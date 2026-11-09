@@ -159,7 +159,13 @@ The engine applies the same function to sight now, movement next, and light and 
 
 **Visibility polygon.** `visPolygon(origin, prepared, {rangeFt, feetPerCell})` returns the area visible from a point. It casts a ray toward every wall endpoint in range (and a hair to either side of it) plus 180 evenly spaced rays for the range circle, applies the semantics in section 6 along each ray, and joins the hit points in angular order. Range comes from the ruleset (for PF2E the current table uses 200 ft). Built in `engine/sight/visibility.js`; about 80 ms for four PCs on a 300-segment map, recomputed only when a token moves or a door changes.
 
-**Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. Up to four Tiny creatures can share one cell, so a Tiny token sits on a half-cell position; the token placement rules for this are settled when tokens are built.
+**Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. A Tiny token's position is its square (whole-number x, y); `engine/tokens/tiny.js` lays it out inside the square:
+
+- Alone in its square: centred.
+- With other Tiny tokens: one quadrant each, up to four per square (a fifth is reported as overfull; the board warns, the GM decides). Free quadrants are handed out top-left, bottom-right, top-right, bottom-left, so two tokens sit on a diagonal. Each token keeps its quadrant (`slot`, stored on the token) while others arrive or leave; a token that moves to another square gives its quadrant up.
+- Sharing its square with a bigger creature: a quadrant, so it is not hidden under the bigger token.
+
+Sight, being seen and drawing use the laid-out space; movement uses the centre of the square, so Tiny tokens move square to square.
 
 **Viewing points.** A token sees from points spread around the edge of its space: the four corners (inset slightly) plus the centre of every cell along the edge. A 1x1 token uses its centre and four corners (5 points); 2x2 uses 8, 3x3 uses 12, 4x4 uses 16. Interior cells add nothing, because anything they could see is also visible from the edge. A viewpoint that the token's own centre cannot see is dropped, so a large token pushed against or squeezing past a wall never sees through that wall. What a token sees is the union of the polygons from its viewpoints. Built as `viewpoints()` in `engine/sight/visibility.js`.
 
@@ -272,7 +278,6 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 ## 16. Open items
 
 - Maps with several floors or heights in one image (balconies, pits).
-- Token placement for Tiny creatures: four per cell on half-cell positions (decided), and how the save and validator store fractional positions.
 - How map images are hosted for the board (published as artifact files, referenced by id from the pack).
 - Wall edges at the limit of sight: visibility stops at a wall's centre line, so half of a drawn wall can stay fogged. The first implementation revealed thin walls whole and thick walls to their middle; decide whether to do the same when the board is built.
 - Whether `links` need conditions beyond `found` (one-way links, links that need a key).

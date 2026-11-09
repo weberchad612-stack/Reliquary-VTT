@@ -116,6 +116,7 @@ ol.log li.foe { border-left-color: var(--foe); }
           <li>Look through the <b>portcullis</b> (dashed, lower left) and the <b>window</b>. Sight passes, movement does not.</li>
           <li>Switch to <b>GM view</b> and click any token, even the ogre, to shade what it can see.</li>
           <li>In GM view, click the <b>gold secret panel</b> to mark it found, then click again to open it.</li>
+          <li>In GM view, drag the three <b>rats</b> (south-east room) into one square. A lone rat sits in the centre; sharing rats take a quadrant each.</li>
         </ul>
       </section>
       <section>
@@ -148,7 +149,9 @@ const START = () => ({
     pip:   { name: 'Pip', kind: 'pc', x: 2, y: 4, speed: 25, short: 'P' },
     ogre:  { name: 'Ogre', kind: 'foe', x: 9, y: 2, size: 2, speed: 25, short: 'O', note: 'Large, 2 x 2' },
     guard: { name: 'Skeleton guard', kind: 'foe', x: 3, y: 8, speed: 25, short: 'S' },
-    rat:   { name: 'Rat', kind: 'foe', x: 9.5, y: 8.5, size: 0.5, speed: 15, short: 'r', note: 'Tiny, half a square' },
+    rat1:  { name: 'Rat', kind: 'foe', x: 9, y: 8, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
+    rat2:  { name: 'Rat 2', kind: 'foe', x: 11, y: 9, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
+    rat3:  { name: 'Rat 3', kind: 'foe', x: 7, y: 9, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
   },
 });
 let S = START();
@@ -165,11 +168,23 @@ let scale = 1;
 
 // ---------- engine glue ----------
 const state = () => ({ doors: S.doors });
-const tokenList = () => Object.entries(S.tokens).map(([id, t]) => ({ id, ...t }));
+let layout = { spaces: new Map(), overfull: [] };
+const raw = () => Object.entries(S.tokens).map(([id, t]) => ({ id, ...t }));
+/** Lay out Tiny tokens and keep each one's quadrant on the token, so it stays put. */
+function relayout() {
+  layout = Engine.layoutTiny(raw());
+  for (const [id, sp] of layout.spaces) {
+    if (sp.slot === null) delete S.tokens[id].slot; else S.tokens[id].slot = sp.slot;
+  }
+}
+const space = (id) => Engine.spaceOf({ id, ...S.tokens[id] }, layout);       // sight, being seen, drawing
+const mspace = (id) => Engine.moveSpaceOf({ id, ...S.tokens[id] });           // movement
+const tokenList = () => raw().map((t) => ({ ...t, ...space(t.id) }));
 const opts = { rangeFt: RANGE, feetPerCell: FPC };
 let view = null, sightSegs = null, moveWalls = null;
 
 function recompute(reason) {
+  relayout();
   sightSegs = Engine.prepare(segs, state(), 'sight');
   moveWalls = Engine.prepareMove(segs, state(), G);
   view = Engine.partyView(tokenList(), sightSegs, opts);
@@ -263,18 +278,17 @@ function draw() {
 
   // GM vision view: what the selected token sees
   if (gm && selected && !drag) {
-    const t = S.tokens[selected];
-    const polys = Engine.tokenSight({ ...t, size: t.size || 1 }, sightSegs, opts);
+    const polys = Engine.tokenSight(space(selected), sightSegs, opts);
     ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .26)';
     ctx.beginPath(); polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
   }
 
   // movement range for the selected token (player view, or while dragging)
   if (selected && (!gm || drag)) {
-    const t = S.tokens[selected], size = t.size || 1;
-    const cells = Engine.reach(moveWalls, { x: t.x, y: t.y, size }, t.speed, opts);
+    const t = S.tokens[selected], ms = mspace(selected), sq = Math.max(1, ms.size);
+    const cells = Engine.reach(moveWalls, ms, t.speed, opts);
     ctx.save(); ctx.fillStyle = 'rgba(95, 191, 131, .16)';
-    for (const c of cells) ctx.fillRect(P(c.x) + 1, P(c.y) + 1, P(size) - 2, P(size) - 2);
+    for (const c of cells) ctx.fillRect(P(Math.floor(c.x)) + 1, P(Math.floor(c.y)) + 1, P(sq) - 2, P(sq) - 2);
     ctx.restore();
   }
 
@@ -314,11 +328,11 @@ function drawDoors(gm) {
 }
 
 function drawRoute() {
-  const t = S.tokens[selected], size = t.size || 1;
+  const t = S.tokens[selected], ms = mspace(selected), size = ms.size, sq = Math.max(1, size);
   const g = drag.goal;
   ctx.save();
   ctx.strokeStyle = 'rgba(227, 164, 67, .9)'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
-  ctx.strokeRect(P(g[0]) + 2, P(g[1]) + 2, P(size) - 4, P(size) - 4);
+  ctx.strokeRect(P(g[0]) + 2, P(g[1]) + 2, P(sq) - 4, P(sq) - 4);
   if (drag.route) {
     ctx.setLineDash([]); ctx.lineWidth = 4; ctx.strokeStyle = '#e3a443';
     ctx.beginPath();
@@ -339,8 +353,11 @@ function drawTokens(gm) {
   for (const [id, t0] of Object.entries(S.tokens)) {
     const seen = view.seen.has(id);
     if (!gm && !seen) continue;
-    const t = drag && drag.id === id ? { ...t0, x: drag.goal[0], y: drag.goal[1] } : t0;
-    const size = t.size || 1, r = P(size) / 2 - (size < 1 ? 2 : 5);
+    const sp = drag && drag.id === id
+      ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
+      : space(id);
+    const t = { ...t0, ...sp };
+    const size = t.size, r = P(size) / 2 - (size < 1 ? 2 : 5);
     const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
     ctx.save();
     if (drag && drag.id === id) ctx.globalAlpha = 0.75;
@@ -381,7 +398,7 @@ function panel() {
     <div class="sel-name">${t.name}</div>
     <div class="chips">
       <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
-      <span class="chip">${size === 2 ? 'Large 2×2' : size < 1 ? 'Tiny' : 'Medium'}</span>
+      <span class="chip">${size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
       <span class="chip">Speed ${t.speed} ft</span>
       ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
     </div>
@@ -396,9 +413,9 @@ function cellAt(ev) {
 function tokenAt(p) {
   const gm = S.view === 'gm';
   let best = null;
-  for (const [id, t] of Object.entries(S.tokens)) {
+  for (const id of Object.keys(S.tokens)) {
     if (!gm && !view.seen.has(id)) continue;
-    const s = t.size || 1;
+    const t = space(id), s = t.size;
     if (p[0] >= t.x && p[0] < t.x + s && p[1] >= t.y && p[1] < t.y + s) best = id; // last drawn wins (smallest on top)
   }
   return best;
@@ -415,8 +432,8 @@ const canDrag = (id) => S.view === 'gm' || S.tokens[id].kind === 'pc';
 
 function goalFor(id, p) {
   const t = S.tokens[id], size = t.size || 1;
-  // keep the token on its own lattice (Tiny tokens sit on half squares)
-  let gx = t.x + Math.round(p[0] - size / 2 - t.x), gy = t.y + Math.round(p[1] - size / 2 - t.y);
+  if (Engine.isTiny(t)) return [Math.max(0, Math.min(G.cols - 1, Math.floor(p[0]))), Math.max(0, Math.min(G.rows - 1, Math.floor(p[1])))];
+  let gx = Math.round(p[0] - size / 2), gy = Math.round(p[1] - size / 2);
   gx = Math.max(0, Math.min(G.cols - size, gx)); gy = Math.max(0, Math.min(G.rows - size, gy));
   return [gx, gy];
 }
@@ -428,7 +445,7 @@ canvas.addEventListener('pointerdown', (ev) => {
   const id = tokenAt(p);
   selected = id; panel();
   if (id && canDrag(id)) {
-    drag = { id, start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
+    drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
     canvas.setPointerCapture(ev.pointerId);
   }
   draw();
@@ -441,8 +458,8 @@ canvas.addEventListener('pointermove', (ev) => {
     const g = goalFor(drag.id, p);
     if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
       drag.goal = g; drag.moved = true;
-      const t = S.tokens[drag.id];
-      drag.route = Engine.path(moveWalls, { x: t.x, y: t.y, size: t.size || 1 }, g[0], g[1], opts);
+      const ms = mspace(drag.id), off = Engine.isTiny(S.tokens[drag.id]) ? 0.25 : 0;
+      drag.route = Engine.path(moveWalls, ms, g[0] + off, g[1] + off, opts);
     }
     draw();
   } else hud();
@@ -457,14 +474,17 @@ canvas.addEventListener('pointerup', () => {
 canvas.addEventListener('pointerleave', () => { hoverCell = null; hud(); });
 
 function moveToken(id, goal, route) {
-  const t = S.tokens[id], size = t.size || 1;
-  const fits = Engine.fits(moveWalls, goal[0], goal[1], size);
+  const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
+  const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
+  const tinyHere = tiny ? Object.entries(S.tokens).filter(([o, u]) => o !== id && Engine.isTiny(u) && u.x === goal[0] && u.y === goal[1]).length : 0;
+  if (tiny && tinyHere >= Engine.MAX_PER_SQUARE) { toast(`Only ${Engine.MAX_PER_SQUARE} Tiny creatures fit in one square.`); log(`${t.name} squeezed into a full square (GM call).`, 'warn'); }
   // The board warns but never prevents: the GM decides.
   if (!fits) { toast(`${t.name} does not fit there.`); log(`${t.name} placed where it does not fit (GM call).`, 'warn'); }
   else if (!route) { toast(`No route for ${t.name}: walls are in the way.`); log(`${t.name} moved with no legal route (GM call).`, 'warn'); }
   else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${t.name}'s ${t.speed} ft Speed.`); log(`${t.name} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
   else log(`${t.name} moved ${route.feet} ft to ${goal[0]},${goal[1]}.`);
   t.x = goal[0]; t.y = goal[1];
+  delete t.slot; // a token arriving in a square takes the next free quadrant
   panel(); recompute();
 }
 
@@ -474,10 +494,10 @@ canvas.addEventListener('keydown', (ev) => {
   if (!k || !selected || !canDrag(selected)) return;
   ev.preventDefault();
   const t = S.tokens[selected];
-  if (!Engine.canStep(moveWalls, { x: t.x, y: t.y, size: t.size || 1 }, k[0], k[1])) {
+  if (!Engine.canStep(moveWalls, mspace(selected), k[0], k[1])) {
     toast(`${t.name} cannot step that way.`); return;
   }
-  t.x += k[0]; t.y += k[1];
+  t.x += k[0]; t.y += k[1]; delete t.slot;
   log(`${t.name} steps to ${t.x},${t.y}.`);
   panel(); recompute();
 });
