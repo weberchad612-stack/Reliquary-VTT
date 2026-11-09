@@ -159,7 +159,9 @@ The engine applies the same function to sight now, movement next, and light and 
 
 **Visibility polygon.** `visPolygon(origin, prepared, {rangeFt, feetPerCell})` returns the area visible from a point. It casts a ray toward every wall endpoint in range (and a hair to either side of it) plus 180 evenly spaced rays for the range circle, applies the semantics in section 6 along each ray, and joins the hit points in angular order. Range comes from the ruleset (for PF2E the current table uses 200 ft). Built in `engine/sight/visibility.js`; about 80 ms for four PCs on a 300-segment map, recomputed only when a token moves or a door changes.
 
-**Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. A Tiny token's position is its square (whole-number x, y); `engine/tokens/tiny.js` lays it out inside the square:
+**Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. A Small creature occupies a full square, like a Medium one, so its footprint stays 1x1 for sight, movement and sharing. Only its token is drawn smaller: 0.75 of a Medium token, centred in the square (`small: true` on the token; `engine/tokens/display.js`).
+
+A Tiny token's position is its square (whole-number x, y); `engine/tokens/tiny.js` lays it out inside the square:
 
 - Alone in its square: centred.
 - With other Tiny tokens: one quadrant each, up to four per square (a fifth is reported as overfull; the board warns, the GM decides). Free quadrants are handed out top-left, bottom-right, top-right, bottom-left, so two tokens sit on a diagonal. Each token keeps its quadrant (`slot`, stored on the token) while others arrive or leave; a token that moves to another square gives its quadrant up.

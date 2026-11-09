@@ -15,6 +15,7 @@ The engine has no game-system or adventure knowledge. Rulesets fill its extensio
 | `fog/view.js` | `partyView` (what PCs see now and which tokens players may see), `fogStateAt` (visible, explored or hidden) and `paintFog` (paints the player or GM fog onto a canvas). |
 | `tokens/tiny.js` | Tiny tokens: `layoutTiny` (centred when alone, a stable quadrant each when sharing a square, up to four), `spaceOf` (space for sight and drawing) and `moveSpaceOf` (space for movement). |
 | `tokens/occupancy.js` | Sharing space: `mayShare` and `blockersAt` under the table rule (a footprint at least two squares wider may share; Tiny shares with anyone). |
+| `tokens/display.js` | How big a token is drawn in its space: Small creatures (`small: true`) at 0.75 of a Medium token, centred. |
 
 All are dependency-free ES modules that run in the browser and in Node. Tools reach them through `tools/sight.mjs`, `tools/move.mjs` and `tools/fog.mjs`.
 

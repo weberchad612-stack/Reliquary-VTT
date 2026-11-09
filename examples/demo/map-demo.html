@@ -147,7 +147,7 @@ const START = () => ({
   locked_known: [],
   tokens: {
     kerra: { name: 'Kerra', kind: 'pc', x: 1, y: 2, speed: 25, short: 'K' },
-    pip:   { name: 'Pip', kind: 'pc', x: 2, y: 4, speed: 25, short: 'P' },
+    pip:   { name: 'Pip', kind: 'pc', x: 2, y: 4, speed: 25, short: 'P', small: true, note: 'Small: occupies a full square, token drawn at 3/4 size' },
     ogre:  { name: 'Ogre', kind: 'foe', x: 9, y: 2, size: 2, speed: 25, short: 'O', note: 'Large, 2 x 2' },
     guard: { name: 'Skeleton guard', kind: 'foe', x: 3, y: 8, speed: 25, short: 'S' },
     giant: { name: 'Bone giant', kind: 'foe', x: 9, y: 5, size: 3, speed: 30, short: 'G', note: 'Huge, 3 x 3: a 1x1 creature may share its space' },
@@ -363,7 +363,8 @@ function drawTokens(gm) {
       ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
       : space(id);
     const t = { ...t0, ...sp };
-    const size = t.size, r = P(size) / 2 - (size < 1 ? 2 : 5);
+    // Medium tokens leave a 5 px margin in their square; Small ones are 3/4 of that token; Tiny a 2 px margin
+    const size = t.size, medium = P(size) / 2 - (size < 1 ? 2 : 5), r = medium * Engine.drawScale(t0);
     const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
     ctx.save();
     if (drag && drag.id === id) ctx.globalAlpha = 0.75;
@@ -404,7 +405,7 @@ function panel() {
     <div class="sel-name">${t.name}</div>
     <div class="chips">
       <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
-      <span class="chip">${size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
+      <span class="chip">${t.small && size === 1 ? 'Small' : size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
       <span class="chip">Speed ${t.speed} ft</span>
       ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
     </div>
