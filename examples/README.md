@@ -8,4 +8,6 @@ Open-licensed sample content only. Do not add publisher content (books, adventur
 
 The map images are generated from the wall data with `python3 tools/wall_overlay.py <map-dir> --blank`.
 
+- `demo/`: an interactive page that runs the engine on the sample crypt (see its README).
+
 Check them with `node tools/validate.mjs examples/sample-pack --save examples/sample-save`.

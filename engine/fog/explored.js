@@ -7,7 +7,7 @@
 // the outlines are then simplified only when the simplified version rasterizes to the identical
 // bitmap, so repeated merges can never grow or shrink the explored area by themselves.
 
-import { simplify as dropCollinear } from '../sight/visibility.js';
+import { simplify } from '../sight/visibility.js';
 
 export const RES = 8; // pixels per cell = 1/8 cell precision (design decision 1)
 
@@ -152,7 +152,7 @@ function trace(m) {
         e = pref.map((d) => cand.find((c) => c.dir === d)).find(Boolean) || cand[0];
       }
       // the first point may be collinear with the last segment when the ring started mid-run
-      const ring = dropCollinear(pts, 1e-9);
+      const ring = simplify(pts, 1e-9);
       if (ring.length >= 3) rings.push(ring);
     }
   }

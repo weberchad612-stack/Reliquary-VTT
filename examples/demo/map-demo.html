@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reliquary Map Engine Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a working table. Map fills the left, a narrow control rail on the right; stacks on phones.
+   Single dark theme by choice: a dungeon table at night, torchlight amber as the one accent. */
+:root {
+  --bg: #17191d;
+  --panel: #20232a;
+  --line: #343841;
+  --ink: #ebe6dc;
+  --muted: #a3a8b0;
+  --accent: #e3a443;
+  --pc: #5b93ff;
+  --foe: #e5615a;
+  --ok: #5fbf83;
+  --warn: #e3a443;
+  --font-display: "Spectral SC", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+header {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+h1 { font: 600 20px/1.2 var(--font-display); letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h1 small { font: 400 13px var(--font-body); color: var(--muted); letter-spacing: 0; margin-left: 8px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button + button { border-left: 1px solid var(--line); }
+button {
+  font: 500 13px var(--font-body); color: var(--ink); background: #2a2e36;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+button:hover { background: #333842; }
+button[aria-pressed="true"] { background: var(--accent); color: #1a1408; }
+button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+.stage { position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+canvas#map { display: block; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); touch-action: none; cursor: default; }
+.hud {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 16px; font: 13px var(--font-mono); color: var(--muted);
+}
+.hud b { color: var(--ink); font-weight: 500; }
+aside { border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: 16px; display: grid; gap: 18px; align-content: start; }
+aside h2 { font: 600 15px var(--font-display); letter-spacing: .03em; margin: 0 0 8px; color: var(--accent); }
+.card { display: grid; gap: 6px; }
+.sel-name { font-weight: 600; font-size: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 12px var(--font-body); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.chip.pc { color: var(--pc); border-color: color-mix(in srgb, var(--pc) 50%, transparent); }
+.chip.foe { color: var(--foe); border-color: color-mix(in srgb, var(--foe) 50%, transparent); }
+.chip.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+.chip.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 50%, transparent); }
+ul.try { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--muted); font-size: 14px; }
+ul.try b { color: var(--ink); font-weight: 500; }
+.legend { display: grid; grid-template-columns: 18px 1fr; gap: 6px 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.sw { width: 18px; height: 4px; border-radius: 2px; }
+ol.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; max-height: 240px; overflow: auto; }
+ol.log li { padding: 4px 8px; border-left: 3px solid var(--line); background: #1b1e24; border-radius: 0 4px 4px 0; }
+ol.log li.warn { border-left-color: var(--warn); }
+ol.log li.ok { border-left-color: var(--ok); }
+ol.log li.foe { border-left-color: var(--foe); }
+.toast {
+  position: absolute; left: 50%; top: 24px; transform: translateX(-50%);
+  background: #2b2418; color: var(--ink); border: 1px solid var(--warn); border-radius: 8px;
+  padding: 8px 14px; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.toast.show { opacity: 1; }
+@media (max-width: 860px) {
+  main { grid-template-columns: 1fr; }
+  aside { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Reliquary Map Engine<small>Sample Crypt · engine test bench</small></h1>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="View">
+        <button id="v-player" aria-pressed="true">Player view</button>
+        <button id="v-gm" aria-pressed="false">GM view</button>
+      </div>
+      <button id="b-walls" aria-pressed="false">Show walls</button>
+      <button id="b-reset">Reset</button>
+    </div>
+  </header>
+  <main>
+    <div class="stage" id="stage">
+      <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="hud" id="hud"></div>
+    </div>
+    <aside>
+      <section class="card" id="sel" aria-live="polite"></section>
+      <section>
+        <h2>Try this</h2>
+        <ul class="try">
+          <li><b>Drag Kerra or Pip</b>. The green area is their 25 ft move; the line shows the cheapest route and its cost (5-10-5 diagonals).</li>
+          <li><b>Click the red door</b> on the middle wall to open it, then walk into the doorway. The ogre appears only while someone can see it.</li>
+          <li><b>Walk back</b>. The far room stays dimmed: explored, but not visible now.</li>
+          <li>Look through the <b>portcullis</b> (dashed, lower left) and the <b>window</b>. Sight passes, movement does not.</li>
+          <li>Switch to <b>GM view</b> and click any token, even the ogre, to shade what it can see.</li>
+          <li>In GM view, click the <b>gold secret panel</b> to mark it found, then click again to open it.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Walls</h2>
+        <div class="legend" id="legend"></div>
+      </section>
+      <section>
+        <h2>Table log</h2>
+        <ol class="log" id="log"></ol>
+      </section>
+    </aside>
+  </main>
+</div>
+<script>
+/*@ENGINE@*/
+
+const DATA = /*@DATA:crypt@*/;
+const { map, segs } = DATA;
+const G = map.grid, CS = G.cell_px, FPC = G.feet_per_cell;
+const W = map.image.w, H = map.image.h;
+const RANGE = 200;
+
+const START = () => ({
+  view: 'player',
+  walls: false,
+  doors: {},
+  locked_known: [],
+  tokens: {
+    kerra: { name: 'Kerra', kind: 'pc', x: 1, y: 2, speed: 25, short: 'K' },
+    pip:   { name: 'Pip', kind: 'pc', x: 2, y: 4, speed: 25, short: 'P' },
+    ogre:  { name: 'Ogre', kind: 'foe', x: 9, y: 2, size: 2, speed: 25, short: 'O', note: 'Large, 2 x 2' },
+    guard: { name: 'Skeleton guard', kind: 'foe', x: 3, y: 8, speed: 25, short: 'S' },
+    rat:   { name: 'Rat', kind: 'foe', x: 9.5, y: 8.5, size: 0.5, speed: 15, short: 'r', note: 'Tiny, half a square' },
+  },
+});
+let S = START();
+let mask = new Engine.ExploredMask(G);
+let selected = null, drag = null, hoverCell = null, lastSeen = new Set(['kerra', 'pip']);
+
+const img = new Image();
+img.src = DATA.image;
+const canvas = document.getElementById('map');
+const ctx = canvas.getContext('2d');
+const fog = document.createElement('canvas'); fog.width = W; fog.height = H;
+const fctx = fog.getContext('2d');
+let scale = 1;
+
+// ---------- engine glue ----------
+const state = () => ({ doors: S.doors });
+const tokenList = () => Object.entries(S.tokens).map(([id, t]) => ({ id, ...t }));
+const opts = { rangeFt: RANGE, feetPerCell: FPC };
+let view = null, sightSegs = null, moveWalls = null;
+
+function recompute(reason) {
+  sightSegs = Engine.prepare(segs, state(), 'sight');
+  moveWalls = Engine.prepareMove(segs, state(), G);
+  view = Engine.partyView(tokenList(), sightSegs, opts);
+  mask.add(view.visible);
+  const explored = mask.toPolys();
+  // announce foes that come into or leave view
+  for (const t of tokenList()) {
+    if (t.kind === 'pc') continue;
+    const was = lastSeen.has(t.id), now = view.seen.has(t.id);
+    if (!was && now) log(`${t.name} comes into view.`, 'foe');
+    if (was && !now && reason !== 'reset') log(`${t.name} is out of sight.`);
+  }
+  lastSeen = new Set(view.seen);
+  S.explored = explored;
+  draw();
+}
+
+// ---------- doors ----------
+const doorSegs = segs.filter((s) => s.door);
+function doorInfo(s) {
+  const live = S.doors[s.door.id] || {};
+  const st = live.state || s.door.initial || 'closed';
+  const found = s.t !== 'secret' || !!live.found;
+  return { st, found, knownLocked: S.locked_known.includes(s.door.id) };
+}
+const mid = (s) => [(s.a[0] + s.b[0]) / 2, (s.a[1] + s.b[1]) / 2];
+function doorVisibleToPlayers(s) {
+  const info = doorInfo(s);
+  if (!info.found) return false;
+  const [mx, my] = mid(s);
+  const dx = s.b[0] - s.a[0], dy = s.b[1] - s.a[1], L = Math.hypot(dx, dy);
+  const nx = -dy / L * 0.35, ny = dx / L * 0.35;
+  return mask.at(mx + nx, my + ny) || mask.at(mx - nx, my - ny);
+}
+function clickDoor(s) {
+  const info = doorInfo(s), id = s.door.id, label = s.door.label;
+  const cur = { ...(S.doors[id] || {}) };
+  if (S.view === 'gm') {
+    if (s.t === 'secret' && !info.found) { cur.found = true; S.doors[id] = cur; log(`GM: ${label} marked found. Players now see a closed door.`, 'ok'); return recompute(); }
+    const next = { closed: 'open', open: 'locked', locked: 'closed' }[info.st];
+    cur.state = next; S.doors[id] = cur;
+    log(`GM: ${label} is now ${next}.`, 'ok');
+    return recompute();
+  }
+  if (info.st === 'locked') {
+    if (!info.knownLocked) S.locked_known.push(id);
+    toast(`${label}: locked. It will not open.`);
+    log(`${label} is locked.`, 'warn');
+    return draw();
+  }
+  cur.state = info.st === 'open' ? 'closed' : 'open'; S.doors[id] = cur;
+  log(`${label} ${cur.state === 'open' ? 'opened' : 'closed'}.`, 'ok');
+  recompute();
+}
+
+// ---------- drawing ----------
+const WALL_COLOURS = { solid: '#d9d2c3', terrain: '#e8913a', grate: '#9aa3ad', window: '#46c6e0', slit: '#d055c8', ethereal: '#9a7cf0', door: '#e5615a', secret: '#e3b330' };
+const LEGEND = [['solid', 'Wall'], ['door', 'Door'], ['secret', 'Secret door (GM only until found)'], ['grate', 'Portcullis: see through, cannot pass'], ['window', 'Window: see through, cannot pass'], ['slit', 'Arrow slit: see through only up close'], ['ethereal', 'Force barrier: pass through, cannot see'], ['terrain', 'Curtain: see past one, not two']];
+document.getElementById('legend').innerHTML = LEGEND.map(([t, l]) => `<span class="sw" style="background:${WALL_COLOURS[t]}"></span><span>${l}</span>`).join('');
+
+function fit() {
+  const stage = document.getElementById('stage');
+  const hudH = document.getElementById('hud').offsetHeight || 20;
+  const availW = Math.max(260, stage.clientWidth - 32);
+  const availH = Math.max(220, stage.clientHeight - 32 - 10 - hudH);
+  scale = Math.min(1.6, availW / W, window.innerWidth > 860 ? availH / H : Infinity);
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width = W * scale + 'px'; canvas.style.height = H * scale + 'px';
+  canvas.width = Math.round(W * scale * dpr); canvas.height = Math.round(H * scale * dpr);
+  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+  draw();
+}
+const P = (c) => c * CS; // cells -> image pixels (origin is 0,0 on the sample map)
+
+function polyPath(c, poly) {
+  c.moveTo(P(poly[0][0]), P(poly[0][1]));
+  for (let i = 1; i < poly.length; i++) c.lineTo(P(poly[i][0]), P(poly[i][1]));
+  c.closePath();
+}
+
+function draw() {
+  if (!view) return;
+  const gm = S.view === 'gm';
+  ctx.clearRect(0, 0, W, H);
+  if (img.complete) ctx.drawImage(img, 0, 0, W, H);
+
+  // fog of war, painted by the engine
+  Engine.paintFog(fctx, { grid: G, explored: S.explored, visible: view.visible, mode: gm ? 'gm' : 'player', width: W, height: H });
+  ctx.drawImage(fog, 0, 0);
+
+  // GM vision view: what the selected token sees
+  if (gm && selected && !drag) {
+    const t = S.tokens[selected];
+    const polys = Engine.tokenSight({ ...t, size: t.size || 1 }, sightSegs, opts);
+    ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .26)';
+    ctx.beginPath(); polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
+  }
+
+  // movement range for the selected token (player view, or while dragging)
+  if (selected && (!gm || drag)) {
+    const t = S.tokens[selected], size = t.size || 1;
+    const cells = Engine.reach(moveWalls, { x: t.x, y: t.y, size }, t.speed, opts);
+    ctx.save(); ctx.fillStyle = 'rgba(95, 191, 131, .16)';
+    for (const c of cells) ctx.fillRect(P(c.x) + 1, P(c.y) + 1, P(size) - 2, P(size) - 2);
+    ctx.restore();
+  }
+
+  if (S.walls || gm) drawWalls(gm && !S.walls);
+  drawDoors(gm);
+  if (drag && drag.route !== undefined) drawRoute();
+  drawTokens(gm);
+  hud();
+}
+
+function drawWalls(faint) {
+  ctx.save(); ctx.lineCap = 'round';
+  for (const s of segs) {
+    if (!faint && S.view === 'player' && s.t === 'secret' && !doorInfo(s).found) continue;
+    ctx.globalAlpha = faint ? 0.45 : 0.95;
+    ctx.strokeStyle = WALL_COLOURS[s.t]; ctx.lineWidth = s.door ? 6 : 4;
+    ctx.setLineDash(s.t === 'grate' || s.t === 'window' ? [6, 5] : []);
+    ctx.beginPath(); ctx.moveTo(P(s.a[0]), P(s.a[1])); ctx.lineTo(P(s.b[0]), P(s.b[1])); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawDoors(gm) {
+  for (const s of doorSegs) {
+    const info = doorInfo(s);
+    if (!gm && !doorVisibleToPlayers(s)) continue;
+    const [mx, my] = mid(s), x = P(mx), y = P(my);
+    const showLock = info.st === 'locked' && (gm || info.knownLocked);
+    const col = !info.found ? '#e3b330' : info.st === 'open' ? '#5fbf83' : showLock ? '#e3a443' : '#e5615a';
+    ctx.save();
+    ctx.fillStyle = '#17191d'; ctx.strokeStyle = col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(x, y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = col; ctx.font = '600 12px IBM Plex Sans, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(!info.found ? '?' : info.st === 'open' ? '◻' : showLock ? '🔒' : '▮', x, y + 1);
+    ctx.restore();
+  }
+}
+
+function drawRoute() {
+  const t = S.tokens[selected], size = t.size || 1;
+  const g = drag.goal;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(227, 164, 67, .9)'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+  ctx.strokeRect(P(g[0]) + 2, P(g[1]) + 2, P(size) - 4, P(size) - 4);
+  if (drag.route) {
+    ctx.setLineDash([]); ctx.lineWidth = 4; ctx.strokeStyle = '#e3a443';
+    ctx.beginPath();
+    drag.route.path.forEach(([x, y], i) => { const px = P(x + size / 2), py = P(y + size / 2); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+    ctx.stroke();
+  }
+  const label = drag.route ? `${drag.route.feet} ft` : 'no route';
+  ctx.font = '600 13px IBM Plex Sans, sans-serif';
+  const tw = ctx.measureText(label).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
+  ctx.fillStyle = drag.route && drag.route.feet <= t.speed ? '#1f2a22' : '#2b2418';
+  ctx.fillRect(lx, ly, tw, 20);
+  ctx.fillStyle = drag.route && drag.route.feet <= t.speed ? '#5fbf83' : '#e3a443';
+  ctx.fillText(label, lx + 6, ly + 15);
+  ctx.restore();
+}
+
+function drawTokens(gm) {
+  for (const [id, t0] of Object.entries(S.tokens)) {
+    const seen = view.seen.has(id);
+    if (!gm && !seen) continue;
+    const t = drag && drag.id === id ? { ...t0, x: drag.goal[0], y: drag.goal[1] } : t0;
+    const size = t.size || 1, r = P(size) / 2 - (size < 1 ? 2 : 5);
+    const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
+    ctx.save();
+    if (drag && drag.id === id) ctx.globalAlpha = 0.75;
+    if (gm && !seen) ctx.globalAlpha = 0.6;
+    ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = id === selected ? 4 : 2; ctx.strokeStyle = id === selected ? '#e3a443' : '#0d0f12';
+    if (gm && !seen) ctx.setLineDash([4, 3]);
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
+    ctx.restore();
+  }
+}
+
+function hud() {
+  const parts = [];
+  if (hoverCell) {
+    const [x, y] = hoverCell, c = [x + 0.5, y + 0.5];
+    const fs = Engine.fogStateAt(c, view.visible, mask, Engine.pointInPolygon);
+    parts.push(`square <b>${x},${y}</b>`, `fog <b>${fs}</b>`);
+  }
+  const bytes = JSON.stringify({ v: 1, polys: S.explored }).length;
+  parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
+  parts.push(`lookers <b>${view.lookers.length}</b>`);
+  document.getElementById('hud').innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
+}
+
+function panel() {
+  const el = document.getElementById('sel');
+  if (!selected) {
+    el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to shade what it sees.' : 'Click Kerra or Pip to see how far they can move.'}</div>`;
+    return;
+  }
+  const t = S.tokens[selected], size = t.size || 1;
+  const seen = view.seen.has(selected);
+  el.innerHTML = `<h2>Selection</h2>
+    <div class="sel-name">${t.name}</div>
+    <div class="chips">
+      <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
+      <span class="chip">${size === 2 ? 'Large 2×2' : size < 1 ? 'Tiny' : 'Medium'}</span>
+      <span class="chip">Speed ${t.speed} ft</span>
+      ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
+    </div>
+    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${S.view === 'gm' ? 'Yellow: what it sees now.' : 'Green: reachable this move.'}</div>`;
+}
+
+// ---------- interaction ----------
+function cellAt(ev) {
+  const r = canvas.getBoundingClientRect();
+  return [(ev.clientX - r.left) / scale / CS, (ev.clientY - r.top) / scale / CS];
+}
+function tokenAt(p) {
+  const gm = S.view === 'gm';
+  let best = null;
+  for (const [id, t] of Object.entries(S.tokens)) {
+    if (!gm && !view.seen.has(id)) continue;
+    const s = t.size || 1;
+    if (p[0] >= t.x && p[0] < t.x + s && p[1] >= t.y && p[1] < t.y + s) best = id; // last drawn wins (smallest on top)
+  }
+  return best;
+}
+function doorAt(p) {
+  for (const s of doorSegs) {
+    if (S.view === 'player' && !doorVisibleToPlayers(s)) continue;
+    const [mx, my] = mid(s);
+    if (Math.hypot(p[0] - mx, p[1] - my) < 0.4) return s;
+  }
+  return null;
+}
+const canDrag = (id) => S.view === 'gm' || S.tokens[id].kind === 'pc';
+
+function goalFor(id, p) {
+  const t = S.tokens[id], size = t.size || 1;
+  // keep the token on its own lattice (Tiny tokens sit on half squares)
+  let gx = t.x + Math.round(p[0] - size / 2 - t.x), gy = t.y + Math.round(p[1] - size / 2 - t.y);
+  gx = Math.max(0, Math.min(G.cols - size, gx)); gy = Math.max(0, Math.min(G.rows - size, gy));
+  return [gx, gy];
+}
+
+canvas.addEventListener('pointerdown', (ev) => {
+  const p = cellAt(ev);
+  const d = doorAt(p);
+  if (d) { clickDoor(d); return; }
+  const id = tokenAt(p);
+  selected = id; panel();
+  if (id && canDrag(id)) {
+    drag = { id, start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
+    canvas.setPointerCapture(ev.pointerId);
+  }
+  draw();
+});
+canvas.addEventListener('pointermove', (ev) => {
+  const p = cellAt(ev);
+  hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
+  canvas.style.cursor = doorAt(p) ? 'pointer' : tokenAt(p) ? (canDrag(tokenAt(p)) ? 'grab' : 'pointer') : 'default';
+  if (drag) {
+    const g = goalFor(drag.id, p);
+    if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
+      drag.goal = g; drag.moved = true;
+      const t = S.tokens[drag.id];
+      drag.route = Engine.path(moveWalls, { x: t.x, y: t.y, size: t.size || 1 }, g[0], g[1], opts);
+    }
+    draw();
+  } else hud();
+});
+canvas.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const { id, goal, route, moved } = drag;
+  drag = null;
+  if (moved && (goal[0] !== S.tokens[id].x || goal[1] !== S.tokens[id].y)) moveToken(id, goal, route);
+  else draw();
+});
+canvas.addEventListener('pointerleave', () => { hoverCell = null; hud(); });
+
+function moveToken(id, goal, route) {
+  const t = S.tokens[id], size = t.size || 1;
+  const fits = Engine.fits(moveWalls, goal[0], goal[1], size);
+  // The board warns but never prevents: the GM decides.
+  if (!fits) { toast(`${t.name} does not fit there.`); log(`${t.name} placed where it does not fit (GM call).`, 'warn'); }
+  else if (!route) { toast(`No route for ${t.name}: walls are in the way.`); log(`${t.name} moved with no legal route (GM call).`, 'warn'); }
+  else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${t.name}'s ${t.speed} ft Speed.`); log(`${t.name} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
+  else log(`${t.name} moved ${route.feet} ft to ${goal[0]},${goal[1]}.`);
+  t.x = goal[0]; t.y = goal[1];
+  panel(); recompute();
+}
+
+canvas.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') { selected = null; panel(); draw(); return; }
+  const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
+  if (!k || !selected || !canDrag(selected)) return;
+  ev.preventDefault();
+  const t = S.tokens[selected];
+  if (!Engine.canStep(moveWalls, { x: t.x, y: t.y, size: t.size || 1 }, k[0], k[1])) {
+    toast(`${t.name} cannot step that way.`); return;
+  }
+  t.x += k[0]; t.y += k[1];
+  log(`${t.name} steps to ${t.x},${t.y}.`);
+  panel(); recompute();
+});
+
+function setView(v) {
+  S.view = v;
+  document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
+  document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
+  if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
+  panel(); draw();
+}
+document.getElementById('v-player').onclick = () => setView('player');
+document.getElementById('v-gm').onclick = () => setView('gm');
+document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
+document.getElementById('b-reset').onclick = () => {
+  const v = S.view; S = START(); S.view = v; mask = new Engine.ExploredMask(G); selected = null; lastSeen = new Set(['kerra', 'pip']);
+  document.getElementById('log').innerHTML = ''; log('Table reset. Kerra and Pip stand in the west hall.');
+  document.getElementById('b-walls').setAttribute('aria-pressed', 'false');
+  panel(); recompute('reset');
+};
+
+let toastT = 0;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2400);
+}
+function log(msg, cls = '') {
+  const li = document.createElement('li'); li.textContent = msg; if (cls) li.className = cls;
+  const ol = document.getElementById('log'); ol.prepend(li);
+  while (ol.children.length > 30) ol.lastChild.remove();
+}
+
+window.addEventListener('resize', fit);
+img.onload = () => draw();
+log('Kerra and Pip stand in the west hall. The door east is closed.');
+recompute('reset');
+panel();
+fit();
+</script>
+</body>
+</html>

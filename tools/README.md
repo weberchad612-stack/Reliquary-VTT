@@ -4,6 +4,7 @@ Scripts Claude runs in its workspace. Requirements: Node.js 20 or newer (`npm in
 
 | Tool | What it does |
 |---|---|
+| `bundle.mjs` | Bundles the engine modules into one script for single-file pages, and inlines data (a map folder, JSON, images). `node tools/bundle.mjs <template.html> <out.html> [--data NAME=FILE ...]`. Used for the board and `examples/demo/`. |
 | `validate.mjs` | Checks a pack's maps and walls, and optionally a save's map state, against the schemas and the design rules. `node tools/validate.mjs <pack-dir or map-dir> [--save <save-dir>]` (also `npm run validate -- ...`). Exit code 1 on errors. |
 | `sight.mjs` | Asks the sight engine what is visible. `node tools/sight.mjs <map-dir> --from X,Y [--to X,Y] [--state FILE] [--range FEET]`. Points are in cells (3.5,4.5 is the centre of cell 3,4). Prints the visibility polygon, or `{"visible": true/false}` with `--to`. `--token X,Y,SIZE` gives what a whole token sees (one polygon per viewpoint). |
 | `move.mjs` | Asks the movement engine. `node tools/move.mjs <map-dir> --token X,Y[,SIZE] (--to X,Y \| --step DX,DY \| --reach FEET) [--state FILE] [--diagonal 1,2] [--squeeze SIZE]`. Prints the cheapest path and its cost, whether one step is allowed, or every reachable position. |

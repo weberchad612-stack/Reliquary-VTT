@@ -14,7 +14,7 @@ Built so far:
 - Movement: steps, fitting large creatures, pathfinding and reach (`engine/movement/`)
 - Fog of war: explored-area merging and the three-state player and GM fog (`engine/fog/`)
 - A validator, sight, movement and fog query tools, and a wall overlay renderer (`tools/`)
-- An original sample map pack and save (`examples/`)
+- An original sample map pack and save, and an interactive demo of the engine on it (`examples/`)
 
 ## Development
 
