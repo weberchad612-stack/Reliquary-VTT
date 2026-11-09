@@ -40,7 +40,7 @@ The user's standing rule:
 | Extract | `extract.py` picks the largest image on the page that is not shared with other pages. | The chosen image is the map, not the page background. |
 | Grid | Automatic calibration. | Strength above about 2 (a clear grid) and square cells. Draw the grid over the image at **two far corners** and look. |
 | Wall mask | Thresholds in the map's `mask` settings. | Sample colours from small boxes you have **confirmed by eye are inside walls**, floors, ground and water. Do not guess thresholds. Render the mask over the map and look. |
-| Features | Doors, windows, proposed arrow slits. | Count the doors against the art. Every slit proposal is accepted or rejected by looking at the original art beside it. |
+| Features | Doors (one segment per leaf; double doors paired), windows, proposed arrow slits. | Count the doors against the art, counting each leaf of a double door. Check each door's swing side; correct it with a `doors` entry when the text or art says otherwise. Every slit proposal is accepted or rejected by looking at the original art beside it. |
 | Corrections | `erase`, `add`, `openings`, `doors`, `windows`, `slits`, excludes with `hide`. | Render zoomed tiles of every corrected spot with the cell grid and the segments drawn. |
 | Validate | `node tools/validate.mjs <pack>`. | No errors, no unexplained warnings. **No "walls pinch the doorway" warnings**: every door must be clear to see and walk through when open. |
 | Doorways | Render a zoomed tile of **every** door and secret door with the segments drawn. | Square jambs, nothing crossing or running along the door line, the opening as wide as the gap in the art. |

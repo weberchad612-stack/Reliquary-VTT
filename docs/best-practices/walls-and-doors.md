@@ -20,7 +20,8 @@ For Claude, when writing or correcting wall data (`walls.json`; design: [maps.md
 
 - A door with a small barred window: type `door` with `sight: 30` and `prox: {sight: 5}`. Closed, it blocks movement, but someone beside it can look through.
 - Stuck doors: `stuck_dc`. Doors blocked by rubble: `blocked`, saying what blocks it and how to get past.
-- Double doors are one segment.
+- **Double doors are two leaves**: two door segments meeting end to end, each naming the other in `door.pair`, each with its own id, state and label ("..., west leaf"). Never make a double door one segment: players must be able to open one leaf.
+- Every leaf has a `hinge` (`a`/`b`) and a `swing` side (`left`/`right` of a→b). Double-door leaves hinge at the outer ends. Pick the swing from the art or the text (into the room, or onto the space the drawing leaves open); when nothing says, choose the side with room to open.
 - Give every door a `label` a GM recognises ("A4-A11 door (stuck)"), and put the text's details in `note` in your own words.
 
 ## Geometry
@@ -31,6 +32,8 @@ For Claude, when writing or correcting wall data (`walls.json`; design: [maps.md
 - Never refer to segments by id in corrections or notes that must survive a re-import; ids change when a map is vectorized again. Door ids (`door.id`) are stable and are what saves and narration use.
 
 ## Checks
+
+- Look at every door in the demo page with all doors closed and then all open: panels sit in the doorway, open leaves swing into open floor, never through a wall, and each leaf of a double door works on its own.
 
 - `node tools/validate.mjs <pack>` after every change.
 - The leak check from inside every room with all doors closed.

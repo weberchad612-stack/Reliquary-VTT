@@ -216,24 +216,38 @@ function doorVisibleToPlayers(s) {
   const nx = -dy / L * 0.35, ny = dx / L * 0.35;
   return mask.at(mx + nx, my + ny) || mask.at(mx - nx, my - ny);
 }
-function clickDoor(s) {
-  const info = doorInfo(s), id = s.door.id, label = s.door.label;
-  const cur = { ...(S.doors[id] || {}) };
+const leafOf = (s) => Engine.leafShapes(s, { partner: Engine.pairOf(s, segs) });
+/** Click a door leaf. With `both`, a double door's two leaves change together (Shift+click). */
+function clickDoor(s, both = false) {
+  const partner = Engine.pairOf(s, segs);
+  const leaves = both && partner ? [s, partner] : [s];
   if (S.view === 'gm') {
-    if (s.t === 'secret' && !info.found) { cur.found = true; S.doors[id] = cur; log(`GM: ${label} marked found. Players now see a closed door.`, 'ok'); return recompute(); }
+    const info = doorInfo(s);
+    if (s.t === 'secret' && !info.found) {
+      for (const l of leaves) S.doors[l.door.id] = { ...(S.doors[l.door.id] || {}), found: true };
+      log(`GM: ${s.door.label} marked found. Players now see a closed door.`, 'ok'); return recompute();
+    }
     const next = { closed: 'open', open: 'locked', locked: 'closed' }[info.st];
-    cur.state = next; S.doors[id] = cur;
-    log(`GM: ${label} is now ${next}.`, 'ok');
+    for (const l of leaves) S.doors[l.door.id] = { ...(S.doors[l.door.id] || {}), state: next };
+    log(`GM: ${leaves.map((l) => l.door.label).join(' and ')} ${leaves.length > 1 ? 'are' : 'is'} now ${next}.`, 'ok');
     return recompute();
   }
-  if (info.st === 'locked') {
-    if (!info.knownLocked) S.locked_known.push(id);
-    toast(`${label}: locked. It will not open.`);
-    log(`${label} is locked.`, 'warn');
-    return draw();
+  const want = doorInfo(s).st === 'open' ? 'closed' : 'open';
+  const changed = [];
+  for (const l of leaves) {
+    const info = doorInfo(l), id = l.door.id;
+    if (want === 'open' && info.st === 'locked') {
+      if (!info.knownLocked) S.locked_known.push(id);
+      toast(`${l.door.label}: locked. It will not open.`);
+      log(`${l.door.label} is locked.`, 'warn');
+      continue;
+    }
+    if (info.st === want) continue;
+    S.doors[id] = { ...(S.doors[id] || {}), state: want };
+    changed.push(l.door.label);
   }
-  cur.state = info.st === 'open' ? 'closed' : 'open'; S.doors[id] = cur;
-  log(`${label} ${cur.state === 'open' ? 'opened' : 'closed'}.`, 'ok');
+  if (!changed.length) return draw();
+  log(`${changed.join(' and ')} ${want === 'open' ? 'opened' : 'closed'}.`, 'ok');
   recompute();
 }
 
@@ -318,20 +332,60 @@ function drawWalls(faint) {
   ctx.restore();
 }
 
+// Door leaves are drawn as panels: in the doorway when closed, swung on the hinge when open.
+const DOOR_LOOK = {
+  wood: '#8a5a2e', woodEdge: '#c48b52', stone: '#7b776f', stoneEdge: '#b3ada2', ink: '#140d07',
+  open: 'rgba(235, 230, 220, .55)', lock: '#e3a443', secret: '#e3b330',
+};
+function polyPath(poly) {
+  ctx.beginPath(); ctx.moveTo(P(poly[0][0]), P(poly[0][1]));
+  for (let i = 1; i < poly.length; i++) ctx.lineTo(P(poly[i][0]), P(poly[i][1]));
+  ctx.closePath();
+}
+function drawPanel(poly, stone) {
+  polyPath(poly);
+  ctx.fillStyle = stone ? DOOR_LOOK.stone : DOOR_LOOK.wood; ctx.fill();
+  ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.ink; ctx.stroke();
+  // a lighter grain line down the middle of the panel
+  const m1 = [(poly[0][0] + poly[3][0]) / 2, (poly[0][1] + poly[3][1]) / 2], m2 = [(poly[1][0] + poly[2][0]) / 2, (poly[1][1] + poly[2][1]) / 2];
+  ctx.beginPath(); ctx.moveTo(P(m1[0]), P(m1[1])); ctx.lineTo(P(m2[0]), P(m2[1]));
+  ctx.lineWidth = 0.8; ctx.strokeStyle = stone ? DOOR_LOOK.stoneEdge : DOOR_LOOK.woodEdge; ctx.stroke();
+}
+function drawPadlock(c, col) {
+  const x = P(c[0]), y = P(c[1]), k = Math.max(0.55, P(0.32) / 10);
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  ctx.fillStyle = '#17191d'; ctx.strokeStyle = col; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, -2, 4.2, Math.PI, 0); ctx.stroke();               // shackle
+  ctx.beginPath(); ctx.rect(-6, -2, 12, 9); ctx.fill(); ctx.stroke();             // body
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 2.5, 1.4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
 function drawDoors(gm) {
+  ctx.save(); ctx.lineJoin = 'round';
   for (const s of doorSegs) {
     const info = doorInfo(s);
     if (!gm && !doorVisibleToPlayers(s)) continue;
-    const [mx, my] = mid(s), x = P(mx), y = P(my);
-    const showLock = info.st === 'locked' && (gm || info.knownLocked);
-    const col = !info.found ? '#e3b330' : info.st === 'open' ? '#5fbf83' : showLock ? '#e3a443' : '#e5615a';
-    ctx.save();
-    ctx.fillStyle = '#17191d'; ctx.strokeStyle = col; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(x, y, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = col; ctx.font = '600 12px IBM Plex Sans, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(!info.found ? '?' : info.st === 'open' ? '◻' : showLock ? '🔒' : '▮', x, y + 1);
-    ctx.restore();
+    const L = leafOf(s), stone = s.t === 'secret';
+    if (!info.found) {                         // GM only: an unfound secret door, outlined
+      polyPath(L.closed); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.secret; ctx.stroke(); ctx.setLineDash([]);
+      continue;
+    }
+    if (info.st === 'open') {
+      // the empty doorway, the swing path, then the leaf standing open
+      ctx.beginPath(); ctx.moveTo(P(L.hinge[0]), P(L.hinge[1])); ctx.lineTo(P(L.free[0]), P(L.free[1]));
+      ctx.lineWidth = 1; ctx.strokeStyle = DOOR_LOOK.open; ctx.setLineDash([2, 3]); ctx.stroke();
+      ctx.beginPath(); ctx.arc(P(L.arc.c[0]), P(L.arc.c[1]), P(L.arc.r), L.arc.from, L.arc.to, L.arc.ccw); ctx.stroke();
+      ctx.setLineDash([]);
+      drawPanel(L.open, stone);
+    } else {
+      drawPanel(L.closed, stone);
+      if (info.st === 'locked' && (gm || info.knownLocked)) drawPadlock(L.centre, DOOR_LOOK.lock);
+    }
+    // hinge pin
+    ctx.beginPath(); ctx.arc(P(L.hinge[0]), P(L.hinge[1]), Math.max(1.2, P(0.05)), 0, Math.PI * 2);
+    ctx.fillStyle = DOOR_LOOK.ink; ctx.fill();
   }
+  ctx.restore();
 }
 
 function drawRoute() {
@@ -401,7 +455,7 @@ function hud() {
 function panel() {
   const el = document.getElementById('sel');
   if (!selected) {
-    el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to shade what it sees.' : 'Click Kerra or Pip to see how far they can move.'}</div>`;
+    el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to shade what it sees. Click a door to cycle closed, open, locked; Shift+click a double door for both leaves.' : 'Click Kerra or Pip to see how far they can move. Click a door to open or close it; Shift+click a double door to work both leaves.'}</div>`;
     return;
   }
   const t = S.tokens[selected], size = t.size || 1;
@@ -433,13 +487,18 @@ function tokenAt(p) {
   }
   return best;
 }
+const distToSeg = (p, a, b) => Engine.pointSegDist(p, a, b);
+/** The door leaf under p: near the closed leaf, or near the open leaf where it now stands. */
 function doorAt(p) {
+  let best = null, bd = 0.3;
   for (const s of doorSegs) {
     if (S.view === 'player' && !doorVisibleToPlayers(s)) continue;
-    const [mx, my] = mid(s);
-    if (Math.hypot(p[0] - mx, p[1] - my) < 0.4) return s;
+    const L = leafOf(s);
+    let d = distToSeg(p, L.hinge, L.free);
+    if (doorInfo(s).st === 'open') d = Math.min(d, distToSeg(p, L.hinge, L.openFree));
+    if (d < bd) { bd = d; best = s; }
   }
-  return null;
+  return best;
 }
 /** "the Ogre" for creatures, plain "Kerra" for player characters. */
 const theName = (t) => (t.kind === 'pc' ? t.name : `the ${t.name}`);
@@ -456,7 +515,7 @@ function goalFor(id, p) {
 canvas.addEventListener('pointerdown', (ev) => {
   const p = cellAt(ev);
   const d = doorAt(p);
-  if (d) { clickDoor(d); return; }
+  if (d) { clickDoor(d, ev.shiftKey); return; }
   const id = tokenAt(p);
   selected = id; panel();
   if (id && canDrag(id)) {

@@ -43,7 +43,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize  # noqa: E402
 
 SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note")
-DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find")
+DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find", "pair", "hinge", "swing")
 
 
 def cells_to_px(p, g):
@@ -85,6 +85,69 @@ def clear_doorway(wall, door, cs):
     w8 = wall.astype(np.uint8)
     cv2.fillPoly(w8, [np.round(np.array(corners)).astype(np.int32)], 0)
     wall[:] = w8.astype(bool)
+
+
+COMPASS = ["east", "south-east", "south", "south-west", "west", "north-west", "north", "north-east"]
+
+
+def _compass(v):
+    """Compass name of a direction in image coordinates (y down)."""
+    return COMPASS[int(round(math.degrees(math.atan2(v[1], v[0])) / 45)) % 8]
+
+
+def swing_cost(wall, hinge, free, side):
+    """Fraction of wall pixels in the quarter disc a leaf sweeps when it opens toward `side`."""
+    d = np.asarray(free, float) - np.asarray(hinge, float)
+    L = float(np.linalg.norm(d))
+    u = d / L
+    n = np.array([u[1], -u[0]]) if side == "left" else np.array([-u[1], u[0]])   # y down
+    h, w = wall.shape
+    hits = total = 0
+    for r in np.linspace(0.25, 0.95, 6):
+        for t in np.linspace(0.1, 1.45, 8):
+            p = np.asarray(hinge, float) + L * r * (math.cos(t) * u + math.sin(t) * n)
+            x, y = int(round(p[0])), int(round(p[1]))
+            total += 1
+            if not (0 <= x < w and 0 <= y < h) or wall[y, x]:
+                hits += 1
+    return hits / total
+
+
+def door_leaves(d, wall, g):
+    """Door segments, one per leaf, for a detected opening. A double door's leaves hinge at the outer
+    ends, are paired, and are named by compass direction; the swing side is the one with room to open."""
+    pts = [np.asarray(d["a"], float)] + [np.asarray(c, float) for c in d.get("cuts", [])] + [np.asarray(d["b"], float)]
+    into = features.DEFAULTS["end_into_wall_cells"] * g["cell_px"]
+    u = (pts[-1] - pts[0]) / np.linalg.norm(pts[-1] - pts[0])
+    face = [pts[0] + u * into] + pts[1:-1] + [pts[-1] - u * into]   # jamb faces instead of segment ends
+    n = len(pts) - 1
+    if n == 1:
+        options = [(h, sw) for h in ("a", "b") for sw in ("left", "right")]
+        cost = lambda h, sw: swing_cost(wall, face[0] if h == "a" else face[1], face[1] if h == "a" else face[0], sw)
+        hinge, swing = min(options, key=lambda o: (round(cost(*o), 2), options.index(o)))
+        hinges = [hinge]
+    else:
+        hinges = ["a"] + ["a"] * (n - 2) + ["b"]
+        def total(sw):
+            c = 0.0
+            for k in range(n):
+                hp, fp = (face[k], face[k + 1]) if hinges[k] == "a" else (face[k + 1], face[k])
+                c += swing_cost(wall, hp, fp, sw)
+            return round(c, 2)
+        swing = min(("left", "right"), key=lambda sw: (total(sw), sw != "left"))
+    mid = (pts[0] + pts[-1]) / 2
+    leaves = []
+    for k in range(n):
+        a, b = seg_cells(pts[k], pts[k + 1], g)
+        door = {"label": "Door" if n == 1 else "Double door", "hinge": hinges[k], "swing": swing}
+        leaf = {"a": a, "b": b, "t": "door", "door": door}
+        if n > 1:
+            leaf["_leafname"] = f"{_compass((pts[k] + pts[k + 1]) / 2 - mid)} leaf"
+            door["label"] = f'Double door, {leaf["_leafname"]}'
+        leaves.append(leaf)
+    if n == 2:
+        leaves[0]["door"]["_partner"], leaves[1]["door"]["_partner"] = leaves[1], leaves[0]
+    return leaves
 
 
 def cut_opening(wall, at_px, g, width_px, angle_deg=None):
@@ -188,14 +251,24 @@ def build(cfg_path, repo):
     wins = features.find_windows(window_px, smooth, cs, fcfg)
 
     door_segs = []
+    openings = []        # one list of leaves per detected door opening
     for d in doors:
-        a, b = seg_cells(d["a"], d["b"], g)
-        door_segs.append({"a": a, "b": b, "t": "door", "door": {"label": "Double door" if d["leaves"] == 2 else "Door"}})
+        leaves = door_leaves(d, smooth, g)
+        openings.append(leaves)
+        door_segs += leaves
     for p in cfg.get("doors", []):
         best = min(door_segs, key=lambda s: dist_point_seg(p["near"], s["a"], s["b"]), default=None)
         if best is None or dist_point_seg(p["near"], best["a"], best["b"]) > 1.0:
             raise ValueError(f"no detected door near {p['near']}")
-        apply_props(best, {k: v for k, v in p.items() if k != "near"})
+        group = next(o for o in openings if any(x is best for x in o))
+        props = {k: v for k, v in p.items() if k != "near"}
+        if len(group) > 1 and "hinge" in props:
+            raise ValueError(f"door near {p['near']}: the leaves of a double door hinge at its outer ends; set swing only")
+        for leaf in group:   # properties apply to the whole opening (both leaves of a double door)
+            q = dict(props)
+            if len(group) > 1 and "label" in q:
+                q["label"] = f'{q["label"]}, {leaf["_leafname"]}'
+            apply_props(leaf, q)
         report["applied"].append({"door_props": p["near"], "note": p.get("note", "")})
     win_segs = []
     for w in wins:
@@ -246,6 +319,13 @@ def build(cfg_path, repo):
                 seg["door"] = {k: v for k, v in s["door"].items() if v is not None}
             if seg["a"] != seg["b"]:
                 out.append(seg)
+    # Double doors: each leaf names the other (ids are known only now).
+    for seg in out:
+        door = seg.get("door")
+        if door and "_partner" in door:
+            door["pair"] = door.pop("_partner")["door"]["id"]
+        if door:
+            door.pop("_leafname", None)
 
     mp = cfg["map"]
     img_name = f'{mp["id"]}.webp'

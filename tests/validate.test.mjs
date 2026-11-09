@@ -164,3 +164,24 @@ test('doorway check: walls that do not block movement are ignored', () => {
   const eth = { id: 'e', t: 'ethereal', a: [5, 3.1], b: [6, 3.1] };
   assert.ok(passes(doorwayClearance(door, [door, ...jambs, eth], 80)));
 });
+
+test('double door: pair must name an existing door', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-cell-door-n').door.pair = 'nope'; }), /pair "nope" is not a door/);
+});
+
+test('double door: both leaves must name each other', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-cell-door-s').door.pair = 'd01'; }), /does not name "d04"|does not name "d03"/);
+});
+
+test('double door: leaves must meet end to end on one line', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { const s = seg(d, 'w-cell-door-s'); s.a = [6, 7.5]; }), /meet end to end/);
+});
+
+test('door hinge and swing take only their named values', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-hall-door').door.swing = 'north'; }), /swing|enum|allowed/i);
+});
+
+test('double door: a small bend at the middle (grid snapping on a diagonal) is allowed', () => {
+  const r = withCopy(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-cell-door-n').a = [6.125, 6]; }));
+  assert.doesNotMatch(errorText(r), /meet end to end/);
+});

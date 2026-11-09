@@ -9,6 +9,7 @@ The engine has no game-system or adventure knowledge. Rulesets fill its extensio
 | Module | What it does |
 |---|---|
 | `walls/presets.js` | The eight wall types and their movement, sight, light and sound values; door and secret-door behaviour; 1/8 cell snapping; one-way sides. |
+| `doors/leaf.js` | Door leaves for drawing: `leafShapes` (closed panel, open panel swung on its hinge, swing arc, centre), `leafEnds`, `pairOf` (the other leaf of a double door), `sideNormal`. |
 | `sight/visibility.js` | The sight engine: `prepare` (segments for one sense, with door states applied), `visPolygon` (area visible from a point), `canSee` (line of sight between two points), `footprintPoints`, `viewpoints`, `tokenSight` and `tokenCanSee` (sight for tokens of any size, Tiny to Gargantuan), plus polygon helpers. |
 | `movement/movement.js` | Movement: `canStep` (one 8-way step of a token's whole space, no corner cutting), `fits` (does a space fit), `path` (cheapest route) and `reach` (every position within a movement allowance). Diagonal costs, difficult terrain, occupied squares and squeezing come from the ruleset as options. |
 | `fog/explored.js` | Explored areas: `ExploredMask` (a 1/8-cell bitmap) and `mergeExplored`, which adds what the party sees now to what it has seen before and stores the result as outlines that round-trip exactly. `displayPolys` / `displayOutlines` give straightened outlines for painting. |

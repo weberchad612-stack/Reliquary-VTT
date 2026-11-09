@@ -175,6 +175,23 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     }
   }
   if (segIds.size === 0) report.warn(mapFile, 'map has no wall segments');
+  // Double doors: each leaf's pair must name the other, and the leaves must meet end to end on one line.
+  const byDoor = new Map(allSegs.filter((x) => x.seg.door).map((x) => [x.seg.door.id, x.seg]));
+  for (const { seg, file } of allSegs) {
+    const pair = seg.door && seg.door.pair;
+    if (!pair) continue;
+    const where = `segment ${seg.id} (door ${seg.door.id})`;
+    const other = byDoor.get(pair);
+    if (!other) { report.error(file, `${where}: pair "${pair}" is not a door on this map`); continue; }
+    if (other === seg) { report.error(file, `${where}: a door cannot pair with itself`); continue; }
+    if (other.door.pair !== seg.door.id) report.error(file, `${where}: door "${pair}" does not name "${seg.door.id}" as its pair`);
+    const shared = [seg.a, seg.b].some((p) => [other.a, other.b].some((q) => p[0] === q[0] && p[1] === q[1]));
+    // Snapping to the 1/8 grid can bend a diagonal double door a little at its middle; allow 10 degrees.
+    const u = [seg.b[0] - seg.a[0], seg.b[1] - seg.a[1]], v = [other.b[0] - other.a[0], other.b[1] - other.a[1]];
+    const sin = Math.abs(u[0] * v[1] - u[1] * v[0]) / (Math.hypot(...u) * Math.hypot(...v));
+    if (!shared || sin > Math.sin(Math.PI / 18)) report.error(file, `${where}: the leaves of a double door must meet end to end on one line`);
+    if (seg.t !== other.t) report.warn(file, `${where}: leaves of one double door have different types (${seg.t}, ${other.t})`);
+  }
   for (const { seg, file } of allSegs) {
     if (!DOOR_TYPES.includes(seg.t)) continue;
     const { clear, length } = doorwayClearance(seg, allSegs.map((x) => x.seg));

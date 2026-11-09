@@ -4,7 +4,7 @@ Everything here works in image pixels; the caller converts to cells. Each featur
 segment whose ends reach a little way into the wall on both sides, so no gap is left beside it.
 
 - Doors: near-white bars that are long and thin. Two bars side by side on one line are a double
-  door and become one segment.
+  door: one segment per leaf, the two leaves paired.
 - Windows: runs of glass colour along a wall; one segment per window opening.
 - Arrow slits: narrow gaps through a wall. Smoothing the wall mask (a closing) bridges them; a
   bridged gap is a slit when it joins two different spaces (inside and outside) AND the original,
@@ -63,7 +63,8 @@ def _walk_to_wall(wall, p, d, max_px):
 
 
 def find_doors(door_mask, wall, cell_px, cfg=None):
-    """Door segments in pixels: [{a, b, leaves}]. `leaves` is 2 for a double door."""
+    """Door openings in pixels: [{a, b, leaves, cuts}]. A double door has `leaves` 2 and one cut point
+    between its leaves; the importer makes one door segment per leaf."""
     s = settings(cfg)
     n, lab, st, _ = cv2.connectedComponentsWithStats(door_mask.astype(np.uint8), 8)
     bars = []
@@ -111,7 +112,11 @@ def find_doors(door_mask, wall, cell_px, cfg=None):
         into = s["end_into_wall_cells"] * cell_px
         ta = _walk_to_wall(wall, a0, -d, cell_px * 0.6)
         tb = _walk_to_wall(wall, b0, d, cell_px * 0.6)
-        doors.append({"a": a0 - d * (ta + into), "b": b0 + d * (tb + into), "leaves": len(group)})
+        # A double door is one leaf per bar: split the opening halfway across the gap between bars.
+        c0 = group[0]["c"]
+        spans = sorted((float((g["c"] - c0) @ d) - g["len"] / 2, float((g["c"] - c0) @ d) + g["len"] / 2) for g in group)
+        cuts = [c0 + d * ((spans[k][1] + spans[k + 1][0]) / 2) for k in range(len(spans) - 1)]
+        doors.append({"a": a0 - d * (ta + into), "b": b0 + d * (tb + into), "leaves": len(group), "cuts": cuts})
     return doors
 
 
