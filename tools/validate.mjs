@@ -132,7 +132,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
         if (doors.has(d.id)) report.error(file, `${where}: door id "${d.id}" is already used by segment ${doors.get(d.id).seg}`);
         doors.set(d.id, { seg: s.id, t: s.t, initial: d.initial || 'closed' });
         if (s.t === 'secret' && d.initial === 'open') report.warn(file, `${where}: a secret door that starts open is not secret`);
-        if (s.t === 'secret' && d.dc === undefined) report.warn(file, `${where}: secret door has no dc to find it`);
+        if (s.t === 'secret' && d.dc === undefined && !d.auto_find) report.warn(file, `${where}: secret door has no dc to find it (set auto_find if it needs none)`);
       }
     }
   }

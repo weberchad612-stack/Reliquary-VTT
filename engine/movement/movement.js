@@ -11,6 +11,14 @@ import { blocksFrom } from '../walls/presets.js';
 const E = 1e-6;
 
 /**
+ * Default movement clearance, in cells. Walls may poke this far into a square without blocking it:
+ * hand-drawn maps rarely line doorways up with the grid (a 1.5-cell door centred on a grid line
+ * leaves a quarter-cell jamb in each square). 0.3 cells is 1.5 ft on a 5-ft grid; a 2x2 creature
+ * still cannot use a 5-ft door and diagonals still cannot cut wall corners.
+ */
+export const CLEARANCE = 0.3;
+
+/**
  * Prepare a map's walls for movement queries.
  * @param {Array} segs  wall segments (all wall files concatenated)
  * @param {object} state  map state from the save (door states, found secrets)
@@ -66,12 +74,16 @@ export function crossesInterior(a, b, r) {
 }
 
 const rect = (x, y, s) => [x, y, x + s, y + s];
+const shrink = (r, c) => [r[0] + c, r[1] + c, r[2] - c, r[3] - c];
 const inBounds = (pm, x, y, s) => x >= -E && y >= -E && x + s <= pm.cols + E && y + s <= pm.rows + E;
 
-/** Does a token of `size` fit with its space starting at (x, y): inside the grid and no wall through it? */
-export function fits(pm, x, y, size = 1) {
+/**
+ * Does a token of `size` fit with its space starting at (x, y): inside the grid and no wall through it?
+ * @param {number} [clearance=CLEARANCE]  walls may poke this far (cells) into the space
+ */
+export function fits(pm, x, y, size = 1, clearance = CLEARANCE) {
   if (!inBounds(pm, x, y, size)) return false;
-  const r = rect(x, y, size);
+  const r = shrink(rect(x, y, size), Math.min(clearance, size * 0.4));
   for (const s of near(pm, r)) if (crossesInterior(s.a, s.b, r)) return false;
   return true;
 }
@@ -86,17 +98,19 @@ export function fits(pm, x, y, size = 1) {
  * @param {object} [opts]
  * @param {number} [opts.size]  footprint to test with instead of token.size (the ruleset passes a
  *                              smaller size when it allows squeezing)
+ * @param {number} [opts.clearance=CLEARANCE]  walls may poke this far (cells) into a square
  */
 export function canStep(pm, token, dx, dy, opts = {}) {
   if ((dx === 0 && dy === 0) || Math.abs(dx) > 1 || Math.abs(dy) > 1) return false;
   const size = opts.size ?? token.size ?? 1;
   const x = token.x, y = token.y, nx = x + dx, ny = y + dy;
   if (!inBounds(pm, nx, ny, size)) return false;
-  const r0 = rect(x, y, size), r1 = rect(nx, ny, size);
+  const c = Math.min(opts.clearance ?? CLEARANCE, size * 0.4);
+  const r0 = shrink(rect(x, y, size), c), r1 = shrink(rect(nx, ny, size), c);
   const u = [Math.min(r0[0], r1[0]), Math.min(r0[1], r1[1]), Math.max(r0[2], r1[2]), Math.max(r0[3], r1[3])];
-  const c = [x + size / 2, y + size / 2];
+  const centre = [x + size / 2, y + size / 2];
   for (const s of near(pm, u)) {
-    if (!blocksFrom(s, c)) continue;
+    if (!blocksFrom(s, centre)) continue;
     if (crossesInterior(s.a, s.b, r1)) return false;
     if (crossesInterior(s.a, s.b, u) && !crossesInterior(s.a, s.b, r0)) return false;
   }
@@ -163,7 +177,7 @@ function search(pm, token, opts, goal) {
       const isDiag = dx !== 0 && dy !== 0;
       const nx = n.x + dx, ny = n.y + dy;
       if (!passable(nx, ny, size)) continue;
-      if (!canStep(pm, { x: n.x, y: n.y, size }, dx, dy)) continue;
+      if (!canStep(pm, { x: n.x, y: n.y, size }, dx, dy, { clearance: opts.clearance })) continue;
       const step = (isDiag ? diag[n.p % diag.length] : 1) + enterCost(nx, ny, size);
       const cost = n.cost + step;
       if (cost > maxCost + E) continue;

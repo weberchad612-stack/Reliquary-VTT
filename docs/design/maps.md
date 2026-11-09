@@ -213,6 +213,8 @@ Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
 
 **Fitting.** Large creatures need room for their whole space: a 2x2 ogre cannot pass a 5-ft door or corridor. `fits(walls, x, y, size)` answers whether a space is clear.
 
+**Clearance.** Walls may poke up to 0.3 cells (1.5 ft) into a square without blocking it (`CLEARANCE`, overridable per call). Hand-drawn maps rarely line doorways up with the grid: Gauntlight Ruins' A1 door is 1.5 cells wide and centred on a grid line, leaving a quarter-cell jamb in each square. A creature needs its width minus 0.6 cells of clear space, so a 2x2 creature still cannot use a 5-ft door. Known limit: a 5-ft doorway offset by half a cell puts a jamb through the middle of both squares beside it, so grid movement cannot pass it; the board warns and the GM decides.
+
 **Paths and reach.** `path()` finds the cheapest route to a destination and `reach()` lists every position within a movement allowance (for showing where a token can go). Both use a shortest-cost search over positions. The ruleset supplies the rules as options:
 
 | Option | Purpose | PF2E | D&D 5e |
@@ -261,6 +263,16 @@ A map goes from a PDF the user owns to pack data in these steps, all run by Clau
 
 Steps 3 and 4 only propose. Nothing is written into a pack without review.
 
+**As built (`tools/mapimport/`, first used on Gauntlight Ruins, 2026-11-09).** One settings file per map (`import.json` in the private pack) drives the whole run, so re-running gives the same result:
+
+- The map image is the largest image on the PDF page that is not shared with other pages (page backgrounds are). The grid is found automatically and refused when no clear grid shows (manual values always work).
+- Walls are dark, not strongly coloured pixels with water and vegetation hues excluded; very dark thin lines are kept separately for thin drawn walls; only shapes that come near a room floor count. A smoothing step seals moss bites and block joints.
+- Doors are long, thin near-white bars; two in line are a double door. Windows are runs of glass colour. Segment ends reach into the wall so nothing leaks beside them.
+- Arrow slits are proposed where the smoothing bridged a gap that joins two spaces and the original art is open through it. Moss over a wall can pass that test too, so each map's settings accept or reject the proposals (`slits.reject_near`) and can add slits the drawing does not show (`openings`).
+- Corrections in cell coordinates: `erase` (rectangles or polygons: stairs, rubble), `add` (explicit segments, such as secret doors placed from the book's labelled map), `doors` and `windows` (properties such as stuck, blocked, barred window, stained glass), and exclusions (`hide: true` makes an inset a hidden area of the map).
+- Checks: the schema validator, then a leak check that looks from inside every room with all doors closed and flags anything outside that it can see. On Gauntlight Ruins it found five real gaps, all fixed, and three openings that the drawing shows on purpose.
+- The rule for drawing versus text (Chad, 2026-11-09): where the map explicitly draws something, the drawing wins; the adventure text fills in what the drawing cannot show (secret doors, arrow slits, stuck doors, what a window is made of). Every decision is listed in the map's `import.json`.
+
 ## 13. Licensing
 
 Maps from commercial adventures, and walls traced from them, are derived from the publisher's book. They live only in the user's private `packs/` folder, which git ignores. The repository's tests and `examples/` use small original maps drawn for this project.
@@ -277,7 +289,7 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 2. The sight engine and its semantics tests, using a small original sample map. Done.
 3. Movement (`canStep`, `fits`, `path`, `reach`). Done.
 4. Explored-area merging and the three-state fog renderer. Done.
-5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions.
+5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions. Pipeline and Level 1 done; Levels 2 and 3 to follow.
 6. Light and vision types (darkvision, low-light), then sound.
 
 ## 16. Open items

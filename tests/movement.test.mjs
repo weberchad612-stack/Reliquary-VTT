@@ -166,3 +166,12 @@ test('crypt: the illusory wall can be crossed northward only', () => {
   assert.equal(canStep(cm(), tok(9, 7), 0, -1), true, 'already north, moving away');
   assert.equal(canStep(cm(), tok(9, 8), 0, -1), true, 'from the south: allowed');
 });
+
+test('clearance: a doorway centred on a grid line still lets a Medium creature through', () => {
+  // A wall along y = 5 with a 1.5-cell doorway from x = 4.25 to 5.75 (centred on the grid line x = 5):
+  // each jamb pokes a quarter cell into the squares beside the gap.
+  const m = pm([{ id: 'l', a: [0, 5], b: [4.25, 5], t: 'solid' }, { id: 'r', a: [5.75, 5], b: [10, 5], t: 'solid' }]);
+  assert.ok(findPath(m, tok(4, 2), 4, 7), 'with the default clearance');
+  assert.equal(findPath(m, tok(4, 2), 4, 7, { clearance: 0 }), null, 'with no clearance the jambs block every column');
+  assert.ok(findPath(m, tok(3, 2, 2), 4, 7), 'a 2x2 creature needs 1.4 cells of clear width, and this door is 1.5');
+});
