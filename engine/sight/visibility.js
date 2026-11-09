@@ -1,0 +1,215 @@
+// Sight engine: visibility polygons and line-of-sight tests over vector wall segments.
+// Implements docs/design/maps.md section 6. Dependency-free; runs in the browser and in Node.
+//
+// All coordinates are in grid cells, with y increasing downward. Distances given in feet are
+// converted with the map's feet_per_cell.
+
+import { SENSE, senseOf, blocksFrom } from '../walls/presets.js';
+
+const EPS = 1e-9;
+/** Angular offset used to look just past segment endpoints (radians). */
+const NUDGE = 1e-5;
+/** Number of rays used to trace the range circle. */
+const ARC_RAYS = 180;
+
+/**
+ * Build the list of segments that matter for one sense, applying door states.
+ * @param {Array} segs    wall segments from walls.json (all files concatenated)
+ * @param {object} [state] map state from the save (uses state.doors)
+ * @param {string} [sense='sight']  'sight' | 'light' | 'sound' | 'move'
+ * @returns {Array<{id, a, b, v, dir, prox}>} segments whose value for this sense is not NONE
+ */
+export function prepare(segs, state = {}, sense = 'sight') {
+  const doors = (state && state.doors) || {};
+  const out = [];
+  for (const s of segs) {
+    const live = s.door ? doors[s.door.id] : undefined;
+    const v = senseOf(s, live)[sense];
+    if (v === SENSE.NONE) continue;
+    out.push({ id: s.id, a: s.a, b: s.b, v, dir: s.dir || 0, prox: s.prox && s.prox[sense] });
+  }
+  return out;
+}
+
+/** Distance from point p to segment a-b. */
+export function pointSegDist(p, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1];
+  const L = dx * dx + dy * dy;
+  let t = L ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L : 0;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+/**
+ * The effective blocking behaviour of a prepared segment for a source at p:
+ * 'none', 'limited' or 'normal'.
+ */
+function effective(seg, p, feetPerCell) {
+  if (!blocksFrom(seg, p)) return 'none';
+  switch (seg.v) {
+    case SENSE.LIMITED: return 'limited';
+    case SENSE.NORMAL: return 'normal';
+    case SENSE.PROXIMITY: {
+      const near = pointSegDist(p, seg.a, seg.b) * feetPerCell <= (seg.prox || 0) + EPS;
+      return near ? 'none' : 'normal';
+    }
+    case SENSE.REVERSE_PROXIMITY: {
+      const far = pointSegDist(p, seg.a, seg.b) * feetPerCell > (seg.prox || 0) + EPS;
+      return far ? 'none' : 'normal';
+    }
+    default: return 'none';
+  }
+}
+
+/**
+ * Distance along the ray (origin o, unit direction d) to segment a-b, or -1 when it misses.
+ * Endpoints count as hits.
+ */
+function rayHit(o, d, a, b) {
+  const ex = b[0] - a[0], ey = b[1] - a[1];
+  const den = d[0] * ey - d[1] * ex;
+  if (Math.abs(den) < EPS) return -1; // parallel or collinear: a ray grazing along a wall is not blocked by it
+  const ax = a[0] - o[0], ay = a[1] - o[1];
+  const t = (ax * ey - ay * ex) / den;      // distance along the ray
+  const u = (ax * d[1] - ay * d[0]) / den;  // position along the segment, 0..1
+  if (t < EPS || u < -EPS || u > 1 + EPS) return -1;
+  return t;
+}
+
+/**
+ * How far a ray travels before it is stopped, applying the sense rules:
+ * normal stops it; limited lets the first one through and stops at the second.
+ * Limited segments hit at the same point (two pieces of one terrain wall meeting there) count once.
+ */
+function castRay(o, d, active, maxDist) {
+  const hits = [];
+  for (const s of active) {
+    const t = rayHit(o, d, s.a, s.b);
+    if (t >= 0 && t <= maxDist + EPS) hits.push([t, s.kind]);
+  }
+  hits.sort((x, y) => x[0] - y[0]);
+  let limitedAt = -Infinity;
+  for (const [t, kind] of hits) {
+    if (kind === 'normal') return t;
+    if (limitedAt === -Infinity) { limitedAt = t; continue; }
+    if (t - limitedAt > 1e-7) return t; // a second, distinct limited wall
+  }
+  return maxDist;
+}
+
+/** Segments that restrict a source at `origin`, tagged with how they behave. */
+function activeFor(prepared, origin, feetPerCell) {
+  const out = [];
+  for (const s of prepared) {
+    const kind = effective(s, origin, feetPerCell);
+    if (kind !== 'none') out.push({ a: s.a, b: s.b, kind });
+  }
+  return out;
+}
+
+/**
+ * Visibility polygon from a point.
+ * @param {[number, number]} origin  viewer position in cells
+ * @param {Array} prepared  output of prepare()
+ * @param {object} opts
+ * @param {number} opts.rangeFt      vision range in feet
+ * @param {number} [opts.feetPerCell=5]
+ * @returns {Array<[number, number]>} polygon vertices in angular order (counter-clockwise on screen)
+ */
+export function visPolygon(origin, prepared, { rangeFt, feetPerCell = 5 }) {
+  const range = rangeFt / feetPerCell;
+  const active = activeFor(prepared, origin, feetPerCell);
+
+  const angles = [];
+  for (let i = 0; i < ARC_RAYS; i++) angles.push((i / ARC_RAYS) * 2 * Math.PI);
+  for (const s of active) {
+    for (const p of [s.a, s.b]) {
+      const dx = p[0] - origin[0], dy = p[1] - origin[1];
+      if (Math.hypot(dx, dy) > range + EPS) continue;
+      const ang = Math.atan2(dy, dx);
+      angles.push(ang - NUDGE, ang, ang + NUDGE);
+    }
+  }
+  const norm = (a) => ((a % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const sorted = [...new Set(angles.map((a) => norm(a)))].sort((x, y) => x - y);
+
+  const poly = [];
+  for (const ang of sorted) {
+    const d = [Math.cos(ang), Math.sin(ang)];
+    const t = castRay(origin, d, active, range);
+    poly.push([origin[0] + d[0] * t, origin[1] + d[1] * t]);
+  }
+  return simplify(poly);
+}
+
+/** Drop repeated points and points that lie on a straight line between their neighbours. */
+export function simplify(poly, tol = 1e-7) {
+  let pts = poly.filter((p, i) => {
+    const q = poly[(i + poly.length - 1) % poly.length];
+    return Math.hypot(p[0] - q[0], p[1] - q[1]) > tol;
+  });
+  let changed = true;
+  while (changed && pts.length > 3) {
+    changed = false;
+    const keep = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[(i + pts.length - 1) % pts.length], b = pts[i], c = pts[(i + 1) % pts.length];
+      const cross = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+      const span = Math.hypot(c[0] - a[0], c[1] - a[1]) || 1;
+      if (Math.abs(cross) / span < tol) changed = true;
+      else keep.push(b);
+    }
+    pts = keep;
+  }
+  return pts;
+}
+
+/**
+ * Line of sight between two points.
+ * @returns {boolean} true when `to` is visible from `from` within range
+ */
+export function canSee(from, to, prepared, { rangeFt = Infinity, feetPerCell = 5 } = {}) {
+  const dx = to[0] - from[0], dy = to[1] - from[1];
+  const dist = Math.hypot(dx, dy);
+  if (dist * feetPerCell > rangeFt + EPS) return false;
+  if (dist < EPS) return true;
+  const d = [dx / dist, dy / dist];
+  const active = activeFor(prepared, from, feetPerCell);
+  return castRay(from, d, active, dist) >= dist - 1e-7;
+}
+
+/** Sample points for a token occupying `size` cells from cell (x, y): centre plus points near each corner. */
+export function tokenPoints(x, y, size = 1, inset = 0.15) {
+  const c = [x + size / 2, y + size / 2];
+  const lo = inset, hi = size - inset;
+  return [c, [x + lo, y + lo], [x + hi, y + lo], [x + lo, y + hi], [x + hi, y + hi]];
+}
+
+/**
+ * True when any viewer point can see any target point.
+ * Used for "can a PC see this token right now".
+ */
+export function canSeeAny(viewerPts, targetPts, prepared, opts) {
+  for (const v of viewerPts) for (const t of targetPts) if (canSee(v, t, prepared, opts)) return true;
+  return false;
+}
+
+/** Signed area of a polygon (positive when counter-clockwise on screen, i.e. clockwise in math axes). */
+export function polygonArea(poly) {
+  let s = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const [x1, y1] = poly[i], [x2, y2] = poly[(i + 1) % poly.length];
+    s += x1 * y2 - x2 * y1;
+  }
+  return s / 2;
+}
+
+/** Point-in-polygon test (even-odd rule). */
+export function pointInPolygon(p, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > p[1]) !== (yj > p[1]) && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}

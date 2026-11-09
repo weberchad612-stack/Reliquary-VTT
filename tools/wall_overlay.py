@@ -3,6 +3,7 @@
 
 Usage:
     python3 tools/wall_overlay.py <map-dir> [--out FILE] [--blank] [--no-labels]
+                                  [--sight X,Y ...] [--state FILE] [--range FEET]
 
 By default the walls are drawn over the map image and saved as <map-dir>/overlay.png.
 --blank draws on a plain floor with a grid instead of the image (used to make the
@@ -11,11 +12,16 @@ original sample map images in examples/). Needs Pillow (pip install pillow).
 Colours: solid black, terrain orange, grate grey dashed, window cyan, slit magenta,
 ethereal violet, door red, secret door gold. One-way walls get an arrow showing the
 side they block from.
+
+--sight X,Y shades the area visible from that point (in cells; repeat for several viewers),
+computed by the JavaScript sight engine through `node tools/sight.mjs`. --state applies door
+states and found secrets from a save's map-state file.
 """
 import argparse
 import json
 import math
 import os
+import subprocess
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
@@ -45,6 +51,19 @@ def load(map_dir):
     return m, segs
 
 
+TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def sight_polygon(map_dir, origin, state, range_ft):
+    cmd = ["node", os.path.join(TOOLS, "sight.mjs"), map_dir, "--from", origin, "--range", str(range_ft)]
+    if state:
+        cmd += ["--state", state]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode != 0:
+        sys.exit(res.stderr.strip() or "sight.mjs failed")
+    return json.loads(res.stdout)
+
+
 def dashed(draw, a, b, colour, width, dash=6):
     length = math.dist(a, b)
     if length == 0:
@@ -62,6 +81,9 @@ def main(argv):
     ap.add_argument("--out")
     ap.add_argument("--blank", action="store_true", help="plain floor and grid instead of the map image")
     ap.add_argument("--no-labels", action="store_true", help="do not write segment ids")
+    ap.add_argument("--sight", action="append", default=[], metavar="X,Y", help="shade what is visible from X,Y (cells)")
+    ap.add_argument("--state", help="map-state file from a save (door states, found secrets)")
+    ap.add_argument("--range", type=float, default=200, help="vision range in feet (default 200)")
     a = ap.parse_args(argv)
 
     m, segs = load(a.map_dir)
@@ -81,6 +103,18 @@ def main(argv):
         d = ImageDraw.Draw(img)
 
     px = lambda p: (ox + p[0] * cs, oy + p[1] * cs)
+
+    if a.sight:
+        shade = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        sd = ImageDraw.Draw(shade)
+        for origin in a.sight:
+            res = sight_polygon(a.map_dir, origin, a.state, a.range)
+            sd.polygon([px(p) for p in res["polygon"]], fill=(255, 220, 60, 90))
+        img = Image.alpha_composite(img.convert("RGBA"), shade).convert("RGB")
+        d = ImageDraw.Draw(img)
+        for origin in a.sight:
+            x, y = px([float(v) for v in origin.split(",")])
+            d.ellipse([x - 6, y - 6, x + 6, y + 6], fill=(30, 110, 255), outline=(255, 255, 255), width=2)
     width = max(3, int(cs / 10))
     font = ImageFont.load_default()
 
