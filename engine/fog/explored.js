@@ -3,13 +3,25 @@
 //
 // The explored area is stored as outlines (rings of points in cells, on the 1/8 cell grid).
 // Merging works on a bitmap with 8 x 8 pixels per cell: rasterize the stored outlines, add the new
-// visibility polygons, then trace the result back into outlines. Tracing is exact (pixel edges);
-// the outlines are then simplified only when the simplified version rasterizes to the identical
-// bitmap, so repeated merges can never grow or shrink the explored area by themselves.
+// visibility polygons, then trace the result back into outlines.
+//
+// Two kinds of outline come out of the bitmap:
+// - Stored outlines (toPolys) follow pixel edges exactly, so a diagonal is a staircase of 1/8-cell
+//   steps. They are simplified only when the result fills the identical pixels, so saving and
+//   reloading can never grow or shrink the explored area.
+// - Display outlines (displayPolys) are for painting only. The inner corner of every one-pixel step
+//   is cut and nearly straight runs are merged, so diagonals are drawn as straight lines. This only
+//   ever adds explored area, at most STRAIGHTEN_PX pixels (about 11 inches), and is checked to cover
+//   every explored pixel. Display outlines are never stored: straightening a shape that was already
+//   straightened would push its edges out a little further each time.
 
 import { simplify } from '../sight/visibility.js';
 
 export const RES = 8; // pixels per cell = 1/8 cell precision (design decision 1)
+
+/** Largest straightening allowed, in pixels (1/8 cell each): 1.5 px is about 11 inches on a 5 ft grid. */
+export const STRAIGHTEN_PX = 1.5;
+const TRY_TOLERANCES = [STRAIGHTEN_PX, 1.0, 0.7, 0.45];
 
 /** A bitmap of explored 1/8-cell pixels for one map. */
 export class ExploredMask {
@@ -54,7 +66,7 @@ export class ExploredMask {
     return changed;
   }
 
-  /** Outlines of the explored area, in cells, on the 1/8 grid. */
+  /** Outlines to store in the save: exact, in cells, on the 1/8 grid. */
   toPolys() {
     const exact = trace(this);
     for (const tol of [0.45, 0.25]) {
@@ -63,6 +75,96 @@ export class ExploredMask {
     }
     return exact;
   }
+
+  /**
+   * Outlines for painting: diagonals drawn as straight lines. Never store these (see the top of this file).
+   * Falls back to the exact outlines if straightening would leave any explored pixel uncovered.
+   */
+  displayPolys() {
+    const exact = trace(this);
+    const rings = exact.map((r) => straightenRing(r, this.res));
+    return covers(this, rings) ? rings : exact;
+  }
+}
+
+/** Display outlines for stored explored outlines (as found in a save). */
+export function displayOutlines(explored, grid) {
+  if (!explored || !explored.polys || !explored.polys.length) return [];
+  return ExploredMask.fromExplored(explored, grid).displayPolys();
+}
+
+/** Twice the signed area: positive for an outer ring as traced (explored on the right), negative for a hole. */
+function signedArea2(r) {
+  let s = 0;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) s += r[j][0] * r[i][1] - r[i][0] * r[j][1];
+  return s;
+}
+
+/** Pixels filled by a single ring, within a box around both rings (for comparing two versions of one ring). */
+function ringBits(ring, box, res) {
+  const t = { w: box.w, h: box.h, res, bits: new Uint8Array(box.w * box.h) };
+  const shifted = ring.map((p) => [p[0] - box.x / res, p[1] - box.y / res]);
+  fillEvenOdd(t, [shifted]);
+  return t.bits;
+}
+
+/**
+ * Remove the inner corner of every one-pixel step. With explored on the right (y down), an inner
+ * corner is a left turn; cutting across it only adds explored area, at most one pixel deep.
+ * What remains is the chain of outer corners, which lies along the true straight edge.
+ */
+function cutStepCorners(ring, res) {
+  const px = 1 / res + 1e-9;
+  const n = ring.length;
+  const keep = [];
+  for (let i = 0; i < n; i++) {
+    const a = ring[(i + n - 1) % n], b = ring[i], c = ring[(i + 1) % n];
+    const cross = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+    const leg = Math.min(Math.hypot(b[0] - a[0], b[1] - a[1]), Math.hypot(c[0] - b[0], c[1] - b[1]));
+    if (cross < 0 && leg <= px) continue; // inner corner of a one-pixel step
+    keep.push(b);
+  }
+  return keep.length >= 3 ? simplify(keep, 1e-9) : ring;
+}
+
+/**
+ * Straighten one traced ring: cut the inner corners of its pixel steps, then merge nearly straight
+ * runs, accepting a version only if it never removes explored pixels (an outer ring may only grow,
+ * a hole may only shrink). Falls back to the exact ring.
+ */
+function straightenRing(ring, res) {
+  if (ring.length < 5) return ring;
+  const outer = signedArea2(ring) > 0;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const p of ring) { x0 = Math.min(x0, p[0]); y0 = Math.min(y0, p[1]); x1 = Math.max(x1, p[0]); y1 = Math.max(y1, p[1]); }
+  const pad = Math.ceil(STRAIGHTEN_PX) + 2;
+  const box = { x: Math.floor(x0 * res) - pad, y: Math.floor(y0 * res) - pad };
+  box.w = Math.ceil(x1 * res) + pad - box.x;
+  box.h = Math.ceil(y1 * res) + pad - box.y;
+  const exact = ringBits(ring, box, res);
+  const keepsExplored = (cand) => {
+    if (cand.length < 3 || Math.sign(signedArea2(cand)) !== Math.sign(signedArea2(ring))) return false;
+    const got = ringBits(cand, box, res);
+    for (let i = 0; i < exact.length; i++) {
+      // outer: every exact pixel must stay filled; hole: no pixel may be filled that was not
+      if (outer ? exact[i] && !got[i] : got[i] && !exact[i]) return false;
+    }
+    return true;
+  };
+  const chain = cutStepCorners(ring, res);
+  for (const tolPx of TRY_TOLERANCES) {
+    const s = simplifyRing(chain, tolPx / res);
+    if (s.length < chain.length && keepsExplored(s)) return s;
+  }
+  return keepsExplored(chain) ? chain : ring;
+}
+
+/** Does filling `rings` (even-odd) cover every pixel of `m`? Extra pixels are allowed. */
+function covers(m, rings) {
+  const t = new ExploredMask({ cols: m.w / m.res, rows: m.h / m.res }, m.res);
+  fillEvenOdd(t, rings);
+  for (let i = 0; i < m.bits.length; i++) if (m.bits[i] && !t.bits[i]) return false;
+  return true;
 }
 
 /**

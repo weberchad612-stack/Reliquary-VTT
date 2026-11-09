@@ -229,7 +229,7 @@ def main(argv):
         fog = Image.new("L", img.size, alpha[0])
         # explored: even-odd over all rings, done by XOR-ing each ring into a mask
         ex = Image.new("1", img.size, 0)
-        for ring in res["explored"]["polys"]:
+        for ring in res.get("shown") or res["explored"]["polys"]:
             r = Image.new("1", img.size, 0)
             ImageDraw.Draw(r).polygon([px(p) for p in ring], fill=1)
             ex = Image.frombytes("1", img.size, bytes(x ^ y for x, y in zip(ex.tobytes(), r.tobytes())))

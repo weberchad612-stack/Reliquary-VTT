@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ExploredMask, mergeExplored, RES } from '../engine/fog/explored.js';
+import { ExploredMask, mergeExplored, displayOutlines, RES, STRAIGHTEN_PX } from '../engine/fog/explored.js';
 import { partyView, fogStateAt, paintFog, FOG_STYLE } from '../engine/fog/view.js';
 import { prepare, pointInPolygon, visPolygon } from '../engine/sight/visibility.js';
 import { onSnap } from '../engine/walls/presets.js';
@@ -91,6 +91,75 @@ test('simplification keeps outlines small', () => {
   const pts = m.toPolys().reduce((n, r) => n + r.length, 0);
   assert.ok(pts < 1000, `${pts} points`);
   assert.ok(roundTrips(m, { cols: 40, rows: 40 }));
+});
+
+// ---- Display outlines: straight diagonals for painting ----
+
+/** Every pixel `b` adds over `a` lies within `px` pixels of a pixel set in `a`. */
+function addsOnlyNear(a, b, px) {
+  const r = Math.ceil(px);
+  for (let j = 0; j < a.h; j++) {
+    for (let i = 0; i < a.w; i++) {
+      const k = j * a.w + i;
+      if (!b.bits[k] || a.bits[k]) continue;
+      let near = false;
+      for (let dj = -r; dj <= r && !near; dj++) {
+        for (let di = -r; di <= r && !near; di++) {
+          const ii = i + di, jj = j + dj;
+          if (ii >= 0 && jj >= 0 && ii < a.w && jj < a.h && a.bits[jj * a.w + ii] && Math.hypot(di, dj) <= px + 0.5) near = true;
+        }
+      }
+      if (!near) return false;
+    }
+  }
+  return true;
+}
+
+test('display outlines draw diagonals as straight lines', () => {
+  const G2 = { cols: 20, rows: 20 };
+  const m = new ExploredMask(G2);
+  m.add([[[2, 2], [18, 5.3], [17.1, 9.7]]]);
+  const stored = m.toPolys(), shown = m.displayPolys();
+  const pts = (r) => r.reduce((n, x) => n + x.length, 0);
+  assert.ok(pts(stored) > 150, `stored outline is a staircase (${pts(stored)} points)`);
+  assert.ok(pts(shown) < 20, `display outline is straight (${pts(shown)} points)`);
+});
+
+test('display outlines never hide explored area and add at most a sliver', () => {
+  const G2 = { cols: 20, rows: 20 };
+  const m = new ExploredMask(G2);
+  m.add([[[2, 2], [18, 5.3], [17.1, 9.7]], [[3, 12], [16, 13.4], [9.2, 19]]]);
+  const shown = ExploredMask.fromExplored({ polys: m.displayPolys() }, G2);
+  assert.ok(m.bits.every((b, i) => !b || shown.bits[i]), 'covers every explored pixel');
+  assert.ok(addsOnlyNear(m, shown, STRAIGHTEN_PX), `adds nothing farther than ${STRAIGHTEN_PX} px from explored area`);
+});
+
+test('display outlines: holes only shrink', () => {
+  const G2 = { cols: 20, rows: 20 };
+  const m = new ExploredMask(G2);
+  m.add([sq(1, 1, 18)]);
+  // carve a diagonal-edged hole by building the mask from a frame polygon with an inner triangle
+  const frame = { polys: [sq(1, 1, 18), [[5, 5], [5.3, 14.2], [14.6, 9.1]]] };
+  const mm = ExploredMask.fromExplored(frame, G2);
+  const shown = ExploredMask.fromExplored({ polys: mm.displayPolys() }, G2);
+  assert.ok(mm.bits.every((b, i) => !b || shown.bits[i]), 'explored frame fully covered');
+  assert.ok(!shown.at(9, 9.5), 'the middle of the hole stays unexplored');
+  assert.ok(addsOnlyNear(mm, shown, STRAIGHTEN_PX));
+});
+
+test('display outlines never feed back: stored area is unchanged by many merges', () => {
+  const G2 = { cols: 20, rows: 20 };
+  let ex = mergeExplored(undefined, [[[2, 2], [18, 5.3], [17.1, 9.7]]], G2).explored;
+  const triArea = (polys) => {
+    const mm = ExploredMask.fromExplored({ polys }, G2);
+    let n = 0;
+    for (let j = 0; j < 12 * RES; j++) for (let i = 0; i < mm.w; i++) n += mm.bits[j * mm.w + i];
+    return n;
+  };
+  const stored0 = triArea(ex.polys), shown0 = triArea(displayOutlines(ex, G2));
+  for (let k = 0; k < 20; k++) ex = mergeExplored(ex, [sq(1 + (k % 9) * 2, 15, 1)], G2).explored;
+  assert.equal(triArea(ex.polys), stored0, 'stored');
+  assert.equal(triArea(displayOutlines(ex, G2)), shown0, 'display');
 });
 
 // ---- Party view on the sample crypt ----

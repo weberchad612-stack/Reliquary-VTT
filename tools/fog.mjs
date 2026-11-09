@@ -7,14 +7,14 @@
 // Tokens come from the state file's `tokens` (each needs kind, x, y and optionally size, hidden, dead)
 // plus any given with --token, e.g. --token kerra:pc:2,2 --token ogre:foe:8,7,2 (a --token overrides
 // a state token with the same id). Computes what the PCs see now, merges it into the explored area,
-// and prints {visible, seen, explored, changed}. With --out, writes the updated map state there.
+// and prints {visible, seen, explored, shown, changed}; `shown` is the outline to paint (straight diagonals). With --out, writes the updated map state there.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prepare } from '../engine/sight/visibility.js';
 import { partyView } from '../engine/fog/view.js';
-import { mergeExplored } from '../engine/fog/explored.js';
+import { mergeExplored, displayOutlines } from '../engine/fog/explored.js';
 import { loadMap } from './sight.mjs';
 
 function main(argv) {
@@ -50,6 +50,7 @@ function main(argv) {
       seen: [...view.seen],
       changed,
       explored,
+      shown: displayOutlines(explored, map.grid),
       visible: view.visible.map((p) => p.map(round)),
     }));
     return 0;

@@ -174,7 +174,8 @@ function recompute(reason) {
   moveWalls = Engine.prepareMove(segs, state(), G);
   view = Engine.partyView(tokenList(), sightSegs, opts);
   mask.add(view.visible);
-  const explored = mask.toPolys();
+  const explored = mask.toPolys();     // stored in the save: pixel-exact
+  S.exploredShown = mask.displayPolys(); // painted: diagonals as straight lines
   // announce foes that come into or leave view
   for (const t of tokenList()) {
     if (t.kind === 'pc') continue;
@@ -257,7 +258,7 @@ function draw() {
   if (img.complete) ctx.drawImage(img, 0, 0, W, H);
 
   // fog of war, painted by the engine
-  Engine.paintFog(fctx, { grid: G, explored: S.explored, visible: view.visible, mode: gm ? 'gm' : 'player', width: W, height: H });
+  Engine.paintFog(fctx, { grid: G, explored: S.exploredShown, visible: view.visible, mode: gm ? 'gm' : 'player', width: W, height: H });
   ctx.drawImage(fog, 0, 0);
 
   // GM vision view: what the selected token sees
