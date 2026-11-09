@@ -219,6 +219,8 @@ Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
 | `passable(x, y, size)` | Spaces the mover cannot pass (other creatures) | three-size rule, Tiny sharing | ruleset's own |
 | `size` | Move with a smaller footprint | when squeezing is allowed | ruleset's own |
 
+**Sharing space.** Two creatures may end their move in the same squares when one footprint is at least two squares wider than the other: a 1x1 with a 3x3 or 4x4, and a 2x2 with a 4x4. Tiny creatures share with anyone (up to four Tiny per square). `engine/tokens/occupancy.js` holds this as data (`SHARE_RULE = {tiny: true, minGap: 2}`) with `mayShare` and `blockersAt`, so a table or ruleset can change it. This is this table's rule; the Player Core as written only lets a creature move through the space of one three or more sizes larger, not end its move there. The board warns when a move ends somewhere sharing is not allowed and never prevents it; smaller creatures are drawn on top of bigger ones.
+
 **Which walls block movement:** solid, terrain, grate (portcullis), window, slit, closed and locked doors, and secret doors until found and opened. Ethereal barriers and open doors do not.
 
 **Board behaviour.** The board may warn when a PC token is dragged through a blocking wall or into a space it does not fit. It never prevents the move; the GM decides.

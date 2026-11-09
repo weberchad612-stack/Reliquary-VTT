@@ -14,6 +14,7 @@ The engine has no game-system or adventure knowledge. Rulesets fill its extensio
 | `fog/explored.js` | Explored areas: `ExploredMask` (a 1/8-cell bitmap) and `mergeExplored`, which adds what the party sees now to what it has seen before and stores the result as outlines that round-trip exactly. `displayPolys` / `displayOutlines` give straightened outlines for painting. |
 | `fog/view.js` | `partyView` (what PCs see now and which tokens players may see), `fogStateAt` (visible, explored or hidden) and `paintFog` (paints the player or GM fog onto a canvas). |
 | `tokens/tiny.js` | Tiny tokens: `layoutTiny` (centred when alone, a stable quadrant each when sharing a square, up to four), `spaceOf` (space for sight and drawing) and `moveSpaceOf` (space for movement). |
+| `tokens/occupancy.js` | Sharing space: `mayShare` and `blockersAt` under the table rule (a footprint at least two squares wider may share; Tiny shares with anyone). |
 
 All are dependency-free ES modules that run in the browser and in Node. Tools reach them through `tools/sight.mjs`, `tools/move.mjs` and `tools/fog.mjs`.
 

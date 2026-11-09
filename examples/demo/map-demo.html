@@ -116,6 +116,7 @@ ol.log li.foe { border-left-color: var(--foe); }
           <li>Look through the <b>portcullis</b> (dashed, lower left) and the <b>window</b>. Sight passes, movement does not.</li>
           <li>Switch to <b>GM view</b> and click any token, even the ogre, to shade what it can see.</li>
           <li>In GM view, click the <b>gold secret panel</b> to mark it found, then click again to open it.</li>
+          <li>In GM view, drag Kerra or a rat into the <b>bone giant</b> (Huge, 3×3): a 1×1 creature may share its space. Try the ogre (2×2): it may not. A 2×2 may share a 4×4's space.</li>
           <li>In GM view, drag the three <b>rats</b> (south-east room) into one square. A lone rat sits in the centre; sharing rats take a quadrant each.</li>
         </ul>
       </section>
@@ -149,6 +150,7 @@ const START = () => ({
     pip:   { name: 'Pip', kind: 'pc', x: 2, y: 4, speed: 25, short: 'P' },
     ogre:  { name: 'Ogre', kind: 'foe', x: 9, y: 2, size: 2, speed: 25, short: 'O', note: 'Large, 2 x 2' },
     guard: { name: 'Skeleton guard', kind: 'foe', x: 3, y: 8, speed: 25, short: 'S' },
+    giant: { name: 'Bone giant', kind: 'foe', x: 9, y: 5, size: 3, speed: 30, short: 'G', note: 'Huge, 3 x 3: a 1x1 creature may share its space' },
     rat1:  { name: 'Rat', kind: 'foe', x: 9, y: 8, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
     rat2:  { name: 'Rat 2', kind: 'foe', x: 11, y: 9, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
     rat3:  { name: 'Rat 3', kind: 'foe', x: 7, y: 9, size: 0.5, speed: 15, short: 'r', note: 'Tiny: centred alone, quadrants when sharing' },
@@ -339,18 +341,22 @@ function drawRoute() {
     drag.route.path.forEach(([x, y], i) => { const px = P(x + size / 2), py = P(y + size / 2); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
     ctx.stroke();
   }
-  const label = drag.route ? `${drag.route.feet} ft` : 'no route';
+  const shared = Engine.isTiny(t) ? [] : Engine.blockersAt({ id: selected, ...t }, g[0], g[1], raw());
+  const label = shared.length ? `occupied by ${theName(shared[0])}` : drag.route ? `${drag.route.feet} ft` : 'no route';
   ctx.font = '600 13px IBM Plex Sans, sans-serif';
   const tw = ctx.measureText(label).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
-  ctx.fillStyle = drag.route && drag.route.feet <= t.speed ? '#1f2a22' : '#2b2418';
+  const good = !shared.length && drag.route && drag.route.feet <= t.speed;
+  ctx.fillStyle = good ? '#1f2a22' : '#2b2418';
   ctx.fillRect(lx, ly, tw, 20);
-  ctx.fillStyle = drag.route && drag.route.feet <= t.speed ? '#5fbf83' : '#e3a443';
+  ctx.fillStyle = good ? '#5fbf83' : '#e3a443';
   ctx.fillText(label, lx + 6, ly + 15);
   ctx.restore();
 }
 
 function drawTokens(gm) {
-  for (const [id, t0] of Object.entries(S.tokens)) {
+  // biggest first, so a creature sharing a bigger one's space is drawn on top of it
+  const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
+  for (const [id, t0] of order) {
     const seen = view.seen.has(id);
     if (!gm && !seen) continue;
     const sp = drag && drag.id === id
@@ -398,7 +404,7 @@ function panel() {
     <div class="sel-name">${t.name}</div>
     <div class="chips">
       <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
-      <span class="chip">${size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
+      <span class="chip">${size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
       <span class="chip">Speed ${t.speed} ft</span>
       ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
     </div>
@@ -413,7 +419,8 @@ function cellAt(ev) {
 function tokenAt(p) {
   const gm = S.view === 'gm';
   let best = null;
-  for (const id of Object.keys(S.tokens)) {
+  const order = Object.keys(S.tokens).sort((a, b) => (S.tokens[b].size || 1) - (S.tokens[a].size || 1));
+  for (const id of order) {
     if (!gm && !view.seen.has(id)) continue;
     const t = space(id), s = t.size;
     if (p[0] >= t.x && p[0] < t.x + s && p[1] >= t.y && p[1] < t.y + s) best = id; // last drawn wins (smallest on top)
@@ -428,6 +435,8 @@ function doorAt(p) {
   }
   return null;
 }
+/** "the Ogre" for creatures, plain "Kerra" for player characters. */
+const theName = (t) => (t.kind === 'pc' ? t.name : `the ${t.name}`);
 const canDrag = (id) => S.view === 'gm' || S.tokens[id].kind === 'pc';
 
 function goalFor(id, p) {
@@ -477,6 +486,8 @@ function moveToken(id, goal, route) {
   const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
   const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
   const tinyHere = tiny ? Object.entries(S.tokens).filter(([o, u]) => o !== id && Engine.isTiny(u) && u.x === goal[0] && u.y === goal[1]).length : 0;
+  const blocking = tiny ? [] : Engine.blockersAt({ id, ...t }, goal[0], goal[1], raw());
+  if (blocking.length) { const who = blocking.map(theName).join(' and '); toast(`${t.name} cannot share a square with ${who}.`); log(`${t.name} placed on ${who} (GM call).`, 'warn'); }
   if (tiny && tinyHere >= Engine.MAX_PER_SQUARE) { toast(`Only ${Engine.MAX_PER_SQUARE} Tiny creatures fit in one square.`); log(`${t.name} squeezed into a full square (GM call).`, 'warn'); }
   // The board warns but never prevents: the GM decides.
   if (!fits) { toast(`${t.name} does not fit there.`); log(`${t.name} placed where it does not fit (GM call).`, 'warn'); }
