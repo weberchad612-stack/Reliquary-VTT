@@ -165,7 +165,8 @@ A Tiny token's position is its square (whole-number x, y); `engine/tokens/tiny.j
 
 - Alone in its square: centred.
 - With other Tiny tokens: one quadrant each, up to four per square (a fifth is reported as overfull; the board warns, the GM decides). Free quadrants are handed out top-left, bottom-right, top-right, bottom-left, so two tokens sit on a diagonal. Each token keeps its quadrant (`slot`, stored on the token) while others arrive or leave; a token that moves to another square gives its quadrant up.
-- Sharing its square with a bigger creature: a quadrant, so it is not hidden under the bigger token.
+- Alone in a square that a Large, Huge or Gargantuan creature covers: centred, drawn on top of it.
+- Sharing its square with a Small or Medium creature: a quadrant, so the two tokens do not cover each other's centres.
 
 Sight, being seen and drawing use the laid-out space; movement uses the centre of the square, so Tiny tokens move square to square.
 

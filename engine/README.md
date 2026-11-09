@@ -13,7 +13,7 @@ The engine has no game-system or adventure knowledge. Rulesets fill its extensio
 | `movement/movement.js` | Movement: `canStep` (one 8-way step of a token's whole space, no corner cutting), `fits` (does a space fit), `path` (cheapest route) and `reach` (every position within a movement allowance). Diagonal costs, difficult terrain, occupied squares and squeezing come from the ruleset as options. |
 | `fog/explored.js` | Explored areas: `ExploredMask` (a 1/8-cell bitmap) and `mergeExplored`, which adds what the party sees now to what it has seen before and stores the result as outlines that round-trip exactly. `displayPolys` / `displayOutlines` give straightened outlines for painting. |
 | `fog/view.js` | `partyView` (what PCs see now and which tokens players may see), `fogStateAt` (visible, explored or hidden) and `paintFog` (paints the player or GM fog onto a canvas). |
-| `tokens/tiny.js` | Tiny tokens: `layoutTiny` (centred when alone, a stable quadrant each when sharing a square, up to four), `spaceOf` (space for sight and drawing) and `moveSpaceOf` (space for movement). |
+| `tokens/tiny.js` | Tiny tokens: `layoutTiny` (centred when alone, even inside a big creature; a stable quadrant each when sharing with other Tiny tokens, up to four, or with a Small or Medium creature), `spaceOf` (space for sight and drawing) and `moveSpaceOf` (space for movement). |
 | `tokens/occupancy.js` | Sharing space: `mayShare` and `blockersAt` under the table rule (a footprint at least two squares wider may share; Tiny shares with anyone). |
 | `tokens/display.js` | How big a token is drawn in its space: Small creatures (`small: true`) at 0.75 of a Medium token, centred. |
 

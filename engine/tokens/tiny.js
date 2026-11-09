@@ -4,7 +4,9 @@
 // - alone: centred;
 // - with other Tiny tokens (up to four per square): one quadrant each. A token keeps its quadrant
 //   (`slot`) while others come and go, so tokens do not jump around;
-// - sharing the square with a bigger creature: a quadrant, so it is not hidden under it.
+// - alone in a square that a Large, Huge or Gargantuan creature covers: centred (drawn on top of it);
+// - sharing the square with a Small or Medium creature: a quadrant, so the two tokens do not cover
+//   each other's centres.
 // Sight, being seen and drawing all use the laid-out space; movement uses the centred space.
 // Dependency-free.
 
@@ -34,13 +36,14 @@ export function layoutTiny(tokens) {
     if (!bySquare.has(k)) bySquare.set(k, []);
     bySquare.get(k).push(t);
   }
-  const bigCovers = (x, y) => tokens.some((t) => !isTiny(t) && x >= t.x && x < t.x + (t.size ?? 1) && y >= t.y && y < t.y + (t.size ?? 1));
+  // a Small or Medium creature in the same square (Large and bigger do not push a lone Tiny aside)
+  const sharesWithOneSquare = (x, y) => tokens.some((t) => (t.size ?? 1) === 1 && t.x === x && t.y === y);
   const spaces = new Map();
   const overfull = [];
   for (const [k, list] of bySquare) {
     const [x, y] = k.split(',').map(Number);
     if (list.length > MAX_PER_SQUARE) overfull.push(k);
-    if (list.length === 1 && !bigCovers(x, y)) {
+    if (list.length === 1 && !sharesWithOneSquare(x, y)) {
       spaces.set(list[0].id, { x: x + TINY / 2, y: y + TINY / 2, size: TINY, slot: null });
       continue;
     }

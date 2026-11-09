@@ -46,12 +46,27 @@ test('tokens keep their quadrant when others arrive or leave', () => {
   assert.equal(at(L4, 'b').slot, null);
 });
 
-test('a Tiny token sharing a square with a bigger creature moves to a quadrant', () => {
-  const ogre = { id: 'ogre', x: 2, y: 2, size: 2 };
-  const L = layoutTiny([ogre, rat('r', 3, 3)]);
+test('a lone Tiny token stays centred inside a Large, Huge or Gargantuan creature', () => {
+  for (const size of [2, 3, 4]) {
+    const big = { id: 'big', x: 2, y: 2, size };
+    const L = layoutTiny([big, rat('r', 3, 3)]);
+    assert.equal(at(L, 'r').slot, null, `size ${size}`);
+  }
+});
+
+test('a Tiny token sharing a square with a Small or Medium creature takes a quadrant', () => {
+  const L = layoutTiny([{ id: 'kerra', x: 3, y: 3 }, rat('r', 3, 3)]);
   assert.notEqual(at(L, 'r').slot, null);
-  const alone = layoutTiny([ogre, rat('r', 5, 5)]);
-  assert.equal(at(alone, 'r').slot, null, 'not under the ogre: centred');
+  const small = layoutTiny([{ id: 'pip', x: 3, y: 3, small: true }, rat('r', 3, 3)]);
+  assert.notEqual(at(small, 'r').slot, null);
+  const next = layoutTiny([{ id: 'kerra', x: 4, y: 3 }, rat('r', 3, 3)]);
+  assert.equal(at(next, 'r').slot, null, 'Medium in the next square: centred');
+});
+
+test('several Tiny tokens inside a big creature still take quadrants', () => {
+  const L = layoutTiny([{ id: 'giant', x: 2, y: 2, size: 3 }, rat('a', 3, 3), rat('b', 3, 3)]);
+  assert.notEqual(at(L, 'a').slot, null);
+  assert.notEqual(at(L, 'b').slot, null);
 });
 
 test('Tiny tokens in different squares do not affect each other', () => {
