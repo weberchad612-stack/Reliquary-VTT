@@ -4,6 +4,7 @@
 Usage:
     python3 tools/wall_overlay.py <map-dir> [--out FILE] [--blank] [--no-labels]
                                   [--sight X,Y ...] [--token X,Y,SIZE ...] [--state FILE] [--range FEET]
+                                  [--path X,Y,SIZE:GX,GY ...] [--reach X,Y,SIZE:FEET]
 
 By default the walls are drawn over the map image and saved as <map-dir>/overlay.png.
 --blank draws on a plain floor with a grid instead of the image (used to make the
@@ -15,7 +16,11 @@ side they block from.
 
 --sight X,Y shades the area visible from that point (in cells; repeat for several viewers),
 computed by the JavaScript sight engine through `node tools/sight.mjs`. --token X,Y,SIZE does the
-same for a whole token (top-left cell and size in cells), the way the GM vision view shades it. --state applies door
+same for a whole token (top-left cell and size in cells), the way the GM vision view shades it.
+
+--path X,Y,SIZE:GX,GY draws the cheapest route for a token to (GX,GY) and its cost, and
+--reach X,Y,SIZE:FEET shades every position the token can reach, both through `node tools/move.mjs`
+(PF2E 5-10-5 diagonals). --state applies door
 states and found secrets from a save's map-state file.
 """
 import argparse
@@ -66,6 +71,16 @@ def sight_polygons(map_dir, flag, value, state, range_ft):
     return out["polygons"] if "polygons" in out else [out["polygon"]]
 
 
+def run_move(map_dir, token, flag, value, state):
+    cmd = ["node", os.path.join(TOOLS, "move.mjs"), map_dir, "--token", token, flag, value]
+    if state:
+        cmd += ["--state", state]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode != 0:
+        sys.exit(res.stderr.strip() or "move.mjs failed")
+    return json.loads(res.stdout)
+
+
 def dashed(draw, a, b, colour, width, dash=6):
     length = math.dist(a, b)
     if length == 0:
@@ -85,6 +100,8 @@ def main(argv):
     ap.add_argument("--no-labels", action="store_true", help="do not write segment ids")
     ap.add_argument("--sight", action="append", default=[], metavar="X,Y", help="shade what is visible from X,Y (cells)")
     ap.add_argument("--token", action="append", default=[], metavar="X,Y,SIZE", help="shade what a token sees (top-left cell, size in cells)")
+    ap.add_argument("--path", action="append", default=[], metavar="X,Y,SIZE:GX,GY", help="draw a token's cheapest route")
+    ap.add_argument("--reach", metavar="X,Y,SIZE:FEET", help="shade every position a token can reach")
     ap.add_argument("--state", help="map-state file from a save (door states, found secrets)")
     ap.add_argument("--range", type=float, default=200, help="vision range in feet (default 200)")
     a = ap.parse_args(argv)
@@ -150,6 +167,42 @@ def main(argv):
         if not a.no_labels and not a.blank:
             mx, my = (pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2
             d.text((mx + 3, my + 3), s["id"], fill=col, font=font)
+
+    if a.reach:
+        tok, feet = a.reach.split(":")
+        res = run_move(a.map_dir, tok, "--reach", feet, a.state)
+        tx, ty, ts = [float(v) for v in tok.split(",")]
+        layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ld = ImageDraw.Draw(layer)
+        for c in res["cells"]:
+            for i in range(int(ts)):
+                for j in range(int(ts)):
+                    x0, y0 = px([c["x"] + i, c["y"] + j])
+                    ld.rectangle([x0 + 1, y0 + 1, x0 + cs - 1, y0 + cs - 1], fill=(60, 170, 90, 45))
+        img = Image.alpha_composite(img.convert("RGBA"), layer).convert("RGB")
+        d = ImageDraw.Draw(img)
+        x0, y0 = px([tx, ty])
+        d.rectangle([x0 + 3, y0 + 3, x0 + ts * cs - 3, y0 + ts * cs - 3], outline=(30, 110, 255), width=3)
+        d.text((x0 + 6, y0 + 6), f"{feet} ft", fill=(30, 60, 160), font=font)
+
+    for spec in a.path:
+        tok, goal = spec.split(":")
+        res = run_move(a.map_dir, tok, "--to", goal, a.state)
+        tx, ty, ts = [float(v) for v in tok.split(",")]
+        r = res["result"]
+        x0, y0 = px([tx, ty])
+        d.rectangle([x0 + 3, y0 + 3, x0 + ts * cs - 3, y0 + ts * cs - 3], outline=(30, 110, 255), width=3)
+        if r is None:
+            d.text((x0 + 6, y0 + 6), "no route", fill=(200, 0, 0), font=font)
+            continue
+        pts = [px([p[0] + ts / 2, p[1] + ts / 2]) for p in r["path"]]
+        d.line(pts, fill=(30, 110, 255), width=4)
+        for q in pts:
+            d.ellipse([q[0] - 4, q[1] - 4, q[0] + 4, q[1] + 4], fill=(30, 110, 255))
+        gx, gy = r["path"][-1]
+        g0 = px([gx, gy])
+        d.rectangle([g0[0] + 3, g0[1] + 3, g0[0] + ts * cs - 3, g0[1] + ts * cs - 3], outline=(30, 110, 255), width=2)
+        d.text((g0[0] + 6, g0[1] + 6), f"{r['feet']:g} ft", fill=(20, 40, 140), font=font)
 
     out = a.out or os.path.join(a.map_dir, m["image"]["file"] if a.blank else "overlay.png")
     img.save(out)

@@ -185,9 +185,31 @@ The engine applies the same function to sight now, movement next, and light and 
 
 ## 9. Movement
 
-- `canStep(a, b)` checks a single 8-way step between cell centres against segments whose movement value applies. Diagonal steps may not cut a wall corner.
-- `path(a, b)` is a breadth-first search on the same rule. The ruleset supplies diagonal cost (PF2E 5-10-5) and difficult terrain.
-- The board may warn when a PC token is dragged through a blocking segment. It never prevents the move; the GM decides.
+Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
+
+**A step.** `canStep(walls, token, dx, dy)` checks one 8-way step of a token's whole space:
+
+- The space at the destination must fit: inside the grid, and no movement-blocking wall through it.
+- The area swept by the step must not cross a wall. For a diagonal step that is the whole box around the start and end spaces, so a diagonal never cuts past a wall corner.
+- One-way walls block only when the token's centre starts on their restricted side.
+- A token already overlapping a wall (squeezing) may step away from it but not deeper into it.
+
+**Fitting.** Large creatures need room for their whole space: a 2x2 ogre cannot pass a 5-ft door or corridor. `fits(walls, x, y, size)` answers whether a space is clear.
+
+**Paths and reach.** `path()` finds the cheapest route to a destination and `reach()` lists every position within a movement allowance (for showing where a token can go). Both use a shortest-cost search over positions. The ruleset supplies the rules as options:
+
+| Option | Purpose | PF2E | D&D 5e |
+|---|---|---|---|
+| `diagonalCosts` | Cost of successive diagonal steps, in cells, repeating | `[1, 2]` (5-10-5, the default) | `[1]` |
+| `enterCost(x, y, size)` | Extra cost for entering a space | +1 per difficult square, +2 greater difficult | +1 per difficult square |
+| `passable(x, y, size)` | Spaces the mover cannot pass (other creatures) | three-size rule, Tiny sharing | ruleset's own |
+| `size` | Move with a smaller footprint | when squeezing is allowed | ruleset's own |
+
+**Which walls block movement:** solid, terrain, grate (portcullis), window, slit, closed and locked doors, and secret doors until found and opened. Ethereal barriers and open doors do not.
+
+**Board behaviour.** The board may warn when a PC token is dragged through a blocking wall or into a space it does not fit. It never prevents the move; the GM decides.
+
+**Performance.** On a 40 x 40 map with 300 walls: about 37 ms for three long paths (1x1, 2x2, 4x4), and about 13 ms for every position a Medium creature can reach in 50 ft.
 
 ## 10. Secrecy
 
@@ -232,9 +254,9 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 
 ## 15. Build order
 
-1. JSON schemas for the map record, wall segments and map state, plus a validator.
-2. The sight engine and its semantics tests, using a small original sample map.
-3. Movement (`canStep`, `path`).
+1. JSON schemas for the map record, wall segments and map state, plus a validator. Done.
+2. The sight engine and its semantics tests, using a small original sample map. Done.
+3. Movement (`canStep`, `fits`, `path`, `reach`). Done.
 4. Explored-area merging and the three-state fog renderer.
 5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions.
 6. Light and vision types (darkvision, low-light), then sound.

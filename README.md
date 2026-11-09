@@ -10,8 +10,9 @@ Built so far:
 
 - JSON schemas for maps, wall segments and map state (`schemas/`)
 - Wall types and sense values shared by the engine and tools (`engine/walls/presets.js`)
-- The sight engine: visibility polygons and line of sight for every wall type (`engine/sight/`)
-- A validator, a sight query tool and a wall overlay renderer (`tools/`)
+- The sight engine: visibility polygons and line of sight for every wall type and token size (`engine/sight/`)
+- Movement: steps, fitting large creatures, pathfinding and reach (`engine/movement/`)
+- A validator, sight and movement query tools, and a wall overlay renderer (`tools/`)
 - An original sample map pack and save (`examples/`)
 
 ## Development
