@@ -1,0 +1,132 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { validate } from '../tools/validate.mjs';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PACK = path.join(ROOT, 'examples', 'sample-pack');
+const SAVE = path.join(ROOT, 'examples', 'sample-save');
+
+/** Copy the sample pack and save into a temp dir, apply a change, and validate. */
+function withCopy(change) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rvtt-'));
+  fs.cpSync(PACK, path.join(tmp, 'pack'), { recursive: true });
+  fs.cpSync(SAVE, path.join(tmp, 'save'), { recursive: true });
+  const crypt = path.join(tmp, 'pack', 'maps', 'sample-crypt');
+  const edit = (file, fn) => {
+    const p = path.join(crypt, file);
+    const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+    fn(d);
+    fs.writeFileSync(p, JSON.stringify(d));
+  };
+  const editState = (fn) => {
+    const p = path.join(tmp, 'save', 'maps', 'sample-crypt.json');
+    const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+    fn(d);
+    fs.writeFileSync(p, JSON.stringify(d));
+  };
+  change({ edit, editState, crypt });
+  const report = validate(path.join(tmp, 'pack'), { save: path.join(tmp, 'save') });
+  fs.rmSync(tmp, { recursive: true, force: true });
+  return report;
+}
+
+const seg = (d, id) => d.segs.find((s) => s.id === id);
+const errorText = (r) => r.errors.map((e) => e.msg).join('\n');
+
+function expectError(change, pattern) {
+  const r = withCopy(change);
+  assert.match(errorText(r), pattern, `expected an error matching ${pattern}; got:\n${errorText(r) || '(no errors)'}`);
+}
+
+test('sample pack and save are valid with no warnings', () => {
+  const r = validate(PACK, { save: SAVE });
+  assert.equal(r.errors.length, 0, errorText(r));
+  assert.equal(r.warnings.length, 0, r.warnings.map((w) => w.msg).join('\n'));
+});
+
+test('a single map folder can be validated on its own', () => {
+  const r = validate(path.join(PACK, 'maps', 'sample-stairwell'));
+  assert.equal(r.errors.length, 0, errorText(r));
+});
+
+test('endpoint off the 1/8 cell grid', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-curtain').b = [9, 3.1]; }), /not on the 1\/8 cell grid/);
+});
+
+test('endpoint outside the grid', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-east').b = [12, 11]; }), /outside the 12x10 grid/);
+});
+
+test('zero-length segment', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-curtain').b = [9, 0.5]; }), /zero length/);
+});
+
+test('duplicate segment id', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-curtain').id = 'w-north'; }), /duplicate segment id/);
+});
+
+test('duplicate door id', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-vault-door').door.id = 'd01'; }), /door id "d01" is already used/);
+});
+
+test('door segment without door data', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { delete seg(d, 'w-hall-door').door; }), /must have required property 'door'/);
+});
+
+test('door data on a non-door segment', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-north').door = { id: 'x1' }; }), /must NOT be valid/);
+});
+
+test('unknown wall type', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-north').t = 'brick'; }), /must be equal to one of the allowed values/);
+});
+
+test('movement override must be 0 or 20', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-north').move = 10; }), /\/move: must be equal to one of the allowed values/);
+});
+
+test('arrow slit without a proximity distance', () => {
+  expectError(({ edit }) => edit('walls.json', (d) => { delete seg(d, 'w-slit').prox; }), /sight uses proximity but prox\.sight/);
+});
+
+test('missing image file', () => {
+  expectError(({ crypt }) => fs.rmSync(path.join(crypt, 'sample-crypt.png')), /image file "sample-crypt.png" not found/);
+});
+
+test('link to a map that is not in the pack', () => {
+  expectError(({ edit }) => edit('map.json', (d) => { d.links[0].to_map = 'nowhere'; }), /target map "nowhere" is not in this pack/);
+});
+
+test('link cell outside the grid', () => {
+  expectError(({ edit }) => edit('map.json', (d) => { d.links[0].at = [[12, 0]]; }), /cell \(12, 0\) is outside the grid/);
+});
+
+test('state: unknown door id', () => {
+  expectError(({ editState }) => editState((d) => { d.doors.d99 = { state: 'open' }; }), /doors\.d99: no such door/);
+});
+
+test('state: secret door open before it is found', () => {
+  expectError(({ editState }) => editState((d) => { d.doors.s01 = { state: 'open' }; }), /cannot be open before it is found/);
+});
+
+test('state: explored point off the 1/8 cell grid', () => {
+  expectError(({ editState }) => editState((d) => { d.explored.polys[0][1] = [6.1, 0]; }), /explored\.polys\[0\]: point \(6\.1, 0\) is not on the 1\/8 cell grid/);
+});
+
+test('state: unknown link id', () => {
+  expectError(({ editState }) => editState((d) => { d.links_found.push('secret-tunnel'); }), /links_found: no such link "secret-tunnel"/);
+});
+
+test('state: token outside the grid', () => {
+  expectError(({ editState }) => editState((d) => { d.tokens.hero = { x: 12, y: 0 }; }), /tokens\.hero: cell \(12, 0\) is outside the grid/);
+});
+
+test('warning, not error: override equal to the default', () => {
+  const r = withCopy(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-window').sight = 0; }));
+  assert.equal(r.errors.length, 0, errorText(r));
+  assert.match(r.warnings.map((w) => w.msg).join('\n'), /sight override equals the "window" default/);
+});

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/map-state.schema.json",
+  "title": "Map state",
+  "description": "What has changed on one map during play, stored in the campaign save. See docs/design/maps.md section 7.",
+  "type": "object",
+  "required": ["map"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "map": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "doors": {
+      "description": "Only doors that differ from their initial state, plus found secret doors. Keyed by door id.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "state": { "enum": ["closed", "open", "locked"] },
+          "found": { "type": "boolean" }
+        }
+      }
+    },
+    "locked_known": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "links_found": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "explored": {
+      "type": "object",
+      "required": ["v", "polys"],
+      "additionalProperties": false,
+      "properties": {
+        "v": { "type": "integer", "minimum": 0, "description": "Increases on every change." },
+        "polys": {
+          "description": "Closed rings in cell coordinates at 1/8 cell precision. Outer rings and holes use opposite winding.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 3,
+            "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+          }
+        }
+      }
+    },
+    "tokens": {
+      "description": "Token positions on this map. The token schema is defined separately; positions are checked here.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["x", "y"],
+        "properties": {
+          "x": { "type": "integer", "minimum": 0 },
+          "y": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

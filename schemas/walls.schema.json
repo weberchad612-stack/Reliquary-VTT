@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/walls.schema.json",
+  "title": "Wall segments",
+  "description": "Vector wall segments for one map, in grid cells. Endpoints are multiples of 1/8 cell (checked by tools/validate.mjs). See docs/design/maps.md sections 4 and 5.",
+  "type": "object",
+  "required": ["v", "unit", "snap", "segs"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "v": { "const": 1 },
+    "unit": { "const": "cell" },
+    "snap": { "const": 0.125 },
+    "segs": { "type": "array", "items": { "$ref": "#/$defs/seg" } }
+  },
+  "$defs": {
+    "point": { "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 2, "maxItems": 2 },
+    "sense": { "enum": [0, 10, 20, 30, 40] },
+    "seg": {
+      "type": "object",
+      "required": ["id", "a", "b", "t"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 32 },
+        "a": { "$ref": "#/$defs/point" },
+        "b": { "$ref": "#/$defs/point" },
+        "t": { "enum": ["solid", "terrain", "grate", "window", "slit", "ethereal", "door", "secret"] },
+        "move": { "enum": [0, 20] },
+        "sight": { "$ref": "#/$defs/sense" },
+        "light": { "$ref": "#/$defs/sense" },
+        "sound": { "$ref": "#/$defs/sense" },
+        "dir": { "enum": [0, 1, 2], "default": 0, "description": "0 both sides, 1 blocks only from the left of a->b, 2 only from the right." },
+        "door": {
+          "type": "object",
+          "required": ["id"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 32 },
+            "label": { "type": "string" },
+            "initial": { "enum": ["closed", "open", "locked"], "default": "closed" },
+            "dc": { "type": "integer", "minimum": 0, "description": "GM-only: DC to find (secret) or unlock." }
+          }
+        },
+        "prox": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "description": "Distances in feet for proximity senses.",
+          "properties": {
+            "sight": { "type": "number", "exclusiveMinimum": 0 },
+            "light": { "type": "number", "exclusiveMinimum": 0 },
+            "sound": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "room": { "type": "string", "description": "GM-only room key." },
+        "note": { "type": "string", "description": "GM-only note." }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "t": { "enum": ["door", "secret"] } } },
+          "then": { "required": ["door"] },
+          "else": { "not": { "required": ["door"] } }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/map.schema.json",
+  "title": "Map record",
+  "description": "One map in an adventure pack: image, grid calibration, wall file and links to other maps. See docs/design/maps.md section 3.",
+  "type": "object",
+  "required": ["id", "name", "image", "grid", "walls"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "$ref": "#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "image": {
+      "type": "object",
+      "required": ["file", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string", "pattern": "^[^/\\\\]+\\.(png|jpe?g|webp)$" },
+        "w": { "type": "integer", "minimum": 1 },
+        "h": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "required": ["cell_px", "origin_px", "cols", "rows", "feet_per_cell"],
+      "additionalProperties": false,
+      "properties": {
+        "cell_px": { "type": "number", "exclusiveMinimum": 0, "description": "Size of one grid cell in image pixels." },
+        "origin_px": { "$ref": "#/$defs/point", "description": "Pixel position of the top-left corner of cell (0,0); may be negative." },
+        "cols": { "type": "integer", "minimum": 1 },
+        "rows": { "type": "integer", "minimum": 1 },
+        "feet_per_cell": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "walls": {
+      "description": "Wall file name, or several files for a large map.",
+      "oneOf": [
+        { "$ref": "#/$defs/jsonFile" },
+        { "type": "array", "items": { "$ref": "#/$defs/jsonFile" }, "minItems": 1, "uniqueItems": true }
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "at", "to_map", "arrive"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "label": { "type": "string", "minLength": 1 },
+          "at": { "type": "array", "items": { "$ref": "#/$defs/cell" }, "minItems": 1 },
+          "to_map": { "$ref": "#/$defs/id" },
+          "arrive": { "type": "array", "items": { "$ref": "#/$defs/cell" }, "minItems": 1 },
+          "found": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "note": { "type": "string", "description": "GM-only note." }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "maxLength": 64 },
+    "jsonFile": { "type": "string", "pattern": "^[^/\\\\]+\\.json$" },
+    "point": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+    "cell": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 }
+  }
+}

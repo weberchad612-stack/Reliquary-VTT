@@ -1,7 +1,11 @@
 # examples
 
-Open-licensed sample content only: a small original sample adventure pack and a sample save.
+Open-licensed sample content only. Do not add publisher content (books, adventures, maps, art) here.
 
-Do not add publisher content (books, adventures, maps, art) here.
+- `sample-pack/maps/sample-crypt/`: a 12 x 10 cell map drawn for this project, with one of every wall type: solid walls, a door, a locked door, a secret door, a portcullis (grate), a window, an arrow slit, an ethereal barrier, a terrain curtain and a one-way illusory wall.
+- `sample-pack/maps/sample-stairwell/`: a 4 x 4 room linked to the crypt, for testing map links.
+- `sample-save/maps/sample-crypt.json`: map state for the crypt: an open door, a found secret door, a known locked door, explored areas and two tokens.
 
-Nothing is built here yet.
+The map images are generated from the wall data with `python3 tools/wall_overlay.py <map-dir> --blank`.
+
+Check them with `node tools/validate.mjs examples/sample-pack --save examples/sample-save`.
