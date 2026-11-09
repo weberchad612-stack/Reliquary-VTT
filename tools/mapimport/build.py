@@ -61,6 +61,32 @@ def dist_point_seg(p, a, b):
     return float(np.linalg.norm(p - (a + t * ab)))
 
 
+def clear_doorway(wall, door, cs):
+    """Cut a detected door's whole opening through the wall mask.
+
+    Door art usually sits in a dark frame that the wall mask picks up. Traced as it is, the wall outline
+    funnels in toward the door bar or runs along it, so the open door still cannot be seen or walked
+    through. Clearing the span between the jambs, through the full thickness of the wall, gives square
+    jambs and a clear doorway.
+    """
+    import cv2
+    a, b = np.asarray(door["a"], float), np.asarray(door["b"], float)
+    d = (b - a) / np.linalg.norm(b - a)
+    n = np.array([-d[1], d[0]])
+    into = features.DEFAULTS["end_into_wall_cells"] * cs
+    a0, b0 = a + d * into, b - d * into          # the jamb faces
+    # Wall thickness, measured just inside each jamb on both sides of the door line.
+    half = cs * 0.25
+    for end, out in ((a0, -d), (b0, d)):
+        p = end + out * cs * 0.25
+        half = max(half, features._walk_to_free(wall, p, n, cs), features._walk_to_free(wall, p, -n, cs))
+    half = min(half, cs) + 2
+    corners = [a0 + n * half, b0 + n * half, b0 - n * half, a0 - n * half]
+    w8 = wall.astype(np.uint8)
+    cv2.fillPoly(w8, [np.round(np.array(corners)).astype(np.int32)], 0)
+    wall[:] = w8.astype(bool)
+
+
 def cut_opening(wall, at_px, g, width_px, angle_deg=None):
     """Cut a straight opening through the wall at at_px. Returns (segment end a, end b, thickness px)."""
     cs = g["cell_px"]
@@ -157,6 +183,8 @@ def build(cfg_path, repo):
         report["applied"].append({"opening": kind, "at": o["at"], "note": o.get("note", "")})
 
     doors = features.find_doors(door_px, smooth, cs, fcfg)
+    for d in doors:
+        clear_doorway(smooth, d, cs)
     wins = features.find_windows(window_px, smooth, cs, fcfg)
 
     door_segs = []

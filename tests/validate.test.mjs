@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validate } from '../tools/validate.mjs';
+import { validate, doorwayClearance, DOORWAY_END_SLACK, DOORWAY_MIN_CELLS } from '../tools/validate.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PACK = path.join(ROOT, 'examples', 'sample-pack');
@@ -129,4 +129,38 @@ test('warning, not error: override equal to the default', () => {
   const r = withCopy(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-window').sight = 0; }));
   assert.equal(r.errors.length, 0, errorText(r));
   assert.match(r.warnings.map((w) => w.msg).join('\n'), /sight override equals the "window" default/);
+});
+
+// Doorway check: a 1-cell door at x 5..6 on the line y = 3, in a wall with faces at y 2.75 and 3.25.
+const door = { id: 'd', t: 'door', a: [4.875, 3], b: [6.125, 3], door: { id: 'd1' } };
+const jambs = [
+  { id: 'n1', t: 'solid', a: [2, 2.75], b: [5, 2.75] }, { id: 'n2', t: 'solid', a: [5, 2.75], b: [5, 3.25] },
+  { id: 's1', t: 'solid', a: [2, 3.25], b: [5, 3.25] },
+  { id: 'n3', t: 'solid', a: [6, 2.75], b: [9, 2.75] }, { id: 'n4', t: 'solid', a: [6, 2.75], b: [6, 3.25] },
+  { id: 's3', t: 'solid', a: [6, 3.25], b: [9, 3.25] },
+];
+const passes = (c) => c.clear >= Math.max(DOORWAY_MIN_CELLS, c.length - DOORWAY_END_SLACK);
+
+test('doorway check: square jambs leave the opening clear', () => {
+  const c = doorwayClearance(door, [door, ...jambs], 80);
+  assert.ok(Math.abs(c.clear - 1) < 0.05, `clear ${c.clear}`);
+  assert.ok(passes(c));
+});
+
+test('doorway check: a wall face running along the door line pinches it shut', () => {
+  const pinch = { id: 'p', t: 'solid', a: [5, 3.1], b: [6, 3.1] };
+  const c = doorwayClearance(door, [door, ...jambs, pinch], 80);
+  assert.ok(c.clear < 0.1, `clear ${c.clear}`);
+  assert.ok(!passes(c));
+});
+
+test('doorway check: jambs funnelling in toward the door bar pinch it', () => {
+  const funnel = [{ id: 'f1', t: 'solid', a: [5, 2.75], b: [5.3, 3] }, { id: 'f2', t: 'solid', a: [6, 3.25], b: [5.7, 3] }];
+  const c = doorwayClearance(door, [door, ...jambs, ...funnel], 80);
+  assert.ok(!passes(c), `clear ${c.clear}`);
+});
+
+test('doorway check: walls that do not block movement are ignored', () => {
+  const eth = { id: 'e', t: 'ethereal', a: [5, 3.1], b: [6, 3.1] };
+  assert.ok(passes(doorwayClearance(door, [door, ...jambs, eth], 80)));
 });

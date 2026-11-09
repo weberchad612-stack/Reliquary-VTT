@@ -42,7 +42,8 @@ The user's standing rule:
 | Wall mask | Thresholds in the map's `mask` settings. | Sample colours from small boxes you have **confirmed by eye are inside walls**, floors, ground and water. Do not guess thresholds. Render the mask over the map and look. |
 | Features | Doors, windows, proposed arrow slits. | Count the doors against the art. Every slit proposal is accepted or rejected by looking at the original art beside it. |
 | Corrections | `erase`, `add`, `openings`, `doors`, `windows`, `slits`, excludes with `hide`. | Render zoomed tiles of every corrected spot with the cell grid and the segments drawn. |
-| Validate | `node tools/validate.mjs <pack>`. | No errors, no unexplained warnings. |
+| Validate | `node tools/validate.mjs <pack>`. | No errors, no unexplained warnings. **No "walls pinch the doorway" warnings**: every door must be clear to see and walk through when open. |
+| Doorways | Render a zoomed tile of **every** door and secret door with the segments drawn. | Square jambs, nothing crossing or running along the door line, the opening as wide as the gap in the art. |
 | Leak check | From a point inside every room, with every door closed, compute what is visible. | Nothing outside the room is visible except where the drawing shows an opening on purpose. Trace each leak to its gap and fix it. |
 | Movement | Route a Medium creature through doors and passages. | Doors that should be usable are; 5-ft doors stop Large creatures. |
 | Sight spot checks | Stand beside each special feature. | Arrow slits work only up close; barred door windows only beside the door; stained glass blocks sight; secret doors block until found and opened. |
@@ -57,6 +58,7 @@ The user's standing rule:
 - **Rubble against walls** makes wall faces bulge into rooms. Erase it, and add a wall segment if the face needs redrawing.
 - **Stairs, spiral stairs, furniture** and dark floor details get detected as walls. Erase them, with a note naming the text that says what they are.
 - **White text and frames** (compass letters, inset borders) look like door bars. Exclude insets and legends; mark insets `hide: true` so the board covers them.
+- **Pinched doorways.** Door art sits in a dark frame that the wall mask picks up, so the traced wall outline funnels in toward the door bar or runs straight along it. The door then opens but nobody can see or walk through it. The importer now clears each detected door's opening (between the jambs, through the full wall thickness) before tracing. Hand-placed doors and secret doors (`add` with an `erase`) get no such help: erase the whole opening through the wall, not just part of it, and confirm with the validator and a zoomed tile. Fix the cause in the import, never by nudging single segments.
 - **Off-grid doorways:** art rarely lines doors up with the grid. The movement engine's clearance (0.3 cells) handles most cases; check routes through every door.
 - **Added segments must reach into the walls they join.** A segment that ends exactly at a wall's corner leaves a sliver for sight to leak through; extend each end an eighth of a cell or more into the wall.
 - **Segment ids change** every time a map is vectorized again. Corrections are geometric, in cell coordinates, never by segment id.

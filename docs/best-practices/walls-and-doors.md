@@ -26,6 +26,7 @@ For Claude, when writing or correcting wall data (`walls.json`; design: [maps.md
 ## Geometry
 
 - Endpoints on the 1/8-cell grid (the validator enforces it).
+- **A doorway must be clear.** No other wall may cross a door or run along it inside the opening; jambs end square at the door. Otherwise an open door still blocks sight and movement. The validator warns ("walls pinch the doorway") when less than the door's length minus 0.4 cells (and under 0.5 cells) is clear; treat that warning as a bug.
 - Every room boundary must be closed. A door, window, slit or added wall must reach a little way into the walls on both sides; a segment that only touches a wall's corner leaves a sliver for sight to leak through.
 - Never refer to segments by id in corrections or notes that must survive a re-import; ids change when a map is vectorized again. Door ids (`door.id`) are stable and are what saves and narration use.
 

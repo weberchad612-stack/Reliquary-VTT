@@ -25,6 +25,42 @@ const V = {
   state: schema('map-state.schema.json'),
 };
 
+// Doorway check: walls running into a door's span pinch it, so an open door cannot be seen or walked through.
+// Probe across the door at many points along it; a point is clear when the probe crosses no other wall
+// that blocks movement. Probes reach half a cell either side, deeper than any wall face.
+// A door segment reaches a little into the walls at both ends, so up to DOORWAY_END_SLACK cells of its
+// length may be covered; whatever is left must be clear, and never less than DOORWAY_MIN_CELLS.
+export const DOORWAY_END_SLACK = 0.4;
+export const DOORWAY_MIN_CELLS = 0.5;
+const PROBE = 0.5;                     // cells either side of the door line
+const BLOCKING = new Set(['solid', 'window', 'slit', 'grate', 'terrain', 'door', 'secret']);
+
+function crosses(p1, p2, a, b) {
+  const d = (ax, ay, bx, by) => ax * by - ay * bx;
+  const r = [p2[0] - p1[0], p2[1] - p1[1]], q = [b[0] - a[0], b[1] - a[1]];
+  const den = d(r[0], r[1], q[0], q[1]);
+  if (Math.abs(den) < 1e-12) return false;
+  const w = [a[0] - p1[0], a[1] - p1[1]];
+  const t = d(w[0], w[1], q[0], q[1]) / den, u = d(w[0], w[1], r[0], r[1]) / den;
+  return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+}
+
+/** Clear width of a door's opening, in cells: the longest stretch along it with no other wall across it. */
+export function doorwayClearance(door, segs, samples = 40) {
+  const [ax, ay] = door.a, [bx, by] = door.b;
+  const length = Math.hypot(bx - ax, by - ay);
+  const nx = -(by - ay) / length * PROBE, ny = (bx - ax) / length * PROBE;
+  const others = segs.filter((s) => s !== door && s.id !== door.id && BLOCKING.has(s.t));
+  let run = 0, best = 0;
+  for (let i = 0; i < samples; i++) {
+    const f = (i + 0.5) / samples, px = ax + (bx - ax) * f, py = ay + (by - ay) * f;
+    const p1 = [px - nx, py - ny], p2 = [px + nx, py + ny];
+    run = others.some((s) => crosses(p1, p2, s.a, s.b)) ? 0 : run + 1;
+    best = Math.max(best, run);
+  }
+  return { clear: (best / samples) * length, length };
+}
+
 /** Collects findings for one file. */
 class Report {
   constructor() { this.items = []; }
@@ -92,6 +128,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
   const wallFiles = Array.isArray(map.walls) ? map.walls : [map.walls];
   const segIds = new Set();
   const edges = new Map();
+  const allSegs = [];
   for (const wf of wallFiles) {
     const file = path.join(dir, wf);
     const walls = readJson(file, report);
@@ -100,6 +137,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     if (size > 200 * 1024) report.warn(file, `file is ${(size / 1024).toFixed(0)} KiB; split it to stay under 200 KiB`);
 
     for (const s of walls.segs) {
+      allSegs.push({ seg: s, file });
       const where = `segment ${s.id}`;
       if (segIds.has(s.id)) report.error(file, `${where}: duplicate segment id`);
       segIds.add(s.id);
@@ -137,6 +175,14 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     }
   }
   if (segIds.size === 0) report.warn(mapFile, 'map has no wall segments');
+  for (const { seg, file } of allSegs) {
+    if (!DOOR_TYPES.includes(seg.t)) continue;
+    const { clear, length } = doorwayClearance(seg, allSegs.map((x) => x.seg));
+    if (clear < Math.max(DOORWAY_MIN_CELLS, length - DOORWAY_END_SLACK)) {
+      report.warn(file, `segment ${seg.id} (door ${seg.door.id}${seg.door.label ? `, "${seg.door.label}"` : ''}): ` +
+        `walls pinch the doorway; only ${(clear * 5).toFixed(1)} ft of its ${(length * 5).toFixed(1)} ft is clear when open`);
+    }
+  }
   return { map, doors, report };
 }
 
