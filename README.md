@@ -12,7 +12,8 @@ Built so far:
 - Wall types and sense values shared by the engine and tools (`engine/walls/presets.js`)
 - The sight engine: visibility polygons and line of sight for every wall type and token size (`engine/sight/`)
 - Movement: steps, fitting large creatures, pathfinding and reach (`engine/movement/`)
-- A validator, sight and movement query tools, and a wall overlay renderer (`tools/`)
+- Fog of war: explored-area merging and the three-state player and GM fog (`engine/fog/`)
+- A validator, sight, movement and fog query tools, and a wall overlay renderer (`tools/`)
 - An original sample map pack and save (`examples/`)
 
 ## Development

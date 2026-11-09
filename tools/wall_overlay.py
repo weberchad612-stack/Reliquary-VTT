@@ -5,6 +5,7 @@ Usage:
     python3 tools/wall_overlay.py <map-dir> [--out FILE] [--blank] [--no-labels]
                                   [--sight X,Y ...] [--token X,Y,SIZE ...] [--state FILE] [--range FEET]
                                   [--path X,Y,SIZE:GX,GY ...] [--reach X,Y,SIZE:FEET]
+                                  [--fog player|gm] [--fog-token ID:KIND:X,Y[,SIZE] ...]
 
 By default the walls are drawn over the map image and saved as <map-dir>/overlay.png.
 --blank draws on a plain floor with a grid instead of the image (used to make the
@@ -20,7 +21,11 @@ same for a whole token (top-left cell and size in cells), the way the GM vision 
 
 --path X,Y,SIZE:GX,GY draws the cheapest route for a token to (GX,GY) and its cost, and
 --reach X,Y,SIZE:FEET shades every position the token can reach, both through `node tools/move.mjs`
-(PF2E 5-10-5 diagonals). --state applies door
+(PF2E 5-10-5 diagonals).
+
+--fog player|gm paints the fog of war for the tokens in --state (plus any --fog-token), through
+`node tools/fog.mjs`: unexplored fogged, explored dimmed, visible clear. Tokens are drawn as rings
+(blue PCs, red others); in the player view, tokens the party cannot see are left out. --state applies door
 states and found secrets from a save's map-state file.
 """
 import argparse
@@ -30,7 +35,7 @@ import os
 import subprocess
 import sys
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 COLOURS = {
     "solid": (20, 20, 20),
@@ -81,6 +86,16 @@ def run_move(map_dir, token, flag, value, state):
     return json.loads(res.stdout)
 
 
+def run_fog(map_dir, state, tokens):
+    cmd = ["node", os.path.join(TOOLS, "fog.mjs"), map_dir, "--state", state]
+    for t in tokens:
+        cmd += ["--token", t]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode != 0:
+        sys.exit(res.stderr.strip() or "fog.mjs failed")
+    return json.loads(res.stdout)
+
+
 def dashed(draw, a, b, colour, width, dash=6):
     length = math.dist(a, b)
     if length == 0:
@@ -102,6 +117,8 @@ def main(argv):
     ap.add_argument("--token", action="append", default=[], metavar="X,Y,SIZE", help="shade what a token sees (top-left cell, size in cells)")
     ap.add_argument("--path", action="append", default=[], metavar="X,Y,SIZE:GX,GY", help="draw a token's cheapest route")
     ap.add_argument("--reach", metavar="X,Y,SIZE:FEET", help="shade every position a token can reach")
+    ap.add_argument("--fog", choices=["player", "gm"], help="paint the fog of war (needs --state)")
+    ap.add_argument("--fog-token", action="append", default=[], metavar="ID:KIND:X,Y[,SIZE]", help="add or move a token for --fog")
     ap.add_argument("--state", help="map-state file from a save (door states, found secrets)")
     ap.add_argument("--range", type=float, default=200, help="vision range in feet (default 200)")
     a = ap.parse_args(argv)
@@ -203,6 +220,46 @@ def main(argv):
         g0 = px([gx, gy])
         d.rectangle([g0[0] + 3, g0[1] + 3, g0[0] + ts * cs - 3, g0[1] + ts * cs - 3], outline=(30, 110, 255), width=2)
         d.text((g0[0] + 6, g0[1] + 6), f"{r['feet']:g} ft", fill=(20, 40, 140), font=font)
+
+    if a.fog:
+        if not a.state:
+            sys.exit("--fog needs --state")
+        res = run_fog(a.map_dir, a.state, a.fog_token)
+        alpha = {"player": (255, 140), "gm": (90, 38)}[a.fog]
+        fog = Image.new("L", img.size, alpha[0])
+        # explored: even-odd over all rings, done by XOR-ing each ring into a mask
+        ex = Image.new("1", img.size, 0)
+        for ring in res["explored"]["polys"]:
+            r = Image.new("1", img.size, 0)
+            ImageDraw.Draw(r).polygon([px(p) for p in ring], fill=1)
+            ex = Image.frombytes("1", img.size, bytes(x ^ y for x, y in zip(ex.tobytes(), r.tobytes())))
+        # soften the explored edge (its outline steps in 1/8 cells), like the board does
+        exl = ex.convert("L").filter(ImageFilter.GaussianBlur(2))
+        fog = Image.composite(Image.new("L", img.size, alpha[1]), fog, exl)
+        fd = ImageDraw.Draw(fog)
+        for poly in res["visible"]:
+            fd.polygon([px(p) for p in poly], fill=0)
+        dark = Image.new("RGBA", img.size, (20, 17, 14, 255))
+        dark.putalpha(fog)
+        img = Image.alpha_composite(img.convert("RGBA"), dark).convert("RGB")
+        d = ImageDraw.Draw(img)
+        with open(a.state, encoding="utf-8") as f:
+            toks = dict(json.load(f).get("tokens", {}))
+        for t in a.fog_token:
+            tid, kind, pos = t.split(":")
+            n = [float(v) for v in pos.split(",")]
+            toks[tid] = {"kind": kind, "x": n[0], "y": n[1], **({"size": n[2]} if len(n) > 2 else {})}
+        seen = set(res["seen"])
+        for tid, t in toks.items():
+            if a.fog == "player" and tid not in seen:
+                continue
+            sz = t.get("size", 1)
+            x0, y0 = px([t["x"], t["y"]])
+            col = (40, 110, 255) if t.get("kind") == "pc" else (220, 40, 40)
+            d.ellipse([x0 + 5, y0 + 5, x0 + sz * cs - 5, y0 + sz * cs - 5], outline=col, width=4)
+            if a.fog == "gm" and tid not in seen:
+                d.line([x0 + 8, y0 + 8, x0 + sz * cs - 8, y0 + sz * cs - 8], fill=col, width=2)
+            d.text((x0 + 6, y0 + sz * cs - 16), tid, fill=col, font=font)
 
     out = a.out or os.path.join(a.map_dir, m["image"]["file"] if a.blank else "overlay.png")
     img.save(out)

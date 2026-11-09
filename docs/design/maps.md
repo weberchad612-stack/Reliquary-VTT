@@ -177,7 +177,13 @@ The engine applies the same function to sight now, movement next, and light and 
 | Explored but not visible now | Dimmed map, no foe or NPC tokens |
 | Never explored | Fog |
 
-**Explored update.** When the visible area changes, it is merged into `explored`. Internally the engine merges on a 1/8 cell grid and traces the outline back into polygons, which keeps merging robust and the stored result small. The save is written after a short delay, not on every step.
+**Explored update.** When the visible area changes, it is merged into `explored` (`engine/fog/explored.js`). The engine keeps a bitmap with 8 x 8 pixels per cell (1/8 cell), sampled at pixel centres: it fills in the stored outlines, adds the new visibility polygons, and traces the pixel edges back into outlines. The traced outlines are simplified only when the simplified version fills exactly the same pixels, so saving and reloading can never grow or shrink the explored area on its own. Where two explored areas touch only at a corner, tracing keeps them as separate rings.
+
+The board keeps the bitmap in memory while play goes on and traces outlines only when it saves, a short delay after the last change. Measured on a 33 x 42 level with 200 walls: about 35 ms per merge (62 ms worst), and 30 moves of exploring produced 28 rings, 308 points, 3.6 KiB.
+
+**Painting.** `paintFog` (`engine/fog/view.js`) paints the fog onto a canvas: fog over everything, cut down to the dimmed level over explored areas, and cut away over what is visible now. The explored edge is softened with a 3-pixel blur when painted, to hide its 1/8-cell steps; the edge of what is visible now stays sharp. The GM view uses the same painter with a light tint instead of fog.
+
+**Who looks and who is seen.** `partyView` returns the visible polygons and the set of tokens players may see. By default every living PC that is not GM-hidden looks, using the map-wide vision range; the ruleset narrows this (unconscious, blinded) and gives tokens their own ranges. GM-hidden tokens are never shown to players; PCs and markers always are.
 
 **Tokens.** A foe or NPC token is shown to players only if a PC can currently see one of its sample points (see Being seen). PCs and the party's own markers are always shown. The GM view shows everything.
 
@@ -257,7 +263,7 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 1. JSON schemas for the map record, wall segments and map state, plus a validator. Done.
 2. The sight engine and its semantics tests, using a small original sample map. Done.
 3. Movement (`canStep`, `fits`, `path`, `reach`). Done.
-4. Explored-area merging and the three-state fog renderer.
+4. Explored-area merging and the three-state fog renderer. Done.
 5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions.
 6. Light and vision types (darkvision, low-light), then sound.
 
@@ -266,4 +272,5 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 - Maps with several floors or heights in one image (balconies, pits).
 - Token placement for Tiny creatures: four per cell on half-cell positions (decided), and how the save and validator store fractional positions.
 - How map images are hosted for the board (published as artifact files, referenced by id from the pack).
+- Wall edges at the limit of sight: visibility stops at a wall's centre line, so half of a drawn wall can stay fogged. The first implementation revealed thin walls whole and thick walls to their middle; decide whether to do the same when the board is built.
 - Whether `links` need conditions beyond `found` (one-way links, links that need a key).
