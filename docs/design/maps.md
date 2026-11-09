@@ -159,7 +159,15 @@ The engine applies the same function to sight now, movement next, and light and 
 
 **Visibility polygon.** `visPolygon(origin, prepared, {rangeFt, feetPerCell})` returns the area visible from a point. It casts a ray toward every wall endpoint in range (and a hair to either side of it) plus 180 evenly spaced rays for the range circle, applies the semantics in section 6 along each ray, and joins the hit points in angular order. Range comes from the ruleset (for PF2E the current table uses 200 ft). Built in `engine/sight/visibility.js`; about 80 ms for four PCs on a 300-segment map, recomputed only when a token moves or a door changes.
 
-**Viewing points.** A token sees from its centre and from points near its corners, as the old board did, so a creature in a doorway sees into both rooms.
+**Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. Up to four Tiny creatures can share one cell, so a Tiny token sits on a half-cell position; the token placement rules for this are settled when tokens are built.
+
+**Viewing points.** A token sees from points spread around the edge of its space: the four corners (inset slightly) plus the centre of every cell along the edge. A 1x1 token uses its centre and four corners (5 points); 2x2 uses 8, 3x3 uses 12, 4x4 uses 16. Interior cells add nothing, because anything they could see is also visible from the edge. A viewpoint that the token's own centre cannot see is dropped, so a large token pushed against or squeezing past a wall never sees through that wall. What a token sees is the union of the polygons from its viewpoints. Built as `viewpoints()` in `engine/sight/visibility.js`.
+
+**Being seen.** A token is visible when a viewer can see any of its sample points (the same set of points as above), so a Huge creature with part of its space past a corner is spotted. This follows the Player Core rule that a creature has no line of effect only when it is entirely behind a barrier.
+
+**Cover is separate.** Cover uses the rulebook's centre-to-centre line (and the large-creature cover rule). It belongs to the ruleset, which uses the engine's line test.
+
+**GM vision view.** In the GM view, clicking any token (NPC, foe or PC) shades the area that token can see right now, using its own viewpoints and vision range. This is display only: it never changes the explored area and never reaches the player view. Clicking empty map or pressing Esc clears it.
 
 **Three fog states for players:**
 
@@ -171,7 +179,7 @@ The engine applies the same function to sight now, movement next, and light and 
 
 **Explored update.** When the visible area changes, it is merged into `explored`. Internally the engine merges on a 1/8 cell grid and traces the outline back into polygons, which keeps merging robust and the stored result small. The save is written after a short delay, not on every step.
 
-**Tokens.** A foe or NPC token is shown to players only if its footprint overlaps the area visible now. PCs and the party's own markers are always shown. The GM view shows everything.
+**Tokens.** A foe or NPC token is shown to players only if a PC can currently see one of its sample points (see Being seen). PCs and the party's own markers are always shown. The GM view shows everything.
 
 **Doors.** A door icon appears once its segment lies in an explored area. Unfound secret doors never get an icon in the player view.
 
@@ -234,5 +242,6 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 ## 16. Open items
 
 - Maps with several floors or heights in one image (balconies, pits).
+- Token placement for Tiny creatures: four per cell on half-cell positions (decided), and how the save and validator store fractional positions.
 - How map images are hosted for the board (published as artifact files, referenced by id from the pack).
 - Whether `links` need conditions beyond `found` (one-way links, links that need a key).

@@ -178,11 +178,54 @@ export function canSee(from, to, prepared, { rangeFt = Infinity, feetPerCell = 5
   return castRay(from, d, active, dist) >= dist - 1e-7;
 }
 
-/** Sample points for a token occupying `size` cells from cell (x, y): centre plus points near each corner. */
-export function tokenPoints(x, y, size = 1, inset = 0.15) {
+/**
+ * Sample points for a token whose space starts at (x, y) and is `size` cells on a side.
+ * size <= 1 (Tiny, Small, Medium): the centre plus four points near the corners (5 points).
+ * size >= 2 (Large and up): four points near the corners plus the centre of every cell along
+ * the edge of the space (2x2: 8, 3x3: 12, 4x4: 16). See docs/design/maps.md section 8.
+ */
+export function footprintPoints(x, y, size = 1, inset = 0.15) {
+  const k = Math.min(inset, size * 0.3);
+  const corners = [[x + k, y + k], [x + size - k, y + k], [x + k, y + size - k], [x + size - k, y + size - k]];
+  if (size <= 1) return [[x + size / 2, y + size / 2], ...corners];
+  const n = Math.round(size);
+  const edge = [];
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (i === 0 || j === 0 || i === n - 1 || j === n - 1) edge.push([x + i + 0.5, y + j + 0.5]);
+    }
+  }
+  return [...corners, ...edge];
+}
+
+/** Alias kept for callers that think in "token points". */
+export const tokenPoints = footprintPoints;
+
+/**
+ * The points a token actually looks from: its footprint points, minus any that the token's own
+ * centre cannot see (so a large token against or squeezing past a wall never sees through it).
+ */
+export function viewpoints(x, y, size, prepared, { feetPerCell = 5 } = {}) {
   const c = [x + size / 2, y + size / 2];
-  const lo = inset, hi = size - inset;
-  return [c, [x + lo, y + lo], [x + hi, y + lo], [x + lo, y + hi], [x + hi, y + hi]];
+  return footprintPoints(x, y, size).filter((p) => canSee(c, p, prepared, { rangeFt: Infinity, feetPerCell }));
+}
+
+/**
+ * Everything a token can see: one visibility polygon per viewpoint (their union is the visible area).
+ * Used for PC fog, for the GM vision view when a token is clicked, and for Claude's sight queries.
+ */
+export function tokenSight(token, prepared, opts) {
+  const size = token.size || 1;
+  return viewpoints(token.x, token.y, size, prepared, opts).map((p) => visPolygon(p, prepared, opts));
+}
+
+/**
+ * Can `viewer` see `target` right now? Both are {x, y, size}. True when any of the viewer's
+ * viewpoints has line of sight to any of the target's footprint points.
+ */
+export function tokenCanSee(viewer, target, prepared, opts) {
+  const vp = viewpoints(viewer.x, viewer.y, viewer.size || 1, prepared, opts);
+  return canSeeAny(vp, footprintPoints(target.x, target.y, target.size || 1), prepared, opts);
 }
 
 /**

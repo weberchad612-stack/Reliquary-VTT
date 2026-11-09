@@ -183,3 +183,57 @@ test('crypt: canSeeAny with token points sees a guard through the window', () =>
   assert.equal(canSeeAny(tokenPoints(8, 3), tokenPoints(8, 6), p, OPTS), true);
   assert.equal(canSeeAny(tokenPoints(1, 1), tokenPoints(9, 8), p, OPTS), false);
 });
+
+// ---- Token footprints (docs/design/maps.md section 8) ----
+
+import { footprintPoints, viewpoints, tokenSight, tokenCanSee } from '../engine/sight/visibility.js';
+
+test('footprint point counts: 1x1 5, 2x2 8, 3x3 12, 4x4 16, Tiny 5', () => {
+  assert.equal(footprintPoints(0, 0, 1).length, 5);
+  assert.equal(footprintPoints(0, 0, 2).length, 8);
+  assert.equal(footprintPoints(0, 0, 3).length, 12);
+  assert.equal(footprintPoints(0, 0, 4).length, 16);
+  assert.equal(footprintPoints(0, 0, 0.5).length, 5);
+});
+
+test('footprint points stay inside the space', () => {
+  for (const size of [0.5, 1, 2, 3, 4]) {
+    for (const [px, py] of footprintPoints(3, 4, size)) {
+      assert.ok(px > 3 && px < 3 + size && py > 4 && py < 4 + size, `size ${size}: (${px}, ${py})`);
+    }
+  }
+  assert.deepEqual(footprintPoints(2.5, 2.5, 0.5)[0], [2.75, 2.75], 'Tiny token on a half-cell position');
+});
+
+test('a large token sees around a corner its centre cannot', () => {
+  // Wall along y = 5 from x = 0 to 4; a 2x2 token at (4,3) has its east edge past the wall end.
+  const segs = room({ id: 'h', a: [0, 5], b: [4.5, 5], t: 'solid' });
+  const p = prepare(segs);
+  const target = { x: 1, y: 7, size: 1 };
+  assert.equal(tokenCanSee({ x: 3, y: 3, size: 1 }, target, p, OPTS), false, 'Medium token at (3,3) cannot see it');
+  assert.equal(tokenCanSee({ x: 3, y: 3, size: 2 }, target, p, OPTS), true, 'Large token whose space reaches x = 5 can');
+});
+
+test('a large target is seen when any part of its space is visible', () => {
+  const segs = room({ id: 'v', a: [5, 0], b: [5, 7], t: 'solid' });
+  const p = prepare(segs);
+  const viewer = { x: 1, y: 1, size: 1 };
+  assert.equal(tokenCanSee(viewer, { x: 6, y: 2, size: 1 }, p, OPTS), false, 'Medium creature behind the wall');
+  assert.equal(tokenCanSee(viewer, { x: 6, y: 6, size: 3 }, p, OPTS), true, 'Huge creature extends below the wall end');
+});
+
+test('viewpoints behind a wall the token overlaps are dropped', () => {
+  // Wall along x = 5.25; a 2x2 token placed at (4,4) straddles it, centre (5,5) on the west side.
+  const segs = room({ id: 'v', a: [5.25, 0], b: [5.25, 10], t: 'solid' });
+  const p = prepare(segs);
+  const vp = viewpoints(4, 4, 2, p, OPTS);
+  assert.equal(vp.length, 4, 'the 4 points west of the wall are kept, the 4 east of it dropped');
+  assert.ok(vp.every((q) => q[0] < 5.25));
+  assert.equal(tokenCanSee({ x: 4, y: 4, size: 2 }, { x: 8, y: 5, size: 1 }, p, OPTS), false);
+});
+
+test('tokenSight returns one polygon per viewpoint', () => {
+  const p = prepare(box);
+  assert.equal(tokenSight({ x: 4, y: 4, size: 3 }, p, OPTS).length, 12);
+  assert.equal(tokenSight({ x: 4, y: 4 }, p, OPTS).length, 5);
+});

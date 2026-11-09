@@ -3,7 +3,7 @@
 
 Usage:
     python3 tools/wall_overlay.py <map-dir> [--out FILE] [--blank] [--no-labels]
-                                  [--sight X,Y ...] [--state FILE] [--range FEET]
+                                  [--sight X,Y ...] [--token X,Y,SIZE ...] [--state FILE] [--range FEET]
 
 By default the walls are drawn over the map image and saved as <map-dir>/overlay.png.
 --blank draws on a plain floor with a grid instead of the image (used to make the
@@ -14,7 +14,8 @@ ethereal violet, door red, secret door gold. One-way walls get an arrow showing 
 side they block from.
 
 --sight X,Y shades the area visible from that point (in cells; repeat for several viewers),
-computed by the JavaScript sight engine through `node tools/sight.mjs`. --state applies door
+computed by the JavaScript sight engine through `node tools/sight.mjs`. --token X,Y,SIZE does the
+same for a whole token (top-left cell and size in cells), the way the GM vision view shades it. --state applies door
 states and found secrets from a save's map-state file.
 """
 import argparse
@@ -54,14 +55,15 @@ def load(map_dir):
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 
 
-def sight_polygon(map_dir, origin, state, range_ft):
-    cmd = ["node", os.path.join(TOOLS, "sight.mjs"), map_dir, "--from", origin, "--range", str(range_ft)]
+def sight_polygons(map_dir, flag, value, state, range_ft):
+    cmd = ["node", os.path.join(TOOLS, "sight.mjs"), map_dir, flag, value, "--range", str(range_ft)]
     if state:
         cmd += ["--state", state]
     res = subprocess.run(cmd, capture_output=True, text=True)
     if res.returncode != 0:
         sys.exit(res.stderr.strip() or "sight.mjs failed")
-    return json.loads(res.stdout)
+    out = json.loads(res.stdout)
+    return out["polygons"] if "polygons" in out else [out["polygon"]]
 
 
 def dashed(draw, a, b, colour, width, dash=6):
@@ -82,6 +84,7 @@ def main(argv):
     ap.add_argument("--blank", action="store_true", help="plain floor and grid instead of the map image")
     ap.add_argument("--no-labels", action="store_true", help="do not write segment ids")
     ap.add_argument("--sight", action="append", default=[], metavar="X,Y", help="shade what is visible from X,Y (cells)")
+    ap.add_argument("--token", action="append", default=[], metavar="X,Y,SIZE", help="shade what a token sees (top-left cell, size in cells)")
     ap.add_argument("--state", help="map-state file from a save (door states, found secrets)")
     ap.add_argument("--range", type=float, default=200, help="vision range in feet (default 200)")
     a = ap.parse_args(argv)
@@ -104,14 +107,23 @@ def main(argv):
 
     px = lambda p: (ox + p[0] * cs, oy + p[1] * cs)
 
-    if a.sight:
+    if a.sight or a.token:
+        # Union of all visible areas: draw every polygon into one mask, then tint once.
+        mask = Image.new("L", img.size, 0)
+        md = ImageDraw.Draw(mask)
+        for flag, values in (("--from", a.sight), ("--token", a.token)):
+            for v in values:
+                for poly in sight_polygons(a.map_dir, flag, v, a.state, a.range):
+                    md.polygon([px(p) for p in poly], fill=255)
+        tint = Image.new("RGBA", img.size, (255, 220, 60, 90))
         shade = Image.new("RGBA", img.size, (0, 0, 0, 0))
-        sd = ImageDraw.Draw(shade)
-        for origin in a.sight:
-            res = sight_polygon(a.map_dir, origin, a.state, a.range)
-            sd.polygon([px(p) for p in res["polygon"]], fill=(255, 220, 60, 90))
+        shade.paste(tint, (0, 0), mask)
         img = Image.alpha_composite(img.convert("RGBA"), shade).convert("RGB")
         d = ImageDraw.Draw(img)
+        for t in a.token:
+            tx, ty, ts = [float(v) for v in t.split(",")]
+            x0, y0 = px([tx, ty])
+            d.rectangle([x0 + 3, y0 + 3, x0 + ts * cs - 3, y0 + ts * cs - 3], outline=(200, 30, 30), width=3)
         for origin in a.sight:
             x, y = px([float(v) for v in origin.split(",")])
             d.ellipse([x - 6, y - 6, x + 6, y + 6], fill=(30, 110, 255), outline=(255, 255, 255), width=2)
