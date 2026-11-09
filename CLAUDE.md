@@ -6,6 +6,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
 - Design: [docs/design/maps.md](docs/design/maps.md).
+- Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.
 - Plan for the whole rebuild: the user's `PF2E_Claude_VTT\future\reimplementation-plan.md` (not in this repo).
 
 ## Standing rules
@@ -24,4 +25,5 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 | `tools/` | Validator, sight/move/fog query tools, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `examples/` | Original sample pack and save, and the engine demo page |
 | `tests/` | `npm test` |
+| `future/` | Thought-through ideas not yet scheduled (for example, faster sight); check here before planning new work |
 | `packs/`, `saves/`, `pdfsource/` | Private, git-ignored |
