@@ -4,7 +4,7 @@ A virtual table top framework for use by Claude AI to run TTRPGs for you.
 
 ## Status
 
-Early development. Nothing playable yet. Work is starting with maps: see [docs/design/maps.md](docs/design/maps.md).
+Early development. Nothing playable yet. Work is starting with maps: see [docs/design/maps.md](docs/design/maps.md). Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md).
 
 Built so far:
 
