@@ -634,6 +634,7 @@ const BAND_LOOK = [   // dash and gap in cells, so the pattern keeps its look at
   { colour: '#5bd06a', dash: [0.3, 0.2] },     // two: medium green, medium dashes
   { colour: '#2f9a48', dash: [0.13, 0.13] },   // three: dark green, short dashes
 ];
+const BAND_ALPHA = 0.5;   // see-through, so the map under the outlines stays readable
 let bandCache = null;
 function moveBands(id) {
   const key = id + '|' + gen;
@@ -673,6 +674,7 @@ function drawMoveBands(F) {
   const bands = moveBands(selected), sq = Math.max(1, mspace(selected).size);
   const seen = (x, y) => (F.focus ? F.at(x + 0.5, y + 0.5) : mask.at(x + 0.5, y + 0.5));
   ctx.save(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+  ctx.globalAlpha = BAND_ALPHA;
   for (let k = bands.length - 1; k >= 0; k--) {
     const set = new Set();
     for (const c of bands[k]) {
