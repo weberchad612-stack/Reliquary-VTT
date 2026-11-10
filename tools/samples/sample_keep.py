@@ -296,7 +296,7 @@ dump("lighting.json", lighting, "lighting.schema.json")
 setup = {
     "title": "Reliquary Map Engine",
     "subtitle": "Sample Keep (48 × 48) · engine test bench",
-    "intro": "Kerra, Pip and Lyra stand on the path south of the keep. The portcullis is down; Kerra's torch is lit.",
+    "intro": "The party has split up round the keep: Lyra to the west, Pip to the east, Kerra far to the south on the path, her torch lit. The portcullis is down.",
     "tips": [
         "<b>Lighting on / off</b> (header) switches the whole light system: off, everything counts as bright and sight is walls only, as before lighting existed.",
         "<b>Day or night:</b> use the <b>Sky</b> selector. By day the grounds are bright and the keep dark inside; at night only lights and darkvision show anything.",
@@ -309,9 +309,9 @@ setup = {
         "<b>Sizes:</b> Tiny rats share squares in the cellar, the Large ogre cannot pass 5-ft doors, the Huge giant prowls outside.",
     ],
     "tokens": {
-        "kerra": {"name": "Kerra", "kind": "pc", "x": 23, "y": 34, "speed": 25, "short": "K", "light": {"preset": "torch"}, "note": "Carries a lit torch"},
-        "pip": {"name": "Pip", "kind": "pc", "x": 24, "y": 35, "speed": 25, "short": "P", "small": True, "senses": ["darkvision"], "note": "Small. Darkvision"},
-        "lyra": {"name": "Lyra", "kind": "pc", "x": 25, "y": 34, "speed": 30, "short": "L", "senses": ["low-light"], "note": "Low-light vision"},
+        "kerra": {"name": "Kerra", "kind": "pc", "x": 23, "y": 46, "speed": 25, "short": "K", "light": {"preset": "torch"}, "note": "Carries a lit torch"},
+        "pip": {"name": "Pip", "kind": "pc", "x": 44, "y": 27, "speed": 25, "short": "P", "small": True, "senses": ["darkvision"], "note": "Small. Darkvision"},
+        "lyra": {"name": "Lyra", "kind": "pc", "x": 2, "y": 18, "speed": 30, "short": "L", "senses": ["low-light"], "note": "Low-light vision"},
         "ogre": {"name": "Ogre", "kind": "foe", "x": 22, "y": 22, "size": 2, "speed": 25, "short": "O", "note": "Large, 2 x 2"},
         "skel1": {"name": "Skeleton", "kind": "foe", "x": 31, "y": 9, "speed": 25, "short": "S"},
         "skel2": {"name": "Skeleton", "kind": "foe", "x": 37, "y": 11, "speed": 25, "short": "S"},
