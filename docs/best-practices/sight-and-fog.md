@@ -8,6 +8,7 @@ For Claude and for board code using `engine/sight/` and `engine/fog/` (design: [
 - Pass the save's door states (`prepare(segs, state)`): an open door or a found secret door changes everything behind it.
 - Tokens see from their whole space (`footprintPoints`, `viewpoints`), and are seen if any part of their space is visible. Do not reduce a creature to its centre point.
 - Vision range and who can look (unconscious, blinded) come from the ruleset through `partyView` options, not from engine code.
+- On maps with lighting, pass the light map and the ruleset's light rules to `partyView`: what a PC perceives depends on light and senses, and only that joins the explored area (see [lighting.md](lighting.md)).
 - Cover is not sight. PF2E measures cover centre to centre; that belongs to the ruleset.
 
 ## Fog

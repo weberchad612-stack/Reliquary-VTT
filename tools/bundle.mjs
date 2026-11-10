@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENGINE = path.join(ROOT, 'engine');
-const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', '../rulesets/pf2e/terrain.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
+export const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', 'light/light.js', '../rulesets/pf2e/terrain.js', '../rulesets/pf2e/light.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
 
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'([^']+)';?\s*$/gm;
 const EXPORT_RE = /^export\s+(?:async\s+)?(const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm;
@@ -50,6 +50,9 @@ export function bundleEngine(entries = ENTRIES) {
       return `const { ${list.join(', ')} } = ${target};`;
     });
     const names = [...src.matchAll(EXPORT_RE)].map((m) => m[2]);
+    // `export const a = 1, b = 2;` would export only `a` here: refuse it rather than lose `b` silently.
+    const multi = src.match(/^export\s+(?:const|let)\s+[A-Za-z_$][\w$]*\s*=[^;\n]*,\s*[A-Za-z_$][\w$]*\s*=/m);
+    if (multi) throw new Error(`${path.relative(ROOT, file)}: one export per declaration, please (${multi[0].trim()}...)`);
     src = src.replace(/^export\s+/gm, '');
     if (/^\s*(import|export)\b/m.test(src)) throw new Error(`unsupported import/export form in ${file}`);
     parts.push(`// ---- ${path.relative(ROOT, file)} ----\nconst ${id(file)} = (() => {\n${src}\nreturn { ${names.join(', ')} };\n})();`);
@@ -67,7 +70,8 @@ function dataFor(file) {
     const segs = files.flatMap((f) => JSON.parse(fs.readFileSync(path.join(abs, f), 'utf8')).segs);
     const image = dataUrl(path.join(abs, map.image.file));
     const terrain = map.terrain ? JSON.parse(fs.readFileSync(path.join(abs, map.terrain), 'utf8')).areas : [];
-    return JSON.stringify({ map, segs, image, terrain });
+    const lighting = map.lighting ? JSON.parse(fs.readFileSync(path.join(abs, map.lighting), 'utf8')) : null;
+    return JSON.stringify({ map, segs, image, terrain, lighting });
   }
   if (abs.endsWith('.json')) return JSON.stringify(JSON.parse(fs.readFileSync(abs, 'utf8')));
   return JSON.stringify(dataUrl(abs));

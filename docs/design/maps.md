@@ -341,7 +341,7 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 3. Movement (`canStep`, `fits`, `path`, `reach`). Done.
 4. Explored-area merging and the three-state fog renderer. Done.
 5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions. Pipeline and Level 1 done; Levels 2 and 3 to follow.
-6. Light and vision types (darkvision, low-light), then sound. Design agreed: [lighting.md](lighting.md).
+6. Light and vision types (darkvision, low-light), then sound. Light and vision done: [lighting.md](lighting.md).
 
 ## 16. Open items
 

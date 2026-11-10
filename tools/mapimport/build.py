@@ -29,6 +29,7 @@ Settings (all optional except source and map):
               doors placed from the adventure's map; pair them with an erase that opens the wall)
   terrain:    {classes: {name: {hsv}}, areas: [{kind, cause, label, dc, active, select, art, minus, split, note}]}
               difficult terrain, water, slopes; see terrain.py
+  lighting:   {outdoor, base, regions: [{level, select, minus, note}], lights: [{at, preset, ...}]}  see lighting.py
   rooms:      {label: [x, y]}  a point inside each keyed room, from the book's labelled map (registered
               to the image); terrain split by room is named after them
 Segment props: id, label, initial, dc, stuck_dc, blocked, auto_find, sight, light, sound, prox, room, note.
@@ -46,6 +47,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
 from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize, terrain as terrainmod  # noqa: E402
+from mapimport import lighting as lightingmod  # noqa: E402
 
 SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note")
 DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find", "pair", "hinge", "swing")
@@ -351,6 +353,15 @@ def build(cfg_path, repo):
             json.dump({"v": 1, "areas": areas}, f, indent=1)
             f.write("\n")
         report["terrain"] = {a["id"]: sum(r[2] * r[3] for r in a["rects"]) for a in areas}
+    light_fields, lighting = lightingmod.build_lighting(cfg.get("lighting"), g, out, areas or [], report,
+                                                        keyed_rooms=cfg.get("rooms"), hidden=hidden_rects)
+    map_rec.update(light_fields)
+    if lighting:
+        map_rec["lighting"] = "lighting.json"
+        with open(os.path.join(out_dir, "lighting.json"), "w", encoding="utf-8") as f:
+            json.dump(lighting, f, indent=1)
+            f.write("\n")
+        report["lighting"] = {r["id"]: sum(x[2] * x[3] for x in r["rects"]) for r in lighting.get("regions", [])}
     hidden = [{"cells": e["cells"], **({"note": e["note"]} if e.get("note") else {})}
               for e in (cfg.get("mask") or {}).get("exclude", []) if isinstance(e, dict) and e.get("hide")]
     if hidden:

@@ -54,15 +54,55 @@
         }
       }
     },
+    "sky_light": {
+      "enum": ["bright", "dim", "dark"],
+      "description": "Current sky light (outdoor maps and sky regions): bright by day, dim at dusk, dark at night. Default bright."
+    },
+    "lights": {
+      "description": "Current on/off state of the map's static lights, by id (missing: the light's initial state).",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object", "required": ["on"], "additionalProperties": false,
+        "properties": { "on": { "type": "boolean" } }
+      }
+    },
+    "regions_off": {
+      "description": "Ids of lighting regions that no longer apply (a magical light dispelled).",
+      "type": "array", "items": { "type": "string" }, "uniqueItems": true
+    },
     "tokens": {
-      "description": "Token positions on this map. The token schema is defined separately; positions are checked here.",
+      "description": "Token positions on this map. The token schema is defined separately; positions, carried lights and senses are checked here.",
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "required": ["x", "y"],
         "properties": {
           "x": { "type": "integer", "minimum": 0 },
-          "y": { "type": "integer", "minimum": 0 }
+          "y": { "type": "integer", "minimum": 0 },
+          "light": {
+            "description": "A light the token carries (always a circle). Presets come from the ruleset.",
+            "type": "object", "additionalProperties": false,
+            "anyOf": [{ "required": ["preset"] }, { "required": ["bright"] }, { "required": ["dim"] }],
+            "properties": {
+              "preset": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+              "rank": { "type": "integer", "minimum": 1, "maximum": 10 },
+              "bright": { "type": "number", "minimum": 0 },
+              "dim": { "type": "number", "minimum": 0 },
+              "on": { "type": "boolean", "default": true },
+              "label": { "type": "string" }
+            }
+          },
+          "senses": {
+            "description": "Senses beyond normal vision as the ruleset names them (low-light, darkvision, greater-darkvision), optionally with a range in feet; a temporary one (a spell) gives its source.",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                { "type": "string", "pattern": "^[a-z][a-z-]*$" },
+                { "type": "object", "required": ["type"], "additionalProperties": false,
+                  "properties": { "type": { "type": "string", "pattern": "^[a-z][a-z-]*$" }, "range": { "type": "number", "minimum": 0 }, "source": { "type": "string" } } }
+              ]
+            }
+          }
         }
       }
     }

@@ -1,0 +1,108 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { LightMap, LightCache, lightShape, lightPatch, prepareLight, DARK, DIM, BRIGHT } from '../engine/light/light.js';
+import { perceive, senseList, lightSpec, LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
+
+const GRID = { cols: 20, rows: 20 };
+// A room x 0..10, y 0..10 with a wall at x = 10, a window at x = 10 for y 4..5, and a closed door at y 6..7.
+const segs = [
+  { id: 'w1', t: 'solid', a: [10, 0], b: [10, 4] },
+  { id: 'win', t: 'window', a: [10, 4], b: [10, 5] },
+  { id: 'w2', t: 'solid', a: [10, 5], b: [10, 6] },
+  { id: 'd', t: 'door', a: [10, 6], b: [10, 7], door: { id: 'd1' } },
+  { id: 'w3', t: 'solid', a: [10, 7], b: [10, 20] },
+];
+const mapWith = (lights, state = {}, o = {}) => {
+  const prepared = prepareLight(segs, state);
+  const patches = lights.map((l) => lightPatch(lightShape(l, prepared), GRID));
+  return new LightMap(GRID, { base: 'dark', ...o, patches });
+};
+
+test('a torch: bright to 20 ft, dim for 20 ft more, dark beyond', () => {
+  const m = mapWith([{ id: 't', at: [3.5, 10.5], bright: 20, dim: 20 }]);
+  assert.equal(m.at(3.5, 10.5), BRIGHT);
+  assert.equal(m.at(3.5 + 3.9, 10.5), BRIGHT);   // 19.5 ft
+  assert.equal(m.at(3.5, 10.5 + 5), DIM);         // 25 ft
+  assert.equal(m.at(3.5, 10.5 + 8.5), DARK);      // 42.5 ft
+});
+
+test('walls stop light; windows let it through; a closed door blocks it until opened', () => {
+  const at = { id: 't', at: [8.5, 5], bright: 20, dim: 20 };
+  const m = mapWith([at]);
+  assert.equal(m.at(11.5, 4.5), BRIGHT, 'through the window');
+  assert.equal(m.at(11.5, 2), DARK, 'behind the wall');
+  assert.equal(m.at(11.5, 7.5), DARK, 'behind the closed door'); // the line from the torch crosses x = 10 at y 6.25, in the doorway
+  assert.equal(mapWith([at], { doors: { d1: { state: 'open' } } }).at(11.5, 7.5), BRIGHT, 'door open');
+});
+
+test('a light that walls do not constrain shines through them', () => {
+  const m = mapWith([{ id: 'g', at: [8.5, 2], bright: 20, dim: 0, walls: false }]);
+  assert.equal(m.at(11.5, 2), BRIGHT);
+});
+
+test('a static cone lights only its arc', () => {
+  const m = mapWith([{ id: 'beam', at: [2, 2], bright: 30, dim: 0, angle: 60, rotation: 0 }]); // east
+  assert.equal(m.at(6, 2.2), BRIGHT);
+  assert.equal(m.at(2.2, 6), DARK, 'south is outside the cone');
+});
+
+test('regions: fixed levels and sky regions following the sky light', () => {
+  const regions = [{ id: 'cave', level: 'dim', rects: [[0, 0, 2, 2]] }, { id: 'roof', level: 'sky', cells: [[5, 5]] }];
+  const day = new LightMap(GRID, { base: 'dark', sky: 'bright', regions });
+  assert.equal(day.at(1, 1), DIM);
+  assert.equal(day.at(5.5, 5.5), BRIGHT);
+  assert.equal(day.at(8, 8), DARK);
+  const night = new LightMap(GRID, { base: 'dark', sky: 'dark', regions });
+  assert.equal(night.at(5.5, 5.5), DARK);
+  const outdoors = new LightMap(GRID, { base: 'sky', sky: 'dim' });
+  assert.equal(outdoors.at(8, 8), DIM);
+});
+
+test('lights add to regions: a torch carried into a dark region lights it', () => {
+  const m = mapWith([{ id: 't', at: [1, 1], bright: 20, dim: 20 }], {}, { regions: [{ id: 'r', level: 'dark', rects: [[0, 0, 4, 4]] }] });
+  assert.equal(m.at(1.5, 1.5), BRIGHT);
+});
+
+test('the cache recomputes a light only when it moves or doors change', () => {
+  const c = new LightCache(GRID);
+  const torch = { id: 't', at: [3, 3], bright: 20, dim: 20 };
+  c.patchesFor([torch], segs, {}, 'a'); c.patchesFor([torch], segs, {}, 'a');
+  assert.equal(c.computed, 1);
+  c.patchesFor([{ ...torch, at: [4, 3] }], segs, {}, 'a');
+  assert.equal(c.computed, 2);
+  c.patchesFor([{ ...torch, at: [4, 3] }], segs, {}, 'b');
+  assert.equal(c.computed, 3);
+});
+
+// ---- PF2E ----
+
+test('PF2E: dim light conceals unless the observer has low-light vision or darkvision', () => {
+  assert.equal(perceive(BRIGHT, []).state, 'observed');
+  assert.equal(perceive(DIM, []).state, 'concealed');
+  assert.equal(perceive(DIM, senseList(['low-light'])).state, 'observed');
+  assert.equal(perceive(DIM, senseList(['darkvision'])).state, 'observed');
+});
+
+test('PF2E: darkness is unseen without darkvision, and seen in black and white with it', () => {
+  assert.equal(perceive(DARK, []).state, 'unseen');
+  assert.equal(perceive(DARK, senseList(['low-light'])).state, 'unseen');
+  assert.deepEqual(perceive(DARK, senseList(['darkvision'])), { state: 'observed', mono: true });
+  assert.deepEqual(perceive(DARK, senseList(['greater-darkvision'])), { state: 'observed', mono: true });
+});
+
+test('a sense with a range works only within it (other systems, special senses)', () => {
+  const dv60 = senseList([{ type: 'darkvision', range: 60 }]);
+  assert.equal(perceive(DARK, dv60, 55).state, 'observed');
+  assert.equal(perceive(DARK, dv60, 65).state, 'unseen');
+});
+
+test('PF2E light presets', () => {
+  assert.deepEqual(lightSpec({ preset: 'torch' }), { bright: 20, dim: 20 });
+  assert.deepEqual(lightSpec({ preset: 'hooded-lantern' }), { bright: 30, dim: 30 });
+  assert.deepEqual(lightSpec({ preset: 'light' }), { bright: 20, dim: 20 });
+  assert.deepEqual(lightSpec({ preset: 'light', rank: 4 }), { bright: 60, dim: 60 });
+  assert.deepEqual(lightSpec({ preset: 'bullseye-lantern' }), lightSpec({ preset: 'hooded-lantern' }));
+  assert.deepEqual(lightSpec({ preset: 'torch', bright: 10 }), { bright: 10, dim: 20 });
+  assert.throws(() => lightSpec({ preset: 'candel' }), /unknown light preset/);
+  assert.ok(Object.keys(LIGHT_PRESETS).length >= 6);
+});

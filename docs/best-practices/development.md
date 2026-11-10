@@ -11,6 +11,7 @@
 ## The demo page
 
 - It is one classic script: a top-level function or constant declared twice silently replaces the first (this once broke the GM vision view). `tests/demo.test.mjs` checks for repeats and that every `Engine.<name>` it uses exists.
+- One export per declaration in engine and ruleset modules: the bundler only sees the first name of `export const a = 1, b = 2` (it now refuses that form), and `tests/demo.test.mjs` checks every module export reaches the bundled engine. A bug like this passes every Node test and only shows in the page.
 - After any change, build it and load it in a headless browser: watch for page errors (a constant used before its definition only fails there), click a token in both views, drag a token, open a door.
 
 ## Visual work

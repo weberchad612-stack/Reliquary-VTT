@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/lighting.schema.json",
+  "title": "Lighting",
+  "description": "Lighting regions and static light sources on one map. See docs/design/lighting.md. Radii in feet; presets come from the ruleset.",
+  "type": "object",
+  "required": ["v"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "v": { "const": 1 },
+    "regions": { "type": "array", "items": { "$ref": "#/$defs/region" } },
+    "lights": { "type": "array", "items": { "$ref": "#/$defs/light" } }
+  },
+  "$defs": {
+    "cell": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 },
+    "rect": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 4, "maxItems": 4, "description": "[x, y, w, h]" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 32 },
+    "region": {
+      "type": "object",
+      "required": ["id", "level"],
+      "anyOf": [{ "required": ["cells"] }, { "required": ["rects"] }],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "level": { "enum": ["sky", "bright", "dim", "dark"], "description": "sky: open to the sky, lit like an outdoor map; otherwise a fixed level." },
+        "label": { "type": "string" },
+        "room": { "type": "string" },
+        "note": { "type": "string", "description": "GM-only: where this comes from." },
+        "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" }, "minItems": 1 },
+        "rects": { "type": "array", "items": { "$ref": "#/$defs/rect" }, "minItems": 1 }
+      }
+    },
+    "lightShape": {
+      "type": "object",
+      "properties": {
+        "preset": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$", "description": "A ruleset preset (torch, hooded-lantern, light...)." },
+        "rank": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Spell rank, for presets that heighten." },
+        "bright": { "type": "number", "minimum": 0, "description": "Radius of bright light, feet (overrides the preset)." },
+        "dim": { "type": "number", "minimum": 0, "description": "How much further dim light reaches beyond the bright light, feet." }
+      }
+    },
+    "light": {
+      "type": "object",
+      "required": ["id", "at"],
+      "anyOf": [{ "required": ["preset"] }, { "required": ["bright"] }, { "required": ["dim"] }],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "at": { "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 2, "maxItems": 2, "description": "Position in cells (any point, e.g. a wall sconce)." },
+        "preset": { "$ref": "#/$defs/lightShape/properties/preset" },
+        "rank": { "$ref": "#/$defs/lightShape/properties/rank" },
+        "bright": { "$ref": "#/$defs/lightShape/properties/bright" },
+        "dim": { "$ref": "#/$defs/lightShape/properties/dim" },
+        "walls": { "type": "boolean", "default": true, "description": "false: the light ignores walls (a magical glow)." },
+        "angle": { "type": "number", "exclusiveMinimum": 0, "maximum": 360, "description": "Emission angle in degrees: a cone (static lights only)." },
+        "rotation": { "type": "number", "minimum": 0, "exclusiveMaximum": 360, "description": "Direction of the cone in degrees: 0 east, 90 south (y down)." },
+        "on": { "type": "boolean", "default": true, "description": "Initial state; the save holds the current one." },
+        "label": { "type": "string" },
+        "room": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

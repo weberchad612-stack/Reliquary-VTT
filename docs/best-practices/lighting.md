@@ -1,0 +1,44 @@
+# Best practices: lighting and vision
+
+For Claude, when adding lighting to a map at import and when using light in play (`lighting.json`, `engine/light/`, the light-aware `partyView`, `rulesets/pf2e/light.js`, `tools/mapimport/lighting.py`; design: [lighting.md](../design/lighting.md)).
+
+## 1. Read the text for light, room by room
+
+Before deciding any lighting, read the adventure's overview for the level and every keyed area:
+
+- **A level-wide rule first.** Gauntlight Ruins: "the only illumination is whatever sunlight filters in through the fog". That makes every roofed room dark, and the outdoors and every place open to the sky follow the sky light.
+- **What is open to the sky.** Drawn rubble ("areas drawn as rubble are open to the sky"), rooms whose ceiling the text says has collapsed (A8: almost the whole ceiling), holes in roofs. A plan cannot show ceilings, so here the text decides where the drawing is silent.
+- **Fixed light sources:** braziers, lamps, magical glows, fungus. Each becomes a light (position, preset or radii, whether walls block it, initial state) or a region with a fixed level.
+- **Light that belongs to a creature** (a glowing will-o'-wisp) is not a fixture: leave it to the creature's token.
+- **Check which room a sentence belongs to** against the heading above it, not by searching for a phrase: the collapsed corner first noted for Gauntlight's A11 is A12's.
+
+Paraphrase in notes; never copy the book's sentences.
+
+## 2. Build the regions
+
+- **The outdoors**: `{"outside": {"from": [a corner], "seal": [...]}}`, a flood fill from outside the buildings. Openings drawn on purpose (a breach, a collapsed wall) join the outdoors to rooms; seal them for this fill with lines across the opening, or the roofed room behind becomes sky.
+- **The flood is also a leak check, and a strict one.** It moves between square centres, so it finds gaps in walls that the sight leak check missed: on Gauntlight it found three (two where moss over a wall bit a hole in the traced outline, one where a correction that erased a stair drawing also erased the wall). Before choosing seals, list every keyed room the outdoor flood reaches; anything that is not a drawn opening is a wall gap to fix in the walls, not a seal.
+- **Roofless areas** reuse the terrain: `{"terrain": "rubble"}` takes every rubble area; add rooms by `room_at`.
+- Plot the regions over the map (dark where roofed, clear where sky) and look at every building.
+
+## 3. Check it
+
+| Check | How |
+|---|---|
+| Validator | `node tools/validate.mjs <pack>`: no errors; presets known; lights inside the grid. |
+| Regions | The plot above: every building dark unless the text opens it; the outdoors whole; insets excluded. |
+| In the demo | Walk a PC in by day without a light (the room stays dark and unexplored), light a torch (the room appears), set the Sky to night (only the torch's circle outdoors). Put a foe in dim light and check its concealed badge; give a PC darkvision and check the greyscale. |
+| Decisions | One line in the map's `decisions` list: the level's rule, what is open to the sky, the lights, and anything to confirm with the user (fog making daylight dim). |
+
+## 4. In play
+
+- Ask the engine what a PC perceives (`partyView` with the light map); never judge light by looking at the picture.
+- Light changes play: say so. "The skeleton at the edge of your torchlight is concealed from you, Kerra: DC 5 flat check to target it." A foe in darkness is not on the board for a PC without darkvision; when the party knows where it is (they heard it, it attacked), place a hidden marker on its square.
+- Keep light state in the save: carried lights on the token (`light`, with `on`), static lights in `lights`, the sky in `sky_light`. Lighting or dousing a light is an Interact action; update the save when it happens.
+- Senses come from the creature (darkvision, low-light vision); a temporary one (a darkvision elixir, a spell) goes on the token's `senses` with its `source`, and comes off when it ends.
+- Carried lights are circles. A bull's-eye lantern acts as a hooded lantern until carried cones exist; tell the player when it matters.
+
+## 5. Engine notes
+
+- Light, sight and the explored area share the 1/8-cell grid, so filtering sight by light is a pixel test and the result is traced into straight-edged outlines like the fog.
+- `export const A = 1, B = 2;` exports only `A` from the bundled page (the bundler now refuses it): one export per declaration. Tests in `tests/demo.test.mjs` check that every module export reaches the bundled engine; Node tests alone cannot see bundling problems.

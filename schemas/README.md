@@ -7,7 +7,8 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 | `map.schema.json` | One map: image, grid calibration, wall files, links to other maps, hidden areas (insets of other maps) | pack: `maps/<id>/map.json` |
 | `walls.schema.json` | Wall segments in grid cells (8 types, doors, secret doors, one-way, proximity); doors may be stuck (`stuck_dc`), blocked, or found automatically (`auto_find`); door leaves have a `hinge` and `swing`, and the two leaves of a double door name each other in `pair` | pack: `maps/<id>/walls.json` |
 | `terrain.schema.json` | Terrain areas in whole squares (difficult, greater difficult, swim, climb, uneven, narrow, hazardous) with cause, DC, damage, and areas that start switched off | pack: `maps/<id>/terrain.json` |
-| `map-state.schema.json` | Door states, found secrets, explored outlines, token cells, temporary terrain and terrain switched on or off, on one map | save: `maps/<id>.json` |
+| `lighting.schema.json` | Lighting regions (squares open to the sky or with a fixed level) and static light sources (position, preset or radii, walls, cone, initial state) | pack: `maps/<id>/lighting.json` |
+| `map-state.schema.json` | Door states, found secrets, explored outlines, token cells, temporary terrain and terrain switched on or off, sky light, static light states, carried lights and senses, on one map | save: `maps/<id>.json` |
 
 A schema cannot check everything. `tools/validate.mjs` adds the rest: 1/8 cell snapping, grid bounds, unique ids, door and link references, double-door pairs, clear doorways, and proximity distances.
 

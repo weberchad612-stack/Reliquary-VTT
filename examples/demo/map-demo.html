@@ -50,6 +50,11 @@ button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); o
 main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
 .stage { position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 canvas#map, .hud { margin: 0 auto; flex: none; }
+.sel-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+.sel-actions:empty { display: none; }
+.sky[hidden] { display: none; }
+.sky { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.sky select { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: inherit; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; }
 .zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
 canvas#map { display: block; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); touch-action: none; cursor: default; }
@@ -104,6 +109,9 @@ ol.log li.foe { border-left-color: var(--foe); }
         <button id="z-in" aria-label="Zoom in" title="Zoom in (+)">+</button>
         <button id="z-fit" title="Fit the map to the window (0)">Fit</button>
       </div>
+      <label class="sky" id="sky-wrap" hidden>Sky
+        <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
+      </label>
       <button id="b-walls" aria-pressed="false">Show walls</button>
       <button id="b-reset">Reset</button>
     </div>
@@ -149,6 +157,9 @@ const START = () => ({
   doors: {},
   locked_known: [],
   terrain_on: [],     // pack areas that start switched off and now apply (a bridge has collapsed)
+  lights: {},         // static lights switched from their initial state: {id: {on}}
+  sky: 'bright',      // sky light for outdoor maps and sky regions
+  hiddenMarks: {},    // GM-placed "hidden" markers: foe id -> square where the party thinks it is
   tokens: JSON.parse(JSON.stringify(SETUP.tokens)),
 });
 let S = START();
@@ -180,6 +191,35 @@ const tokenList = () => raw().map((t) => ({ ...t, ...space(t.id) }));
 const opts = { rangeFt: RANGE, feetPerCell: FPC };
 let view = null, sightSegs = null, moveWalls = null, terrain = null;
 const PACK_TERRAIN = DATA.terrain || [];
+// ---------- light ----------
+const LIGHTING = DATA.lighting || { regions: [], lights: [] };
+const LIT = !!(DATA.lighting || map.base_light || map.outdoor);   // maps without lighting data stay fully lit
+const HAS_SKY = !!map.outdoor || (LIGHTING.regions || []).some((r) => r.level === 'sky');
+const lightCache = new Engine.LightCache(G, { feetPerCell: FPC });
+let lightMap = null;
+const staticOn = (l) => (S.lights[l.id] ? S.lights[l.id].on : l.on !== false);
+/** Every light that is on now: the map's static lights and the lights tokens carry (always circles). */
+function lightsNow() {
+  const out = [];
+  for (const l of LIGHTING.lights || []) {
+    if (!staticOn(l)) continue;
+    out.push({ id: l.id, at: l.at, walls: l.walls, angle: l.angle, rotation: l.rotation, ...Engine.lightSpec(l) });
+  }
+  for (const [id, t] of Object.entries(S.tokens)) {
+    if (!t.light || t.light.on === false) continue;
+    const sp = mspace(id), c = Engine.isTiny(t) ? 0.25 : sp.size / 2;
+    out.push({ id: 'tok:' + id, at: [sp.x + c, sp.y + c], ...Engine.lightSpec(t.light) });
+  }
+  return out;
+}
+const litOpts = () => ({ ...opts, grid: G, light: lightMap, rules: Engine.lightRules });
+/** What one creature perceives now (the GM's vision view, and a player's view of their own PC). */
+function oneView(id) {
+  const one = tokenList().filter((t) => t.id === id);
+  if (!LIT) return { polys: Engine.tokenSight(space(id), sightSegs, opts) };
+  const v = Engine.partyView(one, sightSegs, { ...litOpts(), canLook: () => true });
+  return { polys: v.perceived.displayPolys() };
+}
 /** How each kind of terrain is named and marked (the table's red chevrons for difficult terrain). */
 const TERRAIN_LOOK = {
   difficult: { name: 'difficult terrain', colour: '#c62a1c', mark: 'chevron' },
@@ -207,8 +247,23 @@ function recompute(reason) {
   terrain = new Engine.TerrainMap(PACK_TERRAIN, { terrain_on: S.terrain_on });
   sightSegs = Engine.prepare(segs, state(), 'sight');
   moveWalls = Engine.prepareMove(segs, state(), G);
-  view = Engine.partyView(tokenList(), sightSegs, opts);
-  mask.add(view.visible);
+  if (LIT) {
+    const regions = (LIGHTING.regions || []);
+    lightMap = new Engine.LightMap(G, {
+      base: map.outdoor ? 'sky' : (map.base_light || 'dark'), sky: S.sky, regions,
+      patches: lightCache.patchesFor(lightsNow(), segs, state(), JSON.stringify(S.doors)),
+    });
+    view = Engine.partyView(tokenList(), sightSegs, litOpts());
+    mask.addMask(view.perceived);
+    S.visibleShown = view.perceived.displayPolys();
+    S.dimShown = view.dim.displayPolys();
+    S.monoShown = view.mono.displayPolys();
+  } else {
+    view = Engine.partyView(tokenList(), sightSegs, opts);
+    mask.add(view.visible);
+    S.visibleShown = view.visible; S.dimShown = []; S.monoShown = [];
+  }
+  for (const id of Object.keys(S.hiddenMarks)) if (view.seen.has(id)) delete S.hiddenMarks[id];   // seen again: the marker goes
   const explored = mask.toPolys();     // stored in the save: pixel-exact
   S.exploredShown = mask.displayPolys(); // painted: diagonals as straight lines
   // announce foes that come into or leave view
@@ -314,11 +369,14 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   if (img.complete) ctx.drawImage(img, 0, 0, W, H);
 
+  // light: greyscale where only darkvision sees, darker where the light is dim (GM: the light everywhere)
+  if (LIT) drawLight(gm);
+
   // terrain marks, under the fog: hidden where unexplored, dimmed where only remembered
   ctx.save(); ctx.translate(OX, OY); drawTerrain(gm); ctx.restore();
 
   // fog of war, painted by the engine
-  Engine.paintFog(fctx, { grid: G, explored: S.exploredShown, visible: view.visible, mode: gm ? 'gm' : 'player', width: W, height: H });
+  Engine.paintFog(fctx, { grid: G, explored: S.exploredShown, visible: S.visibleShown, mode: gm ? 'gm' : 'player', width: W, height: H });
   ctx.drawImage(fog, 0, 0);
   ctx.save();
   ctx.translate(OX, OY); // everything below is drawn in grid space
@@ -331,9 +389,15 @@ function draw() {
 
   // GM vision view: what the selected token sees
   if (gm && selected && !drag) {
-    const polys = Engine.tokenSight(space(selected), sightSegs, opts);
+    const polys = oneView(selected).polys;
     ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .26)';
     ctx.beginPath(); polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
+  }
+
+  // a player's own PC: what it perceives now
+  if (!gm && selected && !drag && S.tokens[selected].kind === 'pc' && LIT) {
+    ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .18)';
+    ctx.beginPath(); oneView(selected).polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
   }
 
   // movement range for the selected token (player view, or while dragging)
@@ -347,6 +411,7 @@ function draw() {
 
   if (S.walls || gm) drawWalls(gm && !S.walls);
   drawDoors(gm);
+  if (LIT) drawLightSources(gm);
   if (drag && drag.route !== undefined) drawRoute();
   drawTokens(gm);
   ctx.restore();
@@ -363,6 +428,66 @@ function drawWalls(faint) {
     ctx.beginPath(); ctx.moveTo(P(s.a[0]), P(s.a[1])); ctx.lineTo(P(s.b[0]), P(s.b[1])); ctx.stroke();
   }
   ctx.restore();
+}
+
+// ---------- light drawing ----------
+const LIGHT_LOOK = { shade: '11, 13, 26', gm: [0.5, 0.22, 0], dim: 0.3, on: '#f0b44a', off: '#8a8f99' };
+let lightCanvas = null, lightCanvasFor = null;
+function ringsPath(rings) {
+  ctx.beginPath();
+  for (const r of rings) { if (r.length < 3) continue; ctx.moveTo(P(r[0][0]), P(r[0][1])); for (let i = 1; i < r.length; i++) ctx.lineTo(P(r[i][0]), P(r[i][1])); ctx.closePath(); }
+}
+function drawLight(gm) {
+  ctx.save(); ctx.translate(OX, OY);
+  if (gm) {
+    // the light everywhere, as a soft shade: darkness darkest, dim lighter, bright clear
+    if (lightCanvasFor !== lightMap) {
+      lightCanvas = lightCanvas || document.createElement('canvas');
+      lightCanvas.width = lightMap.w; lightCanvas.height = lightMap.h;
+      const lc = lightCanvas.getContext('2d'), im = lc.createImageData(lightMap.w, lightMap.h);
+      const [r, g, b] = LIGHT_LOOK.shade.split(',').map(Number);
+      for (let k = 0; k < lightMap.levels.length; k++) {
+        im.data[k * 4] = r; im.data[k * 4 + 1] = g; im.data[k * 4 + 2] = b; im.data[k * 4 + 3] = 255 * LIGHT_LOOK.gm[lightMap.levels[k]];
+      }
+      lc.putImageData(im, 0, 0); lightCanvasFor = lightMap;
+    }
+    ctx.imageSmoothingEnabled = true;
+    if ('filter' in ctx) ctx.filter = `blur(${Math.max(2, P(0.1))}px)`;   // hide the 1/8-square steps
+    ctx.drawImage(lightCanvas, 0, 0, P(G.cols), P(G.rows));
+    if ('filter' in ctx) ctx.filter = 'none';
+  } else {
+    // visible now: greyscale where only darkvision sees (PF2E darkvision is black and white) ...
+    if (S.monoShown.length && img.complete) {
+      ctx.save(); ringsPath(S.monoShown); ctx.clip('nonzero');
+      ctx.filter = 'grayscale(1) brightness(.85)'; ctx.drawImage(img, -OX, -OY, W, H); ctx.filter = 'none'; ctx.restore();
+    }
+    // ... and darker where the light is dim
+    if (S.dimShown.length) { ringsPath(S.dimShown); ctx.fillStyle = `rgba(${LIGHT_LOOK.shade}, ${LIGHT_LOOK.dim})`; ctx.fill('nonzero'); }
+  }
+  ctx.restore();
+}
+/** Static lights: a small lamp mark (lit or cold). The GM sees all and clicks one to switch it; players see lit ones they have explored. */
+function drawLightSources(gm) {
+  for (const l of LIGHTING.lights || []) {
+    const on = staticOn(l);
+    if (!gm && (!on || !mask.at(l.at[0], l.at[1]))) continue;
+    const x = P(l.at[0]), y = P(l.at[1]), r = Math.max(5, P(0.17));
+    ctx.save();
+    if (on) { const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6); g.addColorStop(0, 'rgba(255, 200, 90, .55)'); g.addColorStop(1, 'rgba(255, 200, 90, 0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, Math.PI * 2); ctx.fill(); }
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = on ? LIGHT_LOOK.on : '#17191d'; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = on ? '#3a2408' : LIGHT_LOOK.off; ctx.stroke();
+    if (l.angle) {   // a cone: a tick showing where it points
+      const a = ((l.rotation || 0) * Math.PI) / 180;
+      ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.lineTo(x + Math.cos(a) * r * 2.2, y + Math.sin(a) * r * 2.2);
+      ctx.strokeStyle = on ? LIGHT_LOOK.on : LIGHT_LOOK.off; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+/** GM view: the static light under p, if any. */
+function lightAt(p) {
+  return (LIGHTING.lights || []).find((l) => Math.hypot(p[0] - l.at[0], p[1] - l.at[1]) < 0.3) || null;
 }
 
 // ---------- terrain ----------
@@ -526,15 +651,41 @@ function drawTokens(gm) {
     ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
     ctx.restore();
+    if (seen && concealedNow(id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
+  }
+  // "hidden" markers the GM placed: where the party thinks an unseen creature is
+  for (const [id, sq] of Object.entries(S.hiddenMarks)) {
+    const x = P(sq[0] + 0.5), y = P(sq[1] + 0.5), r = P(0.36);
+    ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 2.5; ctx.strokeStyle = '#e3a443'; ctx.fillStyle = 'rgba(23, 25, 29, .55)';
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#e3a443'; ctx.font = `700 ${Math.max(11, r)}px IBM Plex Sans, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('?', x, y + 1); ctx.restore();
   }
 }
+/** Concealed from the selected PC, or (none selected) from any PC who sees it. */
+function concealedNow(id) {
+  const from = view.concealedFrom && view.concealedFrom[id];
+  if (!from) return false;
+  const sel = selected && S.tokens[selected] && S.tokens[selected].kind === 'pc' ? selected : null;
+  return sel ? from.includes(sel) : true;
+}
+function drawConcealed(x, y, r) {   // a half-shaded disc: concealed (DC 5 flat check to target)
+  ctx.save();
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#ebe6dc'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r, -Math.PI / 2, Math.PI / 2); ctx.closePath(); ctx.fillStyle = '#20232a'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.lineWidth = 1.5; ctx.strokeStyle = '#0d0f12'; ctx.stroke();
+  ctx.restore();
+}
+const namesOf = (ids) => ids.map((i) => S.tokens[i].name).join(' and ');
 
 function hud() {
   const parts = [];
   if (hoverCell) {
     const [x, y] = hoverCell, c = [x + 0.5, y + 0.5];
-    const fs = Engine.fogStateAt(c, view.visible, mask, Engine.pointInPolygon);
+    const fs = LIT ? (view.perceived.at(c[0], c[1]) ? 'visible' : mask.at(c[0], c[1]) ? 'explored' : 'hidden')
+      : Engine.fogStateAt(c, view.visible, mask, Engine.pointInPolygon);
     parts.push(`square <b>${x},${y}</b>`, `fog <b>${fs}</b>`);
+    if (LIT && (S.view === 'gm' || fs !== 'hidden')) parts.push(`light <b>${Engine.LEVEL_NAME[lightMap.at(c[0], c[1])]}</b>`);
     if (S.view === 'gm' || fs !== 'hidden') {
       const here = terrain.at(x, y).map((a) => `${a.label || a.cause || 'terrain'}: ${TERRAIN_LOOK[a.kind].name}${a.dc ? ' DC ' + a.dc : ''}`);
       if (here.length) parts.push(`terrain <b>${here.join('; ')}</b>`);
@@ -561,8 +712,27 @@ function panel() {
       <span class="chip">${t.small && size === 1 ? 'Small' : size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
       <span class="chip">Speed ${t.speed} ft</span>
       ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
+      ${(t.senses || []).map((x) => `<span class="chip">${typeof x === 'string' ? x : x.type}</span>`).join('')}
+      ${seen && view.concealedFrom && view.concealedFrom[selected] ? `<span class="chip warn">Concealed from ${namesOf(view.concealedFrom[selected])}</span>` : ''}
     </div>
-    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${S.view === 'gm' ? 'Yellow: what it sees now.' : 'Green: reachable this move.'}</div>`;
+    <div class="sel-actions">
+      ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
+      ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
+    </div>
+    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${S.view === 'gm' ? 'Yellow: what it sees now.' : 'Green: reachable this move.' + (t.kind === 'pc' && LIT ? ' Yellow: what it sees now.' : '')}</div>`;
+  const bl = document.getElementById('b-light');
+  if (bl) bl.onclick = () => {
+    const on = t.light.on === false;
+    t.light = { ...t.light, on };
+    log(`${t.name} ${on ? 'lights' : 'puts out'} the ${((Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light').toLowerCase()}.`, 'ok');
+    panel(); recompute();
+  };
+  const bm = document.getElementById('b-mark');
+  if (bm) bm.onclick = () => {
+    if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; log(`GM: hidden marker for ${t.name} cleared.`, 'ok'); }
+    else { S.hiddenMarks[selected] = [t.x, t.y]; log(`GM: the party knows something is at ${t.x},${t.y} (${t.name}, hidden).`, 'ok'); }
+    panel(); draw();
+  };
 }
 
 // ---------- interaction ----------
@@ -632,6 +802,13 @@ function goalFor(id, p) {
 
 canvas.addEventListener('pointerdown', (ev) => {
   const p = cellAt(ev);
+  const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
+  if (lamp && !tokenDiscAt(p)) {
+    const on = !staticOn(lamp);
+    S.lights[lamp.id] = { on };
+    log(`GM: ${lamp.label || lamp.id} ${on ? 'lit' : 'put out'}.`, 'ok');
+    return recompute();
+  }
   const target = clickTarget(p);
   if (target.door) { clickDoor(target.door, ev.shiftKey); return; }
   const id = target.token || null;
@@ -721,10 +898,15 @@ function setView(v) {
 document.getElementById('v-player').onclick = () => setView('player');
 document.getElementById('v-gm').onclick = () => setView('gm');
 document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
+if (HAS_SKY) {
+  document.getElementById('sky-wrap').hidden = false;
+  document.getElementById('sky').onchange = (e) => { S.sky = e.target.value; log(`GM: the sky is now ${S.sky} (${{ bright: 'day', dim: 'dusk', dark: 'night' }[S.sky]}).`, 'ok'); recompute(); };
+}
 document.getElementById('b-reset').onclick = () => {
   const v = S.view; S = START(); S.view = v; mask = new Engine.ExploredMask(G); selected = null; lastSeen = PCS();
   document.getElementById('log').innerHTML = ''; log('Table reset. ' + SETUP.intro);
   document.getElementById('b-walls').setAttribute('aria-pressed', 'false');
+  document.getElementById('sky').value = 'bright';
   panel(); recompute('reset');
 };
 

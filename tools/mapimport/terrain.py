@@ -80,9 +80,9 @@ def _crosses(p1, p2, a, b):
     return 0 <= t <= 1 and 0 <= u <= 1
 
 
-def room_finder(segs, grid):
+def room_finder(segs, grid, max_cells=ROOM_MAX_CELLS):
     """Returns rooms(point, clip) -> set of cells: flood fill between square centres, stopped by any wall
-    that blocks movement (doors closed)."""
+    that blocks movement (doors closed). A fill larger than max_cells is an error (a leaking room)."""
     blockers = [s for s in segs if s["t"] in BLOCKS_MOVE]
     # bucket segments by the squares they pass near, for speed
     buckets = {}
@@ -109,8 +109,8 @@ def room_finder(segs, grid):
                     continue
                 if open_between(c, n):
                     seen.add(n); todo.append(n)
-            if len(seen) > ROOM_MAX_CELLS:
-                raise ValueError(f"room at {point} leaks (more than {ROOM_MAX_CELLS} squares): give it a clip rectangle")
+            if len(seen) > max_cells:
+                raise ValueError(f"room at {point} leaks (more than {max_cells} squares): give it a clip rectangle")
         return seen
     return rooms
 

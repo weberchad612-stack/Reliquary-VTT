@@ -1,6 +1,6 @@
 # Lighting and vision: design
 
-Status: agreed with Chad on 2026-11-09, not yet built. A lean first version; later additions are listed at the end and in [future/](../../future/README.md). Builds on the sight engine and fog in [maps.md](maps.md) section 8.
+Status: agreed with Chad on 2026-11-09 and built the same day (section 9). A lean first version; later additions are listed in section 8 and in [future/](../../future/README.md). Builds on the sight engine and fog in [maps.md](maps.md) section 8.
 
 ## 1. Light changes the rules, not just the picture
 
@@ -63,3 +63,13 @@ Bases and regions are lookups per square. Combining light and senses at a point 
 ## 8. Not in the first version
 
 Light colour and intensity; animations (flickering torches); magical darkness and greater darkvision seeing through it; imprecise senses (scent, tremorsense, hearing) and automatic hidden markers; time of day changing the sky light; daylight through windows into indoor rooms; carried cone lights and token facing; a darkness scale finer than PF2E's three light levels.
+
+## 9. As built
+
+- **Files.** `map.json`: `outdoor`, `base_light`, `lighting` (file name). `lighting.json` (schema `schemas/lighting.schema.json`): `regions` (squares, level `sky`/`bright`/`dim`/`dark`) and `lights` (`at`, `preset` or `bright`/`dim` in feet, `walls`, `angle`, `rotation`, `on`). Save (`map-state`): `sky_light`, `lights` ({id: {on}}), `regions_off`, and on each token `light` (a carried light: preset, rank, radii, on) and `senses` (names or {type, range, source}).
+- **Engine.** `engine/light/light.js`: `lightShape` (a visibility polygon through the walls' `light` values, or a circle when walls do not constrain it; cones for static lights), `lightPatch` (the pixels it lights on the 1/8-cell grid, bright or dim by distance), `LightMap` (base, regions, then the brightest light at each pixel), `LightCache` (a light is recomputed only when its position, shape or the door states change). `partyView(..., {light, rules, grid})` filters each looker's sight by light and senses into `perceived`, `dim` and `mono` masks (traced into straight-edged outlines for drawing, like the fog) and reports `seen` and `concealedFrom`.
+- **Ruleset.** `rulesets/pf2e/light.js`: `LIGHT_PRESETS`, `lightSpec`, `senseList`, `perceive(level, senses, distFt)`.
+- **Board** (the demo page): light effects drawn under the terrain marks and the fog; the GM sees the light everywhere as a soft shade and clicks a lamp to light it or put it out; concealed badges (half-shaded disc); GM "hidden" markers (a ? on a square, cleared when the creature is seen); a Sky selector on maps with sky; carried lights lit and put out from the selection panel.
+- **Sky.** Until time of day exists, sky light is bright; the GM sets it dim or dark (dusk, night) with the Sky selector, held in the save as `sky_light`.
+- **Measured** (Level 1, two PCs and six other tokens, one torch; cloud workspace): a light polygon about 4 ms the first time, nothing when cached; the light-aware party view about 10 ms more than without light; tracing the three masks for drawing about 20 ms. In the demo page (headless browser, no GPU): a full update with a moving torch 245 ms (162 ms before lighting), a redraw 71 ms (37 ms). See [future/sight-performance.md](../../future/sight-performance.md).
+

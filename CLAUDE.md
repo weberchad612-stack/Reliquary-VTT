@@ -5,7 +5,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 ## Read first
 
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
-- Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision (agreed, not built): [docs/design/lighting.md](docs/design/lighting.md).
+- Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md).
 - Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.
 - Plan for the whole rebuild: the user's `PF2E_Claude_VTT\future\reimplementation-plan.md` (not in this repo).
 
@@ -20,9 +20,9 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 | Folder | What |
 |---|---|
-| `engine/` | Walls, doors, sight, fog, movement, terrain, measurement, tokens (dependency-free JavaScript); board page later |
-| `schemas/` | JSON schemas for maps, walls, terrain and map state |
-| `rulesets/` | Game-system rules the engine asks for (PF2E movement and terrain first) |
+| `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens (dependency-free JavaScript); board page later |
+| `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
+| `rulesets/` | Game-system rules the engine asks for (PF2E movement, terrain, light and senses first) |
 | `tools/` | Validator, sight/move/fog query tools, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `examples/` | Original sample pack and save, and the engine demo page |
 | `tests/` | `npm test` |

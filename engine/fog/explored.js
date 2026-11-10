@@ -66,6 +66,22 @@ export class ExploredMask {
     return changed;
   }
 
+  /**
+   * Add another mask of the same size (OR).
+   * @returns {boolean} true when the explored area grew
+   */
+  addMask(other) {
+    let changed = false;
+    for (let i = 0; i < this.bits.length; i++) if (other.bits[i] && !this.bits[i]) { this.bits[i] = 1; changed = true; }
+    return changed;
+  }
+
+  /** True when no pixel is set. */
+  empty() {
+    for (const b of this.bits) if (b) return false;
+    return true;
+  }
+
   /** Outlines to store in the save: exact, in cells, on the 1/8 grid. */
   toPolys() {
     const exact = trace(this);

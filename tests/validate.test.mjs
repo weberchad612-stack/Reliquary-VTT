@@ -237,3 +237,33 @@ test('terrain: switching on an area that starts off is fine', () => {
   assert.equal(errorText(r), '');
   assert.doesNotMatch(warnText(r), /terrain_on/);
 });
+
+// ---- lighting ----
+
+test('lighting: unknown light preset', () => {
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.lights[1].preset = 'candel'; }), /unknown light preset "candel"/);
+});
+
+test('lighting: a light outside the grid', () => {
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.lights[0].at = [30, 4]; }), /light l01: position .* outside the grid/);
+});
+
+test('lighting: region squares outside the grid', () => {
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.regions[0].rects = [[10, 9, 4, 4]]; }), /lighting region r01: .*outside the 12x10 grid/);
+});
+
+test('lighting: a region level must be sky, bright, dim or dark', () => {
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.regions[0].level = 'gloomy'; }), /level|enum|allowed/i);
+});
+
+test('lighting: the save can only switch lights the map has', () => {
+  expectError(({ editState }) => editState((d) => { d.lights = { l09: { on: true } }; }), /lights.l09: no light "l09"/);
+});
+
+test('lighting: a carried light needs a known preset', () => {
+  expectError(({ editState }) => editState((d) => { d.tokens.hero.light = { preset: 'lamp' }; }), /tokens.hero.light: unknown light preset "lamp"/);
+});
+
+test('lighting: the lighting file named in map.json must exist', () => {
+  expectError(({ edit }) => edit('map.json', (d) => { d.lighting = 'none.json'; }), /lighting file "none.json" not found/);
+});

@@ -22,3 +22,14 @@ test('demo: every Engine.<name> it uses is exported by the bundled engine', asyn
   const missing = [...used].filter((n) => !(n in Engine));
   assert.deepEqual(missing, []);
 });
+
+test('bundle: every export of every engine module reaches the bundled Engine', async () => {
+  const { bundleEngine, ENTRIES } = await import('../tools/bundle.mjs');
+  const Engine = new Function(`${bundleEngine()}\nreturn Engine;`)();
+  const missing = [];
+  for (const e of ENTRIES) {
+    const mod = await import(new URL(`../engine/${e}`, import.meta.url));
+    for (const name of Object.keys(mod)) if (!(name in Engine)) missing.push(`${e}: ${name}`);
+  }
+  assert.deepEqual(missing, []);
+});

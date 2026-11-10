@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { WALL_TYPES, SENSE, SENSES, DOOR_TYPES, onSnap } from '../engine/walls/presets.js';
+import { LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -20,8 +21,10 @@ const SCHEMA_DIR = path.join(ROOT, 'schemas');
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false, useDefaults: false });
 const schema = (name) => ajv.compile(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8')));
 ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, 'terrain.schema.json'), 'utf8')));
+ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, 'lighting.schema.json'), 'utf8')));
 const V = {
   terrain: ajv.getSchema('https://github.com/weberchad612-stack/Reliquary-VTT/schemas/terrain.schema.json'),
+  lighting: ajv.getSchema('https://github.com/weberchad612-stack/Reliquary-VTT/schemas/lighting.schema.json'),
   map: schema('map.schema.json'),
   walls: schema('walls.schema.json'),
   state: schema('map-state.schema.json'),
@@ -218,7 +221,32 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
       }
     }
   }
-  return { map, doors, terrainIds, inactiveTerrain, report };
+  // Lighting
+  const lightIds = new Set(), regionIds = new Set();
+  let hasSky = false;
+  if (map.lighting) {
+    const file = path.join(dir, map.lighting);
+    const lighting = fs.existsSync(file) ? readJson(file, report) : (report.error(mapFile, `lighting file "${map.lighting}" not found`), null);
+    if (lighting && schemaErrors(V.lighting, lighting, file, report)) {
+      for (const r of lighting.regions || []) {
+        const where = `lighting region ${r.id}`;
+        if (regionIds.has(r.id)) report.error(file, `${where}: duplicate region id`);
+        regionIds.add(r.id);
+        if (r.level === 'sky') hasSky = true;
+        checkArea(r, where, grid, file, report);
+      }
+      for (const l of lighting.lights || []) {
+        const where = `light ${l.id}`;
+        if (lightIds.has(l.id)) report.error(file, `${where}: duplicate light id`);
+        lightIds.add(l.id);
+        if (!inGrid(l.at, grid)) report.error(file, `${where}: position ${fmt(l.at)} is outside the grid`);
+        checkLightShape(l, where, file, report);
+        if (l.rotation !== undefined && l.angle === undefined) report.warn(file, `${where}: rotation has no effect without an emission angle`);
+      }
+    }
+  }
+  if (map.outdoor && map.base_light) report.warn(mapFile, '"base_light" is ignored on an outdoor map (the sky lights it)');
+  return { map, doors, terrainIds, inactiveTerrain, lightIds, regionIds, hasSky, report };
 }
 
 /** Validate one map-state file against its map. */
@@ -267,10 +295,20 @@ export function validateState(file, mapInfo, report = new Report()) {
     checkArea(a, where, grid, file, report);
     if (!a.source) report.warn(file, `${where}: temporary terrain should say what created it ("source")`);
   }
+  for (const id of Object.keys(st.lights || {})) if (!(mapInfo.lightIds || new Set()).has(id)) report.error(file, `lights.${id}: no light "${id}" on map "${map.id}"`);
+  for (const id of st.regions_off || []) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions_off: no lighting region "${id}" on map "${map.id}"`);
+  if (st.sky_light && !map.outdoor && !(mapInfo.hasSky)) report.warn(file, 'sky_light is set but the map is indoor with no sky regions');
   for (const [id, t] of Object.entries(st.tokens || {})) {
     if (!cellInGrid([t.x, t.y], grid)) report.error(file, `tokens.${id}: cell (${t.x}, ${t.y}) is outside the grid`);
+    if (t.light) checkLightShape(t.light, `tokens.${id}.light`, file, report);
   }
   return report;
+}
+
+/** A light needs a known preset or its own radii. Presets are the PF2E ruleset's (the only ruleset so far). */
+function checkLightShape(l, where, file, report) {
+  if (l.preset && !LIGHT_PRESETS[l.preset]) report.error(file, `${where}: unknown light preset "${l.preset}" (known: ${Object.keys(LIGHT_PRESETS).join(', ')})`);
+  if (!l.preset && !l.bright && !l.dim) report.warn(file, `${where}: gives no light (no preset, no radius)`);
 }
 
 /** Checks shared by pack and save terrain areas: squares in the grid, no repeats, sensible fields. */

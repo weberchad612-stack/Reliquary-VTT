@@ -22,6 +22,8 @@ Measured 2026-11-09 on Level 1 of the first campaign (693 wall segments, 44 x 58
 | Page: recompute and redraw (2 PCs) | 162 ms | |
 | Page: one redraw only | 37 ms | Runs on every pointer move while dragging, every zoom step and pan. Above the 16 ms a smooth 60 frames a second needs. |
 
+Lighting (added the same day; Level 1, two PCs, one torch): a light polygon about 4 ms the first time and nothing when cached; the light-aware party view about 10 ms on top of sight; tracing the perceived, dim and greyscale areas for drawing about 20 ms. In the page: a full update with a moving torch 245 ms (162 ms before lighting); one redraw 71 ms (37 ms): the greyscale and dim overlays are clipped redraws of the map image, a candidate for the layered drawing in idea 7.
+
 The cost is almost all ray casting: number of viewpoints x rays per polygon x segments tested per ray. The redraw is the second problem: it does not depend on sight at all, and it limits how smooth dragging and zooming feel.
 
 ## Targets

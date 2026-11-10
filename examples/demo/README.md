@@ -1,6 +1,6 @@
 # Map engine demo
 
-An interactive test bench for the map engine on the sample crypt: drag tokens, open doors, switch between the player and GM views, see movement ranges, routes (with terrain costs) and the fog of war. It runs the real engine code, bundled into one page.
+An interactive test bench for the map engine on the sample crypt: drag tokens, open doors, switch between the player and GM views, see movement ranges, routes (with terrain costs), light and vision (torches, darkvision, concealment) and the fog of war. It runs the real engine code, bundled into one page.
 
 Build it:
 
