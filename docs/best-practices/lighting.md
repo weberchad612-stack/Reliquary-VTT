@@ -37,6 +37,7 @@ Paraphrase in notes; never copy the book's sentences.
 - Light changes play: say so. "The skeleton at the edge of your torchlight is concealed from you, Kerra: DC 5 flat check to target it." A foe in darkness is not on the board for a PC without darkvision; when the party knows where it is (they heard it, it attacked), place a hidden marker on its square.
 - Keep light state in the save: carried lights on the token (`light`, with `on`), static lights in `lights`, the sky in `sky_light`. Lighting or dousing a light is an Interact action; update the save when it happens.
 - Senses come from the creature (darkvision, low-light vision); a temporary one (a darkvision elixir, a spell) goes on the token's `senses` with its `source`, and comes off when it ends.
+- A lit area with no lamp mark is a lighting region (glowing fungus, an altar's glow): hover over it in GM view to see its name; GM view outlines every region.
 - Lamp marks on the board are GM-only (players see the light, not the mark). Describe a lamp to players only as their characters would see it.
 - To check what one creature sees, select it on the board: the board then shows only its own view. Deselect for the party's explored map.
 - Light fades in the drawing, not in the rules: a creature in the faint outer edge of a torch's light is still in dim light (concealed). Read the light level from the engine (the board's hover readout shows both the level and the brightness).
@@ -44,6 +45,7 @@ Paraphrase in notes; never copy the book's sentences.
 
 ## 5. Engine notes
 
+- Region edges are faded in `glow` only (`fadeRegionEdges`): pass the light walls (`prepareLight`) to `LightMap` so edges along walls stay sharp.
 - The light map holds two things: `levels` for the rules (three steps) and `glow` for drawing (0-255). Never decide anything from `glow`.
 - Daylight lights are generated (`daylightLights`) from the walls, the door states, the sky and the sky regions every update and handed to the same `LightCache` as the static and carried lights; their ids (`day:<wall>:<n>`) are stable, so they are only recomputed when a door or the sky changes.
 - The player's light shade is drawn blurred and clipped to the visible area; pixels outside the view count as dark in the shade image so the blur does not leave a light rim at the edge of the view.

@@ -282,6 +282,7 @@ function recompute(reason) {
     const regions = (LIGHTING.regions || []);
     lightMap = new Engine.LightMap(G, {
       base: map.outdoor ? 'sky' : (map.base_light || 'dark'), sky: S.sky, regions,
+      walls: Engine.prepareLight(segs, state()), feetPerCell: FPC,   // region edges fade, except along walls
       patches: lightCache.patchesFor([...lightsNow(), ...daylightNow()], segs, state(), JSON.stringify(S.doors)),
     });
     view = Engine.partyView(tokenList(), sightSegs, litOpts());
@@ -430,7 +431,7 @@ function draw() {
 
   if (S.walls || full) drawWalls(full && !S.walls);
   drawDoors(gm, full);
-  if (LIT && gm) drawLightSources();   // lamp marks are the GM's: players see only the light
+  if (LIT && gm) { drawRegionOutlines(); drawLightSources(); }   // the GM's marks: players see only the light
   if (drag && drag.route !== undefined) drawRoute();
   drawTokens(F, full);
   ctx.restore();
@@ -491,6 +492,25 @@ function drawLight(F, full) {
   if ('filter' in ctx) ctx.filter = 'none';
   ctx.restore();
 }
+/** Lighting regions, GM view only, always: a faint dashed outline (gold for a fixed level, blue for sky). */
+const REGION_LOOK = { fixed: '#e9cf86', sky: '#8fcaf2', alpha: 0.7, dash: [0.22, 0.16] };
+let regionRuns = null;
+function drawRegionOutlines() {
+  regionRuns = regionRuns || (LIGHTING.regions || []).map((r) => ({
+    sky: r.level === 'sky', runs: edgeRuns(squareEdges(new Set(Engine.areaCells(r).map(([x, y]) => x + ',' + y)))),
+  }));
+  ctx.save(); ctx.globalAlpha = REGION_LOOK.alpha; ctx.setLineDash(REGION_LOOK.dash.map(P));
+  for (const { sky, runs } of regionRuns) {
+    ctx.beginPath();
+    for (const [x0, y0, x1, y1] of runs) { ctx.moveTo(P(x0), P(y0)); ctx.lineTo(P(x1), P(y1)); }
+    ctx.lineWidth = Math.max(3, P(0.1)); ctx.strokeStyle = 'rgba(10, 10, 14, .75)'; ctx.stroke();
+    ctx.lineWidth = Math.max(1.4, P(0.045)); ctx.strokeStyle = sky ? REGION_LOOK.sky : REGION_LOOK.fixed; ctx.stroke();
+  }
+  ctx.restore();
+}
+/** Lighting regions on a square (GM readout). */
+const regionsAt = (x, y) => (LIGHTING.regions || []).filter((r) => Engine.areaCells(r).some(([cx, cy]) => cx === x && cy === y));
+
 /** Static lights: a small lamp mark (lit or cold), GM view only, always (also through a creature's eyes),
  *  so the GM can click one to light it or put it out. Players never see the marks, only the light. */
 function drawLightSources() {
@@ -792,6 +812,10 @@ function hud() {
     const fs = F.at(c[0], c[1]) ? 'visible' : !F.focus && mask.at(c[0], c[1]) ? 'explored' : 'hidden';
     parts.push(`square <b>${x},${y}</b>`, `fog <b>${fs}</b>`);
     if (LIT && (S.view === 'gm' || fs !== 'hidden')) parts.push(`light <b>${Engine.LEVEL_NAME[lightMap.at(c[0], c[1])]}</b> · glow <b>${Math.round(lightMap.glowAt(c[0], c[1]) * 100)}%</b>`);
+    if (LIT && S.view === 'gm') {
+      const rs = regionsAt(x, y);
+      if (rs.length) parts.push(`region <b>${rs.map((r) => `${r.label || r.note || r.id} (${r.level})`).join('; ')}</b>`);
+    }
     if (S.view === 'gm' || fs !== 'hidden') {
       const here = terrain.at(x, y).map((a) => `${a.label || a.cause || 'terrain'}: ${TERRAIN_LOOK[a.kind].name}${a.dc ? ' DC ' + a.dc : ''}`);
       if (here.length) parts.push(`terrain <b>${here.join('; ')}</b>`);

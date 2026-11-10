@@ -118,9 +118,9 @@ test('dim light fades: full brightness at the bright edge, falling to nothing at
 });
 
 test('dim regions and a dim sky draw at a steady half brightness; overlapping lights take the brighter', () => {
-  const regions = [{ id: 'cave', level: 'dim', rects: [[0, 0, 4, 4]] }];
+  const regions = [{ id: 'cave', level: 'dim', rects: [[0, 0, 8, 8]] }];
   const m = mapWith([{ id: 't', at: [0.5, 0.5], bright: 5, dim: 20 }], {}, { regions });
-  assert.equal(m.glowAt(3.5, 3.5), DIM_GLOW / 255, 'the torch has faded below the region here');
+  assert.equal(m.glowAt(5.5, 5.5), DIM_GLOW / 255, 'the torch has faded below the region here');
   assert.ok(m.glowAt(1.5, 1.5) > DIM_GLOW / 255, 'the torch is brighter than the region here');
 });
 
@@ -131,4 +131,22 @@ test('a light with only bright light gets a thin dim fringe; one with only dim l
   const m = mapWith([{ id: 'c', at: [3.5, 3.5], dim: 10 }]);
   assert.equal(m.at(3.5, 3.5), DIM);
   assert.equal(DIM_FRINGE, 0.1);
+});
+
+test('region edges fade in the drawing over a couple of feet, except along a wall; the rules do not fade', () => {
+  const regions = [{ id: 'fungus', level: 'dim', rects: [[2, 2, 4, 4]] }];
+  const wall = [{ id: 'w', t: 'solid', a: [2, 0], b: [2, 10] }];   // the region's west edge is a wall
+  const m = new LightMap(GRID, { base: 'dark', regions, walls: prepareLight(wall) });
+  const half = DIM_GLOW / 255;
+  assert.equal(m.glowAt(4, 4), half, 'the middle is steady dim');
+  assert.ok(m.glowAt(5.97, 4) < 0.2 * half, 'at the open east edge it has faded almost to the dark beyond');
+  assert.ok(m.glowAt(5.8, 4) > 0.2 * half && m.glowAt(5.8, 4) < 0.8 * half, 'part way in it is part bright');
+  assert.equal(m.glowAt(5.5, 4), half, 'past the fade it is steady');
+  assert.equal(m.glowAt(6.05, 4), 0, 'the fade is all on the lit side');
+  assert.equal(m.glowAt(2.05, 4), half, 'the west edge is a wall: no fade');
+  assert.equal(m.glowAt(1.95, 4), 0);
+  assert.equal(m.at(5.95, 4), DIM, 'rules: dim right up to the square line');
+  assert.equal(m.at(6.05, 4), DARK);
+  const sharp = new LightMap(GRID, { base: 'dark', regions, fadeFt: 0 });
+  assert.equal(sharp.glowAt(5.95, 4), half);
 });

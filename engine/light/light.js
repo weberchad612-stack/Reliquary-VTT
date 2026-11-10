@@ -12,7 +12,7 @@
 // light, falling in a straight line across a light's dim band to 0 at its outer edge, so dim light fades
 // out instead of stopping at a hard edge. Rules never read it.
 
-import { prepare, visPolygon } from '../sight/visibility.js';
+import { prepare, visPolygon, pointSegDist } from '../sight/visibility.js';
 import { ExploredMask, RES } from '../fog/explored.js';
 import { areaCells } from '../terrain/terrain.js';
 
@@ -33,6 +33,13 @@ const LEVEL_GLOW = [0, DIM_GLOW, 255];
  * its bright radius, so it does not end at a hard edge (a 10 ft bright light fades over its last foot).
  */
 export const DIM_FRINGE = 0.1;
+
+/**
+ * Region edges fade over about this many feet in the drawing (half each side of the square line), so a
+ * glowing patch of fungus does not stop at a hard square edge. Edges along a wall that blocks light stay
+ * sharp (the wall is the edge). Drawing only: the rules still change level at the square line.
+ */
+export const REGION_FADE_FT = 2;
 
 /** Light segments for a map: the walls with door states applied, using each wall's `light` value. */
 export function prepareLight(segs, state = {}) {
@@ -111,6 +118,9 @@ export function lightPatch(shape, grid, res = RES) {
  * @param {'bright'|'dim'|'dark'} [o.sky='bright']  the sky light: used by `sky` regions (and by outdoor maps' base)
  * @param {Array} [o.regions]  lighting regions: {id, level: 'sky'|'bright'|'dim'|'dark', cells?, rects?}
  * @param {Array} [o.patches]  lightPatch() results for every light that is on
+ * @param {Array} [o.walls]  prepareLight() output: region edges along these walls are not faded
+ * @param {number} [o.fadeFt=REGION_FADE_FT]  width of the faded region edge in the drawing; 0 for none
+ * @param {number} [o.feetPerCell=5]
  */
 export class LightMap {
   constructor(grid, o = {}, res = RES) {
@@ -130,6 +140,7 @@ export class LightMap {
         }
       }
     }
+    if ((o.regions || []).length) fadeRegionEdges(this, grid, o);
     for (const p of o.patches || []) {
       for (let n = 0; n < p.idx.length; n++) {
         const k = p.idx[n];
@@ -151,6 +162,56 @@ export class LightMap {
     const i = Math.floor(x * this.res), j = Math.floor(y * this.res);
     if (i < 0 || j < 0 || i >= this.w || j >= this.h) return DARK;
     return this.levels[j * this.w + i];
+  }
+}
+
+/**
+ * Soften region edges in the drawing (see REGION_FADE_FT): along every square edge where the brightness
+ * changes and no wall stands, the brighter side dims toward the darker side's level over the fade width,
+ * reaching it at the square line. The fade lies wholly on the lit side, so a creature beyond the edge,
+ * who cannot see into the dark, still sees the light die away rather than stop.
+ */
+function fadeRegionEdges(m, grid, o) {
+  const fadeFt = o.fadeFt ?? REGION_FADE_FT, fpc = o.feetPerCell || 5, res = m.res, w = m.w, h = m.h;
+  if (!(fadeFt > 0)) return;
+  const F = (fadeFt / fpc) * res;   // fade width in pixels
+  const walls = o.walls || [];
+  const onWall = (a, b) => [0.25, 0.5, 0.75].every((t) => {
+    const p = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    return walls.some((s) => pointSegDist(p, s.a, s.b) < 0.15);
+  });
+  const src = Uint8Array.from(m.glow);
+  const cellGlow = (x, y) => src[Math.min(h - 1, y * res + (res >> 1)) * w + Math.min(w - 1, x * res + (res >> 1))];
+  // one edge: the bright cell (bx, by) dims toward `low` approaching the edge from (ax, ay) to (ex, ey), in pixels
+  const fade = (bx, by, low, ax, ay, ex, ey) => {
+    const high = cellGlow(bx, by);
+    for (let j = by * res; j < (by + 1) * res && j < h; j++) {
+      for (let i = bx * res; i < (bx + 1) * res && i < w; i++) {
+        const d = pointSegDist([i + 0.5, j + 0.5], [ax, ay], [ex, ey]);
+        if (d >= F) continue;
+        const v = Math.round(low + ((high - low) * d) / F);
+        if (v < m.glow[j * w + i]) m.glow[j * w + i] = v;
+      }
+    }
+  };
+  for (let y = 0; y < grid.rows; y++) {
+    for (let x = 0; x < grid.cols; x++) {
+      const g = cellGlow(x, y);
+      if (x + 1 < grid.cols) {
+        const g2 = cellGlow(x + 1, y);
+        if (g2 !== g && !onWall([x + 1, y], [x + 1, y + 1])) {
+          const X = (x + 1) * res;
+          if (g > g2) fade(x, y, g2, X, y * res, X, (y + 1) * res); else fade(x + 1, y, g, X, y * res, X, (y + 1) * res);
+        }
+      }
+      if (y + 1 < grid.rows) {
+        const g2 = cellGlow(x, y + 1);
+        if (g2 !== g && !onWall([x, y + 1], [x + 1, y + 1])) {
+          const Y = (y + 1) * res;
+          if (g > g2) fade(x, y, g2, x * res, Y, (x + 1) * res, Y); else fade(x, y + 1, g, x * res, Y, (x + 1) * res, Y);
+        }
+      }
+    }
   }
 }
 

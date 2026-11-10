@@ -88,4 +88,5 @@ With a creature selected, the board shows only what it perceives now: the fog cu
 
 - **Lamp marks are the GM's.** Players never see the mark of a static light, only its light. The GM view shows every mark at all times, also while looking through a creature's eyes, so a lamp can always be clicked to light it or put it out.
 - **Sight has no range.** PF2E vision has none; walls and darkness limit it. `visPolygon` defaults to unlimited range and stops a ray that hits nothing just past the map's edge (pass `grid`). The board and the sight and fog tools no longer use 200 ft; `--range` still limits the tools, and a sense or ruleset can still give one.
+- **Region outlines and soft region edges.** The GM view always outlines each lighting region with a faint dashed line (gold for a fixed level, blue for sky) and names the region under the pointer in the hover readout; players never see the outlines. In the drawing, a region's edge fades over its last 2 ft (`REGION_FADE_FT`), all on the lit side, so the light dies away instead of switching off at the square line; edges along a wall that blocks light stay sharp. The rules still change level at the square line.
 
