@@ -103,7 +103,26 @@ The user owns the board and its database, so nothing can be hidden from the user
 prevents accidental spoilers. When other people play on a board, the secrecy model in the rebuild plan
 (a player projection that never receives GM-only data) is separate, later work.
 
-## 7. Build order
+## 7. The top menu
+
+A menubar under the title (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus.
+
+- **Bar:** Maps (the campaign's maps, the current one marked; only with two or more maps), Map (Measure,
+  Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with a sub-menu: Burst,
+  Cone, Line, Emanation, Clear templates), Records (Party loot, Quest log, Dice), and two buttons straight on
+  the bar, Replay and Narration, which can show a count.
+- **Behaviour:** click a menu to open it; once one is open, pointing at another opens that one; one menu
+  open at a time; picking an item, clicking outside or Escape closes it. A menu shows as active (amber)
+  while one of its toggles is on, and a red dot when something inside is waiting. One level of sub-menu,
+  which flips to the other side at the window's edge.
+- **Keyboard:** the WAI-ARIA menubar pattern (arrows along the bar and inside menus, Right and Left into
+  and out of a sub-menu, Home and End, Escape one level, Tab out).
+- **Views:** an entry marked `gm` shows only in the GM view.
+- **Data, not markup:** the menu is a definition (`MENU`); the page only reports what was chosen. Status:
+  built on 2026-11-10 with nothing wired; every item says "not built yet". The Export DB item of the
+  previous board is gone: saving is Claude's job now (section 5).
+
+## 8. Build order
 
 1. `board/` from the demo, as modules, bundled; the board running from an in-memory store so it can be
    tested headless.

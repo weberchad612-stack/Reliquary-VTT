@@ -15,6 +15,7 @@
 import { MemoryStore } from './store.js';
 import { platformStore } from './platform.js';
 import { mapFromRecords, exploredFromRecords, exploredRecords } from './records.js';
+import { MENU, withMaps, buildMenuBar } from './menu.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -1242,6 +1243,7 @@ export async function start(store) {
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
+    if (menu) menu.setView(v);
   }
   document.getElementById('v-player').onclick = () => setView('player');
   document.getElementById('v-gm').onclick = () => { if (S.view !== 'gm') confirmGM(); };
@@ -1525,6 +1527,23 @@ export async function start(store) {
     el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
   }
 
+  // ---------- the top menu (board/menu.js): items are not wired yet; each says so when chosen ----------
+  let menu = null;
+  async function startMenu() {
+    let maps = [];
+    try { maps = (await store.list('maps')).map((r) => ({ id: r.data.id || r.id, name: r.data.name })); } catch (e) { /* no Maps menu */ }
+    const order = META.maps || [];
+    maps.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    menu = buildMenuBar(document.getElementById('menubar'), {
+      view: S.view,
+      def: withMaps(MENU, maps, MAP_ID),
+      onSelect: (id, item, state) => {
+        const what = item.kind === 'toggle' ? `${item.label} ${state ? 'on' : 'off'}` : item.label;
+        toast(`${what}: not built yet.`);
+      },
+    });
+  }
+
   // ---------- a handle for tests and debugging (read-mostly; the board never depends on it) ----------
   window.reliquary = {
     store, meta: META, map: MAP_ID,
@@ -1533,6 +1552,7 @@ export async function start(store) {
     exploredPolys: () => mask.toPolys(),
     select: (id) => { selected = id; panel(); draw(); },
     view: (v) => setView(v),
+    menu: () => menu,
     sky: (v) => { S.sky = v; document.getElementById('sky').value = v; recompute(); },
     cellPoint: (x, y) => { const r = canvas.getBoundingClientRect(); return [r.left + (OX + x * CS) * scale, r.top + (OY + y * CS) * scale]; },
   };
@@ -1550,5 +1570,6 @@ export async function start(store) {
   panel();
   lightingCard();
   fit();
+  await startMenu();
   startSync();
 }

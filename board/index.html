@@ -110,6 +110,39 @@ ol.log li.foe { border-left-color: var(--foe); }
   padding: 8px 14px; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity .2s;
 }
 .toast.show { opacity: 1; }
+/* The top menu (board/menu.js): a menubar of drop-downs, one level of sub-menu. */
+.menubar { display: flex; gap: 2px; align-items: center; }
+.mb-item { position: relative; }
+.mb-btn { background: none; border-color: transparent; padding: 5px 10px; display: inline-flex; align-items: center; gap: 6px; }
+.mb-btn:hover, .mb-btn[aria-expanded="true"] { background: #333842; border-color: var(--line); }
+.mb-btn.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.mb-caret { font-size: 10px; color: var(--muted); }
+.mb-badge { font: 600 11px var(--font-mono); background: var(--accent); color: #1a1408; border-radius: 999px; padding: 0 6px; line-height: 16px; }
+.mb-badge[hidden] { display: none; }
+.mb-btn.pending .mb-label::after, .mi.pending .mi-label::after { content: ' \25CF'; color: var(--foe); font-size: 10px; vertical-align: 2px; }
+.menu-pop {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 200px; padding: 5px;
+  display: grid; gap: 1px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.5);
+}
+.menu-pop[hidden] { display: none; }
+.menu-pop.flip { left: auto; right: 0; }
+.menu-pop.sub { top: -6px; left: calc(100% + 4px); }
+.menu-pop.sub.flip { left: auto; right: calc(100% + 4px); }
+.mi-sub { position: relative; display: grid; }
+.mi {
+  display: grid; grid-template-columns: 16px 1fr auto auto; align-items: center; gap: 6px; width: 100%;
+  text-align: left; background: none; border: 0; border-radius: 5px; padding: 6px 10px 6px 6px; white-space: nowrap;
+}
+.mi:hover, .mi:focus-visible, .mi[aria-expanded="true"] { background: #333842; outline: none; }
+.mi:focus-visible { box-shadow: inset 0 0 0 1px var(--accent); }
+.mi-check { color: var(--accent); font-size: 12px; text-align: center; }
+.mi[aria-checked="true"] .mi-check::before { content: '\2713'; }
+.mi[role="menuitemradio"][aria-checked="true"] .mi-check::before { content: '\25CF'; font-size: 9px; }
+.mi.active .mi-label { color: var(--accent); }
+.mi-key { font: 500 11px var(--font-mono); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+.mi-arrow { color: var(--muted); }
+.mi-sep { height: 1px; background: var(--line); margin: 4px 6px; }
 @media (max-width: 860px) {
   main { grid-template-columns: 1fr; }
   aside { border-left: 0; border-top: 1px solid var(--line); }
@@ -120,7 +153,8 @@ ol.log li.foe { border-left-color: var(--foe); }
 <body>
 <div class="app">
   <header>
-    <h1 id="title">Reliquary Map Engine<small id="subtitle"></small></h1>
+    <h1 id="title">Reliquary Virtual Tabletop<small id="subtitle"></small></h1>
+    <nav class="menubar" id="menubar" aria-label="Board menu"></nav>
     <div class="controls">
       <div class="seg" role="group" aria-label="View">
         <button id="v-player" aria-pressed="true">Player view</button>
