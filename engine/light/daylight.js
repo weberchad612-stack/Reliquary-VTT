@@ -14,7 +14,7 @@ import { areaCells } from '../terrain/terrain.js';
  * How far daylight reaches into a room, in feet. Day: bright for `bright`, then dim for `dim` more.
  * Dusk (a dim sky): dim light only, for `dusk`. Night: none.
  */
-export const DAYLIGHT = Object.freeze({ bright: 15, dim: 30, dusk: 15 });
+export const DAYLIGHT = Object.freeze({ bright: 15, dim: 50, dusk: 15 });
 
 /** How far inside the opening the lights sit, in cells (just clear of the wall line). */
 const INSET = 0.02;
