@@ -176,6 +176,9 @@ lighting = {
          "note": "Aimed across the tower toward the hall door."},
         {"id": "gate-torch-w", "at": [22.4, 30.6], "preset": "torch", "on": False, "label": "Gate torch", "note": "Unlit sconce outside the gate."},
         {"id": "gate-torch-e", "at": [25.6, 30.6], "preset": "torch", "on": False, "label": "Gate torch", "note": "Unlit sconce outside the gate."},
+        {"id": "test-red", "at": [32.0, 8.5], "bright": 10, "dim": 10, "colour": "#ff2020", "label": "Test light (red)", "room": "Armoury", "note": "Colour test: overlaps the green and blue lights."},
+        {"id": "test-green", "at": [38.0, 8.5], "bright": 10, "dim": 10, "colour": "#20ff40", "label": "Test light (green)", "room": "Armoury", "note": "Colour test: overlaps the red and blue lights."},
+        {"id": "test-blue", "at": [35.0, 11.0], "bright": 10, "dim": 10, "colour": "#2050ff", "label": "Test light (blue)", "room": "Armoury", "note": "Colour test: overlaps the red and green lights."},
     ],
 }
 
