@@ -21,3 +21,13 @@ Terrain follow-ups (from building the terrain layer, 2026-11-09):
 - This table's ruling that moving through an ally's square is difficult terrain: needs the token layer; it uses the same `enterCost` hook.
 - How terrain applies to creatures larger than one square: the engine charges once per step for the worst new square, a table ruling to confirm.
 - Gridless measurement and terrain shapes, if a map or ruleset ever needs them (areas would gain a polygon; the square list stays the grid answer).
+
+Lighting, after the first version (design agreed 2026-11-09 in [docs/design/lighting.md](../docs/design/lighting.md)):
+
+- Light colour and intensity, and animations (a flickering wall torch).
+- Magical darkness, and greater darkvision seeing through it.
+- Imprecise senses (scent, tremorsense, hearing): hidden markers placed for foes automatically, suggested for PCs.
+- Time of day driving the sky light (outdoor maps and sky regions).
+- Daylight through windows into indoor rooms.
+- Carried cone lights (bull's-eye lantern) and token facing.
+
