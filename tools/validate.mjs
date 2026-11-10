@@ -19,7 +19,9 @@ const SCHEMA_DIR = path.join(ROOT, 'schemas');
 
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false, useDefaults: false });
 const schema = (name) => ajv.compile(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8')));
+ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, 'terrain.schema.json'), 'utf8')));
 const V = {
+  terrain: ajv.getSchema('https://github.com/weberchad612-stack/Reliquary-VTT/schemas/terrain.schema.json'),
   map: schema('map.schema.json'),
   walls: schema('walls.schema.json'),
   state: schema('map-state.schema.json'),
@@ -200,7 +202,23 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
         `walls pinch the doorway; only ${(clear * 5).toFixed(1)} ft of its ${(length * 5).toFixed(1)} ft is clear when open`);
     }
   }
-  return { map, doors, report };
+  // Terrain
+  const terrainIds = new Set(), inactiveTerrain = new Set();
+  if (map.terrain) {
+    const file = path.join(dir, map.terrain);
+    const terrain = fs.existsSync(file) ? readJson(file, report) : (report.error(mapFile, `terrain file "${map.terrain}" not found`), null);
+    if (terrain && schemaErrors(V.terrain, terrain, file, report)) {
+      for (const a of terrain.areas) {
+        const where = `terrain area ${a.id}`;
+        if (terrainIds.has(a.id)) report.error(file, `${where}: duplicate area id`);
+        terrainIds.add(a.id);
+        if (a.active === false) inactiveTerrain.add(a.id);
+        checkArea(a, where, grid, file, report);
+        if (a.source || a.until) report.warn(file, `${where}: "source" and "until" belong to temporary terrain in a save`);
+      }
+    }
+  }
+  return { map, doors, terrainIds, inactiveTerrain, report };
 }
 
 /** Validate one map-state file against its map. */
@@ -235,10 +253,48 @@ export function validateState(file, mapInfo, report = new Report()) {
       if (!inGrid(p, grid)) { report.error(file, `explored.polys[${i}]: point ${fmt(p)} is outside the grid`); break; }
     }
   }
+  const terrainIds = mapInfo.terrainIds || new Set();
+  for (const id of st.terrain_off || []) if (!terrainIds.has(id)) report.error(file, `terrain_off: no terrain area "${id}" on map "${map.id}"`);
+  for (const id of st.terrain_on || []) {
+    if (!terrainIds.has(id)) report.error(file, `terrain_on: no terrain area "${id}" on map "${map.id}"`);
+    else if (!(mapInfo.inactiveTerrain || new Set()).has(id)) report.warn(file, `terrain_on: area "${id}" is already active; terrain_on is for areas that start switched off`);
+  }
+  const tempIds = new Set();
+  for (const a of st.terrain || []) {
+    const where = `terrain ${a.id}`;
+    if (terrainIds.has(a.id) || tempIds.has(a.id)) report.error(file, `${where}: id already used by another terrain area`);
+    tempIds.add(a.id);
+    checkArea(a, where, grid, file, report);
+    if (!a.source) report.warn(file, `${where}: temporary terrain should say what created it ("source")`);
+  }
   for (const [id, t] of Object.entries(st.tokens || {})) {
     if (!cellInGrid([t.x, t.y], grid)) report.error(file, `tokens.${id}: cell (${t.x}, ${t.y}) is outside the grid`);
   }
   return report;
+}
+
+/** Checks shared by pack and save terrain areas: squares in the grid, no repeats, sensible fields. */
+function checkArea(a, where, grid, file, report) {
+  const seen = new Set();
+  for (const [x, y, w, h] of a.rects || []) {
+    if (w < 1 || h < 1) report.error(file, `${where}: rect [${x}, ${y}, ${w}, ${h}] is empty`);
+  }
+  let outside = 0, repeated = 0;
+  const cells = [...(a.cells || [])];
+  for (const [x, y, w, h] of a.rects || []) for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) cells.push([x + i, y + j]);
+  for (const c of cells) {
+    const k = c.join(',');
+    if (seen.has(k)) repeated++;
+    seen.add(k);
+    if (!cellInGrid(c, grid)) outside++;
+  }
+  if (outside) report.error(file, `${where}: ${outside} square(s) outside the ${grid.cols}x${grid.rows} grid`);
+  if (repeated) report.warn(file, `${where}: ${repeated} square(s) listed more than once`);
+  if ((a.kind === 'climb' || a.kind === 'swim' || a.kind === 'uneven' || a.kind === 'narrow') && a.dc === undefined) {
+    report.warn(file, `${where}: ${a.kind} areas usually give the DC of their check`);
+  }
+  if (a.kind === 'hazardous' && !a.damage) report.warn(file, `${where}: hazardous terrain should say what damage it deals`);
+  if (a.damage && a.kind !== 'hazardous') report.warn(file, `${where}: "damage" only applies to hazardous terrain`);
 }
 
 /** Validate a pack (or a single map) and optionally a save. */

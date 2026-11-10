@@ -11,8 +11,8 @@ The map image shows what things look like. The adventure text says what they are
 - **Openings:** arrow slits, windows and what they are made of (clear glass, stained glass, bars), murder holes, grates and portcullises.
 - **Damage:** collapsed walls, breaches, caved-in ceilings, rubble.
 - **Things drawn like walls that are not walls:** stairs, ladders, furniture, statues, daises, pits and sinkholes.
+- **Terrain:** rubble, water and its depth, mud, slopes, broken glass, hazards, and terrain that appears during play (a bridge or pier that collapses). Note any general rule for the level ("drawn rubble is difficult terrain"). See [terrain.md](terrain.md).
 - **Exits to other maps:** stairs, trap doors, holes, tunnels, and whether they are hidden.
-- **Terrain:** water depth, mud, rubble, uneven ground. These are not walls; record them for the terrain layer.
 
 Read the full room entries, not only a keyword search: a sentence that matters often sits next to the one a search finds (an arrow slit mentioned in passing in a room's description, a secret door's location in the treasure paragraph). Paraphrase what you learn; never copy passages from the book into the pack or the repo.
 
@@ -42,6 +42,7 @@ The user's standing rule:
 | Wall mask | Thresholds in the map's `mask` settings. | Sample colours from small boxes you have **confirmed by eye are inside walls**, floors, ground and water. Do not guess thresholds. Render the mask over the map and look. |
 | Features | Doors (one segment per leaf; double doors paired), windows, proposed arrow slits. | Count the doors against the art, counting each leaf of a double door. Check each door's swing side; correct it with a `doors` entry when the text or art says otherwise. Every slit proposal is accepted or rejected by looking at the original art beside it. |
 | Corrections | `erase`, `add`, `openings`, `doors`, `windows`, `slits`, excludes with `hide`. | Render zoomed tiles of every corrected spot with the cell grid and the segments drawn. |
+| Terrain | The settings' `terrain` block and `rooms` block: rubble, water, slopes, hazards from the text and the art (see [terrain.md](terrain.md)). | Plot every area over the map; no terrain on stairs, wood, banks or trees; judgment calls listed in `decisions`. |
 | Validate | `node tools/validate.mjs <pack>`. | No errors, no unexplained warnings. **No "walls pinch the doorway" warnings**: every door must be clear to see and walk through when open. |
 | Doorways | Render a zoomed tile of **every** door and secret door with the segments drawn. | Square jambs, nothing crossing or running along the door line, the opening as wide as the gap in the art. |
 | Leak check | From a point inside every room, with every door closed, compute what is visible. | Nothing outside the room is visible except where the drawing shows an opening on purpose. Trace each leak to its gap and fix it. |

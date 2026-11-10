@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/terrain.schema.json",
+  "title": "Terrain",
+  "description": "Areas of squares that change movement on one map: difficult terrain, water, slopes. See docs/design/maps.md section 9a. What each kind costs comes from the ruleset.",
+  "type": "object",
+  "required": ["v", "areas"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "v": { "const": 1 },
+    "areas": { "type": "array", "items": { "$ref": "#/$defs/area" } }
+  },
+  "$defs": {
+    "cell": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 },
+    "rect": {
+      "description": "[x, y, w, h]: w x h squares with (x, y) the top-left one.",
+      "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 4, "maxItems": 4
+    },
+    "area": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "anyOf": [{ "required": ["cells"] }, { "required": ["rects"] }],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 32 },
+        "kind": {
+          "enum": ["difficult", "greater_difficult", "hazardous", "uneven", "narrow", "climb", "swim"],
+          "description": "difficult and greater_difficult cost extra movement; uneven and narrow call for a balance check; climb and swim need that action unless the creature has the speed; hazardous deals damage."
+        },
+        "cause": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$", "description": "What makes it so (rubble, mud, water, ice, undergrowth, glass...). Rulesets use it for creatures that ignore some terrain." },
+        "magical": { "type": "boolean", "default": false, "description": "Created by magic (natural terrain otherwise)." },
+        "active": { "type": "boolean", "default": true, "description": "false: the area starts switched off and applies once the save switches it on (terrain_on), for example water and mud where a bridge or pier will collapse." },
+        "dc": { "type": "integer", "minimum": 0, "description": "DC of the check the area calls for (Climb, Swim, Balance)." },
+        "damage": { "type": "string", "description": "Hazardous terrain: the damage and when it applies." },
+        "label": { "type": "string", "description": "Short name for the board and narration." },
+        "note": { "type": "string", "description": "GM-only: where this comes from and anything the table should know." },
+        "room": { "type": "string", "description": "Keyed area of the adventure (GM-only)." },
+        "source": { "type": "string", "description": "Save only: what created a temporary area (a spell, an ability)." },
+        "until": { "type": "string", "description": "Save only: when a temporary area ends, in words." },
+        "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" }, "minItems": 1 },
+        "rects": { "type": "array", "items": { "$ref": "#/$defs/rect" }, "minItems": 1 }
+      }
+    }
+  }
+}

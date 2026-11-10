@@ -148,6 +148,7 @@ const START = () => ({
   walls: false,
   doors: {},
   locked_known: [],
+  terrain_on: [],     // pack areas that start switched off and now apply (a bridge has collapsed)
   tokens: JSON.parse(JSON.stringify(SETUP.tokens)),
 });
 let S = START();
@@ -177,10 +178,33 @@ const space = (id) => Engine.spaceOf({ id, ...S.tokens[id] }, layout);       // 
 const mspace = (id) => Engine.moveSpaceOf({ id, ...S.tokens[id] });           // movement
 const tokenList = () => raw().map((t) => ({ ...t, ...space(t.id) }));
 const opts = { rangeFt: RANGE, feetPerCell: FPC };
-let view = null, sightSegs = null, moveWalls = null;
+let view = null, sightSegs = null, moveWalls = null, terrain = null;
+const PACK_TERRAIN = DATA.terrain || [];
+/** How each kind of terrain is named and marked (the table's red chevrons for difficult terrain). */
+const TERRAIN_LOOK = {
+  difficult: { name: 'difficult terrain', colour: '#c62a1c', mark: 'chevron' },
+  greater_difficult: { name: 'greater difficult terrain', colour: '#c62a1c', mark: 'chevron2' },
+  swim: { name: 'Swim', colour: '#3f8fd8', mark: 'waves' },
+  climb: { name: 'Climb', colour: '#e3862f', mark: 'arrow' },
+  uneven: { name: 'uneven ground (Balance)', colour: '#e3b330', mark: 'zigzag' },
+  narrow: { name: 'narrow surface (Balance)', colour: '#e3b330', mark: 'zigzag' },
+  hazardous: { name: 'hazardous terrain', colour: '#d0379a', mark: 'bang' },
+};
+/** The creature as the ruleset sees it when it moves: speeds, flying, what terrain it ignores. */
+const moverOf = (id) => { const t = S.tokens[id]; return { speeds: t.speeds, flying: t.flying, ignoreDifficult: t.ignoreDifficult }; };
+/** Movement options for one creature: the ruleset's diagonals and its terrain costs. */
+const moveOpts = (id) => ({ ...opts, diagonalCosts: Engine.DIAGONAL_COSTS, enterCost: Engine.terrainEnterCost(terrain, Engine.terrainRules, moverOf(id)) });
+/** Terrain a route crosses: extra feet and the checks to call for. */
+function routeNotes(id, route) {
+  if (!route) return { extraFt: 0, notes: [] };
+  const steps = Engine.routeTerrain(terrain, Engine.terrainRules, moverOf(id), route.path, mspace(id).size);
+  const notes = [...new Set(steps.flatMap((s) => s.notes))];
+  return { extraFt: steps.reduce((n, s) => n + (Number.isFinite(s.extra) ? s.extra : 0), 0) * FPC, notes };
+}
 
 function recompute(reason) {
   relayout();
+  terrain = new Engine.TerrainMap(PACK_TERRAIN, { terrain_on: S.terrain_on });
   sightSegs = Engine.prepare(segs, state(), 'sight');
   moveWalls = Engine.prepareMove(segs, state(), G);
   view = Engine.partyView(tokenList(), sightSegs, opts);
@@ -254,7 +278,13 @@ function clickDoor(s, both = false) {
 // ---------- drawing ----------
 const WALL_COLOURS = { solid: '#d9d2c3', terrain: '#e8913a', grate: '#9aa3ad', window: '#46c6e0', slit: '#d055c8', ethereal: '#9a7cf0', door: '#e5615a', secret: '#e3b330' };
 const LEGEND = [['solid', 'Wall'], ['door', 'Door'], ['secret', 'Secret door (GM only until found)'], ['grate', 'Portcullis: see through, cannot pass'], ['window', 'Window: see through, cannot pass'], ['slit', 'Arrow slit: see through only up close'], ['ethereal', 'Force barrier: pass through, cannot see'], ['terrain', 'Curtain: see past one, not two']];
-document.getElementById('legend').innerHTML = LEGEND.map(([t, l]) => `<span class="sw" style="background:${WALL_COLOURS[t]}"></span><span>${l}</span>`).join('');
+const TERRAIN_ICON = {
+  chevron: 'M3 12 L9 6 L15 12', chevron2: 'M3 9 L9 3 L15 9 M3 15 L9 9 L15 15', waves: 'M2 7 Q5 4 9 7 T16 7 M2 12 Q5 9 9 12 T16 12',
+  arrow: 'M9 16 V3 M5 7 L9 3 L13 7', zigzag: 'M2 11 L5.5 6 L9 11 L12.5 6 L16 11', bang: 'M9 3 V11 M9 15 V15.5',
+};
+const terrainKinds = [...new Set(PACK_TERRAIN.map((a) => a.kind))];
+document.getElementById('legend').innerHTML = LEGEND.map(([t, l]) => `<span class="sw" style="background:${WALL_COLOURS[t]}"></span><span>${l}</span>`).join('')
+  + terrainKinds.map((k) => `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="${TERRAIN_ICON[TERRAIN_LOOK[k].mark]}" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="${TERRAIN_ICON[TERRAIN_LOOK[k].mark]}" fill="none" stroke="${TERRAIN_LOOK[k].colour}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${TERRAIN_LOOK[k].name[0].toUpperCase() + TERRAIN_LOOK[k].name.slice(1)}</span>`).join('');
 
 function fit() {
   const stage = document.getElementById('stage');
@@ -284,6 +314,9 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   if (img.complete) ctx.drawImage(img, 0, 0, W, H);
 
+  // terrain marks, under the fog: hidden where unexplored, dimmed where only remembered
+  ctx.save(); ctx.translate(OX, OY); drawTerrain(gm); ctx.restore();
+
   // fog of war, painted by the engine
   Engine.paintFog(fctx, { grid: G, explored: S.exploredShown, visible: view.visible, mode: gm ? 'gm' : 'player', width: W, height: H });
   ctx.drawImage(fog, 0, 0);
@@ -306,7 +339,7 @@ function draw() {
   // movement range for the selected token (player view, or while dragging)
   if (selected && (!gm || drag)) {
     const t = S.tokens[selected], ms = mspace(selected), sq = Math.max(1, ms.size);
-    const cells = Engine.reach(moveWalls, ms, t.speed, opts);
+    const cells = Engine.reach(moveWalls, ms, t.speed, moveOpts(selected));
     ctx.save(); ctx.fillStyle = 'rgba(95, 191, 131, .16)';
     for (const c of cells) ctx.fillRect(P(Math.floor(c.x)) + 1, P(Math.floor(c.y)) + 1, P(sq) - 2, P(sq) - 2);
     ctx.restore();
@@ -332,18 +365,72 @@ function drawWalls(faint) {
   ctx.restore();
 }
 
+// ---------- terrain ----------
+// One mark per square, drawn on the map under the fog (so unexplored terrain stays hidden and remembered
+// terrain is dimmed), plus a thin outline round each area. Red up-chevrons for difficult terrain, as at
+// the table; two for greater difficult terrain.
+function terrainMark(kind, x, y, alpha) {
+  const look = TERRAIN_LOOK[kind], cx = P(x + 0.5), cy = P(y + 0.5), u = P(0.16);
+  ctx.save(); ctx.globalAlpha = alpha; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath();
+  if (look.mark === 'chevron' || look.mark === 'chevron2') {
+    const rows = look.mark === 'chevron' ? [0.6] : [0.1, 1.1];
+    for (const dy of rows) { ctx.moveTo(cx - u * 1.3, cy + u * dy); ctx.lineTo(cx, cy - u * 1.1 + u * dy); ctx.lineTo(cx + u * 1.3, cy + u * dy); }
+  } else if (look.mark === 'waves') {
+    for (const dy of [-0.5, 0.6]) { ctx.moveTo(cx - u * 1.4, cy + u * dy); ctx.quadraticCurveTo(cx - u * 0.7, cy + u * (dy - 0.7), cx, cy + u * dy); ctx.quadraticCurveTo(cx + u * 0.7, cy + u * (dy + 0.7), cx + u * 1.4, cy + u * dy); }
+  } else if (look.mark === 'arrow') {
+    ctx.moveTo(cx, cy + u * 1.4); ctx.lineTo(cx, cy - u * 1.2); ctx.moveTo(cx - u, cy - u * 0.2); ctx.lineTo(cx, cy - u * 1.2); ctx.lineTo(cx + u, cy - u * 0.2);
+  } else if (look.mark === 'zigzag') {
+    ctx.moveTo(cx - u * 1.4, cy + u * 0.4); ctx.lineTo(cx - u * 0.7, cy - u * 0.5); ctx.lineTo(cx, cy + u * 0.4); ctx.lineTo(cx + u * 0.7, cy - u * 0.5); ctx.lineTo(cx + u * 1.4, cy + u * 0.4);
+  } else {
+    ctx.moveTo(cx, cy - u * 1.3); ctx.lineTo(cx, cy + u * 0.3); ctx.moveTo(cx, cy + u * 1.05); ctx.lineTo(cx, cy + u * 1.1);
+  }
+  ctx.lineWidth = Math.max(3, P(0.12)); ctx.strokeStyle = 'rgba(255, 255, 255, .9)'; ctx.stroke();   // white edge, as on the old board
+  ctx.lineWidth = Math.max(1.6, P(0.06)); ctx.strokeStyle = look.colour; ctx.stroke();
+  ctx.restore();
+}
+/** Thin outline along the edges of an area's squares that border squares outside it. */
+function terrainOutline(cells, colour, dashed) {
+  const inside = new Set(cells.map(([x, y]) => x + ',' + y));
+  ctx.save(); ctx.strokeStyle = colour; ctx.lineWidth = 1.2; ctx.globalAlpha = dashed ? 0.9 : 0.55;
+  if (dashed) ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  for (const [x, y] of cells) {
+    if (!inside.has(x + ',' + (y - 1))) { ctx.moveTo(P(x), P(y)); ctx.lineTo(P(x + 1), P(y)); }
+    if (!inside.has(x + ',' + (y + 1))) { ctx.moveTo(P(x), P(y + 1)); ctx.lineTo(P(x + 1), P(y + 1)); }
+    if (!inside.has((x - 1) + ',' + y)) { ctx.moveTo(P(x), P(y)); ctx.lineTo(P(x), P(y + 1)); }
+    if (!inside.has((x + 1) + ',' + y)) { ctx.moveTo(P(x + 1), P(y)); ctx.lineTo(P(x + 1), P(y + 1)); }
+  }
+  ctx.stroke(); ctx.restore();
+}
+function drawTerrain(gm) {
+  for (const a of terrain.areas) {
+    const cells = Engine.areaCells(a);
+    terrainOutline(cells, TERRAIN_LOOK[a.kind].colour, false);
+    for (const [x, y] of cells) terrainMark(a.kind, x, y, a.kind === 'swim' ? 0.55 : 0.95);
+  }
+  if (!gm) return;
+  // GM only: areas that start switched off (a bridge that will collapse); click one to switch it on
+  for (const a of PACK_TERRAIN) if (a.active === false && !S.terrain_on.includes(a.id)) terrainOutline(Engine.areaCells(a), TERRAIN_LOOK[a.kind].colour, true);
+}
+/** GM view: the pack area that starts switched off under p, if any. */
+function inactiveAreaAt(p) {
+  const x = Math.floor(p[0]), y = Math.floor(p[1]);
+  return PACK_TERRAIN.find((a) => a.active === false && Engine.areaCells(a).some(([cx, cy]) => cx === x && cy === y)) || null;
+}
+
 // Door leaves are drawn as panels: in the doorway when closed, swung on the hinge when open.
 const DOOR_LOOK = {
   wood: '#8a5a2e', woodEdge: '#c48b52', stone: '#7b776f', stoneEdge: '#b3ada2', ink: '#140d07',
   open: 'rgba(235, 230, 220, .55)', lock: '#e3a443', secret: '#e3b330',
 };
-function polyPath(poly) {
+function leafPath(poly) {
   ctx.beginPath(); ctx.moveTo(P(poly[0][0]), P(poly[0][1]));
   for (let i = 1; i < poly.length; i++) ctx.lineTo(P(poly[i][0]), P(poly[i][1]));
   ctx.closePath();
 }
 function drawPanel(poly, stone) {
-  polyPath(poly);
+  leafPath(poly);
   ctx.fillStyle = stone ? DOOR_LOOK.stone : DOOR_LOOK.wood; ctx.fill();
   ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.ink; ctx.stroke();
   // a lighter grain line down the middle of the panel
@@ -367,7 +454,7 @@ function drawDoors(gm) {
     if (!gm && !doorVisibleToPlayers(s)) continue;
     const L = leafOf(s), stone = s.t === 'secret';
     if (!info.found) {                         // GM only: an unfound secret door, outlined
-      polyPath(L.closed); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.secret; ctx.stroke(); ctx.setLineDash([]);
+      leafPath(L.closed); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.secret; ctx.stroke(); ctx.setLineDash([]);
       continue;
     }
     if (info.st === 'open') {
@@ -401,7 +488,10 @@ function drawRoute() {
     ctx.stroke();
   }
   const shared = Engine.isTiny(t) ? [] : Engine.blockersAt({ id: selected, ...t }, g[0], g[1], raw());
-  const label = shared.length ? `occupied by ${theName(shared[0])}` : drag.route ? `${drag.route.feet} ft` : 'no route';
+  const tn = routeNotes(selected, drag.route);
+  const label = shared.length ? `occupied by ${theName(shared[0])}`
+    : drag.route ? `${drag.route.feet} ft${tn.extraFt ? ` (${tn.extraFt} ft terrain)` : ''}${tn.notes.length ? ' · ' + tn.notes.join(' · ') : ''}`
+    : 'no route';
   ctx.font = '600 13px IBM Plex Sans, sans-serif';
   const tw = ctx.measureText(label).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
   const good = !shared.length && drag.route && drag.route.feet <= t.speed;
@@ -445,6 +535,10 @@ function hud() {
     const [x, y] = hoverCell, c = [x + 0.5, y + 0.5];
     const fs = Engine.fogStateAt(c, view.visible, mask, Engine.pointInPolygon);
     parts.push(`square <b>${x},${y}</b>`, `fog <b>${fs}</b>`);
+    if (S.view === 'gm' || fs !== 'hidden') {
+      const here = terrain.at(x, y).map((a) => `${a.label || a.cause || 'terrain'}: ${TERRAIN_LOOK[a.kind].name}${a.dc ? ' DC ' + a.dc : ''}`);
+      if (here.length) parts.push(`terrain <b>${here.join('; ')}</b>`);
+    }
   }
   const bytes = JSON.stringify({ v: 1, polys: S.explored }).length;
   parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
@@ -517,6 +611,13 @@ canvas.addEventListener('pointerdown', (ev) => {
   const d = doorAt(p);
   if (d) { clickDoor(d, ev.shiftKey); return; }
   const id = tokenAt(p);
+  const area = !id && S.view === 'gm' ? inactiveAreaAt(p) : null;
+  if (area) {
+    const on = S.terrain_on.includes(area.id);
+    S.terrain_on = on ? S.terrain_on.filter((x) => x !== area.id) : [...S.terrain_on, area.id];
+    log(`GM: ${area.label || area.id} ${on ? 'switched off' : 'now applies'} (${TERRAIN_LOOK[area.kind].name}).`, 'ok');
+    return recompute();
+  }
   selected = id; panel();
   if (id && canDrag(id)) {
     drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
@@ -533,7 +634,7 @@ canvas.addEventListener('pointermove', (ev) => {
     if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
       drag.goal = g; drag.moved = true;
       const ms = mspace(drag.id), off = Engine.isTiny(S.tokens[drag.id]) ? 0.25 : 0;
-      drag.route = Engine.path(moveWalls, ms, g[0] + off, g[1] + off, opts);
+      drag.route = Engine.path(moveWalls, ms, g[0] + off, g[1] + off, moveOpts(drag.id));
     }
     draw();
   } else hud();
@@ -558,7 +659,11 @@ function moveToken(id, goal, route) {
   if (!fits) { toast(`${t.name} does not fit there.`); log(`${t.name} placed where it does not fit (GM call).`, 'warn'); }
   else if (!route) { toast(`No route for ${t.name}: walls are in the way.`); log(`${t.name} moved with no legal route (GM call).`, 'warn'); }
   else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${t.name}'s ${t.speed} ft Speed.`); log(`${t.name} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
-  else log(`${t.name} moved ${route.feet} ft to ${goal[0]},${goal[1]}.`);
+  else {
+    const tn = routeNotes(id, route);
+    log(`${t.name} moved ${route.feet} ft to ${goal[0]},${goal[1]}${tn.extraFt ? `, ${tn.extraFt} ft of it for difficult terrain` : ''}.`);
+    for (const n of tn.notes) log(`${t.name}: ${n}.`, 'warn');
+  }
   t.x = goal[0]; t.y = goal[1];
   delete t.slot; // a token arriving in a square takes the next free quadrant
   panel(); recompute();
@@ -573,8 +678,11 @@ canvas.addEventListener('keydown', (ev) => {
   if (!Engine.canStep(moveWalls, mspace(selected), k[0], k[1])) {
     toast(`${t.name} cannot step that way.`); return;
   }
+  const entered = terrain.entered(t.x, t.y, t.x + k[0], t.y + k[1], mspace(selected).size);
+  const stepOk = Engine.canStepInto(entered, moverOf(selected));
   t.x += k[0]; t.y += k[1]; delete t.slot;
-  log(`${t.name} steps to ${t.x},${t.y}.`);
+  if (stepOk) log(`${t.name} steps to ${t.x},${t.y}.`);
+  else log(`${t.name} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
   panel(); recompute();
 });
 

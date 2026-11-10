@@ -151,7 +151,9 @@ class Heap {
  * Options (all from the ruleset):
  * - diagonalCosts: costs in cells for successive diagonal steps, repeating. PF2E 5-10-5 is [1, 2]
  *   (the default); D&D 5e's default is [1].
- * - enterCost(x, y, size): extra cost in cells for entering the space at (x, y) (difficult terrain).
+ * - enterCost(x, y, size, fromX, fromY): extra cost in cells for moving the space from (fromX, fromY)
+ *   to (x, y) (difficult terrain; see engine/terrain/terrain.js). Infinity: the move cannot be made by
+ *   walking (deep water, a cliff) and the search goes round it.
  * - passable(x, y, size): false when the space cannot be moved through (occupied by a creature
  *   the mover cannot pass).
  * - size: footprint to move with (squeezing).
@@ -178,7 +180,7 @@ function search(pm, token, opts, goal) {
       const nx = n.x + dx, ny = n.y + dy;
       if (!passable(nx, ny, size)) continue;
       if (!canStep(pm, { x: n.x, y: n.y, size }, dx, dy, { clearance: opts.clearance })) continue;
-      const step = (isDiag ? diag[n.p % diag.length] : 1) + enterCost(nx, ny, size);
+      const step = (isDiag ? diag[n.p % diag.length] : 1) + enterCost(nx, ny, size, n.x, n.y);
       const cost = n.cost + step;
       if (cost > maxCost + E) continue;
       const p = isDiag ? (n.p + 1) % diag.length : n.p;
@@ -229,4 +231,36 @@ export function reach(pm, token, maxFeet, opts = {}) {
     const [x, y] = k.split(',').map(Number);
     return { x, y, feet: cost * feetPerCell };
   });
+}
+
+/**
+ * Cost of a route the mover chooses (dragging through waypoints, a path Claude describes), rather than
+ * the cheapest one. `cells` lists the top-left cell of each position, start included, one square apart.
+ * Uses the same options as path(). Each step reports its cost; illegal steps (through a wall, more than
+ * one square) are flagged, never refused: the board warns and the GM decides.
+ * @returns {{feet: number, cost: number, steps: Array<{to: [number, number], cost: number, feet: number,
+ *   diagonal: boolean, extra: number, legal: boolean}>, legal: boolean}}
+ */
+export function routeCost(pm, token, cells, opts = {}) {
+  const feetPerCell = opts.feetPerCell ?? 5;
+  const size = opts.size ?? token.size ?? 1;
+  const diag = opts.diagonalCosts || [1, 2];
+  const enterCost = opts.enterCost || (() => 0);
+  let p = 0, total = 0, legal = true;
+  const steps = [];
+  for (let i = 1; i < cells.length; i++) {
+    const [fx, fy] = cells[i - 1], [x, y] = cells[i];
+    const dx = x - fx, dy = y - fy;
+    const adjacent = Math.abs(dx) <= 1 && Math.abs(dy) <= 1 && (dx || dy);
+    const isDiag = dx !== 0 && dy !== 0;
+    const ok = !!adjacent && (!pm || canStep(pm, { x: fx, y: fy, size }, dx, dy, { clearance: opts.clearance }));
+    const base = isDiag ? diag[p % diag.length] : 1;
+    const extra = enterCost(x, y, size, fx, fy);
+    const cost = base + (Number.isFinite(extra) ? extra : 0);   // a step that cannot be walked is flagged, not counted
+    if (isDiag) p = (p + 1) % diag.length;
+    total += cost;
+    if (!ok || !Number.isFinite(extra)) legal = false;
+    steps.push({ to: [x, y], cost, feet: cost * feetPerCell, diagonal: isDiag, extra, legal: ok && Number.isFinite(extra) });
+  }
+  return { cost: total, feet: total * feetPerCell, steps, legal };
 }

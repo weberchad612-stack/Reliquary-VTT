@@ -185,3 +185,55 @@ test('double door: a small bend at the middle (grid snapping on a diagonal) is a
   const r = withCopy(({ edit }) => edit('walls.json', (d) => { seg(d, 'w-cell-door-n').a = [6.125, 6]; }));
   assert.doesNotMatch(errorText(r), /meet end to end/);
 });
+
+// ---- terrain ----
+const warnText = (r) => r.warnings.map((e) => e.msg).join('\n');
+
+test('terrain: unknown kind is a schema error', () => {
+  expectError(({ edit }) => edit('terrain.json', (d) => { d.areas[0].kind = 'lava'; }), /kind|enum|allowed/i);
+});
+
+test('terrain: an area needs cells or rects', () => {
+  expectError(({ edit }) => edit('terrain.json', (d) => { delete d.areas[0].rects; }), /cells|rects|anyOf/i);
+});
+
+test('terrain: squares outside the grid', () => {
+  expectError(({ edit }) => edit('terrain.json', (d) => { d.areas[0].rects = [[11, 9, 3, 1]]; }), /outside the 12x10 grid/);
+});
+
+test('terrain: duplicate area ids', () => {
+  expectError(({ edit }) => edit('terrain.json', (d) => { d.areas[1].id = 't01'; }), /duplicate area id/);
+});
+
+test('terrain: the file named in map.json must exist', () => {
+  expectError(({ edit }) => edit('map.json', (d) => { d.terrain = 'missing.json'; }), /terrain file "missing.json" not found/);
+});
+
+test('terrain: checks without a DC and save-only fields in a pack are warned about', () => {
+  const r = withCopy(({ edit }) => edit('terrain.json', (d) => { delete d.areas[2].dc; d.areas[0].until = 'later'; }));
+  assert.match(warnText(r), /uneven areas usually give the DC/);
+  assert.match(warnText(r), /belong to temporary terrain in a save/);
+});
+
+test('terrain: the save can only switch off areas that exist', () => {
+  expectError(({ editState }) => editState((d) => { d.terrain_off = ['t09']; }), /terrain_off: no terrain area "t09"/);
+});
+
+test('terrain: temporary areas need their own ids', () => {
+  expectError(({ editState }) => editState((d) => { d.terrain[0].id = 't01'; }), /id already used/);
+});
+
+test('terrain: terrain_on must name an existing area', () => {
+  expectError(({ editState }) => editState((d) => { d.terrain_on = ['nope']; }), /terrain_on: no terrain area "nope"/);
+});
+
+test('terrain: terrain_on for an area that is already active is warned about', () => {
+  const r = withCopy(({ editState }) => editState((d) => { d.terrain_on = ['t01']; }));
+  assert.match(warnText(r), /already active/);
+});
+
+test('terrain: switching on an area that starts off is fine', () => {
+  const r = withCopy(({ editState }) => editState((d) => { d.terrain_on = ['t04']; }));
+  assert.equal(errorText(r), '');
+  assert.doesNotMatch(warnText(r), /terrain_on/);
+});

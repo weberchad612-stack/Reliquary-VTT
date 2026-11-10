@@ -8,6 +8,11 @@
 - Keep the design doc ([docs/design/maps.md](../design/maps.md)) and the matching best-practices guide in step with the code: decisions, measurements, known limits.
 - Measure performance on a real map, not only the sample.
 
+## The demo page
+
+- It is one classic script: a top-level function or constant declared twice silently replaces the first (this once broke the GM vision view). `tests/demo.test.mjs` checks for repeats and that every `Engine.<name>` it uses exists.
+- After any change, build it and load it in a headless browser: watch for page errors (a constant used before its definition only fails there), click a token in both views, drag a token, open a door.
+
 ## Visual work
 
 - Render the result and look at it: overlays for walls, zoomed tiles with the cell grid for corrections, the demo page for behaviour.

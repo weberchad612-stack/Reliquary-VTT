@@ -20,8 +20,9 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 | Folder | What |
 |---|---|
-| `engine/` | Walls, sight, fog, movement, tokens (dependency-free JavaScript); board page later |
-| `schemas/` | JSON schemas for maps, walls and map state |
+| `engine/` | Walls, doors, sight, fog, movement, terrain, measurement, tokens (dependency-free JavaScript); board page later |
+| `schemas/` | JSON schemas for maps, walls, terrain and map state |
+| `rulesets/` | Game-system rules the engine asks for (PF2E movement and terrain first) |
 | `tools/` | Validator, sight/move/fog query tools, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `examples/` | Original sample pack and save, and the engine demo page |
 | `tests/` | `npm test` |

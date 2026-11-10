@@ -26,8 +26,8 @@ Other principles carried over from the reimplementation plan:
 
 | Layer | Holds | Example |
 |---|---|---|
-| Adventure pack | Map image, grid calibration, wall segments, door and secret definitions, links between maps | `packs/<pack>/maps/<map>/` |
-| Campaign save | Current map, door states, found secrets, explored outlines, token positions | `saves/<save>/maps/<map>.json` |
+| Adventure pack | Map image, grid calibration, wall segments, door and secret definitions, terrain areas, links between maps | `packs/<pack>/maps/<map>/` |
+| Campaign save | Current map, door states, found secrets, explored outlines, token positions, temporary terrain and terrain switched on or off | `saves/<save>/maps/<map>.json` |
 | Engine | Rendering, the sight and movement engine, the player and GM views | `engine/` |
 | Ruleset | Vision range, vision types, movement rules (diagonals, difficult terrain) | `rulesets/<system>/` |
 
@@ -221,7 +221,7 @@ Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
 | Option | Purpose | PF2E | D&D 5e |
 |---|---|---|---|
 | `diagonalCosts` | Cost of successive diagonal steps, in cells, repeating | `[1, 2]` (5-10-5, the default) | `[1]` |
-| `enterCost(x, y, size)` | Extra cost for entering a space | +1 per difficult square, +2 greater difficult | +1 per difficult square |
+| `enterCost(x, y, size, fromX, fromY)` | Extra cost for moving the space from one position to the next; `Infinity` when walking cannot do it (deep water, a slope to climb) | from the terrain layer (section 9a): +1 difficult, +2 greater difficult | +1 per difficult square |
 | `passable(x, y, size)` | Spaces the mover cannot pass (other creatures) | three-size rule, Tiny sharing | ruleset's own |
 | `size` | Move with a smaller footprint | when squeezing is allowed | ruleset's own |
 
@@ -232,6 +232,56 @@ Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
 **Board behaviour.** The board may warn when a PC token is dragged through a blocking wall or into a space it does not fit. It never prevents the move; the GM decides.
 
 **Performance.** On a 40 x 40 map with 300 walls: about 37 ms for three long paths (1x1, 2x2, 4x4), and about 13 ms for every position a Medium creature can reach in 50 ft.
+
+## 9a. Terrain
+
+Terrain is a separate layer from walls: walls stop movement and sight along lines; terrain changes what moving through whole squares costs and what it calls for. (The wall type `terrain` is a different thing, a low wall or curtain that limits sight; see section 5.)
+
+**Data.** A map may name a terrain file (`map.json` `terrain`, schema `schemas/terrain.schema.json`). It holds areas; each area is a set of squares (`rects` `[x, y, w, h]` and/or `cells`) with:
+
+| Field | Meaning |
+|---|---|
+| `kind` | `difficult`, `greater_difficult` (cost extra movement); `swim`, `climb` (need that action unless the creature has the speed); `uneven`, `narrow` (Balance); `hazardous` (damage) |
+| `cause` | What makes it so: `rubble`, `mud`, `water`, `glass`, `sinkhole`, `plants`... Rulesets use it for creatures that ignore some terrain ("skitters over rubble") |
+| `magical` | Created by magic; abilities that ignore natural terrain do not ignore it, and flying creatures are still affected |
+| `dc`, `damage` | The check the area calls for; the damage of hazardous terrain |
+| `active` | `false`: the area starts switched off (a bridge or pier that will collapse into water and mud) |
+| `label`, `room`, `note` | For the board, narration and the GM |
+
+Whole squares, not shapes: the PF2E rules count terrain per square entered, and so do D&D and most grid games. If gridless play is ever needed, an area can gain a polygon; the square list stays the grid answer.
+
+**The save** adds temporary areas (`terrain`, the same shape plus `source` and `until`: a spell's entangling plants), switches pack areas off (`terrain_off`: the rubble has been cleared) and on (`terrain_on`: the drawbridge has collapsed). The validator checks every id.
+
+**Engine.** `engine/terrain/terrain.js` knows where areas are and nothing about what they cost:
+
+- `TerrainMap(packAreas, state)`: the areas that apply now, indexed by square; `at(x, y)`, `inSpace(x, y, size)`.
+- `entered(fromX, fromY, toX, toY, size)`: the areas a move enters, counting only squares of the new space that were not part of the old one. A creature already in difficult terrain pays again for each new square.
+- `terrainEnterCost(terrain, rules, mover)` gives the movement engine its `enterCost` option for one creature; `routeTerrain(...)` lists, step by step, the extra cost and the checks a route calls for (board warnings, narration).
+
+**Ruleset.** `rulesets/pf2e/terrain.js` holds the Pathfinder 2e rules (Player Core, paraphrased):
+
+- Entering a square of difficult terrain costs 5 ft more, greater difficult terrain 10 ft more. The extra is the same on a diagonal: the 5-10-5 pattern still applies underneath (a diagonal into difficult terrain costs 10 or 15 ft).
+- Terrain does not stack: on one step the worst area entered counts.
+- A creature that ignores difficult terrain treats greater difficult terrain as difficult. A mover describes what it ignores: `ignoreDifficult: true`, `{causes: ['rubble']}`, or `{natural: true}` (not magical areas).
+- You cannot Step into difficult terrain (`canStepInto`); the board logs such a move as a Stride.
+- Swim and climb areas need the Swim or Climb action unless the creature has that speed: walking routes go round them (`Infinity`) and the board lists the check. Uneven ground and narrow surfaces call for Balance; hazardous terrain deals its damage. Flying creatures pass over ordinary ground terrain but not magical areas (a GM call either way).
+- **Larger creatures (a table ruling to confirm):** the rules do not say how terrain applies to a creature larger than one square. The engine charges a Large or bigger creature once per step, for the worst area among the new squares it enters.
+- **Not yet wired:** this table's ruling that moving through an ally's square counts as difficult terrain needs the token layer; it fits the same `enterCost` hook.
+
+**Import.** The importer's terrain step (`tools/mapimport/terrain.py`) builds areas from the adventure text and the art: squares chosen by room, rectangle or polygon, filtered by how much of each square shows a sampled colour (rubble, water), with explicit additions and exclusions, split into one area per keyed room where useful. See the best-practices guide for terrain.
+
+**Board.** Each square of an area carries a mark (red up-chevrons for difficult terrain, two for greater difficult, waves for swim, an arrow for climb, a zigzag for Balance, ! for hazards) and each area a thin outline. Marks are drawn on the map under the fog, so players see terrain only where they have explored, dimmed where it is only remembered. Areas that start switched off show to the GM as dashed outlines. Routes and movement ranges include terrain costs; the route label shows the extra feet and any checks.
+
+## 9b. Distance and measurement
+
+`engine/measure/measure.js`. Terrain never changes a distance; it changes what moving costs.
+
+- `gridDistance(dx, dy, diagonalCosts, parity)`: cells to cover a displacement with the ruleset's diagonal pattern (PF2E 5-10-5).
+- `rulerLength(points)`: a ruler through waypoints, the diagonal pattern carrying on from one leg to the next as it does in one continuous move.
+- `spaceDistance(a, b)`: distance between two creatures' spaces for reach and range, from a square of one to the nearest square of the other (adjacent is 5 ft).
+- `routeCost(walls, token, cells, opts)` (in `engine/movement/movement.js`): the cost of a route the mover chooses through waypoints, rather than the cheapest one, step by step, flagging steps that are not legal moves without refusing them.
+
+The board's ruler tool and drag-through-waypoints movement will use these; Claude's narration and the query tools use the same functions so the board and Claude never disagree about a distance.
 
 ## 10. Secrecy
 

@@ -14,3 +14,10 @@ Other ideas raised but not yet written up (from the comparison with the first im
 - GM-revealed "known" areas shown as a dimmed, blurred map (the party has a map or a description).
 - A player-facing turn view during combat.
 - Pillars kept as small closed walls on import.
+
+Terrain follow-ups (from building the terrain layer, 2026-11-09):
+
+- Hidden terrain: a GM-only area (quicksand, a covered pit) that players learn of when someone enters it or Seeks.
+- This table's ruling that moving through an ally's square is difficult terrain: needs the token layer; it uses the same `enterCost` hook.
+- How terrain applies to creatures larger than one square: the engine charges once per step for the worst new square, a table ruling to confirm.
+- Gridless measurement and terrain shapes, if a map or ruleset ever needs them (areas would gain a polygon; the square list stays the grid answer).

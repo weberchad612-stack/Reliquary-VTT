@@ -6,7 +6,8 @@ Usage:
 
 The settings file lives in the map's folder inside a (private) pack and names the source PDF,
 the page, and every setting and correction for this map. The importer writes, next to it:
-map.json, walls.json, the map image, and import-report.json (counts and what was applied).
+map.json, walls.json, terrain.json (when the settings have a terrain block), the map image, and
+import-report.json (counts and what was applied).
 Paths in the settings are relative to the repository root (--repo, default: two folders up from
 this script).
 
@@ -26,6 +27,10 @@ Settings (all optional except source and map):
   windows:    [{near: [x, y], ...props}]          properties for detected windows
   add:        [{t, a: [x, y], b: [x, y], door?: {...}, ...props, note}]   explicit segments (secret
               doors placed from the adventure's map; pair them with an erase that opens the wall)
+  terrain:    {classes: {name: {hsv}}, areas: [{kind, cause, label, dc, active, select, art, minus, split, note}]}
+              difficult terrain, water, slopes; see terrain.py
+  rooms:      {label: [x, y]}  a point inside each keyed room, from the book's labelled map (registered
+              to the image); terrain split by room is named after them
 Segment props: id, label, initial, dc, stuck_dc, blocked, auto_find, sight, light, sound, prox, room, note.
 """
 import argparse
@@ -40,7 +45,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
-from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize  # noqa: E402
+from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize, terrain as terrainmod  # noqa: E402
 
 SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note")
 DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find", "pair", "hinge", "swing")
@@ -337,6 +342,15 @@ def build(cfg_path, repo):
                  "cols": int(g["cols"]), "rows": int(g["rows"]), "feet_per_cell": fpc},
         "walls": "walls.json",
     }
+    hidden_rects = [e["cells"] for e in (cfg.get("mask") or {}).get("exclude", []) if isinstance(e, dict) and e.get("hide")]
+    areas = terrainmod.build_terrain(cfg.get("terrain"), np.asarray(img.convert("RGB")), g, smooth, out, report,
+                                     keyed_rooms=cfg.get("rooms"), hidden=hidden_rects)
+    if areas:
+        map_rec["terrain"] = "terrain.json"
+        with open(os.path.join(out_dir, "terrain.json"), "w", encoding="utf-8") as f:
+            json.dump({"v": 1, "areas": areas}, f, indent=1)
+            f.write("\n")
+        report["terrain"] = {a["id"]: sum(r[2] * r[3] for r in a["rects"]) for a in areas}
     hidden = [{"cells": e["cells"], **({"note": e["note"]} if e.get("note") else {})}
               for e in (cfg.get("mask") or {}).get("exclude", []) if isinstance(e, dict) and e.get("hide")]
     if hidden:

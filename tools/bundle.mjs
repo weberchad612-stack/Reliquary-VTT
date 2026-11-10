@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENGINE = path.join(ROOT, 'engine');
-const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
+const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', '../rulesets/pf2e/terrain.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
 
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'([^']+)';?\s*$/gm;
 const EXPORT_RE = /^export\s+(?:async\s+)?(const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm;
@@ -66,7 +66,8 @@ function dataFor(file) {
     const files = Array.isArray(map.walls) ? map.walls : [map.walls];
     const segs = files.flatMap((f) => JSON.parse(fs.readFileSync(path.join(abs, f), 'utf8')).segs);
     const image = dataUrl(path.join(abs, map.image.file));
-    return JSON.stringify({ map, segs, image });
+    const terrain = map.terrain ? JSON.parse(fs.readFileSync(path.join(abs, map.terrain), 'utf8')).areas : [];
+    return JSON.stringify({ map, segs, image, terrain });
   }
   if (abs.endsWith('.json')) return JSON.stringify(JSON.parse(fs.readFileSync(abs, 'utf8')));
   return JSON.stringify(dataUrl(abs));

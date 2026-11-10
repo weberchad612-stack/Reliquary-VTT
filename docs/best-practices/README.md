@@ -8,6 +8,7 @@ How to use and change each core feature well. Written for Claude, who runs the t
 | Walls, doors and openings (`walls.json`) | [walls-and-doors.md](walls-and-doors.md) |
 | Sight and fog of war (`engine/sight/`, `engine/fog/`) | [sight-and-fog.md](sight-and-fog.md) |
 | Movement and tokens (`engine/movement/`, `engine/tokens/`) | [movement-and-tokens.md](movement-and-tokens.md) |
+| Terrain and distance (`engine/terrain/`, `engine/measure/`, `rulesets/pf2e/terrain.js`, importer terrain step) | [terrain.md](terrain.md) |
 | Working on the repository | [development.md](development.md) |
 
 The design behind these features is in [docs/design/maps.md](../design/maps.md).
