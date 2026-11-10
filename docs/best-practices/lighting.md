@@ -51,6 +51,7 @@ Paraphrase in notes; never copy the book's sentences.
 
 - Region edges are faded in `glow` only (`fadeRegionEdges`): pass the light walls (`prepareLight`) to `LightMap` so edges along walls stay sharp.
 - Colour mixes by brightness in the light map (`LightMap.colour`); the board draws it as a tint layer under the shade, keyed on the light map so colour and intensity edits rebuild only the light map (`relight()`), never the party view.
+- A view that sees nothing must show nothing: an empty visible area is not "no clip". The animation layer once skipped its clip when the selected creature saw nothing (night, torch out) and flickered every lamp on the map.
 - Animation never touches the light map or the party view: it is a separate layer drawn from per-light sprites (`animSprite`) and `animationAt`, clipped to the view. Keep it that way: anything that redraws the board per frame will not keep up.
 - The light map holds two things: `levels` for the rules (three steps) and `glow` for drawing (0-255). Never decide anything from `glow`.
 - Daylight lights are generated (`daylightLights`) from the walls, the door states, the sky and the sky regions every update and handed to the same `LightCache` as the static and carried lights; their ids (`day:<wall>:<n>`) are stable, so they are only recomputed when a door or the sky changes.
