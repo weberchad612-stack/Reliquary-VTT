@@ -66,6 +66,36 @@ for this project (not copied); tests that the masks still respect walls and the 
   the audio system (engine music is planned); then it is a Group 1 animation driven by an audio level
   instead of a clock.
 
+## Overlapping animated lights: flicker by share (proposed 2026-11-10)
+
+**Today** each animated light draws its own flicker over its whole area, unaware of the others. Where lights
+overlap, the flickers simply add:
+
+- two torches overlapping flicker twice over in the overlap, busier than either torch alone;
+- a torch whose dim fringe runs into a strong steady light (a magical light, daylight, a bright region)
+  still flickers that area fully, though the steady light gives most of the light there.
+
+**Proposal:** each light flickers only by its share of the light at each point. What the eye sees is the sum
+of the lights, so when one source wavers the total wavers by that source's share:
+
+    change at a point = sum over animated lights of (its brightness there / all light there) x (its swing)
+
+- One torch alone: it flickers fully, as now.
+- Two equal torches overlapping: each counts for half; their flickers partly cancel, so the overlap is a
+  little calmer than either torch, as two real flames look.
+- A torch's faint edge against a strong steady light: its share is tiny, so that area stays nearly steady.
+- Chroma: its hue shift is weighted the same way, matching how colours already mix by brightness.
+- The flame weighting (a steady core, a moving fringe) still applies within each light's share.
+
+**How:** the light map keeps one more value per point, the total brightness of every source (lights,
+regions, daylight, the sky). Each animated light's flicker pictures take their alpha from its own brightness
+divided by that total. The pictures must then be remade when any light near them changes or moves (Kerra's
+torch walking past a brazier): a small one-off rebuild keyed on the light map, never a per-frame cost, so
+the frame rate is unchanged.
+
+**Rejected:** letting only the brightest light at each point animate. It leaves visible seams where one
+light takes over from another.
+
 ## Open questions for later
 
 - Should carried lights get Group 2 and 3 animations, or only static ones (a sweeping beam on a moving
