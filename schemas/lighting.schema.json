@@ -33,6 +33,16 @@
         "intensity": { "$ref": "#/$defs/intensity" }
       }
     },
+    "animation": {
+      "type": "object", "additionalProperties": false,
+      "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
+      "properties": {
+        "type": { "enum": ["none", "torch", "flicker", "pulse", "ghostly", "chroma"] },
+        "speed": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5 },
+        "intensity": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5, "description": "How strong the effect is." },
+        "reverse": { "type": "boolean", "default": false, "description": "Reverse direction (chroma: the hues turn the other way)." }
+      }
+    },
     "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour the board tints the light (drawing only), #rrggbb, or none. Presets bring a natural colour; a light or region without one is uncoloured." },
     "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "How strong the light looks on the board, 0-100 % (default 100; drawing only, never the rules): a faint glow 25." },
     "lightShape": {
@@ -58,6 +68,7 @@
         "dim": { "$ref": "#/$defs/lightShape/properties/dim" },
         "colour": { "$ref": "#/$defs/colour" },
         "intensity": { "$ref": "#/$defs/intensity" },
+        "animation": { "$ref": "#/$defs/animation" },
         "walls": { "type": "boolean", "default": true, "description": "false: the light ignores walls (a magical glow)." },
         "angle": { "type": "number", "exclusiveMinimum": 0, "maximum": 360, "description": "Emission angle in degrees: a cone (static lights only)." },
         "rotation": { "type": "number", "minimum": 0, "exclusiveMaximum": 360, "description": "Direction of the cone in degrees: 0 east, 90 south (y down)." },

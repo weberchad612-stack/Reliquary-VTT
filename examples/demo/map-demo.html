@@ -58,6 +58,10 @@ canvas#map, .hud { margin: 0 auto; flex: none; }
 .sky select { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: inherit; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; }
 .zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
+canvas#anim { position: absolute; pointer-events: none; }
+.arow { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); margin: -2px 0 4px 22px; }
+.arow select { font-size: 11px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 1px 2px; }
+.arow input[type=range] { width: 100%; }
 canvas#map { display: block; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); touch-action: none; cursor: default; }
 .hud {
   display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 16px; font: 13px var(--font-mono); color: var(--muted);
@@ -123,6 +127,7 @@ ol.log li.foe { border-left-color: var(--foe); }
       </label>
       <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off: off, everything counts as bright">Lighting on</button>
       <button id="b-colour" aria-pressed="true" hidden title="GM: coloured light on or off for the whole table">Colour on</button>
+      <button id="b-anim" aria-pressed="true" hidden title="GM: light animation (flicker) on or off for the whole table">Animation on</button>
       <button id="b-walls" aria-pressed="false">Show walls</button>
       <button id="b-reset">Reset</button>
     </div>
@@ -130,6 +135,7 @@ ol.log li.foe { border-left-color: var(--foe); }
   <main>
     <div class="stage" id="stage">
       <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
+      <canvas id="anim" aria-hidden="true"></canvas>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
       <div class="hud" id="hud"></div>
     </div>
@@ -173,6 +179,7 @@ const START = () => ({
   regions: {},        // lighting regions changed in play: {id: {colour?, intensity?}}
   regions_off: [],    // lighting regions that no longer apply
   light_colour: { on: true, strength: 25 },   // the GM's table-wide coloured-light switch and strongest tint (%)
+  light_animation: { on: true },              // the GM's table-wide switch for animated lights
   sky: 'bright',      // sky light for outdoor maps and sky regions
   hiddenMarks: {},    // GM-placed "hidden" markers: foe id -> square where the party thinks it is
   tokens: JSON.parse(JSON.stringify(SETUP.tokens)),
@@ -216,7 +223,7 @@ const lightCache = new Engine.LightCache(G, { feetPerCell: FPC });
 let lightMap = null;
 const staticOn = (l) => (S.lights[l.id] && S.lights[l.id].on !== undefined ? S.lights[l.id].on : l.on !== false);
 /** A static light as it is now: the pack's, with any colour and intensity changed in play. */
-const staticSpec = (l) => Engine.lightSpec({ ...l, ...pick(S.lights[l.id], ['colour', 'intensity']) });
+const staticSpec = (l) => Engine.lightSpec({ ...l, ...pick(S.lights[l.id], ['colour', 'intensity', 'animation']) });
 const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o && o[k] !== undefined).map((k) => [k, o[k]]));
 /** The map's lighting regions as they are now: switched-off ones dropped, colour and intensity changes applied. */
 const regionsNow = () => (LIGHTING.regions || []).filter((r) => !S.regions_off.includes(r.id)).map((r) => ({ ...r, ...pick(S.regions[r.id], ['colour', 'intensity']) }));
@@ -414,6 +421,9 @@ function fit() {
   canvas.style.width = W * scale + 'px'; canvas.style.height = H * scale + 'px';
   canvas.width = Math.round(W * scale * dpr); canvas.height = Math.round(H * scale * dpr);
   ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+  animCanvas.style.width = canvas.style.width; animCanvas.style.height = canvas.style.height;
+  animCanvas.width = canvas.width; animCanvas.height = canvas.height;
+  animCanvas.style.left = canvas.offsetLeft + 'px'; animCanvas.style.top = canvas.offsetTop + 'px';
   draw();
 }
 const P = (c) => c * CS; // cells -> pixels from the grid origin (draw() translates by OX, OY)
@@ -459,6 +469,7 @@ function draw() {
   if (drag && drag.route !== undefined) drawRoute();
   drawTokens(F, full);
   ctx.restore();
+  refreshAnimation(F, full);
   hud();
 }
 
@@ -566,6 +577,141 @@ function drawTint(F, full, key) {
   ctx.restore();
 }
 
+// ---------- light animation (torch, flicker, pulse, ghostly, chroma) ----------
+// Drawn on a layer of its own over the map, about 30 times a second, from pictures of each animated light's
+// glow made once (again only when the light moves or changes). The board itself is never redrawn for
+// animation. Drawing only: the rules never change. Clipped to what the view perceives, so an animated light
+// never shows players an unseen room.
+const animCanvas = document.getElementById('anim');
+const actx = animCanvas.getContext('2d');
+const ANIM_LOOK = { darken: 1.6, brighten: 0.9, light: '#fff1d6', fps: 30 };
+const animOn = () => LIT && S.light_animation.on;
+let animList = [], animClip = null, animFull = true, animRAF = null, animLast = 0;
+const animSprites = new Map();   // light id -> {key, x, y, w, h, dark, bright, colour}
+const animStats = { frames: 0, ms: 0, since: 0, fps: 0, avg: 0 };
+const animStatText = () => (animOn() && animList.length ? `animation <b>${animList.length}</b> lights · <b>${animStats.avg.toFixed(1)}</b> ms/frame · <b>${animStats.fps}</b> fps` : animOn() ? 'animation <b>idle</b>' : 'animation <b>off</b>');
+/** A light's glow as small pictures (dark, bright, colour), made once per light shape, colour and intensity. */
+function animSprite(l, patch) {
+  const key = [l.colour || '', l.intensity ?? 100].join('|');
+  const hit = animSprites.get(l.id);
+  if (hit && hit.patch === patch && hit.key === key) return hit;
+  const W = lightMap.w;
+  let i0 = Infinity, j0 = Infinity, i1 = -1, j1 = -1;
+  for (const k of patch.idx) { const i = k % W, j = (k - i) / W; if (i < i0) i0 = i; if (i > i1) i1 = i; if (j < j0) j0 = j; if (j > j1) j1 = j; }
+  if (i1 < 0) return null;
+  const w = i1 - i0 + 1, h = j1 - j0 + 1, f = (l.intensity ?? 100) / 100;
+  const rgb = Engine.parseColour(l.colour) || [255, 80, 80];
+  const make = (r, g, b) => {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const cx = c.getContext('2d'), im = cx.createImageData(w, h);
+    for (let n = 0; n < patch.idx.length; n++) {
+      const k = patch.idx[n], i = (k % W) - i0, j = Math.floor(k / W) - j0, q = (j * w + i) * 4;
+      im.data[q] = r; im.data[q + 1] = g; im.data[q + 2] = b; im.data[q + 3] = Math.round(patch.glow[n] * f);
+    }
+    cx.putImageData(im, 0, 0);
+    return c;
+  };
+  const shade = LIGHT_LOOK.shade.split(',').map(Number), lt = Engine.parseColour(ANIM_LOOK.light);
+  const sp = { key, patch, x: i0 / lightMap.res, y: j0 / lightMap.res, w: w / lightMap.res, h: h / lightMap.res,
+    dark: make(...shade), bright: make(...lt), colour: make(...rgb) };
+  animSprites.set(l.id, sp);
+  return sp;
+}
+/** Which lights animate now, and where the view lets them show. Called after every board redraw. */
+function refreshAnimation(F, full) {
+  animList = [];
+  if (animOn()) {
+    for (const l of lightsNow()) {
+      const anim = Engine.animationOf(l.animation);
+      const hit = anim && lightCache.patches.get(l.id);
+      if (!hit) continue;
+      const sp = animSprite(l, hit.patch);
+      if (sp) animList.push({ id: l.id, anim, sp });
+    }
+  }
+  animFull = full;
+  animClip = null;
+  if (!full && F.visible.length) {
+    animClip = new Path2D();
+    for (const r of F.visible) { if (r.length < 3) continue; animClip.moveTo(P(r[0][0]), P(r[0][1])); for (let i = 1; i < r.length; i++) animClip.lineTo(P(r[i][0]), P(r[i][1])); animClip.closePath(); }
+  }
+  if (!animList.length) { clearAnim(); return; }
+  if (!animRAF) animRAF = requestAnimationFrame(animFrame);
+}
+function clearAnim() {
+  actx.setTransform(1, 0, 0, 1, 0, 0); actx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+}
+function animFrame(now) {
+  animRAF = null;
+  if (!animOn() || !animList.length) { clearAnim(); return; }
+  if (now - animLast >= 1000 / ANIM_LOOK.fps - 2) {
+    animLast = now;
+    const t0 = performance.now();
+    drawAnim(now / 1000);
+    animStats.ms += performance.now() - t0; animStats.frames++;
+    if (now - animStats.since >= 1000) {
+      animStats.fps = Math.round((animStats.frames * 1000) / (now - animStats.since || 1));
+      animStats.avg = animStats.frames ? animStats.ms / animStats.frames : 0;
+      animStats.frames = 0; animStats.ms = 0; animStats.since = now;
+      const el = document.getElementById('animstat'); if (el) el.innerHTML = animStatText();
+    }
+  }
+  animRAF = requestAnimationFrame(animFrame);
+}
+function drawAnim(t) {
+  const dpr = window.devicePixelRatio || 1;
+  clearAnim();
+  actx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+  actx.translate(OX, OY);
+  if (animClip) actx.clip(animClip, 'nonzero');
+  actx.imageSmoothingEnabled = true;
+  const colour = S.light_colour.on, strength = S.light_colour.strength / 100;
+  for (const { id, anim, sp } of animList) {
+    const { brightness, hue } = Engine.animationAt(anim, id, t);
+    const d = brightness - 1, x = P(sp.x), y = P(sp.y), w = P(sp.w), h = P(sp.h);
+    if (d < 0) { actx.globalAlpha = Math.min(1, -d * ANIM_LOOK.darken); actx.drawImage(sp.dark, x, y, w, h); }
+    else if (d > 0) { actx.globalAlpha = Math.min(1, d * ANIM_LOOK.brighten); actx.drawImage(sp.bright, x, y, w, h); }
+    if (anim.type === 'chroma' && colour) {
+      actx.globalAlpha = Math.min(1, strength * 1.6 * (anim.intensity / 10));
+      actx.filter = `hue-rotate(${hue}deg)`; actx.drawImage(sp.colour, x, y, w, h); actx.filter = 'none';
+    }
+  }
+  actx.globalAlpha = 1;
+}
+function syncAnimButton() {
+  const b = document.getElementById('b-anim');
+  b.setAttribute('aria-pressed', String(S.light_animation.on));
+  b.textContent = S.light_animation.on ? 'Animation on' : 'Animation off';
+}
+document.getElementById('b-anim').onclick = () => {
+  S.light_animation = { ...S.light_animation, on: !S.light_animation.on };
+  syncAnimButton();
+  log(`GM: light animation ${S.light_animation.on ? 'on' : 'off'} for the whole table.`, 'ok');
+  draw();
+};
+/** Animation controls under a lamp's or a carried light's row: type, speed, intensity, reverse. */
+function animRow(anim) {
+  const a = { ...Engine.ANIMATION_DEFAULTS, ...(anim || {}) };
+  return `<div class="arow">
+    <select data-a="type" aria-label="Animation">${Object.keys(Engine.ANIMATION_TYPES).map((k) => `<option value="${k}" ${k === a.type ? 'selected' : ''} title="${Engine.ANIMATION_TYPES[k]}">${k === 'none' ? 'steady' : k}</option>`).join('')}</select>
+    <label title="Speed 1-10">speed <input type="range" min="1" max="10" step="1" data-a="speed" value="${a.speed}"></label>
+    <label title="Animation intensity 1-10">strength <input type="range" min="1" max="10" step="1" data-a="intensity" value="${a.intensity}"></label>
+    <label title="Reverse direction"><input type="checkbox" data-a="reverse" ${a.reverse ? 'checked' : ''}> rev</label>
+  </div>`;
+}
+/** Wire an animation row: `get` returns the current settings, `set(next)` stores them. */
+function wireAnimRow(row, get, set, name) {
+  if (!row) return;
+  for (const el of row.querySelectorAll('[data-a]')) {
+    el.onchange = () => {
+      const f = el.dataset.a, v = f === 'type' ? el.value : f === 'reverse' ? el.checked : Number(el.value);
+      set({ ...Engine.ANIMATION_DEFAULTS, ...(get() || {}), [f]: v });
+      log(`GM: ${name} animation ${f} ${v}.`, 'ok');
+      draw();
+    };
+  }
+}
+
 // ---------- the GM's lighting card: coloured light, lamps and regions ----------
 const pct = (v) => Math.round(v === undefined ? 100 : v);
 const colourValue = (c) => (Engine.parseColour(c) ? c : '#ffffff');
@@ -581,7 +727,7 @@ function lightingCard() {
   const el = document.getElementById('lightcard');
   el.hidden = !(S.view === 'gm' && LIT && ((LIGHTING.lights || []).length || (LIGHTING.regions || []).length));
   if (el.hidden) return;
-  const lamps = (LIGHTING.lights || []).map((l) => { const sp = staticSpec(l); return lightRow('lamp', l.id, l.label ? `${l.label}${l.room ? ' · ' + l.room : ''}` : l.id, staticOn(l), sp.colour, sp.intensity); });
+  const lamps = (LIGHTING.lights || []).map((l) => { const sp = staticSpec(l); return lightRow('lamp', l.id, l.label ? `${l.label}${l.room ? ' · ' + l.room : ''}` : l.id, staticOn(l), sp.colour, sp.intensity) + `<div data-anim-for="${l.id}">${animRow(sp.animation)}</div>`; });
   const regs = (LIGHTING.regions || []).map((r) => { const now = { ...r, ...pick(S.regions[r.id], ['colour', 'intensity']) }; return lightRow('region', r.id, `${r.label || r.id} (${r.level})`, !S.regions_off.includes(r.id), now.colour, now.intensity); });
   el.innerHTML = `<h2>Lighting (GM)</h2>
     <div class="lrow"><span class="nm">Colour strength</span><span></span><input type="range" min="0" max="60" step="5" id="colour-strength" value="${S.light_colour.strength}" aria-label="Strongest colour tint"><span class="pct">${S.light_colour.strength}%</span></div>
@@ -604,6 +750,10 @@ function lightingCard() {
     row.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${name} uncoloured.`, 'ok'); lightingCard(); relight(); };
     row.querySelector('[data-f=intensity]').oninput = (e) => { row.querySelector('.pct').textContent = e.target.value + '%'; };
     row.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${name} intensity ${e.target.value}%.`, 'ok'); lightingCard(); relight(); };
+    if (kind === 'lamp') {
+      const l = LIGHTING.lights.find((x) => x.id === id);
+      wireAnimRow(el.querySelector(`[data-anim-for="${id}"]`), () => staticSpec(l).animation, (a) => set('animation', a), name);
+    }
   }
 }
 
@@ -921,6 +1071,7 @@ function hud() {
   const bytes = JSON.stringify({ v: 1, polys: S.explored }).length;
   parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
   parts.push(focusId() ? `view <b>${S.tokens[focusId()].name} only</b>` : `lookers <b>${view.lookers.length}</b>`);
+  parts.push(`<span id="animstat">${animStatText()}</span>`);
   document.getElementById('hud').innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
 }
 
@@ -945,7 +1096,7 @@ function panel() {
     <div class="sel-actions">
       ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
     </div>
-    ${t.light && S.view === 'gm' && LIT ? lightRow('carried', selected, 'Carried light', t.light.on !== false, Engine.lightSpec(t.light).colour, Engine.lightSpec(t.light).intensity) : ''}
+    ${t.light && S.view === 'gm' && LIT ? lightRow('carried', selected, 'Carried light', t.light.on !== false, Engine.lightSpec(t.light).colour, Engine.lightSpec(t.light).intensity) + `<div data-anim-for="carried">${animRow(Engine.lightSpec(t.light).animation)}</div>` : ''}
     <div class="sel-actions">
       ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
     </div>
@@ -958,6 +1109,7 @@ function panel() {
     cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${t.name}'s light uncoloured.`, 'ok'); panel(); relight(); };
     cr.querySelector('[data-f=intensity]').oninput = (e) => { cr.querySelector('.pct').textContent = e.target.value + '%'; };
     cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${t.name}'s light intensity ${e.target.value}%.`, 'ok'); panel(); relight(); };
+    wireAnimRow(el.querySelector('[data-anim-for="carried"]'), () => Engine.lightSpec(t.light).animation, (a) => set('animation', a), `${t.name}'s light`);
   }
   const bl = document.getElementById('b-light');
   if (bl) bl.onclick = () => {
@@ -1134,6 +1286,7 @@ function setView(v) {
   document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
   if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
   document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
+  document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
   panel(); lightingCard(); draw();
 }
 document.getElementById('v-player').onclick = () => setView('player');
@@ -1171,7 +1324,7 @@ document.getElementById('b-reset').onclick = () => {
   document.getElementById('log').innerHTML = ''; log('Table reset. ' + SETUP.intro);
   document.getElementById('b-walls').setAttribute('aria-pressed', 'false');
   document.getElementById('sky').value = 'bright';
-  syncColourButton();
+  syncColourButton(); syncAnimButton();
   panel(); lightingCard(); recompute('reset');
 };
 

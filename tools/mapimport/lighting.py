@@ -16,7 +16,8 @@ Selectors are the terrain step's (cells, rects, poly, room_at; see terrain.py) p
         everything reachable from that point without crossing a wall or a closed door, with no size limit
         (the outdoors); "seal" lines close openings that join the outdoors to rooms (a breach) for this fill
 Squares in hidden areas never get regions.
-colour ("#rrggbb" or "none") and intensity (0-100) only change how the board draws a light: take them from
+colour ("#rrggbb" or "none"), intensity (0-100) and animation ({"type": "torch"|"flicker"|"pulse"|"ghostly"|"chroma",
+"speed": 1-10, "intensity": 1-10, "reverse"}) only change how the board draws a light: take them from
 the text ("a faint green glow": a green colour, intensity about 25); presets already bring a natural colour.
 """
 from mapimport import terrain as T
@@ -30,7 +31,7 @@ def area_cells(a):
     for x, y, w, h in a.get("rects", []):
         out |= {(x + i, y + j) for j in range(h) for i in range(w)}
     return out
-LIGHT_FIELDS = ("at", "preset", "rank", "bright", "dim", "colour", "intensity", "walls", "angle", "rotation", "on", "label", "room", "note")
+LIGHT_FIELDS = ("at", "preset", "rank", "bright", "dim", "colour", "intensity", "animation", "walls", "angle", "rotation", "on", "label", "room", "note")
 
 
 def build_lighting(block, g, segs, terrain_areas, report, keyed_rooms=None, hidden=()):

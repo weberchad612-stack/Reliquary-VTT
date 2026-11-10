@@ -197,3 +197,11 @@ test('changing a light\'s colour or intensity does not recompute it', () => {
   assert.equal(p[0].colour, '#00ff00');
   assert.equal(p[0].intensity, 30);
 });
+
+test('presets bring an animation; a light can change or stop it', () => {
+  assert.deepEqual(lightSpec({ preset: 'torch' }).animation, { type: 'torch', speed: 5, intensity: 5 });
+  assert.equal(lightSpec({ preset: 'hooded-lantern' }).animation.type, 'flicker');
+  assert.equal(lightSpec({ preset: 'light' }).animation, undefined, 'magical light is steady');
+  assert.deepEqual(lightSpec({ preset: 'torch', animation: { speed: 9 } }).animation, { type: 'torch', speed: 9, intensity: 5 });
+  assert.equal(lightSpec({ preset: 'torch', animation: { type: 'none' } }).animation.type, 'none');
+});

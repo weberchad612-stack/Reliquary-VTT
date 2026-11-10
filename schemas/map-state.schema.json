@@ -63,7 +63,16 @@
       "type": "object",
       "additionalProperties": {
         "type": "object", "minProperties": 1, "additionalProperties": false,
-        "properties": { "on": { "type": "boolean" }, "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." } }
+        "properties": { "on": { "type": "boolean" }, "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." }, "animation": {
+      "type": "object", "additionalProperties": false,
+      "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
+      "properties": {
+        "type": { "enum": ["none", "torch", "flicker", "pulse", "ghostly", "chroma"] },
+        "speed": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5 },
+        "intensity": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5, "description": "How strong the effect is." },
+        "reverse": { "type": "boolean", "default": false, "description": "Reverse direction (chroma: the hues turn the other way)." }
+      }
+    } }
       }
     },
     "regions_off": {
@@ -77,6 +86,11 @@
         "type": "object", "minProperties": 1, "additionalProperties": false,
         "properties": { "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." } }
       }
+    },
+    "light_animation": {
+      "type": "object", "additionalProperties": false,
+      "description": "Light animation on the board for the whole table (drawing only).",
+      "properties": { "on": { "type": "boolean", "default": true, "description": "The GM's switch for animated lights." } }
     },
     "light_colour": {
       "type": "object", "additionalProperties": false,
@@ -107,6 +121,16 @@
               "on": { "type": "boolean", "default": true },
               "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." },
               "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." },
+              "animation": {
+      "type": "object", "additionalProperties": false,
+      "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
+      "properties": {
+        "type": { "enum": ["none", "torch", "flicker", "pulse", "ghostly", "chroma"] },
+        "speed": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5 },
+        "intensity": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5, "description": "How strong the effect is." },
+        "reverse": { "type": "boolean", "default": false, "description": "Reverse direction (chroma: the hues turn the other way)." }
+      }
+    },
               "label": { "type": "string" }
             }
           },

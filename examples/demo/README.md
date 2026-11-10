@@ -1,6 +1,6 @@
 # Map engine demo
 
-An interactive test bench for the map engine on the sample crypt: drag tokens, open doors, switch between the player and GM views, see movement ranges (dashed outlines for one, two and three Strides), routes (with terrain costs), light and vision (torches, darkvision, concealment, fading dim light, coloured light) and the fog of war, and select a creature to see the board through its eyes. The GM view adds lamp and lighting-region marks, a Lighting card to change any light's colour and intensity, and a switch for coloured light. It runs the real engine code, bundled into one page.
+An interactive test bench for the map engine on the sample crypt: drag tokens, open doors, switch between the player and GM views, see movement ranges (dashed outlines for one, two and three Strides), routes (with terrain costs), light and vision (torches, darkvision, concealment, fading dim light, coloured and flickering light) and the fog of war, and select a creature to see the board through its eyes. The GM view adds lamp and lighting-region marks, a Lighting card to change any light's colour, intensity and animation, and switches for coloured and animated light; the hover bar shows the animation's cost per frame. It runs the real engine code, bundled into one page.
 
 Build it:
 

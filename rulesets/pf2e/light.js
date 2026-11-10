@@ -15,21 +15,22 @@ import { DARK, DIM, BRIGHT } from '../../engine/light/light.js';
 /**
  * Light presets: `bright` is the radius of bright light, `dim` how much further dim light reaches (feet);
  * `colour` is the natural colour the board tints it (drawing only): firelight warm orange, lanterns a soft
- * yellow, magical light near-white.
+ * yellow, magical light near-white; `animation` how it moves on the board (drawing only): torches flutter,
+ * lanterns flicker faintly, magical light is steady.
  * The bull's-eye lantern's light is a cone, which carried lights cannot be yet: it acts as a hooded
  * lantern until they can (docs/design/lighting.md section 5).
  */
 export const LIGHT_PRESETS = Object.freeze({
-  torch: { label: 'Torch', bright: 20, dim: 20, colour: '#ff9a3c' },
+  torch: { label: 'Torch', bright: 20, dim: 20, colour: '#ff9a3c', animation: { type: 'torch', speed: 5, intensity: 5 } },
   'everburning-torch': { label: 'Everburning torch', bright: 20, dim: 20, colour: '#ff9a3c' },
   sunrod: { label: 'Sunrod', bright: 20, dim: 20, colour: '#fff3d6' },
-  'hooded-lantern': { label: 'Hooded lantern', bright: 30, dim: 30, colour: '#ffd27a' },
-  'bullseye-lantern': { label: "Bull's-eye lantern (as a hooded lantern)", bright: 30, dim: 30, colour: '#ffd27a' },
+  'hooded-lantern': { label: 'Hooded lantern', bright: 30, dim: 30, colour: '#ffd27a', animation: { type: 'flicker', speed: 3, intensity: 2 } },
+  'bullseye-lantern': { label: "Bull's-eye lantern (as a hooded lantern)", bright: 30, dim: 30, colour: '#ffd27a', animation: { type: 'flicker', speed: 3, intensity: 2 } },
   light: { label: 'Light (cantrip)', bright: 20, dim: 20, colour: '#eef2ff', heightened: { 4: { bright: 60, dim: 60 } } },
 });
 
 /**
- * Radii, colour and intensity for a light: its preset (heightened to `rank` where the preset says so),
+ * Radii, colour, intensity and animation for a light: its preset (heightened to `rank` where the preset says so),
  * then any overrides on the light itself. Colour 'none' makes a preset light uncoloured.
  */
 export function lightSpec(light) {
@@ -45,7 +46,9 @@ export function lightSpec(light) {
   if (light.dim !== undefined) dim = light.dim;
   const colour = light.colour !== undefined ? light.colour : base ? base.colour : undefined;
   const intensity = light.intensity !== undefined ? light.intensity : base ? base.intensity : undefined;
-  return { bright, dim, colour, intensity };
+  const animation = light.animation !== undefined || (base && base.animation)
+    ? { ...((base && base.animation) || {}), ...(light.animation || {}) } : undefined;
+  return { bright, dim, colour, intensity, animation };
 }
 
 const VISION = new Set(['low-light', 'darkvision', 'greater-darkvision']);

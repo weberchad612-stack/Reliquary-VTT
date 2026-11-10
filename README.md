@@ -13,7 +13,7 @@ Built so far:
 - The sight engine: visibility polygons and line of sight for every wall type and token size (`engine/sight/`)
 - Movement: steps, fitting large creatures, pathfinding, reach and exact one, two and three Stride ranges (`engine/movement/`); distances and rulers (`engine/measure/`)
 - Terrain: difficult, greater difficult, hazardous, uneven, narrow, climb and swim areas and their movement costs (`engine/terrain/`)
-- Light and vision: light sources and regions, darkness and dim light, darkvision and low-light vision, concealment, daylight through windows and open doors, fading dim light, colour and intensity (`engine/light/`)
+- Light and vision: light sources and regions, darkness and dim light, darkvision and low-light vision, concealment, daylight through windows and open doors, fading dim light, colour, intensity and flickering or pulsing light (`engine/light/`)
 - Fog of war: explored-area merging and the three-state player and GM fog, and one creature's own view (`engine/fog/`)
 - The Pathfinder 2e rules the engine asks for: movement and terrain, light and senses (`rulesets/pf2e/`)
 - A map importer that turns a map in a PDF you own into wall, terrain and lighting data for a private pack (`tools/mapimport/`)

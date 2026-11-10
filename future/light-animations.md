@@ -1,7 +1,7 @@
 # Light animations beyond the first set
 
 Status: ideas, not scheduled. Agreed with the user on 2026-11-10 while planning light flicker. The first set
-(Group 1 below) is being built; this document records how the rest could be added and what each needs.
+(Group 1 below) is built (lighting design section 14); this document records how the rest could be added and what each needs.
 The list of animation types follows Foundry VTT's, which the user reviewed; the descriptions here are ours.
 
 ## Ground rules (all groups)
@@ -20,7 +20,7 @@ The list of animation types follows Foundry VTT's, which the user reviewed; the 
 - **Measure first.** Each group adds a frame cost. The demo's frame-time readout (built with Group 1) is
   how to judge it on real machines before adding the next group.
 
-## Group 1: brightness and colour over time (being built)
+## Group 1: brightness and colour over time (built)
 
 Torch, Flickering Light, Pulse, Ghostly Light, Chroma. Each is one number per light per frame (a
 brightness or a hue), applied to that light's prepared glow picture with `globalAlpha` or a colour

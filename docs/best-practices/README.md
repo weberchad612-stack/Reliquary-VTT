@@ -8,7 +8,7 @@ How to use and change each core feature well. Written for Claude, who runs the t
 | Walls, doors and openings (`walls.json`) | [walls-and-doors.md](walls-and-doors.md) |
 | Sight and fog of war (`engine/sight/`, `engine/fog/`) | [sight-and-fog.md](sight-and-fog.md) |
 | Movement and tokens (`engine/movement/`, `engine/tokens/`; Stride bands on the board) | [movement-and-tokens.md](movement-and-tokens.md) |
-| Lighting and vision (`engine/light/` with daylight, colour and intensity; light-aware `partyView`; a creature's own view; `rulesets/pf2e/light.js`; importer lighting step) | [lighting.md](lighting.md) |
+| Lighting and vision (`engine/light/` with daylight, colour, intensity and animation; light-aware `partyView`; a creature's own view; `rulesets/pf2e/light.js`; importer lighting step) | [lighting.md](lighting.md) |
 | Terrain and distance (`engine/terrain/`, `engine/measure/`, `rulesets/pf2e/terrain.js`, importer terrain step) | [terrain.md](terrain.md) |
 | Working on the repository | [development.md](development.md) |
 
