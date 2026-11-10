@@ -581,6 +581,30 @@ function tokenAt(p) {
   }
   return best;
 }
+/** The token whose drawn disc is under p (smallest on top), or null. A token on its disc takes the
+ *  click before a door: a token standing in a doorway must still be draggable. The rest of the door,
+ *  outside the disc, stays clickable. */
+function tokenDiscAt(p) {
+  const gm = S.view === 'gm';
+  let best = null;
+  const order = Object.keys(S.tokens).sort((a, b) => (S.tokens[b].size || 1) - (S.tokens[a].size || 1));
+  for (const id of order) {
+    if (!gm && !view.seen.has(id)) continue;
+    const t = space(id), s = t.size;
+    const r = (s / 2 - (s < 1 ? 2 : 5) / CS) * Engine.drawScale(S.tokens[id]);   // as drawTokens draws it
+    if (Math.hypot(p[0] - (t.x + s / 2), p[1] - (t.y + s / 2)) <= r) best = id;
+  }
+  return best;
+}
+/** What a click at p acts on: a token's disc first, then a door, then the rest of a token's square. */
+function clickTarget(p) {
+  const disc = tokenDiscAt(p);
+  if (disc) return { token: disc };
+  const door = doorAt(p);
+  if (door) return { door };
+  const id = tokenAt(p);
+  return id ? { token: id } : {};
+}
 const distToSeg = (p, a, b) => Engine.pointSegDist(p, a, b);
 /** The door leaf under p: near the closed leaf, or near the open leaf where it now stands. */
 function doorAt(p) {
@@ -608,9 +632,9 @@ function goalFor(id, p) {
 
 canvas.addEventListener('pointerdown', (ev) => {
   const p = cellAt(ev);
-  const d = doorAt(p);
-  if (d) { clickDoor(d, ev.shiftKey); return; }
-  const id = tokenAt(p);
+  const target = clickTarget(p);
+  if (target.door) { clickDoor(target.door, ev.shiftKey); return; }
+  const id = target.token || null;
   const area = !id && S.view === 'gm' ? inactiveAreaAt(p) : null;
   if (area) {
     const on = S.terrain_on.includes(area.id);
@@ -628,7 +652,8 @@ canvas.addEventListener('pointerdown', (ev) => {
 canvas.addEventListener('pointermove', (ev) => {
   const p = cellAt(ev);
   hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
-  canvas.style.cursor = doorAt(p) ? 'pointer' : tokenAt(p) ? (canDrag(tokenAt(p)) ? 'grab' : 'pointer') : 'default';
+  const over = drag ? {} : clickTarget(p);
+  canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
   if (drag) {
     const g = goalFor(drag.id, p);
     if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {

@@ -22,3 +22,4 @@ For Claude and for board code using `engine/movement/` and `engine/tokens/` (des
 - Small creatures: `small: true`. Their space is a full square; only the token is drawn at 3/4 size.
 - Tiny creatures: position is their square. Store the `slot` that `layoutTiny` returns so each keeps its quadrant; clear it when the token moves to another square. Alone in a square (even inside a big creature), a Tiny token is centred.
 - Draw tokens biggest first, so a creature sharing a bigger one's space stays visible.
+- **Click priority on the board:** a token's drawn disc takes a click before a door, then a door, then the rest of a token's square. Doors often run through the middle of a square, and a token standing in a doorway must still be draggable; the parts of the door outside the token stay clickable (the other leaf of a double door, the door's ends).
