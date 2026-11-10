@@ -24,7 +24,7 @@ Terrain follow-ups (from building the terrain layer, 2026-11-09):
 
 Lighting, after the first version (design agreed 2026-11-09 in [docs/design/lighting.md](../docs/design/lighting.md)):
 
-- Light colour and intensity, and animations (a flickering wall torch).
+- Animations (a flickering wall torch). Colour and intensity are built (lighting design section 13).
 - Magical darkness, and greater darkvision seeing through it.
 - Imprecise senses (scent, tremorsense, hearing): hidden markers placed for foes automatically, suggested for PCs.
 - Time of day driving the sky light (outdoor maps and sky regions).

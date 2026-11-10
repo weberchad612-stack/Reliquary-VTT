@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LightMap, LightCache, lightShape, lightPatch, prepareLight, DARK, DIM, BRIGHT, DIM_GLOW, DIM_FRINGE } from '../engine/light/light.js';
+import { LightMap, LightCache, lightShape, lightPatch, prepareLight, parseColour, DARK, DIM, BRIGHT, DIM_GLOW, DIM_FRINGE } from '../engine/light/light.js';
 import { perceive, senseList, lightSpec, LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 
 const GRID = { cols: 20, rows: 20 };
@@ -97,12 +97,13 @@ test('a sense with a range works only within it (other systems, special senses)'
 });
 
 test('PF2E light presets', () => {
-  assert.deepEqual(lightSpec({ preset: 'torch' }), { bright: 20, dim: 20 });
-  assert.deepEqual(lightSpec({ preset: 'hooded-lantern' }), { bright: 30, dim: 30 });
-  assert.deepEqual(lightSpec({ preset: 'light' }), { bright: 20, dim: 20 });
-  assert.deepEqual(lightSpec({ preset: 'light', rank: 4 }), { bright: 60, dim: 60 });
+  const radii = (l) => { const { bright, dim } = lightSpec(l); return { bright, dim }; };
+  assert.deepEqual(radii({ preset: 'torch' }), { bright: 20, dim: 20 });
+  assert.deepEqual(radii({ preset: 'hooded-lantern' }), { bright: 30, dim: 30 });
+  assert.deepEqual(radii({ preset: 'light' }), { bright: 20, dim: 20 });
+  assert.deepEqual(radii({ preset: 'light', rank: 4 }), { bright: 60, dim: 60 });
   assert.deepEqual(lightSpec({ preset: 'bullseye-lantern' }), lightSpec({ preset: 'hooded-lantern' }));
-  assert.deepEqual(lightSpec({ preset: 'torch', bright: 10 }), { bright: 10, dim: 20 });
+  assert.deepEqual(radii({ preset: 'torch', bright: 10 }), { bright: 10, dim: 20 });
   assert.throws(() => lightSpec({ preset: 'candel' }), /unknown light preset/);
   assert.ok(Object.keys(LIGHT_PRESETS).length >= 6);
 });
@@ -149,4 +150,50 @@ test('region edges fade in the drawing over a couple of feet, except along a wal
   assert.equal(m.at(6.05, 4), DARK);
   const sharp = new LightMap(GRID, { base: 'dark', regions, fadeFt: 0 });
   assert.equal(sharp.glowAt(5.95, 4), half);
+});
+
+test('presets come with natural colours; a light can override or remove its colour', () => {
+  assert.equal(lightSpec({ preset: 'torch' }).colour, '#ff9a3c');
+  assert.equal(lightSpec({ preset: 'hooded-lantern' }).colour, '#ffd27a');
+  assert.equal(lightSpec({ preset: 'torch', colour: '#3355ff' }).colour, '#3355ff');
+  assert.equal(parseColour(lightSpec({ preset: 'torch', colour: 'none' }).colour), null);
+  assert.equal(lightSpec({ bright: 10, dim: 10 }).colour, undefined, 'a light without a preset is uncoloured unless it says');
+  assert.equal(lightSpec({ preset: 'torch', intensity: 40 }).intensity, 40);
+  assert.deepEqual(parseColour('#ff8000'), [255, 128, 0]);
+});
+
+test('intensity scales the drawing brightness only, for lights and regions', () => {
+  const full = mapWith([{ id: 't', at: [3.5, 10.5], bright: 20, dim: 20 }]);
+  const faint = new LightMap(GRID, { base: 'dark', patches: [{ ...lightPatch(lightShape({ id: 't', at: [3.5, 10.5], bright: 20, dim: 20 }, prepareLight(segs)), GRID), intensity: 25 }] });
+  assert.equal(full.glowAt(3.5, 10.5), 1);
+  assert.ok(Math.abs(faint.glowAt(3.5, 10.5) - 0.25) < 0.01);
+  assert.equal(faint.at(3.5, 10.5), BRIGHT, 'still bright light for the rules');
+  const glow = new LightMap(GRID, { base: 'dark', regions: [{ id: 'f', level: 'dim', rects: [[0, 0, 6, 6]], intensity: 50 }] });
+  assert.ok(Math.abs(glow.glowAt(3, 3) - DIM_GLOW / 255 / 2) < 0.01);
+  assert.equal(glow.at(3, 3), DIM);
+});
+
+test('colour: a lone coloured light tints fully; overlapping colours mix by brightness; uncoloured light dilutes', () => {
+  const prepared = prepareLight(segs);
+  const patch = (l) => ({ ...lightPatch(lightShape(l, prepared), GRID), colour: l.colour });
+  const red = { id: 'r', at: [3.5, 12], bright: 10, dim: 0, colour: '#ff0000' };
+  const blue = { id: 'b', at: [6.5, 12], bright: 10, dim: 0, colour: '#0000ff' };
+  const white = { id: 'w', at: [3.5, 16], bright: 10, dim: 0 };
+  const m = new LightMap(GRID, { base: 'dark', patches: [patch(red), patch(blue), patch(white)] });
+  const at = (x, y) => { const k = Math.floor(y * 8) * m.w + Math.floor(x * 8); return { rgb: [...m.colour.rgb.slice(k * 3, k * 3 + 3)], share: m.colour.share[k] }; };
+  assert.deepEqual(at(2, 11), { rgb: [255, 0, 0], share: 255 }, 'only the red light reaches here');
+  const mid = at(5, 12);
+  assert.ok(Math.abs(mid.rgb[0] - mid.rgb[2]) < 3 && mid.rgb[0] > 100, 'half way between red and blue: purple');
+  assert.ok(at(3.5, 14).share < 200 && at(3.5, 14).share > 50, 'red and uncoloured light together: a weaker tint');
+  assert.equal(new LightMap(GRID, { base: 'dark', patches: [patch(white)] }).colour, null, 'nothing coloured: no colour layer');
+});
+
+test('changing a light\'s colour or intensity does not recompute it', () => {
+  const cache = new LightCache(GRID);
+  const l = { id: 't', at: [3, 3], bright: 20, dim: 20, colour: '#ff9a3c' };
+  cache.patchesFor([l], segs, {}, '');
+  const p = cache.patchesFor([{ ...l, colour: '#00ff00', intensity: 30 }], segs, {}, '');
+  assert.equal(cache.computed, 1);
+  assert.equal(p[0].colour, '#00ff00');
+  assert.equal(p[0].intensity, 30);
 });

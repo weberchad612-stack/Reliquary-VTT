@@ -10,7 +10,10 @@
 //
 // Beside the three rule levels, the map keeps a brightness for drawing (`glow`, 0-255): 255 in bright
 // light, falling in a straight line across a light's dim band to 0 at its outer edge, so dim light fades
-// out instead of stopping at a hard edge. Rules never read it.
+// out instead of stopping at a hard edge. A light's or region's `intensity` (0-100 %) scales its glow.
+// It also keeps the light's colour for drawing: where coloured lights overlap their colours mix in
+// proportion to their brightness, and uncoloured light (daylight, the sky) dilutes them. Rules never
+// read glow, intensity or colour.
 
 import { prepare, visPolygon, pointSegDist } from '../sight/visibility.js';
 import { ExploredMask, RES } from '../fog/explored.js';
@@ -23,6 +26,17 @@ export const LEVEL = Object.freeze({ dark: DARK, dim: DIM, bright: BRIGHT });
 export const LEVEL_NAME = Object.freeze(['dark', 'dim', 'bright']);
 
 const CIRCLE_SIDES = 64;
+
+/**
+ * A colour as [r, g, b] (0-255), or null for uncoloured light. Accepts '#rrggbb'; 'none', '' and
+ * undefined are uncoloured.
+ */
+export function parseColour(c) {
+  if (!c || c === 'none') return null;
+  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(c);
+  return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
+}
+const intensityOf = (x) => (x === undefined || x === null ? 1 : Math.max(0, Math.min(100, x)) / 100);
 
 /** Brightness (0-255) of dim light that does not fade: dim regions, a dim sky. */
 export const DIM_GLOW = 128;
@@ -116,8 +130,10 @@ export function lightPatch(shape, grid, res = RES) {
  * @param {'bright'|'dim'|'dark'} [o.base='bright']  the map's own level away from regions and lights
  *   (indoor maps usually 'dark'); outdoor maps pass the sky level here
  * @param {'bright'|'dim'|'dark'} [o.sky='bright']  the sky light: used by `sky` regions (and by outdoor maps' base)
- * @param {Array} [o.regions]  lighting regions: {id, level: 'sky'|'bright'|'dim'|'dark', cells?, rects?}
- * @param {Array} [o.patches]  lightPatch() results for every light that is on
+ * @param {Array} [o.regions]  lighting regions: {id, level: 'sky'|'bright'|'dim'|'dark', cells?, rects?,
+ *   colour?, intensity?}
+ * @param {Array} [o.patches]  lightPatch() results for every light that is on, each optionally with the
+ *   light's `colour` and `intensity` (LightCache.patchesFor adds them)
  * @param {Array} [o.walls]  prepareLight() output: region edges along these walls are not faded
  * @param {number} [o.fadeFt=REGION_FADE_FT]  width of the faded region edge in the drawing; 0 for none
  * @param {number} [o.feetPerCell=5]
@@ -129,24 +145,64 @@ export class LightMap {
     this.h = Math.ceil(grid.rows * res);
     const sky = LEVEL[o.sky || 'bright'];
     const base = o.base === 'sky' ? sky : LEVEL[o.base || 'bright'];
-    this.levels = new Uint8Array(this.w * this.h).fill(base);
+    const n = this.w * this.h;
+    this.levels = new Uint8Array(n).fill(base);
     /** Brightness for drawing, 0-255 (see the top of this file). */
-    this.glow = new Uint8Array(this.w * this.h).fill(LEVEL_GLOW[base]);
-    for (const r of o.regions || []) {
-      const v = r.level === 'sky' ? sky : LEVEL[r.level];
+    this.glow = new Uint8Array(n).fill(LEVEL_GLOW[base]);
+    // colour for drawing: each source adds its brightness as weight; coloured ones add their colour too
+    const coloured = (o.regions || []).some((r) => parseColour(r.colour)) || (o.patches || []).some((p) => parseColour(p.colour));
+    let W = null, Wc = null, R = null, G = null, B = null;
+    if (coloured) {
+      W = new Float32Array(n).fill(LEVEL_GLOW[base]); Wc = new Float32Array(n); R = new Float32Array(n); G = new Float32Array(n); B = new Float32Array(n);
+    }
+    const regionAt = new Int16Array(coloured ? n : 0).fill(-1);
+    const regions = o.regions || [];
+    regions.forEach((r, ri) => {
+      const v = r.level === 'sky' ? sky : LEVEL[r.level], g = Math.round(LEVEL_GLOW[v] * intensityOf(r.intensity));
       for (const [x, y] of areaCells(r)) {
         for (let j = y * res; j < (y + 1) * res && j < this.h; j++) {
-          for (let i = x * res; i < (x + 1) * res && i < this.w; i++) { this.levels[j * this.w + i] = v; this.glow[j * this.w + i] = LEVEL_GLOW[v]; }
+          for (let i = x * res; i < (x + 1) * res && i < this.w; i++) {
+            const k = j * this.w + i;
+            this.levels[k] = v; this.glow[k] = g;
+            if (coloured) regionAt[k] = ri;
+          }
+        }
+      }
+    });
+    if (regions.length) fadeRegionEdges(this, grid, o);
+    if (coloured) {
+      const cols = regions.map((r) => parseColour(r.colour));
+      for (let k = 0; k < n; k++) {
+        const g = this.glow[k]; W[k] = g;
+        const c = regionAt[k] >= 0 ? cols[regionAt[k]] : null;
+        if (c && g) { Wc[k] = g; R[k] = g * c[0]; G[k] = g * c[1]; B[k] = g * c[2]; }
+      }
+    }
+    for (const p of o.patches || []) {
+      const f = intensityOf(p.intensity), c = coloured ? parseColour(p.colour) : null;
+      for (let m = 0; m < p.idx.length; m++) {
+        const k = p.idx[m], g = f === 1 ? p.glow[m] : Math.round(p.glow[m] * f);
+        if (p.lvl[m] > this.levels[k]) this.levels[k] = p.lvl[m];
+        if (g > this.glow[k]) this.glow[k] = g;
+        if (coloured && g) {
+          W[k] += g;
+          if (c) { Wc[k] += g; R[k] += g * c[0]; G[k] += g * c[1]; B[k] += g * c[2]; }
         }
       }
     }
-    if ((o.regions || []).length) fadeRegionEdges(this, grid, o);
-    for (const p of o.patches || []) {
-      for (let n = 0; n < p.idx.length; n++) {
-        const k = p.idx[n];
-        if (p.lvl[n] > this.levels[k]) this.levels[k] = p.lvl[n];
-        if (p.glow[n] > this.glow[k]) this.glow[k] = p.glow[n];
+    /**
+     * Colour for drawing, or null when nothing is coloured: per pixel, rgb (the mixed colour of the
+     * coloured light there) and `share` (0-255: how much of the light there is coloured).
+     */
+    this.colour = null;
+    if (coloured) {
+      const rgb = new Uint8Array(n * 3), share = new Uint8Array(n);
+      for (let k = 0; k < n; k++) {
+        if (!Wc[k]) continue;
+        rgb[k * 3] = R[k] / Wc[k]; rgb[k * 3 + 1] = G[k] / Wc[k]; rgb[k * 3 + 2] = B[k] / Wc[k];
+        share[k] = Math.round((255 * Wc[k]) / W[k]);
       }
+      this.colour = { rgb, share };
     }
   }
 
@@ -227,8 +283,9 @@ export class LightCache {
   }
 
   /**
-   * Patches for the given lights (each {id, at, bright, dim, walls?, angle?, rotation?}).
-   * `doorsKey` is any string that changes when door states change.
+   * Patches for the given lights (each {id, at, bright, dim, walls?, angle?, rotation?, colour?, intensity?}).
+   * `doorsKey` is any string that changes when door states change. Colour and intensity only affect the
+   * drawing, so changing them never recomputes a light: the patch is handed back carrying them.
    */
   patchesFor(lights, segs, state, doorsKey) {
     let prepared = null;
@@ -237,12 +294,12 @@ export class LightCache {
       const key = [l.id, l.at[0], l.at[1], l.bright, l.dim, l.walls !== false, l.angle || 0, l.rotation || 0, l.walls === false ? '' : doorsKey].join('|');
       live.add(l.id);
       const hit = this.patches.get(l.id);
-      if (hit && hit.key === key) { out.push(hit.patch); continue; }
+      if (hit && hit.key === key) { out.push({ ...hit.patch, colour: l.colour, intensity: l.intensity }); continue; }
       if (!prepared) prepared = prepareLight(segs, state);
       const patch = lightPatch(lightShape(l, prepared, { feetPerCell: this.feetPerCell }), this.grid, this.res);
       this.patches.set(l.id, { key, patch });
       this.computed++;
-      out.push(patch);
+      out.push({ ...patch, colour: l.colour, intensity: l.intensity });
     }
     for (const id of [...this.patches.keys()]) if (!live.has(id)) this.patches.delete(id);
     return out;

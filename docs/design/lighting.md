@@ -62,7 +62,7 @@ Bases and regions are lookups per square. Combining light and senses at a point 
 
 ## 8. Not in the first version
 
-Light colour and intensity; animations (flickering torches); magical darkness and greater darkvision seeing through it; imprecise senses (scent, tremorsense, hearing) and automatic hidden markers; time of day changing the sky light; carried cone lights and token facing; a darkness scale finer than PF2E's three light levels for the rules (the drawing now fades: section 10). Daylight through windows was added later (section 10).
+Animations (flickering torches); magical darkness and greater darkvision seeing through it; imprecise senses (scent, tremorsense, hearing) and automatic hidden markers; time of day changing the sky light; carried cone lights and token facing; a darkness scale finer than PF2E's three light levels for the rules (the drawing now fades: section 10). Daylight through windows was added later (section 10), colour and intensity later still (section 13).
 
 ## 9. As built
 
@@ -89,4 +89,15 @@ With a creature selected, the board shows only what it perceives now: the fog cu
 - **Lamp marks are the GM's.** Players never see the mark of a static light, only its light. The GM view shows every mark at all times, also while looking through a creature's eyes, so a lamp can always be clicked to light it or put it out.
 - **Sight has no range.** PF2E vision has none; walls and darkness limit it. `visPolygon` defaults to unlimited range and stops a ray that hits nothing just past the map's edge (pass `grid`). The board and the sight and fog tools no longer use 200 ft; `--range` still limits the tools, and a sense or ruleset can still give one.
 - **Region outlines and soft region edges.** The GM view always outlines each lighting region with a faint dashed line (gold for a fixed level, blue for sky) and names the region under the pointer in the hover readout; players never see the outlines. In the drawing, a region's edge fades over its last 2 ft (`REGION_FADE_FT`), all on the lit side, so the light dies away instead of switching off at the square line; edges along a wall that blocks light stay sharp. The rules still change level at the square line.
+
+## 13. Colour and intensity (agreed with the user, 2026-11-10)
+
+Drawing only: the rules never read colour or intensity.
+
+- **Intensity:** 0-100 % (default 100) on static lights, carried lights and regions; it scales how bright the light looks. A faint fungus glow is still dim light for the rules.
+- **Colour:** `#rrggbb` or `none`. Presets bring a natural colour (torch and everburning torch warm orange, lanterns soft yellow, sunrod and the *light* cantrip near-white); daylight and the sky are uncoloured; a light or region without a preset is uncoloured unless it says. Importers take colour and intensity from the text ("a faint green glow").
+- **Mixing:** where coloured lights overlap, their colours mix in proportion to their brightness; uncoloured light (daylight, the sky) dilutes the tint. Engine: `LightMap.colour` (`rgb` and `share` per pixel), `parseColour`; `LightCache` hands colour and intensity back with each patch, so changing them never recomputes a light.
+- **Look:** a subtle tint under the light shade, at most the table's strength (25 % by default), stronger where the light is brighter (square root, so a dim glow still shows its colour). Darkvision-only areas stay black and white; players see colour only where they perceive; the GM sees it everywhere.
+- **The table's switch:** the GM turns coloured light on or off for everyone (header button, GM view) and sets its strength; both are kept in the save (`light_colour: {on, strength}`).
+- **In play:** the GM's Lighting card lists every lamp and region with an on/off switch, a colour picker (and a button to make it uncoloured) and an intensity slider; the selection panel has the same for a token's carried light. Changes are kept in the save (`lights.{id}`, `regions.{id}`, `regions_off`, the token's `light`).
 

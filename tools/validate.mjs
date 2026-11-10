@@ -297,6 +297,7 @@ export function validateState(file, mapInfo, report = new Report()) {
   }
   for (const id of Object.keys(st.lights || {})) if (!(mapInfo.lightIds || new Set()).has(id)) report.error(file, `lights.${id}: no light "${id}" on map "${map.id}"`);
   for (const id of st.regions_off || []) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions_off: no lighting region "${id}" on map "${map.id}"`);
+  for (const id of Object.keys(st.regions || {})) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions.${id}: no lighting region "${id}" on map "${map.id}"`);
   if (st.sky_light && !map.outdoor && !(mapInfo.hasSky)) report.warn(file, 'sky_light is set but the map is indoor with no sky regions');
   for (const [id, t] of Object.entries(st.tokens || {})) {
     if (!cellInGrid([t.x, t.y], grid)) report.error(file, `tokens.${id}: cell (${t.x}, ${t.y}) is outside the grid`);

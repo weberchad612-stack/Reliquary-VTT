@@ -4,9 +4,9 @@ light sources) from the settings' "lighting" block, the walls and the terrain. S
     "lighting": {
       "outdoor": false,               the whole map is lit by the sky (then regions mark what is not)
       "base": "dark",                 an indoor map's level away from regions and lights
-      "regions": [{"id", "level": "sky"|"bright"|"dim"|"dark", "label"?, "room"?, "note",
+      "regions": [{"id", "level": "sky"|"bright"|"dim"|"dark", "colour"?, "intensity"?, "label"?, "room"?, "note",
                    "select": [selector, ...], "minus": [selector, ...]}],
-      "lights": [{"id", "at": [x, y], "preset"? | "bright"?, "dim"?, "walls"?, "angle"?, "rotation"?,
+      "lights": [{"id", "at": [x, y], "preset"? | "bright"?, "dim"?, "colour"?, "intensity"?, "walls"?, "angle"?, "rotation"?,
                   "on"?, "label"?, "room"?, "note"}]
     }
 
@@ -16,10 +16,12 @@ Selectors are the terrain step's (cells, rects, poly, room_at; see terrain.py) p
         everything reachable from that point without crossing a wall or a closed door, with no size limit
         (the outdoors); "seal" lines close openings that join the outdoors to rooms (a breach) for this fill
 Squares in hidden areas never get regions.
+colour ("#rrggbb" or "none") and intensity (0-100) only change how the board draws a light: take them from
+the text ("a faint green glow": a green colour, intensity about 25); presets already bring a natural colour.
 """
 from mapimport import terrain as T
 
-REGION_FIELDS = ("level", "label", "room", "note")
+REGION_FIELDS = ("level", "label", "room", "note", "colour", "intensity")
 
 
 def area_cells(a):
@@ -28,7 +30,7 @@ def area_cells(a):
     for x, y, w, h in a.get("rects", []):
         out |= {(x + i, y + j) for j in range(h) for i in range(w)}
     return out
-LIGHT_FIELDS = ("at", "preset", "rank", "bright", "dim", "walls", "angle", "rotation", "on", "label", "room", "note")
+LIGHT_FIELDS = ("at", "preset", "rank", "bright", "dim", "colour", "intensity", "walls", "angle", "rotation", "on", "label", "room", "note")
 
 
 def build_lighting(block, g, segs, terrain_areas, report, keyed_rooms=None, hidden=()):

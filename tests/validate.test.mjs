@@ -267,3 +267,14 @@ test('lighting: a carried light needs a known preset', () => {
 test('lighting: the lighting file named in map.json must exist', () => {
   expectError(({ edit }) => edit('map.json', (d) => { d.lighting = 'none.json'; }), /lighting file "none.json" not found/);
 });
+
+test('lighting colour and intensity: valid values pass, bad ones and unknown regions are caught', () => {
+  const ok = withCopy(({ edit, editState }) => {
+    edit('lighting.json', (d) => { d.lights[0].colour = '#ff8800'; d.lights[0].intensity = 40; d.regions[0].colour = 'none'; });
+    editState((d) => { d.lights = { l01: { colour: '#00ff00', intensity: 20 } }; d.regions = { r01: { intensity: 50 } }; d.light_colour = { on: false, strength: 40 }; });
+  });
+  assert.equal(errorText(ok), '');
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.lights[0].colour = 'orange'; }), /colour/);
+  expectError(({ edit }) => edit('lighting.json', (d) => { d.regions[0].intensity = 150; }), /intensity/);
+  expectError(({ editState }) => editState((d) => { d.regions = { r99: { intensity: 50 } }; }), /regions\.r99: no lighting region/);
+});

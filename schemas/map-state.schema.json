@@ -59,16 +59,32 @@
       "description": "Current sky light (outdoor maps and sky regions): bright by day, dim at dusk, dark at night. Default bright."
     },
     "lights": {
-      "description": "Current on/off state of the map's static lights, by id (missing: the light's initial state).",
+      "description": "Changes to the map's static lights in play, by id (missing: as the pack gives them): on/off, colour and intensity.",
       "type": "object",
       "additionalProperties": {
-        "type": "object", "required": ["on"], "additionalProperties": false,
-        "properties": { "on": { "type": "boolean" } }
+        "type": "object", "minProperties": 1, "additionalProperties": false,
+        "properties": { "on": { "type": "boolean" }, "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." } }
       }
     },
     "regions_off": {
       "description": "Ids of lighting regions that no longer apply (a magical light dispelled).",
       "type": "array", "items": { "type": "string" }, "uniqueItems": true
+    },
+    "regions": {
+      "description": "Colour and intensity of lighting regions changed in play, by id (missing: as the pack gives them).",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object", "minProperties": 1, "additionalProperties": false,
+        "properties": { "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." } }
+      }
+    },
+    "light_colour": {
+      "type": "object", "additionalProperties": false,
+      "description": "Coloured light on the board for the whole table (drawing only).",
+      "properties": {
+        "on": { "type": "boolean", "default": true, "description": "The GM's switch for coloured light." },
+        "strength": { "type": "number", "minimum": 0, "maximum": 100, "default": 25, "description": "Strongest tint, % of full colour (subtle by default)." }
+      }
     },
     "tokens": {
       "description": "Token positions on this map. The token schema is defined separately; positions, carried lights and senses are checked here.",
@@ -89,6 +105,8 @@
               "bright": { "type": "number", "minimum": 0 },
               "dim": { "type": "number", "minimum": 0 },
               "on": { "type": "boolean", "default": true },
+              "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." },
+              "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." },
               "label": { "type": "string" }
             }
           },

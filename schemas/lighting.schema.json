@@ -28,9 +28,13 @@
         "room": { "type": "string" },
         "note": { "type": "string", "description": "GM-only: where this comes from." },
         "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" }, "minItems": 1 },
-        "rects": { "type": "array", "items": { "$ref": "#/$defs/rect" }, "minItems": 1 }
+        "rects": { "type": "array", "items": { "$ref": "#/$defs/rect" }, "minItems": 1 },
+        "colour": { "$ref": "#/$defs/colour" },
+        "intensity": { "$ref": "#/$defs/intensity" }
       }
     },
+    "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour the board tints the light (drawing only), #rrggbb, or none. Presets bring a natural colour; a light or region without one is uncoloured." },
+    "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "How strong the light looks on the board, 0-100 % (default 100; drawing only, never the rules): a faint glow 25." },
     "lightShape": {
       "type": "object",
       "properties": {
@@ -52,6 +56,8 @@
         "rank": { "$ref": "#/$defs/lightShape/properties/rank" },
         "bright": { "$ref": "#/$defs/lightShape/properties/bright" },
         "dim": { "$ref": "#/$defs/lightShape/properties/dim" },
+        "colour": { "$ref": "#/$defs/colour" },
+        "intensity": { "$ref": "#/$defs/intensity" },
         "walls": { "type": "boolean", "default": true, "description": "false: the light ignores walls (a magical glow)." },
         "angle": { "type": "number", "exclusiveMinimum": 0, "maximum": 360, "description": "Emission angle in degrees: a cone (static lights only)." },
         "rotation": { "type": "number", "minimum": 0, "exclusiveMaximum": 360, "description": "Direction of the cone in degrees: 0 east, 90 south (y down)." },

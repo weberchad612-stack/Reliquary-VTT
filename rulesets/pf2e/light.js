@@ -13,20 +13,25 @@
 import { DARK, DIM, BRIGHT } from '../../engine/light/light.js';
 
 /**
- * Light presets: `bright` is the radius of bright light, `dim` how much further dim light reaches (feet).
+ * Light presets: `bright` is the radius of bright light, `dim` how much further dim light reaches (feet);
+ * `colour` is the natural colour the board tints it (drawing only): firelight warm orange, lanterns a soft
+ * yellow, magical light near-white.
  * The bull's-eye lantern's light is a cone, which carried lights cannot be yet: it acts as a hooded
  * lantern until they can (docs/design/lighting.md section 5).
  */
 export const LIGHT_PRESETS = Object.freeze({
-  torch: { label: 'Torch', bright: 20, dim: 20 },
-  'everburning-torch': { label: 'Everburning torch', bright: 20, dim: 20 },
-  sunrod: { label: 'Sunrod', bright: 20, dim: 20 },
-  'hooded-lantern': { label: 'Hooded lantern', bright: 30, dim: 30 },
-  'bullseye-lantern': { label: "Bull's-eye lantern (as a hooded lantern)", bright: 30, dim: 30 },
-  light: { label: 'Light (cantrip)', bright: 20, dim: 20, heightened: { 4: { bright: 60, dim: 60 } } },
+  torch: { label: 'Torch', bright: 20, dim: 20, colour: '#ff9a3c' },
+  'everburning-torch': { label: 'Everburning torch', bright: 20, dim: 20, colour: '#ff9a3c' },
+  sunrod: { label: 'Sunrod', bright: 20, dim: 20, colour: '#fff3d6' },
+  'hooded-lantern': { label: 'Hooded lantern', bright: 30, dim: 30, colour: '#ffd27a' },
+  'bullseye-lantern': { label: "Bull's-eye lantern (as a hooded lantern)", bright: 30, dim: 30, colour: '#ffd27a' },
+  light: { label: 'Light (cantrip)', bright: 20, dim: 20, colour: '#eef2ff', heightened: { 4: { bright: 60, dim: 60 } } },
 });
 
-/** Radii for a light: its preset (heightened to `rank` where the preset says so), then any overrides. */
+/**
+ * Radii, colour and intensity for a light: its preset (heightened to `rank` where the preset says so),
+ * then any overrides on the light itself. Colour 'none' makes a preset light uncoloured.
+ */
 export function lightSpec(light) {
   const base = light.preset ? LIGHT_PRESETS[light.preset] : null;
   if (light.preset && !base) throw new Error(`unknown light preset "${light.preset}"`);
@@ -38,7 +43,9 @@ export function lightSpec(light) {
   }
   if (light.bright !== undefined) bright = light.bright;
   if (light.dim !== undefined) dim = light.dim;
-  return { bright, dim };
+  const colour = light.colour !== undefined ? light.colour : base ? base.colour : undefined;
+  const intensity = light.intensity !== undefined ? light.intensity : base ? base.intensity : undefined;
+  return { bright, dim, colour, intensity };
 }
 
 const VISION = new Set(['low-light', 'darkvision', 'greater-darkvision']);

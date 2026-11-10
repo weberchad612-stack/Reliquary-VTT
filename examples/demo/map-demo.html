@@ -64,6 +64,14 @@ canvas#map { display: block; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0
 }
 .hud b { color: var(--ink); font-weight: 500; }
 aside { border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: 16px; display: grid; gap: 18px; align-content: start; }
+.lrow { display: grid; grid-template-columns: 1fr auto auto auto; gap: 6px; align-items: center; font-size: 13px; }
+.lrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lrow input[type=color] { width: 26px; height: 22px; padding: 0; border: 1px solid var(--line); background: none; cursor: pointer; }
+.lrow input[type=range] { width: 74px; }
+.lrow .pct { font-size: 11px; color: var(--muted); width: 30px; text-align: right; }
+.lrow.off .nm { color: var(--muted); text-decoration: line-through; }
+.lrow button { padding: 2px 6px; font-size: 11px; }
+.lsub { font: 600 12px var(--font-display); color: var(--muted); margin-top: 6px; }
 aside h2 { font: 600 15px var(--font-display); letter-spacing: .03em; margin: 0 0 8px; color: var(--accent); }
 .card { display: grid; gap: 6px; }
 .sel-name { font-weight: 600; font-size: 16px; }
@@ -114,6 +122,7 @@ ol.log li.foe { border-left-color: var(--foe); }
         <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
       </label>
       <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off: off, everything counts as bright">Lighting on</button>
+      <button id="b-colour" aria-pressed="true" hidden title="GM: coloured light on or off for the whole table">Colour on</button>
       <button id="b-walls" aria-pressed="false">Show walls</button>
       <button id="b-reset">Reset</button>
     </div>
@@ -126,6 +135,7 @@ ol.log li.foe { border-left-color: var(--foe); }
     </div>
     <aside>
       <section class="card" id="sel" aria-live="polite"></section>
+      <section class="card" id="lightcard" hidden></section>
       <section>
         <h2>Try this</h2>
         <ul class="try" id="try"></ul>
@@ -159,7 +169,10 @@ const START = () => ({
   doors: {},
   locked_known: [],
   terrain_on: [],     // pack areas that start switched off and now apply (a bridge has collapsed)
-  lights: {},         // static lights switched from their initial state: {id: {on}}
+  lights: {},         // static lights changed in play: {id: {on?, colour?, intensity?}}
+  regions: {},        // lighting regions changed in play: {id: {colour?, intensity?}}
+  regions_off: [],    // lighting regions that no longer apply
+  light_colour: { on: true, strength: 25 },   // the GM's table-wide coloured-light switch and strongest tint (%)
   sky: 'bright',      // sky light for outdoor maps and sky regions
   hiddenMarks: {},    // GM-placed "hidden" markers: foe id -> square where the party thinks it is
   tokens: JSON.parse(JSON.stringify(SETUP.tokens)),
@@ -201,13 +214,18 @@ let LIT = HAS_LIGHTING;   // the Lighting button switches the whole light system
 const HAS_SKY = !!map.outdoor || (LIGHTING.regions || []).some((r) => r.level === 'sky');
 const lightCache = new Engine.LightCache(G, { feetPerCell: FPC });
 let lightMap = null;
-const staticOn = (l) => (S.lights[l.id] ? S.lights[l.id].on : l.on !== false);
+const staticOn = (l) => (S.lights[l.id] && S.lights[l.id].on !== undefined ? S.lights[l.id].on : l.on !== false);
+/** A static light as it is now: the pack's, with any colour and intensity changed in play. */
+const staticSpec = (l) => Engine.lightSpec({ ...l, ...pick(S.lights[l.id], ['colour', 'intensity']) });
+const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o && o[k] !== undefined).map((k) => [k, o[k]]));
+/** The map's lighting regions as they are now: switched-off ones dropped, colour and intensity changes applied. */
+const regionsNow = () => (LIGHTING.regions || []).filter((r) => !S.regions_off.includes(r.id)).map((r) => ({ ...r, ...pick(S.regions[r.id], ['colour', 'intensity']) }));
 /** Every light that is on now: the map's static lights and the lights tokens carry (always circles). */
 function lightsNow() {
   const out = [];
   for (const l of LIGHTING.lights || []) {
     if (!staticOn(l)) continue;
-    out.push({ id: l.id, at: l.at, walls: l.walls, angle: l.angle, rotation: l.rotation, ...Engine.lightSpec(l) });
+    out.push({ id: l.id, at: l.at, walls: l.walls, angle: l.angle, rotation: l.rotation, ...staticSpec(l) });
   }
   for (const [id, t] of Object.entries(S.tokens)) {
     if (!t.light || t.light.on === false) continue;
@@ -216,6 +234,17 @@ function lightsNow() {
   }
   return out;
 }
+let lightGen = 0;   // bumped when the light map is rebuilt (colour and intensity changes rebuild only it)
+function buildLightMap() {
+  lightMap = new Engine.LightMap(G, {
+    base: map.outdoor ? 'sky' : (map.base_light || 'dark'), sky: S.sky, regions: regionsNow(),
+    walls: Engine.prepareLight(segs, state()), feetPerCell: FPC,   // region edges fade, except along walls
+    patches: lightCache.patchesFor([...lightsNow(), ...daylightNow()], segs, state(), JSON.stringify(S.doors)),
+  });
+  lightGen++;
+}
+/** A change that only alters how light looks (colour, intensity): rebuild the light map and redraw. */
+function relight() { if (LIT) buildLightMap(); draw(); }
 /** Daylight coming in through windows, grates and open doors that face open sky (none at night). */
 const daylightNow = () => (HAS_SKY ? Engine.daylightLights(segs, state(), { grid: G, sky: S.sky, outdoor: !!map.outdoor, regions: LIGHTING.regions || [] }) : []);
 const litOpts = () => ({ ...opts, grid: G, light: lightMap, rules: Engine.lightRules });
@@ -279,12 +308,7 @@ function recompute(reason) {
   sightSegs = Engine.prepare(segs, state(), 'sight');
   moveWalls = Engine.prepareMove(segs, state(), G);
   if (LIT) {
-    const regions = (LIGHTING.regions || []);
-    lightMap = new Engine.LightMap(G, {
-      base: map.outdoor ? 'sky' : (map.base_light || 'dark'), sky: S.sky, regions,
-      walls: Engine.prepareLight(segs, state()), feetPerCell: FPC,   // region edges fade, except along walls
-      patches: lightCache.patchesFor([...lightsNow(), ...daylightNow()], segs, state(), JSON.stringify(S.doors)),
-    });
+    buildLightMap();
     view = Engine.partyView(tokenList(), sightSegs, litOpts());
     mask.addMask(view.perceived);
   } else {
@@ -463,7 +487,8 @@ function ringsPath(rings) {
 }
 function drawLight(F, full) {
   ctx.save(); ctx.translate(OX, OY);
-  const key = full ? 'gm|' + gen : 'view|' + gen + '|' + (F.focus || '');
+  const key = (full ? 'gm|' : 'view|' + (F.focus || '') + '|') + gen + '|' + lightGen;
+  if (colourOn()) drawTint(F, full, key);
   if (lightCanvasFor !== key) {
     lightCanvas = lightCanvas || document.createElement('canvas');
     lightCanvas.width = lightMap.w; lightCanvas.height = lightMap.h;
@@ -511,6 +536,77 @@ function drawRegionOutlines() {
 /** Lighting regions on a square (GM readout). */
 const regionsAt = (x, y) => (LIGHTING.regions || []).filter((r) => Engine.areaCells(r).some(([cx, cy]) => cx === x && cy === y));
 
+// ---------- coloured light ----------
+// A subtle tint, under the light shade: each pixel takes the mixed colour of the coloured light there,
+// stronger where the light is brighter (by the square root, so a dim glow still shows its colour) and where
+// more of the light there is coloured, at most the table's strength.
+// Darkvision-only areas stay black and white; players see colour only where they perceive.
+const colourOn = () => LIT && S.light_colour.on && S.light_colour.strength > 0 && !!lightMap && !!lightMap.colour;
+let tintCanvas = null, tintFor = null;
+function drawTint(F, full, key) {
+  const tkey = key + '|' + S.light_colour.strength;
+  if (tintFor !== tkey) {
+    tintCanvas = tintCanvas || document.createElement('canvas');
+    tintCanvas.width = lightMap.w; tintCanvas.height = lightMap.h;
+    const tc = tintCanvas.getContext('2d'), im = tc.createImageData(lightMap.w, lightMap.h);
+    const { rgb, share } = lightMap.colour, glow = lightMap.glow, max = S.light_colour.strength / 100;
+    const per = F.perceived && F.perceived.bits, mono = F.monoMask && F.monoMask.bits;
+    for (let k = 0; k < glow.length; k++) {
+      if (!share[k] || (!full && (!per[k] || mono[k]))) continue;
+      im.data[k * 4] = rgb[k * 3]; im.data[k * 4 + 1] = rgb[k * 3 + 1]; im.data[k * 4 + 2] = rgb[k * 3 + 2];
+      im.data[k * 4 + 3] = Math.round(255 * max * (share[k] / 255) * Math.sqrt(glow[k] / 255));   // a faint glow still shows its colour
+    }
+    tc.putImageData(im, 0, 0); tintFor = tkey;
+  }
+  ctx.save();
+  if (!full) { ringsPath(F.visible); ctx.clip('nonzero'); }
+  ctx.imageSmoothingEnabled = true;
+  if ('filter' in ctx) ctx.filter = `blur(${Math.max(2, P(0.1))}px)`;
+  ctx.drawImage(tintCanvas, 0, 0, P(G.cols), P(G.rows));
+  ctx.restore();
+}
+
+// ---------- the GM's lighting card: coloured light, lamps and regions ----------
+const pct = (v) => Math.round(v === undefined ? 100 : v);
+const colourValue = (c) => (Engine.parseColour(c) ? c : '#ffffff');
+function lightRow(kind, id, name, on, colour, intensity) {
+  return `<div class="lrow${on ? '' : ' off'}" data-kind="${kind}" data-id="${id}">
+    <label class="nm" title="${name}"><input type="checkbox" data-f="on" ${on ? 'checked' : ''}> ${name}</label>
+    <span title="${Engine.parseColour(colour) ? 'Colour ' + colour : 'Uncoloured'}"><input type="color" data-f="colour" value="${colourValue(colour)}" aria-label="${name}: colour"><button data-f="nocolour" title="Make it uncoloured" ${Engine.parseColour(colour) ? '' : 'disabled'}>×</button></span>
+    <input type="range" min="0" max="100" step="5" data-f="intensity" value="${pct(intensity)}" aria-label="${name}: intensity">
+    <span class="pct">${pct(intensity)}%</span>
+  </div>`;
+}
+function lightingCard() {
+  const el = document.getElementById('lightcard');
+  el.hidden = !(S.view === 'gm' && LIT && ((LIGHTING.lights || []).length || (LIGHTING.regions || []).length));
+  if (el.hidden) return;
+  const lamps = (LIGHTING.lights || []).map((l) => { const sp = staticSpec(l); return lightRow('lamp', l.id, l.label ? `${l.label}${l.room ? ' · ' + l.room : ''}` : l.id, staticOn(l), sp.colour, sp.intensity); });
+  const regs = (LIGHTING.regions || []).map((r) => { const now = { ...r, ...pick(S.regions[r.id], ['colour', 'intensity']) }; return lightRow('region', r.id, `${r.label || r.id} (${r.level})`, !S.regions_off.includes(r.id), now.colour, now.intensity); });
+  el.innerHTML = `<h2>Lighting (GM)</h2>
+    <div class="lrow"><span class="nm">Colour strength</span><span></span><input type="range" min="0" max="60" step="5" id="colour-strength" value="${S.light_colour.strength}" aria-label="Strongest colour tint"><span class="pct">${S.light_colour.strength}%</span></div>
+    ${lamps.length ? `<div class="lsub">Lamps</div>${lamps.join('')}` : ''}
+    ${regs.length ? `<div class="lsub">Regions</div>${regs.join('')}` : ''}`;
+  el.querySelector('#colour-strength').onchange = (e) => {
+    S.light_colour = { ...S.light_colour, strength: Number(e.target.value) };
+    log(`GM: colour strength ${S.light_colour.strength}%.`, 'ok'); lightingCard(); draw();
+  };
+  for (const row of el.querySelectorAll('.lrow[data-id]')) {
+    const { kind, id } = row.dataset, store = kind === 'lamp' ? S.lights : S.regions;
+    const name = row.querySelector('.nm').textContent.trim();
+    const set = (k, v) => { store[id] = { ...(store[id] || {}), [k]: v }; };
+    row.querySelector('[data-f=on]').onchange = (e) => {
+      if (kind === 'lamp') set('on', e.target.checked);
+      else S.regions_off = e.target.checked ? S.regions_off.filter((x) => x !== id) : [...S.regions_off, id];
+      log(`GM: ${name} ${e.target.checked ? 'on' : 'off'}.`, 'ok'); lightingCard(); recompute();
+    };
+    row.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${name} colour ${e.target.value}.`, 'ok'); lightingCard(); relight(); };
+    row.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${name} uncoloured.`, 'ok'); lightingCard(); relight(); };
+    row.querySelector('[data-f=intensity]').oninput = (e) => { row.querySelector('.pct').textContent = e.target.value + '%'; };
+    row.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${name} intensity ${e.target.value}%.`, 'ok'); lightingCard(); relight(); };
+  }
+}
+
 /** Static lights: a small lamp mark (lit or cold), GM view only, always (also through a creature's eyes),
  *  so the GM can click one to light it or put it out. Players never see the marks, only the light. */
 function drawLightSources() {
@@ -520,7 +616,8 @@ function drawLightSources() {
     ctx.save();
     if (on) { const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6); g.addColorStop(0, 'rgba(255, 200, 90, .55)'); g.addColorStop(1, 'rgba(255, 200, 90, 0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, Math.PI * 2); ctx.fill(); }
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = on ? LIGHT_LOOK.on : '#17191d'; ctx.fill();
+    const lc = on && S.light_colour.on ? staticSpec(l).colour : null;
+    ctx.fillStyle = on ? (Engine.parseColour(lc) ? lc : LIGHT_LOOK.on) : '#17191d'; ctx.fill();
     ctx.lineWidth = 2; ctx.strokeStyle = on ? '#3a2408' : LIGHT_LOOK.off; ctx.stroke();
     if (l.angle) {   // a cone: a tick showing where it points
       const a = ((l.rotation || 0) * Math.PI) / 180;
@@ -847,9 +944,21 @@ function panel() {
     </div>
     <div class="sel-actions">
       ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
+    </div>
+    ${t.light && S.view === 'gm' && LIT ? lightRow('carried', selected, 'Carried light', t.light.on !== false, Engine.lightSpec(t.light).colour, Engine.lightSpec(t.light).intensity) : ''}
+    <div class="sel-actions">
       ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
     </div>
     <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${t.name} perceives now. ` : ''}${canDrag(selected) ? 'Dashed green: where one, two and three Strides reach (light, medium, dark green).' : ''}</div>`;
+  const cr = el.querySelector('.lrow[data-kind=carried]');
+  if (cr) {
+    const set = (k, v) => { t.light = { ...t.light, [k]: v }; };
+    cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); log(`${t.name} ${e.target.checked ? 'lights' : 'puts out'} the light.`, 'ok'); panel(); recompute(); };
+    cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${t.name}'s light colour ${e.target.value}.`, 'ok'); panel(); relight(); };
+    cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${t.name}'s light uncoloured.`, 'ok'); panel(); relight(); };
+    cr.querySelector('[data-f=intensity]').oninput = (e) => { cr.querySelector('.pct').textContent = e.target.value + '%'; };
+    cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${t.name}'s light intensity ${e.target.value}%.`, 'ok'); panel(); relight(); };
+  }
   const bl = document.getElementById('b-light');
   if (bl) bl.onclick = () => {
     const on = t.light.on === false;
@@ -935,8 +1044,9 @@ canvas.addEventListener('pointerdown', (ev) => {
   const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
   if (lamp && !tokenDiscAt(p)) {
     const on = !staticOn(lamp);
-    S.lights[lamp.id] = { on };
+    S.lights[lamp.id] = { ...(S.lights[lamp.id] || {}), on };
     log(`GM: ${lamp.label || lamp.id} ${on ? 'lit' : 'put out'}.`, 'ok');
+    lightingCard();
     return recompute();
   }
   const target = clickTarget(p);
@@ -1023,10 +1133,22 @@ function setView(v) {
   document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
   document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
   if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
-  panel(); draw();
+  document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
+  panel(); lightingCard(); draw();
 }
 document.getElementById('v-player').onclick = () => setView('player');
 document.getElementById('v-gm').onclick = () => setView('gm');
+function syncColourButton() {
+  const b = document.getElementById('b-colour');
+  b.setAttribute('aria-pressed', String(S.light_colour.on));
+  b.textContent = S.light_colour.on ? 'Colour on' : 'Colour off';
+}
+document.getElementById('b-colour').onclick = () => {
+  S.light_colour = { ...S.light_colour, on: !S.light_colour.on };
+  syncColourButton();
+  log(`GM: coloured light ${S.light_colour.on ? 'on' : 'off'} for the whole table.`, 'ok');
+  draw();
+};
 document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
 if (HAS_LIGHTING) {
   const bl = document.getElementById('b-lighting');
@@ -1037,7 +1159,7 @@ if (HAS_LIGHTING) {
     bl.textContent = LIT ? 'Lighting on' : 'Lighting off';
     document.getElementById('sky-wrap').hidden = !(LIT && HAS_SKY);
     log(LIT ? 'Lighting on: light, darkness and senses apply.' : 'Lighting off: everything counts as bright (sight is walls only).', 'ok');
-    panel(); recompute();
+    panel(); lightingCard(); recompute();
   };
 }
 if (HAS_SKY) {
@@ -1049,7 +1171,8 @@ document.getElementById('b-reset').onclick = () => {
   document.getElementById('log').innerHTML = ''; log('Table reset. ' + SETUP.intro);
   document.getElementById('b-walls').setAttribute('aria-pressed', 'false');
   document.getElementById('sky').value = 'bright';
-  panel(); recompute('reset');
+  syncColourButton();
+  panel(); lightingCard(); recompute('reset');
 };
 
 let toastT = 0;
@@ -1104,6 +1227,7 @@ document.getElementById('try').innerHTML = SETUP.tips.map((t) => `<li>${t}</li>`
 log(SETUP.intro);
 recompute('reset');
 panel();
+lightingCard();
 fit();
 </script>
 </body>
