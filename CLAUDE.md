@@ -20,11 +20,12 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 | Folder | What |
 |---|---|
-| `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens (dependency-free JavaScript); board page later |
+| `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens (dependency-free JavaScript) |
+| `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout ([guide](docs/best-practices/board.md)) |
 | `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
 | `rulesets/` | Game-system rules the engine asks for (PF2E movement, terrain, light and senses first) |
 | `tools/` | Validator, sight/move/fog query tools, bundler, wall overlay, map importer (`mapimport/`, Python) |
-| `examples/` | Original sample pack (Sample Crypt for tests, Sample Keep as the 48 x 48 test bench) and save, and the engine demo page |
+| `examples/` | Original sample pack (Sample Crypt for tests, Sample Keep as the 48 x 48 test bench), save, test campaigns (`campaigns/keep-test`, `crypt-test`) and the engine demo page |
 | `tests/` | `npm test` |
 | `future/` | Thought-through ideas not yet scheduled (for example, faster sight); check here before planning new work |
 | `packs/`, `saves/`, `pdfsource/` | Private, git-ignored |

@@ -8,6 +8,7 @@ Open-licensed sample content only. Do not add publisher content (books, adventur
 
 The map images are generated from the wall data with `python3 tools/wall_overlay.py <map-dir> --blank`.
 
+- `campaigns/keep-test/`, `campaigns/crypt-test/`: test campaigns for the board (`campaign.json` and per-map state with tokens and notes) over the sample pack. Copy one to the PC's `saves/` to load it (see `docs/best-practices/board.md`).
 - `demo/`: an interactive page that runs the engine on the sample crypt (see its README).
 
 Check them with `node tools/validate.mjs examples/sample-pack --save examples/sample-save`.

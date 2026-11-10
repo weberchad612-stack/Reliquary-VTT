@@ -208,7 +208,10 @@ function main(argv) {
     console.log('round trip OK');
     return 0;
   }
-  console.error('Usage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>');
+  console.error('Usage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>' +
+    '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
+    '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
+    '\n       node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>');
   return 2;
 }
 

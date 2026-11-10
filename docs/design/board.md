@@ -2,7 +2,7 @@
 
 The client is called **Reliquary Virtual Tabletop**: that is the published page's title and the name the page shows when no campaign is loaded.
 
-Status: agreed with the user on 2026-11-10. Built: the board page (`board/`), its memory and database stores, the campaign tool, and the Sample Keep loaded on the published board; still to do: saving to the PC and switching campaigns (section 5), and the guide. The board is the live table page: the map
+Status: agreed with the user on 2026-11-10. Version 1 (map table) built on 2026-11-10: the board page (`board/`), its memory and database stores, the campaign tool, saving to the PC and switching campaigns (tested Keep to Crypt and back). How to run it: [best practices: the board](../best-practices/board.md). The board is the live table page: the map
 engine running against a campaign's data, kept in sync with Claude, who runs the game. The demo page in
 `examples/demo/` is its test bench and the starting point for its code.
 
@@ -90,7 +90,10 @@ Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 3. Clear the database.
 4. Load the other campaign: its pack (maps, walls, terrain, lighting) and its save. Upload any image whose
    fingerprint is not already in file storage; images stay uploaded between switches.
-5. Write `board/meta` last: the board sees the new campaign and redraws with its ruleset.
+5. Write `board/meta` last: the board sees the new campaign and redraws with its ruleset. (On clearing,
+   delete it first, so an open board shows that no campaign is loaded.)
+
+The exact commands are in [best practices: the board](../best-practices/board.md), section 4.
 
 The page cannot write to the PC itself, so switching and saving are always asked of Claude in chat.
 
