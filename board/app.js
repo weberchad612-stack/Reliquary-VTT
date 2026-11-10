@@ -75,7 +75,12 @@ export async function start(store) {
   let META;
   try { META = await store.get('board/meta'); } catch (e) { clearTimeout(slow); return showMessage(`The board cannot read its database (${(e && e.code) || e}).`); }
   clearTimeout(slow);
-  if (!META) return showMessage('No campaign is loaded on this board yet. Ask Claude to load one.');
+  if (!META) {
+    // an empty board waits for a campaign: when Claude loads one (board/meta is written last), start on it
+    showMessage('No campaign is loaded on this board yet. Ask Claude to load one; it will appear here by itself.');
+    const off = store.watch('board/meta', (m) => { if (m) { off(); location.reload(); } });
+    return;
+  }
   if (!RULESETS.includes(META.ruleset)) return showMessage(`This campaign uses the "${META.ruleset}" rules, which this board does not have yet.`);
   let TABLE = (await store.get('state/table')) || {};
   const NOTES = TABLE.notes || {};

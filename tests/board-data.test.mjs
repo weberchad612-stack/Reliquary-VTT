@@ -108,3 +108,33 @@ test('a save from records holds no store-only fields', () => {
   assert.equal(campaign.pack.id, 'sample-pack');
   for (const st of Object.values(mapStates)) for (const t of Object.values(st.tokens || {})) assert.equal(t.map, undefined);
 });
+
+test('load ops reuse uploaded images by fingerprint, put board/meta last, and stay in batches of 50', async () => {
+  const { loadOps, clearOps } = await import('../tools/campaign.mjs');
+  const { records: r0, images } = buildRecords(PACK, camp('keep-test'), { now: 't' });
+  const keep = images.find((i) => i.map === 'sample-keep');
+  const ops = loadOps(PACK, camp('keep-test'), [{ opaque_id: 'A1', sha256: keep.fingerprint }], { now: 't' });
+  assert.ok(ops.batches.every((b) => b.length <= 50));
+  const all = ops.batches.flat();
+  assert.equal(all.find((o) => o.path === 'maps/sample-keep').data.image.asset, 'A1');
+  assert.equal(all.some((o) => o.path === 'board/meta'), false);
+  assert.equal(ops.meta.path, 'board/meta');
+  assert.deepEqual(ops.upload.map((u) => u.map).sort(), ['sample-crypt', 'sample-stairwell']);
+  assert.equal(all.length, Object.keys(r0).length - 1);
+  const del = clearOps(Object.fromEntries(Array.from({ length: 120 }, (_, i) => [`log/${i}`, 1])));
+  assert.deepEqual(del.map((b) => b.length), [50, 50, 20]);
+  assert.deepEqual(del[0][0], { op: 'delete', path: 'log/0', ifVersion: 1 });
+});
+
+test('verify: a save matches the records it was written from, and a moved token is caught', async () => {
+  const { verifySave } = await import('../tools/campaign.mjs');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rvtt-verify-'));
+  fs.cpSync(camp('keep-test'), tmp, { recursive: true });
+  const { records } = buildRecords(PACK, tmp, { now: 't' });
+  records['tokens/ogre'] = { ...records['tokens/ogre'], x: 23, y: 17 };
+  writeSave(records, tmp);
+  assert.deepEqual(verifySave(records, PACK, tmp), []);
+  records['tokens/ogre'].x = 30;
+  assert.ok(verifySave(records, PACK, tmp).some((d) => d.includes('ogre')));
+  fs.rmSync(tmp, { recursive: true, force: true });
+});

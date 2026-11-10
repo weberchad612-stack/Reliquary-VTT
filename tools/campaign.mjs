@@ -13,6 +13,18 @@
 //       The previous save is first copied to <save-dir>/backups/<time>/ (the last BACKUPS are kept).
 //   node tools/campaign.mjs check <pack-dir> <save-dir>
 //       Round trip: save -> records -> save, and report any difference (exit code 1 if there is one).
+//
+// For loading, saving and switching on the published board (docs/best-practices/board.md):
+//   node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]
+//       The db_write batches that load the campaign: {batches: [[op...]...], meta: op, upload: [images]}.
+//       ASSETS.json is the board's asset list ({assets: [{opaque_id, sha256}]}); a map image whose
+//       fingerprint is already uploaded reuses that asset, any other is listed under "upload".
+//       Write the batches in order, then `meta` last (the board reloads when board/meta changes).
+//   node tools/campaign.mjs ops-clear <LISTING.json> [--out FILE]
+//       Delete ops (batches of 50) for every record in a listing {path: version} of the whole database.
+//   node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>
+//       Compare a save on disk with records read from the board's database (the save's own records:
+//       board/meta, state, mapstate, tokens, explored). Exit code 1 and the differences if any.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -122,12 +134,50 @@ export function roundTrip(packDir, saveDir) {
   return out;
 }
 
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored'];
+const BATCH = 50;
+const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
+
+/** db_write batches loading a campaign; images matched to uploaded assets by SHA-256. */
+export function loadOps(packDir, saveDir, assets = [], { now } = {}) {
+  const bySha = new Map(assets.map((a) => [a.sha256, a.opaque_id]));
+  const { records, images } = buildRecords(packDir, saveDir, { now });
+  const upload = [];
+  for (const [p, d] of Object.entries(records)) {
+    if (!p.startsWith('maps/')) continue;
+    const id = bySha.get(d.image.fingerprint);
+    if (id) d.image.asset = id;
+    else upload.push(images.find((i) => i.fingerprint === d.image.fingerprint));
+  }
+  const ops = Object.entries(records).filter(([p]) => p !== 'board/meta').map(([path, data]) => ({ op: 'set', path, data }));
+  return { batches: batches(ops), meta: { op: 'set', path: 'board/meta', data: records['board/meta'] }, upload };
+}
+
+/** Delete ops for a whole-database listing {path: version}. */
+export function clearOps(listing) {
+  return batches(Object.entries(listing).map(([path, ifVersion]) => ({ op: 'delete', path, ifVersion })));
+}
+
+/** Differences between a save on disk and the save's records read from the board (empty: they match). */
+export function verifySave(records, packDir, saveDir) {
+  const strip = (o) => JSON.parse(JSON.stringify(o, (k, v) => (k === '$schema' || k === 'saved_at' ? undefined : v)));
+  const fromDb = saveFromRecords(records);
+  const disk = readCampaign(packDir, saveDir);
+  const out = diff(strip({ v: 1, ...fromDb.campaign }), strip({ v: 1, ...disk.campaign }), 'campaign');
+  const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
+  for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
+  return out;
+}
+
 function main(argv) {
   const args = argv.slice(2);
   const oi = args.indexOf('--out');
   let out = null;
   if (oi >= 0) { out = args[oi + 1]; args.splice(oi, 2); }
-  const [cmd, a, b] = args;
+  const ai = args.indexOf('--assets');
+  let assetsFile = null;
+  if (ai >= 0) { assetsFile = args[ai + 1]; args.splice(ai, 2); }
+  const [cmd, a, b, c] = args;
   const emit = (obj) => {
     const text = JSON.stringify(obj);
     if (out) { fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true }); fs.writeFileSync(out, text); console.log(`wrote ${out} (${(text.length / 1024).toFixed(0)} KiB)`); } else console.log(text);
@@ -137,6 +187,19 @@ function main(argv) {
     const data = readJson(a);
     const files = writeSave(data.records || data, b);
     console.log(`wrote ${files.length} file(s) to ${b}`);
+    return 0;
+  }
+  if (cmd === 'ops-load' && a && b) {
+    const assets = assetsFile ? (readJson(assetsFile).assets || readJson(assetsFile)) : [];
+    emit(loadOps(a, b, assets));
+    return 0;
+  }
+  if (cmd === 'ops-clear' && a) { emit({ batches: clearOps(readJson(a)) }); return 0; }
+  if (cmd === 'verify' && a && b && c) {
+    const data = readJson(a);
+    const d = verifySave(data.records || data, b, c);
+    if (d.length) { console.log(d.join('\n')); return 1; }
+    console.log('save matches the board');
     return 0;
   }
   if (cmd === 'check' && a && b) {
