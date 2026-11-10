@@ -177,7 +177,7 @@ Sight, being seen and drawing use the laid-out space; movement uses the centre o
 
 **Cover is separate.** Cover uses the rulebook's centre-to-centre line (and the large-creature cover rule). It belongs to the ruleset, which uses the engine's line test.
 
-**GM vision view.** In the GM view, clicking any token (NPC, foe or PC) shades the area that token can see right now, using its own viewpoints and vision range. This is display only: it never changes the explored area and never reaches the player view. Clicking empty map or pressing Esc clears it.
+**A creature's own view.** Selecting a token shows the board through its eyes: only what it perceives now, using its own viewpoints, senses and the light; nothing remembered; only the tokens it sees. The GM can select any token (NPC, foe or PC), a player only a PC. This is display only: it never changes the explored area. Clicking empty map or pressing Esc returns to the whole map. (First built as a shaded overlay; replaced 2026-11-10, see [lighting.md](lighting.md) section 11.)
 
 **Three fog states for players:**
 

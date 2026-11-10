@@ -54,7 +54,7 @@ Senses come from the creature's data (the PC's character, the foe's stat block) 
 
 ## 6. Parties whose members see differently
 
-The players' board shows the **combined view** of the party (everything any PC perceives, drawn as in section 2), and the explored area grows from it. A player may click their own PC to shade exactly what that PC sees (the GM's vision view, limited to the player's own characters). Concealed badges follow the selected PC; with none selected, a foe shows the badge if it is concealed from at least one PC who sees it, and the tooltip names who ("concealed from Kerra: dim light").
+The players' board shows the **combined view** of the party (everything any PC perceives, drawn as in section 2), and the explored area grows from it. A player may select their own PC to see the board through that PC's eyes alone (section 11; first built as a shaded overlay). Concealed badges follow the selected PC; with none selected, a foe shows the badge if it is concealed from at least one PC who sees it, and the tooltip names who ("concealed from Kerra: dim light").
 
 ## 7. Cost
 

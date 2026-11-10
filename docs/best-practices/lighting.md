@@ -27,7 +27,7 @@ Paraphrase in notes; never copy the book's sentences.
 
 | Check | How |
 |---|---|
-| Validator | `node tools/validate.mjs <pack>`: no errors; presets known; lights inside the grid. |
+| Validator | `node tools/validate.mjs <pack>`: no errors; presets known; lights inside the grid; colours `#rrggbb` or `none`; intensities 0-100. |
 | Regions | The plot above: every building dark unless the text opens it; the outdoors whole; insets excluded. |
 | In the demo | Walk a PC in by day without a light (a room with no window or open door stays dark and unexplored; one with a window is lit near it, fading across the room), light a torch (the room appears), set the Sky to night (only the torch's circle outdoors, no daylight indoors). Put a foe in dim light and check its concealed badge; give a PC darkvision and check the greyscale. Select a PC and a foe and check each sees only what it should. |
 | Decisions | One line in the map's `decisions` list: the level's rule, what is open to the sky, the lights, and anything to confirm with the user (fog making daylight dim). |
@@ -36,7 +36,7 @@ Paraphrase in notes; never copy the book's sentences.
 
 - Ask the engine what a PC perceives (`partyView` with the light map); never judge light by looking at the picture.
 - Light changes play: say so. "The skeleton at the edge of your torchlight is concealed from you, Kerra: DC 5 flat check to target it." A foe in darkness is not on the board for a PC without darkvision; when the party knows where it is (they heard it, it attacked), place a hidden marker on its square.
-- Keep light state in the save: carried lights on the token (`light`, with `on`), static lights in `lights`, the sky in `sky_light`. Lighting or dousing a light is an Interact action; update the save when it happens.
+- Keep light state in the save: carried lights on the token (`light`, with `on`, `colour`, `intensity`), static lights in `lights` (`on`, `colour`, `intensity`), regions in `regions` and `regions_off`, the sky in `sky_light`, the table's coloured-light switch and strength in `light_colour`. Lighting or dousing a light is an Interact action; update the save when it happens.
 - Senses come from the creature (darkvision, low-light vision); a temporary one (a darkvision elixir, a spell) goes on the token's `senses` with its `source`, and comes off when it ends.
 - A lit area with no lamp mark is a lighting region (glowing fungus, an altar's glow): hover over it in GM view to see its name; GM view outlines every region.
 - Colour and intensity can change in play (a brazier burning low, a spell turning a flame blue): change them in the GM's Lighting card (lamps, regions) or a token's selection panel (carried light), so they are kept in the save, and describe the change.
@@ -53,6 +53,5 @@ Paraphrase in notes; never copy the book's sentences.
 - Daylight lights are generated (`daylightLights`) from the walls, the door states, the sky and the sky regions every update and handed to the same `LightCache` as the static and carried lights; their ids (`day:<wall>:<n>`) are stable, so they are only recomputed when a door or the sky changes.
 - The player's light shade is drawn blurred and clipped to the visible area; pixels outside the view count as dark in the shade image so the blur does not leave a light rim at the edge of the view.
 - One view decides everything drawn: the party's, or the selected creature's (`shown()` in the demo page). Fog, shade, tokens, badges, doors, movement outlines, hover readout and click targets all read it, so they cannot disagree.
-
 - Light, sight and the explored area share the 1/8-cell grid, so filtering sight by light is a pixel test and the result is traced into straight-edged outlines like the fog.
 - `export const A = 1, B = 2;` exports only `A` from the bundled page (the bundler now refuses it): one export per declaration. Tests in `tests/demo.test.mjs` check that every module export reaches the bundled engine; Node tests alone cannot see bundling problems.

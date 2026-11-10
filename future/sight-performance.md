@@ -8,7 +8,7 @@ Play feels responsive today. The demo recomputes sight only when something chang
 
 ## What it costs today
 
-Measured 2026-11-09 on Level 1 of the first campaign (693 wall segments, 44 x 58 cells, outline-traced walls), 200 ft vision, in the cloud workspace (Node 22 for the engine; headless Chromium with software rendering for the page, so real browsers with a GPU will draw faster).
+Measured 2026-11-09 on Level 1 of the first campaign (693 wall segments, 44 x 58 cells, outline-traced walls), 200 ft vision (sight is now unlimited, to the map's edge, since 2026-11-10: measure again before optimising), in the cloud workspace (Node 22 for the engine; headless Chromium with software rendering for the page, so real browsers with a GPU will draw faster).
 
 | Step | Time | Notes |
 |---|---|---|

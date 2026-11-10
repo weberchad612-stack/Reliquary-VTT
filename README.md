@@ -8,12 +8,15 @@ Early development. Nothing playable yet. Work is starting with maps: see [docs/d
 
 Built so far:
 
-- JSON schemas for maps, wall segments and map state (`schemas/`)
+- JSON schemas for maps, wall segments, terrain, lighting and map state (`schemas/`)
 - Wall types and sense values shared by the engine and tools (`engine/walls/presets.js`)
 - The sight engine: visibility polygons and line of sight for every wall type and token size (`engine/sight/`)
-- Movement: steps, fitting large creatures, pathfinding and reach (`engine/movement/`)
-- Fog of war: explored-area merging and the three-state player and GM fog (`engine/fog/`)
-- A map importer that turns a map in a PDF you own into wall data for a private pack (`tools/mapimport/`)
+- Movement: steps, fitting large creatures, pathfinding, reach and exact one, two and three Stride ranges (`engine/movement/`); distances and rulers (`engine/measure/`)
+- Terrain: difficult, greater difficult, hazardous, uneven, narrow, climb and swim areas and their movement costs (`engine/terrain/`)
+- Light and vision: light sources and regions, darkness and dim light, darkvision and low-light vision, concealment, daylight through windows and open doors, fading dim light, colour and intensity (`engine/light/`)
+- Fog of war: explored-area merging and the three-state player and GM fog, and one creature's own view (`engine/fog/`)
+- The Pathfinder 2e rules the engine asks for: movement and terrain, light and senses (`rulesets/pf2e/`)
+- A map importer that turns a map in a PDF you own into wall, terrain and lighting data for a private pack (`tools/mapimport/`)
 - A validator, sight, movement and fog query tools, and a wall overlay renderer (`tools/`)
 - An original sample map pack and save, and an interactive demo of the engine on it (`examples/`)
 
