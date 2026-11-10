@@ -33,3 +33,20 @@ test('bundle: every export of every engine module reaches the bundled Engine', a
   }
   assert.deepEqual(missing, []);
 });
+
+const BOARD_APP = fs.readFileSync(path.join(ROOT, 'board', 'app.js'), 'utf8');
+
+test('board: no function or constant inside start() is declared twice', () => {
+  const names = [...BOARD_APP.matchAll(/^  (?:function|const|let|class)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
+  const dup = names.filter((n, i) => names.indexOf(n) !== i);
+  assert.deepEqual([...new Set(dup)], []);
+});
+
+test('board: every Engine.<name> it uses is exported, and the board bundles', async () => {
+  const { bundleEngine, bundleBoard } = await import('../tools/bundle.mjs');
+  const Engine = new Function(`${bundleEngine()}\nreturn Engine;`)();
+  const used = new Set([...BOARD_APP.matchAll(/Engine\.([A-Za-z_$][\w$]*)/g)].map((m) => m[1]));
+  assert.deepEqual([...used].filter((n) => !(n in Engine)), []);
+  const Board = new Function(`${bundleEngine()}\n${bundleBoard()}\nreturn Board;`)();
+  for (const n of ['boot', 'start', 'MemoryStore', 'platformStore', 'campaignRecords', 'saveFromRecords']) assert.ok(n in Board, n);
+});

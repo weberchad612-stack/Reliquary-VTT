@@ -28,6 +28,8 @@ const V = {
   map: schema('map.schema.json'),
   walls: schema('walls.schema.json'),
   state: schema('map-state.schema.json'),
+  pack: schema('pack.schema.json'),
+  campaign: schema('campaign.schema.json'),
 };
 
 // Doorway check: walls running into a door's span pinch it, so an open door cannot be seen or walked through.
@@ -345,6 +347,14 @@ export function validate(target, { save = null } = {}) {
     if (info.map) maps.set(info.map.id, info);
   } else if (fs.existsSync(path.join(target, 'maps'))) {
     const mapsDir = path.join(target, 'maps');
+    const packFile = path.join(target, 'pack.json');
+    if (fs.existsSync(packFile)) {
+      const pack = readJson(packFile, report);
+      if (pack && schemaErrors(V.pack, pack, packFile, report)) {
+        report.pack = pack;
+        for (const id of pack.maps) if (!fs.existsSync(path.join(mapsDir, id, 'map.json'))) report.error(packFile, `maps: no map folder "${id}"`);
+      }
+    } else report.warn(target, 'no pack.json: the board cannot load this pack as a campaign');
     const dirs = fs.readdirSync(mapsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
     if (!dirs.length) report.warn(mapsDir, 'no maps found');
     const known = new Set(dirs);
@@ -360,6 +370,16 @@ export function validate(target, { save = null } = {}) {
   }
 
   if (save) {
+    const campFile = path.join(save, 'campaign.json');
+    if (fs.existsSync(campFile)) {
+      const camp = readJson(campFile, report);
+      if (camp && schemaErrors(V.campaign, camp, campFile, report) && report.pack) {
+        if (camp.pack.id !== report.pack.id) report.error(campFile, `pack: this save is for pack "${camp.pack.id}", not "${report.pack.id}"`);
+        else if (camp.pack.version !== report.pack.version) report.warn(campFile, `pack: saved with version ${camp.pack.version}, the pack is ${report.pack.version}`);
+        if (camp.ruleset !== report.pack.ruleset) report.error(campFile, `ruleset: "${camp.ruleset}" does not match the pack's "${report.pack.ruleset}"`);
+        if (camp.current_map && !maps.has(camp.current_map)) report.error(campFile, `current_map: no map "${camp.current_map}" in the pack`);
+      }
+    }
     const dir = path.join(save, 'maps');
     if (!fs.existsSync(dir)) report.error(save, 'save has no maps/ folder');
     else {

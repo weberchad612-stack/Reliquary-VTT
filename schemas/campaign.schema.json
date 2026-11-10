@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/campaign.schema.json",
+  "title": "Campaign",
+  "description": "A campaign save's own record (campaign.json in the save folder): which pack and ruleset it plays, and the table's settings. Per-map state is in maps/<id>.json. See docs/design/board.md.",
+  "type": "object",
+  "required": [
+    "v",
+    "id",
+    "pack",
+    "ruleset"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "v": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 48
+    },
+    "title": {
+      "type": "string"
+    },
+    "pack": {
+      "type": "object",
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "ruleset": {
+      "type": "string"
+    },
+    "current_map": {
+      "type": "string",
+      "description": "The map the table is on."
+    },
+    "sky_light": {
+      "enum": [
+        "bright",
+        "dim",
+        "dark"
+      ]
+    },
+    "light_colour": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "on": {
+          "type": "boolean"
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "light_animation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "on": {
+          "type": "boolean"
+        }
+      }
+    },
+    "notes": {
+      "type": "object",
+      "description": "Free text for the board's side panel (a test campaign's tips).",
+      "properties": {
+        "subtitle": {
+          "type": "string"
+        },
+        "intro": {
+          "type": "string"
+        },
+        "tips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "saved_at": {
+      "type": "string",
+      "description": "When this save was last written from the board."
+    }
+  }
+}

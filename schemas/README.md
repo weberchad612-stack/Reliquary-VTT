@@ -4,6 +4,8 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 
 | Schema | Describes | Lives in |
 |---|---|---|
+| `pack.schema.json` | A pack's manifest: id, version, the ruleset it targets, its maps | pack: `pack.json` |
+| `campaign.schema.json` | A campaign save's own record: pack and ruleset, current map, table settings (sky, colour, animation), notes | save: `campaign.json` |
 | `map.schema.json` | One map: image, grid calibration, wall files, links to other maps, hidden areas (insets of other maps) | pack: `maps/<id>/map.json` |
 | `walls.schema.json` | Wall segments in grid cells (8 types, doors, secret doors, one-way, proximity); doors may be stuck (`stuck_dc`), blocked, or found automatically (`auto_find`); door leaves have a `hinge` and `swing`, and the two leaves of a double door name each other in `pair` | pack: `maps/<id>/walls.json` |
 | `terrain.schema.json` | Terrain areas in whole squares (difficult, greater difficult, swim, climb, uneven, narrow, hazardous) with cause, DC, damage, and areas that start switched off | pack: `maps/<id>/terrain.json` |

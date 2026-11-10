@@ -1,0 +1,143 @@
+// A campaign as database records, and back (docs/design/board.md section 3).
+//
+// On disk a campaign is a pack (pack.json and maps/<id>/: map.json, walls, terrain, lighting, image) and a
+// save folder (campaign.json and maps/<id>.json, one map state per map). In the board's database the
+// same campaign is a set of small records, all paths two parts long:
+//
+//   board/meta         which campaign is loaded: campaign, pack and ruleset ids, schema, when loaded and saved
+//   maps/<map>         a map record (map.json without file names) and its image: {asset, fingerprint, w, h}
+//   walls/<map>.<n>    wall segments in chunks of WALL_CHUNK
+//   terrain/<map>      {map, areas}
+//   lighting/<map>     {map, regions, lights}
+//   state/table        the table's settings: current map, sky, colour and animation switches, notes
+//   mapstate/<map>     a map's state without its tokens and explored area
+//   tokens/<id>        one record per token, with the map it is on
+//   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
+//   log/<time>-<n>     the change log (not part of the save; written by whoever makes a change)
+//
+// Pure functions, no I/O: tools/campaign.mjs reads and writes the files, the board reads and writes the store.
+
+export const SCHEMA = 1;
+export const WALL_CHUNK = 400;
+export const EXPLORED_CHUNK = 200;
+
+/** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
+const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored']);
+/** Fields of campaign.json kept in the table state record. */
+export const TABLE_FIELDS = ['current_map', 'sky_light', 'light_colour', 'light_animation', 'notes'];
+
+const chunks = (arr, n) => {
+  const out = [];
+  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+  return out.length ? out : [[]];
+};
+const pad = (n) => String(n).padStart(3, '0');
+
+/**
+ * Records for a whole campaign.
+ * @param {object} c
+ * @param {object} c.campaign   campaign.json: {id, title, pack: {id, version}, ruleset, current_map, ...}
+ * @param {object} c.pack       pack.json: {id, title, version, ruleset, maps}
+ * @param {Array}  c.maps       [{id, map (map.json), segs, terrain (areas), lighting, image: {asset, fingerprint, w, h}}]
+ * @param {object} c.mapStates  {mapId: map state (as in saves/<campaign>/maps/<id>.json)}
+ * @param {string} [c.now]      ISO time for board/meta
+ * @returns {object}  {path: data}
+ */
+export function campaignRecords({ campaign, pack, maps, mapStates = {}, now = new Date().toISOString() }) {
+  if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
+    throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
+  }
+  const ruleset = campaign.ruleset || pack.ruleset;
+  if (pack.ruleset && ruleset !== pack.ruleset) throw new Error(`campaign ruleset "${ruleset}" does not match pack ruleset "${pack.ruleset}"`);
+  const r = {};
+  r['board/meta'] = {
+    schema: SCHEMA,
+    campaign: { id: campaign.id, title: campaign.title || campaign.id },
+    pack: { id: pack.id, title: pack.title || pack.id, version: pack.version || '0' },
+    ruleset,
+    maps: maps.map((m) => m.id),
+    loaded_at: now,
+    saved_at: campaign.saved_at || null,
+  };
+  for (const m of maps) {
+    const { walls, terrain, lighting, ...map } = m.map;
+    r[`maps/${m.id}`] = { ...map, id: m.id, image: { ...(m.map.image || {}), ...(m.image || {}) } };
+    chunks(m.segs || [], WALL_CHUNK).forEach((segs, n) => { r[`walls/${m.id}.${pad(n)}`] = { map: m.id, n, segs }; });
+    if (m.terrain && m.terrain.length) r[`terrain/${m.id}`] = { map: m.id, areas: m.terrain };
+    if (m.lighting) {
+      const { $schema, ...lighting } = m.lighting;
+      r[`lighting/${m.id}`] = { map: m.id, ...lighting };
+    }
+  }
+  r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
+  if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
+  for (const [mapId, st] of Object.entries(mapStates)) {
+    r[`mapstate/${mapId}`] = Object.fromEntries(Object.entries(st).filter(([k]) => !MAPSTATE_SKIP.has(k)));
+    r[`mapstate/${mapId}`].map = mapId;
+    for (const [tid, t] of Object.entries(st.tokens || {})) r[`tokens/${tid}`] = { ...t, map: mapId };
+    const polys = (st.explored && st.explored.polys) || [];
+    if (polys.length) {
+      chunks(polys, EXPLORED_CHUNK).forEach((p, n) => { r[`explored/${mapId}.${pad(n)}`] = { map: mapId, n, v: st.explored.v || 1, polys: p }; });
+    }
+  }
+  return r;
+}
+
+/** Records belonging to one map, from a {path: data} object or a list: walls joined, chunks in order. */
+export function mapFromRecords(records, mapId) {
+  const get = (p) => records[p] ?? null;
+  const map = get(`maps/${mapId}`);
+  if (!map) return null;
+  const inColl = (coll) => Object.entries(records)
+    .filter(([p, d]) => p.startsWith(coll + '/') && d && d.map === mapId)
+    .sort((a, b) => a[1].n - b[1].n).map(([, d]) => d);
+  const lighting = get(`lighting/${mapId}`);
+  return {
+    map,
+    segs: inColl('walls').flatMap((d) => d.segs),
+    terrain: (get(`terrain/${mapId}`) || {}).areas || [],
+    lighting: lighting ? (({ map: _m, ...l }) => l)(lighting) : null,
+  };
+}
+
+/** The explored area of a map from its chunk records: {v, polys}. */
+export function exploredFromRecords(chunkRecords) {
+  const list = [...chunkRecords].sort((a, b) => a.n - b.n);
+  return { v: Math.max(1, ...list.map((d) => d.v || 1)), polys: list.flatMap((d) => d.polys) };
+}
+
+/** Explored-area chunk records for one map (to replace the old chunks wholesale). */
+export function exploredRecords(mapId, explored) {
+  const out = {};
+  chunks((explored && explored.polys) || [], EXPLORED_CHUNK).forEach((p, n) => {
+    if (p.length || n === 0) out[`explored/${mapId}.${pad(n)}`] = { map: mapId, n, v: (explored && explored.v) || 1, polys: p };
+  });
+  return out;
+}
+
+/**
+ * The save on disk from the records: campaign.json and one map state per map.
+ * @param {object} records  {path: data} (everything the store holds)
+ * @param {object} [base]   the campaign.json being updated (fields the board does not hold are kept)
+ * @returns {{campaign: object, mapStates: object}}
+ */
+export function saveFromRecords(records, base = {}) {
+  const meta = records['board/meta'];
+  if (!meta) throw new Error('no campaign is loaded (board/meta is missing)');
+  const table = records['state/table'] || {};
+  const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
+  for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
+  const mapStates = {};
+  const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
+  for (const [p, d] of Object.entries(records)) {
+    const [coll] = p.split('/');
+    if (coll === 'mapstate') Object.assign(ensure(d.map), d);
+    if (coll === 'tokens') { const { map, ...t } = d; (ensure(map).tokens = ensure(map).tokens || {})[p.split('/')[1]] = t; }
+  }
+  for (const id of meta.maps || []) {
+    const ex = Object.entries(records).filter(([p, d]) => p.startsWith('explored/') && d.map === id).map(([, d]) => d);
+    if (ex.length) ensure(id).explored = exploredFromRecords(ex);
+  }
+  for (const st of Object.values(mapStates)) delete st.$schema;
+  return { campaign, mapStates };
+}

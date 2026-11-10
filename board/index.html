@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reliquary board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral+SC:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a working table. Map fills the left, a narrow control rail on the right; stacks on phones.
+   Single dark theme by choice: a dungeon table at night, torchlight amber as the one accent. */
+:root {
+  --bg: #17191d;
+  --panel: #20232a;
+  --line: #343841;
+  --ink: #ebe6dc;
+  --muted: #a3a8b0;
+  --accent: #e3a443;
+  --pc: #5b93ff;
+  --foe: #e5615a;
+  --ok: #5fbf83;
+  --warn: #e3a443;
+  --font-display: "Spectral SC", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+header {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+h1 { font: 600 20px/1.2 var(--font-display); letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h1 small { font: 400 13px var(--font-body); color: var(--muted); letter-spacing: 0; margin-left: 8px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button + button { border-left: 1px solid var(--line); }
+button {
+  font: 500 13px var(--font-body); color: var(--ink); background: #2a2e36;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+button:hover { background: #333842; }
+button[aria-pressed="true"] { background: var(--accent); color: #1a1408; }
+button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+.stage { position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+canvas#map, .hud { margin: 0 auto; flex: none; }
+.sel-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+.sel-actions:empty { display: none; }
+.sky[hidden] { display: none; }
+#b-lighting[hidden] { display: none; }
+.sky { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.sky select { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: inherit; }
+.zoom { display: inline-flex; align-items: center; gap: 4px; }
+.zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
+canvas#anim { position: absolute; pointer-events: none; }
+.arow { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); margin: -2px 0 4px 22px; }
+.arow select { font-size: 11px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 1px 2px; }
+.arow input[type=range] { width: 100%; }
+canvas#map { display: block; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); touch-action: none; cursor: default; }
+.hud {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 16px; font: 13px var(--font-mono); color: var(--muted);
+}
+.hud b { color: var(--ink); font-weight: 500; }
+aside { border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: 16px; display: grid; gap: 18px; align-content: start; }
+.lrow { display: grid; grid-template-columns: 1fr auto auto auto; gap: 6px; align-items: center; font-size: 13px; }
+.lrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lrow input[type=color] { width: 26px; height: 22px; padding: 0; border: 1px solid var(--line); background: none; cursor: pointer; }
+.lrow input[type=range] { width: 74px; }
+.lrow .pct { font-size: 11px; color: var(--muted); width: 30px; text-align: right; }
+.lrow.off .nm { color: var(--muted); text-decoration: line-through; }
+.lrow button { padding: 2px 6px; font-size: 11px; }
+.lsub { font: 600 12px var(--font-display); color: var(--muted); margin-top: 6px; }
+.board-message { margin: 40px auto; max-width: 520px; color: var(--muted); font-size: 16px; text-align: center; }
+.changes { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 13px; max-height: 320px; overflow: auto; }
+.changes .when { color: var(--muted); font: 11px var(--font-mono); }
+.changes .who-claude { color: #b69cf6; } .changes .who-gm { color: var(--accent); } .changes .who-player { color: var(--pc); }
+.changes .muted { color: var(--muted); }
+.gm-confirm { position: fixed; inset: 0; background: rgba(5, 6, 9, .6); display: grid; place-items: center; z-index: 50; }
+.gm-confirm[hidden] { display: none; }
+.gm-confirm .box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; max-width: 420px; display: grid; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+.gm-confirm h2 { margin: 0; font: 600 18px var(--font-display); color: var(--accent); }
+.gm-confirm .row { display: flex; gap: 8px; justify-content: flex-end; }
+aside h2 { font: 600 15px var(--font-display); letter-spacing: .03em; margin: 0 0 8px; color: var(--accent); }
+.card { display: grid; gap: 6px; }
+.sel-name { font-weight: 600; font-size: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 12px var(--font-body); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.chip.pc { color: var(--pc); border-color: color-mix(in srgb, var(--pc) 50%, transparent); }
+.chip.foe { color: var(--foe); border-color: color-mix(in srgb, var(--foe) 50%, transparent); }
+.chip.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+.chip.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 50%, transparent); }
+ul.try { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--muted); font-size: 14px; }
+ul.try b { color: var(--ink); font-weight: 500; }
+.legend { display: grid; grid-template-columns: 18px 1fr; gap: 6px 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.sw { width: 18px; height: 4px; border-radius: 2px; }
+ol.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; max-height: 240px; overflow: auto; }
+ol.log li { padding: 4px 8px; border-left: 3px solid var(--line); background: #1b1e24; border-radius: 0 4px 4px 0; }
+ol.log li.warn { border-left-color: var(--warn); }
+ol.log li.ok { border-left-color: var(--ok); }
+ol.log li.foe { border-left-color: var(--foe); }
+.toast {
+  position: absolute; left: 50%; top: 24px; transform: translateX(-50%);
+  background: #2b2418; color: var(--ink); border: 1px solid var(--warn); border-radius: 8px;
+  padding: 8px 14px; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.toast.show { opacity: 1; }
+@media (max-width: 860px) {
+  main { grid-template-columns: 1fr; }
+  aside { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title">Reliquary Map Engine<small id="subtitle"></small></h1>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="View">
+        <button id="v-player" aria-pressed="true">Player view</button>
+        <button id="v-gm" aria-pressed="false">GM view</button>
+      </div>
+      <div class="zoom" role="group" aria-label="Zoom">
+        <button id="z-out" aria-label="Zoom out" title="Zoom out (-)">−</button>
+        <output id="z-lab" aria-live="polite">100%</output>
+        <button id="z-in" aria-label="Zoom in" title="Zoom in (+)">+</button>
+        <button id="z-fit" title="Fit the map to the window (0)">Fit</button>
+      </div>
+      <label class="sky" id="sky-wrap" hidden>Sky
+        <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
+      </label>
+      <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off: off, everything counts as bright">Lighting on</button>
+      <button id="b-colour" aria-pressed="true" hidden title="GM: coloured light on or off for the whole table">Colour on</button>
+      <button id="b-anim" aria-pressed="true" hidden title="GM: light animation (flicker) on or off for the whole table">Animation on</button>
+      <button id="b-walls" aria-pressed="false">Show walls</button>
+    </div>
+  </header>
+  <main>
+    <div class="stage" id="stage">
+      <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
+      <canvas id="anim" aria-hidden="true"></canvas>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="hud" id="hud"></div>
+    </div>
+    <aside>
+      <section class="card" id="sel" aria-live="polite"></section>
+      <section class="card" id="lightcard" hidden></section>
+      <section class="card" id="changelog" hidden></section>
+      <section>
+        <h2>Try this</h2>
+        <ul class="try" id="try"></ul>
+      </section>
+      <section>
+        <h2>Walls</h2>
+        <div class="legend" id="legend"></div>
+      </section>
+      <section>
+        <h2>Table log</h2>
+        <ol class="log" id="log"></ol>
+      </section>
+    </aside>
+  </main>
+</div>
+<div class="gm-confirm" id="gm-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="gm-confirm-title">
+  <div class="box">
+    <h2 id="gm-confirm-title">Show the GM view?</h2>
+    <p>This reveals unseen foes, secret doors and other spoilers. The board returns to the player view when you reload it.</p>
+    <div class="row"><button data-a="no">Stay in player view</button><button data-a="yes" aria-pressed="true">Show GM view</button></div>
+  </div>
+</div>
+<script>
+/*@ENGINE@*/
+/*@BOARD@*/
+// A seed campaign makes this a board on memory (the demo, tests); without one it uses the board's database.
+const SEED = /*@DATA?:seed@*/;
+Board.boot(SEED);
+</script>
+</body>
+</html>

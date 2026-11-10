@@ -6,7 +6,9 @@
 //
 // In the template:
 //   /*@ENGINE@*/      is replaced by the bundled engine; it defines `const Engine = {...every export}`.
+//   /*@BOARD@*/       is replaced by the bundled board modules (board/): `const Board = {...every export}`.
 //   /*@DATA:NAME@*/   is replaced by the JSON or data URL built from --data NAME=FILE.
+//   /*@DATA?:NAME@*/  the same, or null when no --data NAME is given (optional data, e.g. a seed campaign).
 //                     FILE ending in .json is inlined as JSON; .png/.jpg/.webp become a data URL string;
 //                     a map folder (containing map.json) becomes {map, segs, image}.
 //
@@ -20,6 +22,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENGINE = path.join(ROOT, 'engine');
+const BOARD = path.join(ROOT, 'board');
+export const BOARD_ENTRIES = ['store.js', 'records.js', 'platform.js', 'app.js'];
 export const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', 'light/light.js', 'light/daylight.js', 'light/animate.js', '../rulesets/pf2e/terrain.js', '../rulesets/pf2e/light.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
 
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'([^']+)';?\s*$/gm;
@@ -27,6 +31,15 @@ const EXPORT_RE = /^export\s+(?:async\s+)?(const|let|function|class)\s+([A-Za-z_
 
 /** Resolve modules depth-first so every module comes after its imports. */
 export function bundleEngine(entries = ENTRIES) {
+  return bundleModules(ENGINE, entries, 'Engine');
+}
+
+/** The board's modules (they use the bundled Engine as a global). */
+export function bundleBoard(entries = BOARD_ENTRIES) {
+  return bundleModules(BOARD, entries, 'Board', '__b_');
+}
+
+function bundleModules(base, entries, name, prefix = '__m_') {
   const order = [];
   const seen = new Set();
   const visit = (file) => {
@@ -36,9 +49,9 @@ export function bundleEngine(entries = ENTRIES) {
     for (const m of src.matchAll(IMPORT_RE)) visit(path.resolve(path.dirname(file), m[2]));
     order.push(file);
   };
-  entries.forEach((e) => visit(path.join(ENGINE, e)));
+  entries.forEach((e) => visit(path.join(base, e)));
 
-  const id = (file) => '__m_' + path.relative(ENGINE, file).replace(/[^A-Za-z0-9]/g, '_');
+  const id = (file) => prefix + path.relative(base, file).replace(/[^A-Za-z0-9]/g, '_');
   const parts = [];
   const all = [];
   for (const file of order) {
@@ -58,7 +71,7 @@ export function bundleEngine(entries = ENTRIES) {
     parts.push(`// ---- ${path.relative(ROOT, file)} ----\nconst ${id(file)} = (() => {\n${src}\nreturn { ${names.join(', ')} };\n})();`);
     all.push(id(file));
   }
-  parts.push(`const Engine = Object.freeze(Object.assign({}, ${all.join(', ')}));`);
+  parts.push(`const ${name} = Object.freeze(Object.assign({}, ${all.join(', ')}));`);
   return parts.join('\n\n');
 }
 
@@ -98,8 +111,9 @@ function main(argv) {
   }
   let html = fs.readFileSync(args[0], 'utf8');
   html = html.replace('/*@ENGINE@*/', () => bundleEngine());
-  html = html.replace(/\/\*@DATA:([A-Za-z0-9_]+)@\*\//g, (_, name) => {
-    if (!data[name]) throw new Error(`template needs --data ${name}=FILE`);
+  html = html.replace('/*@BOARD@*/', () => bundleBoard());
+  html = html.replace(/\/\*@DATA(\?)?:([A-Za-z0-9_]+)@\*\//g, (_, optional, name) => {
+    if (!data[name]) { if (optional) return 'null'; throw new Error(`template needs --data ${name}=FILE`); }
     return dataFor(data[name]);
   });
   fs.mkdirSync(path.dirname(path.resolve(args[1])), { recursive: true });

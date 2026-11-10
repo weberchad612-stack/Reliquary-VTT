@@ -1,6 +1,6 @@
 # The board (client): design
 
-Status: agreed with the user on 2026-11-10; nothing built yet. The board is the live table page: the map
+Status: agreed with the user on 2026-11-10. Built: the board page (`board/`), its memory and database stores, the campaign tool, and the Sample Keep loaded on the published board; still to do: saving to the PC and switching campaigns (section 5), and the guide. The board is the live table page: the map
 engine running against a campaign's data, kept in sync with Claude, who runs the game. The demo page in
 `examples/demo/` is its test bench and the starting point for its code.
 
@@ -43,7 +43,7 @@ engine running against a campaign's data, kept in sync with Claude, who runs the
 |---|---|---|
 | Board source | `board/` | The page, its styles and the board code (drawing, input, views, sync), split into modules; grown out of `examples/demo/map-demo.html` |
 | Bundle | `tools/bundle.mjs` | One self-contained page: board code, engine and every ruleset; no campaign data |
-| Campaign tool | `tools/campaign.mjs` (planned) | Turns a pack and a save on disk into database records and back; checks a round trip |
+| Campaign tool | `tools/campaign.mjs` | Turns a pack and a save on disk into database records and back; checks a round trip |
 | Publish | Claude's artifact tools | Publishes the bundled page as the user's board and declares its database and file storage |
 | Database | the board's own | The active campaign (section 3) |
 | File storage | the board's own | Map images and other media, by fingerprint |
@@ -51,23 +51,26 @@ engine running against a campaign's data, kept in sync with Claude, who runs the
 
 ## 3. What is in the database
 
-Small records, so a change rewrites little and the 256 KiB per-record limit is never near:
+Small records, so a change rewrites little and the 256 KiB per-record limit is never near. The platform's
+database takes two-part paths (`collection/record`), so every path is two parts (layout and conversion in
+`board/records.js`):
 
 | Path | Holds | Written by |
 |---|---|---|
-| `board/meta` | Active campaign: id, pack id and version, ruleset, schema version, when loaded, when last saved to the PC | Claude |
-| `pack/maps/<map>` | The map record: grid, image (file id and fingerprint), links | Claude (loading) |
-| `pack/walls/<map>/<n>` | Wall segments in chunks | Claude (loading) |
-| `pack/terrain/<map>`, `pack/lighting/<map>` | Terrain areas, lighting regions and lights | Claude (loading) |
-| `save/state` | Current map, sky, colour and animation switches, other table settings | Claude |
-| `save/maps/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off | Claude; the player for doors |
-| `save/tokens/<id>` | One record per token: position, light, senses, size, kind | Claude; the player for their PCs |
-| `save/explored/<map>/<n>` | The party's explored area, in chunks | The board (merged as the party moves) |
-| `log/<time>-<n>` | Change log: who, when, what | Whoever made the change |
+| `board/meta` | Active campaign: id and title, pack id, title and version, ruleset, schema version, its maps, when loaded, when last saved to the PC | Claude, last when loading |
+| `maps/<map>` | The map record: grid, image (uploaded file id and SHA-256 fingerprint), links | Claude (loading) |
+| `walls/<map>.<n>` | Wall segments in chunks of 400 | Claude (loading) |
+| `terrain/<map>`, `lighting/<map>` | Terrain areas; lighting regions and lights | Claude (loading) |
+| `state/table` | Current map, sky, colour and animation switches, notes (a test campaign's tips) | Claude; the GM view |
+| `mapstate/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off, hidden markers | Claude; the board (doors, GM view) |
+| `tokens/<id>` | One record per token, with the map it is on | Claude; the board (the player's PCs, the GM view) |
+| `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
+| `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 
-The page listens to a handful of these (the meta record, the current map's save record, the token
-collection, the newest log entries), well under the platform's listener limit. Records are per token and
-per map, so the player and Claude changing different things never overwrite each other.
+The page listens to six of these (the meta record, the table, the current map's state, and the token,
+explored and log collections), far under the platform's limit of 64. Records are per token and per map,
+so the player and Claude changing different things never overwrite each other. Measured: the whole Sample
+Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 
 ## 4. How a change flows
 

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/pack.schema.json",
+  "title": "Pack",
+  "description": "An adventure pack's manifest: which ruleset it targets and which maps it holds. See docs/design/board.md.",
+  "type": "object",
+  "required": [
+    "v",
+    "id",
+    "version",
+    "ruleset",
+    "maps"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "v": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 48
+    },
+    "title": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version; a save records the version it was played with."
+    },
+    "ruleset": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "The ruleset the pack targets, e.g. pf2e."
+    },
+    "maps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Map folder ids under maps/."
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}
