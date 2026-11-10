@@ -8,7 +8,7 @@
 // Points are in grid cells (fractions allowed: 3.5,4.5 is the centre of cell 3,4).
 // Without --to, prints the visibility polygon as JSON. With --to, prints {"visible": true|false}.
 // --token takes a token's top-left cell and size in cells (2 = Large) and prints one polygon per viewpoint.
-// --state is a map-state file from a save (door states, found secrets). Default range 200 ft.
+// --state is a map-state file from a save (door states, found secrets). Default range unlimited (to the map's edge), as PF2E vision; --range limits it.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -43,13 +43,13 @@ function main(argv) {
     const fromArg = opt('--from');
     const toArg = opt('--to');
     const stateFile = opt('--state');
-    const rangeFt = Number(opt('--range', '200'));
+    const rangeFt = Number(opt('--range', 'Infinity'));
     const sense = opt('--sense', 'sight');
     if (args.length !== 1) throw new Error('give exactly one map folder');
     const { map, segs } = loadMap(path.resolve(args[0]));
     const state = stateFile ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : {};
     const prepared = prepare(segs, state, sense);
-    const opts = { rangeFt, feetPerCell: map.grid.feet_per_cell };
+    const opts = { rangeFt, feetPerCell: map.grid.feet_per_cell, grid: map.grid };
     const round = (p) => [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000];
     if (tokArg) {
       const t = String(tokArg).split(',').map(Number);

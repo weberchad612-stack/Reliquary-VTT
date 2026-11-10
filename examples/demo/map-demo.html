@@ -150,7 +150,7 @@ const { map, segs } = DATA;
 const G = map.grid, CS = G.cell_px, FPC = G.feet_per_cell;
 const OX = G.origin_px[0], OY = G.origin_px[1];
 const W = map.image.w, H = map.image.h;
-const RANGE = 200;
+const RANGE = Infinity;   // PF2E vision has no range: walls and darkness limit sight
 const PCS = () => new Set(Object.entries(SETUP.tokens).filter(([, t]) => t.kind === 'pc').map(([id]) => id));
 
 const START = () => ({
@@ -191,7 +191,7 @@ function relayout() {
 const space = (id) => Engine.spaceOf({ id, ...S.tokens[id] }, layout);       // sight, being seen, drawing
 const mspace = (id) => Engine.moveSpaceOf({ id, ...S.tokens[id] });           // movement
 const tokenList = () => raw().map((t) => ({ ...t, ...space(t.id) }));
-const opts = { rangeFt: RANGE, feetPerCell: FPC };
+const opts = { rangeFt: RANGE, feetPerCell: FPC, grid: G };
 let view = null, sightSegs = null, moveWalls = null, terrain = null;
 const PACK_TERRAIN = DATA.terrain || [];
 // ---------- light ----------
@@ -425,18 +425,12 @@ function draw() {
     ctx.fillRect(P(x0), P(y0), P(x1 - x0), P(y1 - y0) + CS);
   }
 
-  // movement range for the selected token (player view, or while dragging)
-  if (selected && (!gm || drag)) {
-    const t = S.tokens[selected], ms = mspace(selected), sq = Math.max(1, ms.size);
-    const cells = Engine.reach(moveWalls, ms, t.speed, moveOpts(selected));
-    ctx.save(); ctx.fillStyle = 'rgba(95, 191, 131, .16)';
-    for (const c of cells) ctx.fillRect(P(Math.floor(c.x)) + 1, P(Math.floor(c.y)) + 1, P(sq) - 2, P(sq) - 2);
-    ctx.restore();
-  }
+  // movement range of the selected token: one, two and three Strides (a player's PC, or any token for the GM)
+  if (selected && canDrag(selected)) drawMoveBands(F);
 
   if (S.walls || full) drawWalls(full && !S.walls);
   drawDoors(gm, full);
-  if (LIT) drawLightSources(full);
+  if (LIT && gm) drawLightSources();   // lamp marks are the GM's: players see only the light
   if (drag && drag.route !== undefined) drawRoute();
   drawTokens(F, full);
   ctx.restore();
@@ -497,18 +491,11 @@ function drawLight(F, full) {
   if ('filter' in ctx) ctx.filter = 'none';
   ctx.restore();
 }
-/** Players see a lit lamp once they have explored where it hangs; a creature's own view, while it sees it. */
-function lampShown(l) {
-  if (!staticOn(l)) return false;
-  const F = shown(), [x, y] = l.at;
-  if (!F.focus) return !!mask.at(x, y);
-  return [[0, 0], [0.3, 0], [-0.3, 0], [0, 0.3], [0, -0.3]].some(([dx, dy]) => F.at(x + dx, y + dy));   // a sconce sits on a wall
-}
-/** Static lights: a small lamp mark (lit or cold). The GM sees all and clicks one to switch it. */
-function drawLightSources(full) {
+/** Static lights: a small lamp mark (lit or cold), GM view only, always (also through a creature's eyes),
+ *  so the GM can click one to light it or put it out. Players never see the marks, only the light. */
+function drawLightSources() {
   for (const l of LIGHTING.lights || []) {
     const on = staticOn(l);
-    if (!full && !lampShown(l)) continue;
     const x = P(l.at[0]), y = P(l.at[1]), r = Math.max(5, P(0.17));
     ctx.save();
     if (on) { const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6); g.addColorStop(0, 'rgba(255, 200, 90, .55)'); g.addColorStop(1, 'rgba(255, 200, 90, 0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, Math.PI * 2); ctx.fill(); }
@@ -638,6 +625,70 @@ function drawDoors(gm, full) {
   ctx.restore();
 }
 
+// ---------- movement range ----------
+// Dashed outlines round where one, two and three Strides reach this turn (exact: feet left over from one
+// Stride are lost, the diagonal count carries on), drawn only over squares the view can see so the
+// outline never gives away walls in the fog. No fill: a fill reads as light.
+const BAND_LOOK = [   // dash and gap in cells, so the pattern keeps its look at any zoom
+  { colour: '#c6f5ae', dash: [0.5, 0.25] },    // one Stride: light green, long dashes
+  { colour: '#5bd06a', dash: [0.3, 0.2] },     // two: medium green, medium dashes
+  { colour: '#2f9a48', dash: [0.13, 0.13] },   // three: dark green, short dashes
+];
+let bandCache = null;
+function moveBands(id) {
+  const key = id + '|' + gen;
+  if (bandCache && bandCache.key === key) return bandCache.bands;
+  const bands = Engine.strideReach(moveWalls, mspace(id), S.tokens[id].speed, BAND_LOOK.length, moveOpts(id));
+  bandCache = { key, bands };
+  return bands;
+}
+/** Outline of a set of squares ("x,y" keys) as straight runs: [[x0, y0, x1, y1], ...] in cells. */
+function squareOutline(set) {
+  const h = new Map(), v = new Map();   // line -> edge starts
+  const add = (m, line, at) => { if (!m.has(line)) m.set(line, []); m.get(line).push(at); };
+  for (const k of set) {
+    const [x, y] = k.split(',').map(Number);
+    if (!set.has(x + ',' + (y - 1))) add(h, 'T' + y, x);
+    if (!set.has(x + ',' + (y + 1))) add(h, 'B' + (y + 1), x);
+    if (!set.has((x - 1) + ',' + y)) add(v, 'L' + x, y);
+    if (!set.has((x + 1) + ',' + y)) add(v, 'R' + (x + 1), y);
+  }
+  const runs = [];
+  const merge = (m, horiz) => {
+    for (const [line, starts] of m) {
+      const c = Number(line.slice(1));
+      starts.sort((a, b) => a - b);
+      let a = starts[0], b = a + 1;
+      for (let i = 1; i <= starts.length; i++) {
+        if (i < starts.length && starts[i] === b) { b++; continue; }
+        runs.push(horiz ? [a, c, b, c] : [c, a, c, b]);
+        if (i < starts.length) { a = starts[i]; b = a + 1; }
+      }
+    }
+  };
+  merge(h, true); merge(v, false);
+  return runs;
+}
+function drawMoveBands(F) {
+  const bands = moveBands(selected), sq = Math.max(1, mspace(selected).size);
+  const seen = (x, y) => (F.focus ? F.at(x + 0.5, y + 0.5) : mask.at(x + 0.5, y + 0.5));
+  ctx.save(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+  for (let k = bands.length - 1; k >= 0; k--) {
+    const set = new Set();
+    for (const c of bands[k]) {
+      const x0 = Math.floor(c.x), y0 = Math.floor(c.y);
+      for (let j = 0; j < sq; j++) for (let i = 0; i < sq; i++) if (seen(x0 + i, y0 + j)) set.add((x0 + i) + ',' + (y0 + j));
+    }
+    const runs = squareOutline(set), look = BAND_LOOK[k];
+    ctx.beginPath();
+    for (const [x0, y0, x1, y1] of runs) { ctx.moveTo(P(x0), P(y0)); ctx.lineTo(P(x1), P(y1)); }
+    ctx.setLineDash(look.dash.map(P));
+    ctx.lineWidth = Math.max(4, P(0.17)); ctx.strokeStyle = 'rgba(6, 10, 7, .8)'; ctx.stroke();   // dark edge: readable on pale floors and grass
+    ctx.lineWidth = Math.max(2, P(0.085)); ctx.strokeStyle = look.colour; ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function drawRoute() {
   const t = S.tokens[selected], ms = mspace(selected), size = ms.size, sq = Math.max(1, size);
   const g = drag.goal;
@@ -757,7 +808,7 @@ function panel() {
       ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
       ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
     </div>
-    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${t.name} perceives now. ` : ''}${S.view === 'gm' ? '' : 'Green: reachable this move.'}</div>`;
+    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${t.name} perceives now. ` : ''}${canDrag(selected) ? 'Dashed green: where one, two and three Strides reach (light, medium, dark green).' : ''}</div>`;
   const bl = document.getElementById('b-light');
   if (bl) bl.onclick = () => {
     const on = t.light.on === false;
@@ -840,8 +891,7 @@ function goalFor(id, p) {
 
 canvas.addEventListener('pointerdown', (ev) => {
   const p = cellAt(ev);
-  let lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
-  if (lamp && !fullGM() && !lampShown(lamp)) lamp = null;   // looking through a creature's eyes: only lamps it sees
+  const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
   if (lamp && !tokenDiscAt(p)) {
     const on = !staticOn(lamp);
     S.lights[lamp.id] = { on };

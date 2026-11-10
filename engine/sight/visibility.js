@@ -97,6 +97,15 @@ function castRay(o, d, active, maxDist) {
   return maxDist;
 }
 
+/** A distance from `origin` that reaches past every corner of the map (or of the walls, without a grid). */
+function beyondMap(origin, prepared, grid) {
+  let x0 = 0, y0 = 0, x1 = grid ? grid.cols : 0, y1 = grid ? grid.rows : 0;
+  if (!grid) for (const s of prepared) for (const p of [s.a, s.b]) { x0 = Math.min(x0, p[0]); y0 = Math.min(y0, p[1]); x1 = Math.max(x1, p[0]); y1 = Math.max(y1, p[1]); }
+  let far = 0;
+  for (const [cx, cy] of [[x0, y0], [x1, y0], [x0, y1], [x1, y1]]) far = Math.max(far, Math.hypot(cx - origin[0], cy - origin[1]));
+  return far + 1;
+}
+
 /** Segments that restrict a source at `origin`, tagged with how they behave. */
 function activeFor(prepared, origin, feetPerCell) {
   const out = [];
@@ -112,12 +121,15 @@ function activeFor(prepared, origin, feetPerCell) {
  * @param {[number, number]} origin  viewer position in cells
  * @param {Array} prepared  output of prepare()
  * @param {object} opts
- * @param {number} opts.rangeFt      vision range in feet
+ * @param {number} [opts.rangeFt=Infinity]  vision range in feet. Unlimited (PF2E vision has no range:
+ *   walls and darkness limit it): rays that hit nothing stop beyond the edge of the map.
  * @param {number} [opts.feetPerCell=5]
+ * @param {{cols, rows}} [opts.grid]  the map's size, for unlimited range (default: the walls' extent)
  * @returns {Array<[number, number]>} polygon vertices in angular order (counter-clockwise on screen)
  */
-export function visPolygon(origin, prepared, { rangeFt, feetPerCell = 5 }) {
-  const range = rangeFt / feetPerCell;
+export function visPolygon(origin, prepared, { rangeFt = Infinity, feetPerCell = 5, grid } = {}) {
+  let range = rangeFt / feetPerCell;
+  if (!Number.isFinite(range)) range = beyondMap(origin, prepared, grid);
   const active = activeFor(prepared, origin, feetPerCell);
 
   const angles = [];

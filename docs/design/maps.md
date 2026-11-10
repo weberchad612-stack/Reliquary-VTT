@@ -158,7 +158,7 @@ The engine applies the same function to sight now, movement next, and light and 
 
 ## 8. Sight, fog and token visibility
 
-**Visibility polygon.** `visPolygon(origin, prepared, {rangeFt, feetPerCell})` returns the area visible from a point. It casts a ray toward every wall endpoint in range (and a hair to either side of it) plus 180 evenly spaced rays for the range circle, applies the semantics in section 6 along each ray, and joins the hit points in angular order. Range comes from the ruleset (for PF2E the current table uses 200 ft). Built in `engine/sight/visibility.js`; about 80 ms for four PCs on a 300-segment map, recomputed only when a token moves or a door changes.
+**Visibility polygon.** `visPolygon(origin, prepared, {rangeFt, feetPerCell})` returns the area visible from a point. It casts a ray toward every wall endpoint in range (and a hair to either side of it) plus 180 evenly spaced rays for the range circle, applies the semantics in section 6 along each ray, and joins the hit points in angular order. Range defaults to unlimited, as PF2E vision has none (walls and darkness limit sight): a ray that hits nothing stops just past the map's edge (`grid` option, or the walls' extent). A ruleset or a special sense can still pass a range. (Until 2026-11-10 the board used 200 ft.) Built in `engine/sight/visibility.js`; about 80 ms for four PCs on a 300-segment map, recomputed only when a token moves or a door changes.
 
 **Token footprints.** A token's `size` is the side of its space in cells. The ruleset maps size names to footprints (PF2E: Tiny 0.5, Small and Medium 1, Large 2, Huge 3, Gargantuan 4 or more); the engine only sees the number. A Small creature occupies a full square, like a Medium one, so its footprint stays 1x1 for sight, movement and sharing. Only its token is drawn smaller: 0.75 of a Medium token, centred in the square (`small: true` on the token; `engine/tokens/display.js`).
 
@@ -216,7 +216,7 @@ Built in `engine/movement/movement.js`; tools reach it through `tools/move.mjs`.
 
 **Clearance.** Walls may poke up to 0.3 cells (1.5 ft) into a square without blocking it (`CLEARANCE`, overridable per call). Hand-drawn maps rarely line doorways up with the grid: Gauntlight Ruins' A1 door is 1.5 cells wide and centred on a grid line, leaving a quarter-cell jamb in each square. A creature needs its width minus 0.6 cells of clear space, so a 2x2 creature still cannot use a 5-ft door. Known limit: a 5-ft doorway offset by half a cell puts a jamb through the middle of both squares beside it, so grid movement cannot pass it; the board warns and the GM decides.
 
-**Paths and reach.** `path()` finds the cheapest route to a destination and `reach()` lists every position within a movement allowance (for showing where a token can go). Both use a shortest-cost search over positions. The ruleset supplies the rules as options:
+**Paths and reach.** `path()` finds the cheapest route to a destination and `reach()` lists every position within a movement allowance (for showing where a token can go). `strideReach()` gives where one, two and three Strides reach: each Stride is its own move up to the creature's Speed, so feet left over from one are lost, while the 5-10-5 diagonal count runs across the whole turn (Player Core: it resets only at the end of the turn); Stride k searches from every position and diagonal count Stride k-1 can end on, so the bands are exact. All use a shortest-cost search over positions. The ruleset supplies the rules as options:
 
 | Option | Purpose | PF2E | D&D 5e |
 |---|---|---|---|

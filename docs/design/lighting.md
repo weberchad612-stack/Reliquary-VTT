@@ -82,5 +82,10 @@ Light colour and intensity; animations (flickering torches); magical darkness an
 
 ## 11. A selected creature's own view (agreed with the user, 2026-11-10)
 
-With a creature selected, the board shows only what it perceives now: the fog cut to its view alone, nothing remembered, its own dim and greyscale shading, only the tokens it sees (PCs included), concealed badges from its point of view, doors and lamps only where it sees them. The GM may select anyone (seeing through a foe's eyes); a player only a PC. Deselect (click empty floor, Escape) for the whole explored map. This replaces the yellow "what it sees" tint. Engine: `partyView` with `canLook` set to the one creature and `alwaysShown` set to markers only. The party keeps exploring underneath; the explored area is the party's whatever is selected.
+With a creature selected, the board shows only what it perceives now: the fog cut to its view alone, nothing remembered, its own dim and greyscale shading, only the tokens it sees (PCs included), concealed badges from its point of view, doors only where it sees them. The GM may select anyone (seeing through a foe's eyes); a player only a PC. Deselect (click empty floor, Escape) for the whole explored map. This replaces the yellow "what it sees" tint. Engine: `partyView` with `canLook` set to the one creature and `alwaysShown` set to markers only. The party keeps exploring underneath; the explored area is the party's whatever is selected.
+
+## 12. Lamp marks and sight range (agreed with the user, 2026-11-10)
+
+- **Lamp marks are the GM's.** Players never see the mark of a static light, only its light. The GM view shows every mark at all times, also while looking through a creature's eyes, so a lamp can always be clicked to light it or put it out.
+- **Sight has no range.** PF2E vision has none; walls and darkness limit it. `visPolygon` defaults to unlimited range and stops a ray that hits nothing just past the map's edge (pass `grid`). The board and the sight and fog tools no longer use 200 ft; `--range` still limits the tools, and a sense or ruleset can still give one.
 

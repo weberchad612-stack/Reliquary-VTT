@@ -237,3 +237,15 @@ test('tokenSight returns one polygon per viewpoint', () => {
   assert.equal(tokenSight({ x: 4, y: 4, size: 3 }, p, OPTS).length, 12);
   assert.equal(tokenSight({ x: 4, y: 4 }, p, OPTS).length, 5);
 });
+
+test('unlimited sight range: rays that hit nothing stop just past the edge of the map', async () => {
+  const { visPolygon: vp, pointInPolygon: pip } = await import('../engine/sight/visibility.js');
+  const grid = { cols: 100, rows: 20 };
+  const walls = [{ id: 'w', a: [10, 0], b: [10, 8], v: 20, dir: 0 }];
+  const poly = vp([2, 10], walls, { grid });
+  assert.ok(poly.every((p) => Number.isFinite(p[0]) && Number.isFinite(p[1])), 'no point at infinity');
+  assert.ok(pip([99, 10], poly), 'sees to the far end of a 500 ft map');
+  assert.ok(!pip([12, 1], poly), 'still not through the wall');
+  const limited = vp([2, 10], walls, { grid, rangeFt: 200 });
+  assert.ok(!pip([99, 10], limited), 'a range still limits it when given');
+});

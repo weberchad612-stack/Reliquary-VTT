@@ -25,7 +25,7 @@ function main(argv) {
   try {
     const stateFile = opt('--state');
     const outFile = opt('--out');
-    const rangeFt = Number(opt('--range') ?? 200);
+    const rangeFt = Number(opt('--range') ?? Infinity);
     if (args.length !== 1 || !stateFile) throw new Error('give one map folder and --state');
     const { map, segs } = loadMap(path.resolve(args[0]));
     const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
@@ -38,7 +38,7 @@ function main(argv) {
     }
     const list = Object.entries(tokens).map(([id, t]) => ({ id, ...t }));
     const prepared = prepare(segs, state, 'sight');
-    const view = partyView(list, prepared, { rangeFt, feetPerCell: map.grid.feet_per_cell });
+    const view = partyView(list, prepared, { rangeFt, feetPerCell: map.grid.feet_per_cell, grid: map.grid });
     const { changed, explored } = mergeExplored(state.explored, view.visible, map.grid);
     const round = (p) => [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000];
     if (outFile) {

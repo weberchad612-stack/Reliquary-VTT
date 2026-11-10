@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { prepareMove, canStep, fits, path as findPath, reach, crossesInterior } from '../engine/movement/movement.js';
+import { prepareMove, canStep, fits, path as findPath, reach, strideReach, crossesInterior } from '../engine/movement/movement.js';
 import { loadMap } from '../tools/sight.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -174,4 +174,37 @@ test('clearance: a doorway centred on a grid line still lets a Medium creature t
   assert.ok(findPath(m, tok(4, 2), 4, 7), 'with the default clearance');
   assert.equal(findPath(m, tok(4, 2), 4, 7, { clearance: 0 }), null, 'with no clearance the jambs block every column');
   assert.ok(findPath(m, tok(3, 2, 2), 4, 7), 'a 2x2 creature needs 1.4 cells of clear width, and this door is 1.5');
+});
+
+test('Stride bands: each Stride is its own move: feet left over are lost, the diagonal count carries on', () => {
+  const grid = { cols: 40, rows: 40 };
+  const pm = prepareMove([], {}, grid);
+  const t = { x: 5, y: 5, size: 1 };
+  const bands = strideReach(pm, t, 25, 3);
+  const has = (band, x, y) => band.some((c) => c.x === x && c.y === y);
+  const key = (c) => c.x + ',' + c.y;
+  assert.equal(bands.length, 3);
+  assert.ok(has(bands[0], 10, 5) && !has(bands[0], 11, 5), 'one Stride: 25 ft straight');
+  assert.ok(has(bands[1], 15, 5) && has(bands[2], 20, 5), 'two and three Strides: 50 and 75 ft straight');
+  assert.ok(has(bands[0], 8, 8) && !has(bands[0], 9, 9), 'one Stride: three diagonals (5 + 10 + 5)');
+  assert.ok(bands[0].every((c) => has(bands[1], c.x, c.y)) && bands[1].every((c) => has(bands[2], c.x, c.y)), 'bands nest');
+  assert.ok(has(bands[0], 5, 5), 'staying put is in every band');
+  // never more than one long move of the same total (the diagonal count carries over) ...
+  for (const [k, ft] of [[1, 50], [2, 75]]) {
+    const all = new Set(reach(pm, t, ft).map(key));
+    assert.ok(bands[k].every((c) => all.has(key(c))), `${k + 1} Strides stay within ${ft} ft`);
+  }
+  // ... and sometimes less: feet left at the end of a Stride are lost
+  const r50 = reach(pm, t, 50);
+  assert.ok(r50.some((c) => !has(bands[1], c.x, c.y)), 'some square 50 ft away needs a third Stride');
+});
+
+test('Stride bands: a wall is walked round, not through', () => {
+  const grid = { cols: 30, rows: 30 };
+  const pm = prepareMove([{ id: 'w', t: 'solid', a: [7, 0], b: [7, 12] }], {}, grid);
+  const bands = strideReach(pm, { x: 5, y: 5, size: 1 }, 25, 3);
+  const has = (band, x, y) => band.some((c) => c.x === x && c.y === y);
+  assert.ok(!bands[0].some((c) => c.x >= 7), 'one Stride cannot get past the wall');
+  assert.ok(has(bands[1], 8, 11) && !has(bands[1], 8, 5), 'two Strides reach round the end of the wall, not back up behind it');
+  assert.ok(has(bands[2], 7, 5), 'three Strides reach the square just behind the wall');
 });

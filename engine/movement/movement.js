@@ -158,6 +158,8 @@ class Heap {
  *   the mover cannot pass).
  * - size: footprint to move with (squeezing).
  * - maxCost: stop searching beyond this cost in cells.
+ * - starts: positions [{x, y, p?}] to search from together, each at cost 0; p is where the diagonal
+ *   count stands there (default 0). Default: the token's own position. Used for later Strides.
  */
 function search(pm, token, opts, goal) {
   const size = opts.size ?? token.size ?? 1;
@@ -167,10 +169,13 @@ function search(pm, token, opts, goal) {
   const maxCost = opts.maxCost ?? Infinity;
   const best = new Map();
   const prev = new Map();
-  const startKey = `${token.x},${token.y},0`;
-  best.set(startKey, 0);
   const heap = new Heap();
-  heap.push({ x: token.x, y: token.y, p: 0, cost: 0, key: startKey });
+  for (const st of opts.starts || [token]) {
+    const p = st.p || 0, key = `${st.x},${st.y},${p}`;
+    if (best.has(key)) continue;
+    best.set(key, 0);
+    heap.push({ x: st.x, y: st.y, p, cost: 0, key });
+  }
   while (heap.size) {
     const n = heap.pop();
     if (n.cost > best.get(n.key)) continue;
@@ -231,6 +236,33 @@ export function reach(pm, token, maxFeet, opts = {}) {
     const [x, y] = k.split(',').map(Number);
     return { x, y, feet: cost * feetPerCell };
   });
+}
+
+/**
+ * Where a creature can get with one, two, three... Strides of `speedFt` each this turn. PF2E: each
+ * Stride is its own move up to the creature's Speed, so feet left over from one do not carry into the
+ * next; the diagonal count does (it runs across all movement in a turn and resets at the end of the
+ * turn). Exact: Stride k searches from every position, and diagonal count, Stride k-1 can end on.
+ * Same options as reach().
+ * @returns {Array<Array<{x: number, y: number}>>}  bands[k - 1]: every position reachable with at most
+ *   k Strides (each band contains the one before it; the start is in every band)
+ */
+export function strideReach(pm, token, speedFt, strides = 3, opts = {}) {
+  const feetPerCell = opts.feetPerCell ?? 5;
+  const ends = new Map([[`${token.x},${token.y},0`, { x: token.x, y: token.y, p: 0 }]]);   // position and diagonal count
+  const cells = new Map([[token.x + ',' + token.y, { x: token.x, y: token.y }]]);
+  const bands = [];
+  for (let k = 1; k <= strides; k++) {
+    const { best } = search(pm, token, { ...opts, maxCost: speedFt / feetPerCell, starts: [...ends.values()] });
+    for (const key of best.keys()) {
+      if (ends.has(key)) continue;
+      const [x, y, p] = key.split(',').map(Number);
+      ends.set(key, { x, y, p });
+      if (!cells.has(x + ',' + y)) cells.set(x + ',' + y, { x, y });
+    }
+    bands.push([...cells.values()]);
+  }
+  return bands;
 }
 
 /**

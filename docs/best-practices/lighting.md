@@ -37,6 +37,7 @@ Paraphrase in notes; never copy the book's sentences.
 - Light changes play: say so. "The skeleton at the edge of your torchlight is concealed from you, Kerra: DC 5 flat check to target it." A foe in darkness is not on the board for a PC without darkvision; when the party knows where it is (they heard it, it attacked), place a hidden marker on its square.
 - Keep light state in the save: carried lights on the token (`light`, with `on`), static lights in `lights`, the sky in `sky_light`. Lighting or dousing a light is an Interact action; update the save when it happens.
 - Senses come from the creature (darkvision, low-light vision); a temporary one (a darkvision elixir, a spell) goes on the token's `senses` with its `source`, and comes off when it ends.
+- Lamp marks on the board are GM-only (players see the light, not the mark). Describe a lamp to players only as their characters would see it.
 - To check what one creature sees, select it on the board: the board then shows only its own view. Deselect for the party's explored map.
 - Light fades in the drawing, not in the rules: a creature in the faint outer edge of a torch's light is still in dim light (concealed). Read the light level from the engine (the board's hover readout shows both the level and the brightness).
 - Carried lights are circles. A bull's-eye lantern acts as a hooded lantern until carried cones exist; tell the player when it matters.
@@ -46,7 +47,7 @@ Paraphrase in notes; never copy the book's sentences.
 - The light map holds two things: `levels` for the rules (three steps) and `glow` for drawing (0-255). Never decide anything from `glow`.
 - Daylight lights are generated (`daylightLights`) from the walls, the door states, the sky and the sky regions every update and handed to the same `LightCache` as the static and carried lights; their ids (`day:<wall>:<n>`) are stable, so they are only recomputed when a door or the sky changes.
 - The player's light shade is drawn blurred and clipped to the visible area; pixels outside the view count as dark in the shade image so the blur does not leave a light rim at the edge of the view.
-- One view decides everything drawn: the party's, or the selected creature's (`shown()` in the demo page). Fog, shade, tokens, badges, doors, lamps, hover readout and click targets all read it, so they cannot disagree.
+- One view decides everything drawn: the party's, or the selected creature's (`shown()` in the demo page). Fog, shade, tokens, badges, doors, movement outlines, hover readout and click targets all read it, so they cannot disagree.
 
 - Light, sight and the explored area share the 1/8-cell grid, so filtering sight by light is a pixel test and the result is traced into straight-edged outlines like the fog.
 - `export const A = 1, B = 2;` exports only `A` from the bundled page (the bundler now refuses it): one export per declaration. Tests in `tests/demo.test.mjs` check that every module export reaches the bundled engine; Node tests alone cannot see bundling problems.
