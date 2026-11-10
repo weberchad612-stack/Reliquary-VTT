@@ -643,47 +643,62 @@ function moveBands(id) {
   bandCache = { key, bands };
   return bands;
 }
-/** Outline of a set of squares ("x,y" keys) as straight runs: [[x0, y0, x1, y1], ...] in cells. */
-function squareOutline(set) {
-  const h = new Map(), v = new Map();   // line -> edge starts
-  const add = (m, line, at) => { if (!m.has(line)) m.set(line, []); m.get(line).push(at); };
+/** Edges round a set of squares ("x,y" keys), one per square side: "h:x,y" runs (x,y)-(x+1,y), "v:x,y" (x,y)-(x,y+1). */
+function squareEdges(set) {
+  const out = new Set();
   for (const k of set) {
     const [x, y] = k.split(',').map(Number);
-    if (!set.has(x + ',' + (y - 1))) add(h, 'T' + y, x);
-    if (!set.has(x + ',' + (y + 1))) add(h, 'B' + (y + 1), x);
-    if (!set.has((x - 1) + ',' + y)) add(v, 'L' + x, y);
-    if (!set.has((x + 1) + ',' + y)) add(v, 'R' + (x + 1), y);
+    if (!set.has(x + ',' + (y - 1))) out.add(`h:${x},${y}`);
+    if (!set.has(x + ',' + (y + 1))) out.add(`h:${x},${y + 1}`);
+    if (!set.has((x - 1) + ',' + y)) out.add(`v:${x},${y}`);
+    if (!set.has((x + 1) + ',' + y)) out.add(`v:${x + 1},${y}`);
+  }
+  return out;
+}
+/** Unit edges joined into straight runs: [[x0, y0, x1, y1], ...] in cells (so dashes run on unbroken). */
+function edgeRuns(edges) {
+  const lines = new Map();
+  for (const e of edges) {
+    const [x, y] = e.slice(2).split(',').map(Number), horiz = e[0] === 'h';
+    const line = (horiz ? 'h' : 'v') + (horiz ? y : x);
+    if (!lines.has(line)) lines.set(line, []);
+    lines.get(line).push(horiz ? x : y);
   }
   const runs = [];
-  const merge = (m, horiz) => {
-    for (const [line, starts] of m) {
-      const c = Number(line.slice(1));
-      starts.sort((a, b) => a - b);
-      let a = starts[0], b = a + 1;
-      for (let i = 1; i <= starts.length; i++) {
-        if (i < starts.length && starts[i] === b) { b++; continue; }
-        runs.push(horiz ? [a, c, b, c] : [c, a, c, b]);
-        if (i < starts.length) { a = starts[i]; b = a + 1; }
-      }
+  for (const [line, starts] of lines) {
+    const horiz = line[0] === 'h', c = Number(line.slice(1));
+    starts.sort((a, b) => a - b);
+    let a = starts[0], b = a + 1;
+    for (let i = 1; i <= starts.length; i++) {
+      if (i < starts.length && starts[i] === b) { b++; continue; }
+      runs.push(horiz ? [a, c, b, c] : [c, a, c, b]);
+      if (i < starts.length) { a = starts[i]; b = a + 1; }
     }
-  };
-  merge(h, true); merge(v, false);
+  }
   return runs;
 }
 function drawMoveBands(F) {
   const bands = moveBands(selected), sq = Math.max(1, mspace(selected).size);
   const seen = (x, y) => (F.focus ? F.at(x + 0.5, y + 0.5) : mask.at(x + 0.5, y + 0.5));
-  ctx.save(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
-  ctx.globalAlpha = BAND_ALPHA;
-  for (let k = bands.length - 1; k >= 0; k--) {
+  // each band's edges, nearest band first; where bands share an edge (a dead-end corridor, along a wall)
+  // only the nearest band's line is drawn
+  const taken = new Set(), lines = [];
+  for (let k = 0; k < bands.length; k++) {
     const set = new Set();
     for (const c of bands[k]) {
       const x0 = Math.floor(c.x), y0 = Math.floor(c.y);
       for (let j = 0; j < sq; j++) for (let i = 0; i < sq; i++) if (seen(x0 + i, y0 + j)) set.add((x0 + i) + ',' + (y0 + j));
     }
-    const runs = squareOutline(set), look = BAND_LOOK[k];
+    const own = [...squareEdges(set)].filter((e) => !taken.has(e));
+    own.forEach((e) => taken.add(e));
+    lines.push(edgeRuns(own));
+  }
+  ctx.save(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+  ctx.globalAlpha = BAND_ALPHA;
+  for (let k = lines.length - 1; k >= 0; k--) {
+    const look = BAND_LOOK[k];
     ctx.beginPath();
-    for (const [x0, y0, x1, y1] of runs) { ctx.moveTo(P(x0), P(y0)); ctx.lineTo(P(x1), P(y1)); }
+    for (const [x0, y0, x1, y1] of lines[k]) { ctx.moveTo(P(x0), P(y0)); ctx.lineTo(P(x1), P(y1)); }
     ctx.setLineDash(look.dash.map(P));
     ctx.lineWidth = Math.max(4, P(0.17)); ctx.strokeStyle = 'rgba(6, 10, 7, .8)'; ctx.stroke();   // dark edge: readable on pale floors and grass
     ctx.lineWidth = Math.max(2, P(0.085)); ctx.strokeStyle = look.colour; ctx.stroke();
