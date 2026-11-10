@@ -62,7 +62,7 @@ Bases and regions are lookups per square. Combining light and senses at a point 
 
 ## 8. Not in the first version
 
-Light colour and intensity; animations (flickering torches); magical darkness and greater darkvision seeing through it; imprecise senses (scent, tremorsense, hearing) and automatic hidden markers; time of day changing the sky light; daylight through windows into indoor rooms; carried cone lights and token facing; a darkness scale finer than PF2E's three light levels.
+Light colour and intensity; animations (flickering torches); magical darkness and greater darkvision seeing through it; imprecise senses (scent, tremorsense, hearing) and automatic hidden markers; time of day changing the sky light; carried cone lights and token facing; a darkness scale finer than PF2E's three light levels for the rules (the drawing now fades: section 10). Daylight through windows was added later (section 10).
 
 ## 9. As built
 
@@ -72,4 +72,15 @@ Light colour and intensity; animations (flickering torches); magical darkness an
 - **Board** (the demo page): light effects drawn under the terrain marks and the fog; the GM sees the light everywhere as a soft shade and clicks a lamp to light it or put it out; concealed badges (half-shaded disc); GM "hidden" markers (a ? on a square, cleared when the creature is seen); a Sky selector on maps with sky; carried lights lit and put out from the selection panel.
 - **Sky.** Until time of day exists, sky light is bright; the GM sets it dim or dark (dusk, night) with the Sky selector, held in the save as `sky_light`.
 - **Measured** (Level 1, two PCs and six other tokens, one torch; cloud workspace): a light polygon about 4 ms the first time, nothing when cached; the light-aware party view about 10 ms more than without light; tracing the three masks for drawing about 20 ms. In the demo page (headless browser, no GPU): a full update with a moving torch 245 ms (162 ms before lighting), a redraw 71 ms (37 ms). See [future/sight-performance.md](../../future/sight-performance.md).
+
+## 10. Second pass: fading light, daylight indoors, darker memory (agreed with the user, 2026-11-10)
+
+- **Dim light fades.** The rules keep PF2E's three levels. The drawing does not: the light map also keeps a brightness for each pixel (`glow`, 0-255), full in bright light, falling in a straight line across a light's dim band to nothing at its outer edge. Dim regions and a dim sky draw at a steady half brightness. Where lights overlap the brighter wins. Both views shade by brightness through one curve (GM: up to 60 % shade in darkness; players: up to 70 % over what they perceive, none over what only darkvision shows, which stays greyscale). A creature at the far edge of a torch's light looks nearly dark but is still in dim light: concealed, not unseen.
+- **Light radii.** A static light should give both radii. A light with only dim light is allowed (a candle, glowing fungus). A light with bright light and no dim radius gets a thin dim fringe of a tenth of its bright radius (`DIM_FRINGE`), so it fades instead of stopping at a hard edge; the importer warns when that happens.
+- **Daylight indoors.** Any opening that light passes (window, grate, arrow slit, open door) with open sky on one side and roof on the other lets the sky in: a row of half-circle lights just inside it, one per square of opening, facing into the room. Day: bright for 15 ft, then dim for 30 ft more. Dusk: dim for 15 ft. Night: none. An opening narrower than a square lets in proportionally less (an arrow slit, a thin beam). Walls block it as any light; closing the door shuts it out. "Sky" is what the light map says: an outdoor map's sky, or `sky` regions; on an outdoor map, a building needs a roofed region (`dark` or a fixed level) for its windows to count. Engine: `engine/light/daylight.js` (`daylightLights`, `skyTest`, `DAYLIGHT`). They are ordinary lights to the cache: recomputed only when a door or the sky changes.
+- **Remembered areas are darker.** The player fog over explored-but-not-visible areas went from 55 % to 75 %, the same everywhere (the user chose this over shading memory by light, which would show players a room being lit after they left it).
+
+## 11. A selected creature's own view (agreed with the user, 2026-11-10)
+
+With a creature selected, the board shows only what it perceives now: the fog cut to its view alone, nothing remembered, its own dim and greyscale shading, only the tokens it sees (PCs included), concealed badges from its point of view, doors and lamps only where it sees them. The GM may select anyone (seeing through a foe's eyes); a player only a PC. Deselect (click empty floor, Escape) for the whole explored map. This replaces the yellow "what it sees" tint. Engine: `partyView` with `canLook` set to the one creature and `alwaysShown` set to markers only. The party keeps exploring underneath; the explored area is the party's whatever is selected.
 

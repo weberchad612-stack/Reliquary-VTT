@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LightMap, LightCache, lightShape, lightPatch, prepareLight, DARK, DIM, BRIGHT } from '../engine/light/light.js';
+import { LightMap, LightCache, lightShape, lightPatch, prepareLight, DARK, DIM, BRIGHT, DIM_GLOW, DIM_FRINGE } from '../engine/light/light.js';
 import { perceive, senseList, lightSpec, LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 
 const GRID = { cols: 20, rows: 20 };
@@ -105,4 +105,30 @@ test('PF2E light presets', () => {
   assert.deepEqual(lightSpec({ preset: 'torch', bright: 10 }), { bright: 10, dim: 20 });
   assert.throws(() => lightSpec({ preset: 'candel' }), /unknown light preset/);
   assert.ok(Object.keys(LIGHT_PRESETS).length >= 6);
+});
+
+test('dim light fades: full brightness at the bright edge, falling to nothing at the outer edge', () => {
+  const m = mapWith([{ id: 't', at: [3.5, 10.5], bright: 20, dim: 20 }]);
+  assert.equal(m.glowAt(3.5, 10.5), 1);
+  assert.ok(m.glowAt(3.5, 10.5 + 4.1) > 0.95, 'just past the bright edge');
+  assert.ok(Math.abs(m.glowAt(3.5, 10.5 + 6) - 0.5) < 0.05, 'half way across the dim band');
+  assert.ok(m.glowAt(3.5, 10.5 + 7.9) < 0.05, 'at the outer edge');
+  assert.equal(m.at(3.5, 10.5 + 7.9), DIM, 'still dim light for the rules');
+  assert.equal(m.glowAt(3.5, 10.5 + 8.5), 0);
+});
+
+test('dim regions and a dim sky draw at a steady half brightness; overlapping lights take the brighter', () => {
+  const regions = [{ id: 'cave', level: 'dim', rects: [[0, 0, 4, 4]] }];
+  const m = mapWith([{ id: 't', at: [0.5, 0.5], bright: 5, dim: 20 }], {}, { regions });
+  assert.equal(m.glowAt(3.5, 3.5), DIM_GLOW / 255, 'the torch has faded below the region here');
+  assert.ok(m.glowAt(1.5, 1.5) > DIM_GLOW / 255, 'the torch is brighter than the region here');
+});
+
+test('a light with only bright light gets a thin dim fringe; one with only dim light has none bright', () => {
+  const shape = lightShape({ id: 'b', at: [3, 3], bright: 10 }, prepareLight(segs));
+  assert.equal(shape.bright, 2);
+  assert.ok(Math.abs(shape.reach - 2.2) < 1e-9, 'a 10 ft bright light fades over 1 ft');
+  const m = mapWith([{ id: 'c', at: [3.5, 3.5], dim: 10 }]);
+  assert.equal(m.at(3.5, 3.5), DIM);
+  assert.equal(DIM_FRINGE, 0.1);
 });

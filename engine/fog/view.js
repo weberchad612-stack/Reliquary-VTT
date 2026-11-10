@@ -15,6 +15,9 @@ const ALWAYS_SHOWN = new Set(['pc', 'marker']);
  * @param {object} [opts.canLook]  (token) => boolean: which PCs are looking. Default: living, not
  *   GM-hidden PCs. The ruleset narrows this (unconscious, blinded) and sets per-token ranges.
  * @param {function} [opts.rangeOf]  (token) => feet: a token's own vision range; default opts.rangeFt
+ * @param {Set<string>} [opts.alwaysShown]  token kinds shown whether or not anyone sees them; default PCs
+ *   and markers (the players' own). Pass just markers for one creature's own view (docs/design/lighting.md
+ *   section 11): then even PCs show only when it sees them.
  * @returns {{visible: Array, seen: Set<string>, lookers: Array<string>}}
  *   visible: visibility polygons (their union is the area visible now)
  *   seen: ids of tokens players may see
@@ -24,12 +27,13 @@ export function partyView(tokens, prepared, opts) {
   const canLook = opts.canLook || ((t) => t.kind === 'pc' && !t.hidden && !t.dead);
   const rangeOf = opts.rangeOf || (() => opts.rangeFt);
   const lookers = tokens.filter(canLook);
+  const shown = opts.alwaysShown || ALWAYS_SHOWN, lookerIds = new Set(lookers.map((t) => t.id));
   const visible = [];
   for (const t of lookers) visible.push(...tokenSight(t, prepared, { ...opts, rangeFt: rangeOf(t) }));
   const seen = new Set();
   for (const t of tokens) {
     if (t.hidden) continue; // GM-hidden tokens are never shown to players
-    if (ALWAYS_SHOWN.has(t.kind)) { seen.add(t.id); continue; }
+    if (shown.has(t.kind) || lookerIds.has(t.id)) { seen.add(t.id); continue; }
     if (lookers.some((l) => tokenCanSee(l, t, prepared, { ...opts, rangeFt: rangeOf(l) }))) seen.add(t.id);
   }
   return { visible, seen, lookers: lookers.map((t) => t.id) };
@@ -55,6 +59,7 @@ function litPartyView(tokens, prepared, opts) {
   const sensesOf = opts.sensesOf || ((t) => t.senses || []);
   const fpc = opts.feetPerCell || 5;
   const lookers = tokens.filter(canLook);
+  const shown = opts.alwaysShown || ALWAYS_SHOWN, lookerIds = new Set(lookers.map((t) => t.id));
   const visible = [];
   const perceived = new ExploredMask(grid), dim = new ExploredMask(grid), mono = new ExploredMask(grid);
   const res = perceived.res, w = perceived.w;
@@ -90,7 +95,7 @@ function litPartyView(tokens, prepared, opts) {
   const seen = new Set(), concealedFrom = {};
   for (const t of tokens) {
     if (t.hidden) continue;
-    if (ALWAYS_SHOWN.has(t.kind)) { seen.add(t.id); continue; }
+    if (shown.has(t.kind) || lookerIds.has(t.id)) { seen.add(t.id); continue; }
     const targets = footprintPoints(t.x, t.y, t.size || 1);
     const from = [];
     let any = false;
@@ -130,7 +135,7 @@ export function fogStateAt(p, visible, mask, pointInPolygon) {
 /** Default look; the board passes its theme colours. */
 export const FOG_STYLE = Object.freeze({
   colour: '#14110e',
-  player: { hidden: 1, explored: 0.55 }, // opacity of the fog over each state
+  player: { hidden: 1, explored: 0.75 }, // opacity of the fog over each state: remembered areas are kept dark
   gm: { hidden: 0.35, explored: 0.15 },
   softenPx: 3, // blur on the explored edge, in canvas pixels, to hide its 1/8-cell steps
 });

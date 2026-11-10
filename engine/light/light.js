@@ -7,6 +7,10 @@
 //
 // The light map is a bitmap on the same 1/8-cell grid as the explored area, so the party's view can be
 // filtered by light pixel by pixel and traced back into outlines exactly as the fog is.
+//
+// Beside the three rule levels, the map keeps a brightness for drawing (`glow`, 0-255): 255 in bright
+// light, falling in a straight line across a light's dim band to 0 at its outer edge, so dim light fades
+// out instead of stopping at a hard edge. Rules never read it.
 
 import { prepare, visPolygon } from '../sight/visibility.js';
 import { ExploredMask, RES } from '../fog/explored.js';
@@ -19,6 +23,16 @@ export const LEVEL = Object.freeze({ dark: DARK, dim: DIM, bright: BRIGHT });
 export const LEVEL_NAME = Object.freeze(['dark', 'dim', 'bright']);
 
 const CIRCLE_SIDES = 64;
+
+/** Brightness (0-255) of dim light that does not fade: dim regions, a dim sky. */
+export const DIM_GLOW = 128;
+const LEVEL_GLOW = [0, DIM_GLOW, 255];
+
+/**
+ * A light with bright light but no dim radius still gets a thin fringe of dim light, this fraction of
+ * its bright radius, so it does not end at a hard edge (a 10 ft bright light fades over its last foot).
+ */
+export const DIM_FRINGE = 0.1;
 
 /** Light segments for a map: the walls with door states applied, using each wall's `light` value. */
 export function prepareLight(segs, state = {}) {
@@ -34,8 +48,11 @@ export function prepareLight(segs, state = {}) {
  *   bright and reach in cells; poly is the area the light can reach through walls (null when walls do not constrain it)
  */
 export function lightShape(light, preparedLight, { feetPerCell = 5 } = {}) {
-  const bright = Math.max(0, light.bright || 0) / feetPerCell;
-  const reach = bright + Math.max(0, light.dim || 0) / feetPerCell;
+  const brightFt = Math.max(0, light.bright || 0);
+  let dimFt = Math.max(0, light.dim || 0);
+  if (dimFt === 0 && brightFt > 0) dimFt = brightFt * DIM_FRINGE;
+  const bright = brightFt / feetPerCell;
+  const reach = bright + dimFt / feetPerCell;
   const at = light.at;
   let poly;
   if (light.walls === false) {
@@ -54,11 +71,11 @@ export function lightShape(light, preparedLight, { feetPerCell = 5 } = {}) {
 }
 
 /**
- * The pixels one light lights, as two parallel arrays (pixel index, level), so a cached light can be laid
- * onto a fresh map without recomputing anything.
+ * The pixels one light lights, as three parallel arrays (pixel index, level, brightness 0-255), so a
+ * cached light can be laid onto a fresh map without recomputing anything.
  */
 export function lightPatch(shape, grid, res = RES) {
-  const out = { idx: [], lvl: [] };
+  const out = { idx: [], lvl: [], glow: [] };
   if (!shape.poly || shape.reach <= 0) return out;
   const m = new ExploredMask(grid, res);
   m.add([shape.poly]);
@@ -77,7 +94,9 @@ export function lightPatch(shape, grid, res = RES) {
         if (Math.abs(da) > shape.cone.half) continue;
       }
       out.idx.push(k);
-      out.lvl.push(d2 <= b2 ? BRIGHT : DIM);
+      if (d2 <= b2) { out.lvl.push(BRIGHT); out.glow.push(255); continue; }
+      out.lvl.push(DIM);
+      out.glow.push(Math.max(1, Math.round((255 * (shape.reach - Math.sqrt(d2))) / (shape.reach - shape.bright))));
     }
   }
   return out;
@@ -101,17 +120,30 @@ export class LightMap {
     const sky = LEVEL[o.sky || 'bright'];
     const base = o.base === 'sky' ? sky : LEVEL[o.base || 'bright'];
     this.levels = new Uint8Array(this.w * this.h).fill(base);
+    /** Brightness for drawing, 0-255 (see the top of this file). */
+    this.glow = new Uint8Array(this.w * this.h).fill(LEVEL_GLOW[base]);
     for (const r of o.regions || []) {
       const v = r.level === 'sky' ? sky : LEVEL[r.level];
       for (const [x, y] of areaCells(r)) {
         for (let j = y * res; j < (y + 1) * res && j < this.h; j++) {
-          for (let i = x * res; i < (x + 1) * res && i < this.w; i++) this.levels[j * this.w + i] = v;
+          for (let i = x * res; i < (x + 1) * res && i < this.w; i++) { this.levels[j * this.w + i] = v; this.glow[j * this.w + i] = LEVEL_GLOW[v]; }
         }
       }
     }
     for (const p of o.patches || []) {
-      for (let n = 0; n < p.idx.length; n++) if (p.lvl[n] > this.levels[p.idx[n]]) this.levels[p.idx[n]] = p.lvl[n];
+      for (let n = 0; n < p.idx.length; n++) {
+        const k = p.idx[n];
+        if (p.lvl[n] > this.levels[k]) this.levels[k] = p.lvl[n];
+        if (p.glow[n] > this.glow[k]) this.glow[k] = p.glow[n];
+      }
     }
+  }
+
+  /** Brightness for drawing at a point in cells, 0 (dark) to 1 (bright). */
+  glowAt(x, y) {
+    const i = Math.floor(x * this.res), j = Math.floor(y * this.res);
+    if (i < 0 || j < 0 || i >= this.w || j >= this.h) return 0;
+    return this.glow[j * this.w + i] / 255;
   }
 
   /** Light level at a point in cells (0 dark, 1 dim, 2 bright). */

@@ -28,6 +28,7 @@ Lighting, after the first version (design agreed 2026-11-09 in [docs/design/ligh
 - Magical darkness, and greater darkvision seeing through it.
 - Imprecise senses (scent, tremorsense, hearing): hidden markers placed for foes automatically, suggested for PCs.
 - Time of day driving the sky light (outdoor maps and sky regions).
-- Daylight through windows into indoor rooms.
+- Daylight spilling sideways from a hole in the roof (a sky region inside a building) into the roofed part of the room around it. Daylight through windows and open doors is built (lighting design section 10); open roof edges have no wall to emit from yet.
+- Roofed regions for buildings on outdoor maps, filled by the importer from the room outlines, so their windows let daylight in.
 - Carried cone lights (bull's-eye lantern) and token facing.
 

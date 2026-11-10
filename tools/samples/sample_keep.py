@@ -299,8 +299,8 @@ setup = {
     "intro": "The party has split up round the keep: Lyra to the west, Pip to the east, Kerra far to the south on the path, her torch lit. The portcullis is down.",
     "tips": [
         "<b>Lighting on / off</b> (header) switches the whole light system: off, everything counts as bright and sight is walls only, as before lighting existed.",
-        "<b>Day or night:</b> use the <b>Sky</b> selector. By day the grounds are bright and the keep dark inside; at night only lights and darkvision show anything.",
-        "<b>Kerra</b> carries a torch, <b>Pip</b> has darkvision (greyscale), <b>Lyra</b> has low-light vision (dim light is clear to her). Select one to see exactly what that PC sees.",
+        "<b>Day or night:</b> use the <b>Sky</b> selector. By day the grounds are bright and daylight comes into the keep through its windows, arrow slits, the portcullis and any open door, fading across each room; at night only lights and darkvision show anything.",
+        "<b>Kerra</b> carries a torch, <b>Pip</b> has darkvision (greyscale), <b>Lyra</b> has low-light vision (dim light is clear to her). Select one to see the board through their eyes alone; click empty floor or press Escape to see the whole explored map again.",
         "<b>Get in:</b> the portcullis lets sight through but not feet. The postern door (west) is locked; the GM can open it. Walk the path, the pond's plank bridge (Balance) or the muddy shallows.",
         "<b>The great hall</b> has pillars that block sight, braziers, and a collapsed corner open to the sky (rubble: difficult terrain). The ogre waits inside.",
         "<b>GM view:</b> the map is shaded by light; click a lamp to light it or put it out (the gate torches start unlit). Select a foe the party cannot see to <b>mark it hidden</b>.",

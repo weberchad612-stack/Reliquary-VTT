@@ -80,3 +80,21 @@ test('a torch-bearer is seen from the dark', () => {
 test('PCs are always shown, whatever the light', () => {
   assert.ok(view([pc('k', 2, 5), pc('p', 30, 5)]).seen.has('p'));
 });
+
+test('one creature\'s own view: only what it perceives, and PCs show only when it sees them', () => {
+  const k = pc('k', 2, 5), far = pc('far', 35, 5), ogre = foe('ogre', 6, 5);
+  const tokens = [k, far, ogre];
+  const cache = new LightCache(GRID);
+  const light = new LightMap(GRID, { base: 'dark', patches: cache.patchesFor([torchAt('torch', k)], segs, {}, '') });
+  const one = (id) => partyView(tokens, sight, {
+    rangeFt: 200, feetPerCell: 5, grid: GRID, light, rules: lightRules,
+    canLook: (t) => t.id === id, alwaysShown: new Set(['marker']),
+  });
+  const ogreView = one('ogre');
+  assert.ok(ogreView.seen.has('ogre'), 'it always shows itself');
+  assert.ok(ogreView.seen.has('k'), 'the torch-bearer is lit');
+  assert.ok(!ogreView.seen.has('far'), 'a PC in the dark is not shown through the ogre\'s eyes');
+  assert.ok(ogreView.perceived.at(5, 5.5) && !ogreView.perceived.at(30, 5.5));
+  const party = partyView(tokens, sight, { rangeFt: 200, feetPerCell: 5, grid: GRID, light, rules: lightRules });
+  assert.ok(party.seen.has('far'), 'the party view still shows every PC');
+});

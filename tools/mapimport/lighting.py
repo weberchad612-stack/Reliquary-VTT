@@ -75,6 +75,11 @@ def build_lighting(block, g, segs, terrain_areas, report, keyed_rooms=None, hidd
         for k in LIGHT_FIELDS:
             if k in l:
                 light[k] = l[k]
+        if "preset" not in light and light.get("bright", 0) > 0 and not light.get("dim"):
+            # allowed (the engine adds a thin dim fringe), but a static light should give both radii
+            report.setdefault("warnings", []).append(
+                f"light {light['id']}: bright light but no dim radius; give the dim radius from the text "
+                "(the board fades it over a fringe of a tenth of the bright radius otherwise)")
         lights.append(light)
         report["applied"].append({"light": light["id"], "note": l.get("note", "")})
     fields = {}

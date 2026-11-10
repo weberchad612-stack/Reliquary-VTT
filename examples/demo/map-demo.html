@@ -167,6 +167,7 @@ const START = () => ({
 let S = START();
 let mask = new Engine.ExploredMask(G);
 let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
+let gen = 0;   // bumped by every recompute(): cached drawings and the focus view key on it
 
 const img = new Image();
 img.src = DATA.image;
@@ -215,14 +216,41 @@ function lightsNow() {
   }
   return out;
 }
+/** Daylight coming in through windows, grates and open doors that face open sky (none at night). */
+const daylightNow = () => (HAS_SKY ? Engine.daylightLights(segs, state(), { grid: G, sky: S.sky, outdoor: !!map.outdoor, regions: LIGHTING.regions || [] }) : []);
 const litOpts = () => ({ ...opts, grid: G, light: lightMap, rules: Engine.lightRules });
-/** What one creature perceives now (the GM's vision view, and a player's view of their own PC). */
-function oneView(id) {
-  const one = tokenList().filter((t) => t.id === id);
-  if (!LIT) return { polys: Engine.tokenSight(space(id), sightSegs, opts) };
-  const v = Engine.partyView(one, sightSegs, { ...litOpts(), canLook: () => true });
-  return { polys: v.perceived.displayPolys() };
+
+// ---------- what the board shows ----------
+// Nothing selected: the party's view, with everything it has explored. A creature selected (the GM: any;
+// a player: a PC): only what that creature perceives now, nothing remembered (docs/design/lighting.md
+// section 11). Deselect to see the explored map again.
+let partyShown = null, focusCache = null;
+const MARKERS_ONLY = new Set(['marker']);
+/** The creature whose eyes the board shows, or null for the party. */
+function focusId() {
+  if (!selected || !S.tokens[selected]) return null;
+  return S.view === 'gm' || S.tokens[selected].kind === 'pc' ? selected : null;
 }
+const inPolys = (polys) => (x, y) => polys.some((poly) => Engine.pointInPolygon([x, y], poly));
+/** The view being drawn: {focus, visible, explored, mono, perceived, monoMask, seen, concealedFrom, at(x, y)}. */
+function shown() {
+  const fid = focusId();
+  if (!fid) return partyShown;
+  const key = fid + '|' + gen;
+  if (focusCache && focusCache.key === key) return focusCache.v;
+  const o = { ...(LIT ? litOpts() : opts), canLook: (t) => t.id === fid, alwaysShown: MARKERS_ONLY };
+  const v = Engine.partyView(tokenList(), sightSegs, o);
+  const visible = LIT ? v.perceived.displayPolys() : v.visible;
+  const out = {
+    focus: fid, visible, explored: [], mono: LIT ? v.mono.displayPolys() : [], perceived: LIT ? v.perceived : null, monoMask: LIT ? v.mono : null,
+    seen: new Set([...v.seen, fid]), concealedFrom: v.concealedFrom || {},
+    at: LIT ? (x, y) => !!v.perceived.at(x, y) : inPolys(v.visible),
+  };
+  focusCache = { key, v: out };
+  return out;
+}
+/** The GM's whole-map view (GM view with nothing selected): everything drawn, the party's view shaded. */
+const fullGM = () => S.view === 'gm' && !focusId();
 /** How each kind of terrain is named and marked (the table's red chevrons for difficult terrain). */
 const TERRAIN_LOOK = {
   difficult: { name: 'difficult terrain', colour: '#c62a1c', mark: 'chevron' },
@@ -254,21 +282,24 @@ function recompute(reason) {
     const regions = (LIGHTING.regions || []);
     lightMap = new Engine.LightMap(G, {
       base: map.outdoor ? 'sky' : (map.base_light || 'dark'), sky: S.sky, regions,
-      patches: lightCache.patchesFor(lightsNow(), segs, state(), JSON.stringify(S.doors)),
+      patches: lightCache.patchesFor([...lightsNow(), ...daylightNow()], segs, state(), JSON.stringify(S.doors)),
     });
     view = Engine.partyView(tokenList(), sightSegs, litOpts());
     mask.addMask(view.perceived);
-    S.visibleShown = view.perceived.displayPolys();
-    S.dimShown = view.dim.displayPolys();
-    S.monoShown = view.mono.displayPolys();
   } else {
     view = Engine.partyView(tokenList(), sightSegs, opts);
     mask.add(view.visible);
-    S.visibleShown = view.visible; S.dimShown = []; S.monoShown = [];
   }
+  gen++;
   for (const id of Object.keys(S.hiddenMarks)) if (view.seen.has(id)) delete S.hiddenMarks[id];   // seen again: the marker goes
   const explored = mask.toPolys();     // stored in the save: pixel-exact
-  S.exploredShown = mask.displayPolys(); // painted: diagonals as straight lines
+  partyShown = {
+    focus: null, explored: mask.displayPolys(),   // painted: diagonals as straight lines
+    visible: LIT ? view.perceived.displayPolys() : view.visible, mono: LIT ? view.mono.displayPolys() : [],
+    perceived: LIT ? view.perceived : null, monoMask: LIT ? view.mono : null,
+    seen: view.seen, concealedFrom: view.concealedFrom || {},
+    at: LIT ? (x, y) => !!view.perceived.at(x, y) : inPolys(view.visible),
+  };
   // announce foes that come into or leave view
   for (const t of tokenList()) {
     if (t.kind === 'pc') continue;
@@ -290,13 +321,15 @@ function doorInfo(s) {
   return { st, found, knownLocked: S.locked_known.includes(s.door.id) };
 }
 const mid = (s) => [(s.a[0] + s.b[0]) / 2, (s.a[1] + s.b[1]) / 2];
+/** Players see a found door once either side of it is explored; a creature's own view, while it sees one side now. */
 function doorVisibleToPlayers(s) {
   const info = doorInfo(s);
   if (!info.found) return false;
   const [mx, my] = mid(s);
   const dx = s.b[0] - s.a[0], dy = s.b[1] - s.a[1], L = Math.hypot(dx, dy);
   const nx = -dy / L * 0.35, ny = dx / L * 0.35;
-  return mask.at(mx + nx, my + ny) || mask.at(mx - nx, my - ny);
+  const F = shown(), at = F.focus ? F.at : (x, y) => mask.at(x, y);
+  return !!(at(mx + nx, my + ny) || at(mx - nx, my - ny));
 }
 const leafOf = (s) => Engine.leafShapes(s, { partner: Engine.pairOf(s, segs) });
 /** Click a door leaf. With `both`, a double door's two leaves change together (Shift+click). */
@@ -372,14 +405,16 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   if (img.complete) ctx.drawImage(img, 0, 0, W, H);
 
-  // light: greyscale where only darkvision sees, darker where the light is dim (GM: the light everywhere)
-  if (LIT) drawLight(gm);
+  const F = shown(), full = fullGM();
+
+  // light: greyscale where only darkvision sees, darker as light fades (GM: the light everywhere)
+  if (LIT) drawLight(F, full);
 
   // terrain marks, under the fog: hidden where unexplored, dimmed where only remembered
-  ctx.save(); ctx.translate(OX, OY); drawTerrain(gm); ctx.restore();
+  ctx.save(); ctx.translate(OX, OY); drawTerrain(full); ctx.restore();
 
-  // fog of war, painted by the engine
-  Engine.paintFog(fctx, { grid: G, explored: S.exploredShown, visible: S.visibleShown, mode: gm ? 'gm' : 'player', width: W, height: H });
+  // fog of war, painted by the engine: a selected creature's view is drawn as a player sees it
+  Engine.paintFog(fctx, { grid: G, explored: F.explored, visible: F.visible, mode: full ? 'gm' : 'player', width: W, height: H });
   ctx.drawImage(fog, 0, 0);
   ctx.save();
   ctx.translate(OX, OY); // everything below is drawn in grid space
@@ -388,19 +423,6 @@ function draw() {
   for (const h of map.hidden_areas || []) {
     const [x0, y0, x1, y1] = h.cells;
     ctx.fillRect(P(x0), P(y0), P(x1 - x0), P(y1 - y0) + CS);
-  }
-
-  // GM vision view: what the selected token sees
-  if (gm && selected && !drag) {
-    const polys = oneView(selected).polys;
-    ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .26)';
-    ctx.beginPath(); polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
-  }
-
-  // a player's own PC: what it perceives now
-  if (!gm && selected && !drag && S.tokens[selected].kind === 'pc' && LIT) {
-    ctx.save(); ctx.fillStyle = 'rgba(255, 214, 90, .18)';
-    ctx.beginPath(); oneView(selected).polys.forEach((p) => polyPath(ctx, p)); ctx.fill('nonzero'); ctx.restore();
   }
 
   // movement range for the selected token (player view, or while dragging)
@@ -412,11 +434,11 @@ function draw() {
     ctx.restore();
   }
 
-  if (S.walls || gm) drawWalls(gm && !S.walls);
-  drawDoors(gm);
-  if (LIT) drawLightSources(gm);
+  if (S.walls || full) drawWalls(full && !S.walls);
+  drawDoors(gm, full);
+  if (LIT) drawLightSources(full);
   if (drag && drag.route !== undefined) drawRoute();
-  drawTokens(gm);
+  drawTokens(F, full);
   ctx.restore();
   hud();
 }
@@ -434,46 +456,59 @@ function drawWalls(faint) {
 }
 
 // ---------- light drawing ----------
-const LIGHT_LOOK = { shade: '11, 13, 26', gm: [0.5, 0.22, 0], dim: 0.3, on: '#f0b44a', off: '#8a8f99' };
+// Shade over the map by brightness: none in bright light, deepening as light fades, deepest in darkness.
+// gm: the GM's whole-map view; player: what the party (or a selected creature) perceives now.
+const LIGHT_LOOK = { shade: '11, 13, 26', gm: 0.6, player: 0.7, curve: 1.5, on: '#f0b44a', off: '#8a8f99' };
+const shadeTable = (max) => Array.from({ length: 256 }, (_, g) => Math.round(255 * max * Math.pow(1 - g / 255, LIGHT_LOOK.curve)));
+const SHADE_GM = shadeTable(LIGHT_LOOK.gm), SHADE_PLAYER = shadeTable(LIGHT_LOOK.player);
 let lightCanvas = null, lightCanvasFor = null;
 function ringsPath(rings) {
   ctx.beginPath();
   for (const r of rings) { if (r.length < 3) continue; ctx.moveTo(P(r[0][0]), P(r[0][1])); for (let i = 1; i < r.length; i++) ctx.lineTo(P(r[i][0]), P(r[i][1])); ctx.closePath(); }
 }
-function drawLight(gm) {
+function drawLight(F, full) {
   ctx.save(); ctx.translate(OX, OY);
-  if (gm) {
-    // the light everywhere, as a soft shade: darkness darkest, dim lighter, bright clear
-    if (lightCanvasFor !== lightMap) {
-      lightCanvas = lightCanvas || document.createElement('canvas');
-      lightCanvas.width = lightMap.w; lightCanvas.height = lightMap.h;
-      const lc = lightCanvas.getContext('2d'), im = lc.createImageData(lightMap.w, lightMap.h);
-      const [r, g, b] = LIGHT_LOOK.shade.split(',').map(Number);
-      for (let k = 0; k < lightMap.levels.length; k++) {
-        im.data[k * 4] = r; im.data[k * 4 + 1] = g; im.data[k * 4 + 2] = b; im.data[k * 4 + 3] = 255 * LIGHT_LOOK.gm[lightMap.levels[k]];
-      }
-      lc.putImageData(im, 0, 0); lightCanvasFor = lightMap;
+  const key = full ? 'gm|' + gen : 'view|' + gen + '|' + (F.focus || '');
+  if (lightCanvasFor !== key) {
+    lightCanvas = lightCanvas || document.createElement('canvas');
+    lightCanvas.width = lightMap.w; lightCanvas.height = lightMap.h;
+    const lc = lightCanvas.getContext('2d'), im = lc.createImageData(lightMap.w, lightMap.h);
+    const [r, g, b] = LIGHT_LOOK.shade.split(',').map(Number), glow = lightMap.glow;
+    const per = F.perceived && F.perceived.bits, mono = F.monoMask && F.monoMask.bits;
+    for (let k = 0; k < glow.length; k++) {
+      im.data[k * 4] = r; im.data[k * 4 + 1] = g; im.data[k * 4 + 2] = b;
+      // what is not perceived counts as dark here so the blur does not lighten the edge of the view
+      // (the drawing is clipped to the view); darkvision alone sees without shade, in greyscale
+      im.data[k * 4 + 3] = full ? SHADE_GM[glow[k]] : !per[k] ? SHADE_PLAYER[0] : mono[k] ? 0 : SHADE_PLAYER[glow[k]];
     }
-    ctx.imageSmoothingEnabled = true;
-    if ('filter' in ctx) ctx.filter = `blur(${Math.max(2, P(0.1))}px)`;   // hide the 1/8-square steps
-    ctx.drawImage(lightCanvas, 0, 0, P(G.cols), P(G.rows));
-    if ('filter' in ctx) ctx.filter = 'none';
-  } else {
-    // visible now: greyscale where only darkvision sees (PF2E darkvision is black and white) ...
-    if (S.monoShown.length && img.complete) {
-      ctx.save(); ringsPath(S.monoShown); ctx.clip('nonzero');
+    lc.putImageData(im, 0, 0); lightCanvasFor = key;
+  }
+  if (!full) {
+    // visible now: greyscale where only darkvision sees (PF2E darkvision is black and white)
+    ringsPath(F.visible); ctx.clip('nonzero');
+    if (F.mono.length && img.complete) {
+      ctx.save(); ringsPath(F.mono); ctx.clip('nonzero');
       ctx.filter = 'grayscale(1) brightness(.85)'; ctx.drawImage(img, -OX, -OY, W, H); ctx.filter = 'none'; ctx.restore();
     }
-    // ... and darker where the light is dim
-    if (S.dimShown.length) { ringsPath(S.dimShown); ctx.fillStyle = `rgba(${LIGHT_LOOK.shade}, ${LIGHT_LOOK.dim})`; ctx.fill('nonzero'); }
   }
+  ctx.imageSmoothingEnabled = true;
+  if ('filter' in ctx) ctx.filter = `blur(${Math.max(2, P(0.1))}px)`;   // hide the 1/8-square steps
+  ctx.drawImage(lightCanvas, 0, 0, P(G.cols), P(G.rows));
+  if ('filter' in ctx) ctx.filter = 'none';
   ctx.restore();
 }
-/** Static lights: a small lamp mark (lit or cold). The GM sees all and clicks one to switch it; players see lit ones they have explored. */
-function drawLightSources(gm) {
+/** Players see a lit lamp once they have explored where it hangs; a creature's own view, while it sees it. */
+function lampShown(l) {
+  if (!staticOn(l)) return false;
+  const F = shown(), [x, y] = l.at;
+  if (!F.focus) return !!mask.at(x, y);
+  return [[0, 0], [0.3, 0], [-0.3, 0], [0, 0.3], [0, -0.3]].some(([dx, dy]) => F.at(x + dx, y + dy));   // a sconce sits on a wall
+}
+/** Static lights: a small lamp mark (lit or cold). The GM sees all and clicks one to switch it. */
+function drawLightSources(full) {
   for (const l of LIGHTING.lights || []) {
     const on = staticOn(l);
-    if (!gm && (!on || !mask.at(l.at[0], l.at[1]))) continue;
+    if (!full && !lampShown(l)) continue;
     const x = P(l.at[0]), y = P(l.at[1]), r = Math.max(5, P(0.17));
     ctx.save();
     if (on) { const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6); g.addColorStop(0, 'rgba(255, 200, 90, .55)'); g.addColorStop(1, 'rgba(255, 200, 90, 0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, Math.PI * 2); ctx.fill(); }
@@ -531,13 +566,13 @@ function terrainOutline(cells, colour, dashed) {
   }
   ctx.stroke(); ctx.restore();
 }
-function drawTerrain(gm) {
+function drawTerrain(full) {
   for (const a of terrain.areas) {
     const cells = Engine.areaCells(a);
     terrainOutline(cells, TERRAIN_LOOK[a.kind].colour, false);
     for (const [x, y] of cells) terrainMark(a.kind, x, y, a.kind === 'swim' ? 0.55 : 0.95);
   }
-  if (!gm) return;
+  if (!full) return;
   // GM only: areas that start switched off (a bridge that will collapse); click one to switch it on
   for (const a of PACK_TERRAIN) if (a.active === false && !S.terrain_on.includes(a.id)) terrainOutline(Engine.areaCells(a), TERRAIN_LOOK[a.kind].colour, true);
 }
@@ -575,11 +610,11 @@ function drawPadlock(c, col) {
   ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 2.5, 1.4, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
-function drawDoors(gm) {
+function drawDoors(gm, full) {
   ctx.save(); ctx.lineJoin = 'round';
   for (const s of doorSegs) {
     const info = doorInfo(s);
-    if (!gm && !doorVisibleToPlayers(s)) continue;
+    if (!full && !doorVisibleToPlayers(s)) continue;
     const L = leafOf(s), stone = s.t === 'secret';
     if (!info.found) {                         // GM only: an unfound secret door, outlined
       leafPath(L.closed); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.secret; ctx.stroke(); ctx.setLineDash([]);
@@ -630,12 +665,12 @@ function drawRoute() {
   ctx.restore();
 }
 
-function drawTokens(gm) {
+function drawTokens(F, full) {
   // biggest first, so a creature sharing a bigger one's space is drawn on top of it
   const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
   for (const [id, t0] of order) {
-    const seen = view.seen.has(id);
-    if (!gm && !seen) continue;
+    const seen = F.seen.has(id);
+    if (!full && !seen) continue;
     const sp = drag && drag.id === id
       ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
       : space(id);
@@ -645,18 +680,19 @@ function drawTokens(gm) {
     const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
     ctx.save();
     if (drag && drag.id === id) ctx.globalAlpha = 0.75;
-    if (gm && !seen) ctx.globalAlpha = 0.6;
+    if (full && !seen) ctx.globalAlpha = 0.6;
     ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
     ctx.lineWidth = id === selected ? 4 : 2; ctx.strokeStyle = id === selected ? '#e3a443' : '#0d0f12';
-    if (gm && !seen) ctx.setLineDash([4, 3]);
+    if (full && !seen) ctx.setLineDash([4, 3]);
     ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
     ctx.restore();
-    if (seen && concealedNow(id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
+    if (seen && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
   }
-  // "hidden" markers the GM placed: where the party thinks an unseen creature is
+  // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
+  if (F.focus && S.tokens[F.focus].kind !== 'pc') return;
   for (const [id, sq] of Object.entries(S.hiddenMarks)) {
     const x = P(sq[0] + 0.5), y = P(sq[1] + 0.5), r = P(0.36);
     ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 2.5; ctx.strokeStyle = '#e3a443'; ctx.fillStyle = 'rgba(23, 25, 29, .55)';
@@ -665,12 +701,11 @@ function drawTokens(gm) {
     ctx.fillText('?', x, y + 1); ctx.restore();
   }
 }
-/** Concealed from the selected PC, or (none selected) from any PC who sees it. */
-function concealedNow(id) {
-  const from = view.concealedFrom && view.concealedFrom[id];
+/** Concealed from the creature whose eyes the board shows, or (the party's view) from any PC who sees it. */
+function concealedNow(F, id) {
+  const from = F.concealedFrom[id];
   if (!from) return false;
-  const sel = selected && S.tokens[selected] && S.tokens[selected].kind === 'pc' ? selected : null;
-  return sel ? from.includes(sel) : true;
+  return F.focus ? from.includes(F.focus) : true;
 }
 function drawConcealed(x, y, r) {   // a half-shaded disc: concealed (DC 5 flat check to target)
   ctx.save();
@@ -685,10 +720,10 @@ function hud() {
   const parts = [];
   if (hoverCell) {
     const [x, y] = hoverCell, c = [x + 0.5, y + 0.5];
-    const fs = LIT ? (view.perceived.at(c[0], c[1]) ? 'visible' : mask.at(c[0], c[1]) ? 'explored' : 'hidden')
-      : Engine.fogStateAt(c, view.visible, mask, Engine.pointInPolygon);
+    const F = shown();
+    const fs = F.at(c[0], c[1]) ? 'visible' : !F.focus && mask.at(c[0], c[1]) ? 'explored' : 'hidden';
     parts.push(`square <b>${x},${y}</b>`, `fog <b>${fs}</b>`);
-    if (LIT && (S.view === 'gm' || fs !== 'hidden')) parts.push(`light <b>${Engine.LEVEL_NAME[lightMap.at(c[0], c[1])]}</b>`);
+    if (LIT && (S.view === 'gm' || fs !== 'hidden')) parts.push(`light <b>${Engine.LEVEL_NAME[lightMap.at(c[0], c[1])]}</b> · glow <b>${Math.round(lightMap.glowAt(c[0], c[1]) * 100)}%</b>`);
     if (S.view === 'gm' || fs !== 'hidden') {
       const here = terrain.at(x, y).map((a) => `${a.label || a.cause || 'terrain'}: ${TERRAIN_LOOK[a.kind].name}${a.dc ? ' DC ' + a.dc : ''}`);
       if (here.length) parts.push(`terrain <b>${here.join('; ')}</b>`);
@@ -696,14 +731,14 @@ function hud() {
   }
   const bytes = JSON.stringify({ v: 1, polys: S.explored }).length;
   parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
-  parts.push(`lookers <b>${view.lookers.length}</b>`);
+  parts.push(focusId() ? `view <b>${S.tokens[focusId()].name} only</b>` : `lookers <b>${view.lookers.length}</b>`);
   document.getElementById('hud').innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
 }
 
 function panel() {
   const el = document.getElementById('sel');
   if (!selected) {
-    el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to shade what it sees. Click a door to cycle closed, open, locked; Shift+click a double door for both leaves.' : 'Click Kerra or Pip to see how far they can move. Click a door to open or close it; Shift+click a double door to work both leaves.'}</div>`;
+    el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to see the board through its eyes: only what it perceives now. Click empty floor or press Escape for the whole map. Click a door to cycle closed, open, locked; Shift+click a double door for both leaves.' : 'Click a PC to see only what they perceive now and how far they can move; click empty floor or press Escape to see everything the party has explored. Click a door to open or close it; Shift+click a double door to work both leaves.'}</div>`;
     return;
   }
   const t = S.tokens[selected], size = t.size || 1;
@@ -722,7 +757,7 @@ function panel() {
       ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
       ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
     </div>
-    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${S.view === 'gm' ? 'Yellow: what it sees now.' : 'Green: reachable this move.' + (t.kind === 'pc' && LIT ? ' Yellow: what it sees now.' : '')}</div>`;
+    <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${t.name} perceives now. ` : ''}${S.view === 'gm' ? '' : 'Green: reachable this move.'}</div>`;
   const bl = document.getElementById('b-light');
   if (bl) bl.onclick = () => {
     const on = t.light.on === false;
@@ -748,7 +783,7 @@ function tokenAt(p) {
   let best = null;
   const order = Object.keys(S.tokens).sort((a, b) => (S.tokens[b].size || 1) - (S.tokens[a].size || 1));
   for (const id of order) {
-    if (!gm && !view.seen.has(id)) continue;
+    if (!gm && !shown().seen.has(id)) continue;
     const t = space(id), s = t.size;
     if (p[0] >= t.x && p[0] < t.x + s && p[1] >= t.y && p[1] < t.y + s) best = id; // last drawn wins (smallest on top)
   }
@@ -762,7 +797,7 @@ function tokenDiscAt(p) {
   let best = null;
   const order = Object.keys(S.tokens).sort((a, b) => (S.tokens[b].size || 1) - (S.tokens[a].size || 1));
   for (const id of order) {
-    if (!gm && !view.seen.has(id)) continue;
+    if (!gm && !shown().seen.has(id)) continue;
     const t = space(id), s = t.size;
     const r = (s / 2 - (s < 1 ? 2 : 5) / CS) * Engine.drawScale(S.tokens[id]);   // as drawTokens draws it
     if (Math.hypot(p[0] - (t.x + s / 2), p[1] - (t.y + s / 2)) <= r) best = id;
@@ -783,7 +818,7 @@ const distToSeg = (p, a, b) => Engine.pointSegDist(p, a, b);
 function doorAt(p) {
   let best = null, bd = 0.3;
   for (const s of doorSegs) {
-    if (S.view === 'player' && !doorVisibleToPlayers(s)) continue;
+    if (!fullGM() && !doorVisibleToPlayers(s)) continue;
     const L = leafOf(s);
     let d = distToSeg(p, L.hinge, L.free);
     if (doorInfo(s).st === 'open') d = Math.min(d, distToSeg(p, L.hinge, L.openFree));
@@ -805,7 +840,8 @@ function goalFor(id, p) {
 
 canvas.addEventListener('pointerdown', (ev) => {
   const p = cellAt(ev);
-  const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
+  let lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
+  if (lamp && !fullGM() && !lampShown(lamp)) lamp = null;   // looking through a creature's eyes: only lamps it sees
   if (lamp && !tokenDiscAt(p)) {
     const on = !staticOn(lamp);
     S.lights[lamp.id] = { on };
