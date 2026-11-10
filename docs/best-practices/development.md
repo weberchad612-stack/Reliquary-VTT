@@ -30,3 +30,4 @@
 - Commit straight to `main` for now.
 - When the user asks to take something slowly, ask questions one at a time.
 - Report what was done and what was decided; list decisions where the user can review them (for maps, the `decisions` list in `import.json`).
+- Anything that runs every frame (the light animation layer) must leave the canvas as it found it: wrap each frame in `save()`/`restore()`. A clip applied per frame without them piles up: the first animation layer slowed from 30 to 5 frames a second within a minute and then seemed to stop. Run a headless check for at least a minute and watch the frame rate, not just the first frames.

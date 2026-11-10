@@ -590,9 +590,18 @@ let animList = [], animClip = null, animFull = true, animRAF = null, animLast = 
 const animSprites = new Map();   // light id -> {key, x, y, w, h, dark, bright, colour}
 const animStats = { frames: 0, ms: 0, since: 0, fps: 0, avg: 0 };
 const animStatText = () => (animOn() && animList.length ? `animation <b>${animList.length}</b> lights · <b>${animStats.avg.toFixed(1)}</b> ms/frame · <b>${animStats.fps}</b> fps` : animOn() ? 'animation <b>idle</b>' : 'animation <b>off</b>');
-/** A light's glow as small pictures (dark, bright, colour), made once per light shape, colour and intensity. */
-function animSprite(l, patch) {
-  const key = [l.colour || '', l.intensity ?? 100].join('|');
+/**
+ * A light's glow as small pictures (dark, bright, colour), made once per light shape, colour, intensity and
+ * kind of animation. Flames (torch, flicker) move mostly at the edge: the bright core wavers a little, the
+ * dim fringe more, as a real flame's reach comes and goes. Pulse, ghostly and chroma move evenly.
+ */
+const FLAME = { core: 0.25, edge: 1 };
+function flameWeight(g) {   // g: brightness 0-1 at this point of the light
+  const toEdge = FLAME.core + (FLAME.edge - FLAME.core) * (1 - g);
+  return toEdge * Math.min(1, g * 5);   // fading out right at the outer edge, so nothing pops beyond the light
+}
+function animSprite(l, patch, flame) {
+  const key = [l.colour || '', l.intensity ?? 100, flame ? 'flame' : 'even'].join('|');
   const hit = animSprites.get(l.id);
   if (hit && hit.patch === patch && hit.key === key) return hit;
   const W = lightMap.w;
@@ -606,7 +615,8 @@ function animSprite(l, patch) {
     const cx = c.getContext('2d'), im = cx.createImageData(w, h);
     for (let n = 0; n < patch.idx.length; n++) {
       const k = patch.idx[n], i = (k % W) - i0, j = Math.floor(k / W) - j0, q = (j * w + i) * 4;
-      im.data[q] = r; im.data[q + 1] = g; im.data[q + 2] = b; im.data[q + 3] = Math.round(patch.glow[n] * f);
+      const gl = patch.glow[n] / 255;
+      im.data[q] = r; im.data[q + 1] = g; im.data[q + 2] = b; im.data[q + 3] = Math.round(255 * f * (flame ? flameWeight(gl) : gl));
     }
     cx.putImageData(im, 0, 0);
     return c;
@@ -625,7 +635,7 @@ function refreshAnimation(F, full) {
       const anim = Engine.animationOf(l.animation);
       const hit = anim && lightCache.patches.get(l.id);
       if (!hit) continue;
-      const sp = animSprite(l, hit.patch);
+      const sp = animSprite(l, hit.patch, anim.type === 'torch' || anim.type === 'flicker');
       if (sp) animList.push({ id: l.id, anim, sp });
     }
   }
@@ -661,6 +671,7 @@ function animFrame(now) {
 function drawAnim(t) {
   const dpr = window.devicePixelRatio || 1;
   clearAnim();
+  actx.save();   // the view clip must not pile up from frame to frame (it did: the animation slowed, then stopped)
   actx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
   actx.translate(OX, OY);
   if (animClip) actx.clip(animClip, 'nonzero');
@@ -676,7 +687,7 @@ function drawAnim(t) {
       actx.filter = `hue-rotate(${hue}deg)`; actx.drawImage(sp.colour, x, y, w, h); actx.filter = 'none';
     }
   }
-  actx.globalAlpha = 1;
+  actx.restore();
 }
 function syncAnimButton() {
   const b = document.getElementById('b-anim');

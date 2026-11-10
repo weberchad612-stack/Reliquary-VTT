@@ -71,8 +71,8 @@ export function animationAt(a, id, t) {
   const amp = (anim.intensity / 10) * MAX_SWING;
   let v = 0, hue = 0;
   switch (anim.type) {
-    case 'torch':   // a quick flutter over a slow sway
-      v = 0.65 * noise(s, t * 6 * k) + 0.35 * noise(s + 1, t * 1.2 * k);
+    case 'torch':   // a gentle sway with a light flutter on top (calm: a torch burns steadily)
+      v = 0.7 * noise(s + 1, t * 1.1 * k) + 0.3 * noise(s, t * 3.5 * k);
       break;
     case 'flicker': {   // faster and broken: sudden short dips
       const dip = Math.max(0, noise(s + 2, t * 3 * k) - 0.55) / 0.45;
