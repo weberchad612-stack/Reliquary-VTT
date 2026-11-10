@@ -56,6 +56,7 @@ One folder per map: `maps/<map-id>/` with `map.json`, the image, `walls.json` an
       "label": "Stairs up",
       "at": [[4, 7], [5, 7]],
       "to_map": "upper-hall",
+      "to_link": "stairs-down",
       "arrive": [[20, 3], [21, 3], [20, 4], [21, 4]],
       "found": false
     }
@@ -64,7 +65,7 @@ One folder per map: `maps/<map-id>/` with `map.json`, the image, `walls.json` an
 ```
 
 - `grid.origin_px` is the pixel position of the corner of cell (0,0). Cell (x,y) covers pixels `origin + [x, y] * cell_px` to `origin + [x+1, y+1] * cell_px`.
-- `links` replace the old `game/maps` arrival table. `at` lists the cells that trigger the link, `arrive` lists the cells where travellers are placed on the other map, in order. `found` is the starting state; the save tracks it after that.
+- `links` replace the old `game/maps` arrival table. `at` lists the cells that trigger the link, `arrive` lists the cells where travellers are placed on the other map, in order. `to_link` names the partner entrance on the other map (the one that leads back), so the board knows where the party arrives and which way back becomes known; the validator warns when it is missing or does not lead back. `found` is the starting state; the save tracks it after that (`links_found`).
 - No namespace strings. Saves key per-map state by `id`.
 
 ## 4. Wall segments (pack)

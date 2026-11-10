@@ -29,13 +29,32 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
-.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+.app { display: grid; grid-template-rows: auto auto 1fr; height: 100%; }
 header {
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
   padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
 }
 h1 { font: 600 20px/1.2 var(--font-display); letter-spacing: .02em; margin: 0; text-wrap: balance; }
-h1 small { font: 400 13px var(--font-body); color: var(--muted); letter-spacing: 0; margin-left: 8px; }
+.titleline { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.titleline small { font: 400 13px var(--font-body); color: var(--muted); }
+.bver { font: 500 11px var(--font-mono); color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; cursor: default; }
+.bver[hidden] { display: none; }
+.mapmenu[hidden] { display: none; }
+.mapmenu .mb-btn { font: 600 15px var(--font-display); color: var(--ink); padding: 3px 8px; }
+.mapmenu .mb-btn::before { content: '\00b7'; color: var(--muted); margin-right: 4px; }
+.mapmenu .menu-pop { min-width: 240px; }
+.preview-bar {
+  display: flex; align-items: center; gap: 12px; justify-content: center; padding: 6px 16px;
+  background: #2a2216; border-bottom: 1px solid var(--warn); color: var(--ink); font-size: 14px;
+}
+.preview-bar[hidden] { display: none; }
+.newver {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 70; display: flex; gap: 2px;
+  background: #24493f; border: 1px solid var(--ok); border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,.45);
+}
+.newver[hidden] { display: none; }
+.newver button { background: none; border: 0; border-radius: 999px; color: var(--ink); }
+.newver button:hover { background: rgba(255,255,255,.08); }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-left: auto; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .seg button { border: 0; border-radius: 0; }
@@ -140,6 +159,10 @@ ol.log li.foe { border-left-color: var(--foe); }
 .mi[aria-checked="true"] .mi-check::before { content: '\2713'; }
 .mi[role="menuitemradio"][aria-checked="true"] .mi-check::before { content: '\25CF'; font-size: 9px; }
 .mi.active .mi-label { color: var(--accent); }
+.mi-tag { font: 500 11px var(--font-body); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+.mi.dim .mi-label { color: var(--muted); }
+.mi[aria-disabled="true"] { cursor: default; }
+.mi[aria-disabled="true"] .mi-label { color: var(--muted); font-style: italic; }
 .mi-key { font: 500 11px var(--font-mono); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
 .mi-arrow { color: var(--muted); }
 .mi-sep { height: 1px; background: var(--line); margin: 4px 6px; }
@@ -153,7 +176,12 @@ ol.log li.foe { border-left-color: var(--foe); }
 <body>
 <div class="app">
   <header>
-    <h1 id="title">Reliquary Virtual Tabletop<small id="subtitle"></small></h1>
+    <div class="titleline">
+      <h1 id="title"><span id="campaign-title">Reliquary Virtual Tabletop</span></h1>
+      <span class="bver" id="bver" hidden></span>
+      <nav class="menubar mapmenu" id="mapmenu" aria-label="Maps" hidden></nav>
+      <small id="subtitle"></small>
+    </div>
     <nav class="menubar" id="menubar" aria-label="Board menu"></nav>
     <div class="controls">
       <div class="seg" role="group" aria-label="View">
@@ -175,6 +203,7 @@ ol.log li.foe { border-left-color: var(--foe); }
       <button id="b-walls" aria-pressed="false">Show walls</button>
     </div>
   </header>
+  <div class="preview-bar" id="preview-bar" hidden role="status"><span id="preview-text"></span><button id="preview-back">Back to the party's map</button></div>
   <main>
     <div class="stage" id="stage">
       <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
@@ -208,12 +237,24 @@ ol.log li.foe { border-left-color: var(--foe); }
     <div class="row"><button data-a="no">Stay in player view</button><button data-a="yes" aria-pressed="true">Show GM view</button></div>
   </div>
 </div>
+<div class="newver" id="newver" hidden role="status">
+  <button id="newver-reload">A newer version of the board is ready. Reload</button>
+  <button id="newver-x" aria-label="Dismiss" title="Dismiss">&#x2715;</button>
+</div>
+<div class="gm-confirm" id="travel-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="travel-confirm-title">
+  <div class="box">
+    <h2 id="travel-confirm-title">Move the party?</h2>
+    <p id="travel-confirm-text"></p>
+    <div class="row"><button data-a="no">Cancel</button><button data-a="yes" aria-pressed="true">Move</button></div>
+  </div>
+</div>
 <script>
 /*@ENGINE@*/
 /*@BOARD@*/
 // A seed campaign makes this a board on memory (the demo, tests); without one it uses the board's database.
 const SEED = /*@DATA?:seed@*/;
-Board.boot(SEED);
+const BUILD = /*@BUILD@*/;
+Board.boot(SEED, BUILD);
 </script>
 </body>
 </html>

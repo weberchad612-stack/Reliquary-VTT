@@ -1,10 +1,10 @@
 // The board's top menu (board/menu.js): the definition and the rules that need no page.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MENU, withMaps, menuForView, menuIndex, activeMenus, moveIndex } from '../board/menu.js';
+import { MENU, menuForView, menuIndex, activeMenus, moveIndex } from '../board/menu.js';
 
 test('menu: every id is used once, and every menu on the bar has items', () => {
-  const idx = menuIndex(withMaps(MENU, [{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], 'a'));
+  const idx = menuIndex(MENU);
   assert.ok(idx.size > 20);
   for (const e of MENU) if (e.items) assert.ok(e.items.some((i) => !i.sep), e.id);
   assert.throws(() => menuIndex([{ id: 'x', label: 'X' }, { id: 'm', label: 'M', items: [{ id: 'x', label: 'again' }] }]), /used twice/);
@@ -17,13 +17,6 @@ test('menu: the previous board\'s groups are all there, with a sub-menu', () => 
   }
   assert.equal(idx.get('tpl-cone').parent, 'templates');
   assert.equal(idx.get('templates').parent, 'menu-play');
-});
-
-test('menu: the Maps menu lists the maps with the current one checked, and only when there are two or more', () => {
-  const def = withMaps(MENU, [{ id: 'keep', name: 'Keep' }, { id: 'crypt' }], 'crypt');
-  assert.equal(def[0].id, 'menu-maps');
-  assert.deepEqual(def[0].items.map((i) => [i.id, i.label, i.kind, i.checked]), [['map:keep', 'Keep', 'radio', false], ['map:crypt', 'crypt', 'radio', true]]);
-  assert.equal(withMaps(MENU, [{ id: 'keep' }], 'keep'), MENU);
 });
 
 test('menu: GM-only entries are hidden from players, with empty menus and stray separators', () => {

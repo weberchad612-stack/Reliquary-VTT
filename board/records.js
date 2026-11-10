@@ -24,7 +24,7 @@ export const EXPLORED_CHUNK = 200;
 /** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
 const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored']);
 /** Fields of campaign.json kept in the table state record. */
-export const TABLE_FIELDS = ['current_map', 'sky_light', 'light_colour', 'light_animation', 'notes'];
+export const TABLE_FIELDS = ['current_map', 'discovered', 'sky_light', 'light_colour', 'light_animation', 'notes'];
 
 const chunks = (arr, n) => {
   const out = [];

@@ -1,6 +1,6 @@
 // The board's top menu: a menubar of drop-down menus, each holding commands, toggles and one level of
 // sub-menu (docs/design/board.md, section 7). Modelled on the previous board's top bar (Map / Play /
-// Records, with Replay and Narration beside them, and the map name as a menu of maps) and on Foundry's
+// Records, with Replay and Narration beside them) and on Foundry's
 // menus: click to open, hover moves between menus once one is open, one menu open at a time, a menu
 // shows as active while one of its toggles is on, and a dot when something inside is waiting.
 //
@@ -21,7 +21,9 @@
  *   {id, label, kind: 'button'}      on the bar only: a command or panel opened straight from the bar
  *   {sep: true}                      a separator line
  * Optional on any entry: hint (tooltip), gm: true (GM view only), key (shortcut shown, not bound here),
- * badge: true (can show a count, set with setBadge).
+ * badge: true (can show a count, set with setBadge), tag (a short note on the right: "here", "not found"),
+ * disabled: true (shown, not chosen), dim: true (shown greyed but still chosen).
+ * The same builder makes the map menu on the current map's name (board/travel.js): a bar of one menu.
  */
 export const MENU = [
   { id: 'menu-map', label: 'Map', items: [
@@ -52,16 +54,6 @@ export const MENU = [
   { id: 'replay', label: 'Replay', kind: 'button', badge: true, hint: 'Step through a batch of resolved actions' },
   { id: 'narration', label: 'Narration', kind: 'button', badge: true, hint: 'The story so far' },
 ];
-
-/**
- * The definition with a Maps menu first: one entry per map of the campaign, the current map checked
- * (the previous board's map-name menu). `maps` is [{id, name}].
- */
-export function withMaps(def, maps, current) {
-  if (!maps || maps.length < 2) return def;
-  const items = maps.map((m) => ({ id: 'map:' + m.id, label: m.name || m.id, kind: 'radio', checked: m.id === current }));
-  return [{ id: 'menu-maps', label: 'Maps', items }, ...def];
-}
 
 const isMenu = (e) => Array.isArray(e && e.items);
 const isItem = (e) => e && !e.sep;
@@ -165,18 +157,19 @@ export function buildMenuBar(root, { view = 'player', onSelect = () => {}, def =
     if (e.sep) return el('div', { class: 'mi-sep', role: 'separator' });
     const label = el('span', { class: 'mi-label', text: e.label });
     const kids = [el('span', { class: 'mi-check', 'aria-hidden': 'true' }), label];
+    if (e.tag) kids.push(el('span', { class: 'mi-tag', text: e.tag }));
     if (e.key) kids.push(el('kbd', { class: 'mi-key', text: e.key }));
     if (isMenu(e)) {
       kids.push(el('span', { class: 'mi-arrow', 'aria-hidden': 'true', text: '›' }));
       const wrap = el('div', { class: 'mi-sub' });
-      const btn = el('button', { type: 'button', class: 'mi', role: 'menuitem', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-controls': 'menu-pop-' + e.id, 'data-id': e.id, title: e.hint, tabindex: '-1' }, kids);
+      const btn = el('button', { type: 'button', class: 'mi' + (e.dim ? ' dim' : ''), role: 'menuitem', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-controls': 'menu-pop-' + e.id, 'data-id': e.id, title: e.hint, tabindex: '-1' }, kids);
       const pop = el('div', { class: 'menu-pop sub', role: 'menu', id: 'menu-pop-' + e.id, 'aria-label': e.label, hidden: true }, e.items.map(renderItem));
       wrap.append(btn, pop);
       return wrap;
     }
     const role = e.kind === 'toggle' ? 'menuitemcheckbox' : e.kind === 'radio' ? 'menuitemradio' : 'menuitem';
     const checked = e.kind === 'toggle' ? String(on.has(e.id)) : e.kind === 'radio' ? String(!!e.checked) : null;
-    return el('button', { type: 'button', class: 'mi', role, 'aria-checked': checked, 'data-id': e.id, title: e.hint, tabindex: '-1' }, kids);
+    return el('button', { type: 'button', class: 'mi' + (e.dim ? ' dim' : ''), role, 'aria-checked': checked, 'aria-disabled': e.disabled ? 'true' : null, 'data-id': e.id, title: e.hint, tabindex: '-1' }, kids);
   }
 
   function render() {
@@ -271,7 +264,7 @@ export function buildMenuBar(root, { view = 'player', onSelect = () => {}, def =
   function choose(item) {
     const id = item.dataset.id;
     const entry = menuIndex(def).get(id)?.entry;
-    if (!entry) return;
+    if (!entry || entry.disabled) return;
     let state;
     if (entry.kind === 'toggle') { state = !on.has(id); if (state) on.add(id); else on.delete(id); refresh(); }
     close(true);
@@ -356,6 +349,8 @@ export function buildMenuBar(root, { view = 'player', onSelect = () => {}, def =
   return {
     /** Show the menu for the player or GM view (GM-only entries come and go; open menus close). */
     setView(v) { if (v === view) return; close(); view = v; render(); },
+    /** Replace the definition (the map menu, when maps or entrances are discovered); open menus close. */
+    setDef(d) { menuIndex(d); close(); def = d; render(); },
     /** Set a toggle's state without calling onSelect (when the board changes it some other way). */
     setToggle(id, value) { if (value) on.add(id); else on.delete(id); refresh(); },
     /** A count on a bar button with badge: true (0 hides it). */

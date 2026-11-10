@@ -7,6 +7,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 | Place | What | Who writes it |
 |---|---|---|
 | The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `log/`; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
 | The pack (`examples/sample-pack`, or a private `packs/<id>`) | Maps, walls, terrain and lighting: never changed by play | The importer |
@@ -36,7 +37,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: all ten collections, including the pack records and `log`. Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: all ten campaign collections, including the pack records and `log` (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -54,7 +55,21 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Verify on the PC, not just in the workspace.** The read-back checksum is what proves the save reached the user's disk.
 - **Do not trust a log entry you wrote by hand** until you have compared it with one the board wrote (section 2).
 
-## 6. The top menu
+## 6. Maps, entrances and discovery
+
+- **Mark a map discovered** when the party learns of it (your ruling, or the user says so): add its id to `discovered` in `state/table` (read for the version, `update`), with a log entry ("Claude: the party learns of the Stairwell"). Players see it in the map menu at once.
+- **Mark an entrance found** the same way: add its id to `links_found` in `mapstate/<map>`. The pack's `found` is only the starting state.
+- **Never mark anything just because it would be convenient**: discovery is a ruling. The board marks one thing by itself: arriving through an entrance makes the way back known.
+- **When the party moves**, the board writes the PCs' tokens (map and square), any newly known entrances, a log entry by the player, and `current_map` last. Read the log to narrate the arrival. If an entrance has no room, the board refuses and tells the player to ask you: place the PCs yourself.
+- **Moving the party yourself:** write each PC's `map`, `x`, `y`, then `current_map` last (every open board reloads on it). Use the arrival squares and the same overflow rule (`planArrival` in `board/travel.js`, with the target map's walls and doors).
+- **Pair entrances in packs** with `to_link`, both ways; the validator warns about an unpaired one. A link's `arrive` cells are on the map it leads to.
+
+## 7. The version badge and publishing
+
+- The bundler stamps every build (`/*@BUILD@*/`): the badge shows the version, the tooltip the commit and whether there were uncommitted changes. Commit before publishing when you can, so the badge points at real code.
+- **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
+
+## 8. The top menu
 
 - **Add an entry to `MENU`** in `board/menu.js`, not markup: `{id, label, kind}` (`command`, `toggle`, `radio`, or `button` on the bar), `items` for a menu or sub-menu, `{sep: true}` for a line. Optional: `hint` (tooltip), `gm: true`, `key` (shown, not bound), `badge: true`.
 - **Wire it in `app.js`**, in the menu's `onSelect(id, item, state)`: one `case` per id. Ids are unique; a repeat fails at start-up and in the tests.
@@ -62,7 +77,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **One level of sub-menu.** Deeper menus are hard to use with a mouse and on a phone; split the menu instead.
 - Test the rules in `tests/board-menu.test.mjs`; check the page by hand (or headless) for clicking, hovering across the bar, the keyboard and a narrow window.
 
-## 7. Changing the board
+## 9. Changing the board
 
 - Edit the modules in `board/`, then bundle: `node tools/bundle.mjs board/index.html <out.html>` (add `--data seed=<seed.json>` from `campaign.mjs seed` for a board running on memory) and publish the result to the same artifact (keep its slug; the database stays).
 - `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.

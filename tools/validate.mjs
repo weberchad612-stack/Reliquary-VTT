@@ -248,7 +248,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     }
   }
   if (map.outdoor && map.base_light) report.warn(mapFile, '"base_light" is ignored on an outdoor map (the sky lights it)');
-  return { map, doors, terrainIds, inactiveTerrain, lightIds, regionIds, hasSky, report };
+  return { map, dir, doors, terrainIds, inactiveTerrain, lightIds, regionIds, hasSky, report };
 }
 
 /** Validate one map-state file against its map. */
@@ -338,6 +338,26 @@ function checkArea(a, where, grid, file, report) {
   if (a.damage && a.kind !== 'hazardous') report.warn(file, `${where}: "damage" only applies to hazardous terrain`);
 }
 
+/**
+ * Entrances between maps come in pairs: a link's to_link names the entrance it arrives at on its target
+ * map, and that entrance should lead back. Without a pair the board cannot take the entrance from the
+ * map menu or make the way back known (docs/design/board.md, section 7).
+ */
+function checkLinkPairs(maps, report) {
+  for (const [id, info] of maps) {
+    const file = path.join(info.dir || '', 'map.json');
+    for (const l of info.map.links || []) {
+      const where = `links "${l.id}"`;
+      const target = maps.get(l.to_map);
+      if (!target) continue;   // a missing target map is reported with the map
+      if (!l.to_link) { report.warn(file, `${where}: no to_link (the entrance it arrives at on ${l.to_map}); the party cannot take it from the map menu`); continue; }
+      const back = (target.map.links || []).find((x) => x.id === l.to_link);
+      if (!back) { report.error(file, `${where}: to_link "${l.to_link}" is not an entrance on ${l.to_map}`); continue; }
+      if (back.to_map !== id || (back.to_link && back.to_link !== l.id)) report.warn(file, `${where}: its partner "${back.id}" on ${l.to_map} does not lead back here`);
+    }
+  }
+}
+
 /** Validate a pack (or a single map) and optionally a save. */
 export function validate(target, { save = null } = {}) {
   const report = new Report();
@@ -368,6 +388,7 @@ export function validate(target, { save = null } = {}) {
   } else {
     report.error(target, 'not a pack (no maps/ folder) or a map folder (no map.json)');
   }
+  checkLinkPairs(maps, report);
 
   if (save) {
     const campFile = path.join(save, 'campaign.json');
@@ -378,6 +399,7 @@ export function validate(target, { save = null } = {}) {
         else if (camp.pack.version !== report.pack.version) report.warn(campFile, `pack: saved with version ${camp.pack.version}, the pack is ${report.pack.version}`);
         if (camp.ruleset !== report.pack.ruleset) report.error(campFile, `ruleset: "${camp.ruleset}" does not match the pack's "${report.pack.ruleset}"`);
         if (camp.current_map && !maps.has(camp.current_map)) report.error(campFile, `current_map: no map "${camp.current_map}" in the pack`);
+        for (const id of camp.discovered || []) if (!maps.has(id)) report.error(campFile, `discovered: no map "${id}" in the pack`);
       }
     }
     const dir = path.join(save, 'maps');

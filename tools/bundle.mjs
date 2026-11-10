@@ -7,6 +7,7 @@
 // In the template:
 //   /*@ENGINE@*/      is replaced by the bundled engine; it defines `const Engine = {...every export}`.
 //   /*@BOARD@*/       is replaced by the bundled board modules (board/): `const Board = {...every export}`.
+//   /*@BUILD@*/       is replaced by this build's stamp: {version, commit, dirty, built_at} (buildInfo()).
 //   /*@DATA:NAME@*/   is replaced by the JSON or data URL built from --data NAME=FILE.
 //   /*@DATA?:NAME@*/  the same, or null when no --data NAME is given (optional data, e.g. a seed campaign).
 //                     FILE ending in .json is inlined as JSON; .png/.jpg/.webp become a data URL string;
@@ -18,6 +19,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -28,6 +30,19 @@ export const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js
 
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'([^']+)';?\s*$/gm;
 const EXPORT_RE = /^export\s+(?:async\s+)?(const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm;
+
+/**
+ * This build's stamp. version: the build's local date and time, v<yy>.<mm>.<dd>-<hhmm> (sorts in order);
+ * commit: the repository's short commit hash; dirty: whether files differed from that commit.
+ */
+export function buildInfo(now = new Date()) {
+  const p = (n) => String(n).padStart(2, '0');
+  const version = `v${p(now.getFullYear() % 100)}.${p(now.getMonth() + 1)}.${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}`;
+  const git = (...a) => { try { return execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; } };
+  const commit = git('rev-parse', '--short', 'HEAD');
+  const status = git('status', '--porcelain', '--untracked-files=no');
+  return { version, commit, dirty: !!status, built_at: now.toISOString() };
+}
 
 /** Resolve modules depth-first so every module comes after its imports. */
 export function bundleEngine(entries = ENTRIES) {
@@ -112,6 +127,8 @@ function main(argv) {
   let html = fs.readFileSync(args[0], 'utf8');
   html = html.replace('/*@ENGINE@*/', () => bundleEngine());
   html = html.replace('/*@BOARD@*/', () => bundleBoard());
+  const build = buildInfo();
+  if (html.includes('/*@BUILD@*/')) { html = html.replace('/*@BUILD@*/', () => JSON.stringify(build)); console.log(`build ${build.version} from ${build.commit || 'no commit'}${build.dirty ? ' + uncommitted changes' : ''}`); }
   html = html.replace(/\/\*@DATA(\?)?:([A-Za-z0-9_]+)@\*\//g, (_, optional, name) => {
     if (!data[name]) { if (optional) return 'null'; throw new Error(`template needs --data ${name}=FILE`); }
     return dataFor(data[name]);
