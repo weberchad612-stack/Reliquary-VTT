@@ -298,6 +298,7 @@ setup = {
     "subtitle": "Sample Keep (48 × 48) · engine test bench",
     "intro": "Kerra, Pip and Lyra stand on the path south of the keep. The portcullis is down; Kerra's torch is lit.",
     "tips": [
+        "<b>Lighting on / off</b> (header) switches the whole light system: off, everything counts as bright and sight is walls only, as before lighting existed.",
         "<b>Day or night:</b> use the <b>Sky</b> selector. By day the grounds are bright and the keep dark inside; at night only lights and darkvision show anything.",
         "<b>Kerra</b> carries a torch, <b>Pip</b> has darkvision (greyscale), <b>Lyra</b> has low-light vision (dim light is clear to her). Select one to see exactly what that PC sees.",
         "<b>Get in:</b> the portcullis lets sight through but not feet. The postern door (west) is locked; the GM can open it. Walk the path, the pond's plank bridge (Balance) or the muddy shallows.",

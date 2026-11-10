@@ -53,6 +53,7 @@ canvas#map, .hud { margin: 0 auto; flex: none; }
 .sel-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
 .sel-actions:empty { display: none; }
 .sky[hidden] { display: none; }
+#b-lighting[hidden] { display: none; }
 .sky { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
 .sky select { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: inherit; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; }
@@ -112,6 +113,7 @@ ol.log li.foe { border-left-color: var(--foe); }
       <label class="sky" id="sky-wrap" hidden>Sky
         <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
       </label>
+      <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off: off, everything counts as bright">Lighting on</button>
       <button id="b-walls" aria-pressed="false">Show walls</button>
       <button id="b-reset">Reset</button>
     </div>
@@ -193,7 +195,8 @@ let view = null, sightSegs = null, moveWalls = null, terrain = null;
 const PACK_TERRAIN = DATA.terrain || [];
 // ---------- light ----------
 const LIGHTING = DATA.lighting || { regions: [], lights: [] };
-const LIT = !!(DATA.lighting || map.base_light || map.outdoor);   // maps without lighting data stay fully lit
+const HAS_LIGHTING = !!(DATA.lighting || map.base_light || map.outdoor);   // maps without lighting data stay fully lit
+let LIT = HAS_LIGHTING;   // the Lighting button switches the whole light system off (everything bright) and on
 const HAS_SKY = !!map.outdoor || (LIGHTING.regions || []).some((r) => r.level === 'sky');
 const lightCache = new Engine.LightCache(G, { feetPerCell: FPC });
 let lightMap = null;
@@ -898,6 +901,18 @@ function setView(v) {
 document.getElementById('v-player').onclick = () => setView('player');
 document.getElementById('v-gm').onclick = () => setView('gm');
 document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
+if (HAS_LIGHTING) {
+  const bl = document.getElementById('b-lighting');
+  bl.hidden = false;
+  bl.onclick = () => {
+    LIT = !LIT;
+    bl.setAttribute('aria-pressed', String(LIT));
+    bl.textContent = LIT ? 'Lighting on' : 'Lighting off';
+    document.getElementById('sky-wrap').hidden = !(LIT && HAS_SKY);
+    log(LIT ? 'Lighting on: light, darkness and senses apply.' : 'Lighting off: everything counts as bright (sight is walls only).', 'ok');
+    panel(); recompute();
+  };
+}
 if (HAS_SKY) {
   document.getElementById('sky-wrap').hidden = false;
   document.getElementById('sky').onchange = (e) => { S.sky = e.target.value; log(`GM: the sky is now ${S.sky} (${{ bright: 'day', dim: 'dusk', dark: 'night' }[S.sky]}).`, 'ok'); recompute(); };
