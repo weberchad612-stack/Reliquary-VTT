@@ -1,5 +1,7 @@
 # The board (client): design
 
+The client is called **Reliquary Virtual Tabletop**: that is the published page's title and the name the page shows when no campaign is loaded.
+
 Status: agreed with the user on 2026-11-10. Built: the board page (`board/`), its memory and database stores, the campaign tool, and the Sample Keep loaded on the published board; still to do: saving to the PC and switching campaigns (section 5), and the guide. The board is the live table page: the map
 engine running against a campaign's data, kept in sync with Claude, who runs the game. The demo page in
 `examples/demo/` is its test bench and the starting point for its code.

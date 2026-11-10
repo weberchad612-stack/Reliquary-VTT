@@ -63,7 +63,7 @@ export function showMessage(text) {
   p.className = 'board-message';
   p.textContent = text;
   stage.replaceChildren(p);
-  document.getElementById('title').firstChild.textContent = 'Reliquary board';
+  document.getElementById('title').firstChild.textContent = 'Reliquary Virtual Tabletop';
 }
 
 /**
@@ -1533,7 +1533,7 @@ export async function start(store) {
   };
 
   // ---------- start ----------
-  document.title = META.campaign.title + ' · Reliquary';
+  document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('title').firstChild.textContent = META.campaign.title;
   document.getElementById('subtitle').textContent = NOTES.subtitle || `${META.pack.title} · ${map.name || map.id}`;
   document.getElementById('try').innerHTML = (NOTES.tips || []).map((t) => `<li>${t}</li>`).join('');
