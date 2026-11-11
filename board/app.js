@@ -1103,7 +1103,7 @@ export async function start(store, { build = null } = {}) {
     // biggest first, so a creature sharing a bigger one's space is drawn on top of it
     const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
     badgeHits = [];
-    const badgeQueue = [];
+    const badgeQueue = [];   // drawn on the overlay (drawTargets), above the hover and selection squares
     // During a group drag, Tiny creatures are laid out where the move will put them: those moving take free
     // quadrants where they land, and those left behind keep theirs (or are centred if now alone).
     const preview = dragPreview();
@@ -1136,10 +1136,10 @@ export async function start(store, { build = null } = {}) {
       const box = boxFor(id, t, L);
       if (box) strokeBox(ctx, box);
       // concealed by light from the creature whose eyes the board shows (or from some PC): worked out, not stored
-      if (seen && !t0.dead && concealedNow(F, id) && !hasStoredConcealed(t0)) badgeQueue.push(() => drawConcealBadge(F, id, P(t.x), P(t.y), P(size)));
-      badgeQueue.push(() => drawBadges(id, t0, P(t.x), P(t.y), P(size)));   // after every token, so none covers them
+      if (seen && !t0.dead && concealedNow(F, id) && !hasStoredConcealed(t0)) badgeQueue.push((c) => drawConcealBadge(c, F, id, P(t.x), P(t.y), P(size)));
+      badgeQueue.push((c) => drawBadges(c, id, t0, P(t.x), P(t.y), P(size)));
     }
-    for (const f of badgeQueue) f();
+    badgeDraws = badgeQueue;
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
     if (F.focus && S.tokens[F.focus].kind !== 'pc') return;
     for (const [id, sq] of Object.entries(S.hiddenMarks)) {
@@ -1152,12 +1152,13 @@ export async function start(store, { build = null } = {}) {
   }
   // ---- effect badges (board/effects.js; the conditions come from the system configuration) ----
   let badgeHits = [];      // [{x, y, w, h, text}] in map pixels (grid origin), from the last drawTokens
+  let badgeDraws = [];     // the badges to draw, from the last drawTokens: (ctx) => void, run on the overlay
   let hoverBadge = null;   // the badge under the pointer: {x, y, w, h, text}
   const BADGE_MIN_PX = 10;   // a badge is never smaller than this on screen
   /** Badges as Foundry lays them out: inside the token's space from its top-left corner, in columns of five,
    *  then the next column to the right; each a fifth of the token's side (at least BADGE_MIN_PX on screen).
    *  Square, the icon or letter, the number in a corner, the border by kind (good, bad, neutral). */
-  function drawBadges(id, t0, left, top, spacePx) {
+  function drawBadges(ctx, id, t0, left, top, spacePx) {
     const list = badgesFor(t0, S.view, CONDS);
     if (!list.length) return;
     const b = Math.max(BADGE_MIN_PX / scale, spacePx / 5), inset = b * 0.08;
@@ -1223,7 +1224,7 @@ export async function start(store, { build = null } = {}) {
    * holding the half-shaded disc. It follows the board's eyes: with a creature selected, concealed from that
    * creature; otherwise concealed from at least one PC who sees it. The hover names who and why.
    */
-  function drawConcealBadge(F, id, left, top, spacePx) {
+  function drawConcealBadge(ctx, F, id, left, top, spacePx) {
     const b = Math.max(BADGE_MIN_PX / scale, spacePx / 5), inset = b * 0.08, sz = b - inset;
     const x = left + spacePx - inset - sz, y = top + spacePx - inset - sz;
     ctx.save();
@@ -1591,7 +1592,7 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge) return;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge && !badgeDraws.length) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1616,6 +1617,7 @@ export async function start(store, { build = null } = {}) {
       if (box) strokeBox(tctx, box);
     }
     if (hoverBox) strokeBox(tctx, hoverBox);
+    for (const f of badgeDraws) f(tctx);   // effect and concealment badges: above every square, under the labels
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     drawBadgeTip(tctx);

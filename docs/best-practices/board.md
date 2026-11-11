@@ -140,6 +140,8 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 
 ### The token HUD
 
+- **Layer order on a token, bottom to top:** the token (map), the target triangles, the selection and hover squares (overlay), the effect and concealment badges (overlay), then the name and distance labels and the badge tip. Badges are worked out in `drawTokens` (positions, hover areas) but drawn on the overlay in `drawTargets`, after the squares: drawn on the map, the hover square (overlay) covered them while the selection square (map) did not (the user saw the mismatch, 2026-11-11).
+
 - **Right-click is shared with panning:** the pan remembers the button and the point; a right press released without moving over a token opens the HUD. Keep that rule if the right button gets more uses.
 - **The HUD rebuilds only when what it shows changes** (a key of the token's effects, dead state, targets and the view), but it is placed on every redraw, so it follows the token. A rebuild on every redraw would drop the hover tooltip under the pointer.
 - **It floats (`position: fixed`) outside the scrolling stage**, so the stage cannot clip it; re-place it on scroll and resize, and forward the wheel from it to the zoom (the stage never sees events on it).
