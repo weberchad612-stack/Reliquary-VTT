@@ -20,7 +20,8 @@ import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
-import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, markerAt, areaTargets, sizeFeet, templateRecord } from './templates.js';
+import { removeButton } from './ui.js';
+import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -1327,8 +1328,6 @@ export async function start(store, { build = null } = {}) {
       return pickSize(aim.pick, id);
     }
     if (aim) { aimMove(p); placeTemplate(); return; }
-    const tplHit = markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05);
-    if (tplHit && !READONLY) { removeTemplate(tplHit); return; }
     const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
     if (lamp && !tokenDiscAt(p)) {
       const on = !staticOn(lamp);
@@ -1401,9 +1400,6 @@ export async function start(store, { build = null } = {}) {
     lastPoint = p;
     if (noting) { canvas.style.cursor = 'crosshair'; return; }
     if (aim && !aim.pick) { aimMove(p); return; }
-    const ht = !drag && !READONLY ? markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05) : null;
-    if (ht !== hoverTpl) { hoverTpl = ht; targetsChanged(); }
-    if (ht) { canvas.style.cursor = 'pointer'; if (hoverId) { hoverId = null; targetsChanged(); } return; }
     if (aim && aim.pick) { const o = clickTarget(p); canvas.style.cursor = o.token ? 'pointer' : 'crosshair'; return; }
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
@@ -1445,7 +1441,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; lastPoint = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; targetsChanged(); } hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; lastPoint = null; if (hoverId) { hoverId = null; targetsChanged(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1501,8 +1497,7 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    const hasTpl = Object.keys(TEMPLATES).length > 0;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hasTpl) return;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur)) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1527,7 +1522,6 @@ export async function start(store, { build = null } = {}) {
       if (box) strokeBox(tctx, box);
     }
     if (hoverBox) strokeBox(tctx, hoverBox);
-    if (hasTpl) drawTplMarkers(tctx);   // remove markers above the target triangles
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
@@ -1603,7 +1597,6 @@ export async function start(store, { build = null } = {}) {
   // ---- area templates (Play > Templates): pick a caster, a size, aim, place; placing replaces your targets ----
   const AREAS = SYS.areas || null;
   let aim = null;          // {pick: shape} while choosing the caster, or {shape, ft, caster, R, width, blockers, cur}
-  let hoverTpl = null;     // the template whose remove marker is under the pointer
   const lastFt = {};       // the size last used for each shape
   const casterSpace = (id) => { const t = S.tokens[id], s = Math.max(1, Math.ceil(t.size || 1)); return { x: Math.floor(t.x), y: Math.floor(t.y), size: s }; };
   // who an area can target: the GM view, every creature; the player view, those the party sees (not only the caster)
@@ -1722,7 +1715,6 @@ export async function start(store, { build = null } = {}) {
     const t = TEMPLATES[id];
     if (!t) return;
     delete TEMPLATES[id];
-    if (hoverTpl === id) hoverTpl = null;
     sending('templates/' + id, store.remove('templates/' + id)).catch((e) => { TEMPLATES[id] = t; draw(); toast(`Could not remove the template (${e.message || e}).`); });
     if (!quiet) { logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`); toast('Template removed.'); }
     draw();
@@ -1741,44 +1733,40 @@ export async function start(store, { build = null } = {}) {
     if (id === 'tpl-clear') { if (READONLY) toast('This is a preview.'); else clearTemplates(); return true; }
     return false;
   }
-  /** Placed templates, on the map under the tokens: filled squares with an outline. Their remove markers are on
-   *  the overlay (drawTplMarkers), above the target triangles, so they can always be seen and clicked. */
+  /** Placed templates, on the map under the tokens: filled squares with an outline. Their remove buttons are
+   *  page buttons in a layer over the map (renderTplButtons), above the target triangles. */
   function drawTemplates() {
     for (const id of Object.keys(TEMPLATES).sort()) cellsPath(ctx, TEMPLATES[id].cells, colourOf(TEMPLATES[id]), false);
+    renderTplButtons();
   }
-  function drawTplMarkers(c) {
+  /** One shared remove button (board/ui.js) per template this view may remove, at its marker point. Rebuilt
+   *  only when the templates, the view or the scale change, so an armed button survives other redraws. */
+  const tplLayer = document.getElementById('tplx');
+  let tplKey = '';
+  function renderTplButtons() {
+    tplLayer.style.left = canvas.offsetLeft + 'px'; tplLayer.style.top = canvas.offsetTop + 'px';
+    tplLayer.style.width = canvas.style.width; tplLayer.style.height = canvas.style.height;
     const pts = markerPoints(TEMPLATES);
-    for (const id of Object.keys(pts)) drawMarker(c, pts[id], colourOf(TEMPLATES[id]), canRemove(TEMPLATES[id], S.view), hoverTpl === id);
-    if (hoverTpl && TEMPLATES[hoverTpl]) {
-      const [x, y] = markerPoints(TEMPLATES)[hoverTpl];
-      const text = `${Engine.describeArea(TEMPLATES[hoverTpl], SYS.measurement.unit)} · click to remove`;
-      c.save(); c.font = '600 12px IBM Plex Sans, sans-serif';
-      const w = c.measureText(text).width + 14, lx = P(x) - w / 2, ly = P(y) + markerR() + 6;
-      c.fillStyle = 'rgba(13, 15, 18, .88)'; c.fillRect(lx, ly, w, 20);
-      c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, P(x), ly + 10.5);
-      c.restore();
+    const ids = Object.keys(pts).filter((id) => !READONLY && canRemove(TEMPLATES[id], S.view));
+    const key = canon({ ids, pts: ids.map((id) => pts[id]), cols: ids.map((id) => TEMPLATES[id].col), view: S.view, scale });
+    if (key === tplKey) return;
+    tplKey = key;
+    tplLayer.replaceChildren();
+    for (const id of ids) {
+      const t = TEMPLATES[id], [x, y] = pts[id];
+      const b = removeButton({ colour: colourOf(t), what: `the ${Engine.describeArea(t, SYS.measurement.unit)}`, onRemove: () => removeTemplate(id) });
+      b.style.left = (OX + x * CS) * scale + 'px'; b.style.top = (OY + y * CS) * scale + 'px';
+      tplLayer.appendChild(b);
     }
   }
+  tplLayer.addEventListener('contextmenu', (e) => e.preventDefault());
+  tplLayer.addEventListener('pointerdown', (e) => { if (e.button === 2) { e.preventDefault(); startPan(e, false, true); } });
   function cellsPath(c, cells, col, preview) {
     c.save();
     c.fillStyle = hexA(col, preview ? 0.22 : 0.3);
     c.strokeStyle = hexA(col, 0.95); c.lineWidth = preview ? 1.5 : 1.25;
     if (preview) c.setLineDash([6, 4]);
     for (const [x, y] of cells) { c.fillRect(P(x), P(y), CS, CS); c.strokeRect(P(x) + 0.5, P(y) + 0.5, CS - 1, CS - 1); }
-    c.restore();
-  }
-  /** A remove marker's radius in map pixels: a fifth of a square, never under 9 screen pixels. */
-  const markerR = () => Math.max(9 / (scale || 1), CS * 0.2);
-  function drawMarker(c, [x, y], col, removable, hot) {
-    const r = markerR() * (hot ? 1.15 : 1);
-    c.save();
-    c.beginPath(); c.arc(P(x), P(y), removable ? r : r * 0.55, 0, Math.PI * 2);
-    c.fillStyle = col; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke();
-    if (removable) {
-      const k = r * 0.42;
-      c.beginPath(); c.moveTo(P(x) - k, P(y) - k); c.lineTo(P(x) + k, P(y) + k); c.moveTo(P(x) + k, P(y) - k); c.lineTo(P(x) - k, P(y) + k);
-      c.lineWidth = 2.5; c.lineCap = 'round'; c.stroke();
-    }
     c.restore();
   }
   /** On the overlay: the aimed template (dashed), under the target triangles. */
@@ -1849,21 +1837,7 @@ export async function start(store, { build = null } = {}) {
       if (mine) {
         b.title = 'Click to edit this note';
         b.addEventListener('click', (e) => { e.stopPropagation(); openNoteEditor({ id, at: n.at, text: n.text, gmOnly: !!n.gm_only }); });
-        const x = document.createElement('button');
-        x.type = 'button'; x.className = 'ndel'; x.textContent = '✕';
-        x.title = 'Delete this note'; x.setAttribute('aria-label', 'Delete note: ' + n.text);
-        let armed = null;
-        x.addEventListener('pointerdown', (e) => e.stopPropagation());
-        x.addEventListener('click', (e) => {
-          e.stopPropagation(); e.preventDefault();
-          if (!armed) {
-            x.textContent = 'Delete?'; x.classList.add('arm');
-            armed = setTimeout(() => { armed = null; x.textContent = '✕'; x.classList.remove('arm'); }, 3000);
-            return;
-          }
-          clearTimeout(armed); deleteNote(id);
-        });
-        b.appendChild(x);
+        b.appendChild(removeButton({ colour: noteColour(n), what: 'this note', onRemove: () => deleteNote(id) }));
       }
       notesEl.appendChild(b);
     }
@@ -1975,7 +1949,8 @@ export async function start(store, { build = null } = {}) {
     if (!n) return;
     delete MAPNOTES[id];
     sending('notes/' + id, store.remove('notes/' + id)).catch((e) => { MAPNOTES[id] = n; renderNotes(); toast(`Could not delete the note (${e.message || e}).`); });
-    logChange(`deleted a note: "${noteGist(n.text)}"`);
+    logChange(`removed a note: "${noteGist(n.text)}"`);
+    toast('Note removed.');
     renderNotes();
   }
   // the right button pans from a note too; no browser menu over notes

@@ -256,9 +256,9 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
   the area; T removes them. The toast names who is targeted.
 - **Placed templates** stay until removed, are shared on the board and saved with the campaign (map state
   `templates`). Each has its own palette colour (the first free of ten), drawn as filled squares with an
-  outline, above the fog and under the tokens. Each has a remove marker (✕) just past its start, drawn above the target triangles; hovering
-  it names the template, clicking removes it. The player view removes the templates it placed; the GM view
-  removes any (others show a plain dot). Play ▸ Templates ▸ Clear templates removes all this view may
+  outline, above the fog and under the tokens. Each has the shared remove button (below) just past its start, above the target triangles; its
+  tooltip names the template. The player view removes the templates it placed; the GM view removes any
+  (templates this view may not remove have no button). Play ▸ Templates ▸ Clear templates removes all this view may
   remove. Placing and removing are in the change log.
 - **Claude** places templates from chat with `tools/area.mjs` (section 3: `templates/<id>`), and reads who
   is in one from its output.
@@ -280,13 +280,24 @@ player notes). Helpers in `board/notes.js`; the notes section of `board/app.js`.
   orange, the GM view purple, Claude the board's accent (amber); GM-only notes have a dashed outline.
 - **Changing:** the player view edits, moves and deletes the notes it wrote; the GM view any note, Claude's
   included. Click the bubble's text to edit (saving it empty deletes); drag the pin to move (Shift: the
-  centre of a square); the bubble's ✕ turns into "Delete?" for 3 seconds and a second click deletes.
+  centre of a square); the bubble's shared remove button (below) removes it.
 - **Data:** each note is a record (section 3), written as it changes, in the change log (added, edited,
   moved, deleted, with the note's first line), and saved with the campaign (map state `notes`).
 - **Drawing:** pins, bubbles and the editor are page elements in a layer over the map (`#notes`), placed by
   the map's scale; they follow zoom and pan, never redraw the map, and sit above the target triangles and
   template markers. The right button still pans when pressed on a note.
 - **Later:** touch screens (FR-5).
+
+**Shared controls** (`board/ui.js`; asked for 2026-11-11: "consistent UI elements"). A kind of control
+looks and behaves the same everywhere; a new feature uses the shared one rather than making its own.
+
+- **The remove button** (`removeButton`, styles `.rm-btn`): every removable thing on the map (area
+  templates, map notes, and later ones). A 20 px circle at any zoom, in the item's colour with a white
+  border and a white ✕; the first click (or Enter) turns it into a "Remove?" pill for 3 seconds, a second
+  removes, and a toast confirms ("Template removed.", "Note removed."). It is a real page button: a tooltip
+  and screen-reader label name the item, and it can be reached with Tab. Items this view may not remove get
+  no button. The user's choices (2026-11-11): arm then confirm, the template look, a fixed size.
+- Not a remove button: the GM lighting card's "×" next to a colour means "make uncoloured".
 
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 

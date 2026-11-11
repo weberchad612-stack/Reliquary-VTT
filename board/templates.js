@@ -1,4 +1,4 @@
-// Area templates on the board: colours, records, remove markers and who an area targets.
+// Area templates on the board: colours, records, where remove buttons go and who an area targets.
 // Pure functions; board/app.js draws and wires them. The shapes come from engine/areas (Engine.buildArea).
 // Docs: docs/design/board.md section 7 (area templates), docs/best-practices/board.md.
 
@@ -51,17 +51,6 @@ export function markerPoints(templates) {
     out[id] = [x, y];
   }
   return out;
-}
-
-/** The template whose marker is under point p (cells), among those `view` may remove; or null. */
-export function markerAt(templates, p, view, radius = 0.3) {
-  const pts = markerPoints(templates);
-  let best = null;
-  for (const [id, [x, y]] of Object.entries(pts)) {
-    if (!canRemove(templates[id], view)) continue;
-    if (Math.hypot(p[0] - x, p[1] - y) <= radius) best = id;
-  }
-  return best;
 }
 
 /** Tokens that can be targeted: not markers, not GM-only notes. */

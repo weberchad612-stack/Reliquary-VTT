@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  TEMPLATE_COLOURS, nextColour, templateId, canRemove, markerOf, markerPoints, markerAt, areaTargets, sizeFeet, templateRecord, hexA,
+  TEMPLATE_COLOURS, nextColour, templateId, canRemove, markerOf, markerPoints, areaTargets, sizeFeet, templateRecord, hexA,
 } from '../board/templates.js';
 import { tokensInCells } from '../engine/areas/areas.js';
 
@@ -31,10 +31,6 @@ test('remove markers sit past the origin and are nudged apart', () => {
   assert.ok(Math.abs(c[0] - 3) < 1e-9 && Math.abs(c[1] - 4.4) < 1e-9);
   const pts = markerPoints({ a: { shape: 'burst', origin: [3, 4] }, b: { shape: 'burst', origin: [3, 4] } });
   assert.notDeepEqual(pts.a, pts.b);
-  const T = { a: { shape: 'burst', origin: [3, 4], by: 'gm' } };
-  assert.equal(markerAt(T, [3.1, 4], 'gm'), 'a');
-  assert.equal(markerAt(T, [3.1, 4], 'player'), null);
-  assert.equal(markerAt(T, [4, 4], 'gm'), null);
 });
 
 test('areaTargets: visible, targetable tokens in the area; an emanation adds its caster', () => {
