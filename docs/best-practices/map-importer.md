@@ -72,6 +72,32 @@ A town or region map (`kind: "area"`, docs/design/maps.md section 3a) has no wal
 
 Every **battle** map the importer writes needs a starting area (`start` in `map.json`): choose it from the text and the map (where the adventure has the party arrive, else the road or path in) and record the decision in `import.json`.
 
+## 5b. Printed location numbers on area maps
+
+Almost every adventure's town or region map prints its location numbers on the image. Two ways to live with them:
+
+1. **Keep them, and ring them.** This is the default. Centre each place's pin on its printed marker, size it a little larger than the marker, and copy the number into `number`. The board's pins are rings with a clear inside, so the number stays readable when a pin is hovered, selected or waiting. Check this on the board.
+2. **Strip some of them.** Use this for numbers that give something away: a GM-only place whose number is printed, so players would see it. Prefer an unlabelled player version of the map if the user owns one; it is far cleaner. Otherwise run:
+
+   ```
+   python3 tools/mapimport/strip_numbers.py packs/<pack>/maps/<area-map> --only 14,17
+   ```
+
+   It writes `<image>-stripped`, `<image>-mask.png` and `<image>-strip-check.png` beside the image and never changes the original. Look at the check sheet (original | mask in red | result) for every place before using the stripped image. Then point `image.file` at it and re-upload; the fingerprint changes.
+
+How the tool works, and what was learned on Otari (Abomination Vaults, 2026-11-10):
+
+- **Finding the marker is reliable; filling it is not.** The pin says where to look. Light pixels within `--radius` of the pin, in shapes at least `--min-height` pixels tall, are the marker. That means bare digits (Otari: bold white digits with a black outline) or a light disc behind dark digits (the Sample Village); holes inside a kept shape are filled. Street names next to a number are shorter and are left alone. The mask grows by `--grow` pixels to take the outline.
+- **Measure the marker first.** Otari's digits were about 20 px tall in the 1424 px wide scan. A first guess of 22 px found nothing, and a too-large radius would catch street lettering. Crop a few markers, look at them, then set `--min-height` and `--radius`.
+- **What the fill can do.** It is OpenCV inpainting (Telea), which spreads the surrounding colours and texture inward. It does not redraw anything.
+  - Flat or evenly textured ground fills cleanly: grass, water, a plain roof (Otari 5).
+  - Busy detail under a number leaves a soft smudge: a building's corner (Otari 10), market stalls (Otari 12, the worst), a roof ridge line (the Sample Village).
+  - Dark rubble blurs but passes (Otari 14).
+- **Scale matters.** At the size the board shows a whole town map, stripped spots are hard to find. Zoomed in, every one shows. Strip only what must go.
+- **For better results on busy spots**, hand `<image>-mask.png` to a generative fill tool (Photoshop's Generative Fill, for example), which can redraw the detail.
+- `--scale` converts pins placed on a different-size copy of the map: Otari's old pins were on the 922 px copy, so `--scale 1.5445` for the 1424 px scan.
+- Stripped images are book content: private pack only, never committed. The tool's check sheets too.
+
 ## 6. Licensing and privacy
 
 - Book-derived files (map images, walls, settings that name rooms and creatures, demo pages built on them) live only in the user's private `packs/` folder, which git ignores. Before every commit, check that nothing under `packs/` or `pdfsource/` is staged.
