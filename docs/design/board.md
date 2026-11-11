@@ -172,6 +172,10 @@ map, fitted to the window, its places as pins.
 - Group moves keep the Tiny stacking rules (`layoutTiny`), even when only some of a square's Tiny creatures
   are selected: those moving give up their quadrants and take free ones where they land; those left behind
   keep theirs, or are centred if now alone. A group drag shows this while dragging, not only on release.
+- A group move may put more than four Tiny creatures in one square: it is allowed, without a warning, like
+  every other group move; the extras stack on used quadrants (`layoutTiny`), so one can be drawn over
+  another. A single token's move into a full square still warns. (The user's choice, 2026-11-11, after
+  weighing overflow to the nearest free square, a warning, and refusing the move.)
 - Ctrl+click (Cmd+click on a Mac) adds a token to the selection or takes it away (players: their PCs only).
 - Dragging any selected token moves the whole selection together, keeping its spacing. No route or cost is
   shown, and no warnings are given for walls, taken squares or Speed (the GM decides). The arrow keys step
