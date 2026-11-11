@@ -985,9 +985,21 @@ export async function start(store, { build = null } = {}) {
     ctx.restore();
   }
 
-  /** The tokens as a group drag would leave them: the group moved, their quadrants given up, as moveGroup does. */
-  function groupPreview() {
-    const list = raw().map((t) => (drag.group.has(t.id) ? { ...t, x: t.x + drag.dx, y: t.y + drag.dy, slot: undefined } : t));
+  /**
+   * The tokens as a drag would leave them, for drawing during the drag: the dragged tokens at their new
+   * squares with their quadrants given up (as moveGroup and moveToken do), so Tiny creatures show where they
+   * will really sit. Null while nothing has moved to another square: tokens are drawn where they are.
+   */
+  function dragPreview() {
+    if (!drag) return null;
+    if (drag.group) {
+      if (!drag.dx && !drag.dy) return null;
+      const list = raw().map((t) => (drag.group.has(t.id) ? { ...t, x: t.x + drag.dx, y: t.y + drag.dy, slot: undefined } : t));
+      return { list, layout: Engine.layoutTiny(list) };
+    }
+    const t0 = S.tokens[drag.id];
+    if (!t0 || (drag.goal[0] === t0.x && drag.goal[1] === t0.y)) return null;
+    const list = raw().map((t) => (t.id === drag.id ? { ...t, x: drag.goal[0], y: drag.goal[1], slot: undefined } : t));
     return { list, layout: Engine.layoutTiny(list) };
   }
   function drawTokens(F, full) {
@@ -995,22 +1007,18 @@ export async function start(store, { build = null } = {}) {
     const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
     // During a group drag, Tiny creatures are laid out where the move will put them: those moving take free
     // quadrants where they land, and those left behind keep theirs (or are centred if now alone).
-    const preview = drag && drag.group ? groupPreview() : null;
+    const preview = dragPreview();
     const L = preview ? preview.layout : layout;
     for (const [id, t0] of order) {
       const seen = F.seen.has(id);
       if (!full && !seen) continue;
-      const sp = preview
-        ? Engine.spaceOf(preview.list.find((t) => t.id === id), L)
-        : drag && drag.id === id
-        ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
-        : space(id);
+      const sp = preview ? Engine.spaceOf(preview.list.find((t) => t.id === id), L) : space(id);
       const t = { ...t0, ...sp };
       // Medium tokens leave a 5 px margin in their square; Small ones are 3/4 of that token; Tiny a 2 px margin
       const size = t.size, medium = P(size) / 2 - (size < 1 ? 2 : 5), r = medium * Engine.drawScale(t0);
       const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
       ctx.save();
-      if (drag && (drag.id === id || (drag.group && drag.group.has(id)))) ctx.globalAlpha = 0.75;
+      if (preview && drag && (drag.id === id || (drag.group && drag.group.has(id)))) ctx.globalAlpha = 0.75;   // faded only once it moves
       if (full && !seen) ctx.globalAlpha = 0.6;
       ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
@@ -1023,7 +1031,7 @@ export async function start(store, { build = null } = {}) {
       // Selected: a thin amber square on the grid squares the token occupies. A Tiny creature alone: its square;
       // sharing a square with others: its own quarter of it.
       if (id === selected || multi.has(id)) {
-        const tiny = Engine.isTiny(t0), q = tiny && L.spaces.get(id), quarter = q && q.slot !== null && !(drag && drag.id === id && !preview);
+        const tiny = Engine.isTiny(t0), q = tiny && L.spaces.get(id), quarter = !!q && q.slot !== null;
         const sx = !tiny || quarter ? t.x : Math.floor(t.x), sy = !tiny || quarter ? t.y : Math.floor(t.y), ss = quarter ? 0.5 : tiny ? 1 : size;
         ctx.save();
         ctx.lineWidth = 2; ctx.strokeStyle = '#e3a443';
