@@ -1005,13 +1005,20 @@ export async function start(store, { build = null } = {}) {
       if (full && !seen) ctx.globalAlpha = 0.6;
       ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      const picked = id === selected || multi.has(id);
-      ctx.lineWidth = picked ? 4 : 2; ctx.strokeStyle = picked ? '#e3a443' : '#0d0f12';
+      ctx.lineWidth = 2; ctx.strokeStyle = '#0d0f12';
       if (full && !seen) ctx.setLineDash([4, 3]);
       ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
       ctx.restore();
+      // Selected: a thin amber square on the grid squares the token occupies (a Tiny creature: its square)
+      if (id === selected || multi.has(id)) {
+        const tiny = Engine.isTiny(t0), sx = tiny ? Math.floor(t.x) : t.x, sy = tiny ? Math.floor(t.y) : t.y, ss = tiny ? 1 : size;
+        ctx.save();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#e3a443';
+        ctx.strokeRect(P(sx) + 1, P(sy) + 1, P(ss) - 2, P(ss) - 2);
+        ctx.restore();
+      }
       if (seen && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
     }
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
