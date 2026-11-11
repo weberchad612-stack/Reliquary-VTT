@@ -17,7 +17,6 @@ const EPS = 1e-9;
 /** The 8 cone directions, clockwise from north, as [dx, dy]. */
 export const DIRECTIONS = Object.freeze([[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]]);
 export const DIRECTION_NAMES = Object.freeze(['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest']);
-export const AREA_SHAPES = Object.freeze(['burst', 'cone', 'emanation', 'line']);
 
 /**
  * Distance in cells for a reach of a columns and b rows, which may be half-squares: straight squares

@@ -422,11 +422,7 @@ export async function start(store, { build = null } = {}) {
   }
   const P = (c) => c * CS; // cells -> pixels from the grid origin (draw() translates by OX, OY)
 
-  function polyPath(c, poly) {
-    c.moveTo(P(poly[0][0]), P(poly[0][1]));
-    for (let i = 1; i < poly.length; i++) c.lineTo(P(poly[i][0]), P(poly[i][1]));
-    c.closePath();
-  }
+
 
   function draw() {
     if (!view) return;
@@ -1683,7 +1679,7 @@ export async function start(store, { build = null } = {}) {
     panel(); recompute();
   }
 
-  // ---- area templates (Play > Templates): pick a caster, a size, aim, place; placing replaces your targets ----
+  // ---- area templates (the token HUD's Area template): a shape, a size, aim, place; placing replaces your targets ----
   const AREAS = SYS.areas || null;
   let aim = null;          // {shape, ft, caster, R, width, blockers, cur}: a template being aimed (from the token HUD)
   const lastFt = {};       // the size last used for each shape
