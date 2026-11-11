@@ -147,6 +147,16 @@ map, fitted to the window, its places as pins.
   and clears it.
 - The shared pieces (menus, travel, preview, version banner) are `board/shell.js`, used by both views.
 
+**Zoom and pan on the battle map** (`board/gestures.js`, built 2026-11-11):
+- The mouse wheel zooms about the pointer, one notch about 12%. A trackpad's two-finger scroll zooms too, and
+  its pinch (sent as Ctrl+wheel) zooms faster. The + and − buttons, Fit, and the + − 0 keys still work.
+- On a touch screen, two fingers pinch to zoom about their midpoint, and pan as they move together. A
+  second finger cancels a token drag in progress (the token goes back).
+- Panning: drag empty floor (mouse or one finger), or drag with the right or middle button anywhere. A
+  press that moves less than 4 px is a click: on empty floor it clears the selection, on release.
+- Zoom changes are applied at most once per frame.
+- The area view still fits its picture to the window (no zoom yet).
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with

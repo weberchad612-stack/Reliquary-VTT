@@ -17,6 +17,7 @@ import { platformStore } from './platform.js';
 import { mapFromRecords, exploredFromRecords, exploredRecords } from './records.js';
 import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
+import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -1165,7 +1166,28 @@ export async function start(store, { build = null } = {}) {
     return [gx, gy];
   }
 
+  // ---- zoom and pan (board/gestures.js): wheel and pinch zoom; dragging empty floor, or right/middle drag, pans ----
+  const touches = new Map();   // pointerId -> {x, y}: the pointers down on the map
+  let pan = null;              // {x, y, left, top, moved, deselect}: a pan in progress
+  let pinch = null;            // the two pointers of a pinch, as last seen
+  const stageEl = document.getElementById('stage');
+  function startPan(ev, deselect) {
+    pan = { x: ev.clientX, y: ev.clientY, left: stageEl.scrollLeft, top: stageEl.scrollTop, moved: false, deselect };
+    canvas.setPointerCapture(ev.pointerId);
+  }
+  canvas.addEventListener('contextmenu', (ev) => ev.preventDefault());   // the right button pans
+
   canvas.addEventListener('pointerdown', (ev) => {
+    touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (touches.size === 2) {
+      // a second finger: a pinch. A token being dragged goes back where it was.
+      if (drag) { drag = null; draw(); }
+      pan = null;
+      pinch = [...touches.values()].map((t) => ({ ...t }));
+      return;
+    }
+    if (touches.size > 2) return;
+    if (ev.button === 1 || ev.button === 2) { ev.preventDefault(); startPan(ev, false); return; }
     const p = cellAt(ev);
     const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
     if (lamp && !tokenDiscAt(p)) {
@@ -1185,18 +1207,33 @@ export async function start(store, { build = null } = {}) {
       log(`GM: ${area.label || area.id} ${on ? 'switched off' : 'now applies'} (${TERRAIN_LOOK[area.kind].name}).`, 'ok');
       return recompute();
     }
+    // Empty floor: a drag pans; a click without moving clears the selection (on release).
+    if (!id) { startPan(ev, true); return; }
     selected = id; panel();
-    if (id && canDrag(id)) {
+    if (canDrag(id)) {
       drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
       canvas.setPointerCapture(ev.pointerId);
     }
     draw();
   });
   canvas.addEventListener('pointermove', (ev) => {
+    if (touches.has(ev.pointerId)) touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch && touches.size >= 2) {
+      const now = [...touches.values()].slice(0, 2);
+      const st = pinchStep(pinch, now);
+      pinch = now.map((t) => ({ ...t }));
+      queueView(st.factor, st.mid.x, st.mid.y, st.dx, st.dy);
+      return;
+    }
+    if (pan) {
+      if (!pan.moved && isDrag(pan.x, pan.y, ev.clientX, ev.clientY)) { pan.moved = true; canvas.style.cursor = 'grabbing'; }
+      if (pan.moved) { stageEl.scrollLeft = pan.left - (ev.clientX - pan.x); stageEl.scrollTop = pan.top - (ev.clientY - pan.y); }
+      return;
+    }
     const p = cellAt(ev);
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     const over = drag ? {} : clickTarget(p);
-    canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
+    canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'grab';
     if (drag) {
       const g = goalFor(drag.id, p);
       if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
@@ -1207,13 +1244,23 @@ export async function start(store, { build = null } = {}) {
       draw();
     } else hud();
   });
-  canvas.addEventListener('pointerup', () => {
+  function pointerEnd(ev, cancelled) {
+    touches.delete(ev.pointerId);
+    if (pinch) { if (touches.size < 2) pinch = null; return; }
+    if (pan) {
+      const { moved, deselect } = pan;
+      pan = null; canvas.style.cursor = 'default';
+      if (!moved && deselect && !cancelled) { selected = null; panel(); draw(); }
+      return;
+    }
     if (!drag) return;
     const { id, goal, route, moved } = drag;
     drag = null;
-    if (moved && (goal[0] !== S.tokens[id].x || goal[1] !== S.tokens[id].y)) moveToken(id, goal, route);
+    if (!cancelled && moved && (goal[0] !== S.tokens[id].x || goal[1] !== S.tokens[id].y)) moveToken(id, goal, route);
     else draw();
-  });
+  }
+  canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
+  canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
   canvas.addEventListener('pointerleave', () => { hoverCell = null; hud(); });
 
   function moveToken(id, goal, route) {
@@ -1329,11 +1376,21 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('z-in').onclick = () => setZoom(zoom * 1.25);
   document.getElementById('z-out').onclick = () => setZoom(zoom / 1.25);
   document.getElementById('z-fit').onclick = () => { zoom = 1; fit(); };
-  // Ctrl+wheel (and trackpad pinch, which browsers send as Ctrl+wheel) zooms about the pointer
-  document.getElementById('stage').addEventListener('wheel', (e) => {
-    if (!e.ctrlKey && !e.metaKey) return;
+  // The wheel zooms about the pointer (mouse wheel, trackpad scroll, and trackpad pinch: Ctrl+wheel).
+  // Changes are gathered and applied once per frame, so a fast wheel or pinch redraws at most once a frame.
+  let viewQ = null;
+  function queueView(factor, cx, cy, dx = 0, dy = 0) {
+    if (!viewQ) { viewQ = { factor: 1, cx, cy, dx: 0, dy: 0 }; requestAnimationFrame(applyView); }
+    viewQ.factor *= factor; viewQ.cx = cx; viewQ.cy = cy; viewQ.dx += dx; viewQ.dy += dy;
+  }
+  function applyView() {
+    const q = viewQ; viewQ = null;
+    if (Math.abs(q.factor - 1) > 1e-4) setZoom(zoom * q.factor, q.cx, q.cy);
+    if (q.dx || q.dy) { stageEl.scrollLeft -= q.dx; stageEl.scrollTop -= q.dy; }
+  }
+  stageEl.addEventListener('wheel', (e) => {
     e.preventDefault();
-    setZoom(zoom * Math.exp(-Math.max(-100, Math.min(100, e.deltaY)) * 0.004), e.clientX, e.clientY);
+    queueView(wheelZoomFactor(e, stageEl.clientHeight), e.clientX, e.clientY);
   }, { passive: false });
   window.addEventListener('keydown', (e) => {
     if (e.target.closest && e.target.closest('input, textarea')) return;
