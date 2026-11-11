@@ -196,11 +196,12 @@ map, fitted to the window, its places as pins.
   square to nearest square, diagonals 5-10-5, in feet).
 - **T** over a hovered token targets it, and again un-targets it; T over others adds them. **Shift+T**
   clears this view's targets. Targets are any visible token (foes, PCs, the selected token itself), are
-  independent of the selection, and show as pulsing chevrons in the four corners of the token's square,
-  in its kind colour (still with reduced motion).
+  independent of the selection, and show as filled triangles in the four corners of the token's square,
+  pointing inward, in its kind colour; they pulse inward toward the token and back (still with reduced
+  motion; the user's choice of shape, 2026-11-11).
 - Targets are shared through the store: `targets/player` and `targets/gm`, each `{ids}`. The player view
-  edits and shows the player's; the GM view edits its own and also shows the player's (as thinner, still
-  chevrons). Claude reads `targets/player` when the user says "I attack my target". Targets are not logged
+  edits and shows the player's; the GM view edits its own and also shows the player's (as outlined,
+  unfilled triangles). Claude reads `targets/player` when the user says "I attack my target". Targets are not logged
   and not saved to the PC; switching campaigns clears them.
 - Touch screens: no targeting yet (FR-2). Light ranges still use true circles, not the measurement setting
   (FR-3).

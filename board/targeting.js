@@ -4,7 +4,7 @@
 // - Hovering a token that is not selected shows a thin square in its kind's colour: green for PCs and allies,
 //   yellow for neutrals, red for foes. A selected token's square is amber.
 // - T over a hovered token targets it or un-targets it (a toggle); Shift+T clears every target. Targets show
-//   as pulsing chevrons in the four corners of the token's square, in its kind's colour. The player's and
+//   as filled triangles in the four corners of the token's square, pointing and pulsing inward, in its kind's colour. The player's and
 //   the GM view's targets are kept apart (targets/player, targets/gm); the GM view shows both.
 
 /** Token kinds and their colours. Any other kind (an older save) is treated as a foe. */
@@ -29,17 +29,21 @@ export function markSquare(space, tiny, shared) {
 }
 
 /**
- * Chevrons in the four corners of a square (pixels: x, y, side), pointing inward, at pulse phase t (0-1).
- * Each chevron is three points (an L). They breathe: they sit just outside the corners and move in a little
- * and back. Returns [[[x, y], [x, y], [x, y]] x 4] and the opacity for this phase.
+ * Target markers in the four corners of a square (pixels: x, y, side), at pulse phase t (0-1): filled
+ * triangles pointing inward, toward the middle of the square. They pulse inward: at rest each sits on its
+ * corner, and once a cycle it slides in toward the token by about a tenth of the side and back.
+ * Returns {paths: [[[x, y] x 3] x 4] (closed triangles), alpha}.
  */
 export function chevrons(x, y, side, t = 0) {
-  const arm = Math.max(5, side * 0.22);
-  const out = Math.max(2, side * 0.08) * (1 - Math.sin(t * Math.PI * 2) * 0.5 - 0.5) + 1;   // 1 .. 1 + 8% of the side
+  const len = Math.max(7, side * 0.2);                       // tip to base
+  const half = len * 0.75;                                   // half the base
+  const push = Math.max(2, side * 0.1) * (0.5 - 0.5 * Math.cos(t * Math.PI * 2));   // 0 at rest, in and back
   const corners = [[x, y, 1, 1], [x + side, y, -1, 1], [x, y + side, 1, -1], [x + side, y + side, -1, -1]];
+  const k = Math.SQRT1_2;
   const paths = corners.map(([cx, cy, sx, sy]) => {
-    const px = cx - sx * out, py = cy - sy * out;
-    return [[px + sx * arm, py], [px, py], [px, py + sy * arm]];
+    const dx = sx * k, dy = sy * k;                          // inward, along the diagonal
+    const bx = cx - dx * len * 0.35 + dx * push, by = cy - dy * len * 0.35 + dy * push;   // base centre, just outside
+    return [[bx + dx * len, by + dy * len], [bx - dy * half, by + dx * half], [bx + dy * half, by - dx * half]];
   });
-  return { paths, alpha: 0.65 + 0.35 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2)) };
+  return { paths, alpha: 0.75 + 0.25 * (0.5 - 0.5 * Math.cos(t * Math.PI * 2)) };
 }

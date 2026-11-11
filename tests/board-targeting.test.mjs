@@ -26,14 +26,21 @@ test('mark squares: whole space; a lone Tiny creature its square; a sharing one 
   assert.deepEqual(markSquare({ x: 3.5, y: 4, size: 0.5 }, true, true), { x: 3.5, y: 4, size: 0.5 });
 });
 
-test('chevrons: four, pointing inward from the corners, breathing with the phase', () => {
-  const a = chevrons(0, 0, 50, 0), b = chevrons(0, 0, 50, 0.25);
-  assert.equal(a.paths.length, 4);
-  const [tl] = a.paths;   // top-left: the corner point is up-left of the square, the arms point right and down
-  assert.ok(tl[1][0] <= 0 && tl[1][1] <= 0);
-  assert.ok(tl[0][0] > tl[1][0] && tl[2][1] > tl[1][1]);
-  assert.notDeepEqual(a.paths, b.paths, 'they move with the pulse');
-  assert.ok(a.alpha > 0 && a.alpha <= 1);
+test('target triangles: four, pointing inward, pulsing inward and back', () => {
+  const rest = chevrons(0, 0, 50, 0), mid = chevrons(0, 0, 50, 0.5), end = chevrons(0, 0, 50, 1);
+  assert.equal(rest.paths.length, 4);
+  for (const p of rest.paths) assert.equal(p.length, 3);
+  // top-left triangle: its tip points into the square (down and right of its base)
+  const [tip, b1, b2] = rest.paths[0];
+  const base = [(b1[0] + b2[0]) / 2, (b1[1] + b2[1]) / 2];
+  assert.ok(tip[0] > base[0] && tip[1] > base[1]);
+  // at rest it sits on the corner (base just outside it); halfway through the pulse it is further in
+  assert.ok(base[0] < 0 && base[1] < 0);
+  assert.ok(mid.paths[0][0][0] > tip[0] && mid.paths[0][0][1] > tip[1]);
+  assert.deepEqual(end.paths, rest.paths, 'and back again');
+  // bottom-right points up and left
+  const [t4, c1, c2] = rest.paths[3];
+  assert.ok(t4[0] < (c1[0] + c2[0]) / 2 && t4[1] < (c1[1] + c2[1]) / 2);
 });
 
 test('PF2E system configuration: 5-ft squares, 5-10-5 diagonals, nearest-square creature distance', () => {

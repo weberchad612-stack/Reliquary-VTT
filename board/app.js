@@ -1414,7 +1414,7 @@ export async function start(store, { build = null } = {}) {
   let tgtRaf = null;
   const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function targetsChanged() { if (!tgtRaf) tgtRaf = requestAnimationFrame(drawTargets); }
-  /** The chevrons: the view's own targets solid, the player's (in the GM view) as outlines; they pulse. */
+  /** The target triangles: the view's own filled, the player's (in the GM view) as outlines; they pulse inward. */
   function drawTargets(now) {
     tgtRaf = null;
     const dpr = window.devicePixelRatio || 1;
@@ -1430,10 +1430,12 @@ export async function start(store, { build = null } = {}) {
       tctx.save();
       tctx.globalAlpha = own ? alpha : 0.85;
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
+      // this view's own targets: filled triangles; the player's, in the GM view: outlines only
       for (const pts of paths) {
-        tctx.beginPath(); tctx.moveTo(...pts[0]); tctx.lineTo(...pts[1]); tctx.lineTo(...pts[2]);
-        tctx.strokeStyle = 'rgba(10, 12, 16, .8)'; tctx.lineWidth = own ? 5 : 4; tctx.stroke();
-        tctx.strokeStyle = kindColour(t.kind); tctx.lineWidth = own ? 3 : 1.5; tctx.stroke();
+        tctx.beginPath(); tctx.moveTo(...pts[0]); tctx.lineTo(...pts[1]); tctx.lineTo(...pts[2]); tctx.closePath();
+        tctx.strokeStyle = 'rgba(10, 12, 16, .85)'; tctx.lineWidth = own ? 2 : 3.5; tctx.stroke();
+        if (own) { tctx.fillStyle = kindColour(t.kind); tctx.fill(); }
+        else { tctx.strokeStyle = kindColour(t.kind); tctx.lineWidth = 1.5; tctx.stroke(); }
       }
       tctx.restore();
     }
