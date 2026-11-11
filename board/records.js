@@ -13,6 +13,7 @@
 //   mapstate/<map>     a map's state without its tokens and explored area
 //   tokens/<id>        one record per token, with the map it is on
 //   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
+//   templates/<id>     one placed area template, with the map it is on
 //   log/<time>-<n>     the change log (not part of the save; written by whoever makes a change)
 //
 // Pure functions, no I/O: tools/campaign.mjs reads and writes the files, the board reads and writes the store.
@@ -22,7 +23,7 @@ export const WALL_CHUNK = 400;
 export const EXPLORED_CHUNK = 200;
 
 /** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
-const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored']);
+const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored', 'templates']);
 /** Fields of campaign.json kept in the table state record. */
 export const TABLE_FIELDS = ['current_map', 'discovered', 'sky_light', 'light_colour', 'light_animation', 'notes'];
 
@@ -75,6 +76,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, now = ne
     r[`mapstate/${mapId}`] = Object.fromEntries(Object.entries(st).filter(([k]) => !MAPSTATE_SKIP.has(k)));
     r[`mapstate/${mapId}`].map = mapId;
     for (const [tid, t] of Object.entries(st.tokens || {})) r[`tokens/${tid}`] = { ...t, map: mapId };
+    for (const [aid, a] of Object.entries(st.templates || {})) r[`templates/${aid}`] = { ...a, map: mapId };
     const polys = (st.explored && st.explored.polys) || [];
     if (polys.length) {
       chunks(polys, EXPLORED_CHUNK).forEach((p, n) => { r[`explored/${mapId}.${pad(n)}`] = { map: mapId, n, v: st.explored.v || 1, polys: p }; });
@@ -133,6 +135,7 @@ export function saveFromRecords(records, base = {}) {
     const [coll] = p.split('/');
     if (coll === 'mapstate') Object.assign(ensure(d.map), d);
     if (coll === 'tokens') { const { map, ...t } = d; (ensure(map).tokens = ensure(map).tokens || {})[p.split('/')[1]] = t; }
+    if (coll === 'templates') { const { map, ...t } = d; (ensure(map).templates = ensure(map).templates || {})[p.split('/')[1]] = t; }
   }
   for (const id of meta.maps || []) {
     const ex = Object.entries(records).filter(([p, d]) => p.startsWith('explored/') && d.map === id).map(([, d]) => d);

@@ -272,7 +272,7 @@ export function validateState(file, mapInfo, report = new Report()) {
       if (!p) report.error(file, `places_found: no place "${id}" on map "${map.id}"`);
       else if (p.public !== false) report.warn(file, `places_found: "${id}" is public already`);
     }
-    for (const k of ['doors', 'locked_known', 'links_found', 'explored', 'terrain', 'terrain_on', 'terrain_off', 'lights', 'regions', 'regions_off', 'hidden_marks']) {
+    for (const k of ['doors', 'locked_known', 'links_found', 'explored', 'terrain', 'terrain_on', 'terrain_off', 'lights', 'regions', 'regions_off', 'hidden_marks', 'templates']) {
       if (st[k] !== undefined) report.warn(file, `${k}: an area map has no grid; ignored`);
     }
     return report;
@@ -319,6 +319,13 @@ export function validateState(file, mapInfo, report = new Report()) {
   for (const id of Object.keys(st.regions || {})) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions.${id}: no lighting region "${id}" on map "${map.id}"`);
   if (st.sky_light && !map.outdoor && !(mapInfo.hasSky)) report.warn(file, 'sky_light is set but the map is indoor with no sky regions');
   const KINDS = new Set(['pc', 'ally', 'neutral', 'foe', 'marker', 'gm']);
+  for (const [id, a] of Object.entries(st.templates || {})) {
+    if (a.caster && !(st.tokens || {})[a.caster]) report.warn(file, `templates.${id}: caster "${a.caster}" is not a token on this map`);
+    if (a.shape === 'cone' && a.dir === undefined) report.error(file, `templates.${id}: a cone needs dir`);
+    if (a.shape === 'line' && a.angle === undefined) report.error(file, `templates.${id}: a line needs angle`);
+    const off = (a.cells || []).filter((c) => !cellInGrid(c, grid)).length;
+    if (off) report.warn(file, `templates.${id}: ${off} square(s) outside the grid`);
+  }
   for (const [id, t] of Object.entries(st.tokens || {})) {
     if (!cellInGrid([t.x, t.y], grid)) report.error(file, `tokens.${id}: cell (${t.x}, ${t.y}) is outside the grid`);
     if (t.kind !== undefined && !KINDS.has(t.kind)) report.warn(file, `tokens.${id}: kind "${t.kind}" is not one of pc, ally, neutral, foe, marker, gm (the board treats it as a foe)`);

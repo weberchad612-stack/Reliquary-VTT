@@ -24,7 +24,7 @@
 //       Delete ops (batches of 50) for every record in a listing {path: version} of the whole database.
 //   node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>
 //       Compare a save on disk with records read from the board's database (the save's own records:
-//       board/meta, state, mapstate, tokens, explored). Exit code 1 and the differences if any.
+//       board/meta, state, mapstate, tokens, explored, templates). Exit code 1 and the differences if any.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -134,7 +134,7 @@ export function roundTrip(packDir, saveDir) {
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 

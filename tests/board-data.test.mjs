@@ -81,6 +81,18 @@ test('records: explored areas are chunked and rebuilt in order', () => {
   assert.deepEqual(back.polys[300], polys[300]);
 });
 
+test('records: placed templates get a record each and come back into their map state', () => {
+  const c = readCampaign(PACK, camp('keep-test'));
+  const mapId = Object.keys(c.mapStates)[0];
+  const tpl = { shape: 'burst', ft: 10, by: 'gm', origin: [5, 5], cells: [[4, 4], [5, 5]], col: 2, at: 'x' };
+  c.mapStates[mapId] = { ...c.mapStates[mapId], templates: { a1: tpl } };
+  const recs = campaignRecords({ ...c, now: 'x' });
+  assert.deepEqual(recs['templates/a1'], { ...tpl, map: mapId });
+  assert.equal(recs[`mapstate/${mapId}`].templates, undefined);
+  const back = saveFromRecords(recs, c.campaign);
+  assert.deepEqual(back.mapStates[mapId].templates, { a1: tpl });
+});
+
 test('records: a save for the wrong pack or ruleset is refused', () => {
   const c = readCampaign(PACK, camp('keep-test'));
   assert.throws(() => campaignRecords({ ...c, campaign: { ...c.campaign, pack: { id: 'other' } } }), /pack "other"/);

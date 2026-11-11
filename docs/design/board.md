@@ -67,10 +67,11 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `mapstate/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off, hidden markers | Claude; the board (doors, GM view) |
 | `tokens/<id>` | One record per token, with the map it is on | Claude; the board (the player's PCs, the GM view) |
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
+| `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (Play ▸ Templates); Claude (`tools/area.mjs`) |
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 
-The page listens to six of these (the meta record, the table, the current map's state, and the token,
-explored and log collections), far under the platform's limit of 64. Records are per token and per map,
+The page listens to eight of these (the meta record, the table, the current map's state, and the token,
+explored, targets, templates and log collections), far under the platform's limit of 64. Records are per token and per map,
 so the player and Claude changing different things never overwrite each other. Measured: the whole Sample
 Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 
@@ -227,6 +228,41 @@ distance label, movement routes and costs, the Stride outlines (through the move
 `tools/move.mjs` (`--ruleset`). A map's own `feet_per_cell` still sets its scale; without one, the system's
 square is used. PF2E's terrain rules take their diagonals from the same configuration.
 
+**Area templates** (Play ▸ Templates; designed with the user and built 2026-11-11, from the previous board's
+templates). The shapes are defined in the system configuration (`areas`) and built by `engine/areas`; the
+board's part is `board/templates.js` and the templates section of `board/app.js`.
+
+- **Starting:** Play ▸ Templates ▸ Burst, Cone, Line or Emanation. The selected creature is the caster (the
+  player view: one of the PCs); with none selected, the aim bar asks for a click on one. A size picker
+  follows: the system's quick sizes (PF2E 5, 10, 15, 20, 30, 60 ft) or a custom size, rounded to whole
+  squares. Enter or double-click a size to go on, Escape to cancel.
+- **Aiming:** a dashed preview in the next free colour follows the mouse, drawn on the overlay (never a map
+  redraw). A **cone** snaps to 8 directions and its start slides along the caster's edge in half squares; a
+  **burst** sits on the nearest grid corner and the aim bar shows its distance from the caster; a **line**
+  goes from the caster's edge at any angle, one square wide; an **emanation** is placed at once round the
+  caster. The aim bar names who is in the area. Click places; Escape, right-click or the bar's Cancel
+  button cancels (Escape then leaves the selection alone).
+- **Walls (line of effect):** a square is in the area only if the line from the area's start to the square's
+  centre crosses no wall that blocks movement: walls, closed or locked doors, unfound secret doors and glass
+  windows block; open doors do not, and neither do the wall types the system lists as letting effects
+  through (PF2E: grates and portcullises). A cone or line starts just inside the caster's space, so a caster
+  standing against a wall cannot aim through it; a burst on a wall's corner spreads both ways; an emanation
+  reaches a square if any square of the caster's space has a clear line to it. The squares are worked out
+  when the template is placed and kept; opening a door later does not change a placed template.
+- **Targets:** placing replaces this view's targets with every creature in the area it can see (the GM view:
+  every creature; the player view: those the party sees), markers and GM notes excepted, the caster
+  included when inside. An emanation also targets its caster, though the caster's own space is not part of
+  the area; T removes them. The toast names who is targeted.
+- **Placed templates** stay until removed, are shared on the board and saved with the campaign (map state
+  `templates`). Each has its own palette colour (the first free of ten), drawn as filled squares with an
+  outline, above the fog and under the tokens. Each has a remove marker (✕) just past its start; hovering
+  it names the template, clicking removes it. The player view removes the templates it placed; the GM view
+  removes any (others show a plain dot). Play ▸ Templates ▸ Clear templates removes all this view may
+  remove. Placing and removing are in the change log.
+- **Claude** places templates from chat with `tools/area.mjs` (section 3: `templates/<id>`), and reads who
+  is in one from its output.
+- **Later:** who an area may affect (creatures, enemies, allies) when spells and actions arrive (FR-4).
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with
@@ -241,7 +277,8 @@ square is used. PF2E's terrain rules take their diagonals from the same configur
   and out of a sub-menu, Home and End, Escape one level, Tab out).
 - **Views:** an entry marked `gm` shows only in the GM view.
 - **Data, not markup:** the menu is a definition (`MENU`); the page only reports what was chosen. Status:
-  built on 2026-11-10 with nothing wired; every item says "not built yet". The Export DB item of the
+  built on 2026-11-10 with nothing wired; items say "not built yet" until the page answers them (`onCommand`;
+Play ▸ Templates since 2026-11-11). The Export DB item of the
   previous board is gone: saving is Claude's job now (section 5). The rest of the menu is designed later.
 
 ## 8. Build order

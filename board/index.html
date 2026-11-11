@@ -132,6 +132,17 @@ ol.log li.foe { border-left-color: var(--foe); }
   padding: 8px 14px; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity .2s;
 }
 .toast.show { opacity: 1; }
+/* Area templates: the aim bar while aiming, and the size picker. */
+.aimbar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40; max-width: min(760px, 92vw);
+  background: #1d2129; color: var(--ink); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 14px; font-size: 14px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.45); display: flex; gap: 12px; align-items: center; }
+.aimbar .who { color: var(--muted, #aab); font-size: 13px; }
+.aimbar button { flex: none; }
+.tpl-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.tpl-sizes button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.tpl-custom { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.tpl-custom input { width: 6em; font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: #14161a; color: inherit; }
+.tpl-hint { margin: 0; font-size: 13px; color: var(--muted, #aab); }
 /* The top menu (board/menu.js): a menubar of drop-downs, one level of sub-menu. */
 .menubar { display: flex; gap: 2px; align-items: center; }
 .mb-item { position: relative; }
@@ -258,6 +269,16 @@ ol.log li.foe { border-left-color: var(--foe); }
       </section>
     </aside>
   </main>
+</div>
+<div class="aimbar" id="aimbar" hidden role="status" aria-live="polite"><span><span id="aim-text"></span> <span class="who" id="aim-who"></span></span><button id="aim-cancel" type="button">Cancel</button></div>
+<div class="gm-confirm" id="tpl-size" hidden role="dialog" aria-modal="true" aria-labelledby="tpl-size-title">
+  <div class="box">
+    <h2 id="tpl-size-title">Burst size</h2>
+    <p class="tpl-hint" id="tpl-size-hint"></p>
+    <div class="tpl-sizes" id="tpl-sizes" role="group" aria-label="Quick sizes"></div>
+    <label class="tpl-custom">Custom <input id="tpl-ft" type="number" min="5" step="5" inputmode="numeric" aria-label="Size in feet"> feet</label>
+    <div class="row"><button data-a="no" type="button">Cancel</button><button data-a="yes" type="button">Aim</button></div>
+  </div>
 </div>
 <div class="gm-confirm" id="gm-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="gm-confirm-title">
   <div class="box">

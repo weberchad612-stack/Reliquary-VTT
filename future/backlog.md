@@ -11,6 +11,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-1 | [Party marching order](#fr-1-party-marching-order) | open (partly decided) | 2026-11-10 |
 | FR-2 | [Targeting on touch screens](#fr-2-targeting-on-touch-screens) | open | 2026-11-11 |
 | FR-3 | [Light ranges by the system's measurement](#fr-3-light-ranges-by-the-systems-measurement) | open | 2026-11-11 |
+| FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
 
 ---
 
@@ -78,3 +79,23 @@ to read it (a grid-shaped emanation instead of a circle) without breaking walls,
 
 **Open questions:** grid-shaped light everywhere, or only for the rules (who is in bright or dim light)
 while drawing stays round? Performance of grid-shaped light polygons.
+
+---
+
+## FR-4: Who an area or effect can affect
+
+**Asked for:** the user, 2026-11-11, while area templates were being built: "In PF2E and D&D, there's a
+concept of what's eligible to be effected; creatures (all tokens), enemies, and allies." To consider once
+real spells and combat actions are in the game.
+
+**What is known:** placing a template now targets every visible creature in the area (caster included when
+inside; an emanation's caster by default), whatever side they are on (docs/design/board.md, section 7).
+Many effects say whom they affect: all creatures, only enemies, only allies, or "you and allies". Tokens
+already have kinds (pc, ally, neutral, foe), which is a start for sides, but "enemy" is relative to the
+caster (a foe's enemies are the PCs).
+
+**Open questions:** where the eligibility lives (on the spell or action, with the system configuration
+naming the choices); how sides are worked out relative to the caster (kind, a faction field, or a GM
+ruling per token); whether the board filters the targets on placing or shows everyone and dims the
+ineligible; how neutrals count.
+

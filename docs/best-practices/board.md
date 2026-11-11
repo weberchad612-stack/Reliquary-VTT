@@ -102,6 +102,16 @@ The platform writes a record's changes one at a time and reports each back late.
 
 A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 ms on the Sample Keep. Anything that changes as the pointer moves (hover squares, the distance line and label, target marks) must go on the overlay canvas (`#tgt`, `drawTargets`), which redraws in well under a millisecond; call `targetsChanged()`, never `draw()`, for those. When the hover square and distance line were first drawn on the map, hovering across tokens took 2.4 times as long and the page stalled three times as often; moving them to the overlay put it back to the earlier speed. Something that must look "under" a token on the overlay can be cut away where the token is (`destination-out`), as the distance line is. Measure before and after with a headless browser: time a hover sweep, clicks and drags, and count long tasks (PerformanceObserver `longtask`), against a build of the previous commit.
 
+### Area templates
+
+- **The shapes are rules: keep them in the system configuration.** `SYS.areas` holds the shapes (where each starts, directions, line width, whether an emanation targets its caster), the quick sizes and the line-of-effect setting (which wall types let effects through). `engine/areas` takes the diagonal pattern and the walls as arguments; nothing there is PF2E-specific.
+- **Placing a template from chat:** `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster <token id> --dir north --state <save>/maps/<map>.json`, then write the printed `record` to the board at `path` (db_write). Its `inArea` list says who is in it. To change the player's targets too, write `targets/player` (only when the user asks). Remove one by deleting its record.
+- **Line of effect is not line of sight.** Glass windows block an area though they let sight through; grates and portcullises let both through. Areas use the movement value of a wall (`effectBlockers`), minus the system's `passes` list. Test both kinds of wall when changing it.
+- **Squares are fixed when placed.** The record keeps the squares reached; drawing never recomputes them. If a door opens and the GM wants the area to spread, remove the template and place it again.
+- **Placed templates are their own records** (`templates/<id>`), not part of `mapstate/<map>`: a placement and a door change by someone else never overwrite each other, and the late-echo rule applies (`sending`, `busy`, `resync.templates`). The save keeps them in the map state's `templates`; include the collection when clearing for a switch (it is in `SAVE_COLLECTIONS`).
+- **Aiming draws on the overlay.** The preview, aim bar and marker label change with every pointer move; only placing or removing (and entering or leaving a remove marker) redraws the map.
+- **Escape while aiming** is caught first (capture phase) so it cancels the template without also clearing the selection; the size picker catches its own keys the same way.
+
 ## 10. Zoom and pan
 
 - Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.

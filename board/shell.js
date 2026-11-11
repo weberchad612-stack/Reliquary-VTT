@@ -59,6 +59,7 @@ export function confirmBox(text, { title = 'Move the party?', yes = 'Move' } = {
  * @param {function} o.toast, o.logChange
  * @param {function} [o.centreOn] (linkId) => void: show an entrance of the map on screen
  * @param {function} [o.fitWhole] () => void: show the whole map on screen
+ * @param {function} [o.onCommand] (id, item, state) => true when the page handled a menu item
  */
 export function makeShell(o) {
   const { store, meta } = o;
@@ -67,12 +68,13 @@ export function makeShell(o) {
   let LINKS_FOUND = {};     // map id -> entrances found in play
   let travelKey = '';
 
-  /** The top menu: items are not wired yet; each says so when chosen. */
+  /** The top menu: the page answers the items it has built (o.onCommand returns true); the rest say they are not built yet. */
   function startMenu() {
     menu = buildMenuBar(document.getElementById('menubar'), {
       view: o.view(),
       def: MENU,
       onSelect: (id, item, state) => {
+        if (o.onCommand && o.onCommand(id, item, state)) return;
         const what = item.kind === 'toggle' ? `${item.label} ${state ? 'on' : 'off'}` : item.label;
         o.toast(`${what}: not built yet.`);
       },

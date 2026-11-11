@@ -106,6 +106,30 @@
         "strength": { "type": "number", "minimum": 0, "maximum": 100, "default": 25, "description": "Strongest tint, % of full colour (subtle by default)." }
       }
     },
+    "templates": {
+      "description": "Area templates placed on this map (bursts, cones, emanations, lines), by id. They stay until removed.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["shape", "ft", "by", "origin", "cells", "col"],
+        "additionalProperties": false,
+        "properties": {
+          "shape": { "enum": ["burst", "cone", "emanation", "line"] },
+          "ft": { "type": "number", "exclusiveMinimum": 0, "description": "Size in feet: radius, length or distance." },
+          "width_ft": { "type": "number", "exclusiveMinimum": 0, "description": "Lines: width in feet (default one square)." },
+          "by": { "enum": ["player", "gm"], "description": "Which view placed it: players remove their own, the GM any." },
+          "caster": { "type": "string", "description": "Token id of the creature it comes from (none for a burst placed by Claude at a point)." },
+          "casterName": { "type": "string" },
+          "origin": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Grid point the area starts from, in cells." },
+          "dir": { "type": "integer", "minimum": 0, "maximum": 7, "description": "Cones: direction, 0 north, clockwise in 45-degree steps." },
+          "angle": { "type": "number", "description": "Lines: angle in radians, 0 east, clockwise on screen." },
+          "cells": { "description": "Squares the area reaches (after walls).", "type": "array", "items": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 } },
+          "col": { "type": "integer", "minimum": 0, "description": "Palette colour index." },
+          "at": { "type": "string", "description": "When it was placed (ISO time)." }
+        }
+      }
+    },
     "tokens": {
       "description": "Token positions on this map. The token schema is defined separately; positions, carried lights and senses are checked here.",
       "type": "object",

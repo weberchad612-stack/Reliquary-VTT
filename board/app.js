@@ -19,6 +19,7 @@ import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
+import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, markerAt, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -116,6 +117,8 @@ export async function start(store, { build = null } = {}) {
   const MS = (await store.get(`mapstate/${MAP_ID}`)) || {};
   const TOKENS0 = {};
   for (const e of await store.list('tokens')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TOKENS0[e.id] = t; }
+  const TEMPLATES = {};   // area templates on this map: {id: template} (records templates/<id>)
+  for (const e of await store.list('templates')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TEMPLATES[e.id] = t; }
   const ex = (await store.list('explored')).filter((e) => e.data.map === MAP_ID).map((e) => e.data);
   const EXPLORED0 = ex.length ? exploredFromRecords(ex) : null;
 
@@ -449,6 +452,7 @@ export async function start(store, { build = null } = {}) {
     drawDoors(gm, full);
     if (LIT && gm) { drawRegionOutlines(); drawLightSources(); }   // the GM's marks: players see only the light
     if (drag && drag.route !== undefined) drawRoute();
+    drawTemplates();       // area templates: under the tokens, above the fog (they are shared on the board)
     drawTokens(F, full);   // the hover square, distance line and target marks are on the overlay (drawOverlay)
     ctx.restore();
     refreshAnimation(F, full);
@@ -1305,9 +1309,20 @@ export async function start(store, { build = null } = {}) {
       return;
     }
     if (touches.size > 2) return;
+    if (aim && ev.button === 2) { ev.preventDefault(); endAim('Cancelled.'); return; }   // aiming: the right button cancels
     if (ev.button === 2) { ev.preventDefault(); startPan(ev, false, true); return; }   // right button: pan, hand cursor
     if (ev.button !== 0) return;
     const p = cellAt(ev);
+    if (aim && aim.pick) {   // choosing the caster for a template
+      const id = clickTarget(p).token;
+      if (!id) return;
+      if (!canDrag(id)) return toast('Pick one of your characters.');
+      setSelection([id]); panel(); draw();
+      return pickSize(aim.pick, id);
+    }
+    if (aim) { aimMove(p); placeTemplate(); return; }
+    const tplHit = markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05);
+    if (tplHit && !READONLY) { removeTemplate(tplHit); return; }
     const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
     if (lamp && !tokenDiscAt(p)) {
       const on = !staticOn(lamp);
@@ -1377,6 +1392,11 @@ export async function start(store, { build = null } = {}) {
     }
     const p = cellAt(ev);
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
+    if (aim && !aim.pick) { aimMove(p); return; }
+    const ht = !drag && !READONLY ? markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05) : null;
+    if (ht !== hoverTpl) { hoverTpl = ht; draw(); }
+    if (ht) { canvas.style.cursor = 'pointer'; if (hoverId) { hoverId = null; targetsChanged(); } return; }
+    if (aim && aim.pick) { const o = clickTarget(p); canvas.style.cursor = o.token ? 'pointer' : 'crosshair'; return; }
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
     if (h !== hoverId) { hoverId = h; targetsChanged(); }   // the overlay only: a full map redraw costs ~50 ms
@@ -1417,7 +1437,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; draw(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1445,6 +1465,8 @@ export async function start(store, { build = null } = {}) {
     setMyTargets(toggleTarget(myTargets(), hoverId));
   });
   window.addEventListener('keyup', (e) => { if (isT(e)) { tHeld = false; boxStyle(); } });
+  // Escape while aiming cancels the template only (caught first, so it does not also clear the selection)
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && aim) { e.preventDefault(); e.stopPropagation(); endAim('Cancelled.'); } }, true);
   window.addEventListener('blur', () => { tHeld = false; boxStyle(); });
   /** What to mark: [{id, own}] for tokens on this map that this view may see. */
   function targetMarks() {
@@ -1471,8 +1493,9 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    if (!marks.length && !dist && !hoverBox && !hoverName) return;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverTpl) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
+    drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
     const phase = REDUCED ? 0.25 : ((now || 0) % 1400) / 1400;
     for (const { id, own } of marks) {
@@ -1567,6 +1590,195 @@ export async function start(store, { build = null } = {}) {
     panel(); recompute();
   }
 
+  // ---- area templates (Play > Templates): pick a caster, a size, aim, place; placing replaces your targets ----
+  const AREAS = SYS.areas || null;
+  let aim = null;          // {pick: shape} while choosing the caster, or {shape, ft, caster, R, width, blockers, cur}
+  let hoverTpl = null;     // the template whose remove marker is under the pointer
+  const lastFt = {};       // the size last used for each shape
+  const casterSpace = (id) => { const t = S.tokens[id], s = Math.max(1, Math.ceil(t.size || 1)); return { x: Math.floor(t.x), y: Math.floor(t.y), size: s }; };
+  // who an area can target: the GM view, every creature; the player view, those the party sees (not only the caster)
+  const canSeeId = (id) => S.view === 'gm' || (partyShown && partyShown.seen.has(id));
+  const tplBlockers = () => Engine.effectBlockers(segs, state(), AREAS.lineOfEffect);
+  const aimBar = document.getElementById('aimbar');
+  function aimMessage(text, who = '') {
+    aimBar.hidden = !text;
+    document.getElementById('aim-text').textContent = text || '';
+    document.getElementById('aim-who').textContent = who;
+  }
+  document.getElementById('aim-cancel').onclick = () => endAim('Cancelled.');
+  const label = (shape) => (AREAS.shapes[shape] && AREAS.shapes[shape].label) || shape;
+  /** Menu: Play > Templates > a shape. The selected creature is the caster; with none, the next click picks one. */
+  function templateCommand(shape) {
+    if (READONLY) return toast('This is a preview: templates are placed on the party\'s map.');
+    if (!AREAS) return toast(`${SYS.name} has no area templates yet.`);
+    endAim();
+    const ids = selectedIds().filter((id) => S.tokens[id] && canDrag(id));
+    if (ids.length === 1) return pickSize(shape, ids[0]);
+    aim = { pick: shape };
+    canvas.style.cursor = 'crosshair';
+    aimMessage(`Click the creature the ${label(shape).toLowerCase()} comes from.`, S.view === 'gm' ? '' : '(one of your characters)');
+  }
+  /** The size picker: the system's quick sizes and a custom size, in feet. */
+  function pickSize(shape, caster) {
+    aim = null; aimMessage('');
+    const dlg = document.getElementById('tpl-size'), sq = SYS.measurement.squareFeet, unit = SYS.measurement.unit;
+    const input = document.getElementById('tpl-ft'), row = document.getElementById('tpl-sizes');
+    document.getElementById('tpl-size-title').textContent = `${label(shape)} size`;
+    const hints = {
+      burst: 'Move the mouse to a grid corner and click to place.',
+      cone: 'Move the mouse round the caster: 8 directions, the start slides along their edge. Click to place.',
+      line: `Aim at any angle from the caster's edge (${AREAS.shapes.line.widthFeet || sq} ${unit} wide). Click to place.`,
+      emanation: 'Placed round the caster at once; the caster is targeted too (T removes them).',
+    };
+    document.getElementById('tpl-size-hint').textContent = `From ${S.tokens[caster].name}. ${hints[shape]}`;
+    input.step = sq; input.min = sq; input.max = AREAS.maxFeet || 500;
+    input.value = lastFt[shape] || (shape === 'line' ? 30 : 15);
+    const mark = () => { for (const b of row.children) b.setAttribute('aria-pressed', String(Number(b.dataset.ft) === Number(input.value))); };
+    row.innerHTML = '';
+    for (const ft of AREAS.sizes) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = `${ft} ${unit}`; b.dataset.ft = ft;
+      b.onclick = () => { input.value = ft; mark(); };
+      b.ondblclick = () => { input.value = ft; done(true); };
+      row.appendChild(b);
+    }
+    mark(); input.oninput = mark;
+    dlg.hidden = false; input.focus(); input.select();
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); }
+      else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); done(true); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    function done(ok) {
+      document.removeEventListener('keydown', onKey, true);
+      if (!ok) { dlg.hidden = true; return; }
+      const ft = sizeFeet(input.value, sq, AREAS.maxFeet || 500);
+      if (!Number.isFinite(ft)) { toast(`Give the size in ${unit}.`); input.focus(); document.addEventListener('keydown', onKey, true); return; }
+      dlg.hidden = true; lastFt[shape] = ft;
+      startAim(shape, ft, caster);
+    }
+    dlg.querySelector('[data-a=yes]').onclick = () => done(true);
+    dlg.querySelector('[data-a=no]').onclick = () => done(false);
+  }
+  function startAim(shape, ft, caster) {
+    if (!S.tokens[caster]) return toast('That creature is not on this map.');
+    const width = (AREAS.shapes.line.widthFeet || FPC) / FPC;
+    aim = { shape, ft, caster, R: Math.max(1, Math.round(ft / FPC)), width, blockers: tplBlockers(), cur: null };
+    if (shape === 'emanation') { aim.cur = aimAt([0, 0]); return placeTemplate(); }
+    canvas.style.cursor = 'crosshair';
+    aimMessage(`Aim the ${ft}-${SYS.measurement.unit} ${shape} from ${S.tokens[caster].name}: click to place. Esc or right-click cancels.`);
+    canvas.focus();
+  }
+  function endAim(msg) {
+    if (!aim) return;
+    aim = null; aimMessage(''); canvas.style.cursor = 'default';
+    if (msg) toast(msg);
+    targetsChanged();
+  }
+  const aimAt = (p) => Engine.buildArea(aim.shape, casterSpace(aim.caster), p[0], p[1], { R: aim.R, width: aim.width, costs: SYS.measurement.diagonalCosts, blockers: aim.blockers });
+  function whoIn(cells, caster, shape) {
+    return areaTargets(cells, S.tokens, { inCells: Engine.tokensInCells, visible: canSeeId, caster, includesCaster: !!(AREAS.shapes[shape] && AREAS.shapes[shape].includesCaster) });
+  }
+  function aimMove(p) {
+    const c = aimAt(p);
+    if (!c) return;
+    aim.cur = c;
+    const unit = SYS.measurement.unit, name = S.tokens[aim.caster].name;
+    let text = `${aim.ft}-${unit} ${aim.shape} from ${name}`;
+    if (aim.shape === 'cone') text += `, facing ${Engine.DIRECTION_NAMES[c.dir]}`;
+    if (aim.shape === 'line') text += `, angle ${Math.round(((c.angle * 180) / Math.PI + 360) % 360)}°`;
+    if (aim.shape === 'burst') text = `${aim.ft}-${unit} burst, ${Engine.cornerDistance(casterSpace(aim.caster), c.origin[0], c.origin[1], SYS.measurement.diagonalCosts) * FPC} ${unit} from ${name}`;
+    const who = whoIn(c.cells, aim.caster, aim.shape).map((id) => S.tokens[id].name);
+    aimMessage(text + '. Click to place, Esc cancels.', who.length ? `In the area: ${who.join(', ')}` : 'Nobody in the area.');
+    targetsChanged();
+  }
+  /** Place the aimed template: shared on the board, saved with the campaign; your targets become who is in it. */
+  function placeTemplate() {
+    if (!aim || !aim.cur) return;
+    const { shape, ft, caster, cur } = aim;
+    endAim();
+    const id = templateId(), by = S.view === 'gm' ? 'gm' : 'player';
+    const rec = templateRecord({ map: MAP_ID, shape, ft, area: cur, caster, casterName: S.tokens[caster].name, by, col: nextColour(TEMPLATES), at: new Date().toISOString(), widthFeet: shape === 'line' ? AREAS.shapes.line.widthFeet : undefined });
+    const { map: _m, ...t } = rec;
+    TEMPLATES[id] = t;
+    sending('templates/' + id, store.set('templates/' + id, rec)).catch((e) => { delete TEMPLATES[id]; draw(); toast(`Could not save the template (${e.message || e}).`); });
+    const ids = whoIn(t.cells, caster, shape);
+    const what = Engine.describeArea(t, SYS.measurement.unit);
+    logChange(`placed a ${what}`);
+    setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => S.tokens[i].name).join(', ')}` : 'nobody in the area'}.`);
+    draw();
+  }
+  function removeTemplate(id, quiet) {
+    const t = TEMPLATES[id];
+    if (!t) return;
+    delete TEMPLATES[id];
+    if (hoverTpl === id) hoverTpl = null;
+    sending('templates/' + id, store.remove('templates/' + id)).catch((e) => { TEMPLATES[id] = t; draw(); toast(`Could not remove the template (${e.message || e}).`); });
+    if (!quiet) { logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`); toast('Template removed.'); }
+    draw();
+  }
+  /** Play > Templates > Clear templates: the player view clears its own, the GM view all of them. */
+  function clearTemplates() {
+    const ids = Object.keys(TEMPLATES).filter((id) => canRemove(TEMPLATES[id], S.view));
+    if (!ids.length) return toast(S.view === 'gm' ? 'No templates on this map.' : 'You have no templates on this map.');
+    for (const id of ids) removeTemplate(id, true);
+    logChange(`cleared ${ids.length} template${ids.length === 1 ? '' : 's'}`);
+    toast(`${ids.length} template${ids.length === 1 ? '' : 's'} cleared.`);
+  }
+  function onCommand(id) {
+    if (TEMPLATE_COMMANDS[id]) { templateCommand(TEMPLATE_COMMANDS[id]); return true; }
+    if (id === 'tpl-clear') { if (READONLY) toast('This is a preview.'); else clearTemplates(); return true; }
+    return false;
+  }
+  /** Placed templates, on the map under the tokens: filled squares with an outline, and their remove markers. */
+  function drawTemplates() {
+    const ids = Object.keys(TEMPLATES).sort();
+    if (!ids.length) return;
+    for (const id of ids) cellsPath(ctx, TEMPLATES[id].cells, colourOf(TEMPLATES[id]), false);
+    const pts = markerPoints(TEMPLATES);
+    for (const id of ids) drawMarker(ctx, pts[id], colourOf(TEMPLATES[id]), canRemove(TEMPLATES[id], S.view), hoverTpl === id);
+  }
+  function cellsPath(c, cells, col, preview) {
+    c.save();
+    c.fillStyle = hexA(col, preview ? 0.22 : 0.3);
+    c.strokeStyle = hexA(col, 0.95); c.lineWidth = preview ? 1.5 : 1.25;
+    if (preview) c.setLineDash([6, 4]);
+    for (const [x, y] of cells) { c.fillRect(P(x), P(y), CS, CS); c.strokeRect(P(x) + 0.5, P(y) + 0.5, CS - 1, CS - 1); }
+    c.restore();
+  }
+  /** A remove marker's radius in map pixels: a fifth of a square, never under 9 screen pixels. */
+  const markerR = () => Math.max(9 / (scale || 1), CS * 0.2);
+  function drawMarker(c, [x, y], col, removable, hot) {
+    const r = markerR() * (hot ? 1.15 : 1);
+    c.save();
+    c.beginPath(); c.arc(P(x), P(y), removable ? r : r * 0.55, 0, Math.PI * 2);
+    c.fillStyle = col; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke();
+    if (removable) {
+      const k = r * 0.42;
+      c.beginPath(); c.moveTo(P(x) - k, P(y) - k); c.lineTo(P(x) + k, P(y) + k); c.moveTo(P(x) + k, P(y) - k); c.lineTo(P(x) - k, P(y) + k);
+      c.lineWidth = 2.5; c.lineCap = 'round'; c.stroke();
+    }
+    c.restore();
+  }
+  /** On the overlay: the aimed template (dashed) and the label of the template under the pointer. */
+  function drawAimOverlay(c) {
+    if (aim && aim.cur) {
+      const col = TEMPLATE_COLOURS[nextColour(TEMPLATES)];
+      cellsPath(c, aim.cur.cells, col, true);
+      const [ox, oy] = aim.cur.origin;
+      c.save(); c.beginPath(); c.arc(P(ox), P(oy), 5, 0, Math.PI * 2); c.fillStyle = col; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke(); c.restore();
+    }
+    if (hoverTpl && TEMPLATES[hoverTpl]) {
+      const [x, y] = markerPoints(TEMPLATES)[hoverTpl];
+      const text = `${Engine.describeArea(TEMPLATES[hoverTpl], SYS.measurement.unit)} · click to remove`;
+      c.save(); c.font = '600 12px IBM Plex Sans, sans-serif';
+      const w = c.measureText(text).width + 14, lx = P(x) - w / 2, ly = P(y) + markerR() + 6;
+      c.fillStyle = 'rgba(13, 15, 18, .88)'; c.fillRect(lx, ly, w, 20);
+      c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, P(x), ly + 10.5);
+      c.restore();
+    }
+  }
+
   function moveToken(id, goal, route) {
     const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
     const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
@@ -1607,6 +1819,7 @@ export async function start(store, { build = null } = {}) {
   });
 
   function setView(v) {
+    if (v !== S.view) endAim();
     S.view = v;
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
@@ -1917,6 +2130,21 @@ export async function start(store, { build = null } = {}) {
       }
       if (changed) targetsChanged();
     });
+    const onTemplates = (list) => {
+      let changed = false;
+      const here = new Set();
+      for (const e of list) {
+        if (e.data.map !== MAP_ID) continue;
+        here.add(e.id);
+        if (busy(e.path)) continue;
+        const { map: _m, ...t } = e.data;
+        if (canon(t) !== canon(TEMPLATES[e.id])) { TEMPLATES[e.id] = t; changed = true; }
+      }
+      for (const id of Object.keys(TEMPLATES)) if (!here.has(id) && !busy('templates/' + id)) { delete TEMPLATES[id]; changed = true; }
+      if (changed) draw();
+    };
+    store.watchCollection('templates', onTemplates);
+    resync.templates = () => store.list('templates').then(onTemplates).catch(() => {});
     resync.state = (p) => { if (p === 'state/table') store.get(p).then(onTable).catch(() => {}); };
     resync.mapstate = (p) => { if (p === 'mapstate/' + MAP_ID) store.get(p).then(onMapState).catch(() => {}); };
     resync.tokens = () => store.list('tokens').then(onTokens).catch(() => {});
@@ -1959,7 +2187,7 @@ export async function start(store, { build = null } = {}) {
   // ---------- the page around the map (board/shell.js): menus, travel, preview, version ----------
   const shell = makeShell({
     store, meta: META, build, table: () => TABLE, mapId: MAP_ID, mapName: map.name, partyMap: PARTY_MAP, readOnly: READONLY,
-    view: () => S.view, tokensHere: () => S.tokens, toast, logChange, centreOn: centreOnLink, fitWhole: () => { zoom = 1; fit(); },
+    view: () => S.view, tokensHere: () => S.tokens, toast, logChange, onCommand, centreOn: centreOnLink, fitWhole: () => { zoom = 1; fit(); },
   });
   shellReady = true;
   const travelChanged = () => shell.travelChanged();
@@ -1984,6 +2212,9 @@ export async function start(store, { build = null } = {}) {
     select: (id) => { setSelection(id ? [id] : []); panel(); draw(); },
     selection: () => selectedIds(),
     targets: () => clone(TARGETS),
+    templates: () => clone(TEMPLATES),
+    aim: () => (aim ? { shape: aim.shape, pick: aim.pick, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
+    command: (id) => onCommand(id),
     hover: () => hoverId,
     view: (v) => setView(v),
     menu: () => shell.menu(),
