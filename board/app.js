@@ -1342,12 +1342,14 @@ export async function start(store, { build = null } = {}) {
     if (multi.has(id)) {
       drag = { id, group: new Map([...multi].map((x) => [x, [S.tokens[x].x, S.tokens[x].y]])), start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], dx: 0, dy: 0, moved: false };
       canvas.setPointerCapture(ev.pointerId);
+      canvas.style.cursor = 'grabbing';
       return;
     }
     setSelection([id]); panel();
     if (canDrag(id)) {
       drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
       canvas.setPointerCapture(ev.pointerId);
+      canvas.style.cursor = 'grabbing';
     }
     draw();
   });
@@ -1362,6 +1364,7 @@ export async function start(store, { build = null } = {}) {
     }
     if (box) { moveBox(ev); return; }
     if (drag && drag.group) {
+      canvas.style.cursor = 'grabbing';
       const g = goalFor(drag.id, cellAt(ev));
       const dx = g[0] - drag.start[0], dy = g[1] - drag.start[1];
       if (dx !== drag.dx || dy !== drag.dy) { drag.dx = dx; drag.dy = dy; drag.goal = g; drag.moved = true; draw(); }
@@ -1377,7 +1380,8 @@ export async function start(store, { build = null } = {}) {
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
     if (h !== hoverId) { hoverId = h; targetsChanged(); }   // the overlay only: a full map redraw costs ~50 ms
-    canvas.style.cursor = over.door || over.token ? 'pointer' : 'default';   // doors and every token: the pointing hand
+    // doors and every token: the pointing hand; a token being dragged: the closed hand
+    canvas.style.cursor = drag ? 'grabbing' : over.door || over.token ? 'pointer' : 'default';
     if (drag) {
       const g = goalFor(drag.id, p);
       if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
@@ -1392,6 +1396,7 @@ export async function start(store, { build = null } = {}) {
     touches.delete(ev.pointerId);
     if (pinch) { if (touches.size < 2) pinch = null; return; }
     if (box) { endBox(cancelled); return; }
+    if (drag) canvas.style.cursor = 'pointer';   // released over the token
     if (drag && drag.group) {
       const d = drag; drag = null;
       if (!cancelled && d.moved && (d.dx || d.dy)) moveGroup([...d.group.keys()], d.dx, d.dy);

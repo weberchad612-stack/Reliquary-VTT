@@ -192,7 +192,8 @@ map, fitted to the window, its places as pins.
   any other kind counts as a foe). A selected token's square stays amber. Only tokens this view can see can
   be hovered; a hidden foe's "?" marker cannot.
 - The pointer is the pointing hand over every token, in both views, the same as over a door (the user's
-  choice, 2026-11-11); in the player view only tokens the party can see count, so it never gives away an
+  choice, 2026-11-11), and the closed (grabbing) hand from the press that starts a drag until release,
+  single token or group; in the player view only tokens the party can see count, so it never gives away an
   unseen foe.
 - The hovered token's name shows centred under its square, in a small label outlined in its kind colour;
   a Tiny creature sharing a square gets its name under the whole square, not its quarter (the user's
