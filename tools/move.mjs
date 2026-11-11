@@ -5,17 +5,20 @@
 //   node tools/move.mjs <map-dir> --token X,Y[,SIZE] --to X,Y      [--state FILE] [--diagonal 1,2] [--squeeze SIZE]
 //   node tools/move.mjs <map-dir> --token X,Y[,SIZE] --step DX,DY  [--state FILE] [--squeeze SIZE]
 //   node tools/move.mjs <map-dir> --token X,Y[,SIZE] --reach FEET  [--state FILE] [--diagonal 1,2] [--squeeze SIZE]
+//   Any of these takes [--ruleset ID] (default pf2e): its system configuration (rulesets/<id>/system.js)
+//   gives the diagonal pattern and the square's size unless --diagonal or the map's grid says otherwise.
 //
 // X,Y is the top-left cell of the token's space; SIZE is its side in cells (default 1, Large = 2).
 // --to prints the cheapest path and its cost; --step prints whether one step is allowed;
 // --reach prints every position reachable within FEET. --diagonal sets successive diagonal costs in
-// cells (default 1,2 = PF2E 5-10-5; use 1 for D&D 5e). --squeeze moves with a smaller footprint.
+// cells (default: the ruleset's, PF2E 1,2 = 5-10-5). --squeeze moves with a smaller footprint.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prepareMove, canStep, fits, path as findPath, reach } from '../engine/movement/movement.js';
 import { loadMap } from './sight.mjs';
+import { systemConfig } from '../rulesets/systems.js';
 
 const nums = (s, name, n) => {
   const v = String(s || '').split(',').map(Number);
@@ -39,13 +42,15 @@ function main(argv) {
     const stateFile = opt('--state');
     const diag = opt('--diagonal');
     const squeeze = opt('--squeeze');
+    const sys = systemConfig(opt('--ruleset') || 'pf2e');
+    if (!sys) throw new Error('unknown --ruleset');
     if (args.length !== 1 || [to, step, reachFt].filter((v) => v !== undefined).length !== 1) {
       throw new Error('give one map folder and exactly one of --to, --step or --reach');
     }
     const { map, segs } = loadMap(path.resolve(args[0]));
     const state = stateFile ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : {};
     const pm = prepareMove(segs, state, map.grid);
-    const opts = { feetPerCell: map.grid.feet_per_cell };
+    const opts = { feetPerCell: map.grid.feet_per_cell || sys.measurement.squareFeet, diagonalCosts: [...sys.measurement.diagonalCosts] };
     if (diag) opts.diagonalCosts = nums(diag, '--diagonal');
     if (squeeze) opts.size = Number(squeeze);
     let out;
@@ -62,7 +67,7 @@ function main(argv) {
     return 0;
   } catch (e) {
     console.error(`Error: ${e.message}`);
-    console.error('Usage: node tools/move.mjs <map-dir> --token X,Y[,SIZE] (--to X,Y | --step DX,DY | --reach FEET) [--state FILE] [--diagonal 1,2] [--squeeze SIZE]');
+    console.error('Usage: node tools/move.mjs <map-dir> --token X,Y[,SIZE] (--to X,Y | --step DX,DY | --reach FEET) [--state FILE] [--diagonal 1,2] [--squeeze SIZE] [--ruleset ID]');
     return 2;
   }
 }

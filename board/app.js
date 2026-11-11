@@ -18,6 +18,7 @@ import { mapFromRecords, exploredFromRecords, exploredRecords } from './records.
 import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
+import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -44,9 +45,6 @@ export function canon(v) {
   if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map((k) => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
   return JSON.stringify(v === undefined ? null : v);
 }
-
-/** The rulesets this board carries (the engine bundles their rules). */
-export const RULESETS = ['pf2e'];
 
 /**
  * Start the page: on memory with a seed campaign ({records, assets}), otherwise on the board's database.
@@ -96,7 +94,9 @@ export async function start(store, { build = null } = {}) {
     const off = store.watch('board/meta', (m) => { if (m) { off(); location.reload(); } });
     return;
   }
-  if (!RULESETS.includes(META.ruleset)) return showMessage(`This campaign uses the "${META.ruleset}" rules, which this board does not have yet.`);
+  // The campaign's game system: measurement and other rules settings (rulesets/<id>/system.js)
+  const SYS = Engine.systemConfig(META.ruleset);
+  if (!SYS) return showMessage(`This campaign uses the "${META.ruleset}" rules, which this board does not have yet.`);
   let TABLE = (await store.get('state/table')) || {};
   const NOTES = TABLE.notes || {};
   const PARTY_MAP = TABLE.current_map || (META.maps || [])[0];
@@ -120,7 +120,8 @@ export async function start(store, { build = null } = {}) {
   const EXPLORED0 = ex.length ? exploredFromRecords(ex) : null;
 
   const { map, segs } = DATA;
-  const G = map.grid, CS = G.cell_px, FPC = G.feet_per_cell;
+  // Feet per square: the map's own scale if it gives one, else the system's square (PF2E: 5 ft)
+  const G = map.grid, CS = G.cell_px, FPC = G.feet_per_cell || SYS.measurement.squareFeet;
   const OX = G.origin_px[0], OY = G.origin_px[1];
   const W = map.image.w, H = map.image.h;
   const RANGE = Infinity;   // PF2E vision has no range: walls and darkness limit sight
@@ -152,6 +153,10 @@ export async function start(store, { build = null } = {}) {
   // Several tokens selected (a box, or Ctrl+click): this screen only. While it holds two or more, `selected`
   // is null, so the map shows the party's view with no movement outlines (as with nothing selected).
   let multi = new Set();
+  // Hover and targets (board/targeting.js). Targets are shared through the store: targets/player and
+  // targets/gm, each {ids}; this view edits its own list, and the GM view also shows the player's.
+  let hoverId = null;
+  const TARGETS = { player: [], gm: [] };
   const selectedIds = () => (multi.size ? [...multi] : selected ? [selected] : []);
   /** Set the selection from a list of ids: one becomes the single selection, two or more a multi-selection. */
   function setSelection(ids) {
@@ -272,7 +277,7 @@ export async function start(store, { build = null } = {}) {
   /** The creature as the ruleset sees it when it moves: speeds, flying, what terrain it ignores. */
   const moverOf = (id) => { const t = S.tokens[id]; return { speeds: t.speeds, flying: t.flying, ignoreDifficult: t.ignoreDifficult }; };
   /** Movement options for one creature: the ruleset's diagonals and its terrain costs. */
-  const moveOpts = (id) => ({ ...opts, diagonalCosts: Engine.DIAGONAL_COSTS, enterCost: Engine.terrainEnterCost(terrain, Engine.terrainRules, moverOf(id)) });
+  const moveOpts = (id) => ({ ...opts, diagonalCosts: SYS.measurement.diagonalCosts, enterCost: Engine.terrainEnterCost(terrain, Engine.terrainRules, moverOf(id)) });
   /** Terrain a route crosses: extra feet and the checks to call for. */
   function routeNotes(id, route) {
     if (!route) return { extraFt: 0, notes: [] };
@@ -396,6 +401,11 @@ export async function start(store, { build = null } = {}) {
     animCanvas.style.width = canvas.style.width; animCanvas.style.height = canvas.style.height;
     animCanvas.width = canvas.width; animCanvas.height = canvas.height;
     animCanvas.style.left = canvas.offsetLeft + 'px'; animCanvas.style.top = canvas.offsetTop + 'px';
+    for (const c of [tgtCanvas]) {
+      c.style.width = canvas.style.width; c.style.height = canvas.style.height;
+      c.width = canvas.width; c.height = canvas.height;
+      c.style.left = canvas.offsetLeft + 'px'; c.style.top = canvas.offsetTop + 'px';
+    }
     draw();
   }
   const P = (c) => c * CS; // cells -> pixels from the grid origin (draw() translates by OX, OY)
@@ -439,9 +449,13 @@ export async function start(store, { build = null } = {}) {
     drawDoors(gm, full);
     if (LIT && gm) { drawRegionOutlines(); drawLightSources(); }   // the GM's marks: players see only the light
     if (drag && drag.route !== undefined) drawRoute();
+    const dist = distanceTo(F, full);
+    if (dist) drawDistanceLine(dist);   // under the tokens
     drawTokens(F, full);
+    if (dist) drawDistanceLabel(dist);
     ctx.restore();
     refreshAnimation(F, full);
+    targetsChanged();
     hud();
     schedulePersist();
   }
@@ -555,6 +569,8 @@ export async function start(store, { build = null } = {}) {
   // glow made once (again only when the light moves or changes). The board itself is never redrawn for
   // animation. Drawing only: the rules never change. Clipped to what the view perceives, so an animated light
   // never shows players an unseen room.
+  const tgtCanvas = document.getElementById('tgt');   // targets' pulsing chevrons, drawn every frame while any show
+  const tctx = tgtCanvas.getContext('2d');
   const animCanvas = document.getElementById('anim');
   const actx = animCanvas.getContext('2d');
   const ANIM_LOOK = { darken: 1.6, brighten: 0.9, light: '#fff1d6', fps: 30 };
@@ -985,6 +1001,37 @@ export async function start(store, { build = null } = {}) {
     ctx.restore();
   }
 
+  // ---- hover, distance and targets ----
+  const visibleToken = (F, full, id) => !!S.tokens[id] && (full || F.seen.has(id));
+  /** With one token selected and another hovered (both visible): the line between them and the distance. */
+  function distanceTo(F, full) {
+    if (!selected || !hoverId || hoverId === selected || drag || multi.size) return null;
+    if (!visibleToken(F, full, selected) || !visibleToken(F, full, hoverId)) return null;
+    const a = space(selected), b = space(hoverId);
+    const feet = Engine.creatureDistance(SYS, mspace(selected), mspace(hoverId), Engine.spaceDistance);
+    return { a: [a.x + a.size / 2, a.y + a.size / 2], b: [b.x + b.size / 2, b.y + b.size / 2], top: b.y, feet, unit: SYS.measurement.unit };
+  }
+  function drawDistanceLine(d) {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(10, 12, 16, .75)'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(P(d.a[0]), P(d.a[1])); ctx.lineTo(P(d.b[0]), P(d.b[1])); ctx.stroke();
+    ctx.strokeStyle = '#f4ecd6'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(P(d.a[0]), P(d.a[1])); ctx.lineTo(P(d.b[0]), P(d.b[1])); ctx.stroke();
+    ctx.restore();
+  }
+  function drawDistanceLabel(d) {
+    const label = `${d.feet} ${d.unit}`;
+    ctx.save();
+    ctx.font = '600 13px IBM Plex Sans, sans-serif';
+    const w = ctx.measureText(label).width + 12, x = P(d.b[0]) - w / 2, y = P(d.top) - 26;
+    ctx.fillStyle = 'rgba(20, 22, 27, .92)'; ctx.strokeStyle = '#f4ecd6'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(x, y, w, 20, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f4ecd6'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, P(d.b[0]), y + 10.5);
+    ctx.restore();
+  }
+
   /**
    * The tokens as a drag would leave them, for drawing during the drag: the dragged tokens at their new
    * squares with their quadrants given up (as moveGroup and moveToken do), so Tiny creatures show where they
@@ -1028,14 +1075,15 @@ export async function start(store, { build = null } = {}) {
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
       ctx.restore();
-      // Selected: a thin amber square on the grid squares the token occupies. A Tiny creature alone: its square;
-      // sharing a square with others: its own quarter of it.
-      if (id === selected || multi.has(id)) {
-        const tiny = Engine.isTiny(t0), q = tiny && L.spaces.get(id), quarter = !!q && q.slot !== null;
-        const sx = !tiny || quarter ? t.x : Math.floor(t.x), sy = !tiny || quarter ? t.y : Math.floor(t.y), ss = quarter ? 0.5 : tiny ? 1 : size;
+      // A thin square on the grid squares the token occupies (a Tiny creature alone: its square; sharing a
+      // square with others: its own quarter): amber when selected, its kind's colour when hovered.
+      const picked = id === selected || multi.has(id);
+      if (picked || (id === hoverId && !drag)) {
+        const q = Engine.isTiny(t0) && L.spaces.get(id);
+        const m = markSquare(t, Engine.isTiny(t0), !!q && q.slot !== null);
         ctx.save();
-        ctx.lineWidth = 2; ctx.strokeStyle = '#e3a443';
-        ctx.strokeRect(P(sx) + 1, P(sy) + 1, P(ss) - 2, P(ss) - 2);
+        ctx.lineWidth = 2; ctx.strokeStyle = picked ? SELECTED_COLOUR : kindColour(t0.kind);
+        ctx.strokeRect(P(m.x) + 1, P(m.y) + 1, P(m.size) - 2, P(m.size) - 2);
         ctx.restore();
       }
       if (seen && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
@@ -1298,6 +1346,8 @@ export async function start(store, { build = null } = {}) {
     const p = cellAt(ev);
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     const over = drag ? {} : clickTarget(p);
+    const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
+    if (h !== hoverId) { hoverId = h; draw(); }
     canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
     if (drag) {
       const g = goalFor(drag.id, p);
@@ -1333,7 +1383,62 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; draw(); } else hud(); });
+
+  // ---- targeting (T): this view's own list; the GM view also shows the player's ----
+  const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
+  function setMyTargets(ids, what) {
+    const who = S.view === 'gm' ? 'gm' : 'player';
+    TARGETS[who] = ids;
+    sending('targets/' + who, store.set('targets/' + who, { ids })).catch((e) => toast(`Could not save the targets (${e.message || e}).`));
+    if (what) toast(what);
+    targetsChanged();
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 't' && e.key !== 'T') return;
+    if (e.ctrlKey || e.metaKey || e.altKey || (e.target.closest && e.target.closest('input, textarea, select, [role^=menu]'))) return;
+    if (READONLY) return;
+    e.preventDefault();
+    if (e.shiftKey) { if (myTargets().length) setMyTargets([], 'Targets cleared.'); return; }
+    if (!hoverId) return;
+    setMyTargets(toggleTarget(myTargets(), hoverId));
+  });
+  /** What to mark: [{id, own}] for tokens on this map that this view may see. */
+  function targetMarks() {
+    const F = shown(), full = fullGM(), out = [];
+    const add = (ids, own) => { for (const id of ids) if (S.tokens[id] && (full || F.seen.has(id)) && !out.some((m) => m.id === id && m.own)) out.push({ id, own }); };
+    add(myTargets(), true);
+    if (S.view === 'gm') add(TARGETS.player, false);
+    return out;
+  }
+  let tgtRaf = null;
+  const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function targetsChanged() { if (!tgtRaf) tgtRaf = requestAnimationFrame(drawTargets); }
+  /** The chevrons: the view's own targets solid, the player's (in the GM view) as outlines; they pulse. */
+  function drawTargets(now) {
+    tgtRaf = null;
+    const dpr = window.devicePixelRatio || 1;
+    tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, tgtCanvas.width, tgtCanvas.height);
+    const marks = targetMarks();
+    if (!marks.length) return;
+    tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
+    const phase = REDUCED ? 0.25 : ((now || 0) % 1400) / 1400;
+    for (const { id, own } of marks) {
+      const t = S.tokens[id], sp = space(id), q = Engine.isTiny(t) && layout.spaces.get(id);
+      const m = markSquare(sp, Engine.isTiny(t), !!q && q.slot !== null);
+      const { paths, alpha } = chevrons(P(m.x), P(m.y), P(m.size), phase);
+      tctx.save();
+      tctx.globalAlpha = own ? alpha : 0.85;
+      tctx.lineCap = 'round'; tctx.lineJoin = 'round';
+      for (const pts of paths) {
+        tctx.beginPath(); tctx.moveTo(...pts[0]); tctx.lineTo(...pts[1]); tctx.lineTo(...pts[2]);
+        tctx.strokeStyle = 'rgba(10, 12, 16, .8)'; tctx.lineWidth = own ? 5 : 4; tctx.stroke();
+        tctx.strokeStyle = kindColour(t.kind); tctx.lineWidth = own ? 3 : 1.5; tctx.stroke();
+      }
+      tctx.restore();
+    }
+    if (!REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
+  }
 
   // ---- the selection box and group moves ----
   let box = null;   // {x, y, p0, moved}: a selection box being drawn from a press on empty floor
@@ -1730,9 +1835,19 @@ export async function start(store, { build = null } = {}) {
       if (changed) remoteChanged();
     };
     store.watchCollection('tokens', onTokens);
+    store.watchCollection('targets', (list) => {
+      let changed = false;
+      for (const who of ['player', 'gm']) {
+        if (busy('targets/' + who)) continue;
+        const e = list.find((x) => x.id === who), ids = (e && e.data.ids) || [];
+        if (JSON.stringify(ids) !== JSON.stringify(TARGETS[who])) { TARGETS[who] = ids; changed = true; }
+      }
+      if (changed) targetsChanged();
+    });
     resync.state = (p) => { if (p === 'state/table') store.get(p).then(onTable).catch(() => {}); };
     resync.mapstate = (p) => { if (p === 'mapstate/' + MAP_ID) store.get(p).then(onMapState).catch(() => {}); };
     resync.tokens = () => store.list('tokens').then(onTokens).catch(() => {});
+    resync.targets = (p) => store.get(p).then((d) => { const who = p.split('/')[1]; const ids = (d && d.ids) || []; if (JSON.stringify(ids) !== JSON.stringify(TARGETS[who])) { TARGETS[who] = ids; targetsChanged(); } }).catch(() => {});
     store.watchCollection('explored', (list) => {
       const mine = list.filter((e) => e.data.map === MAP_ID);
       const polys = exploredFromRecords(mine.map((e) => e.data)).polys;
@@ -1795,6 +1910,8 @@ export async function start(store, { build = null } = {}) {
     exploredPolys: () => mask.toPolys(),
     select: (id) => { setSelection(id ? [id] : []); panel(); draw(); },
     selection: () => selectedIds(),
+    targets: () => clone(TARGETS),
+    hover: () => hoverId,
     view: (v) => setView(v),
     menu: () => shell.menu(),
     mapMenu: () => shell.mapMenu(),

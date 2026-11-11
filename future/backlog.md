@@ -9,6 +9,8 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | # | Feature | Status | Raised |
 |---|---|---|---|
 | FR-1 | [Party marching order](#fr-1-party-marching-order) | open (partly decided) | 2026-11-10 |
+| FR-2 | [Targeting on touch screens](#fr-2-targeting-on-touch-screens) | open | 2026-11-11 |
+| FR-3 | [Light ranges by the system's measurement](#fr-3-light-ranges-by-the-systems-measurement) | open | 2026-11-11 |
 
 ---
 
@@ -49,3 +51,30 @@ Status: **open** (not started), **designing**, **building**, **done**.
 
 **Not in scope (the user, 2026-11-11):** moving several selected tokens together (box select, Ctrl+click)
 never uses marching order. A group move always keeps the group's own spacing.
+
+---
+
+## FR-2: Targeting on touch screens
+
+**Asked for:** deferred from the targeting design (the user, 2026-11-11): touch screens have no hover, so
+the hover squares, distance line and T key do not work there.
+
+**What is known:** targeting is built for mouse and keyboard (docs/design/board.md, section 7). A long press
+to toggle a target was one option offered; the user chose to do touch later.
+
+**Open questions:** long press, a targeting mode button, or a target button on the selection card (the
+card is being redesigned)? How is the distance shown without hover?
+
+---
+
+## FR-3: Light ranges by the system's measurement
+
+**Asked for:** raised while building the system configuration (2026-11-11), left for later by the user.
+
+**What is known:** light and vision radii are drawn as true circles (engine/light). In PF2E a light's
+radius is counted like any other distance, on the grid (5-10-5), so a torch's 20 ft would follow the grid
+count, not a circle. The system configuration's `measurement` already holds the rule; light would need
+to read it (a grid-shaped emanation instead of a circle) without breaking walls, colours and animation.
+
+**Open questions:** grid-shaped light everywhere, or only for the rules (who is in bright or dim light)
+while drawing stays round? Performance of grid-shaped light polygons.

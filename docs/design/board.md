@@ -186,6 +186,33 @@ map, fitted to the window, its places as pins.
 - The selection is this screen's only: not saved, not shared, not logged. The moves are logged as usual.
 - Touch screens have no box yet: one finger on empty floor pans.
 
+**Hover, distance and targeting** (agreed with the user and built 2026-11-11; `board/targeting.js`):
+- Hovering a token that is not selected shows the selection's thin square in the token's kind colour:
+  green for PCs and allies, yellow for neutrals, red for foes (token kinds `pc`, `ally`, `neutral`, `foe`;
+  any other kind counts as a foe). A selected token's square stays amber. Only tokens this view can see can
+  be hovered; a hidden foe's "?" marker cannot.
+- With exactly one token selected, hovering another draws a straight line between their centres, under both
+  tokens, and a label above the hovered one with the distance by the system's measurement (PF2E: nearest
+  square to nearest square, diagonals 5-10-5, in feet).
+- **T** over a hovered token targets it, and again un-targets it; T over others adds them. **Shift+T**
+  clears this view's targets. Targets are any visible token (foes, PCs, the selected token itself), are
+  independent of the selection, and show as pulsing chevrons in the four corners of the token's square,
+  in its kind colour (still with reduced motion).
+- Targets are shared through the store: `targets/player` and `targets/gm`, each `{ids}`. The player view
+  edits and shows the player's; the GM view edits its own and also shows the player's (as thinner, still
+  chevrons). Claude reads `targets/player` when the user says "I attack my target". Targets are not logged
+  and not saved to the PC; switching campaigns clears them.
+- Touch screens: no targeting yet (FR-2). Light ranges still use true circles, not the measurement setting
+  (FR-3).
+
+**Game-system configuration** (`rulesets/<id>/system.js`, listed in `rulesets/systems.js`): the board
+loads the campaign's system by its `ruleset` and refuses a campaign whose system it does not have. Its
+first entry is `measurement`: the unit, the square's size (`squareFeet`), the diagonal pattern
+(`diagonalCosts`) and how distance between creatures is counted. Everything that measures reads it: the
+distance label, movement routes and costs, the Stride outlines (through the movement options) and
+`tools/move.mjs` (`--ruleset`). A map's own `feet_per_cell` still sets its scale; without one, the system's
+square is used. PF2E's terrain rules take their diagonals from the same configuration.
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with

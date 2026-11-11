@@ -91,7 +91,13 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 
 The platform writes a record's changes one at a time and reports each back late. A collection watch (tokens) re-sends every record whenever any one changes, carrying each record's value as it stood, which can be from before our newest write. Applying those reports snapped tokens back a square and, with a key pressed meanwhile, broke a group's formation. The rule now in `app.js`: while a record has writes of ours in progress, its reports are ignored (`busy(path)`); when its last write settles it is read once more (`resync`), so a change by Claude in the meantime still arrives. Any new watcher of a record the board writes must check `busy()` first. Reproduce timing bugs with a seed's `latency` (the memory store then writes like the platform: `new MemoryStore(records, assets, {latency: 400})`).
 
-## 9. Zoom and pan
+## 9. System configuration, hover and targets
+
+- **Never hard-code a rule of measurement.** Read the campaign's system (`SYS = Engine.systemConfig(META.ruleset)`, from `rulesets/<id>/system.js`): `SYS.measurement.diagonalCosts`, `squareFeet`, `unit`, and `Engine.creatureDistance(SYS, a, b, Engine.spaceDistance)` for distances between creatures. A new system adds its own `system.js` and an entry in `rulesets/systems.js`; a new rule that varies by system goes into that configuration, not into the board.
+- **Targets** live in `targets/player` and `targets/gm` (`{ids}`). To act on "I attack my target", read `targets/player` and use those tokens. Write targets for the player only when the user asks. The `targets` collection is part of the active campaign: include it in the clear listing when switching; it is not saved to the PC.
+- Hover, target marks and the distance label are drawn from `board/targeting.js` helpers (`kindColour`, `markSquare`, `chevrons`); the chevrons are on their own canvas (`#tgt`), redrawn each frame only while a target is visible.
+
+## 10. Zoom and pan
 
 - Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.
 - **Selection** is `selected` (one token) or `multi` (two or more, with `selected` null), always set through `setSelection(ids)`. Code that shows one creature's eyes or Stride bands reads `selected` only, so a multi-selection falls back to the party view by itself. Mark `selected || multi` with the thin amber grid square drawn after the token (`drawTokens`), never by changing the token's own outline; a Tiny creature sharing a square gets a quarter-square (its slot in the layout).
@@ -101,7 +107,7 @@ The platform writes a record's changes one at a time and reports each back late.
 - Test in a browser with a real touch pinch (DevTools touch emulation, or `Input.dispatchTouchEvent` headless) as well as the wheel. A token placed near a map edge may be off screen when zoomed: scroll to it first.
 - Avoid `export const f = (a, b = X) => ...` in board modules: the bundler takes the default argument for a second export. Write a function.
 
-## 10. Changing the board
+## 11. Changing the board
 
 - Edit the modules in `board/`, then bundle: `node tools/bundle.mjs board/index.html <out.html>` (add `--data seed=<seed.json>` from `campaign.mjs seed` for a board running on memory) and publish the result to the same artifact (keep its slug; the database stays).
 - `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.

@@ -15,8 +15,11 @@
 // `ignoreDifficult` covers abilities such as a creature that skitters over rubble ({causes: ['rubble']})
 // or one that ignores natural difficult terrain ({natural: true}).
 
-export const DIAGONAL_COSTS = [1, 2];
-export const FEET_PER_CELL = 5;
+import { PF2E_SYSTEM } from './system.js';
+
+// From the system configuration (rulesets/pf2e/system.js), kept here for code that imported them from this file.
+export const DIAGONAL_COSTS = PF2E_SYSTEM.measurement.diagonalCosts;
+export const FEET_PER_CELL = PF2E_SYSTEM.measurement.squareFeet;
 
 /** Extra squares of movement for each kind; kinds missing here cost nothing extra. */
 const DIFFICULTY = { difficult: 1, greater_difficult: 2 };
