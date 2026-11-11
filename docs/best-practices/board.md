@@ -21,7 +21,16 @@ The database is the truth during play; the PC save is the truth between sessions
 - **Log entries use the board's own format**, so they sort and show correctly in the change log:
   path `log/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `log/0mwbam9my-0clde`), and data `{by: "claude", at: <ISO time>, map: <map id>, what: "<one line>"}`. (An entry first written as `{t, text}` with an id lacking the leading zero showed wrongly and sorted last.)
 - **Read the log to see what the player did** since you last looked (moves, doors, lights). In GM view the user can read the same log to audit Claude.
-- The player moves their PCs, opens doors and toggles their own light; everything else is Claude's (or the GM view's). Do not undo a player's move silently: say why in chat and in the log.
+- **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (Map ▸ Add note, N), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat and in the log.
+- **Claude's tools at the table** (each prints the record to write with `db_write`; details in section 12):
+
+  | To | Use | Writes |
+  |---|---|---|
+  | Place an area template (and see who is in it) | `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster <id> --dir north --state <save>/maps/<map>.json` | `templates/<id>` |
+  | Pin a note to the map (shared or GM-only) | `node tools/note.mjs <map-dir> --at X,Y --text "..." [--gm-only]` | `notes/<id>` |
+  | Set conditions, custom effects, dead | `node tools/effect.mjs <token.json> add frightened 2` (`custom`, `remove`, `clear`, `dead`, `alive`; `list`) | `tokens/<id>` |
+  | Know the player's targets | read `targets/player` | (nothing) |
+  | Measure, route, sight, fog | `tools/move.mjs`, `tools/sight.mjs`, `tools/fog.mjs` | (nothing) |
 
 ## 3. Save the game (when the user says so, and before every switch)
 
@@ -102,6 +111,26 @@ The platform writes a record's changes one at a time and reports each back late.
 
 A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 ms on the Sample Keep. Anything that changes as the pointer moves (hover squares, the distance line and label, target marks) must go on the overlay canvas (`#tgt`, `drawTargets`), which redraws in well under a millisecond; call `targetsChanged()`, never `draw()`, for those. When the hover square and distance line were first drawn on the map, hovering across tokens took 2.4 times as long and the page stalled three times as often; moving them to the overlay put it back to the earlier speed. Something that must look "under" a token on the overlay can be cut away where the token is (`destination-out`), as the distance line is. Measure before and after with a headless browser: time a hover sweep, clicks and drags, and count long tasks (PerformanceObserver `longtask`), against a build of the previous commit.
 
+## 10. Zoom and pan
+
+- Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.
+- **Selection** is `selected` (one token) or `multi` (two or more, with `selected` null), always set through `setSelection(ids)`. Code that shows one creature's eyes or Stride bands reads `selected` only, so a multi-selection falls back to the party view by itself. Mark `selected || multi` with the thin amber grid square drawn after the token (`drawTokens`), never by changing the token's own outline; a Tiny creature sharing a square gets a quarter-square (its slot in the layout).
+- **Tiny creatures in group moves:** anything that moves tokens together must give up the movers' `slot` and re-run `layoutTiny` (as `moveGroup` does), and any preview must use a layout computed for the moved positions (`dragPreview`), or Tiny tokens are drawn where they were. Until a drag reaches another square, draw nothing differently (no fade, no re-layout): a press alone must not move or flash a token (a Tiny token sharing a square used to jump to the centre on every click).
+- A left press on empty floor starts the selection box (a DOM overlay on the stage, so drawing it never redraws the map); the box is decided on release.
+- The left button never pans; the right button pans from anywhere and shows the hand cursor only while held. On touch, empty-floor taps act on release so a one-finger drag can still become a pan.
+- Test in a browser with a real touch pinch (DevTools touch emulation, or `Input.dispatchTouchEvent` headless) as well as the wheel. A token placed near a map edge may be off screen when zoomed: scroll to it first.
+- Avoid `export const f = (a, b = X) => ...` in board modules: the bundler takes the default argument for a second export. Write a function.
+
+## 11. Changing the board
+
+- Edit the modules in `board/`, then bundle: `node tools/bundle.mjs board/index.html <out.html>` (add `--data seed=<seed.json>` from `campaign.mjs seed` for a board running on memory) and publish the result to the same artifact (keep its slug; the database stays).
+- `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.
+- A change to the record layout is a migration: save every campaign to the PC first, then load them again with the new tools.
+
+## 12. On the map: area templates, notes, effects and the token HUD
+
+Design: [board.md](../design/board.md), section 7. Each feature below has a chat tool for Claude (section 2).
+
 ### Area templates
 
 - **The shapes are rules: keep them in the system configuration.** `SYS.areas` holds the shapes (where each starts, directions, line width, whether an emanation targets its caster), the quick sizes and the line-of-effect setting (which wall types let effects through). `engine/areas` takes the diagonal pattern and the walls as arguments; nothing there is PF2E-specific.
@@ -156,19 +185,3 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **Page buttons over the map** sit in their own layers (`#tplx`, `#notes`), placed from map cells with the map's scale and re-placed on zoom. Rebuild them only when their content changes (a key of what they show), never on every map redraw, or an armed button would disarm whenever anything moves.
 - **The page's own button styles win over a class on hover** (`button:hover` is more specific than `.rm-btn`): a control with its own colours sets them for `:hover`, `:active` and `:focus` too.
 - **Timers passed around as object methods** must be wrapped (`(f, ms) => setTimeout(f, ms)`): calling `timers.set(...)` with the real `setTimeout` throws "Illegal invocation" in the browser, though it works in Node.
-
-## 10. Zoom and pan
-
-- Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.
-- **Selection** is `selected` (one token) or `multi` (two or more, with `selected` null), always set through `setSelection(ids)`. Code that shows one creature's eyes or Stride bands reads `selected` only, so a multi-selection falls back to the party view by itself. Mark `selected || multi` with the thin amber grid square drawn after the token (`drawTokens`), never by changing the token's own outline; a Tiny creature sharing a square gets a quarter-square (its slot in the layout).
-- **Tiny creatures in group moves:** anything that moves tokens together must give up the movers' `slot` and re-run `layoutTiny` (as `moveGroup` does), and any preview must use a layout computed for the moved positions (`dragPreview`), or Tiny tokens are drawn where they were. Until a drag reaches another square, draw nothing differently (no fade, no re-layout): a press alone must not move or flash a token (a Tiny token sharing a square used to jump to the centre on every click).
-- A left press on empty floor starts the selection box (a DOM overlay on the stage, so drawing it never redraws the map); the box is decided on release.
-- The left button never pans; the right button pans from anywhere and shows the hand cursor only while held. On touch, empty-floor taps act on release so a one-finger drag can still become a pan.
-- Test in a browser with a real touch pinch (DevTools touch emulation, or `Input.dispatchTouchEvent` headless) as well as the wheel. A token placed near a map edge may be off screen when zoomed: scroll to it first.
-- Avoid `export const f = (a, b = X) => ...` in board modules: the bundler takes the default argument for a second export. Write a function.
-
-## 11. Changing the board
-
-- Edit the modules in `board/`, then bundle: `node tools/bundle.mjs board/index.html <out.html>` (add `--data seed=<seed.json>` from `campaign.mjs seed` for a board running on memory) and publish the result to the same artifact (keep its slug; the database stays).
-- `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.
-- A change to the record layout is a migration: save every campaign to the PC first, then load them again with the new tools.

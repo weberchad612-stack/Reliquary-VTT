@@ -26,4 +26,4 @@ The engine has no game-system or adventure knowledge. Rulesets fill its extensio
 
 All are dependency-free ES modules that run in the browser and in Node. Tools reach them through `tools/sight.mjs`, `tools/move.mjs`, `tools/fog.mjs` and `tools/area.mjs`.
 
-Design: [docs/design/maps.md](../docs/design/maps.md). The board page itself is not built yet.
+Design: [docs/design/maps.md](../docs/design/maps.md). The board page that uses these modules is in `board/` (design: [docs/design/board.md](../docs/design/board.md)).

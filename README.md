@@ -4,7 +4,7 @@ A virtual table top framework for use by Claude AI to run TTRPGs for you.
 
 ## Status
 
-Early development. Nothing playable yet. Work is starting with maps: see [docs/design/maps.md](docs/design/maps.md). Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Ideas for later: [future/](future/README.md).
+Early development. The board (Reliquary Virtual Tabletop) runs a map table: maps, light and fog, tokens, movement, targets, area templates, notes and effect badges. Design: [docs/design/maps.md](docs/design/maps.md) and [docs/design/board.md](docs/design/board.md). Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Ideas for later: [future/](future/README.md).
 
 Built so far:
 
@@ -15,9 +15,11 @@ Built so far:
 - Terrain: difficult, greater difficult, hazardous, uneven, narrow, climb and swim areas and their movement costs (`engine/terrain/`)
 - Light and vision: light sources and regions, darkness and dim light, darkvision and low-light vision, concealment, daylight through windows and open doors, fading dim light, colour, intensity and flickering or pulsing light (`engine/light/`)
 - Fog of war: explored-area merging and the three-state player and GM fog, and one creature's own view (`engine/fog/`)
-- The Pathfinder 2e rules the engine asks for: movement and terrain, light and senses (`rulesets/pf2e/`)
+- The Pathfinder 2e rules and configuration the engine and board ask for: measurement, area shapes and line of effect, conditions, movement and terrain, light and senses (`rulesets/pf2e/`)
+- Area templates (burst, cone, emanation, line) with line of effect (`engine/areas/`)
+- The board, Reliquary Virtual Tabletop (`board/`): one page with the player and GM views, a top menu, travel between maps and area maps (towns), zoom and pan, multi-select and group moves, hover and distance, targeting, area templates, map notes, effect badges with unconscious, dying and dead, and a right-click token menu with a status palette; it runs on its own private database, and Claude loads, saves and switches campaigns with `tools/campaign.mjs`
 - A map importer that turns a map in a PDF you own into wall, terrain and lighting data for a private pack (`tools/mapimport/`)
-- A validator, sight, movement and fog query tools, and a wall overlay renderer (`tools/`)
+- A validator; sight, movement and fog query tools; area template, map note and effect tools for Claude; and a wall overlay renderer (`tools/`)
 - An original sample map pack and save, and an interactive demo of the engine on it (`examples/`)
 
 ## Development
