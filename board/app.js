@@ -2060,7 +2060,7 @@ export async function start(store, { build = null } = {}) {
       if (hudPanel === 'effects' && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
       if (hudPanel === 'template' && canEditEffects(hudFor) && AREAS) hudEl.appendChild(templatePanel(hudFor));
       hudLeftEl.replaceChildren();
-      if (canEditEffects(hudFor)) hudLeftEl.appendChild(elevationControl(hudFor));
+      hudLeftEl.appendChild(elevationControl(hudFor, canEditEffects(hudFor)));   // read-only where this view may not change it
     }
     hudEl.hidden = false;
     hudLeftEl.hidden = !hudLeftEl.childElementCount;
@@ -2069,9 +2069,18 @@ export async function start(store, { build = null } = {}) {
   /** Elevation, in the column on the token's left (as Foundry's): the height in feet, shown above the token as
    *  "+15 ft". Click it to type a number (negative is below the ground); Enter saves, Escape cancels. */
   const elevText = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
-  function elevationControl(id) {
+  function elevationControl(id, editable = true) {
     const t = S.tokens[id], v = t.elevation || 0, unit = SYS.measurement.unit, box = document.createElement('div');
     box.className = 'hud-col';
+    if (!editable) {   // players see a foe's or NPC's height, but do not change it
+      const b = document.createElement('div');
+      b.className = 'hud-btn hud-elev readonly' + (v ? ' on' : '');
+      b.textContent = String(v === 0 ? 0 : elevText(v));
+      b.title = `Elevation: ${v ? elevText(v) + ' ' + unit : 'on the ground'}`;
+      b.setAttribute('role', 'status'); b.setAttribute('aria-label', `Elevation ${v} ${unit}`);
+      box.appendChild(b);
+      return box;
+    }
     if (!hudElevEdit) {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'hud-btn hud-elev' + (v ? ' on' : '');

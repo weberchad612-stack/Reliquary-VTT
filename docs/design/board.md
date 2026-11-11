@@ -344,7 +344,8 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   saves, Escape cancels the typing only. A token off the ground shows "+15 ft" (or "−10 ft") above it, with
   the badges; the distance label moves up above it. Stored as `elevation` on the token (left out at 0),
   shared and logged ("Kerra elevation +15 ft"). The player view sets it on its own PCs, the GM view on any
-  token; Claude with `tools/effect.mjs <token> elevation 15`. Nothing uses it in rules yet: distances,
+  token; on foes and NPCs the player view's menu shows the height read-only (asked for 2026-11-11), and the
+  "+15 ft" label shows on every token the view can see; Claude with `tools/effect.mjs <token> elevation 15`. Nothing uses it in rules yet: distances,
   reach, areas and sight ignore height until the rules engine does (FR-7).
 - **The status palette:** every condition of the system in a grid five wide (alphabetical), then **Dead**.
   Active ones are lit with an orange frame, the rest dimmed; valued ones show their number. Click toggles a
