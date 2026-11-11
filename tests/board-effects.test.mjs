@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { badgeOf, badgesFor, tokenState, cannotSee, visibleEffects, withEffect, withoutEffect, MAX_BADGES } from '../board/effects.js';
+import { badgeOf, badgesFor, badgeSlot, tokenState, cannotSee, visibleEffects, withEffect, withoutEffect, stepCondition, describeEffects } from '../board/effects.js';
 import { applyEffect } from '../tools/effect.mjs';
 import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
 import { PF2E_CONDITIONS } from '../rulesets/pf2e/conditions.js';
@@ -35,15 +35,40 @@ test('badges: conditions show their icon, number and rules line; custom effects 
   assert.equal(badgeOf({ name: '???' }, C).letter, '•');
 });
 
-test('badges: at most four, the token-state ones first, then the rest for +N; GM-only ones in the GM view only', () => {
+test('badges: all of them, the token-state ones first, in columns of five; GM-only ones in the GM view only', () => {
   const t = { effects: [{ id: 'prone' }, { id: 'off-guard' }, { id: 'sickened', value: 1 }, { id: 'clumsy', value: 1 }, { id: 'dying', value: 1 }, { name: 'Curse', gm_only: true }] };
   const p = badgesFor(t, 'player', C);
-  assert.equal(p.shown.length, MAX_BADGES);
-  assert.equal(p.shown[0].key, 'dying');
-  assert.equal(p.more.length, 1);
-  const g = badgesFor(t, 'gm', C);
-  assert.equal(g.more.length, 2);
+  assert.equal(p.length, 5);
+  assert.equal(p[0].key, 'dying');
+  assert.equal(badgesFor(t, 'gm', C).length, 6);
+  assert.deepEqual(badgeSlot(0), { col: 0, row: 0 });
+  assert.deepEqual(badgeSlot(4), { col: 0, row: 4 });
+  assert.deepEqual(badgeSlot(5), { col: 1, row: 0 });
   assert.equal(visibleEffects({ dead: true, effects: t.effects }, 'gm').length, 0, 'none on the dead');
+});
+
+test('the status palette: click toggles or raises, right-click lowers or removes', () => {
+  let e = stepCondition([], 'prone', 1, C);
+  assert.deepEqual(e, [{ id: 'prone' }]);
+  assert.deepEqual(stepCondition(e, 'prone', 1, C), [], 'a second click on a plain condition removes it');
+  assert.deepEqual(stepCondition(e, 'prone', -1, C), []);
+  e = stepCondition([], 'frightened', 1, C);
+  e = stepCondition(e, 'frightened', 1, C);
+  assert.deepEqual(e, [{ id: 'frightened', value: 2 }]);
+  assert.deepEqual(stepCondition(e, 'frightened', -1, C), [{ id: 'frightened', value: 1 }]);
+  assert.deepEqual(stepCondition([{ id: 'frightened', value: 1, source: 'x' }], 'frightened', -1, C), []);
+  assert.deepEqual(stepCondition([{ id: 'frightened', value: 1, source: 'x' }], 'frightened', 1, C), [{ id: 'frightened', value: 2, source: 'x' }], 'keeps the source');
+  assert.deepEqual(stepCondition([{ id: 'dying', value: 4 }], 'dying', 1, C), [{ id: 'dying', value: 4 }], 'capped at its max');
+  assert.deepEqual(stepCondition([], 'frightened', -1, C), []);
+  assert.throws(() => stepCondition([], 'nope', 1, C), /not a condition/);
+});
+
+test('change-log lines for effects', () => {
+  assert.deepEqual(describeEffects('Lyra', {}, { effects: [{ id: 'frightened', value: 2 }] }, C), ['Lyra frightened 2']);
+  assert.deepEqual(describeEffects('Lyra', { effects: [{ id: 'frightened', value: 2 }] }, { effects: [{ id: 'frightened', value: 1 }] }, C), ['Lyra frightened 1 (was 2)']);
+  assert.deepEqual(describeEffects('Lyra', { effects: [{ id: 'prone' }] }, {}, C), ['Lyra no longer prone']);
+  assert.deepEqual(describeEffects('Ogre', {}, { dead: true }, C), ['Ogre is dead']);
+  assert.deepEqual(describeEffects('Ogre', {}, { effects: [{ name: 'Curse', gm_only: true }] }, C), ['Ogre Curse (GM only)']);
 });
 
 test('token states: dead, down (unconscious or dying), and who cannot see', () => {

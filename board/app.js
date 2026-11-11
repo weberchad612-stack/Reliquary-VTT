@@ -21,7 +21,7 @@ import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
-import { badgesFor, tokenState, cannotSee, KIND_COLOURS } from './effects.js';
+import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
@@ -462,6 +462,7 @@ export async function start(store, { build = null } = {}) {
     if (LIT && gm) { drawRegionOutlines(); drawLightSources(); }   // the GM's marks: players see only the light
     if (drag && drag.route !== undefined) drawRoute();
     drawTemplates();       // area templates: under the tokens, above the fog (they are shared on the board)
+    if (hudFor) renderHud();   // follows the token; rebuilt only when its effects or targets changed
     drawTokens(F, full);   // the hover square, distance line and target marks are on the overlay (drawOverlay)
     ctx.restore();
     refreshAnimation(F, full);
@@ -1135,7 +1136,7 @@ export async function start(store, { build = null } = {}) {
       const box = boxFor(id, t, L);
       if (box) strokeBox(ctx, box);
       if (seen && !t0.dead && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
-      badgeQueue.push(() => drawBadges(id, t0, cx, P(t.y), P(size)));   // after every token, so none covers them
+      badgeQueue.push(() => drawBadges(id, t0, P(t.x), P(t.y), P(size)));   // after every token, so none covers them
     }
     for (const f of badgeQueue) f();
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
@@ -1151,36 +1152,34 @@ export async function start(store, { build = null } = {}) {
   // ---- effect badges (board/effects.js; the conditions come from the system configuration) ----
   let badgeHits = [];      // [{x, y, w, h, text}] in map pixels (grid origin), from the last drawTokens
   let hoverBadge = null;   // the badge under the pointer: {x, y, w, h, text}
-  const BADGE_PX = 16;     // a badge's size on screen, at any zoom
-  /** Square badges in a row centred on the top edge of the token's space: icon or letter, the number in a
-   *  corner, the border by kind (good, bad, neutral); at most four, then +N. */
-  function drawBadges(id, t0, cx, top, spacePx) {
-    const { shown: list, more } = badgesFor(t0, S.view, CONDS);
+  const BADGE_MIN_PX = 10;   // a badge is never smaller than this on screen
+  /** Badges as Foundry lays them out: inside the token's space from its top-left corner, in columns of five,
+   *  then the next column to the right; each a fifth of the token's side (at least BADGE_MIN_PX on screen).
+   *  Square, the icon or letter, the number in a corner, the border by kind (good, bad, neutral). */
+  function drawBadges(id, t0, left, top, spacePx) {
+    const list = badgesFor(t0, S.view, CONDS);
     if (!list.length) return;
-    const b = BADGE_PX / scale, gap = 2 / scale, n = list.length + (more.length ? 1 : 0);
-    let x = cx - (n * b + (n - 1) * gap) / 2;
-    const y = top - b * 0.55;
-    const one = (bd, label, text) => {
+    const b = Math.max(BADGE_MIN_PX / scale, spacePx / 5), inset = b * 0.08;
+    list.forEach((bd, i) => {
+      const { col, row } = badgeSlot(i);
+      const x = left + inset + col * b, y = top + inset + row * b, s = b - inset;
       ctx.save();
-      ctx.fillStyle = '#1a2438'; ctx.strokeStyle = bd ? KIND_COLOURS[bd.kind] : '#aab'; ctx.lineWidth = 1.5 / scale;
-      ctx.beginPath(); ctx.roundRect(x, y, b, b, 3 / scale); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1a2438'; ctx.strokeStyle = KIND_COLOURS[bd.kind]; ctx.lineWidth = Math.max(1 / scale, s * 0.08);
+      ctx.beginPath(); ctx.roundRect(x, y, s, s, s * 0.18); ctx.fill(); ctx.stroke();
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      if (bd && bd.icon) { ctx.font = `${b * 0.66}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`; ctx.fillText(bd.icon, x + b / 2, y + b / 2 + b * 0.04); }
-      else { ctx.fillStyle = '#fff'; ctx.font = `700 ${b * (label.length > 2 ? 0.5 : 0.62)}px IBM Plex Sans, sans-serif`; ctx.fillText(label, x + b / 2, y + b / 2 + b * 0.03); }
-      if (bd && bd.value != null) {   // the number, in the bottom-right corner
-        const v = String(bd.value), w = Math.max(b * 0.5, b * 0.32 * v.length);
+      if (bd.icon) { ctx.font = `${s * 0.66}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`; ctx.fillText(bd.icon, x + s / 2, y + s / 2 + s * 0.04); }
+      else { ctx.fillStyle = '#fff'; ctx.font = `700 ${s * 0.62}px IBM Plex Sans, sans-serif`; ctx.fillText(bd.letter, x + s / 2, y + s / 2 + s * 0.03); }
+      if (bd.value != null) {   // the number, in the bottom-right corner
+        const v = String(bd.value), w = Math.max(s * 0.5, s * 0.32 * v.length);
         ctx.fillStyle = bd.kind === 'good' ? '#1f6f47' : bd.kind === 'bad' ? '#a82424' : '#7a5c12';
-        ctx.fillRect(x + b - w * 0.75, y + b - b * 0.42, w, b * 0.52);
-        ctx.fillStyle = '#fff'; ctx.font = `700 ${b * 0.46}px IBM Plex Sans, sans-serif`;
-        ctx.fillText(v, x + b - w * 0.75 + w / 2, y + b - b * 0.15);
+        ctx.fillRect(x + s - w * 0.75, y + s - s * 0.42, w, s * 0.52);
+        ctx.fillStyle = '#fff'; ctx.font = `700 ${s * 0.46}px IBM Plex Sans, sans-serif`;
+        ctx.fillText(v, x + s - w * 0.75 + w / 2, y + s - s * 0.15);
       }
-      if (bd && bd.gm) { ctx.setLineDash([2 / scale, 2 / scale]); ctx.strokeStyle = '#b48cff'; ctx.strokeRect(x - 1.5 / scale, y - 1.5 / scale, b + 3 / scale, b + 3 / scale); }
+      if (bd.gm) { ctx.setLineDash([2 / scale, 2 / scale]); ctx.strokeStyle = '#b48cff'; ctx.lineWidth = 1 / scale; ctx.strokeRect(x - 1.5 / scale, y - 1.5 / scale, s + 3 / scale, s + 3 / scale); }
       ctx.restore();
-      badgeHits.push({ x, y, w: b, h: b, text });
-      x += b + gap;
-    };
-    for (const bd of list) one(bd, bd.letter || '', bd.text);
-    if (more.length) one(null, '+' + more.length, more.map((m) => m.label).join('; '));
+      badgeHits.push({ x, y, w: s, h: s, text: bd.text });
+    });
   }
   function drawDeadCross(cx, cy, r) {
     ctx.save();
@@ -1372,7 +1371,7 @@ export async function start(store, { build = null } = {}) {
   let pinch = null;            // the two pointers of a pinch, as last seen
   const stageEl = document.getElementById('stage');
   function startPan(ev, deselect, hand = false) {
-    pan = { x: ev.clientX, y: ev.clientY, left: stageEl.scrollLeft, top: stageEl.scrollTop, moved: false, deselect };
+    pan = { x: ev.clientX, y: ev.clientY, left: stageEl.scrollLeft, top: stageEl.scrollTop, moved: false, deselect, button: ev.button, p: cellAt(ev) };
     canvas.setPointerCapture(ev.pointerId);
     if (hand) canvas.style.cursor = 'grabbing';
   }
@@ -1392,6 +1391,7 @@ export async function start(store, { build = null } = {}) {
     if (ev.button === 2) { ev.preventDefault(); startPan(ev, false, true); return; }   // right button: pan, hand cursor
     if (ev.button !== 0) return;
     const p = cellAt(ev);
+    if (hudFor) closeHud();
     if (noting) { setNoting(false); openNoteEditor({ at: notePoint(p[0], p[1]) }); return; }   // Add note: the editor opens here
     if (aim && aim.pick) {   // choosing the caster for a template
       const id = clickTarget(p).token;
@@ -1503,8 +1503,9 @@ export async function start(store, { build = null } = {}) {
       return;
     }
     if (pan) {
-      const { moved, deselect } = pan;
+      const { moved, deselect, button, p } = pan;
       pan = null; canvas.style.cursor = 'default';
+      if (!moved && button === 2 && !cancelled && ev.target === canvas) { const id = clickTarget(p).token; if (id && canHud(id)) openHud(id); else closeHud(); return; }   // right-click: the token HUD
       if (!moved && deselect && !cancelled) { selected = null; panel(); draw(); }
       return;
     }
@@ -2044,6 +2045,113 @@ export async function start(store, { build = null } = {}) {
     else setNoting(true);
   }, true);
 
+  // ---- the token HUD (right-click a token): Target and Assign status effects, as Foundry's Token HUD ----
+  const hudEl = document.getElementById('tokhud');
+  let hudFor = null;        // the token the HUD is open on
+  let hudPalette = false;   // the status palette is open
+  let hudKey = '';
+  /** The GM view opens the HUD on any token it sees; the player view on its own PCs. */
+  const canHud = (id) => !READONLY && !!S.tokens[id] && (S.view === 'gm' ? (fullGM() || shown().seen.has(id)) : S.tokens[id].kind === 'pc');
+  const HUD_ICONS = {
+    effects: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.6" fill="currentColor"/><path d="M8.5 21v-6.5L7 10.5Q7 9 9 9h6q2 0 2 1.5l-1.5 4V21z" fill="currentColor"/><path d="M12 1.5v1.6M4.5 4.5l1.2 1.1M19.5 4.5l-1.2 1.1M2 11h1.7M20.3 11H22M3.5 17.5l1.4-.8M20.5 17.5l-1.4-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
+  };
+  function openHud(id) {
+    endAim(); if (noting) setNoting(false);
+    hudFor = id; hudPalette = false; hudKey = '';
+    renderHud();
+  }
+  function closeHud() {
+    if (!hudFor) return;
+    hudFor = null; hudPalette = false; hudKey = '';
+    hudEl.replaceChildren(); hudEl.hidden = true;
+  }
+  /** The HUD beside the token's space; rebuilt only when what it shows changes (so hovering a tile keeps its tip). */
+  function renderHud() {
+    if (!hudFor || !S.tokens[hudFor] || !canHud(hudFor)) return closeHud();
+    const t = S.tokens[hudFor];
+    const key = canon({ id: hudFor, p: hudPalette, e: t.effects || [], d: !!t.dead, tg: myTargets().includes(hudFor), v: S.view });
+    if (key !== hudKey) {
+      hudKey = key;
+      hudEl.replaceChildren();
+      const col = document.createElement('div');
+      col.className = 'hud-col';
+      const btn = (kind, label, on, act) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'hud-btn' + (on ? ' on' : ''); b.innerHTML = HUD_ICONS[kind];
+        b.title = label; b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(!!on));
+        b.addEventListener('click', (e) => { e.stopPropagation(); act(); });
+        col.appendChild(b);
+        return b;
+      };
+      btn('target', myTargets().includes(hudFor) ? 'Untarget' : 'Target', myTargets().includes(hudFor), () => {
+        if (t.dead && !myTargets().includes(hudFor)) return toast(`${t.name} is dead: it can't be targeted.`);
+        setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
+      });
+      btn('effects', 'Assign status effects', hudPalette, () => { hudPalette = !hudPalette; renderHud(); });
+      hudEl.appendChild(col);
+      if (hudPalette) hudEl.appendChild(statusPalette(hudFor));
+    }
+    hudEl.hidden = false;
+    placeHud();
+  }
+  /** Every condition of the system and Dead: lit with an orange frame when on, dimmed when off; the number on
+   *  valued ones. Click toggles or raises, right-click lowers or removes (board/effects.js stepCondition). */
+  function statusPalette(id) {
+    const t = S.tokens[id], pal = document.createElement('div');
+    pal.className = 'hud-palette'; pal.setAttribute('role', 'group'); pal.setAttribute('aria-label', `Status effects for ${t.name}`);
+    const mine = (t.effects || []).filter((e) => S.view === 'gm' || !e.gm_only);
+    const tile = (icon, label, rule, on, value, kind, act) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'hud-tile' + (on ? ' on' : '') + ' ' + kind;
+      b.textContent = icon;
+      b.title = `${label}${value != null ? ' ' + value : ''}: ${rule}${on ? '' : ''}`;
+      b.setAttribute('aria-label', `${label}${value != null ? ' ' + value : ''}${on ? ' (on)' : ''}`);
+      b.setAttribute('aria-pressed', String(!!on));
+      if (value != null) { const n = document.createElement('span'); n.className = 'hud-n'; n.textContent = value; b.appendChild(n); }
+      b.addEventListener('click', (e) => { e.stopPropagation(); act(1); });
+      b.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); act(-1); });
+      pal.appendChild(b);
+    };
+    const ids = Object.keys(CONDS).sort((a, b) => CONDS[a].label.localeCompare(CONDS[b].label));
+    for (const cid of ids) {
+      const c = CONDS[cid], cur = mine.find((e) => e.id === cid);
+      tile(c.icon, c.label, c.rule + (c.valued ? ' (Click raises, right-click lowers.)' : ''), !!cur, cur && c.valued ? cur.value : null, c.kind, (dir) => setEffects(id, stepCondition(t.effects, cid, dir, CONDS)));
+    }
+    tile('✖', 'Dead', 'Faded with a red cross; no longer blocks movement, sees or can be targeted. Click to switch.', !!t.dead, null, 'dead', (dir) => setDead(id, dir > 0 ? !t.dead : false));
+    return pal;
+  }
+  function setEffects(id, effects) {
+    const t = { ...S.tokens[id] };
+    if (effects.length) t.effects = effects; else delete t.effects;
+    S.tokens[id] = t;
+    renderHud(); recompute();   // who can see may change (blinded, unconscious); persist() writes it and logs the change
+  }
+  function setDead(id, dead) {
+    const t = { ...S.tokens[id] };
+    if (dead) { t.dead = true; if (myTargets().includes(id)) setMyTargets(myTargets().filter((x) => x !== id)); } else delete t.dead;
+    S.tokens[id] = t;
+    renderHud(); recompute();
+  }
+  /** The HUD floats over the page (fixed), to the right of the token's space, or to its left when there is no
+   *  room; kept inside the window. It follows the token, the zoom and scrolling. */
+  function placeHud() {
+    if (!hudFor || !S.tokens[hudFor] || hudEl.hidden) return;
+    const sp = space(hudFor), r = canvas.getBoundingClientRect(), gap = 8;
+    const x0 = r.left + (OX + sp.x * CS) * scale, x1 = r.left + (OX + (sp.x + sp.size) * CS) * scale, y0 = r.top + (OY + sp.y * CS) * scale;
+    const w = hudEl.offsetWidth, h = hudEl.offsetHeight;
+    let left = x1 + gap;
+    if (left + w > window.innerWidth - gap) left = Math.max(gap, x0 - gap - w);
+    const top = Math.max(gap, Math.min(window.innerHeight - h - gap, y0));
+    hudEl.style.left = left + 'px'; hudEl.style.top = top + 'px';
+    hudEl.classList.toggle('flip', left < x0);
+  }
+  document.getElementById('stage').addEventListener('scroll', () => { if (hudFor) placeHud(); }, { passive: true });
+  window.addEventListener('resize', () => { if (hudFor) placeHud(); });
+  hudEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+  hudEl.addEventListener('contextmenu', (e) => e.preventDefault());
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && hudFor) { e.preventDefault(); e.stopPropagation(); closeHud(); } }, true);
+
   function moveToken(id, goal, route) {
     const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
     const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
@@ -2084,7 +2192,7 @@ export async function start(store, { build = null } = {}) {
   });
 
   function setView(v) {
-    if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); }
+    if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); closeHud(); }
     S.view = v;
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
@@ -2262,7 +2370,8 @@ export async function start(store, { build = null } = {}) {
       const lb = before.light || {}, la = after.light || {};
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);
       for (const k of ['colour', 'intensity', 'animation']) if (canon(lb[k]) !== canon(la[k])) out.push(`${name}'s light ${k}: ${typeof la[k] === 'object' ? canon(la[k]) : la[k]}`);
-      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot'].includes(k))) out.push(`${name}: ${k} changed`);
+      out.push(...describeEffects(name, before, after, CONDS));
+      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead'].includes(k))) out.push(`${name}: ${k} changed`);
       return out;
     }
     if (coll === 'mapstate') {
@@ -2497,6 +2606,7 @@ export async function start(store, { build = null } = {}) {
     templates: () => clone(TEMPLATES),
     notes: () => clone(MAPNOTES),
     badges: () => clone(badgeHits),
+    hud: () => hudFor,
     noting: () => noting,
     aim: () => (aim ? { shape: aim.shape, pick: aim.pick, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
     command: (id) => onCommand(id),

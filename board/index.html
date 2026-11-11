@@ -169,6 +169,26 @@ ol.log li.foe { border-left-color: var(--foe); }
   border-radius: 5px; font: inherit; font-size: 14px; padding: 4px 6px; }
 .notes .nedit small { font-size: 11px; color: var(--muted); }
 .notes .nedit .ngm { font-size: 12px; display: flex; gap: 6px; align-items: center; }
+/* The token HUD (right-click a token): a column of buttons beside the token and the status palette. */
+.tokhud { position: fixed; z-index: 45; display: flex; gap: 8px; align-items: flex-start; pointer-events: auto; }
+.tokhud.flip { flex-direction: row-reverse; }   /* on the token's left: the buttons next to the token */
+.hud-col { display: grid; gap: 6px; }
+.hud-btn { width: 40px; height: 40px; min-height: 0; padding: 7px; border-radius: 8px; background: rgba(20, 22, 28, .92); border: 1px solid var(--line);
+  color: var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; }
+.hud-btn svg { width: 24px; height: 24px; }
+.hud-btn:hover { background: #2b2f38; }
+.hud-btn.on, .hud-btn.on:hover { border-color: #ff8a1f; color: #ffb36b; background: rgba(40, 28, 16, .95); }
+.hud-palette { display: grid; grid-template-columns: repeat(5, 40px); gap: 4px; padding: 6px; background: rgba(20, 22, 28, .94); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.55); }
+.hud-tile { position: relative; width: 40px; height: 40px; min-height: 0; padding: 0; font-size: 22px; line-height: 1; border-radius: 6px;
+  background: #1a2438; border: 2px solid transparent; opacity: .42; filter: grayscale(.5);
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; display: flex; align-items: center; justify-content: center; }
+.hud-tile:hover { opacity: .8; filter: none; background: #22304a; }
+.hud-tile.on, .hud-tile.on:hover { opacity: 1; filter: none; border-color: #ff8a1f; background: #1a2438; }
+.hud-tile.dead { color: #e02020; font-family: var(--font-body); font-weight: 900; }
+.hud-n { position: absolute; right: 1px; bottom: 1px; min-width: 14px; padding: 0 3px; font: 700 11px/14px var(--font-body); color: #fff;
+  background: #a82424; border-radius: 3px; }
+.hud-tile.good .hud-n { background: #1f6f47; }
 /* Area templates: the aim bar while aiming, and the size picker. */
 .aimbar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40; max-width: min(760px, 92vw);
   background: #1d2129; color: var(--ink); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 14px; font-size: 14px;
@@ -310,6 +330,7 @@ ol.log li.foe { border-left-color: var(--foe); }
   </main>
 </div>
 <div class="aimbar" id="aimbar" hidden role="status" aria-live="polite"><span><span id="aim-text"></span> <span class="who" id="aim-who"></span></span><button id="aim-cancel" type="button">Cancel</button></div>
+<div class="tokhud" id="tokhud" hidden aria-label="Token HUD"></div>
 <div class="gm-confirm" id="tpl-size" hidden role="dialog" aria-modal="true" aria-labelledby="tpl-size-title">
   <div class="box">
     <h2 id="tpl-size-title">Burst size</h2>

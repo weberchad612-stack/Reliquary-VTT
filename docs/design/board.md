@@ -296,14 +296,17 @@ board's status icons). Helpers in `board/effects.js`; the conditions are the sys
   (frightened 2) or detail (persistent damage: 2d6 fire), and custom effects by name (a spell, an aura) with
   good, bad or neutral. Any effect may be GM-only, and may say where it came from and when it ends (in
   words: nothing ends or ticks down by itself until initiative exists).
-- **Who sets them:** Claude, from chat (`tools/effect.mjs`). Editing them on the board is later (FR-6).
-- **Look:** square badges in a row centred on the top edge of the token's space, a fixed 16 px on screen:
-  each condition its own emoji, a custom effect its first letter; the number in the bottom-right corner;
-  the border green, red or amber for good, bad or neutral; GM-only ones with a purple dashed frame (GM view
-  only). At most four, then a "+N" badge. Drawn after all tokens, so none covers them. Shown on every token
-  the view can see.
+- **Who sets them:** Claude, from chat (`tools/effect.mjs`), and the token HUD (below): the GM view on any
+  token, the player view on its own PCs (changed from Claude-and-GM-only when the HUD was designed,
+  2026-11-11).
+- **Look** (Foundry's layout, from the user's screenshot, 2026-11-11): square badges inside the token's space
+  from its top-left corner, in columns of five, then the next column to the right; each a fifth of the
+  token's side (never under 10 px on screen), so they scale with the token. Each condition its own emoji, a
+  custom effect its first letter; the number in the bottom-right corner; the border green, red or amber for
+  good, bad or neutral (kept, though Foundry has none); GM-only ones with a purple dashed frame (GM view
+  only). Drawn after all tokens, so none covers them. Shown on every token the view can see.
 - **Hover:** the badge's name and value, the condition's rules line (paraphrased in the system's list),
-  where it came from and when it ends; "+N" lists the rest. Drawn on the overlay.
+  where it came from and when it ends. Drawn on the overlay.
 - **Unconscious and dying** (conditions the system marks `state: 'down'`) grey the token; **dead**
   (`dead: true` on the token) fades it, greys it and draws a red ✕, and hides its badges. A dead token does
   not block movement (as before), cannot be targeted (T, a targeting box or an area) and does not see.
@@ -311,6 +314,24 @@ board's status icons). Helpers in `board/effects.js`; the conditions are the sys
   unconscious, dying, petrified), adds nothing to what the party sees, and selecting them shows nothing:
   they cannot see (Player Core: the unconscious are blinded). Added by Claude while building; kept by the
   user (2026-11-11).
+
+**The token HUD** (right-click a token; designed with the user and built 2026-11-11, after Foundry's Token
+HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
+
+- **Opening:** a right-click on a token without dragging (a right-drag still pans). The GM view opens it on
+  any token it sees, the player view on its own PCs. Escape, a left click on the map, another right-click
+  elsewhere or switching views closes it.
+- **Buttons**, in a column to the right of the token (to its left when there is no room): **Target**
+  (toggles this view's target, as T; refused on the dead) and **Assign status effects** (opens the palette
+  beside them). More buttons can be added later.
+- **The status palette:** every condition of the system in a grid five wide (alphabetical), then **Dead**.
+  Active ones are lit with an orange frame, the rest dimmed; valued ones show their number. Click toggles a
+  plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at
+  0) or removes a plain one (Foundry PF2E's way). Dead switches the token's dead state. Hovering a tile
+  shows its name and rules line.
+- **Saving:** each change writes the token record (shared at once) and a change-log line ("Lyra frightened
+  3 (was 2)", "Lyra no longer prone", "Ogre is dead").
+- The HUD floats over the page and stays inside the window; it follows the token, the zoom and scrolling.
 
 **Shared controls** (`board/ui.js`; asked for 2026-11-11: "consistent UI elements"). A kind of control
 looks and behaves the same everywhere; a new feature uses the shared one rather than making its own.

@@ -13,7 +13,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-3 | [Light ranges by the system's measurement](#fr-3-light-ranges-by-the-systems-measurement) | open | 2026-11-11 |
 | FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
 | FR-5 | [Map notes on touch screens](#fr-5-map-notes-on-touch-screens) | open | 2026-11-11 |
-| FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | open | 2026-11-11 |
+| FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | done (token HUD, 2026-11-11) | 2026-11-11 |
 
 ---
 
@@ -119,6 +119,9 @@ and dragging? How to snap without Shift? Should the bubble's ✕ be larger on to
 ---
 
 ## FR-6: Editing effects on the board
+
+**Status:** done the same day: the token HUD (right-click a token) with a status palette, after Foundry's
+(docs/design/board.md, section 7). Custom effects and GM-only effects are still set from chat only.
 
 **Asked for:** the user, 2026-11-11, while designing effect badges: "Let's do this as a future feature ... for
 now Claude will manually assign token effect badges."

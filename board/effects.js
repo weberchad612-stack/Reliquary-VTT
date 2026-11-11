@@ -5,7 +5,8 @@
 // On a token: effects: [{id, value?, detail?, gm_only?, until?, source?}] for a system condition, or
 // [{name, kind?, value?, detail?, gm_only?, until?, source?}] for a custom effect; dead: true.
 
-export const MAX_BADGES = 4;
+/** Badges per column (Foundry's layout: columns of five from the token's top-left, then the next column). */
+export const BADGES_PER_COLUMN = 5;
 export const KIND_COLOURS = Object.freeze({ good: '#4cc38a', bad: '#ff5d5d', neutral: '#e3b341' });
 
 /** The effects a view shows on a token: GM-only ones only in the GM view; none on a dead token. */
@@ -35,12 +36,15 @@ export function badgeOf(e, conditions = {}) {
   };
 }
 
-/** The badges a view shows on a token (at most `max`, the token-state ones such as dying first) and the rest (a +N badge). */
-export function badgesFor(token, view, conditions, max = MAX_BADGES) {
+/** The badges a view shows on a token, the token-state ones (dying, unconscious) first. */
+export function badgesFor(token, view, conditions) {
   const all = visibleEffects(token, view).map((e) => badgeOf(e, conditions));
-  all.sort((a, b) => (b.down - a.down));
-  const shown = all.slice(0, max);
-  return { shown, more: all.slice(shown.length) };
+  return all.sort((a, b) => (b.down - a.down));
+}
+
+/** Where badge i goes: column and row, in columns of `per` from the top-left. */
+export function badgeSlot(i, per = BADGES_PER_COLUMN) {
+  return { col: Math.floor(i / per), row: i % per };
 }
 
 /**
@@ -75,6 +79,41 @@ export function withEffect(effects, e, conditions = {}) {
   const same = (x) => (out.id ? x.id === out.id : !x.id && x.name === out.name);
   const list = (effects || []).filter((x) => !same(x));
   return [...list, out];
+}
+
+/**
+ * One click in the status palette (Foundry PF2E's way). dir +1 (click): a plain condition is toggled; a valued
+ * one is added at 1 or raised by 1 (up to its max). dir -1 (right-click): a valued condition is lowered by 1
+ * and removed at 0; a plain one is removed. Other fields of the effect (source, until) are kept.
+ */
+export function stepCondition(effects, id, dir, conditions = {}) {
+  const c = conditions[id];
+  if (!c) throw new Error(`"${id}" is not a condition of this system`);
+  const list = effects || [], cur = list.find((x) => x.id === id);
+  if (!c.valued) {
+    if (dir > 0 && !cur) return [...list, { id }];
+    return list.filter((x) => x.id !== id);
+  }
+  const v = (cur ? cur.value || 0 : 0) + (dir > 0 ? 1 : -1);
+  if (v <= 0) return list.filter((x) => x.id !== id);
+  const value = c.max ? Math.min(c.max, v) : v;
+  return cur ? list.map((x) => (x.id === id ? { ...x, value } : x)) : [...list, { id, value }];
+}
+
+/** Change-log lines for a token's effects and dead state: "frightened 2", "no longer prone", "dead". */
+export function describeEffects(name, before = {}, after = {}, conditions = {}) {
+  const out = [];
+  if (!!before.dead !== !!after.dead) out.push(`${name} ${after.dead ? 'is dead' : 'is no longer dead'}`);
+  const key = (e) => e.id || 'custom:' + e.name;
+  const label = (e) => { const c = e.id && conditions[e.id]; return (c ? c.label.toLowerCase() : e.name) + (e.value != null ? ` ${e.value}` : ''); };
+  const b = new Map((before.effects || []).map((e) => [key(e), e])), a = new Map((after.effects || []).map((e) => [key(e), e]));
+  for (const [k, e] of a) {
+    const o = b.get(k);
+    if (!o) out.push(`${name} ${label(e)}${e.gm_only ? ' (GM only)' : ''}`);
+    else if (o.value !== e.value) out.push(`${name} ${label(e)} (was ${o.value})`);
+  }
+  for (const [k, e] of b) if (!a.has(k)) out.push(`${name} no longer ${label({ ...e, value: undefined })}`);
+  return out;
 }
 
 /** Remove an effect by condition id or custom name. */
