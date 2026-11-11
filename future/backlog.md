@@ -15,6 +15,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-5 | [Map notes on touch screens](#fr-5-map-notes-on-touch-screens) | open | 2026-11-11 |
 | FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | done (token HUD, 2026-11-11) | 2026-11-11 |
 | FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | done for distances and areas (2026-11-11); movement and sight open | 2026-11-11 |
+| FR-8 | [Tilting area templates up and down](#fr-8-tilting-area-templates-up-and-down) | open (designed, not built) | 2026-11-11 |
 
 ---
 
@@ -157,4 +158,62 @@ radius, a cone or line in its direction).
 **Open questions:** the 3-D distance rule in the system configuration (`measurement`), and every place that
 measures (the distance label, reach, areas, sight over low walls); whether areas get a height; how to show
 a token's height when it changes during a move.
+
+---
+
+## FR-8: Tilting area templates up and down
+
+**Asked for:** the user, 2026-11-11, after height in areas (FR-7): "What are your thoughts about tilting area of
+effects up and down?" Logged as a backlog feature with the thinking so far.
+
+**What is known (as of FR-7):** every template has a height (a burst's point; cones, lines and emanations start
+at the caster's elevation) and runs level. Who it reaches is worked out per square on the fly (engine
+`areaReaches`, `tokensInArea`): bursts and cones reach as far up and down as is left of their size at that
+square, emanations their size from the caster's height column, lines one square tall. Creatures in the squares
+but beyond that reach are listed as out of reach and not targeted.
+
+**Rules footing:** PF2E areas are three-dimensional, and nothing stops a cone or line from being aimed upward
+(at a flyer, out of a pit), but the rules give no method. What we build is a ruling in software, like FR-7's
+height counting, and belongs in the system configuration where it varies by system.
+
+**Proposed model: a height band per square.**
+- Make the per-square reach explicit: every square of an area carries the lowest and highest point it reaches
+  there ([zmin, zmax], feet). A token is hit if its height column (elevation up to elevation + height by
+  size) overlaps the band in any square it stands in: one test for every shape, flat or tilted.
+- A flat burst or cone fills its bands from today's dome rule, so nothing changes for level areas.
+- A tilted cone or line is a different footprint, each square with its own band: a line rising toward a
+  flyer is low in its first squares and higher further out.
+- The template record keeps the pitch (and, for a line, the height at its far end) so the save, the board
+  and `tools/area.mjs` agree.
+
+**Per shape.**
+- **Lines:** any pitch. Aimed at something 30 ft up and 30 ft away, a line climbs about 5 ft per square. Still
+  one square thick, so it passes over whoever it rises past.
+- **Cones:** snap to 0, 45 or 90 degrees, as the 8 compass directions snap. A 45-degree cone is the
+  vertical-plane version of the diagonal cone, so the grid count stays honest; straight up (90 degrees)
+  covers the caster's column and its neighbours, for a creature directly overhead.
+- **Bursts:** no tilt (they already have a height). **Emanations:** no tilt (centred on the caster).
+
+**Aiming on the board.**
+- **Aim at a token (the easy way):** while aiming a cone or line, clicking a token aims it at that creature,
+  height included ("lightning bolt at the dragon"). This is what players will want nearly every time.
+- **By hand:** while aiming, the arrow keys up and down tilt: 45-degree steps for a cone, 5 ft at the far end
+  for a line. The aim bar says "rising 45 degrees" or "to 30 ft up".
+- **Drawing:** the squares stay flat on the map but are shaded by height (lighter where the area is high), and
+  the template's label says "rising to 30 ft", so it is clear it passes over those beneath.
+- **From chat:** `tools/area.mjs` gains `--pitch DEG` (cones: 0, 45, 90; down with negatives) and
+  `--toward-token ID` (aim at a creature in 3-D), and reports bands and who is out of reach as now.
+
+**Cost and limits.**
+- The engine change (bands, tilted footprints) is modest and testable; the aiming controls are most of the
+  work.
+- Walls stay full height: a tilted line cannot pass over a low wall until walls have heights (a separate idea).
+- Line of effect for a tilted area still uses the flat wall test from its start square.
+
+**Suggested order:** tilted **lines** first, with aim-at-a-token (where it matters most at the table); tilted
+cones later if fights with flyers are common. Until then: GM rulings, helped by the out-of-reach list.
+
+**Open questions:** should a line aimed at a token stop at the token or run its full length (PF2E lines run
+their full length)? Do downward cones from a flyer need their own snap angles (-45, -90)? How is the band
+drawn when two templates overlap?
 
