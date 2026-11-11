@@ -133,6 +133,11 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **GM-only effects** (`--gm-only`) are for what the players have not noticed: they show only in the GM view.
 - **The conditions are data in the system package** (`rulesets/<id>/conditions.js`): a condition's icon, kind, value rules and rules line are changed there, never in the board. Keep each icon unique (a test checks) and the rules line short and paraphrased.
 
+### Concealment by light
+
+- **Never store light concealment as an effect.** It is per observer and changes as anyone moves or a light changes; the board works it out (`concealedFrom` in the party view). Use the `concealed` condition only for concealment that applies to everyone (Blur, fog, an obscuring cloud).
+- **Answer "is it concealed from X?" from the engine, not from the board's badge:** the light rules (`rulesets/pf2e/light.js` `perceive`) for observer X's senses and the light at the target. Remember that low-light vision and darkvision see dim light clearly.
+
 ### The token HUD
 
 - **Right-click is shared with panning:** the pan remembers the button and the point; a right press released without moving over a token opens the HUD. Keep that rule if the right button gets more uses.

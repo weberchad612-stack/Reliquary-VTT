@@ -315,6 +315,18 @@ board's status icons). Helpers in `board/effects.js`; the conditions are the sys
   they cannot see (Player Core: the unconscious are blinded). Added by Claude while building; kept by the
   user (2026-11-11).
 
+**Concealment by light** (kept separate from the effect badges, the user's choice, 2026-11-11). Concealment
+from dim light is between two creatures: it depends on the light where the target stands and the observer's
+senses (Kerra with normal vision; Pip with darkvision and Lyra with low-light vision see the same rat clearly).
+So it is worked out, never stored, and follows the board's eyes: with a creature selected, concealed from
+that creature; with none, concealed from at least one PC who sees it. It shows as a badge in the token's
+bottom-right corner, the same square as the effect badges (green border), holding a half-shaded disc; its
+hover names who it is concealed from and why ("Concealed from Kerra: in dim light. Targeting it takes a DC 5
+flat check."). The stored **concealed** condition (a spell, fog: concealed from everyone) is an ordinary
+badge; when a creature has it, the light badge is not shown. A rules engine (later) asks the engine, not the
+badge: the light rules' `perceive` gives observed, concealed or unseen for one observer; a query for one
+observer and one target (`observe`) is the planned way to ask it.
+
 **The token HUD** (right-click a token; designed with the user and built 2026-11-11, after Foundry's Token
 HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
 

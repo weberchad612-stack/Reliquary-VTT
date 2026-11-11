@@ -1135,7 +1135,8 @@ export async function start(store, { build = null } = {}) {
       // square with others: its own quarter): amber when selected, its kind's colour when hovered.
       const box = boxFor(id, t, L);
       if (box) strokeBox(ctx, box);
-      if (seen && !t0.dead && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
+      // concealed by light from the creature whose eyes the board shows (or from some PC): worked out, not stored
+      if (seen && !t0.dead && concealedNow(F, id) && !hasStoredConcealed(t0)) badgeQueue.push(() => drawConcealBadge(F, id, P(t.x), P(t.y), P(size)));
       badgeQueue.push(() => drawBadges(id, t0, P(t.x), P(t.y), P(size)));   // after every token, so none covers them
     }
     for (const f of badgeQueue) f();
@@ -1215,13 +1216,29 @@ export async function start(store, { build = null } = {}) {
     if (!from) return false;
     return F.focus ? from.includes(F.focus) : true;
   }
-  function drawConcealed(x, y, r) {   // a half-shaded disc: concealed (DC 5 flat check to target)
+  /** The concealed condition set on the creature (a spell, fog) shows as an ordinary badge for everyone. */
+  const hasStoredConcealed = (t) => (t.effects || []).some((e) => e.id === 'concealed' && (S.view === 'gm' || !e.gm_only));
+  /**
+   * Concealment by light, as a badge in the token's bottom-right corner: the same square as the effect badges,
+   * holding the half-shaded disc. It follows the board's eyes: with a creature selected, concealed from that
+   * creature; otherwise concealed from at least one PC who sees it. The hover names who and why.
+   */
+  function drawConcealBadge(F, id, left, top, spacePx) {
+    const b = Math.max(BADGE_MIN_PX / scale, spacePx / 5), inset = b * 0.08, sz = b - inset;
+    const x = left + spacePx - inset - sz, y = top + spacePx - inset - sz;
     ctx.save();
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#ebe6dc'; ctx.fill();
-    ctx.beginPath(); ctx.arc(x, y, r, -Math.PI / 2, Math.PI / 2); ctx.closePath(); ctx.fillStyle = '#20232a'; ctx.fill();
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.lineWidth = 1.5; ctx.strokeStyle = '#0d0f12'; ctx.stroke();
+    ctx.fillStyle = '#1a2438'; ctx.strokeStyle = KIND_COLOURS.good; ctx.lineWidth = Math.max(1 / scale, sz * 0.08);
+    ctx.beginPath(); ctx.roundRect(x, y, sz, sz, sz * 0.18); ctx.fill(); ctx.stroke();
+    const cx = x + sz / 2, cy = y + sz / 2, r = sz * 0.3;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#ebe6dc'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2); ctx.closePath(); ctx.fillStyle = '#4b5263'; ctx.fill();
     ctx.restore();
+    const from = (F.concealedFrom[id] || []).filter((pid) => S.tokens[pid]).map((pid) => S.tokens[pid].name);
+    const who = F.focus ? S.tokens[F.focus].name : from.join(', ');
+    const others = F.focus ? '' : ' Any other PC who sees it sees it clearly.';
+    badgeHits.push({ x, y, w: sz, h: sz, text: `Concealed from ${who}: in dim light. Targeting it takes a DC 5 flat check.${others} (Worked out from light and senses; changes as they move.)` });
   }
+
   const namesOf = (ids) => ids.map((i) => S.tokens[i].name).join(' and ');
 
   function hud() {
