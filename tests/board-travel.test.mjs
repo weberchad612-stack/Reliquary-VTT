@@ -116,3 +116,80 @@ test('validator: entrances should pair up and lead back', () => {
   fs.writeFileSync(f, JSON.stringify(m));
   assert.match(msgs(), /to_link "nowhere" is not an entrance/);
 });
+
+// ---- area maps ----
+import { visiblePlaces, pinBox } from '../board/area.js';
+
+const AREA_MAPS = [
+  ...MAPS,
+  { id: 'town', name: 'Town', kind: 'area', links: [] },
+  { id: 'road', name: 'Road', links: [{ id: 'gate', label: 'Town gate', at: [[4, 0]], to_map: 'town', arrive: [[0, 0]], found: true }] },
+];
+
+test('area maps: one entry each in the map menu, no sub-menu', () => {
+  const gm = travelMenu({ maps: AREA_MAPS, view: 'gm', current: 'town' });
+  const town = gm[0].items.find((i) => i.label === 'Town');
+  assert.equal(town.items, undefined);
+  assert.equal(town.tag, 'party here');
+  assert.deepEqual(parseTravelId(town.id), { kind: 'view', map: 'town', link: null });
+  const pl = travelMenu({ maps: AREA_MAPS, view: 'player', current: 'crypt', discovered: ['town'] });
+  const t2 = pl[0].items.find((i) => i.label === 'Town');
+  assert.deepEqual(parseTravelId(t2.id), { kind: 'go', map: 'town', link: null });
+  assert.ok(!t2.disabled);
+  const here = travelMenu({ maps: AREA_MAPS, view: 'player', current: 'town' })[0].items.find((i) => i.label === 'Town');
+  assert.ok(here.disabled && here.tag === 'here');
+  // an entrance leading to an area map can be taken
+  const road = travelMenu({ maps: AREA_MAPS, view: 'player', current: 'road', discovered: ['town'] })[0].items.find((i) => i.label === 'Road');
+  assert.equal(road.items[0].label, 'Town gate → Town');
+  assert.ok(!road.items[0].disabled);
+});
+
+test('area maps: travelling in needs no squares; leaving arrives at the entrance itself', () => {
+  const tokens = { k: { name: 'Kerra', kind: 'pc', x: 1, y: 1 } };
+  const into = travelPlan({ maps: AREA_MAPS, from: 'crypt', toMap: 'town', tokens });
+  assert.equal(into.target.map.id, 'town');
+  assert.equal(into.target.link, null);
+  assert.equal(into.cells, null);
+  assert.deepEqual(into.found, {});
+  const gate = travelPlan({ maps: AREA_MAPS, from: 'road', toMap: 'road', linkId: 'gate', tokens });
+  assert.equal(gate.target.map.id, 'town');
+  const out = travelPlan({ maps: AREA_MAPS, from: 'town', toMap: 'well', linkId: 'up', tokens });
+  assert.deepEqual(out.cells, [[1, 1], [2, 1]], 'the squares the paired stairs down lead to');
+  const hatchMaps = [...AREA_MAPS, { id: 'cellar', name: 'Cellar', links: [{ id: 'hatch', label: 'Hatch', at: [[3, 3]], to_map: 'town', found: true, arrive: [[0, 0]] }] }];
+  assert.deepEqual(travelPlan({ maps: hatchMaps, from: 'town', toMap: 'cellar', linkId: 'hatch', tokens }).cells, [[3, 3]], 'no partner: the entrance\'s own squares');
+  assert.deepEqual(out.found, { well: ['up'] });
+});
+
+test('area maps: players see public and found places; pins scale with the image', () => {
+  const town = { image: { w: 1000, h: 500 }, places: [
+    { id: 'a', name: 'A', at: [100, 100] },
+    { id: 's', name: 'S', at: [500, 250], public: false },
+    { id: 'w', name: 'W', at: [500, 400], shape: 'wide', size: 220 },
+  ] };
+  assert.deepEqual(visiblePlaces(town, 'player').map((p) => p.id), ['a', 'w']);
+  assert.deepEqual(visiblePlaces(town, 'player', ['s']).map((p) => p.id), ['a', 's', 'w']);
+  const gm = visiblePlaces(town, 'gm');
+  assert.deepEqual(gm.map((p) => [p.id, p.secret, p.revealed]), [['a', false, false], ['s', true, false], ['w', false, false]]);
+  assert.deepEqual(pinBox(town.places[0], town.image).map((v) => +v.toFixed(2)), [7.75, 15.5, 4.5, 9]);
+  assert.deepEqual(pinBox(town.places[2], town.image).map((v) => +v.toFixed(2)), [39, 76, 22, 8]);
+});
+
+test('validator: area maps check their places, and a link to one needs no partner', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'area-'));
+  fs.cpSync('examples/sample-pack', dir, { recursive: true });
+  const msgs = () => { const r = validate(dir); return [...r.errors, ...r.warnings].map((m) => m.msg).join('\n'); };
+  assert.equal(msgs(), '');
+  const f = path.join(dir, 'maps/sample-village/map.json');
+  const m = JSON.parse(fs.readFileSync(f, 'utf8'));
+  m.places.push({ ...m.places[0] });
+  m.places.push({ id: 'far', name: 'Far', at: [5000, 10] });
+  m.places.push({ id: 'bad', name: 'Bad', at: [10, 10], to_map: 'nowhere' });
+  fs.writeFileSync(f, JSON.stringify(m));
+  const out = msgs();
+  assert.match(out, /duplicate place id/);
+  assert.match(out, /outside the image/);
+  assert.match(out, /battle map "nowhere"/);
+  m.grid = { cell_px: 50, origin_px: [0, 0], cols: 2, rows: 2, feet_per_cell: 5 };
+  fs.writeFileSync(f, JSON.stringify(m));
+  assert.match(msgs(), /grid|must NOT|false schema/i, 'an area map may not have a grid');
+});

@@ -66,6 +66,10 @@ The user's standing rule:
 - **Added segments must reach into the walls they join.** A segment that ends exactly at a wall's corner leaves a sliver for sight to leak through; extend each end an eighth of a cell or more into the wall.
 - **Segment ids change** every time a map is vectorized again. Corrections are geometric, in cell coordinates, never by segment id.
 
+## 5a. Area maps are not imported
+
+A town or region map (`kind: "area"`, docs/design/maps.md section 3a) has no walls to trace: write its `map.json` by hand from the book's map and text, one place per keyed site, paraphrased. Keep secret sites `public: false`.
+
 ## 6. Licensing and privacy
 
 - Book-derived files (map images, walls, settings that name rooms and creatures, demo pages built on them) live only in the user's private `packs/` folder, which git ignores. Before every commit, check that nothing under `packs/` or `pdfsource/` is staged.

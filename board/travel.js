@@ -8,6 +8,10 @@
 //   through to its partner entrance on the map it leads to. Arrival squares follow the pack format
 //   (docs/design/maps.md, section 3): a link's `arrive` cells are on the map it leads to, so arriving at
 //   entrance E uses the arrive cells of E's partner (the link that leads to E), else E's own cells.
+// - An area map (kind "area": a town) has no entrances and no sub-menu: it is one entry. The GM previews it;
+//   players travel to it (the PCs go with the party, undrawn) and leave it by choosing an entrance of a
+//   battle map, where they arrive on the entrance's own squares. A battle map's entrance may lead to an
+//   area map; taking it goes there.
 // - Discovery is never automatic: Claude marks maps discovered (state/table `discovered`) and entrances
 //   found (`links_found` in each map's state), by ruling or because the user says so. The one exception:
 //   arriving through an entrance makes the way back known (the entrance and its partner on the map the
@@ -51,7 +55,13 @@ export function travelMenu({ maps, view, current, shown = current, discovered = 
   const name = (id) => (byId.get(id) && byId.get(id).name) || id;
   const gm = view === 'gm';
   const visible = gm ? maps : maps.filter((m) => m.id === current || discovered.includes(m.id));
+  const isArea = (id) => (byId.get(id) || {}).kind === 'area';
   const items = visible.map((m) => {
+    if (m.kind === 'area') {
+      const here = m.id === current;
+      if (gm) return { id: travelId('view', m.id), label: m.name || m.id, kind: 'command', tag: here ? 'party here' : m.id === shown ? 'previewing' : undefined, hint: `Preview ${m.name || m.id} on this screen` };
+      return { id: travelId('go', m.id), label: m.name || m.id, kind: 'command', disabled: here, tag: here ? 'here' : undefined, hint: here ? undefined : `Move the party to ${m.name || m.id}` };
+    }
     const sub = [];
     if (gm) sub.push({ id: travelId('view', m.id), label: 'Whole map', kind: 'command', hint: `Preview ${m.name || m.id} on this screen` });
     const links = (m.links || []).filter((l) => gm || isKnown(m.id, l, linksFound));
@@ -66,7 +76,7 @@ export function travelMenu({ maps, view, current, shown = current, discovered = 
         // An entrance here is taken: through to its partner on the map it leads to.
         const p = partnerOf(l, maps);
         e.label = `${l.label} → ${discovered.includes(l.to_map) ? name(l.to_map) : 'unexplored'}`;
-        if (!p) { e.disabled = true; e.tag = 'not linked'; }
+        if (!p && !isArea(l.to_map)) { e.disabled = true; e.tag = 'not linked'; }
         else e.hint = `Take the ${l.label} with the party`;
       } else {
         e.hint = `Move the party to the ${l.label} in ${m.name || m.id}`;
@@ -134,16 +144,22 @@ export function planArrival({ pm, cells, travellers, occupants = [], engine, lim
 export function travelPlan({ maps, from, toMap, linkId, tokens }) {
   const fromMap = maps.find((m) => m.id === from);
   let target = null, via = null;
+  const area = (id) => (maps.find((m) => m.id === id) || {}).kind === 'area';
   if (toMap === from) {
-    // Taking an entrance on this map: through to its partner.
-    via = (fromMap.links || []).find((l) => l.id === linkId) || null;
-    target = via && partnerOf(via, maps);
+    // Taking an entrance on this map: through to its partner, or to the area map it leads to.
+    via = ((fromMap && fromMap.links) || []).find((l) => l.id === linkId) || null;
+    target = via && (area(via.to_map) ? { map: maps.find((m) => m.id === via.to_map), link: null } : partnerOf(via, maps));
+  } else if (area(toMap)) {
+    target = { map: maps.find((m) => m.id === toMap), link: null };
   } else {
     const m = maps.find((x) => x.id === toMap);
     const l = m && (m.links || []).find((x) => x.id === linkId);
     if (l) target = { map: m, link: l };
   }
   if (!target) return null;
+  const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
+    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+  if (!target.link) return { target, via, cells: null, found: {}, travellers };   // an area map: no squares
   // Arrival squares (on the target map): the arrive cells of the link that leads to the target entrance.
   const into = via || (() => {
     const p = partnerOf(target.link, maps);
@@ -153,7 +169,5 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
   const found = { [target.map.id]: [target.link.id] };
   const back = target.link.to_map === from && target.link.to_link ? target.link.to_link : via && via.id;
   if (back && target.link.to_map === from) found[from] = [back];
-  const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
-    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
   return { target, via, cells, found, travellers };
 }

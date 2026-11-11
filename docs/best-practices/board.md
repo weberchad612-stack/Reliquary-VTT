@@ -55,7 +55,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Verify on the PC, not just in the workspace.** The read-back checksum is what proves the save reached the user's disk.
 - **Do not trust a log entry you wrote by hand** until you have compared it with one the board wrote (section 2).
 
-## 6. Maps, entrances and discovery
+## 6. Maps, entrances, area maps and discovery
 
 - **Mark a map discovered** when the party learns of it (your ruling, or the user says so): add its id to `discovered` in `state/table` (read for the version, `update`), with a log entry ("Claude: the party learns of the Stairwell"). Players see it in the map menu at once.
 - **Mark an entrance found** the same way: add its id to `links_found` in `mapstate/<map>`. The pack's `found` is only the starting state.
@@ -63,6 +63,14 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **When the party moves**, the board writes the PCs' tokens (map and square), any newly known entrances, a log entry by the player, and `current_map` last. Read the log to narrate the arrival. If an entrance has no room, the board refuses and tells the player to ask you: place the PCs yourself.
 - **Moving the party yourself:** write each PC's `map`, `x`, `y`, then `current_map` last (every open board reloads on it). Use the arrival squares and the same overflow rule (`planArrival` in `board/travel.js`, with the target map's walls and doors).
 - **Pair entrances in packs** with `to_link`, both ways; the validator warns about an unpaired one. A link's `arrive` cells are on the map it leads to.
+
+### Area maps (towns)
+
+- **Requests.** A player's "The party goes to …" is in `state/request` (`{by, at, map, place, what, status}`) and in the change log. When the user next writes, read it, rule, narrate, then **delete `state/request`** (with its version) so the pin's waiting dot clears. One at a time: a new request replaces the old.
+- **Reveal a GM-only place** (the party finds the hideout): add its id to `places_found` in `mapstate/<area map>`. Public places need nothing.
+- **A scene at a place with a battle map** (the graveyard): move the PCs yourself, as for any move (their `map`, `x`, `y`, then `current_map` last), onto sensible squares of the battle map.
+- **PCs on an area map** keep their last square but are not drawn. When the party leaves through a battle map's entrance from the map menu, they arrive on that entrance's own squares.
+- **Building one** from a book: an area map is written by hand, not by the importer. The image goes into the private pack; each place gets a paraphrased, player-safe `note` and, if needed, a `gm_note`. Mark anything the players should not know yet `public: false`. Validate with `tools/validate.mjs`.
 
 ## 7. The version badge and publishing
 

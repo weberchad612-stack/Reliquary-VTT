@@ -130,6 +130,20 @@ prevents accidental spoilers. When other people play on a board, the secrecy mod
      exception: arriving through an entrance makes the way back known (the arrival entrance and its
      partner on the map the party left). Entrances pair through `to_link` (docs/design/maps.md, section 3).
 
+**Area maps** (`board/area.js`; format: docs/design/maps.md, section 3a), agreed on 2026-11-10 from the
+previous board's separate Otari town page. A town or region loads in the same board in place of a battle
+map, fitted to the window, its places as pins.
+- **Map menu:** an area map is one entry, no sub-menu. GM: preview it. Players (once it is discovered):
+  move the party there; the PCs go with the party but are not drawn.
+- **Pins:** players see public places and those found in play; the GM sees all, GM-only ones dashed.
+  Clicking a pin shows its card (kind of place, name, address, a short description; for the GM also the GM
+  note, whether it is GM-only, and a preview of its battle map).
+- **Requests:** the card's "The party goes here" leaves one pending request (`state/request`), shown as a
+  red dot on the pin and in the change log. A new request replaces it (with a confirmation); the player
+  can withdraw it. The board cannot message Claude: the user tells Claude in chat, Claude rules, narrates
+  and clears it.
+- The shared pieces (menus, travel, preview, version banner) are `board/shell.js`, used by both views.
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with

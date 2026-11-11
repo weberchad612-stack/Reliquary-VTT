@@ -27,6 +27,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* the hidden attribute always wins over a component's display */
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
 .app { display: grid; grid-template-rows: auto auto 1fr; height: 100%; }
@@ -166,6 +167,27 @@ ol.log li.foe { border-left-color: var(--foe); }
 .mi-key { font: 500 11px var(--font-mono); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
 .mi-arrow { color: var(--muted); }
 .mi-sep { height: 1px; background: var(--line); margin: 4px 6px; }
+/* The area view (board/area.js): a town or region map fitted to the window, places as pins. */
+.stage.area-stage { align-items: center; justify-content: center; overflow: hidden; }
+.area-map { position: relative; flex: none; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.45); overflow: hidden; user-select: none; }
+.area-map img { display: block; width: 100%; height: 100%; }
+.area-map .pin {
+  position: absolute; padding: 0; border-radius: 50%; border: 2px solid #f4ecd6; background: rgba(23, 25, 29, .15);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.4); cursor: pointer; transition: transform .12s, background .12s;
+}
+.area-map .pin.wide { border-radius: 999px; }
+.area-map .pin:hover { background: color-mix(in srgb, var(--accent) 35%, transparent); transform: scale(1.08); }
+.area-map .pin[aria-pressed="true"] { border-color: var(--accent); border-width: 3px; background: color-mix(in srgb, var(--accent) 40%, transparent); }
+.area-map .pin.secret { border-style: dashed; border-color: var(--foe); }
+.area-map .pin.pending::after { content: ''; position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--foe); box-shadow: 0 0 0 2px #17191d; }
+.place-card .ptype { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.place-card h2 { margin: 0; }
+.place-card p { margin: 0; }
+.place-card .addr { color: var(--muted); font-size: 14px; }
+.place-card .gmnote { border-left: 3px solid var(--warn); padding-left: 8px; color: var(--muted); font-size: 14px; }
+.place-card .req { color: var(--accent); font-size: 14px; }
+.place-card .muted { color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .area-map .pin { transition: none; } }
 @media (max-width: 860px) {
   main { grid-template-columns: 1fr; }
   aside { border-left: 0; border-top: 1px solid var(--line); }

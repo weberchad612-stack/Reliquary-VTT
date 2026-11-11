@@ -109,6 +109,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
   const map = readJson(mapFile, report);
   const doors = new Map();
   if (!map || !schemaErrors(V.map, map, mapFile, report)) return { map: null, doors, report };
+  if (map.kind === 'area') return validateArea(map, dir, mapFile, knownMaps, report);
 
   const { grid } = map;
   if (path.basename(dir) !== map.id) report.warn(mapFile, `map id "${map.id}" does not match its folder name "${path.basename(dir)}"`);
@@ -260,6 +261,18 @@ export function validateState(file, mapInfo, report = new Report()) {
     return report;
   }
   const { map, doors } = mapInfo;
+  if (mapInfo.area) {
+    if (st.map !== map.id) report.error(file, `state is for map "${st.map}" but was checked against "${map.id}"`);
+    for (const id of st.places_found || []) {
+      const p = map.places.find((x) => x.id === id);
+      if (!p) report.error(file, `places_found: no place "${id}" on map "${map.id}"`);
+      else if (p.public !== false) report.warn(file, `places_found: "${id}" is public already`);
+    }
+    for (const k of ['doors', 'locked_known', 'links_found', 'explored', 'terrain', 'terrain_on', 'terrain_off', 'lights', 'regions', 'regions_off', 'hidden_marks']) {
+      if (st[k] !== undefined) report.warn(file, `${k}: an area map has no grid; ignored`);
+    }
+    return report;
+  }
   const grid = map.grid;
   if (st.map !== map.id) report.error(file, `state is for map "${st.map}" but was checked against "${map.id}"`);
 
@@ -338,6 +351,23 @@ function checkArea(a, where, grid, file, report) {
   if (a.damage && a.kind !== 'hazardous') report.warn(file, `${where}: "damage" only applies to hazardous terrain`);
 }
 
+/** An area map (a town): its image and places. No grid, walls, terrain or lighting. */
+function validateArea(map, dir, mapFile, knownMaps, report) {
+  if (path.basename(dir) !== map.id) report.warn(mapFile, `map id "${map.id}" does not match its folder name "${path.basename(dir)}"`);
+  if (!fs.existsSync(path.join(dir, map.image.file))) report.error(mapFile, `image file "${map.image.file}" not found`);
+  const ids = new Set();
+  for (const p of map.places) {
+    const where = `place "${p.id}"`;
+    if (ids.has(p.id)) report.error(mapFile, `${where}: duplicate place id`);
+    ids.add(p.id);
+    if (p.at[0] > map.image.w || p.at[1] > map.image.h) report.error(mapFile, `${where}: pin ${fmt(p.at)} is outside the image (${map.image.w}x${map.image.h})`);
+    if (p.to_map && knownMaps && !knownMaps.has(p.to_map)) report.error(mapFile, `${where}: battle map "${p.to_map}" is not in this pack`);
+    if (p.to_map === map.id) report.error(mapFile, `${where}: to_map is this map`);
+  }
+  if (!map.places.length) report.warn(mapFile, 'an area map with no places');
+  return { map, dir, doors: new Map(), placeIds: ids, area: true, report };
+}
+
 /**
  * Entrances between maps come in pairs: a link's to_link names the entrance it arrives at on its target
  * map, and that entrance should lead back. Without a pair the board cannot take the entrance from the
@@ -350,6 +380,7 @@ function checkLinkPairs(maps, report) {
       const where = `links "${l.id}"`;
       const target = maps.get(l.to_map);
       if (!target) continue;   // a missing target map is reported with the map
+      if (target.area) { if (l.to_link) report.error(file, `${where}: to_link on a link to an area map (an area map has no entrances)`); continue; }
       if (!l.to_link) { report.warn(file, `${where}: no to_link (the entrance it arrives at on ${l.to_map}); the party cannot take it from the map menu`); continue; }
       const back = (target.map.links || []).find((x) => x.id === l.to_link);
       if (!back) { report.error(file, `${where}: to_link "${l.to_link}" is not an entrance on ${l.to_map}`); continue; }

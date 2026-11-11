@@ -2,14 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/map.schema.json",
   "title": "Map record",
-  "description": "One map in an adventure pack: image, grid calibration, wall file and links to other maps. See docs/design/maps.md section 3.",
+  "description": "One map in an adventure pack. A battle map (the default) has an image, grid calibration, wall file and links to other maps; an area map (kind \"area\": a town, a region) has an image and places, and no grid. See docs/design/maps.md section 3.",
   "type": "object",
   "required": [
     "id",
     "name",
-    "image",
-    "grid",
-    "walls"
+    "image"
   ],
   "additionalProperties": false,
   "properties": {
@@ -22,6 +20,14 @@
     "name": {
       "type": "string",
       "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "battle",
+        "area"
+      ],
+      "default": "battle",
+      "description": "battle: a grid map with walls, tokens and fog. area: a picture with places (a town), shown fitted to the window; travel and requests only."
     },
     "image": {
       "type": "object",
@@ -81,11 +87,16 @@
       }
     },
     "outdoor": {
-      "type": "boolean", "default": false,
+      "type": "boolean",
+      "default": false,
       "description": "Outdoor map: lit by the sky (bright by day; the save's sky_light can make it dim or dark)."
     },
     "base_light": {
-      "enum": ["bright", "dim", "dark"],
+      "enum": [
+        "bright",
+        "dim",
+        "dark"
+      ],
       "description": "Light level of an indoor map away from regions and lights. Default: bright when no lighting is given, else dark."
     },
     "lighting": {
@@ -189,6 +200,74 @@
           }
         }
       }
+    },
+    "places": {
+      "description": "Area maps: the places shown as pins. Players see public places and those found in play (places_found in the map's state); the GM sees all.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "at"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "What kind of place it is (\"Tavern and inn\")."
+          },
+          "address": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "description": "A short description players may read."
+          },
+          "gm_note": {
+            "type": "string",
+            "description": "GM-only note."
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "The pin's centre, in image pixels."
+          },
+          "shape": {
+            "enum": [
+              "round",
+              "wide"
+            ],
+            "default": "round"
+          },
+          "size": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The pin's width in image pixels (default: 4.5% of the image width; a wide pin is 5.5 times as wide as it is tall)."
+          },
+          "public": {
+            "type": "boolean",
+            "default": true,
+            "description": "false: GM-only until found in play."
+          },
+          "to_map": {
+            "$ref": "#/$defs/id",
+            "description": "A battle map for this place (the GM can preview it from the place's card)."
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -217,6 +296,37 @@
       },
       "minItems": 2,
       "maxItems": 2
+    }
+  },
+  "if": {
+    "properties": {
+      "kind": {
+        "const": "area"
+      }
+    },
+    "required": [
+      "kind"
+    ]
+  },
+  "then": {
+    "required": [
+      "places"
+    ],
+    "properties": {
+      "grid": false,
+      "walls": false,
+      "links": false,
+      "terrain": false,
+      "lighting": false
+    }
+  },
+  "else": {
+    "required": [
+      "grid",
+      "walls"
+    ],
+    "properties": {
+      "places": false
     }
   }
 }

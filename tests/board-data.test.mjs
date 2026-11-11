@@ -119,7 +119,8 @@ test('load ops reuse uploaded images by fingerprint, put board/meta last, and st
   assert.equal(all.find((o) => o.path === 'maps/sample-keep').data.image.asset, 'A1');
   assert.equal(all.some((o) => o.path === 'board/meta'), false);
   assert.equal(ops.meta.path, 'board/meta');
-  assert.deepEqual(ops.upload.map((u) => u.map).sort(), ['sample-crypt', 'sample-stairwell']);
+  assert.deepEqual(ops.upload.map((u) => u.map).sort(), ['sample-crypt', 'sample-stairwell', 'sample-village']);
+  assert.equal(all.some((o) => o.path.startsWith('walls/sample-village')), false, 'an area map has no wall records');
   assert.equal(all.length, Object.keys(r0).length - 1);
   const del = clearOps(Object.fromEntries(Array.from({ length: 120 }, (_, i) => [`log/${i}`, 1])));
   assert.deepEqual(del.map((b) => b.length), [50, 50, 20]);

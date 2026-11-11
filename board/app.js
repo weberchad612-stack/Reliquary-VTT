@@ -15,8 +15,8 @@
 import { MemoryStore } from './store.js';
 import { platformStore } from './platform.js';
 import { mapFromRecords, exploredFromRecords, exploredRecords } from './records.js';
-import { MENU, buildMenuBar } from './menu.js';
-import { travelMenu, parseTravelId, travelPlan, planArrival } from './travel.js';
+import { makeShell, pageMap } from './shell.js';
+import { startArea } from './area.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -69,15 +69,6 @@ export function showBuild(build) {
   b.hidden = false;
 }
 
-/** Is version a newer than b? Versions are v<yy>.<mm>.<dd>-<hhmm>, so they compare as text. */
-export const newerVersion = (a, b) => !!a && !!b && String(a) > String(b);
-
-/** The preview asked for in the page's address: #preview=<map>[:<entrance>] (GM view only). */
-export function previewFromHash(hash) {
-  const m = /^#?preview=([a-z0-9][a-z0-9-]*)(?::([A-Za-z0-9_-]+))?$/.exec(hash || '');
-  return m ? { map: m[1], link: m[2] || null } : null;
-}
-const KEEP_GM = 'reliquary-keep-gm';   // set just before a preview reload, so the GM view survives it
 
 /** Show a message in place of the map. */
 export function showMessage(text) {
@@ -109,18 +100,17 @@ export async function start(store, { build = null } = {}) {
   const NOTES = TABLE.notes || {};
   const PARTY_MAP = TABLE.current_map || (META.maps || [])[0];
   // The GM's preview of another map: this screen only; nothing is written while it is shown.
-  let keepGM = false;
-  try { keepGM = sessionStorage.getItem(KEEP_GM) === '1'; sessionStorage.removeItem(KEEP_GM); } catch (e) { /* no session storage */ }
-  let PREVIEW = keepGM ? previewFromHash(location.hash) : null;
-  if (PREVIEW && (PREVIEW.map === PARTY_MAP || !(META.maps || []).includes(PREVIEW.map))) PREVIEW = { ...PREVIEW, map: PARTY_MAP, here: true };
-  if (!keepGM && location.hash) history.replaceState(null, '', location.pathname + location.search);
-  const READONLY = !!(PREVIEW && !PREVIEW.here);
-  const MAP_ID = PREVIEW ? PREVIEW.map : PARTY_MAP;
+  const PAGE = pageMap(META, PARTY_MAP);
+  const keepGM = PAGE.keepGM, PREVIEW = PAGE.preview, READONLY = PAGE.readOnly, MAP_ID = PAGE.mapId;
   const recs = {};
   for (const p of [`maps/${MAP_ID}`, `terrain/${MAP_ID}`, `lighting/${MAP_ID}`]) { const d = await store.get(p); if (d) recs[p] = d; }
   for (const e of await store.list('walls')) if (e.data.map === MAP_ID) recs[e.path] = e.data;
   const MAPDATA = mapFromRecords(recs, MAP_ID);
   if (!MAPDATA) return showMessage(`The map "${MAP_ID}" is not on this board.`);
+  if (MAPDATA.map.kind === 'area') {
+    // A town or region: a picture with places, not a battle map (board/area.js).
+    return startArea(store, { meta: META, table: TABLE, page: PAGE, partyMap: PARTY_MAP, map: MAPDATA.map, mapState: (await store.get(`mapstate/${MAP_ID}`)) || {}, build });
+  }
   const DATA = { ...MAPDATA, image: MAPDATA.map.image && MAPDATA.map.image.asset ? store.assetUrl(MAPDATA.map.image.asset) : null };
   const MS = (await store.get(`mapstate/${MAP_ID}`)) || {};
   const TOKENS0 = {};
@@ -155,6 +145,7 @@ export async function start(store, { build = null } = {}) {
     tokens: clone(TOKENS0),
   });
   let S = START();
+  let shellReady = false;   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
   let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
   let gen = 0;   // bumped by every recompute(): cached drawings and the focus view key on it
@@ -1273,9 +1264,8 @@ export async function start(store, { build = null } = {}) {
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
-    if (menu) menu.setView(v);
-    mapMenuDef();
-    if (READONLY && v !== 'gm') leavePreview();
+    if (shellReady) shell.setView(v);
+    if (READONLY && v !== 'gm') shell.leavePreview();
   }
   document.getElementById('v-player').onclick = () => setView('player');
   document.getElementById('v-gm').onclick = () => { if (S.view !== 'gm') confirmGM(); };
@@ -1488,7 +1478,7 @@ export async function start(store, { build = null } = {}) {
       if (!t) return;
       TABLE = t;
       travelChanged();
-      if (READONLY) { travelChanged(); return previewBar(); }
+      if (READONLY) { travelChanged(); return shell.previewBar(); }
       if (t.current_map && t.current_map !== MAP_ID) return reloadBoard('The table moved to another map.');
       if (!fresh('state/table', tableRecord(t))) return;
       S.sky = t.sky_light || 'bright';
@@ -1563,68 +1553,13 @@ export async function start(store, { build = null } = {}) {
     el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
   }
 
-  // ---------- the top menu (board/menu.js): items are not wired yet; each says so when chosen ----------
-  let menu = null;
-  function startMenu() {
-    menu = buildMenuBar(document.getElementById('menubar'), {
-      view: S.view,
-      onSelect: (id, item, state) => {
-        const what = item.kind === 'toggle' ? `${item.label} ${state ? 'on' : 'off'}` : item.label;
-        toast(`${what}: not built yet.`);
-      },
-    });
-  }
-
-  // ---------- the map menu on the map's name (board/travel.js) ----------
-  let MAPS = [];               // [{id, name, links}] in the campaign's order
-  let LINKS_FOUND = {};        // map id -> entrances found in play
-  let mapMenu = null;
-  async function startMapMenu() {
-    try {
-      const order = META.maps || [];
-      MAPS = (await store.list('maps')).map((r) => ({ id: r.data.id || r.id, name: r.data.name, grid: r.data.grid, links: r.data.links || [] }))
-        .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
-      for (const e of await store.list('mapstate')) LINKS_FOUND[e.data.map || e.id] = e.data.links_found || [];
-    } catch (e) { MAPS = [{ id: MAP_ID, name: map.name, links: map.links || [] }]; }
-    const nav = document.getElementById('mapmenu');
-    nav.hidden = false;
-    mapMenu = buildMenuBar(nav, { view: S.view, def: travelDef(), onSelect: (id) => chooseTravel(id) });
-    store.watchCollection('mapstate', (list) => {
-      const next = {};
-      for (const e of list) next[e.data.map || e.id] = e.data.links_found || [];
-      if (canon(next) !== canon(LINKS_FOUND)) { LINKS_FOUND = next; travelChanged(); }
-    });
-  }
-  const travelDef = () => travelMenu({ maps: MAPS, view: S.view, current: TABLE.current_map || PARTY_MAP, shown: MAP_ID, discovered: TABLE.discovered || [], linksFound: LINKS_FOUND });
-  let travelKey = '';
-  function travelChanged() {
-    if (!mapMenu) return;
-    const d = travelDef(), k = canon(d);
-    if (k === travelKey) return;
-    travelKey = k;
-    mapMenu.setDef(d);
-  }
-  function mapMenuDef() { if (mapMenu) { mapMenu.setView(S.view); travelKey = ''; travelChanged(); } }
-
-  function chooseTravel(id) {
-    const t = parseTravelId(id);
-    if (!t) return;
-    if (t.kind === 'view') return previewMap(t.map, t.link);
-    if (t.kind === 'go') return moveParty(t.map, t.link);
-  }
-  /** GM: show another map (centred on an entrance) on this screen only. */
-  function previewMap(mapId, linkId) {
-    if (S.view !== 'gm') return;
-    if (mapId === MAP_ID) { if (linkId) centreOnLink(linkId); else { zoom = 1; fit(); } return; }
-    try { sessionStorage.setItem(KEEP_GM, '1'); } catch (e) { /* the preview will open in the player view */ }
-    location.hash = 'preview=' + mapId + (linkId ? ':' + linkId : '');
-    location.reload();
-  }
-  function leavePreview() {
-    try { if (S.view === 'gm') sessionStorage.setItem(KEEP_GM, '1'); } catch (e) { /* back in the player view */ }
-    history.replaceState(null, '', location.pathname + location.search);
-    location.reload();
-  }
+  // ---------- the page around the map (board/shell.js): menus, travel, preview, version ----------
+  const shell = makeShell({
+    store, meta: META, build, table: () => TABLE, mapId: MAP_ID, mapName: map.name, partyMap: PARTY_MAP, readOnly: READONLY,
+    view: () => S.view, tokensHere: () => S.tokens, toast, logChange, centreOn: centreOnLink, fitWhole: () => { zoom = 1; fit(); },
+  });
+  shellReady = true;
+  const travelChanged = () => shell.travelChanged();
   function centreOnLink(linkId) {
     const l = (map.links || []).find((x) => x.id === linkId);
     if (!l) return;
@@ -1636,72 +1571,6 @@ export async function start(store, { build = null } = {}) {
     stage.scrollTop += r.top - sr.top + (OY + (y + 0.5) * CS) * scale - stage.clientHeight / 2;
     toast(l.label);
   }
-  function previewBar() {
-    const bar = document.getElementById('preview-bar');
-    if (!READONLY) { bar.hidden = true; return; }
-    const party = TABLE.current_map || PARTY_MAP;
-    const nm = (id) => ((MAPS.find((m) => m.id === id) || {}).name) || id;
-    document.getElementById('preview-text').textContent = `Previewing ${map.name || MAP_ID} on this screen only (the party is on ${nm(party)}). Nothing you change here is saved.`;
-    bar.hidden = false;
-    document.getElementById('preview-back').onclick = leavePreview;
-  }
-
-  /** Player: move the PCs on this map to an entrance (after a confirmation), then the table follows them. */
-  async function moveParty(toMap, linkId) {
-    if (S.view !== 'player' || READONLY) return;
-    const plan = travelPlan({ maps: MAPS, from: MAP_ID, toMap, linkId, tokens: S.tokens });
-    if (!plan) return toast('That entrance does not lead anywhere yet.');
-    if (!plan.travellers.length) return toast('No PCs are on this map.');
-    const dest = plan.target.map, entrance = plan.target.link;
-    const text = plan.via
-      ? `Take the ${plan.via.label} to ${dest.name || dest.id}? ${plan.travellers.map((t) => t.name || t.id).join(', ')} will go.`
-      : `Move the party to the ${entrance.label} in ${dest.name || dest.id}? ${plan.travellers.map((t) => t.name || t.id).join(', ')} will go.`;
-    if (!(await confirmTravel(text))) return;
-    try {
-      // The target map as the engine sees it: its walls and its doors as they stand.
-      const segs = (await store.list('walls')).filter((e) => e.data.map === dest.id).flatMap((e) => e.data.segs || []);
-      const dstate = (await store.get('mapstate/' + dest.id)) || {};
-      const pm = Engine.prepareMove(segs, dstate, dest.grid);
-      const occupants = (await store.list('tokens')).filter((e) => e.data.map === dest.id).map((e) => ({ ...e.data, id: e.id }));
-      const { placed, unplaced } = planArrival({ pm, cells: plan.cells, travellers: plan.travellers, occupants, engine: Engine });
-      if (unplaced.length) return toast(`There is no room at the ${entrance.label} for ${unplaced.join(', ')}. Ask Claude.`);
-      for (const p of placed) await store.update('tokens/' + p.id, { map: dest.id, x: p.x, y: p.y });
-      for (const [mid, ids] of Object.entries(plan.found)) {
-        const st = (await store.get('mapstate/' + mid)) || { map: mid };
-        const have = st.links_found || [];
-        const add = ids.filter((x) => !have.includes(x) && !((MAPS.find((m) => m.id === mid) || {}).links || []).find((l) => l.id === x && l.found));
-        if (add.length) await store.set('mapstate/' + mid, { ...st, map: mid, links_found: [...have, ...add] });
-      }
-      logChange(`party moved to the ${entrance.label} in ${dest.name || dest.id}`);
-      await store.update('state/table', { current_map: dest.id });   // the board reloads on this
-    } catch (e) { toast(`Could not move the party (${e.message || e}).`); }
-  }
-  function confirmTravel(text) {
-    return new Promise((resolve) => {
-      const dlg = document.getElementById('travel-confirm');
-      document.getElementById('travel-confirm-text').textContent = text;
-      dlg.hidden = false;
-      const yes = dlg.querySelector('[data-a=yes]'), no = dlg.querySelector('[data-a=no]');
-      const done = (v) => { dlg.hidden = true; document.removeEventListener('keydown', onKey, true); resolve(v); };
-      const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } };
-      document.addEventListener('keydown', onKey, true);
-      yes.onclick = () => done(true); no.onclick = () => done(false);
-      yes.focus();
-    });
-  }
-
-  // ---------- the version: a newer board published while this page is open ----------
-  function watchBuild() {
-    if (!build) return;
-    let dismissed = null;
-    const box = document.getElementById('newver');
-    store.watch('app/build', (b) => {
-      if (!b || !newerVersion(b.version, build.version) || b.version === dismissed) return;
-      box.hidden = false;
-      document.getElementById('newver-reload').onclick = () => location.reload();
-      document.getElementById('newver-x').onclick = () => { dismissed = b.version; box.hidden = true; };
-    });
-  }
 
   // ---------- a handle for tests and debugging (read-mostly; the board never depends on it) ----------
   window.reliquary = {
@@ -1711,8 +1580,8 @@ export async function start(store, { build = null } = {}) {
     exploredPolys: () => mask.toPolys(),
     select: (id) => { selected = id; panel(); draw(); },
     view: (v) => setView(v),
-    menu: () => menu,
-    mapMenu: () => mapMenu,
+    menu: () => shell.menu(),
+    mapMenu: () => shell.mapMenu(),
     preview: () => (READONLY ? MAP_ID : null),
     sky: (v) => { S.sky = v; document.getElementById('sky').value = v; recompute(); },
     cellPoint: (x, y) => { const r = canvas.getBoundingClientRect(); return [r.left + (OX + x * CS) * scale, r.top + (OY + y * CS) * scale]; },
@@ -1731,11 +1600,11 @@ export async function start(store, { build = null } = {}) {
   panel();
   lightingCard();
   fit();
-  startMenu();
-  await startMapMenu();
+  shell.startMenu();
+  await shell.startMapMenu();
   if (keepGM) setView('gm');
   if (PREVIEW && PREVIEW.link) centreOnLink(PREVIEW.link);
-  previewBar();
+  shell.previewBar();
   startSync();
-  watchBuild();
+  shell.watchBuild();
 }

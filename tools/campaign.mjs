@@ -44,7 +44,7 @@ export function readCampaign(packDir, saveDir) {
   const maps = pack.maps.map((id) => {
     const dir = path.join(packDir, 'maps', id);
     const map = readJson(path.join(dir, 'map.json'));
-    const wallFiles = Array.isArray(map.walls) ? map.walls : [map.walls];
+    const wallFiles = !map.walls ? [] : Array.isArray(map.walls) ? map.walls : [map.walls];   // an area map has none
     const segs = wallFiles.flatMap((f) => readJson(path.join(dir, f)).segs);
     const terrain = map.terrain ? readJson(path.join(dir, map.terrain)).areas : [];
     const lighting = map.lighting ? readJson(path.join(dir, map.lighting)) : null;

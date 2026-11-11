@@ -62,7 +62,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, now = ne
   for (const m of maps) {
     const { walls, terrain, lighting, ...map } = m.map;
     r[`maps/${m.id}`] = { ...map, id: m.id, image: { ...(m.map.image || {}), ...(m.image || {}) } };
-    chunks(m.segs || [], WALL_CHUNK).forEach((segs, n) => { r[`walls/${m.id}.${pad(n)}`] = { map: m.id, n, segs }; });
+    if (m.map.kind !== 'area') chunks(m.segs || [], WALL_CHUNK).forEach((segs, n) => { r[`walls/${m.id}.${pad(n)}`] = { map: m.id, n, segs }; });
     if (m.terrain && m.terrain.length) r[`terrain/${m.id}`] = { map: m.id, areas: m.terrain };
     if (m.lighting) {
       const { $schema, ...lighting } = m.lighting;
