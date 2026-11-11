@@ -1377,7 +1377,7 @@ export async function start(store, { build = null } = {}) {
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
     if (h !== hoverId) { hoverId = h; targetsChanged(); }   // the overlay only: a full map redraw costs ~50 ms
-    canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
+    canvas.style.cursor = over.door || over.token ? 'pointer' : 'default';   // doors and every token: the pointing hand
     if (drag) {
       const g = goalFor(drag.id, p);
       if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
