@@ -98,6 +98,10 @@ The platform writes a record's changes one at a time and reports each back late.
 - Hover, target marks and the distance label are drawn from `board/targeting.js` helpers (`kindColour`, `markSquare`, `chevrons`); the target triangles are on their own canvas (`#tgt`), redrawn each frame only while a target is visible. That canvas is above the map, so to keep a token's square on top of its triangles the target layer strokes the square again after them (`boxFor`, `strokeBox`, shared with `drawTokens`).
 - When a script edits a file, never open it for writing and reading in the same expression (`open(f,'w').write(open(f).read())` empties it). A board edit once did this to `app.js`; `git checkout` restored it.
 
+### Performance: the map redraw is expensive (a lesson from targeting, 2026-11-11)
+
+A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 ms on the Sample Keep. Anything that changes as the pointer moves (hover squares, the distance line and label, target marks) must go on the overlay canvas (`#tgt`, `drawTargets`), which redraws in well under a millisecond; call `targetsChanged()`, never `draw()`, for those. When the hover square and distance line were first drawn on the map, hovering across tokens took 2.4 times as long and the page stalled three times as often; moving them to the overlay put it back to the earlier speed. Something that must look "under" a token on the overlay can be cut away where the token is (`destination-out`), as the distance line is. Measure before and after with a headless browser: time a hover sweep, clicks and drags, and count long tasks (PerformanceObserver `longtask`), against a build of the previous commit.
+
 ## 10. Zoom and pan
 
 - Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.

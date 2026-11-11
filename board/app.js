@@ -449,10 +449,7 @@ export async function start(store, { build = null } = {}) {
     drawDoors(gm, full);
     if (LIT && gm) { drawRegionOutlines(); drawLightSources(); }   // the GM's marks: players see only the light
     if (drag && drag.route !== undefined) drawRoute();
-    const dist = distanceTo(F, full);
-    if (dist) drawDistanceLine(dist);   // under the tokens
-    drawTokens(F, full);
-    if (dist) drawDistanceLabel(dist);
+    drawTokens(F, full);   // the hover square, distance line and target marks are on the overlay (drawOverlay)
     ctx.restore();
     refreshAnimation(F, full);
     targetsChanged();
@@ -1002,10 +999,13 @@ export async function start(store, { build = null } = {}) {
   }
 
   // ---- hover, distance and targets ----
-  /** The token's square (hover or selection) at space t with Tiny layout L, or null when it shows none. */
-  function boxFor(id, t, L) {
+  /**
+   * The token's square at space t with Tiny layout L, or null when it shows none: the selection square (amber),
+   * and with `hover` also the hover square (its kind's colour) for the hovered token.
+   */
+  function boxFor(id, t, L, hover = false) {
     const picked = id === selected || multi.has(id);
-    if (!picked && !(id === hoverId && !drag)) return null;
+    if (!picked && !(hover && id === hoverId && !drag)) return null;
     const t0 = S.tokens[id], q = Engine.isTiny(t0) && L.spaces.get(id);
     return { m: markSquare(t, Engine.isTiny(t0), !!q && q.slot !== null), colour: picked ? SELECTED_COLOUR : kindColour(t0.kind) };
   }
@@ -1022,18 +1022,27 @@ export async function start(store, { build = null } = {}) {
     if (!visibleToken(F, full, selected) || !visibleToken(F, full, hoverId)) return null;
     const a = space(selected), b = space(hoverId);
     const feet = Engine.creatureDistance(SYS, mspace(selected), mspace(hoverId), Engine.spaceDistance);
-    return { a: [a.x + a.size / 2, a.y + a.size / 2], b: [b.x + b.size / 2, b.y + b.size / 2], top: b.y, feet, unit: SYS.measurement.unit };
+    return { ids: [selected, hoverId], a: [a.x + a.size / 2, a.y + a.size / 2], b: [b.x + b.size / 2, b.y + b.size / 2], top: b.y, feet, unit: SYS.measurement.unit };
   }
-  function drawDistanceLine(d) {
+  /** Token disc in pixels (grid space), as drawTokens draws it: [cx, cy, r]. */
+  function discOf(id) {
+    const t0 = S.tokens[id], sp = space(id), size = sp.size;
+    return [P(sp.x + size / 2), P(sp.y + size / 2), (P(size) / 2 - (size < 1 ? 2 : 5)) * Engine.drawScale(t0)];
+  }
+  /** The line between the two tokens, drawn on the overlay and then cut away where the tokens are, so it
+   *  shows under them (the tokens are on the map below). */
+  function drawDistanceLine(ctx, d) {
     ctx.save();
     ctx.lineCap = 'round';
     ctx.strokeStyle = 'rgba(10, 12, 16, .75)'; ctx.lineWidth = 5;
     ctx.beginPath(); ctx.moveTo(P(d.a[0]), P(d.a[1])); ctx.lineTo(P(d.b[0]), P(d.b[1])); ctx.stroke();
     ctx.strokeStyle = '#f4ecd6'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(P(d.a[0]), P(d.a[1])); ctx.lineTo(P(d.b[0]), P(d.b[1])); ctx.stroke();
+    ctx.globalCompositeOperation = 'destination-out';
+    for (const id of d.ids) { const [cx, cy, r] = discOf(id); ctx.beginPath(); ctx.arc(cx, cy, r + 1.5, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
   }
-  function drawDistanceLabel(d) {
+  function drawDistanceLabel(ctx, d) {
     const label = `${d.feet} ${d.unit}`;
     ctx.save();
     ctx.font = '600 13px IBM Plex Sans, sans-serif';
@@ -1353,7 +1362,7 @@ export async function start(store, { build = null } = {}) {
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
-    if (h !== hoverId) { hoverId = h; draw(); }
+    if (h !== hoverId) { hoverId = h; targetsChanged(); }   // the overlay only: a full map redraw costs ~50 ms
     canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
     if (drag) {
       const g = goalFor(drag.id, p);
@@ -1389,7 +1398,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; draw(); } else hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1430,13 +1439,21 @@ export async function start(store, { build = null } = {}) {
   const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function targetsChanged() { if (!tgtRaf) tgtRaf = requestAnimationFrame(drawTargets); }
   /** The target triangles: the view's own filled, the player's (in the GM view) as outlines; they pulse inward. */
+  /**
+   * The overlay above the map (#tgt): the distance line (cut away under the two tokens), the target
+   * triangles, the hover square and the distance label. It is cheap to redraw, so hovering never redraws the
+   * map; it animates (every frame) only while a target is shown.
+   */
   function drawTargets(now) {
     tgtRaf = null;
     const dpr = window.devicePixelRatio || 1;
     tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, tgtCanvas.width, tgtCanvas.height);
     const marks = targetMarks();
-    if (!marks.length) return;
+    const F = shown(), dist = distanceTo(F, fullGM());
+    const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
+    if (!marks.length && !dist && !hoverBox) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
+    if (dist) drawDistanceLine(tctx, dist);
     const phase = REDUCED ? 0.25 : ((now || 0) % 1400) / 1400;
     for (const { id, own } of marks) {
       const t = S.tokens[id], sp = space(id), q = Engine.isTiny(t) && layout.spaces.get(id);
@@ -1457,7 +1474,9 @@ export async function start(store, { build = null } = {}) {
       const box = !drag && boxFor(id, sp, layout);
       if (box) strokeBox(tctx, box);
     }
-    if (!REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
+    if (hoverBox) strokeBox(tctx, hoverBox);
+    if (dist) drawDistanceLabel(tctx, dist);
+    if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
   }
 
   // ---- the selection box and group moves ----
