@@ -318,8 +318,10 @@ board's status icons). Helpers in `board/effects.js`; the conditions are the sys
 **The token HUD** (right-click a token; designed with the user and built 2026-11-11, after Foundry's Token
 HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
 
-- **Opening:** a right-click on a token without dragging (a right-drag still pans). The GM view opens it on
-  any token it sees, the player view on its own PCs. Escape, a left click on the map, another right-click
+- **Opening:** a right-click on a token without dragging (a right-drag still pans), in either view, on any
+  token that view can see. The player view gets only Target on foes and NPCs (asked for 2026-11-11: "Players
+  should be able to right-click an NPC token ... to select/deselect it"); Assign status effects is the GM
+  view's on every token and the player view's on its own PCs. Escape, a left click on the map, another right-click
   elsewhere or switching views closes it.
 - **Buttons**, in a column to the right of the token (to its left when there is no room): **Target**
   (toggles this view's target, as T; refused on the dead) and **Assign status effects** (opens the palette

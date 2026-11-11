@@ -2050,8 +2050,10 @@ export async function start(store, { build = null } = {}) {
   let hudFor = null;        // the token the HUD is open on
   let hudPalette = false;   // the status palette is open
   let hudKey = '';
-  /** The GM view opens the HUD on any token it sees; the player view on its own PCs. */
-  const canHud = (id) => !READONLY && !!S.tokens[id] && (S.view === 'gm' ? (fullGM() || shown().seen.has(id)) : S.tokens[id].kind === 'pc');
+  /** Both views open the HUD on any token they can see (to target it); the status effects button is the GM
+   *  view's on every token and the player view's on its own PCs only. */
+  const canHud = (id) => !READONLY && !!S.tokens[id] && (fullGM() || shown().seen.has(id) || (S.view === 'player' && S.tokens[id].kind === 'pc'));
+  const canEditEffects = (id) => S.view === 'gm' || (S.tokens[id] && S.tokens[id].kind === 'pc');
   const HUD_ICONS = {
     effects: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.6" fill="currentColor"/><path d="M8.5 21v-6.5L7 10.5Q7 9 9 9h6q2 0 2 1.5l-1.5 4V21z" fill="currentColor"/><path d="M12 1.5v1.6M4.5 4.5l1.2 1.1M19.5 4.5l-1.2 1.1M2 11h1.7M20.3 11H22M3.5 17.5l1.4-.8M20.5 17.5l-1.4-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
@@ -2088,9 +2090,9 @@ export async function start(store, { build = null } = {}) {
         if (t.dead && !myTargets().includes(hudFor)) return toast(`${t.name} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
-      btn('effects', 'Assign status effects', hudPalette, () => { hudPalette = !hudPalette; renderHud(); });
+      if (canEditEffects(hudFor)) btn('effects', 'Assign status effects', hudPalette, () => { hudPalette = !hudPalette; renderHud(); });
       hudEl.appendChild(col);
-      if (hudPalette) hudEl.appendChild(statusPalette(hudFor));
+      if (hudPalette && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
     }
     hudEl.hidden = false;
     placeHud();
