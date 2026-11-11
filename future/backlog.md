@@ -8,13 +8,19 @@ Status: **open** (not started), **designing**, **building**, **done**.
 
 | # | Feature | Status | Raised |
 |---|---|---|---|
-| FR-1 | [Party marching order](#fr-1-party-marching-order) | open | 2026-11-10 |
+| FR-1 | [Party marching order](#fr-1-party-marching-order) | open (partly decided) | 2026-11-10 |
 
 ---
 
 ## FR-1: Party marching order
 
 **Asked for:** a party marching order (2026-11-10).
+
+**Decided so far (the user, 2026-11-10)**
+- A **tool on the board** sets the marching order, at any time during play: both each PC's **position** in
+  the formation and the formation's **orientation**.
+- It is set **per adventure pack**. Packs themselves are read-only book data, so this probably means it is
+  kept with the campaign that plays the pack, in its save. Confirm when designing.
 
 **What is known**
 - The previous board ran it as a GM rule, not a board feature (`PF2E_Claude_VTT/game/rules/gm-rules.md`,
@@ -31,11 +37,12 @@ Status: **open** (not started), **designing**, **building**, **done**.
 **Where it would show up**
 - Party moves between maps (entrances and starting areas): the PCs arrive in marching order.
 - When Claude moves the party (exploration, retracing explored ground): Claude places them in formation.
-- Possibly a way to see and change it at the table.
+- The board tool that sets it (position and orientation).
 
 **Open questions for the design**
-- An order (first, second, ...) or a formation (rows and positions, like the 2x2 block)?
-- Who sets it: the player on the board, Claude from chat, or both?
-- Is it kept per campaign in the save?
-- Does the formation turn to face the direction of travel, as rule I4 does?
+- What the tool looks like: a small grid to drag PCs into, or rows and slots? Player view, GM view, or both?
+  Can Claude also set it from chat?
+- Orientation: set by hand only, or also turned automatically to face the direction of travel, as rule I4 does?
+- "Per adventure pack": kept in the campaign's save (one per campaign), or truly one per pack shared by
+  every campaign that plays it?
 - How are companions, summons and new party members fitted in?
