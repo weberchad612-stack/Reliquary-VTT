@@ -149,6 +149,16 @@ export async function start(store, { build = null } = {}) {
   let shellReady = false;   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
   let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
+  // Several tokens selected (a box, or Ctrl+click): this screen only. While it holds two or more, `selected`
+  // is null, so the map shows the party's view with no movement outlines (as with nothing selected).
+  let multi = new Set();
+  const selectedIds = () => (multi.size ? [...multi] : selected ? [selected] : []);
+  /** Set the selection from a list of ids: one becomes the single selection, two or more a multi-selection. */
+  function setSelection(ids) {
+    const list = [...new Set(ids)].filter((id) => S.tokens[id]);
+    multi = new Set(list.length > 1 ? list : []);
+    selected = list.length === 1 ? list[0] : null;
+  }
   let gen = 0;   // bumped by every recompute(): cached drawings and the focus view key on it
 
   const img = new Image();
@@ -981,7 +991,9 @@ export async function start(store, { build = null } = {}) {
     for (const [id, t0] of order) {
       const seen = F.seen.has(id);
       if (!full && !seen) continue;
-      const sp = drag && drag.id === id
+      const sp = drag && drag.group && drag.group.has(id)
+        ? Engine.spaceOf({ id, ...t0, x: t0.x + drag.dx, y: t0.y + drag.dy }, layout)
+        : drag && drag.id === id
         ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
         : space(id);
       const t = { ...t0, ...sp };
@@ -989,11 +1001,12 @@ export async function start(store, { build = null } = {}) {
       const size = t.size, medium = P(size) / 2 - (size < 1 ? 2 : 5), r = medium * Engine.drawScale(t0);
       const cx = P(t.x + size / 2), cy = P(t.y + size / 2);
       ctx.save();
-      if (drag && drag.id === id) ctx.globalAlpha = 0.75;
+      if (drag && (drag.id === id || (drag.group && drag.group.has(id)))) ctx.globalAlpha = 0.75;
       if (full && !seen) ctx.globalAlpha = 0.6;
       ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.lineWidth = id === selected ? 4 : 2; ctx.strokeStyle = id === selected ? '#e3a443' : '#0d0f12';
+      const picked = id === selected || multi.has(id);
+      ctx.lineWidth = picked ? 4 : 2; ctx.strokeStyle = picked ? '#e3a443' : '#0d0f12';
       if (full && !seen) ctx.setLineDash([4, 3]);
       ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
@@ -1201,8 +1214,16 @@ export async function start(store, { build = null } = {}) {
       return recompute();
     }
     const target = clickTarget(p);
+    const id0 = target.token || null;
+    // Ctrl+click: add a token to the selection or take it away (players: their PCs only)
+    if ((ev.ctrlKey || ev.metaKey) && id0) {
+      if (!canDrag(id0)) return;
+      const cur = selectedIds();
+      setSelection(cur.includes(id0) ? cur.filter((x) => x !== id0) : [...cur, id0]);
+      panel(); draw(); return;
+    }
     if (target.door) { clickDoor(target.door, ev.shiftKey); return; }
-    const id = target.token || null;
+    const id = id0;
     const area = !id && S.view === 'gm' ? inactiveAreaAt(p) : null;
     if (area) {
       const on = S.terrain_on.includes(area.id);
@@ -1210,10 +1231,17 @@ export async function start(store, { build = null } = {}) {
       log(`GM: ${area.label || area.id} ${on ? 'switched off' : 'now applies'} (${TERRAIN_LOOK[area.kind].name}).`, 'ok');
       return recompute();
     }
-    // Empty floor: a click clears the selection. On a touch screen a one-finger drag there pans (no right button).
+    // Empty floor: a left drag draws a selection box; a click clears the selection (on release).
+    // On a touch screen a one-finger drag there pans instead (no right button).
     if (!id && ev.pointerType === 'touch') { startPan(ev, true); return; }
-    if (!id) { selected = null; panel(); draw(); return; }
-    selected = id; panel();
+    if (!id) { startBox(ev, p); return; }
+    // A token in a multi-selection: the whole group moves with it (no route, no warnings)
+    if (multi.has(id)) {
+      drag = { id, group: new Map([...multi].map((x) => [x, [S.tokens[x].x, S.tokens[x].y]])), start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], dx: 0, dy: 0, moved: false };
+      canvas.setPointerCapture(ev.pointerId);
+      return;
+    }
+    setSelection([id]); panel();
     if (canDrag(id)) {
       drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
       canvas.setPointerCapture(ev.pointerId);
@@ -1227,6 +1255,13 @@ export async function start(store, { build = null } = {}) {
       const st = pinchStep(pinch, now);
       pinch = now.map((t) => ({ ...t }));
       queueView(st.factor, st.mid.x, st.mid.y, st.dx, st.dy);
+      return;
+    }
+    if (box) { moveBox(ev); return; }
+    if (drag && drag.group) {
+      const g = goalFor(drag.id, cellAt(ev));
+      const dx = g[0] - drag.start[0], dy = g[1] - drag.start[1];
+      if (dx !== drag.dx || dy !== drag.dy) { drag.dx = dx; drag.dy = dy; drag.goal = g; drag.moved = true; draw(); }
       return;
     }
     if (pan) {
@@ -1251,6 +1286,13 @@ export async function start(store, { build = null } = {}) {
   function pointerEnd(ev, cancelled) {
     touches.delete(ev.pointerId);
     if (pinch) { if (touches.size < 2) pinch = null; return; }
+    if (box) { endBox(cancelled); return; }
+    if (drag && drag.group) {
+      const d = drag; drag = null;
+      if (!cancelled && d.moved && (d.dx || d.dy)) moveGroup([...d.group.keys()], d.dx, d.dy);
+      else draw();
+      return;
+    }
     if (pan) {
       const { moved, deselect } = pan;
       pan = null; canvas.style.cursor = 'default';
@@ -1266,6 +1308,54 @@ export async function start(store, { build = null } = {}) {
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
   canvas.addEventListener('pointerleave', () => { hoverCell = null; hud(); });
+
+  // ---- the selection box and group moves ----
+  let box = null;   // {x, y, p0, moved}: a selection box being drawn from a press on empty floor
+  const boxEl = document.createElement('div');
+  boxEl.className = 'selbox'; boxEl.hidden = true;
+  stageEl.appendChild(boxEl);
+  function startBox(ev, p) {
+    box = { x: ev.clientX, y: ev.clientY, p0: p, moved: false };
+    canvas.setPointerCapture(ev.pointerId);
+  }
+  function moveBox(ev) {
+    if (!box.moved && !isDrag(box.x, box.y, ev.clientX, ev.clientY)) return;
+    box.moved = true; box.cx = ev.clientX; box.cy = ev.clientY; box.p1 = cellAt(ev);
+    const sr = stageEl.getBoundingClientRect();
+    const l = Math.min(box.x, ev.clientX), t = Math.min(box.y, ev.clientY);
+    boxEl.style.left = l - sr.left + stageEl.scrollLeft + 'px'; boxEl.style.top = t - sr.top + stageEl.scrollTop + 'px';
+    boxEl.style.width = Math.abs(ev.clientX - box.x) + 'px'; boxEl.style.height = Math.abs(ev.clientY - box.y) + 'px';
+    boxEl.hidden = false;
+  }
+  /** Tokens a box picks: centre inside it. Players pick their PCs only; the GM picks every token. */
+  function tokensInBox(p0, p1) {
+    const [x0, x1] = [Math.min(p0[0], p1[0]), Math.max(p0[0], p1[0])], [y0, y1] = [Math.min(p0[1], p1[1]), Math.max(p0[1], p1[1])];
+    return Object.keys(S.tokens).filter((id) => {
+      if (S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
+      const sp = space(id), cx = sp.x + sp.size / 2, cy = sp.y + sp.size / 2;
+      return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
+    });
+  }
+  function endBox(cancelled) {
+    const b = box; box = null; boxEl.hidden = true;
+    if (cancelled) return;
+    setSelection(b.moved ? tokensInBox(b.p0, b.p1) : []);   // a click without a box clears the selection
+    panel(); draw();
+  }
+  /** Move several tokens by (dx, dy) together, keeping their spacing. No route and no warnings (the user's choice). */
+  function moveGroup(ids, dx, dy) {
+    const moved = [];
+    for (const id of ids) {
+      const t = S.tokens[id];
+      if (!t) continue;
+      const size = Engine.isTiny(t) ? 1 : (t.size || 1);
+      t.x = Math.max(0, Math.min(G.cols - size, t.x + dx)); t.y = Math.max(0, Math.min(G.rows - size, t.y + dy));
+      delete t.slot;
+      moved.push(t.name);
+    }
+    if (moved.length) log(`${moved.join(', ')} moved together.`);
+    panel(); recompute();
+  }
 
   function moveToken(id, goal, route) {
     const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
@@ -1289,8 +1379,9 @@ export async function start(store, { build = null } = {}) {
   }
 
   canvas.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Escape') { selected = null; panel(); draw(); return; }
+    if (ev.key === 'Escape') { setSelection([]); panel(); draw(); return; }
     const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
+    if (k && multi.size) { ev.preventDefault(); moveGroup([...multi], k[0], k[1]); return; }
     if (!k || !selected || !canDrag(selected)) return;
     ev.preventDefault();
     const t = S.tokens[selected];
@@ -1310,6 +1401,7 @@ export async function start(store, { build = null } = {}) {
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
     if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
+    if (v === 'player' && multi.size) setSelection([...multi].filter((id) => S.tokens[id] && S.tokens[id].kind === 'pc'));
   document.getElementById('changelog').hidden = v !== 'gm';
   if (v === 'gm') changeLogCard();
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
@@ -1575,6 +1667,7 @@ export async function start(store, { build = null } = {}) {
         if (here.has(id)) continue;
         delete S.tokens[id]; known.delete('tokens/' + id); knownData.delete('tokens/' + id);
         if (selected === id) selected = null;
+        if (multi.has(id)) setSelection([...multi].filter((x) => x !== id));
         changed = true;
       }
       if (changed) remoteChanged();
@@ -1639,7 +1732,8 @@ export async function start(store, { build = null } = {}) {
     state: () => clone(S),
     known: (p) => clone(knownData.get(p)),
     exploredPolys: () => mask.toPolys(),
-    select: (id) => { selected = id; panel(); draw(); },
+    select: (id) => { setSelection(id ? [id] : []); panel(); draw(); },
+    selection: () => selectedIds(),
     view: (v) => setView(v),
     menu: () => shell.menu(),
     mapMenu: () => shell.mapMenu(),

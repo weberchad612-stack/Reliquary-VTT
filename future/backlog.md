@@ -46,3 +46,6 @@ Status: **open** (not started), **designing**, **building**, **done**.
 - "Per adventure pack": kept in the campaign's save (one per campaign), or truly one per pack shared by
   every campaign that plays it?
 - How are companions, summons and new party members fitted in?
+
+**Not in scope (the user, 2026-11-11):** moving several selected tokens together (box select, Ctrl+click)
+never uses marching order. A group move always keeps the group's own spacing.

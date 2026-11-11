@@ -160,6 +160,22 @@ map, fitted to the window, its places as pins.
 - Zoom changes are applied at most once per frame.
 - The area view still fits its picture to the window (no zoom yet).
 
+**Selecting several tokens** (agreed with the user and built 2026-11-11):
+- A left drag from empty floor draws a selection box. A token is picked if its centre is inside. In the
+  player view the box picks PCs only; in the GM view it picks every token, including foes the party cannot
+  see and dead creatures. Every box starts a new selection. A plain click on empty floor clears it (on
+  release, so a drag can become a box). A box starts only on empty floor: a press on a token still drags
+  it, and a press on a door still opens it.
+- Ctrl+click (Cmd+click on a Mac) adds a token to the selection or takes it away (players: their PCs only).
+- Dragging any selected token moves the whole selection together, keeping its spacing. No route or cost is
+  shown, and no warnings are given for walls, taken squares or Speed (the GM decides). The arrow keys step
+  the whole selection one square. Group moves never use marching order (FR-1).
+- With two or more selected, the map shows the same view as with nothing selected (the party's view; the
+  whole map for the GM), with no movement outlines and no single creature's eyes. The Selection card is
+  left as it is (it is being redesigned) and shows its nothing-selected text.
+- The selection is this screen's only: not saved, not shared, not logged. The moves are logged as usual.
+- Touch screens have no box yet: one finger on empty floor pans.
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with
