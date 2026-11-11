@@ -166,8 +166,12 @@ map, fitted to the window, its places as pins.
   see and dead creatures. Every box starts a new selection. A plain click on empty floor clears it (on
   release, so a drag can become a box). A box starts only on empty floor: a press on a token still drags
   it, and a press on a door still opens it.
-- A selected token is marked by a thin amber square on exactly the grid squares it occupies (a Tiny
-  creature: its square), not by a thicker outline (the user's choice, 2026-11-11).
+- A selected token is marked by a thin amber square on exactly the grid squares it occupies, not by a
+  thicker outline (the user's choice, 2026-11-11). A Tiny creature alone in its square: that square. Tiny
+  creatures sharing a square: each selected one gets its own quarter-square, around its quadrant.
+- Group moves keep the Tiny stacking rules (`layoutTiny`), even when only some of a square's Tiny creatures
+  are selected: those moving give up their quadrants and take free ones where they land; those left behind
+  keep theirs, or are centred if now alone. A group drag shows this while dragging, not only on release.
 - Ctrl+click (Cmd+click on a Mac) adds a token to the selection or takes it away (players: their PCs only).
 - Dragging any selected token moves the whole selection together, keeping its spacing. No route or cost is
   shown, and no warnings are given for walls, taken squares or Speed (the GM decides). The arrow keys step

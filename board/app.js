@@ -985,14 +985,23 @@ export async function start(store, { build = null } = {}) {
     ctx.restore();
   }
 
+  /** The tokens as a group drag would leave them: the group moved, their quadrants given up, as moveGroup does. */
+  function groupPreview() {
+    const list = raw().map((t) => (drag.group.has(t.id) ? { ...t, x: t.x + drag.dx, y: t.y + drag.dy, slot: undefined } : t));
+    return { list, layout: Engine.layoutTiny(list) };
+  }
   function drawTokens(F, full) {
     // biggest first, so a creature sharing a bigger one's space is drawn on top of it
     const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
+    // During a group drag, Tiny creatures are laid out where the move will put them: those moving take free
+    // quadrants where they land, and those left behind keep theirs (or are centred if now alone).
+    const preview = drag && drag.group ? groupPreview() : null;
+    const L = preview ? preview.layout : layout;
     for (const [id, t0] of order) {
       const seen = F.seen.has(id);
       if (!full && !seen) continue;
-      const sp = drag && drag.group && drag.group.has(id)
-        ? Engine.spaceOf({ id, ...t0, x: t0.x + drag.dx, y: t0.y + drag.dy }, layout)
+      const sp = preview
+        ? Engine.spaceOf(preview.list.find((t) => t.id === id), L)
         : drag && drag.id === id
         ? (Engine.isTiny(t0) ? { x: drag.goal[0] + 0.25, y: drag.goal[1] + 0.25, size: 0.5 } : { x: drag.goal[0], y: drag.goal[1], size: t0.size || 1 })
         : space(id);
@@ -1011,9 +1020,11 @@ export async function start(store, { build = null } = {}) {
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
       ctx.restore();
-      // Selected: a thin amber square on the grid squares the token occupies (a Tiny creature: its square)
+      // Selected: a thin amber square on the grid squares the token occupies. A Tiny creature alone: its square;
+      // sharing a square with others: its own quarter of it.
       if (id === selected || multi.has(id)) {
-        const tiny = Engine.isTiny(t0), sx = tiny ? Math.floor(t.x) : t.x, sy = tiny ? Math.floor(t.y) : t.y, ss = tiny ? 1 : size;
+        const tiny = Engine.isTiny(t0), q = tiny && L.spaces.get(id), quarter = q && q.slot !== null && !(drag && drag.id === id && !preview);
+        const sx = !tiny || quarter ? t.x : Math.floor(t.x), sy = !tiny || quarter ? t.y : Math.floor(t.y), ss = quarter ? 0.5 : tiny ? 1 : size;
         ctx.save();
         ctx.lineWidth = 2; ctx.strokeStyle = '#e3a443';
         ctx.strokeRect(P(sx) + 1, P(sy) + 1, P(ss) - 2, P(ss) - 2);
