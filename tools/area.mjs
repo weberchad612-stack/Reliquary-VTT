@@ -9,17 +9,20 @@
 //   node tools/area.mjs <map-dir> --shape emanation --ft N --caster ID|X,Y[,SIZE]
 //   Options: [--state FILE] the map's state (saves/<campaign>/maps/<id>.json): door states, tokens (a caster
 //            named by id, and who is in the area), templates already placed (for the colour);
-//            [--by gm|player] (default gm); [--ruleset ID] (default pf2e); [--no-walls]; [--id ID]
+//            [--by gm|player] (default gm); [--ruleset ID] (default pf2e); [--no-walls]; [--id ID];
+//            [--height FEET] a burst's point above the ground (default 0; cones, lines and emanations start at
+//            the caster's elevation)
 //
 // Burst --at is a grid corner (cells). Cone --dir: north, northeast, ... northwest. Line --angle: degrees,
 // 0 east, 90 south (clockwise on screen). --toward aims as the mouse does on the board (a point in cells).
-// Prints JSON: {path, record, covered, reached, inArea: [{id, name}]}. To place it, write `record` to the
+// Prints JSON: {path, record, covered, reached, inArea: [{id, name}], outOfReach: [{id, name, elevation}]}
+// (outOfReach: in the area's squares but above or below it). To place it, write `record` to the
 // board's store at `path` (db_write), or add it to the map state's templates (record without "map").
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildArea, effectBlockers, tokensInCells, DIRECTION_NAMES, describeArea } from '../engine/areas/areas.js';
+import { buildArea, effectBlockers, tokensInArea, DIRECTION_NAMES, describeArea } from '../engine/areas/areas.js';
 import { templateRecord, templateId, nextColour, TARGETABLE } from '../board/templates.js';
 import { loadMap } from './sight.mjs';
 import { systemConfig } from '../rulesets/systems.js';
@@ -34,7 +37,7 @@ const nums = (s, name, n) => {
  * Build a template from options (the CLI's work, without the file reading).
  * @returns {{path, record, covered, reached, inArea}}
  */
-export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster, at, dir, toward, angle, by = 'gm', walls = true, id = templateId() }) {
+export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster, at, dir, toward, angle, by = 'gm', walls = true, id = templateId(), height }) {
   if (!sys.areas || !sys.areas.shapes[shape]) throw new Error(`${sys.name} has no "${shape}" area`);
   if (!(ft > 0)) throw new Error('--ft must be a positive number of feet');
   const FPC = map.grid.feet_per_cell || sys.measurement.squareFeet;
@@ -43,7 +46,7 @@ export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster,
   if (caster !== undefined) {
     if (typeof caster === 'string' && tokens[caster]) {
       const t = tokens[caster];
-      space = { x: Math.floor(t.x), y: Math.floor(t.y), size: Math.max(1, Math.ceil(t.size || 1)) };
+      space = { x: Math.floor(t.x), y: Math.floor(t.y), size: Math.max(1, Math.ceil(t.size || 1)), elevation: t.elevation || 0 };
       casterId = caster; casterName = t.name || caster;
     } else if (typeof caster === 'string' && /^[\d.]+,[\d.]+(,[\d.]+)?$/.test(caster)) {
       const c = nums(caster, '--caster', [2, 3]);
@@ -73,13 +76,16 @@ export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster,
   const blockers = walls ? effectBlockers(segs, state, sys.areas.lineOfEffect) : [];
   const area = buildArea(shape, space, gx, gy, { R: Math.max(1, Math.round(ft / FPC)), width: widthFeet / FPC, costs: [...sys.measurement.diagonalCosts], blockers });
   if (!area) throw new Error('--toward is too close to the caster to choose a direction');
+  const h = shape === 'burst' ? Number(height || 0) : (space && space.elevation) || 0;
+  if (!Number.isFinite(h)) throw new Error('--height must be a number of feet');
   const record = templateRecord({
     map: map.id, shape, ft, area, caster: casterId, casterName, by, col: nextColour(state.templates), at: new Date().toISOString(),
-    widthFeet: shape === 'line' ? widthFeet : undefined,
+    widthFeet: shape === 'line' ? widthFeet : undefined, height: Math.round(h),
   });
   if (!casterId && space && shape !== 'burst') record.casterName = `the creature at ${space.x},${space.y}`;
   const pool = Object.fromEntries(Object.entries(tokens).filter(([, t]) => TARGETABLE(t)));
-  const inArea = tokensInCells(area.cells, pool);
+  const reach = tokensInArea(area, pool, { R: Math.max(1, Math.round(ft / FPC)), height: Math.round(h), caster: space, costs: [...sys.measurement.diagonalCosts], squareFeet: FPC });
+  const inArea = reach.in;
   if (sys.areas.shapes[shape].includesCaster && casterId && pool[casterId] && !inArea.includes(casterId)) inArea.unshift(casterId);
   return {
     path: `templates/${id}`,
@@ -88,6 +94,7 @@ export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster,
     covered: area.covered.length,
     reached: area.cells.length,
     inArea: inArea.map((t) => ({ id: t, name: tokens[t].name || t })),
+    outOfReach: reach.over.filter((t) => t !== casterId).map((t) => ({ id: t, name: tokens[t].name || t, elevation: tokens[t].elevation || 0 })),
   };
 }
 
@@ -103,7 +110,7 @@ function main(argv) {
   const flag = (name) => { const i = args.indexOf(name); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
     const shape = opt('--shape'), ft = Number(opt('--ft')), caster = opt('--caster'), at = opt('--at'), dir = opt('--dir');
-    const toward = opt('--toward'), angle = opt('--angle'), stateFile = opt('--state'), by = opt('--by') || 'gm', id = opt('--id');
+    const toward = opt('--toward'), angle = opt('--angle'), stateFile = opt('--state'), by = opt('--by') || 'gm', id = opt('--id'), height = opt('--height');
     const sys = systemConfig(opt('--ruleset') || 'pf2e');
     const noWalls = flag('--no-walls');
     if (!sys) throw new Error('unknown --ruleset');
@@ -112,7 +119,7 @@ function main(argv) {
     const { map, segs } = loadMap(path.resolve(args[0]));
     const state = stateFile ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : {};
     const out = areaFromOptions({
-      map, segs, state, sys, shape, ft, caster, by, walls: !noWalls, id: id || undefined, dir,
+      map, segs, state, sys, shape, ft, caster, by, walls: !noWalls, id: id || undefined, dir, height,
       at: at ? nums(at, '--at (X,Y)', [2]) : undefined,
       toward: toward ? nums(toward, '--toward (X,Y)', [2]) : undefined,
       angle: angle !== undefined ? Number(angle) : undefined,

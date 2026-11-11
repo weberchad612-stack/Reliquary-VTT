@@ -163,6 +163,54 @@ test('area CLI: builds the record the board stores, with who is in the area', as
   assert.ok(l.reached < l.covered, 'the keep wall stops the line');
   const open = areaFromOptions({ map, segs, state, sys, shape: 'line', ft: 60, caster: 'lyra', angle: 30, walls: false });
   assert.equal(open.reached, open.covered);
+  const flyer = { ...state, tokens: { ...state.tokens, skel1: { ...state.tokens.skel1, elevation: 40 } } };
+  const hi = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'cultist' });
+  assert.ok(hi.outOfReach.some((t) => t.id === 'skel1' && t.elevation === 40), 'a skeleton 40 ft up is over the burst');
+  const air = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'cultist', height: 40 });
+  assert.ok(air.inArea.some((t) => t.id === 'skel1') && air.record.height === 40, 'an airburst at 40 ft reaches it');
   assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'cone', ft: 15 }), /needs --caster/);
   assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'cone', ft: 15, caster: 'pip', dir: 'up' }), /--dir must be/);
+});
+
+test('three dimensions: creature height, vertical gap and 3-D distance (10 ft across, 45 ft up = 50 ft)', async () => {
+  const { verticalGap, spaceDistance3D, heightSquares } = await import('../engine/measure/measure.js');
+  const { creatureDistance3D } = await import('../rulesets/systems.js');
+  assert.equal(heightSquares(0.5), 1); assert.equal(heightSquares(2), 2);
+  const ground = { x: 0, y: 0, size: 1 }, bird = (e, x = 0) => ({ x, y: 0, size: 1, elevation: e });
+  assert.equal(verticalGap(ground, bird(0)), 0);
+  assert.equal(verticalGap(ground, bird(5)), 1, 'right on top: adjacent');
+  assert.equal(verticalGap(ground, bird(45)), 9);
+  assert.equal(verticalGap({ ...ground, size: 2 }, bird(5)), 0, 'a Large creature is 10 ft tall');
+  assert.equal(verticalGap(bird(45), ground), 9, 'the same from above');
+  // 10 ft across: nearest squares 2 apart
+  const far = spaceDistance3D(ground, bird(45, 2));
+  assert.deepEqual(far, { cells: 10, across: 2, up: 9 });
+  const d = creatureDistance3D(PF2E_SYSTEM, ground, bird(45, 2), spaceDistance3D);
+  assert.deepEqual(d, { feet: 50, across: 10, up: 45 });
+  assert.equal(creatureDistance3D(PF2E_SYSTEM, ground, bird(0, 3), spaceDistance3D).feet, 15, 'flat as before');
+  assert.equal(creatureDistance3D(PF2E_SYSTEM, ground, bird(15, 3), spaceDistance3D).feet, 20, 'Kerra 15 ft up, 15 ft across');
+});
+
+test('areas in three dimensions: bursts and cones reach up as far as their size allows, lines are one square tall', async () => {
+  const { areaReaches, tokensInArea } = await import('../engine/areas/areas.js');
+  const b = buildArea('burst', null, 10, 10, { R: 4 });   // 20-ft burst on the ground
+  const at = (x, y, e) => ({ x, y, size: 1, elevation: e });
+  const o = { R: 4 };
+  assert.ok(areaReaches(b, at(10, 10, 0), o), 'next to the point, on the ground');
+  assert.ok(areaReaches(b, at(10, 10, 15), o), '15 ft up next to the point: 3 + 1 = 4 squares');
+  assert.equal(areaReaches(b, at(10, 10, 20), o), false, '20 ft up is 5 squares');
+  assert.equal(areaReaches(b, at(12, 12, 5), o), false, 'near the edge only the ground is reached');
+  assert.ok(areaReaches(b, at(12, 12, 0), o));
+  const airburst = { R: 4, height: 30 };
+  assert.ok(areaReaches(b, at(10, 10, 30), airburst) && !areaReaches(b, at(10, 10, 0), airburst), 'a burst in the air misses the ground');
+  const r = tokensInArea(b, { a: at(10, 10, 0), hawk: at(10, 10, 40), off: at(30, 30, 0) }, o);
+  assert.deepEqual(r, { in: ['a'], over: ['hawk'] });
+  const caster = { x: 5, y: 5, size: 1, elevation: 0 };
+  const line = buildArea('line', caster, 15, 5.5, { R: 6 });
+  assert.ok(areaReaches(line, at(8, 5, 0), { R: 6, height: 0 }));
+  assert.equal(areaReaches(line, at(8, 5, 5), { R: 6, height: 0 }), false, 'a line along the ground passes under a flyer');
+  const em = buildArea('emanation', caster, 0, 0, { R: 2 });
+  assert.ok(areaReaches(em, at(6, 5, 5), { R: 2, caster }), 'just above, next to the caster');
+  assert.equal(areaReaches(em, at(6, 5, 15), { R: 2, caster }), false);
+  assert.ok(areaReaches(em, at(6, 5, 0), { R: 2, caster: { ...caster, elevation: 10 } }), 'a caster 10 ft up still reaches the ground next to it (2 squares)');
 });

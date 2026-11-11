@@ -1031,8 +1031,11 @@ export async function start(store, { build = null } = {}) {
     if (!selected || !hoverId || hoverId === selected || drag || multi.size) return null;
     if (!visibleToken(F, full, selected) || !visibleToken(F, full, hoverId)) return null;
     const a = space(selected), b = space(hoverId);
-    const feet = Engine.creatureDistance(SYS, mspace(selected), mspace(hoverId), Engine.spaceDistance);
-    return { ids: [selected, hoverId], a: [a.x + a.size / 2, a.y + a.size / 2], b: [b.x + b.size / 2, b.y + b.size / 2], top: b.y, feet, unit: SYS.measurement.unit };
+    // in three dimensions: elevation (feet) and the creature's height by its size (rulesets/<id>/system.js)
+    const withH = (id) => ({ ...mspace(id), elevation: S.tokens[id].elevation || 0 });
+    const d = Engine.creatureDistance3D(SYS, withH(selected), withH(hoverId), Engine.spaceDistance3D);
+    const higher = (S.tokens[hoverId].elevation || 0) > (S.tokens[selected].elevation || 0);
+    return { ids: [selected, hoverId], a: [a.x + a.size / 2, a.y + a.size / 2], b: [b.x + b.size / 2, b.y + b.size / 2], top: b.y, feet: d.feet, across: d.across, up: d.up, higher, unit: SYS.measurement.unit };
   }
   /** Token disc in pixels (grid space), as drawTokens draws it: [cx, cy, r]. */
   function discOf(id) {
@@ -1066,16 +1069,22 @@ export async function start(store, { build = null } = {}) {
     ctx.fillText(name, cx, y + 9.5);
     ctx.restore();
   }
+  /** The distance above the hovered token; when the two are at different heights, a second line breaks it
+   *  down ("15 ft across · 15 ft up"). */
   function drawDistanceLabel(ctx, d) {
-    const label = `${d.feet} ${d.unit}`;
+    const label = `${d.feet} ${d.unit}`, sub = d.up ? `${d.across} ${d.unit} across · ${d.up} ${d.unit} ${d.higher ? 'up' : 'down'}` : '';
     ctx.save();
     ctx.font = '600 13px IBM Plex Sans, sans-serif';
-    const up = S.tokens[d.ids[1]] && S.tokens[d.ids[1]].elevation ? 18 : 0;   // above the elevation label
-    const w = ctx.measureText(label).width + 12, x = P(d.b[0]) - w / 2, y = P(d.top) - 26 - up;
+    const w1 = ctx.measureText(label).width;
+    ctx.font = '500 11px IBM Plex Sans, sans-serif';
+    const w2 = sub ? ctx.measureText(sub).width : 0;
+    const raise = S.tokens[d.ids[1]] && S.tokens[d.ids[1]].elevation ? 18 : 0;   // above the elevation label
+    const h = sub ? 34 : 20, w = Math.max(w1, w2) + 12, x = P(d.b[0]) - w / 2, y = P(d.top) - 6 - h - raise;
     ctx.fillStyle = 'rgba(20, 22, 27, .92)'; ctx.strokeStyle = '#f4ecd6'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.roundRect(x, y, w, 20, 5); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 5); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#f4ecd6'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(label, P(d.b[0]), y + 10.5);
+    ctx.font = '600 13px IBM Plex Sans, sans-serif'; ctx.fillText(label, P(d.b[0]), y + 10.5);
+    if (sub) { ctx.font = '500 11px IBM Plex Sans, sans-serif'; ctx.fillStyle = '#c9c2b2'; ctx.fillText(sub, P(d.b[0]), y + 25); }
     ctx.restore();
   }
 
@@ -1694,6 +1703,7 @@ export async function start(store, { build = null } = {}) {
   const AREAS = SYS.areas || null;
   let aim = null;          // {shape, ft, caster, R, width, blockers, cur}: a template being aimed (from the token HUD)
   const lastFt = {};       // the size last used for each shape
+  let lastBurstHeight = 0; // the height last given for a burst's point (feet)
   const casterSpace = (id) => { const t = S.tokens[id], s = Math.max(1, Math.ceil(t.size || 1)); return { x: Math.floor(t.x), y: Math.floor(t.y), size: s }; };
   // who an area can target: the GM view, every creature; the player view, those the party sees (not only the caster)
   const canSeeId = (id) => S.view === 'gm' || (partyShown && partyShown.seen.has(id));
@@ -1706,13 +1716,15 @@ export async function start(store, { build = null } = {}) {
   }
   document.getElementById('aim-cancel').onclick = () => endAim('Cancelled.');
   const label = (shape) => (AREAS.shapes[shape] && AREAS.shapes[shape].label) || shape;
-  function startAim(shape, ft, caster) {
+  function startAim(shape, ft, caster, burstHeight = 0) {
     if (READONLY) return toast('This is a preview: templates are placed on the party\'s map.');
     if (!S.tokens[caster]) return toast('That creature is not on this map.');
     endAim(); if (noting) setNoting(false);
     lastFt[shape] = ft;
     const width = (AREAS.shapes.line.widthFeet || FPC) / FPC;
-    aim = { shape, ft, caster, R: Math.max(1, Math.round(ft / FPC)), width, blockers: tplBlockers(), cur: null };
+    // the area's height: a burst's point (chosen in the flyout, the ground by default); the rest start at the caster's elevation
+    const height = shape === 'burst' ? burstHeight : (S.tokens[caster].elevation || 0);
+    aim = { shape, ft, caster, R: Math.max(1, Math.round(ft / FPC)), width, height, blockers: tplBlockers(), cur: null };
     if (shape === 'emanation') { aim.cur = aimAt([0, 0]); return placeTemplate(); }
     canvas.style.cursor = 'crosshair';
     aimMessage(`Aim the ${ft}-${SYS.measurement.unit} ${shape} from ${S.tokens[caster].name}: click to place. Esc or right-click cancels.`);
@@ -1725,9 +1737,14 @@ export async function start(store, { build = null } = {}) {
     targetsChanged();
   }
   const aimAt = (p) => Engine.buildArea(aim.shape, casterSpace(aim.caster), p[0], p[1], { R: aim.R, width: aim.width, costs: SYS.measurement.diagonalCosts, blockers: aim.blockers });
-  function whoIn(cells, caster, shape) {
-    return areaTargets(cells, S.tokens, { inCells: Engine.tokensInCells, visible: canSeeId, caster, includesCaster: !!(AREAS.shapes[shape] && AREAS.shapes[shape].includesCaster) });
+  /** Who the area reaches, heights included ({ids, over}: over are in its squares but above or below it). */
+  function whoIn(area, caster, shape, R, height) {
+    const cs = { ...casterSpace(caster), elevation: S.tokens[caster] ? S.tokens[caster].elevation || 0 : 0 };
+    const opts = { R, height, caster: cs, costs: SYS.measurement.diagonalCosts, squareFeet: FPC };
+    const inArea = (pool) => (SYS.measurement.vertical ? Engine.tokensInArea({ ...area, shape }, pool, opts) : { in: Engine.tokensInCells(area.cells, pool), over: [] });
+    return areaTargets(S.tokens, { inArea, visible: canSeeId, caster, includesCaster: !!(AREAS.shapes[shape] && AREAS.shapes[shape].includesCaster) });
   }
+  const overText = (ids) => ids.map((id) => { const e = S.tokens[id].elevation || 0; return `${S.tokens[id].name} (${e ? `${Math.abs(e)} ${SYS.measurement.unit} ${e > 0 ? 'up' : 'down'}` : 'on the ground'})`; }).join(', ');
   function aimMove(p) {
     const c = aimAt(p);
     if (!c) return;
@@ -1737,24 +1754,25 @@ export async function start(store, { build = null } = {}) {
     if (aim.shape === 'cone') text += `, facing ${Engine.DIRECTION_NAMES[c.dir]}`;
     if (aim.shape === 'line') text += `, angle ${Math.round(((c.angle * 180) / Math.PI + 360) % 360)}°`;
     if (aim.shape === 'burst') text = `${aim.ft}-${unit} burst, ${Engine.cornerDistance(casterSpace(aim.caster), c.origin[0], c.origin[1], SYS.measurement.diagonalCosts) * FPC} ${unit} from ${name}`;
-    const who = whoIn(c.cells, aim.caster, aim.shape).map((id) => S.tokens[id].name);
-    aimMessage(text + '. Click to place, Esc cancels.', who.length ? `In the area: ${who.join(', ')}` : 'Nobody in the area.');
+    if (aim.height && aim.shape === 'burst') text += `, ${aim.height} ${unit} up`;
+    const w = whoIn(c, aim.caster, aim.shape, aim.R, aim.height), who = w.ids.map((id) => S.tokens[id].name);
+    aimMessage(text + '. Click to place, Esc cancels.', (who.length ? `In the area: ${who.join(', ')}.` : 'Nobody in the area.') + (w.over.length ? ` Out of reach: ${overText(w.over)}.` : ''));
     targetsChanged();
   }
   /** Place the aimed template: shared on the board, saved with the campaign; your targets become who is in it. */
   function placeTemplate() {
     if (!aim || !aim.cur) return;
-    const { shape, ft, caster, cur } = aim;
+    const { shape, ft, caster, cur, R, height } = aim;
     endAim();
     const id = templateId(), by = S.view === 'gm' ? 'gm' : 'player';
-    const rec = templateRecord({ map: MAP_ID, shape, ft, area: cur, caster, casterName: S.tokens[caster].name, by, col: nextColour(TEMPLATES), at: new Date().toISOString(), widthFeet: shape === 'line' ? AREAS.shapes.line.widthFeet : undefined });
+    const rec = templateRecord({ map: MAP_ID, shape, ft, area: cur, caster, casterName: S.tokens[caster].name, by, col: nextColour(TEMPLATES), at: new Date().toISOString(), widthFeet: shape === 'line' ? AREAS.shapes.line.widthFeet : undefined, height });
     const { map: _m, ...t } = rec;
     TEMPLATES[id] = t;
     sending('templates/' + id, store.set('templates/' + id, rec)).catch((e) => { delete TEMPLATES[id]; draw(); toast(`Could not save the template (${e.message || e}).`); });
-    const ids = whoIn(t.cells, caster, shape);
+    const { ids, over } = whoIn({ ...t, cells: t.cells }, caster, shape, R, height);
     const what = Engine.describeArea(t, SYS.measurement.unit);
     logChange(`placed a ${what}`);
-    setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => S.tokens[i].name).join(', ')}` : 'nobody in the area'}.`);
+    setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => S.tokens[i].name).join(', ')}` : 'nobody in the area'}.${over.length ? ` Out of reach: ${overText(over)}.` : ''}`);
     draw();
   }
   function removeTemplate(id) {
@@ -2141,7 +2159,8 @@ export async function start(store, { build = null } = {}) {
     }
     pan.appendChild(row);
     if (hudShape) {
-      const go = (ft) => { const shape = hudShape, caster = id; closeHud(); startAim(shape, ft, caster); };
+      let burstHeight = lastBurstHeight;
+      const go = (ft) => { const shape = hudShape, caster = id; lastBurstHeight = burstHeight; closeHud(); startAim(shape, ft, caster, shape === 'burst' ? burstHeight : 0); };
       const sizes = document.createElement('div'); sizes.className = 'hud-sizes';
       for (const ft of AREAS.sizes) {
         const b = document.createElement('button');
@@ -2164,6 +2183,15 @@ export async function start(store, { build = null } = {}) {
       });
       input.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') closeHud(); });
       sizes.appendChild(custom);
+      if (hudShape === 'burst') {   // a burst's point can be in the air: its height above the ground
+        const hl = document.createElement('label'); hl.className = 'hud-height';
+        const hi = document.createElement('input');
+        hi.type = 'number'; hi.step = '5'; hi.value = String(burstHeight); hi.setAttribute('aria-label', `Burst height in ${unit}`);
+        hi.addEventListener('input', () => { const n = Math.round(Number(hi.value)); burstHeight = Number.isFinite(n) ? n : 0; });
+        hi.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') closeHud(); });
+        hl.append('At height ', hi, ` ${unit}`);
+        sizes.appendChild(hl);
+      }
       pan.appendChild(sizes);
     }
     return pan;

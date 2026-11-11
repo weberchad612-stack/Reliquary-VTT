@@ -9,6 +9,9 @@
 // - Distance between creatures (range, reach, the board's distance label) is counted from a square of one
 //   creature's space to the nearest square of the other's, not centre to centre. Adjacent creatures are
 //   5 feet apart; a creature sharing a square with another is 0 feet from it.
+// - Height (the user's ruling, 2026-11-11; Player Core does not spell out measuring in three dimensions): the
+//   vertical gap counts like a third direction, with the same alternating diagonals, so 10 ft across and 45 ft
+//   up is 50 ft. A creature is as tall as it is wide, and distance counts from its nearest part.
 //
 // areas: the shapes of area effects (Player Core, ORC licence, paraphrased; engine/areas):
 // - Burst: spreads from a grid intersection out to the radius in every direction.
@@ -31,6 +34,8 @@ export const PF2E_SYSTEM = Object.freeze({
     squareFeet: 5,
     diagonalCosts: Object.freeze([1, 2]),    // squares counted for successive diagonals: 5-10-5
     creatureDistance: 'nearest-square',     // between creatures: nearest square to nearest square
+    vertical: 'diagonal',                   // height counts like a third direction, with the same 5-10-5 count
+    creatureHeight: 'size',                 // a creature is as tall as it is wide (Medium 5 ft, Large 10 ft)
     describe: '5-ft squares, diagonals 5-10-5, measured between nearest squares',
   }),
   areas: Object.freeze({

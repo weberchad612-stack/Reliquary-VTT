@@ -19,3 +19,15 @@ export function creatureDistance(system, a, b, spaceDistance) {
   const m = system.measurement;
   return spaceDistance(a, b, m.diagonalCosts) * m.squareFeet;
 }
+
+/**
+ * The same in three dimensions, when the system counts height (measurement.vertical): creatures carry
+ * elevation (feet) and are as tall as their size. `spaceDistance3D` is the engine's (engine/measure).
+ * @returns {{feet: number, across: number, up: number}}  across and up in the system's unit
+ */
+export function creatureDistance3D(system, a, b, spaceDistance3D) {
+  const m = system.measurement;
+  if (!m.vertical) { const d = spaceDistance3D(a, { ...b, elevation: a.elevation }, m.diagonalCosts, m.squareFeet); return { feet: d.across * m.squareFeet, across: d.across * m.squareFeet, up: 0 }; }
+  const d = spaceDistance3D(a, b, m.diagonalCosts, m.squareFeet);
+  return { feet: d.cells * m.squareFeet, across: d.across * m.squareFeet, up: d.up * m.squareFeet };
+}

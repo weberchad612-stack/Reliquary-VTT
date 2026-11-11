@@ -57,18 +57,18 @@ export function markerPoints(templates) {
 export const TARGETABLE = (t) => !!t && t.kind !== 'marker' && t.kind !== 'gm' && !t.dead;
 
 /**
- * Whom placing an area targets: every targetable token in it that the view can see, the caster too when
+ * Whom placing an area targets: every targetable token it reaches that the view can see, the caster too when
  * inside. An emanation targets its caster even though its own space is not part of the area (T removes it).
- * @param {Array} cells
  * @param {object} tokens  {id: token}
- * @param {{inCells: function, visible: function, caster?: string, includesCaster?: boolean}} o
- *   inCells(cells, tokens) -> ids (Engine.tokensInCells); visible(id) -> boolean
+ * @param {{inArea: function, visible: function, caster?: string, includesCaster?: boolean}} o
+ *   inArea(pool) -> {in: ids, over: ids} (Engine.tokensInArea: heights included); visible(id) -> boolean
+ * @returns {{ids: string[], over: string[]}}  over: in the area's squares but above or below its reach
  */
-export function areaTargets(cells, tokens, { inCells, visible, caster, includesCaster = false }) {
+export function areaTargets(tokens, { inArea, visible, caster, includesCaster = false }) {
   const pool = Object.fromEntries(Object.entries(tokens || {}).filter(([id, t]) => TARGETABLE(t) && visible(id)));
-  const ids = inCells(cells, pool);
+  const r = inArea(pool), ids = [...r.in];
   if (includesCaster && caster && pool[caster] && !ids.includes(caster)) ids.unshift(caster);
-  return ids;
+  return { ids, over: r.over.filter((id) => id !== caster) };
 }
 
 /** A size typed in the picker, as feet: whole squares, at least one, at most `max`. NaN when not a number. */
@@ -82,8 +82,9 @@ export function sizeFeet(v, squareFeet = 5, max = 500) {
  * The template record (map-state templates.<id> plus the map it is on).
  * @param {{shape, ft, area, caster?, casterName?, by, col, at, map, widthFeet?}} o  area from Engine.buildArea
  */
-export function templateRecord({ shape, ft, area, caster, casterName, by, col, at, map, widthFeet }) {
+export function templateRecord({ shape, ft, area, caster, casterName, by, col, at, map, widthFeet, height = 0 }) {
   const r = { map, shape, ft, by, origin: area.origin.map((v) => Math.round(v * 1000) / 1000), cells: area.cells, col, at };
+  if (height) r.height = height;   // feet: a burst's point, or a cone's, line's or emanation's caster elevation
   if (caster) { r.caster = caster; r.casterName = casterName || caster; }
   if (shape === 'cone') r.dir = area.dir;
   if (shape === 'line') { r.angle = Math.round(area.angle * 1e4) / 1e4; if (widthFeet) r.width_ft = widthFeet; }

@@ -47,3 +47,33 @@ export function spaceDistance(a, b, diagonalCosts = [1, 2]) {
   };
   return gridDistance(gap(ax, as, bx, bs), gap(ay, as, by, bs), diagonalCosts);
 }
+
+/** How tall a creature is, in squares: as tall as it is wide (Medium and Small 1, Large 2, Huge 3; Tiny 1). */
+export function heightSquares(size) {
+  return Math.max(1, Math.ceil(size || 1));
+}
+
+/**
+ * Squares between two creatures' height columns, counted like the gap between their spaces: 0 when the
+ * columns overlap, 1 when one is right on top of the other, and so on. A creature {elevation (feet), size}
+ * fills from its elevation up to elevation + its height.
+ */
+export function verticalGap(a, b, squareFeet = 5) {
+  const a0 = a.elevation || 0, a1 = a0 + heightSquares(a.size) * squareFeet;
+  const b0 = b.elevation || 0, b1 = b0 + heightSquares(b.size) * squareFeet;
+  if (b0 >= a1) return Math.ceil((b0 - a1) / squareFeet - 1e-9) + 1;
+  if (a0 >= b1) return Math.ceil((a0 - b1) / squareFeet - 1e-9) + 1;
+  return 0;
+}
+
+/**
+ * Distance between two creatures in three dimensions, in squares: the flat nearest-square distance and the
+ * vertical gap combined with the same diagonal pattern (PF2E's 5-10-5; the system's measurement.vertical is
+ * 'diagonal'). With no height difference it is the flat distance.
+ * @returns {{cells: number, across: number, up: number}}  up: the vertical gap in squares
+ */
+export function spaceDistance3D(a, b, diagonalCosts = [1, 2], squareFeet = 5) {
+  const across = spaceDistance(a, b, diagonalCosts), up = verticalGap(a, b, squareFeet);
+  return { cells: up ? gridDistance(across, up, diagonalCosts) : across, across, up };
+}
+

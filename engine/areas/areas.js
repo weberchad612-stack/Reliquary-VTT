@@ -226,8 +226,8 @@ export function buildArea(shape, caster, gx, gy, { R, width = 1, costs = [1, 2],
 }
 
 /**
- * Tokens whose space touches any of the cells. `tokens` is {id: {x, y, size}}; Tiny tokens (size < 1)
- * count by the square they stand in.
+ * Tokens whose space touches any of the cells, flat (heights ignored). `tokens` is {id: {x, y, size}}; Tiny
+ * tokens (size < 1) count by the square they stand in. tokensInArea also checks heights.
  */
 export function tokensInCells(cells, tokens) {
   const set = new Set(cells.map(([c, r]) => c + ',' + r)), out = [];
@@ -253,7 +253,80 @@ export function describeArea(t, unit = 'ft') {
   const n = `${t.ft}-${unit} ${t.shape}` + (t.shape === 'line' && t.width_ft > 5 ? ` (${t.width_ft} ${unit} wide)` : '');
   const who = t.casterName || t.caster || '?';
   if (t.shape === 'cone') return `${n} from ${who}, facing ${DIRECTION_NAMES[t.dir || 0]}`;
-  if (t.shape === 'burst') return `${n} at a point` + (t.casterName ? ` (from ${t.casterName})` : '');
+  if (t.shape === 'burst') return `${n} at a point` + (t.height ? `, ${t.height} ${unit} up` : '') + (t.casterName ? ` (from ${t.casterName})` : '');
   if (t.shape === 'emanation') return `${n} around ${who}`;
   return `${n} from ${who}, angle ${Math.round((((t.angle || 0) * 180) / Math.PI + 360) % 360)}°`;
 }
+
+// ---- areas in three dimensions (the system's measurement.vertical) ----
+// An area has a height: a burst's point (feet; the ground by default), a cone's or line's start (the caster's
+// elevation) and an emanation's caster. A token in the area's squares is in the area only if the area reaches
+// its height there: bursts and cones reach as far up and down as is left of their size at that square
+// (counted with the same diagonal pattern), an emanation as far as its size from the caster's space, and a
+// line is one square tall from its start. A creature is as tall as it is wide.
+
+const heightSq = (size) => Math.max(1, Math.ceil(size || 1));
+
+/** Squares from a point at height h (feet) to a creature's height column, counting the far face (1 when the
+ *  point is inside or at the edge of the column, as the far corner counts flat). */
+function pointToColumn(h, t, sq) {
+  const b = t.elevation || 0, top = b + heightSq(t.size) * sq;
+  if (h < b) return Math.floor((b - h) / sq + 1e-9) + 1;
+  if (h > top) return Math.floor((h - top) / sq - 1e-9) + 1;
+  return 1;
+}
+
+/** The flat measure of a cell from the area's start, as its shape counts it (the far corner from the origin). */
+function cellReach(area, c, r, caster, costs) {
+  if (area.shape === 'emanation' && caster) {
+    const s = heightSq(caster.size), x = Math.floor(caster.x), y = Math.floor(caster.y);
+    const dx = c < x ? x - c : c >= x + s ? c - (x + s) + 1 : 0, dy = r < y ? y - r : r >= y + s ? r - (y + s) + 1 : 0;
+    return areaDistance(dx, dy, costs);
+  }
+  const [ox, oy] = area.origin;
+  return areaDistance(Math.max(Math.abs(c - ox), Math.abs(c + 1 - ox)), Math.max(Math.abs(r - oy), Math.abs(r + 1 - oy)), costs);
+}
+
+/**
+ * Does the area reach this creature, heights included?
+ * @param {{shape, origin, cells}} area
+ * @param {{x, y, size, elevation}} t  the creature
+ * @param {{R: number, height?: number, caster?: {x, y, size, elevation}, costs?: number[], squareFeet?: number}} o
+ *   R: the area's size in squares; height: the area's height in feet (bursts; cones and lines start at the
+ *   caster's elevation)
+ */
+export function areaReaches(area, t, { R, height = 0, caster = null, costs = [1, 2], squareFeet = 5 }) {
+  const set = new Set(area.cells.map(([c, r]) => c + ',' + r));
+  const s = heightSq(t.size), x = Math.floor(t.x), y = Math.floor(t.y);
+  for (let i = 0; i < s; i++) for (let j = 0; j < s; j++) {
+    const c = x + i, r = y + j;
+    if (!set.has(c + ',' + r)) continue;
+    if (area.shape === 'line') {
+      const b = t.elevation || 0, top = b + s * squareFeet;
+      if (height < top && height + squareFeet > b) return true;   // one square tall from its start
+      continue;
+    }
+    const flat = cellReach(area, c, r, caster, costs);
+    let up;
+    if (area.shape === 'emanation' && caster) {
+      const a0 = caster.elevation || 0, a1 = a0 + heightSq(caster.size) * squareFeet, b0 = t.elevation || 0, b1 = b0 + s * squareFeet;
+      up = b0 >= a1 ? Math.ceil((b0 - a1) / squareFeet - 1e-9) + 1 : a0 >= b1 ? Math.ceil((a0 - b1) / squareFeet - 1e-9) + 1 : 0;
+      if ((up ? areaDistance(Math.max(flat, 0), up, costs) : flat) <= R + EPS) return true;
+      continue;
+    }
+    up = pointToColumn(height, t, squareFeet);
+    if (areaDistance(flat, up, costs) <= R + EPS) return true;
+  }
+  return false;
+}
+
+/**
+ * Tokens in an area, heights included: {in: ids the area reaches, over: ids in its squares but above or
+ * below its reach}. `tokens` is {id: {x, y, size, elevation}}.
+ */
+export function tokensInArea(area, tokens, opts) {
+  const flat = tokensInCells(area.cells, tokens), out = { in: [], over: [] };
+  for (const id of flat) (areaReaches(area, tokens[id], opts) ? out.in : out.over).push(id);
+  return out;
+}
+
