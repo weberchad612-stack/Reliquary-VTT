@@ -183,13 +183,54 @@ test('validator: area maps check their places, and a link to one needs no partne
   const m = JSON.parse(fs.readFileSync(f, 'utf8'));
   m.places.push({ ...m.places[0] });
   m.places.push({ id: 'far', name: 'Far', at: [5000, 10] });
-  m.places.push({ id: 'bad', name: 'Bad', at: [10, 10], to_map: 'nowhere' });
   fs.writeFileSync(f, JSON.stringify(m));
   const out = msgs();
   assert.match(out, /duplicate place id/);
   assert.match(out, /outside the image/);
-  assert.match(out, /battle map "nowhere"/);
+  m.places.pop(); m.places.pop();
+  m.places[0] = { ...m.places[0], to_map: 'sample-keep' };
+  fs.writeFileSync(f, JSON.stringify(m));
+  assert.match(msgs(), /to_map|additional/i, 'places do not link to battle maps (the map menu does that)');
   m.grid = { cell_px: 50, origin_px: [0, 0], cols: 2, rows: 2, feet_per_cell: 5 };
   fs.writeFileSync(f, JSON.stringify(m));
   assert.match(msgs(), /grid|must NOT|false schema/i, 'an area map may not have a grid');
+});
+
+// ---- starting areas ----
+import { START } from '../board/travel.js';
+
+test('starting area: first in a battle map\'s sub-menu; players go there from another map', () => {
+  const maps = [
+    { id: 'keep', name: 'Keep', start: [[5, 5], [6, 5]], links: [] },
+    { id: 'town', name: 'Town', kind: 'area', links: [] },
+    { id: 'crypt', name: 'Crypt', links: [] },
+  ];
+  const gm = travelMenu({ maps, view: 'gm', current: 'town' })[0].items[0];
+  assert.deepEqual(gm.items.map((i) => i.label), ['Whole map', 'Starting area']);
+  assert.deepEqual(parseTravelId(gm.items[1].id), { kind: 'view', map: 'keep', link: START });
+  const pl = travelMenu({ maps, view: 'player', current: 'town', discovered: ['keep', 'crypt'] })[0].items;
+  assert.deepEqual(pl[0].items.map((i) => [i.label, !!i.disabled]), [['Starting area', false]]);
+  assert.deepEqual(pl[2].items.map((i) => [i.label, !!i.disabled]), [['No known entrances', true]], 'no start, no entrances');
+  const here = travelMenu({ maps, view: 'player', current: 'keep' })[0].items[0].items[0];
+  assert.ok(here.disabled && here.tag === 'here');
+  const plan = travelPlan({ maps, from: 'town', toMap: 'keep', linkId: START, tokens: { k: { name: 'Kerra', kind: 'pc' } } });
+  assert.equal(plan.target.start, true);
+  assert.deepEqual(plan.cells, [[5, 5], [6, 5]]);
+  assert.deepEqual(plan.found, {});
+  assert.equal(travelPlan({ maps, from: 'town', toMap: 'crypt', linkId: START, tokens: {} }), null);
+});
+
+test('validator: a battle map without a starting area is warned about; the samples all have one', () => {
+  const r = validate('examples/sample-pack');
+  assert.equal(r.warnings.filter((w) => /starting area/.test(w.msg)).length, 0);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'start-'));
+  fs.cpSync('examples/sample-pack', dir, { recursive: true });
+  const f = path.join(dir, 'maps/sample-crypt/map.json');
+  const m = JSON.parse(fs.readFileSync(f, 'utf8'));
+  delete m.start;
+  fs.writeFileSync(f, JSON.stringify(m));
+  assert.match(validate(dir).warnings.map((w) => w.msg).join('\n'), /no starting area/);
+  m.start = [[99, 99]];
+  fs.writeFileSync(f, JSON.stringify(m));
+  assert.match(validate(dir).errors.map((w) => w.msg).join('\n'), /start: cell \(99, 99\) is outside the grid|start: cell .*outside/);
 });

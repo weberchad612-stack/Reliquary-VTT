@@ -121,6 +121,10 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     report.warn(mapFile, `grid (${grid.cols}x${grid.rows}) extends more than one cell past the image (${map.image.w}x${map.image.h} px)`);
   }
 
+  // Starting area: where the party arrives without an entrance
+  if (!map.start) report.warn(mapFile, 'no starting area ("start"): the party cannot be moved here from the map menu except through an entrance');
+  for (const c of map.start || []) if (!cellInGrid(c, grid)) report.error(mapFile, `start: cell ${fmt(c)} is outside the grid`);
+
   // Links
   const linkIds = new Set();
   for (const [i, l] of (map.links || []).entries()) {
@@ -361,8 +365,6 @@ function validateArea(map, dir, mapFile, knownMaps, report) {
     if (ids.has(p.id)) report.error(mapFile, `${where}: duplicate place id`);
     ids.add(p.id);
     if (p.at[0] > map.image.w || p.at[1] > map.image.h) report.error(mapFile, `${where}: pin ${fmt(p.at)} is outside the image (${map.image.w}x${map.image.h})`);
-    if (p.to_map && knownMaps && !knownMaps.has(p.to_map)) report.error(mapFile, `${where}: battle map "${p.to_map}" is not in this pack`);
-    if (p.to_map === map.id) report.error(mapFile, `${where}: to_map is this map`);
   }
   if (!map.places.length) report.warn(mapFile, 'an area map with no places');
   return { map, dir, doors: new Map(), placeIds: ids, area: true, report };

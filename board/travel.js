@@ -12,6 +12,8 @@
 //   players travel to it (the PCs go with the party, undrawn) and leave it by choosing an entrance of a
 //   battle map, where they arrive on the entrance's own squares. A battle map's entrance may lead to an
 //   area map; taking it goes there.
+// - Every battle map has a starting area (`start`): the first item of its sub-menu. The GM previews it;
+//   players travel there (from another map) and are placed on its squares, overflowing as at an entrance.
 // - Discovery is never automatic: Claude marks maps discovered (state/table `discovered`) and entrances
 //   found (`links_found` in each map's state), by ruling or because the user says so. The one exception:
 //   arriving through an entrance makes the way back known (the entrance and its partner on the map the
@@ -32,6 +34,9 @@ export function partnerOf(link, maps) {
   const l = target && (target.links || []).find((x) => x.id === link.to_link);
   return l ? { map: target, link: l } : null;
 }
+
+/** The link id that stands for a battle map's starting area (pack ids never start with "_"). */
+export const START = '_start';
 
 /** Menu ids for travel entries: 'travel:<view|go>:<map>[:<link>]'. */
 export const travelId = (kind, mapId, linkId) => ['travel', kind, mapId, linkId].filter(Boolean).join(':');
@@ -64,6 +69,11 @@ export function travelMenu({ maps, view, current, shown = current, discovered = 
     }
     const sub = [];
     if (gm) sub.push({ id: travelId('view', m.id), label: 'Whole map', kind: 'command', hint: `Preview ${m.name || m.id} on this screen` });
+    if (m.start) {
+      if (gm) sub.push({ id: travelId('view', m.id, START), label: 'Starting area', kind: 'command', hint: 'Preview, centred on the starting area' });
+      else if (m.id === current) sub.push({ id: travelId('go', m.id, START), label: 'Starting area', kind: 'command', disabled: true, tag: 'here' });
+      else sub.push({ id: travelId('go', m.id, START), label: 'Starting area', kind: 'command', hint: `Move the party to the starting area of ${m.name || m.id}` });
+    }
     const links = (m.links || []).filter((l) => gm || isKnown(m.id, l, linksFound));
     if (gm && links.length) sub.push({ sep: true });
     for (const l of links) {
@@ -83,7 +93,7 @@ export function travelMenu({ maps, view, current, shown = current, discovered = 
       }
       sub.push(e);
     }
-    if (!gm && !links.length) sub.push({ id: travelId('none', m.id), label: 'No known entrances', kind: 'command', disabled: true });
+    if (!gm && !links.length && !m.start) sub.push({ id: travelId('none', m.id), label: 'No known entrances', kind: 'command', disabled: true });
     const tag = m.id === current ? (gm ? 'party here' : 'here') : m.id === shown ? 'previewing' : undefined;
     return { id: 'travel-map:' + m.id, label: m.name || m.id, tag, items: sub };
   });
@@ -151,6 +161,13 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
     target = via && (area(via.to_map) ? { map: maps.find((m) => m.id === via.to_map), link: null } : partnerOf(via, maps));
   } else if (area(toMap)) {
     target = { map: maps.find((m) => m.id === toMap), link: null };
+  } else if (linkId === START) {
+    // The starting area of a battle map: its own squares; nothing becomes known.
+    const m = maps.find((x) => x.id === toMap);
+    if (!m || !m.start) return null;
+    const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
+      .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+    return { target: { map: m, link: null, start: true }, via: null, cells: m.start.map((c) => c.slice()), found: {}, travellers };
   } else {
     const m = maps.find((x) => x.id === toMap);
     const l = m && (m.links || []).find((x) => x.id === linkId);

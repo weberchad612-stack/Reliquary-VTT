@@ -8,8 +8,8 @@ original (no book content), so it may be committed and published.
 An area map has no grid, walls or tokens: a picture with places (docs/design/maps.md, section 3).
 The village: a river running south through the middle with a bridge, a market square, a few houses,
 a chapel, a tavern, the old keep's road to the north-west and the crypt's lane to the south-west.
-Places cover each case the board handles: public places, a GM-only place (the smugglers' cellar), wide
-pins at the map's edges, and places with a battle map (the keep, the crypt).
+Places cover each case the board handles: public places and a GM-only place (the smugglers' cellar).
+The board's map menu is the way to the keep and the crypt; the roads drawn at the edges are scenery.
 """
 import json
 import math
@@ -133,13 +133,11 @@ places = [
      "note": "Tools, horseshoes and the occasional blade.", "at": [792, 493]},
     {"id": "mill", "name": "The Old Mill", "type": "Watermill", "address": "Mill Lane",
      "note": "The wheel still turns; the miller grinds for the whole valley.", "at": [910, 223]},
+    {"id": "riverside", "name": "Riverside road", "type": "Road", "note": "The road east along the river, toward the farms.",
+     "at": [930, 300], "shape": "wide", "size": 150},
     {"id": "cellar", "name": "Smugglers' cellar", "type": "Hidden cellar", "address": "Under the old warehouse",
      "note": "A cellar under the warehouse floor, reached by a trapdoor behind the barrels.",
      "gm_note": "GM only until the party finds the trapdoor (Seek DC 20 in the warehouse).", "at": [357, 580], "public": False},
-    {"id": "keep-road", "name": "Road to the old keep", "type": "Road", "note": "The road north-west to the ruined keep.",
-     "at": [110, 92], "shape": "wide", "size": 170, "to_map": "sample-keep"},
-    {"id": "crypt-lane", "name": "Lane to the crypt", "type": "Lane", "note": "A sunken lane south-west to the old crypt.",
-     "at": [150, 700], "shape": "wide", "size": 150, "to_map": "sample-crypt"},
 ]
 map_json = {
     "$schema": "../../../../schemas/map.schema.json",

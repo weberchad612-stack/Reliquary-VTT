@@ -125,6 +125,9 @@ prevents accidental spoilers. When other people play on a board, the secrecy mod
      PCs arrive on the arrival squares (the `arrive` cells of the link leading there) and overflow onto the
      nearest free squares that can be walked to from them; foes and others stay behind. The table follows
      the party to the new map.
+   - **Starting areas:** every battle map has one (`start`), first in its sub-menu. The GM previews it;
+     players travel there from another map (from a town, for instance) and are placed on its squares,
+     overflowing as at an entrance.
    - **Discovery is never automatic.** Claude marks maps discovered (`discovered` in `state/table`) and
      entrances found (`links_found` in the map's state), by ruling or because the user says so. The one
      exception: arriving through an entrance makes the way back known (the arrival entrance and its
@@ -137,7 +140,7 @@ map, fitted to the window, its places as pins.
   move the party there; the PCs go with the party but are not drawn.
 - **Pins:** players see public places and those found in play; the GM sees all, GM-only ones dashed.
   Clicking a pin shows its card (kind of place, name, address, a short description; for the GM also the GM
-  note, whether it is GM-only, and a preview of its battle map).
+  note and whether it is GM-only). Places do not link to battle maps: the map menu is the way there.
 - **Requests:** the card's "The party goes here" leaves one pending request (`state/request`), shown as a
   red dot on the pin and in the change log. A new request replaces it (with a confirmation); the player
   can withdraw it. The board cannot message Claude: the user tells Claude in chat, Claude rules, narrates

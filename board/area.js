@@ -4,7 +4,7 @@
 // ("The party goes to the Leaning Lantern") for Claude, who reads it when the user next writes.
 //
 // - Players see public places and those found in play (`places_found` in the map's state); the GM view
-//   shows every place, the GM-only ones marked, with GM notes and a preview of the place's battle map.
+//   shows every place, the GM-only ones marked, with GM notes. The map menu is the way to other maps.
 // - One request at a time, in `state/request`; a new one replaces it. Claude deletes it once ruled on.
 // - Travel, the menus, the preview bar and the version banner are the shell's (board/shell.js).
 
@@ -117,7 +117,6 @@ export async function startArea(store, c) {
       + (tags.length ? `<div class="chips">${tags.join('')}</div>` : '');
     if (view === 'gm') {
       if (p.gm_note) html += `<p class="gmnote">${esc(p.gm_note)}</p>`;
-      if (p.to_map) html += `<button data-a="battle">Preview its battle map</button>`;
       if (waiting) html += `<p class="req">Request: ${esc(waiting.what)} <button data-a="clear">Clear</button></p>`;
     } else if (!PAGE.readOnly) {
       if (waiting && waiting.place === p.id) html += `<p class="req">Requested. Waiting for Claude. <button data-a="withdraw">Withdraw</button></p>`;
@@ -128,7 +127,6 @@ export async function startArea(store, c) {
     on('go', () => requestPlace(p));
     on('withdraw', () => clearRequest('withdrew the request'));
     on('clear', () => clearRequest('cleared the request'));
-    on('battle', () => { location.hash = 'preview=' + p.to_map; try { sessionStorage.setItem('reliquary-keep-gm', '1'); } catch (e) { /* player view after reload */ } location.reload(); });
   }
 
   async function requestPlace(p) {

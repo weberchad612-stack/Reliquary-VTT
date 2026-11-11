@@ -68,7 +68,9 @@ The user's standing rule:
 
 ## 5a. Area maps are not imported
 
-A town or region map (`kind: "area"`, docs/design/maps.md section 3a) has no walls to trace: write its `map.json` by hand from the book's map and text, one place per keyed site, paraphrased. Keep secret sites `public: false`.
+A town or region map (`kind: "area"`, docs/design/maps.md section 3a) has no walls to trace: write its `map.json` by hand from the book's map and text, one place per keyed site, paraphrased. Keep secret sites `public: false`. Places never link to battle maps.
+
+Every **battle** map the importer writes needs a starting area (`start` in `map.json`): choose it from the text and the map (where the adventure has the party arrive, else the road or path in) and record the decision in `import.json`.
 
 ## 6. Licensing and privacy
 

@@ -66,6 +66,11 @@ One folder per map: `maps/<map-id>/` with `map.json`, the image, `walls.json` an
 
 - `grid.origin_px` is the pixel position of the corner of cell (0,0). Cell (x,y) covers pixels `origin + [x, y] * cell_px` to `origin + [x+1, y+1] * cell_px`.
 - `links` replace the old `game/maps` arrival table. `at` lists the cells that trigger the link, `arrive` lists the cells where travellers are placed on the other map, in order. `to_link` names the partner entrance on the other map (the one that leads back), so the board knows where the party arrives and which way back becomes known; the validator warns when it is missing or does not lead back. `found` is the starting state; the save tracks it after that (`links_found`).
+- `start` (battle maps): the starting area, cells where the party is placed when it travels here without
+  an entrance (from the map menu, or from a town), in order; more PCs overflow onto the nearest free squares
+  that can be walked to. Every battle map should have one (the validator warns): put it where the party
+  would logically arrive, like the road or path into the map (the Sample Keep's is on the path south of
+  the gate).
 - No namespace strings. Saves key per-map state by `id`.
 
 ### 3a. Area maps (towns and regions)
@@ -83,7 +88,6 @@ is told in chat.
     { "id": "rockfish", "name": "The Rowdy Rockfish", "type": "Tavern and inn", "address": "50 Zarmavdian Street",
       "note": "Paraphrased, player-safe description.", "at": [317, 921] },
     { "id": "hideout", "name": "A hideout", "at": [300, 800], "public": false, "gm_note": "..." },
-    { "id": "graveyard", "name": "Graveyard", "at": [162, 996], "to_map": "graveyard" },
     { "id": "road-north", "name": "Road north", "at": [862, 102], "shape": "wide", "size": 130 }
   ]
 }
@@ -92,8 +96,7 @@ is told in chat.
 - `at` is the pin's centre in image pixels; `size` its width in pixels (default 4.5% of the image width);
   `shape: "wide"` is a pill 5.5 times as wide as tall, for roads and districts at the edges.
 - `public: false` keeps a place GM-only until Claude marks it found (`places_found` in the map state).
-- `to_map` names a battle map for the place (the graveyard): the GM can preview it from the card; Claude
-  moves the party there when the scene needs it.
+- Places do not link to battle maps: the map menu is the way to other maps (agreed with the user).
 - A battle map's link may lead to an area map (`to_map` only, no `to_link`: an area map has no entrances).
   Leaving an area map, the party arrives on the chosen entrance's own squares.
 

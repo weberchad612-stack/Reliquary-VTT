@@ -90,7 +90,7 @@ export function makeShell(o) {
   async function startMapMenu() {
     try {
       const order = meta.maps || [];
-      MAPS = (await store.list('maps')).map((r) => ({ id: r.data.id || r.id, name: r.data.name, kind: r.data.kind || 'battle', grid: r.data.grid, links: r.data.links || [] }))
+      MAPS = (await store.list('maps')).map((r) => ({ id: r.data.id || r.id, name: r.data.name, kind: r.data.kind || 'battle', grid: r.data.grid, start: r.data.start || null, links: r.data.links || [] }))
         .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
       for (const e of await store.list('mapstate')) LINKS_FOUND[e.data.map || e.id] = e.data.links_found || [];
     } catch (e) { MAPS = [{ id: o.mapId, name: o.mapName, links: [] }]; }
@@ -143,7 +143,7 @@ export function makeShell(o) {
     if (!plan.travellers.length) return o.toast('No PCs are on this map.');
     const dest = plan.target.map, entrance = plan.target.link;
     const who = plan.travellers.map((t) => t.name || t.id).join(', ');
-    const where = entrance ? `the ${entrance.label} in ${dest.name || dest.id}` : (dest.name || dest.id);
+    const where = entrance ? `the ${entrance.label} in ${dest.name || dest.id}` : plan.target.start ? `the starting area of ${dest.name || dest.id}` : (dest.name || dest.id);
     const text = plan.via ? `Take the ${plan.via.label} to ${dest.name || dest.id}? ${who} will go.` : `Move the party to ${where}? ${who} will go.`;
     if (!(await confirmBox(text))) return;
     try {

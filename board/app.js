@@ -1561,7 +1561,7 @@ export async function start(store, { build = null } = {}) {
   shellReady = true;
   const travelChanged = () => shell.travelChanged();
   function centreOnLink(linkId) {
-    const l = (map.links || []).find((x) => x.id === linkId);
+    const l = linkId === '_start' ? (map.start ? { label: 'Starting area', at: map.start } : null) : (map.links || []).find((x) => x.id === linkId);
     if (!l) return;
     const [x, y] = l.at[0];
     zoom = Math.max(zoom, 1.5); fit();
