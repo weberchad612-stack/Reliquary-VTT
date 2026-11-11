@@ -309,7 +309,8 @@ board's status icons). Helpers in `board/effects.js`; the conditions are the sys
   not block movement (as before), cannot be targeted (T, a targeting box or an area) and does not see.
 - **Who sees:** a PC who is dead, or has a condition the system marks `blinds` (PF2E: blinded,
   unconscious, dying, petrified), adds nothing to what the party sees, and selecting them shows nothing:
-  they cannot see (Player Core: the unconscious are blinded).
+  they cannot see (Player Core: the unconscious are blinded). Added by Claude while building; kept by the
+  user (2026-11-11).
 
 **Shared controls** (`board/ui.js`; asked for 2026-11-11: "consistent UI elements"). A kind of control
 looks and behaves the same everywhere; a new feature uses the shared one rather than making its own.
