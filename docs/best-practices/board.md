@@ -90,7 +90,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 ## 9. Zoom and pan
 
 - Gestures are in `board/gestures.js` (the arithmetic, tested in `tests/board-gestures.test.mjs`) and wired in `app.js` next to the canvas's pointer handlers. Keep new pointer features in that one place: a press is a token drag, a pan, or one of the click actions (door, lamp, terrain), decided on the press.
-- Clicks that act on empty floor must act on release, not on press, so a drag can still become a pan.
+- The left button never pans; the right button pans from anywhere and shows the hand cursor only while held. On touch, empty-floor taps act on release so a one-finger drag can still become a pan.
 - Test in a browser with a real touch pinch (DevTools touch emulation, or `Input.dispatchTouchEvent` headless) as well as the wheel. A token placed near a map edge may be off screen when zoomed: scroll to it first.
 - Avoid `export const f = (a, b = X) => ...` in board modules: the bundler takes the default argument for a second export. Write a function.
 

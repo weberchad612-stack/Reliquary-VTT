@@ -152,8 +152,11 @@ map, fitted to the window, its places as pins.
   its pinch (sent as Ctrl+wheel) zooms faster. The + and − buttons, Fit, and the + − 0 keys still work.
 - On a touch screen, two fingers pinch to zoom about their midpoint, and pan as they move together. A
   second finger cancels a token drag in progress (the token goes back).
-- Panning: drag empty floor (mouse or one finger), or drag with the right or middle button anywhere. A
-  press that moves less than 4 px is a click: on empty floor it clears the selection, on release.
+- Panning: hold the right mouse button and drag, anywhere on the map. The pointer is the normal arrow
+  until then and becomes a hand only while the right button is held (the user's choice, 2026-11-11). The
+  left button never pans: it selects, drags tokens and clicks doors, and a click on empty floor clears the
+  selection. On a touch screen (no right button), one finger dragged on empty floor pans; a touch that
+  moves less than 4 px is a tap and clears the selection.
 - Zoom changes are applied at most once per frame.
 - The area view still fits its picture to the window (no zoom yet).
 

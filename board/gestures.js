@@ -4,7 +4,8 @@
 // - The wheel zooms about the pointer: a mouse wheel (one notch about 12%), a trackpad's two-finger scroll
 //   (small steps), and a trackpad pinch, which browsers send as a wheel event with Ctrl held (stronger).
 // - Two fingers on a touch screen pinch to zoom about their midpoint, and pan as the midpoint moves.
-// - Dragging empty floor (mouse or one finger), or dragging with the right or middle button, pans.
+// - Dragging with the right mouse button pans (the hand cursor shows only while it is held). On a touch
+//   screen, one finger dragged on empty floor pans.
 
 export const PAN_SLOP = 4;    // pixels a press may move and still count as a click
 

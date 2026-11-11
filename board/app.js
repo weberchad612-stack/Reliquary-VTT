@@ -1166,14 +1166,16 @@ export async function start(store, { build = null } = {}) {
     return [gx, gy];
   }
 
-  // ---- zoom and pan (board/gestures.js): wheel and pinch zoom; dragging empty floor, or right/middle drag, pans ----
+  // ---- zoom and pan (board/gestures.js): wheel and pinch zoom; the right button pans (the hand shows only then);
+  // on a touch screen, one finger on empty floor or two fingers together pan ----
   const touches = new Map();   // pointerId -> {x, y}: the pointers down on the map
   let pan = null;              // {x, y, left, top, moved, deselect}: a pan in progress
   let pinch = null;            // the two pointers of a pinch, as last seen
   const stageEl = document.getElementById('stage');
-  function startPan(ev, deselect) {
+  function startPan(ev, deselect, hand = false) {
     pan = { x: ev.clientX, y: ev.clientY, left: stageEl.scrollLeft, top: stageEl.scrollTop, moved: false, deselect };
     canvas.setPointerCapture(ev.pointerId);
+    if (hand) canvas.style.cursor = 'grabbing';
   }
   canvas.addEventListener('contextmenu', (ev) => ev.preventDefault());   // the right button pans
 
@@ -1187,7 +1189,8 @@ export async function start(store, { build = null } = {}) {
       return;
     }
     if (touches.size > 2) return;
-    if (ev.button === 1 || ev.button === 2) { ev.preventDefault(); startPan(ev, false); return; }
+    if (ev.button === 2) { ev.preventDefault(); startPan(ev, false, true); return; }   // right button: pan, hand cursor
+    if (ev.button !== 0) return;
     const p = cellAt(ev);
     const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
     if (lamp && !tokenDiscAt(p)) {
@@ -1207,8 +1210,9 @@ export async function start(store, { build = null } = {}) {
       log(`GM: ${area.label || area.id} ${on ? 'switched off' : 'now applies'} (${TERRAIN_LOOK[area.kind].name}).`, 'ok');
       return recompute();
     }
-    // Empty floor: a drag pans; a click without moving clears the selection (on release).
-    if (!id) { startPan(ev, true); return; }
+    // Empty floor: a click clears the selection. On a touch screen a one-finger drag there pans (no right button).
+    if (!id && ev.pointerType === 'touch') { startPan(ev, true); return; }
+    if (!id) { selected = null; panel(); draw(); return; }
     selected = id; panel();
     if (canDrag(id)) {
       drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
@@ -1226,14 +1230,14 @@ export async function start(store, { build = null } = {}) {
       return;
     }
     if (pan) {
-      if (!pan.moved && isDrag(pan.x, pan.y, ev.clientX, ev.clientY)) { pan.moved = true; canvas.style.cursor = 'grabbing'; }
+      if (!pan.moved && isDrag(pan.x, pan.y, ev.clientX, ev.clientY)) pan.moved = true;
       if (pan.moved) { stageEl.scrollLeft = pan.left - (ev.clientX - pan.x); stageEl.scrollTop = pan.top - (ev.clientY - pan.y); }
       return;
     }
     const p = cellAt(ev);
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     const over = drag ? {} : clickTarget(p);
-    canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'grab';
+    canvas.style.cursor = over.door ? 'pointer' : over.token ? (canDrag(over.token) ? 'grab' : 'pointer') : 'default';
     if (drag) {
       const g = goalFor(drag.id, p);
       if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
