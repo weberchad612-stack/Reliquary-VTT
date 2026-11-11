@@ -68,7 +68,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `tokens/<id>` | One record per token, with the map it is on; its effect badges (`effects`) and `dead` | Claude; the board (the player's PCs, the GM view) |
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
-| `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (Play ▸ Templates); Claude (`tools/area.mjs`) |
+| `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 
 The page listens to nine of these (the meta record, the table, the current map's state, and the token,
@@ -229,14 +229,15 @@ distance label, movement routes and costs, the Stride outlines (through the move
 `tools/move.mjs` (`--ruleset`). A map's own `feet_per_cell` still sets its scale; without one, the system's
 square is used. PF2E's terrain rules take their diagonals from the same configuration.
 
-**Area templates** (Play ▸ Templates; designed with the user and built 2026-11-11, from the previous board's
+**Area templates** (the token HUD's Area template; designed with the user and built 2026-11-11, from the previous board's
 templates). The shapes are defined in the system configuration (`areas`) and built by `engine/areas`; the
 board's part is `board/templates.js` and the templates section of `board/app.js`.
 
-- **Starting:** Play ▸ Templates ▸ Burst, Cone, Line or Emanation. The selected creature is the caster (the
-  player view: one of the PCs); with none selected, the aim bar asks for a click on one. A size picker
-  follows: the system's quick sizes (PF2E 5, 10, 15, 20, 30, 60 ft) or a custom size, rounded to whole
-  squares. Enter or double-click a size to go on, Escape to cancel.
+- **Starting** (from the token HUD since 2026-11-11; it was Play ▸ Templates in the top menu): right-click
+  the caster, **Area template**, pick a shape (Burst, Cone, Emanation, Line), then a size: the system's quick
+  sizes as tiles (PF2E 5, 10, 15, 20, 30, 60 ft; the last one used is marked) or a custom size, rounded to
+  whole squares. The player view has the button on its own PCs, the GM view on any token. There is no
+  "Clear templates" any more: each template has its remove button.
 - **Aiming:** a dashed preview in the next free colour follows the mouse, drawn on the overlay (never a map
   redraw). A **cone** snaps to 8 directions and its start slides along the caster's edge in half squares; a
   **burst** sits on the nearest grid corner and the aim bar shows its distance from the caster; a **line**
@@ -258,8 +259,7 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
   `templates`). Each has its own palette colour (the first free of ten), drawn as filled squares with an
   outline, above the fog and under the tokens. Each has the shared remove button (below) just past its start, above the target triangles; its
   tooltip names the template. The player view removes the templates it placed; the GM view removes any
-  (templates this view may not remove have no button). Play ▸ Templates ▸ Clear templates removes all this view may
-  remove. Placing and removing are in the change log.
+  (templates this view may not remove have no button). Placing and removing are in the change log.
 - **Claude** places templates from chat with `tools/area.mjs` (section 3: `templates/<id>`), and reads who
   is in one from its output.
 - **Later:** who an area may affect (creatures, enemies, allies) when spells and actions arrive (FR-4).
@@ -336,8 +336,9 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   view's on every token and the player view's on its own PCs. Escape, a left click on the map, another right-click
   elsewhere or switching views closes it.
 - **Buttons**, in a column to the right of the token (to its left when there is no room): **Target**
-  (toggles this view's target, as T; refused on the dead) and **Assign status effects** (opens the palette
-  beside them). More buttons can be added later.
+  (toggles this view's target, as T; refused on the dead), **Assign status effects** (opens the palette
+  beside them) and **Area template** (the shapes and sizes, with this token as the caster; see Area
+  templates). More buttons can be added later.
 - **The status palette:** every condition of the system in a grid five wide (alphabetical), then **Dead**.
   Active ones are lit with an orange frame, the rest dimmed; valued ones show their number. Click toggles a
   plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at
@@ -363,8 +364,7 @@ looks and behaves the same everywhere; a new feature uses the shared one rather 
 
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
-- **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with
-  a sub-menu: Burst, Cone, Line, Emanation, Clear templates), Records (Party loot, Quest log, Dice), and two
+- **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration), Records (Party loot, Quest log, Dice), and two
   buttons straight on the bar, Replay and Narration, which can show a count.
 - **Behaviour:** click a menu to open it; once one is open, pointing at another opens that one; one menu
   open at a time; picking an item, clicking outside or Escape closes it. A menu shows as active (amber)
@@ -376,8 +376,9 @@ looks and behaves the same everywhere; a new feature uses the shared one rather 
 - **Views:** an entry marked `gm` shows only in the GM view.
 - **Data, not markup:** the menu is a definition (`MENU`); the page only reports what was chosen. Status:
   built on 2026-11-10 with nothing wired; items say "not built yet" until the page answers them (`onCommand`;
-Play ▸ Templates and Map ▸ Add note since 2026-11-11). The Export DB item of the
+Map ▸ Add note since 2026-11-11). The Export DB item of the
   previous board is gone: saving is Claude's job now (section 5). The rest of the menu is designed later.
+  Area templates moved out of Play into the token HUD (2026-11-11).
 
 ## 8. Build order
 

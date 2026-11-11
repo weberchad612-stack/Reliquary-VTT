@@ -189,17 +189,26 @@ ol.log li.foe { border-left-color: var(--foe); }
 .hud-n { position: absolute; right: 1px; bottom: 1px; min-width: 14px; padding: 0 3px; font: 700 11px/14px var(--font-body); color: #fff;
   background: #a82424; border-radius: 3px; }
 .hud-tile.good .hud-n { background: #1f6f47; }
+.hud-tpl { display: grid; gap: 6px; padding: 6px; background: rgba(20, 22, 28, .94); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.55); }
+.hud-shapes { display: grid; grid-template-columns: repeat(4, 58px); gap: 4px; }
+.hud-shape { height: 56px; min-height: 0; padding: 4px 2px; border-radius: 6px; background: #1a2438; border: 2px solid transparent; color: var(--ink);
+  display: grid; justify-items: center; align-content: center; gap: 2px; font-size: 11px; }
+.hud-shape svg { width: 24px; height: 24px; }
+.hud-shape:hover { background: #22304a; }
+.hud-shape.on, .hud-shape.on:hover { border-color: #ff8a1f; color: #ffb36b; background: #1a2438; }
+.hud-sizes { display: grid; grid-template-columns: repeat(4, 58px); gap: 4px; }
+.hud-size { height: 30px; min-height: 0; padding: 0; font-size: 12px; border-radius: 6px; background: #1a2438; border: 1px solid var(--line); color: var(--ink); }
+.hud-size:hover { background: #22304a; }
+.hud-size.last { border-color: #ff8a1f; }
+.hud-custom { grid-column: 1 / -1; display: flex; gap: 4px; }
+.hud-custom input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: #14161a; color: var(--ink); }
+.hud-custom button { min-height: 0; padding: 3px 10px; font-size: 12px; }
 /* Area templates: the aim bar while aiming, and the size picker. */
 .aimbar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40; max-width: min(760px, 92vw);
   background: #1d2129; color: var(--ink); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 14px; font-size: 14px;
   box-shadow: 0 8px 26px rgba(0,0,0,.45); display: flex; gap: 12px; align-items: center; }
 .aimbar .who { color: var(--muted, #aab); font-size: 13px; }
 .aimbar button { flex: none; }
-.tpl-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
-.tpl-sizes button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-.tpl-custom { display: flex; gap: 8px; align-items: center; font-size: 14px; }
-.tpl-custom input { width: 6em; font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: #14161a; color: inherit; }
-.tpl-hint { margin: 0; font-size: 13px; color: var(--muted, #aab); }
 /* The top menu (board/menu.js): a menubar of drop-downs, one level of sub-menu. */
 .menubar { display: flex; gap: 2px; align-items: center; }
 .mb-item { position: relative; }
@@ -331,15 +340,6 @@ ol.log li.foe { border-left-color: var(--foe); }
 </div>
 <div class="aimbar" id="aimbar" hidden role="status" aria-live="polite"><span><span id="aim-text"></span> <span class="who" id="aim-who"></span></span><button id="aim-cancel" type="button">Cancel</button></div>
 <div class="tokhud" id="tokhud" hidden aria-label="Token HUD"></div>
-<div class="gm-confirm" id="tpl-size" hidden role="dialog" aria-modal="true" aria-labelledby="tpl-size-title">
-  <div class="box">
-    <h2 id="tpl-size-title">Burst size</h2>
-    <p class="tpl-hint" id="tpl-size-hint"></p>
-    <div class="tpl-sizes" id="tpl-sizes" role="group" aria-label="Quick sizes"></div>
-    <label class="tpl-custom">Custom <input id="tpl-ft" type="number" min="5" step="5" inputmode="numeric" aria-label="Size in feet"> feet</label>
-    <div class="row"><button data-a="no" type="button">Cancel</button><button data-a="yes" type="button">Aim</button></div>
-  </div>
-</div>
 <div class="gm-confirm" id="gm-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="gm-confirm-title">
   <div class="box">
     <h2 id="gm-confirm-title">Show the GM view?</h2>

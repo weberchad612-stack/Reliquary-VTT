@@ -89,6 +89,3 @@ export function templateRecord({ shape, ft, area, caster, casterName, by, col, a
   if (shape === 'line') { r.angle = Math.round(area.angle * 1e4) / 1e4; if (widthFeet) r.width_ft = widthFeet; }
   return r;
 }
-
-/** The menu commands this module answers, by shape. */
-export const TEMPLATE_COMMANDS = Object.freeze({ 'tpl-burst': 'burst', 'tpl-cone': 'cone', 'tpl-line': 'line', 'tpl-emanation': 'emanation' });

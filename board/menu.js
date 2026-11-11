@@ -37,14 +37,6 @@ export const MENU = [
   { id: 'menu-play', label: 'Play', items: [
     { id: 'actions', label: 'Actions', kind: 'command', hint: 'The selected creature\'s actions' },
     { id: 'exploration', label: 'Exploration', kind: 'command', hint: 'Exploration activities' },
-    { id: 'templates', label: 'Templates', items: [
-      { id: 'tpl-burst', label: 'Burst', kind: 'command' },
-      { id: 'tpl-cone', label: 'Cone', kind: 'command' },
-      { id: 'tpl-line', label: 'Line', kind: 'command' },
-      { id: 'tpl-emanation', label: 'Emanation', kind: 'command' },
-      { sep: true },
-      { id: 'tpl-clear', label: 'Clear templates', kind: 'command' },
-    ] },
   ] },
   { id: 'menu-records', label: 'Records', items: [
     { id: 'loot', label: 'Party loot', kind: 'command' },

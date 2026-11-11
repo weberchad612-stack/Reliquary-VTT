@@ -22,7 +22,7 @@ import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from 
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
-import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
+import { TEMPLATE_COLOURS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -1411,13 +1411,6 @@ export async function start(store, { build = null } = {}) {
     const p = cellAt(ev);
     if (hudFor) closeHud();
     if (noting) { setNoting(false); openNoteEditor({ at: notePoint(p[0], p[1]) }); return; }   // Add note: the editor opens here
-    if (aim && aim.pick) {   // choosing the caster for a template
-      const id = clickTarget(p).token;
-      if (!id) return;
-      if (!canDrag(id)) return toast('Pick one of your characters.');
-      setSelection([id]); panel(); draw();
-      return pickSize(aim.pick, id);
-    }
     if (aim) { aimMove(p); placeTemplate(); return; }
     const lamp = S.view === 'gm' && LIT ? lightAt(p) : null;
     if (lamp && !tokenDiscAt(p)) {
@@ -1490,8 +1483,7 @@ export async function start(store, { build = null } = {}) {
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     lastPoint = p;
     if (noting) { canvas.style.cursor = 'crosshair'; return; }
-    if (aim && !aim.pick) { aimMove(p); return; }
-    if (aim && aim.pick) { const o = clickTarget(p); canvas.style.cursor = o.token ? 'pointer' : 'crosshair'; return; }
+    if (aim) { aimMove(p); return; }
     const hb = drag ? null : badgeAt(p);
     if (hb !== hoverBadge) { hoverBadge = hb; targetsChanged(); }
     const over = drag ? {} : clickTarget(p);
@@ -1693,7 +1685,7 @@ export async function start(store, { build = null } = {}) {
 
   // ---- area templates (Play > Templates): pick a caster, a size, aim, place; placing replaces your targets ----
   const AREAS = SYS.areas || null;
-  let aim = null;          // {pick: shape} while choosing the caster, or {shape, ft, caster, R, width, blockers, cur}
+  let aim = null;          // {shape, ft, caster, R, width, blockers, cur}: a template being aimed (from the token HUD)
   const lastFt = {};       // the size last used for each shape
   const casterSpace = (id) => { const t = S.tokens[id], s = Math.max(1, Math.ceil(t.size || 1)); return { x: Math.floor(t.x), y: Math.floor(t.y), size: s }; };
   // who an area can target: the GM view, every creature; the player view, those the party sees (not only the caster)
@@ -1707,61 +1699,11 @@ export async function start(store, { build = null } = {}) {
   }
   document.getElementById('aim-cancel').onclick = () => endAim('Cancelled.');
   const label = (shape) => (AREAS.shapes[shape] && AREAS.shapes[shape].label) || shape;
-  /** Menu: Play > Templates > a shape. The selected creature is the caster; with none, the next click picks one. */
-  function templateCommand(shape) {
-    if (READONLY) return toast('This is a preview: templates are placed on the party\'s map.');
-    if (!AREAS) return toast(`${SYS.name} has no area templates yet.`);
-    endAim(); if (noting) setNoting(false);
-    const ids = selectedIds().filter((id) => S.tokens[id] && canDrag(id));
-    if (ids.length === 1) return pickSize(shape, ids[0]);
-    aim = { pick: shape };
-    canvas.style.cursor = 'crosshair';
-    aimMessage(`Click the creature the ${label(shape).toLowerCase()} comes from.`, S.view === 'gm' ? '' : '(one of your characters)');
-  }
-  /** The size picker: the system's quick sizes and a custom size, in feet. */
-  function pickSize(shape, caster) {
-    aim = null; aimMessage('');
-    const dlg = document.getElementById('tpl-size'), sq = SYS.measurement.squareFeet, unit = SYS.measurement.unit;
-    const input = document.getElementById('tpl-ft'), row = document.getElementById('tpl-sizes');
-    document.getElementById('tpl-size-title').textContent = `${label(shape)} size`;
-    const hints = {
-      burst: 'Move the mouse to a grid corner and click to place.',
-      cone: 'Move the mouse round the caster: 8 directions, the start slides along their edge. Click to place.',
-      line: `Aim at any angle from the caster's edge (${AREAS.shapes.line.widthFeet || sq} ${unit} wide). Click to place.`,
-      emanation: 'Placed round the caster at once; the caster is targeted too (T removes them).',
-    };
-    document.getElementById('tpl-size-hint').textContent = `From ${S.tokens[caster].name}. ${hints[shape]}`;
-    input.step = sq; input.min = sq; input.max = AREAS.maxFeet || 500;
-    input.value = lastFt[shape] || (shape === 'line' ? 30 : 15);
-    const mark = () => { for (const b of row.children) b.setAttribute('aria-pressed', String(Number(b.dataset.ft) === Number(input.value))); };
-    row.innerHTML = '';
-    for (const ft of AREAS.sizes) {
-      const b = document.createElement('button');
-      b.type = 'button'; b.textContent = `${ft} ${unit}`; b.dataset.ft = ft;
-      b.onclick = () => { input.value = ft; mark(); };
-      b.ondblclick = () => { input.value = ft; done(true); };
-      row.appendChild(b);
-    }
-    mark(); input.oninput = mark;
-    dlg.hidden = false; input.focus(); input.select();
-    const onKey = (e) => {
-      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); }
-      else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); done(true); }
-    };
-    document.addEventListener('keydown', onKey, true);
-    function done(ok) {
-      document.removeEventListener('keydown', onKey, true);
-      if (!ok) { dlg.hidden = true; return; }
-      const ft = sizeFeet(input.value, sq, AREAS.maxFeet || 500);
-      if (!Number.isFinite(ft)) { toast(`Give the size in ${unit}.`); input.focus(); document.addEventListener('keydown', onKey, true); return; }
-      dlg.hidden = true; lastFt[shape] = ft;
-      startAim(shape, ft, caster);
-    }
-    dlg.querySelector('[data-a=yes]').onclick = () => done(true);
-    dlg.querySelector('[data-a=no]').onclick = () => done(false);
-  }
   function startAim(shape, ft, caster) {
+    if (READONLY) return toast('This is a preview: templates are placed on the party\'s map.');
     if (!S.tokens[caster]) return toast('That creature is not on this map.');
+    endAim(); if (noting) setNoting(false);
+    lastFt[shape] = ft;
     const width = (AREAS.shapes.line.widthFeet || FPC) / FPC;
     aim = { shape, ft, caster, R: Math.max(1, Math.round(ft / FPC)), width, blockers: tplBlockers(), cur: null };
     if (shape === 'emanation') { aim.cur = aimAt([0, 0]); return placeTemplate(); }
@@ -1808,26 +1750,16 @@ export async function start(store, { build = null } = {}) {
     setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => S.tokens[i].name).join(', ')}` : 'nobody in the area'}.`);
     draw();
   }
-  function removeTemplate(id, quiet) {
+  function removeTemplate(id) {
     const t = TEMPLATES[id];
     if (!t) return;
     delete TEMPLATES[id];
     sending('templates/' + id, store.remove('templates/' + id)).catch((e) => { TEMPLATES[id] = t; draw(); toast(`Could not remove the template (${e.message || e}).`); });
-    if (!quiet) { logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`); toast('Template removed.'); }
+    logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`); toast('Template removed.');
     draw();
-  }
-  /** Play > Templates > Clear templates: the player view clears its own, the GM view all of them. */
-  function clearTemplates() {
-    const ids = Object.keys(TEMPLATES).filter((id) => canRemove(TEMPLATES[id], S.view));
-    if (!ids.length) return toast(S.view === 'gm' ? 'No templates on this map.' : 'You have no templates on this map.');
-    for (const id of ids) removeTemplate(id, true);
-    logChange(`cleared ${ids.length} template${ids.length === 1 ? '' : 's'}`);
-    toast(`${ids.length} template${ids.length === 1 ? '' : 's'} cleared.`);
   }
   function onCommand(id, item, state) {
     if (id === NOTE_COMMAND) { if (READONLY) { toast('This is a preview: notes are added on the party\'s map.'); setNoting(false); } else setNoting(state); return true; }
-    if (TEMPLATE_COMMANDS[id]) { templateCommand(TEMPLATE_COMMANDS[id]); return true; }
-    if (id === 'tpl-clear') { if (READONLY) toast('This is a preview.'); else clearTemplates(); return true; }
     return false;
   }
   /** Placed templates, on the map under the tokens: filled squares with an outline. Their remove buttons are
@@ -2067,7 +1999,8 @@ export async function start(store, { build = null } = {}) {
   // ---- the token HUD (right-click a token): Target and Assign status effects, as Foundry's Token HUD ----
   const hudEl = document.getElementById('tokhud');
   let hudFor = null;        // the token the HUD is open on
-  let hudPalette = false;   // the status palette is open
+  let hudPanel = null;      // the flyout that is open: 'effects' (status palette) or 'template' (area templates)
+  let hudShape = null;      // the template shape picked in the flyout, waiting for its size
   let hudKey = '';
   /** Both views open the HUD on any token they can see (to target it); the status effects button is the GM
    *  view's on every token and the player view's on its own PCs only. */
@@ -2075,23 +2008,24 @@ export async function start(store, { build = null } = {}) {
   const canEditEffects = (id) => S.view === 'gm' || (S.tokens[id] && S.tokens[id].kind === 'pc');
   const HUD_ICONS = {
     effects: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.6" fill="currentColor"/><path d="M8.5 21v-6.5L7 10.5Q7 9 9 9h6q2 0 2 1.5l-1.5 4V21z" fill="currentColor"/><path d="M12 1.5v1.6M4.5 4.5l1.2 1.1M19.5 4.5l-1.2 1.1M2 11h1.7M20.3 11H22M3.5 17.5l1.4-.8M20.5 17.5l-1.4-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    template: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L12 4 L21 21 Z" fill="currentColor" fill-opacity=".35" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="currentColor"/></svg>',
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
   };
   function openHud(id) {
     endAim(); if (noting) setNoting(false);
-    hudFor = id; hudPalette = false; hudKey = '';
+    hudFor = id; hudPanel = null; hudShape = null; hudKey = '';
     renderHud();
   }
   function closeHud() {
     if (!hudFor) return;
-    hudFor = null; hudPalette = false; hudKey = '';
+    hudFor = null; hudPanel = null; hudShape = null; hudKey = '';
     hudEl.replaceChildren(); hudEl.hidden = true;
   }
   /** The HUD beside the token's space; rebuilt only when what it shows changes (so hovering a tile keeps its tip). */
   function renderHud() {
     if (!hudFor || !S.tokens[hudFor] || !canHud(hudFor)) return closeHud();
     const t = S.tokens[hudFor];
-    const key = canon({ id: hudFor, p: hudPalette, e: t.effects || [], d: !!t.dead, tg: myTargets().includes(hudFor), v: S.view });
+    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, tg: myTargets().includes(hudFor), v: S.view });
     if (key !== hudKey) {
       hudKey = key;
       hudEl.replaceChildren();
@@ -2109,12 +2043,65 @@ export async function start(store, { build = null } = {}) {
         if (t.dead && !myTargets().includes(hudFor)) return toast(`${t.name} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
-      if (canEditEffects(hudFor)) btn('effects', 'Assign status effects', hudPalette, () => { hudPalette = !hudPalette; renderHud(); });
+      const panelBtn = (kind, label, panel) => btn(kind, label, hudPanel === panel, () => { hudPanel = hudPanel === panel ? null : panel; hudShape = null; renderHud(); });
+      if (canEditEffects(hudFor)) panelBtn('effects', 'Assign status effects', 'effects');
+      if (canEditEffects(hudFor) && AREAS) panelBtn('template', 'Area template', 'template');
       hudEl.appendChild(col);
-      if (hudPalette && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
+      if (hudPanel === 'effects' && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
+      if (hudPanel === 'template' && canEditEffects(hudFor) && AREAS) hudEl.appendChild(templatePanel(hudFor));
     }
     hudEl.hidden = false;
     placeHud();
+  }
+  const SHAPE_ICONS = {
+    burst: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg>',
+    cone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 L20 3 L20 21 Z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    line: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9.5" width="20" height="5" rx="1" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.6"/></svg>',
+    emanation: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"/><rect x="8.5" y="8.5" width="7" height="7" rx="1" fill="currentColor"/></svg>',
+  };
+  /** The area template flyout: the system's shapes; then that shape's quick sizes and a custom size. The token
+   *  is the caster. Picking a size starts aiming (an emanation is placed at once). */
+  function templatePanel(id) {
+    const pan = document.createElement('div'), unit = SYS.measurement.unit, sq = SYS.measurement.squareFeet;
+    pan.className = 'hud-tpl'; pan.setAttribute('role', 'group'); pan.setAttribute('aria-label', `Area template from ${S.tokens[id].name}`);
+    const row = document.createElement('div'); row.className = 'hud-shapes';
+    for (const shape of Object.keys(AREAS.shapes)) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'hud-shape' + (hudShape === shape ? ' on' : '');
+      b.innerHTML = (SHAPE_ICONS[shape] || '') + `<span>${label(shape)}</span>`;
+      b.setAttribute('aria-pressed', String(hudShape === shape));
+      b.title = { burst: 'Burst: from a grid corner you choose', cone: 'Cone: from this creature, 8 directions', line: 'Line: from this creature, any angle', emanation: 'Emanation: all round this creature, placed at once' }[shape] || label(shape);
+      b.addEventListener('click', (e) => { e.stopPropagation(); hudShape = hudShape === shape ? null : shape; renderHud(); });
+      row.appendChild(b);
+    }
+    pan.appendChild(row);
+    if (hudShape) {
+      const go = (ft) => { const shape = hudShape, caster = id; closeHud(); startAim(shape, ft, caster); };
+      const sizes = document.createElement('div'); sizes.className = 'hud-sizes';
+      for (const ft of AREAS.sizes) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'hud-size' + (lastFt[hudShape] === ft ? ' last' : ''); b.textContent = `${ft} ${unit}`;
+        b.addEventListener('click', (e) => { e.stopPropagation(); go(ft); });
+        sizes.appendChild(b);
+      }
+      const custom = document.createElement('form'); custom.className = 'hud-custom';
+      custom.noValidate = true;   // 12 is fine: sizeFeet rounds it to whole squares (the browser's step check would block it)
+      const input = document.createElement('input');
+      input.type = 'number'; input.min = sq; input.step = sq; input.max = AREAS.maxFeet || 500; input.placeholder = 'Custom';
+      input.setAttribute('aria-label', `Custom size in ${unit}`);
+      const ok = document.createElement('button'); ok.type = 'submit'; ok.textContent = 'Aim';
+      custom.append(input, ok);
+      custom.addEventListener('submit', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const ft = sizeFeet(input.value, sq, AREAS.maxFeet || 500);
+        if (!Number.isFinite(ft)) { toast(`Give the size in ${unit}.`); input.focus(); return; }
+        go(ft);
+      });
+      input.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') closeHud(); });
+      sizes.appendChild(custom);
+      pan.appendChild(sizes);
+    }
+    return pan;
   }
   /** Every condition of the system and Dead: lit with an orange frame when on, dimmed when off; the number on
    *  valued ones. Click toggles or raises, right-click lowers or removes (board/effects.js stepCondition). */
@@ -2639,7 +2626,7 @@ export async function start(store, { build = null } = {}) {
     badges: () => clone(badgeHits),
     hud: () => hudFor,
     noting: () => noting,
-    aim: () => (aim ? { shape: aim.shape, pick: aim.pick, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
+    aim: () => (aim ? { shape: aim.shape, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
     command: (id) => onCommand(id),
     hover: () => hoverId,
     view: (v) => setView(v),

@@ -111,7 +111,8 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **Placed templates are their own records** (`templates/<id>`), not part of `mapstate/<map>`: a placement and a door change by someone else never overwrite each other, and the late-echo rule applies (`sending`, `busy`, `resync.templates`). The save keeps them in the map state's `templates`; include the collection when clearing for a switch (it is in `SAVE_COLLECTIONS`).
 - **Aiming draws on the overlay.** The preview and aim bar change with every pointer move; only placing or removing redraws the map.
 - **Remove buttons sit above the target triangles** (the user's choice, 2026-11-11): an emanation's button sits on the caster's corner, where a target triangle also is, and must stay visible and clickable. The squares stay on the map under the tokens; the buttons are the shared remove button in a page layer over the map (see Shared controls).
-- **Escape while aiming** is caught first (capture phase) so it cancels the template without also clearing the selection; the size picker catches its own keys the same way.
+- **Escape while aiming** is caught first (capture phase) so it cancels the template without also clearing the selection.
+- **Templates start from the token HUD** (right-click the caster, Area template, shape, size). The custom-size box is in a form with `noValidate`: a number input with `step` 5 would otherwise refuse 12 silently on Enter, though `sizeFeet` rounds it to whole squares.
 
 ### Map notes
 
