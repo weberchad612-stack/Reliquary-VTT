@@ -90,8 +90,9 @@ export async function startArea(store, c) {
       b.className = 'pin' + (p.shape === 'wide' ? ' wide' : '') + (p.secret && !p.revealed ? ' secret' : '') + (request && request.place === p.id ? ' pending' : '');
       b.style.cssText = `left:${l}%;top:${t}%;width:${w}%;height:${h}%`;
       b.setAttribute('aria-pressed', String(selected === p.id));
-      b.setAttribute('aria-label', p.name);
-      b.title = p.name + (p.secret && !p.revealed ? ' (GM only)' : '');
+      const label = (p.number ? p.number + '. ' : '') + p.name;
+      b.setAttribute('aria-label', label);
+      b.title = label + (p.secret && !p.revealed ? ' (GM only)' : '');
       b.onclick = (e) => { e.stopPropagation(); select(p.id); };
       box.appendChild(b);
     }
@@ -111,7 +112,7 @@ export async function startArea(store, c) {
     }
     const tags = [];
     if (p.secret) tags.push(p.revealed ? '<span class="chip ok">found in play</span>' : '<span class="chip warn">GM only</span>');
-    let html = `<p class="ptype">${esc(p.type || '')}</p><h2>${esc(p.name)}</h2>`
+    let html = `<p class="ptype">${esc(p.type || '')}</p><h2>${p.number ? esc(p.number) + '. ' : ''}${esc(p.name)}</h2>`
       + (p.address ? `<p class="addr">${esc(p.address)}</p>` : '')
       + (p.note ? `<p>${esc(p.note)}</p>` : '')
       + (tags.length ? `<div class="chips">${tags.join('')}</div>` : '');

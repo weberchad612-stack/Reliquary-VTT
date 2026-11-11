@@ -93,6 +93,10 @@ is told in chat.
 }
 ```
 
+- Adventure maps print their own location numbers. Put `at` on the printed marker and set `size` so the
+  pin rings it; `number` repeats the printed number ("14") for the card. The pin is only a ring: its inside
+  stays clear, and selection, hover and a waiting request show on and outside the ring. A GM-only place's
+  number is still printed on the picture; only its pin and card are hidden.
 - `at` is the pin's centre in image pixels; `size` its width in pixels (default 4.5% of the image width);
   `shape: "wide"` is a pill 5.5 times as wide as tall, for roads and districts at the edges.
 - `public: false` keeps a place GM-only until Claude marks it found (`places_found` in the map state).

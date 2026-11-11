@@ -123,15 +123,15 @@ os.makedirs(OUT, exist_ok=True)
 img.save(os.path.join(OUT, "sample-village.webp"), "WEBP", quality=86, method=6)
 
 places = [
-    {"id": "tavern", "name": "The Leaning Lantern", "type": "Tavern and inn", "address": "3 Bridge Street",
+    {"id": "tavern", "number": "1", "name": "The Leaning Lantern", "type": "Tavern and inn", "address": "3 Bridge Street",
      "note": "A crooked two-storey inn; the lamp over the door has hung askew for forty years.", "at": [275, 225]},
-    {"id": "market", "name": "Market Square", "type": "Market", "address": "Market Square",
+    {"id": "market", "number": "2", "name": "Market Square", "type": "Market", "address": "Market Square",
      "note": "Stalls most mornings; a notice board by the well.", "at": [400, 335]},
-    {"id": "chapel", "name": "Chapel of the Dawn", "type": "Chapel", "address": "1 Bell Lane",
+    {"id": "chapel", "number": "3", "name": "Chapel of the Dawn", "type": "Chapel", "address": "1 Bell Lane",
      "note": "A slate-roofed chapel with a small bell tower.", "at": [650, 210]},
-    {"id": "smithy", "name": "Harrow's Forge", "type": "Smithy", "address": "12 Riverside Road",
+    {"id": "smithy", "number": "4", "name": "Harrow's Forge", "type": "Smithy", "address": "12 Riverside Road",
      "note": "Tools, horseshoes and the occasional blade.", "at": [792, 493]},
-    {"id": "mill", "name": "The Old Mill", "type": "Watermill", "address": "Mill Lane",
+    {"id": "mill", "number": "5", "name": "The Old Mill", "type": "Watermill", "address": "Mill Lane",
      "note": "The wheel still turns; the miller grinds for the whole valley.", "at": [910, 223]},
     {"id": "riverside", "name": "Riverside road", "type": "Road", "note": "The road east along the river, toward the farms.",
      "at": [930, 300], "shape": "wide", "size": 150},
