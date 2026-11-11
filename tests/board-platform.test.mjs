@@ -59,3 +59,17 @@ test('platform store: writes to one record never overlap, a transient failure is
     assert.equal(s.assetUrl('abc'), '/_blob/abc');
   } finally { delete globalThis.claude; }
 });
+
+test('memory store with latency: writes land one at a time per record, in order, and watchers see each late', async () => {
+  const { MemoryStore } = await import('../board/store.js');
+  const s = new MemoryStore({ 'tokens/a': { x: 0 }, 'tokens/b': { x: 0 } }, {}, { latency: 20 });
+  const seen = [];
+  s.watchCollection('tokens', (list) => seen.push(list.map((e) => e.data.x).join(',')));
+  await new Promise((r) => setTimeout(r, 5));
+  const w = [s.set('tokens/a', { x: 1 }), s.set('tokens/b', { x: 1 }), s.set('tokens/a', { x: 2 }), s.set('tokens/b', { x: 2 })];
+  assert.equal((await s.get('tokens/a')).x, 0, 'nothing has landed yet');
+  await Promise.all(w);
+  assert.deepEqual((await s.get('tokens/a')).x, 2);
+  // each report carries the other record's value as it stood: the first report still has b at 0
+  assert.deepEqual(seen, ['0,0', '1,0', '1,1', '2,1', '2,2']);
+});

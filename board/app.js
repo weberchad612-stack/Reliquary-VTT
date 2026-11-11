@@ -54,7 +54,7 @@ export const RULESETS = ['pf2e'];
  */
 export async function boot(seed, build = null) {
   showBuild(build);
-  if (seed) return start(new MemoryStore(seed.records, seed.assets || {}), { build });
+  if (seed) return start(new MemoryStore(seed.records, seed.assets || {}, { latency: seed.latency || 0 }), { build });
   const store = await platformStore();
   if (!store) return showMessage('This board has no database to read from. Open it as a published board, or build it with a seed campaign.');
   return start(store, { build });
@@ -1344,12 +1344,18 @@ export async function start(store, { build = null } = {}) {
   }
   /** Move several tokens by (dx, dy) together, keeping their spacing. No route and no warnings (the user's choice). */
   function moveGroup(ids, dx, dy) {
+    ids = ids.filter((id) => S.tokens[id]);
+    // The whole group stops at the map's edge together, so it keeps its shape.
+    for (const id of ids) {
+      const t = S.tokens[id], size = Engine.isTiny(t) ? 1 : (t.size || 1);
+      dx = Math.max(-t.x, Math.min(G.cols - size - t.x, dx));
+      dy = Math.max(-t.y, Math.min(G.rows - size - t.y, dy));
+    }
+    if (!dx && !dy) return;
     const moved = [];
     for (const id of ids) {
       const t = S.tokens[id];
-      if (!t) continue;
-      const size = Engine.isTiny(t) ? 1 : (t.size || 1);
-      t.x = Math.max(0, Math.min(G.cols - size, t.x + dx)); t.y = Math.max(0, Math.min(G.rows - size, t.y + dy));
+      t.x += dx; t.y += dy;
       delete t.slot;
       moved.push(t.name);
     }
@@ -1521,6 +1527,29 @@ export async function start(store, { build = null } = {}) {
   }
   for (const [p, d] of Object.entries(recordsFromState())) { const v = prune(d); known.set(p, canon(v)); knownData.set(p, v); }
 
+  // Our own writes come back from the store, one at a time per record and late (the platform writes a
+  // record's changes in order). A late echo of an older write must not count as someone else's change, or it
+  // would put a token back where it was a moment ago (and a key pressed then would move it from there).
+  // While a record has writes of ours in progress, whatever the store reports for it is out of date: an echo of
+  // an earlier write of ours, or (through a collection watch, which re-sends every record whenever any one
+  // changes) its value from before our writes landed. Applying either would put a token back where it was a
+  // moment ago, and a key pressed then would move it on from there. So a busy record's reports are ignored,
+  // and when its last write settles it is read once more, in case someone else changed it meanwhile.
+  const inflight = new Map();   // path -> writes of ours not yet settled
+  const resync = {};            // collection -> (path) => re-read and apply; set by startSync()
+  const busy = (p) => inflight.has(p);
+  function sending(p, promise) {
+    inflight.set(p, (inflight.get(p) || 0) + 1);
+    const done = () => {
+      const n = inflight.get(p) - 1;
+      if (n > 0) { inflight.set(p, n); return; }
+      inflight.delete(p);
+      const r = resync[p.split('/')[0]];
+      if (r) r(p);
+    };
+    promise.then(done, done);
+    return promise;
+  }
   let persistT = null;
   function schedulePersist() { if (!persistT) persistT = setTimeout(persist, 0); }
   /** Write every record the board's state changed, each with a change-log entry. */
@@ -1532,7 +1561,7 @@ export async function start(store, { build = null } = {}) {
       if (known.get(p) === c) continue;
       const before = knownData.get(p);
       known.set(p, c); knownData.set(p, v);
-      store.set(p, v).catch((e) => toast(`Could not save a change (${e.message || e}).`));
+      sending(p, store.set(p, v)).catch((e) => toast(`Could not save a change (${e.message || e}).`));
       for (const what of describe(p, before, v)) logChange(what);
     }
   }
@@ -1627,37 +1656,39 @@ export async function start(store, { build = null } = {}) {
       if (!m) return reloadBoard('The campaign was unloaded.');
       if (m.campaign.id !== META.campaign.id || m.loaded_at !== META.loaded_at) reloadBoard(`${m.campaign.title} is now on the table.`);
     });
-    store.watch('state/table', (t) => {
+    const onTable = (t) => {
       if (!t) return;
       TABLE = t;
       travelChanged();
       if (READONLY) { travelChanged(); return shell.previewBar(); }
       if (t.current_map && t.current_map !== MAP_ID) return reloadBoard('The table moved to another map.');
-      if (!fresh('state/table', tableRecord(t))) return;
+      if (busy('state/table') || !fresh('state/table', tableRecord(t))) return;
       S.sky = t.sky_light || 'bright';
       S.light_colour = { on: true, strength: 25, ...(t.light_colour || {}) };
       S.light_animation = { on: true, ...(t.light_animation || {}) };
       document.getElementById('sky').value = S.sky;
       syncColourButton(); syncAnimButton();
       remoteChanged();
-    });
-    store.watch('mapstate/' + MAP_ID, (d) => {
-      if (!d || !fresh('mapstate/' + MAP_ID, d)) return;
+    };
+    store.watch('state/table', onTable);
+    const onMapState = (d) => {
+      if (!d || busy('mapstate/' + MAP_ID) || !fresh('mapstate/' + MAP_ID, d)) return;
       mapStateBase = clone(d);
       S.doors = d.doors || {}; S.locked_known = d.locked_known || []; S.terrain = d.terrain || [];
       S.terrain_on = d.terrain_on || []; S.terrain_off = d.terrain_off || []; S.links_found = d.links_found || [];
       S.lights = d.lights || {}; S.regions = d.regions || {}; S.regions_off = d.regions_off || [];
       S.hiddenMarks = d.hidden_marks || {};
       remoteChanged();
-    });
-    store.watchCollection('tokens', (list) => {
+    };
+    store.watch('mapstate/' + MAP_ID, onMapState);
+    const onTokens = (list) => {
       let changed = false;
       const here = new Set();
       for (const e of list) {
         if (e.data.map !== MAP_ID) continue;
         here.add(e.id);
-        if (drag && drag.id === e.id) continue;   // the player is moving it: their move wins
-        if (!fresh(e.path, e.data)) continue;
+        if (drag && (drag.id === e.id || (drag.group && drag.group.has(e.id)))) continue;   // being moved here: our move wins
+        if (busy(e.path) || !fresh(e.path, e.data)) continue;
         const { map: _m, ...t } = e.data;
         for (const k of TOKEN_LOCAL) if (S.tokens[e.id] && S.tokens[e.id][k] !== undefined && t[k] === undefined) t[k] = S.tokens[e.id][k];
         S.tokens[e.id] = t;
@@ -1671,7 +1702,11 @@ export async function start(store, { build = null } = {}) {
         changed = true;
       }
       if (changed) remoteChanged();
-    });
+    };
+    store.watchCollection('tokens', onTokens);
+    resync.state = (p) => { if (p === 'state/table') store.get(p).then(onTable).catch(() => {}); };
+    resync.mapstate = (p) => { if (p === 'mapstate/' + MAP_ID) store.get(p).then(onMapState).catch(() => {}); };
+    resync.tokens = () => store.list('tokens').then(onTokens).catch(() => {});
     store.watchCollection('explored', (list) => {
       const mine = list.filter((e) => e.data.map === MAP_ID);
       const polys = exploredFromRecords(mine.map((e) => e.data)).polys;

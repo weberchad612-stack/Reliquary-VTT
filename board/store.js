@@ -29,8 +29,13 @@ export class MemoryStore {
   /**
    * @param {object} [records]  {path: data}
    * @param {object} [assets]   {id: url} (data URLs in tests and the demo)
+   * @param {object} [o]
+   * @param {number} [o.latency=0]  ms each write takes, one at a time per record, as on the platform: its
+   *   change is seen (and reported to watchers) only then. Tests use it to reproduce late echoes.
    */
-  constructor(records = {}, assets = {}) {
+  constructor(records = {}, assets = {}, { latency = 0 } = {}) {
+    this.latency = latency;
+    this.queues = new Map();
     this.kind = 'memory';
     this.records = new Map();
     for (const [p, d] of Object.entries(records)) { checkPath(p); this.records.set(p, clone(d)); }
@@ -50,15 +55,24 @@ export class MemoryStore {
     return out.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   }
 
-  async set(path, data) { checkPath(path); this.records.set(path, clone(data)); this._changed(path); }
+  /** Run a write now, or (with latency) after the record's earlier writes, each taking `latency` ms. */
+  _write(path, fn) {
+    if (!this.latency) { fn(); return Promise.resolve(); }
+    const prev = this.queues.get(path) || Promise.resolve();
+    const next = prev.then(() => new Promise((r) => setTimeout(r, this.latency))).then(fn);
+    this.queues.set(path, next);
+    return next;
+  }
+
+  async set(path, data) { checkPath(path); const d = clone(data); return this._write(path, () => { this.records.set(path, d); this._changed(path); }); }
 
   async update(path, partial) {
     checkPath(path);
-    this.records.set(path, { ...(this.records.get(path) || {}), ...clone(partial) });
-    this._changed(path);
+    const p = clone(partial);
+    return this._write(path, () => { this.records.set(path, { ...(this.records.get(path) || {}), ...p }); this._changed(path); });
   }
 
-  async remove(path) { checkPath(path); if (this.records.delete(path)) this._changed(path); }
+  async remove(path) { checkPath(path); return this._write(path, () => { if (this.records.delete(path)) this._changed(path); }); }
 
   watch(path, cb) {
     checkPath(path);
