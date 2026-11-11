@@ -16,6 +16,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | done (token HUD, 2026-11-11) | 2026-11-11 |
 | FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | done for distances and areas (2026-11-11); movement and sight open | 2026-11-11 |
 | FR-8 | [Tilting area templates up and down](#fr-8-tilting-area-templates-up-and-down) | open (designed, not built) | 2026-11-11 |
+| FR-9 | [Light at a height](#fr-9-light-at-a-height) | open | 2026-11-11 |
 
 ---
 
@@ -216,4 +217,43 @@ cones later if fights with flyers are common. Until then: GM rulings, helped by 
 **Open questions:** should a line aimed at a token stop at the token or run its full length (PF2E lines run
 their full length)? Do downward cones from a flyer need their own snap angles (-45, -90)? How is the band
 drawn when two templates overlap?
+
+---
+
+## FR-9: Light at a height
+
+**Asked for:** the user, 2026-11-11, after token elevation and height in distances (FR-7): "Kerra holding a
+torch light source, if she's 50 feet up in the air technically the floor of the map isn't lit."
+
+**What is known:** the light engine (engine/light, docs/design/lighting.md) is flat: every light, carried or
+static, lights the floor around it as if it stood on the floor, and the light map has one level, the floor.
+Tokens now carry `elevation` and are as tall as their size (FR-7), and the system counts height as a third
+direction with the same 5-10-5 diagonals (`measurement.vertical`). A torch gives 20 ft of bright light and
+20 ft of dim light beyond it: 40 ft in every direction, so a torch 50 ft up lights nothing on the floor.
+
+**What it would take.**
+- **A light has a height:** a carried light at its bearer's elevation (in the hand: about the middle of the
+  creature's height column), a static light at its own `height` in the lighting file (a wall sconce at 5 ft, a
+  chandelier at 20 ft; the importer and the map editor would set it, 0 by default).
+- **Light on the floor:** for each floor square, the 3-D distance from the light counted the system's way
+  (the flat distance and the vertical gap combined, as FR-7 does), against the bright and dim radii. A
+  light raised by v squares lights a smaller patch of floor; above its full reach, none. With FR-3 (light
+  ranges by the system's measurement) this replaces the true circle with the grid count.
+- **Light where a creature is:** whether a creature is in bright, dim or no light depends on its own height
+  too: a flyer next to Kerra's torch at 50 ft is lit while the floor below is dark. The light map stays a
+  floor map for drawing; "the light at this creature" (used by the light rules' `perceive`: concealment,
+  what darkvision and low-light vision see) asks the light sources in 3-D for the creature's height column.
+- **Sight and fog:** what the party perceives on the floor follows the floor's light; a creature at a height
+  is seen by the light at its height. The explored area stays a floor map.
+- **Walls** stay full height for light, as for sight and areas (walls with heights are a separate idea).
+- **Daylight and sky regions** are not affected: the sky lights every height.
+
+**Cost:** the light map already rebuilds a light only when it moves (`LightCache`); a height is one more input.
+The per-square 3-D test is cheap; the work is mostly in threading heights through the light rules and the
+board's "light at this creature" lookups, and tests.
+
+**Open questions:** where in a creature's column its carried light sits (feet, middle, top); whether static
+lights need heights now or only carried ones; whether the floor patch of an elevated light should be drawn
+dimmer than the same light on the floor (PF2E has only bright and dim, so the rules level is enough);
+whether to do this together with FR-3.
 
