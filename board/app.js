@@ -19,6 +19,7 @@ import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
+import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, markerAt, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
@@ -117,6 +118,8 @@ export async function start(store, { build = null } = {}) {
   const MS = (await store.get(`mapstate/${MAP_ID}`)) || {};
   const TOKENS0 = {};
   for (const e of await store.list('tokens')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TOKENS0[e.id] = t; }
+  const MAPNOTES = {};       // map notes on this map: {id: note} (records notes/<id>)
+  for (const e of await store.list('notes')) if (e.data.map === MAP_ID) { const { map: _m, ...n } = e.data; MAPNOTES[e.id] = n; }
   const TEMPLATES = {};   // area templates on this map: {id: template} (records templates/<id>)
   for (const e of await store.list('templates')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TEMPLATES[e.id] = t; }
   const ex = (await store.list('explored')).filter((e) => e.data.map === MAP_ID).map((e) => e.data);
@@ -150,7 +153,8 @@ export async function start(store, { build = null } = {}) {
     tokens: clone(TOKENS0),
   });
   let S = START();
-  let shellReady = false;   // the shell (menus) is made near the end of start()
+  let shellReady = false;
+  let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
   let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
   // Several tokens selected (a box, or Ctrl+click): this screen only. While it holds two or more, `selected`
@@ -410,6 +414,7 @@ export async function start(store, { build = null } = {}) {
       c.style.left = canvas.offsetLeft + 'px'; c.style.top = canvas.offsetTop + 'px';
     }
     draw();
+    if (notesReady) renderNotes();   // pins and bubbles follow the zoom
   }
   const P = (c) => c * CS; // cells -> pixels from the grid origin (draw() translates by OX, OY)
 
@@ -1313,6 +1318,7 @@ export async function start(store, { build = null } = {}) {
     if (ev.button === 2) { ev.preventDefault(); startPan(ev, false, true); return; }   // right button: pan, hand cursor
     if (ev.button !== 0) return;
     const p = cellAt(ev);
+    if (noting) { setNoting(false); openNoteEditor({ at: notePoint(p[0], p[1]) }); return; }   // Add note: the editor opens here
     if (aim && aim.pick) {   // choosing the caster for a template
       const id = clickTarget(p).token;
       if (!id) return;
@@ -1392,6 +1398,8 @@ export async function start(store, { build = null } = {}) {
     }
     const p = cellAt(ev);
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
+    lastPoint = p;
+    if (noting) { canvas.style.cursor = 'crosshair'; return; }
     if (aim && !aim.pick) { aimMove(p); return; }
     const ht = !drag && !READONLY ? markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05) : null;
     if (ht !== hoverTpl) { hoverTpl = ht; targetsChanged(); }
@@ -1437,7 +1445,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; targetsChanged(); } hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; lastPoint = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; targetsChanged(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1613,7 +1621,7 @@ export async function start(store, { build = null } = {}) {
   function templateCommand(shape) {
     if (READONLY) return toast('This is a preview: templates are placed on the party\'s map.');
     if (!AREAS) return toast(`${SYS.name} has no area templates yet.`);
-    endAim();
+    endAim(); if (noting) setNoting(false);
     const ids = selectedIds().filter((id) => S.tokens[id] && canDrag(id));
     if (ids.length === 1) return pickSize(shape, ids[0]);
     aim = { pick: shape };
@@ -1727,7 +1735,8 @@ export async function start(store, { build = null } = {}) {
     logChange(`cleared ${ids.length} template${ids.length === 1 ? '' : 's'}`);
     toast(`${ids.length} template${ids.length === 1 ? '' : 's'} cleared.`);
   }
-  function onCommand(id) {
+  function onCommand(id, item, state) {
+    if (id === NOTE_COMMAND) { if (READONLY) { toast('This is a preview: notes are added on the party\'s map.'); setNoting(false); } else setNoting(state); return true; }
     if (TEMPLATE_COMMANDS[id]) { templateCommand(TEMPLATE_COMMANDS[id]); return true; }
     if (id === 'tpl-clear') { if (READONLY) toast('This is a preview.'); else clearTemplates(); return true; }
     return false;
@@ -1782,6 +1791,207 @@ export async function start(store, { build = null } = {}) {
     }
   }
 
+  // ---- map notes (Map > Add note, or N under the mouse): pins and bubbles in a page layer over the map ----
+  const notesEl = document.getElementById('notes');
+  const NOTES_SHUT = collapsedStore(`reliquary-notes-shut:${META.campaign.id}:${MAP_ID}`);
+  let noting = false;      // Add note is on: the next click on the map opens the editor there
+  let lastPoint = null;    // the pointer's point on the map, for N
+  let noteEditor = null;   // {box, id}: the editor that is open
+  const noteBy = () => (S.view === 'gm' ? 'gm' : 'player');
+  function setNoting(on) {
+    noting = !!on && !READONLY;
+    if (noting) endAim();
+    const m = shellReady && shell.menu();
+    if (m) m.setToggle(NOTE_COMMAND, noting);
+    canvas.style.cursor = noting ? 'crosshair' : 'default';
+    if (noting) toast('Click the map to drop a note. Esc cancels.');
+  }
+  /** Map point (cells) -> pixels inside the notes layer. */
+  const notePx = ([x, y]) => [(OX + x * CS) * scale, (OY + y * CS) * scale];
+  function placeNotesLayer() {
+    notesEl.style.left = canvas.offsetLeft + 'px'; notesEl.style.top = canvas.offsetTop + 'px';
+    notesEl.style.width = canvas.style.width; notesEl.style.height = canvas.style.height;
+  }
+  /** Draw every note this view may see: a pin, and unless collapsed here, a bubble with the text. */
+  function renderNotes() {
+    placeNotesLayer();
+    const keepEditor = noteEditor && noteEditor.box;
+    notesEl.replaceChildren();
+    NOTES_SHUT.prune(Object.keys(MAPNOTES));
+    for (const id of Object.keys(MAPNOTES).sort()) {
+      const n = MAPNOTES[id];
+      if (!noteVisible(n, S.view)) continue;
+      const [px, py] = notePx(n.at), mine = canEditNote(n, S.view) && !READONLY, shut = NOTES_SHUT.has(id);
+      const who = authorName(n, S.view);
+      const pin = document.createElement('button');
+      pin.type = 'button';
+      pin.className = 'pin' + (shut ? ' shut' : '') + (n.gm_only ? ' gm-only' : '') + (mine ? ' mine' : '');
+      pin.style.setProperty('--nc', noteColour(n));
+      pin.style.left = px + 'px'; pin.style.top = py + 'px';
+      pin.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="nfill" d="M4 3h16v12l-6 6H4z" fill="currentColor" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 21v-6h6" fill="#fff" fill-opacity=".55" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.5 8h9M7.5 11.5h9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      pin.setAttribute('aria-expanded', String(!shut));
+      pin.setAttribute('aria-label', `${shut ? 'Show' : 'Hide'} note by ${who}: ${n.text}`);
+      pin.title = (shut ? 'Show note' : 'Hide note') + (mine ? ' · drag to move (Shift: centre of a square)' : '');
+      wirePin(pin, id, mine);
+      notesEl.appendChild(pin);
+      if (shut) continue;
+      const b = document.createElement('div');
+      b.className = 'note' + (mine ? ' mine' : '') + (n.gm_only ? ' gm-only' : '');
+      b.style.setProperty('--nc', noteColour(n));
+      b.style.left = px + 'px'; b.style.top = py + 'px';
+      const text = document.createElement('span');
+      text.textContent = n.text;
+      b.appendChild(text);
+      const tag = document.createElement('small');
+      tag.className = 'nby';
+      tag.textContent = who + (n.gm_only ? ' · GM only' : '');
+      b.appendChild(tag);
+      if (mine) {
+        b.title = 'Click to edit this note';
+        b.addEventListener('click', (e) => { e.stopPropagation(); openNoteEditor({ id, at: n.at, text: n.text, gmOnly: !!n.gm_only }); });
+        const x = document.createElement('button');
+        x.type = 'button'; x.className = 'ndel'; x.textContent = '✕';
+        x.title = 'Delete this note'; x.setAttribute('aria-label', 'Delete note: ' + n.text);
+        let armed = null;
+        x.addEventListener('pointerdown', (e) => e.stopPropagation());
+        x.addEventListener('click', (e) => {
+          e.stopPropagation(); e.preventDefault();
+          if (!armed) {
+            x.textContent = 'Delete?'; x.classList.add('arm');
+            armed = setTimeout(() => { armed = null; x.textContent = '✕'; x.classList.remove('arm'); }, 3000);
+            return;
+          }
+          clearTimeout(armed); deleteNote(id);
+        });
+        b.appendChild(x);
+      }
+      notesEl.appendChild(b);
+    }
+    if (keepEditor) notesEl.appendChild(keepEditor);
+  }
+  /** A pin: click hides or shows its bubble (this browser only); the author drags it to move the note. */
+  function wirePin(pin, id, mine) {
+    let press = null;
+    pin.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      press = { x: e.clientX, y: e.clientY, moved: false };
+      if (mine) pin.setPointerCapture(e.pointerId);
+    });
+    pin.addEventListener('pointermove', (e) => {
+      if (!press || !mine) return;
+      if (!press.moved && !isDrag(press.x, press.y, e.clientX, e.clientY)) return;
+      press.moved = true;
+      const p = cellAt(e), at = notePoint(p[0], p[1], e.shiftKey), [px, py] = notePx(at);
+      pin.style.left = px + 'px'; pin.style.top = py + 'px';
+      pin.classList.add('dragging');
+    });
+    pin.addEventListener('pointerup', (e) => {
+      if (!press) return;
+      const { moved } = press;
+      press = null;
+      if (moved) { const p = cellAt(e); moveNote(id, notePoint(p[0], p[1], e.shiftKey)); return; }
+      NOTES_SHUT.toggle(id); renderNotes();
+    });
+    pin.addEventListener('pointercancel', () => { press = null; renderNotes(); });
+    pin.addEventListener('click', (e) => e.stopPropagation());
+  }
+  /** The note editor: Enter saves, Shift+Enter a new line, Esc cancels; empty text removes the note. */
+  function openNoteEditor(o) {
+    if (READONLY) return;
+    closeNoteEditor();
+    const box = document.createElement('div');
+    box.className = 'nedit';
+    box.style.setProperty('--nc', o.id ? noteColour(MAPNOTES[o.id]) : noteColour({ by: noteBy() }));
+    const [px, py] = notePx(o.at);
+    box.style.left = px + 'px'; box.style.top = py + 'px';
+    const ta = document.createElement('textarea');
+    ta.value = o.text || ''; ta.maxLength = NOTE_MAX; ta.setAttribute('aria-label', 'Map note text');
+    box.appendChild(ta);
+    let gmBox = null;
+    if (S.view === 'gm') {
+      const lab = document.createElement('label');
+      lab.className = 'ngm';
+      gmBox = document.createElement('input');
+      gmBox.type = 'checkbox'; gmBox.checked = o.id ? !!o.gmOnly : true;
+      lab.append(gmBox, ' GM only (players never see it)');
+      box.appendChild(lab);
+    }
+    const hint = document.createElement('small');
+    hint.textContent = 'Enter saves · Shift+Enter new line · Esc cancels' + (o.id ? ' · empty text removes the note' : '');
+    box.appendChild(hint);
+    for (const ev of ['pointerdown', 'click', 'dblclick', 'wheel']) box.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
+    let done = false;
+    const finish = (save) => {
+      if (done) return;
+      done = true;
+      closeNoteEditor();
+      if (save) saveNote(o, ta.value, gmBox ? gmBox.checked : (o.id ? !!o.gmOnly : false));
+    };
+    ta.addEventListener('keydown', (e) => {
+      e.stopPropagation();
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+    });
+    if (gmBox) gmBox.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') finish(false); if (e.key === 'Enter') finish(true); });
+    // clicking away saves (as before); moving focus inside the editor does not
+    box.addEventListener('focusout', (e) => { if (!box.contains(e.relatedTarget)) setTimeout(() => { if (noteEditor && noteEditor.box === box) finish(true); }, 120); });
+    noteEditor = { box, id: o.id || null };
+    notesEl.appendChild(box);
+    setTimeout(() => { ta.focus(); ta.select(); }, 0);
+  }
+  function closeNoteEditor() { if (noteEditor) { noteEditor.box.remove(); noteEditor = null; } }
+  function writeNote(id, rec, what) {
+    const { map: _m, ...n } = rec, before = MAPNOTES[id];
+    MAPNOTES[id] = n;
+    sending('notes/' + id, store.set('notes/' + id, rec)).catch((e) => {
+      if (before) MAPNOTES[id] = before; else delete MAPNOTES[id];
+      renderNotes(); toast(`Could not save the note (${e.message || e}).`);
+    });
+    if (what) logChange(what);
+    renderNotes();
+  }
+  function saveNote(o, raw, gmOnly) {
+    const text = cleanText(raw);
+    if (!o.id) {
+      if (!text) return;
+      const id = noteId();
+      writeNote(id, noteRecord({ map: MAP_ID, text, at: o.at, by: noteBy(), gmOnly }), `added a note${gmOnly ? ' (GM only)' : ''}: "${noteGist(text)}"`);
+      return;
+    }
+    const n = MAPNOTES[o.id];
+    if (!n) return;
+    if (!text) { deleteNote(o.id); return; }
+    if (text === n.text && !!gmOnly === !!n.gm_only) return;
+    writeNote(o.id, noteRecord({ map: MAP_ID, text, at: n.at, by: n.by, gmOnly }), `edited a note: "${noteGist(text)}"`);
+  }
+  function moveNote(id, at) {
+    const n = MAPNOTES[id];
+    if (!n || (at[0] === n.at[0] && at[1] === n.at[1])) return renderNotes();
+    writeNote(id, noteRecord({ map: MAP_ID, text: n.text, at, by: n.by, gmOnly: !!n.gm_only }), `moved a note: "${noteGist(n.text)}"`);
+  }
+  function deleteNote(id) {
+    const n = MAPNOTES[id];
+    if (!n) return;
+    delete MAPNOTES[id];
+    sending('notes/' + id, store.remove('notes/' + id)).catch((e) => { MAPNOTES[id] = n; renderNotes(); toast(`Could not delete the note (${e.message || e}).`); });
+    logChange(`deleted a note: "${noteGist(n.text)}"`);
+    renderNotes();
+  }
+  // the right button pans from a note too; no browser menu over notes
+  notesEl.addEventListener('contextmenu', (e) => e.preventDefault());
+  notesEl.addEventListener('pointerdown', (e) => { if (e.button === 2 && !e.target.closest('.nedit')) { e.preventDefault(); startPan(e, false, true); } });
+  // N: a note under the mouse (or Add note, if the mouse is not on the map); Escape: Add note off
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && noting) { e.preventDefault(); e.stopPropagation(); setNoting(false); return; }
+    if (e.key !== 'n' && e.key !== 'N') return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || READONLY) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [role^=menu]')) return;
+    e.preventDefault();
+    if (lastPoint) { setNoting(false); openNoteEditor({ at: notePoint(lastPoint[0], lastPoint[1]) }); }
+    else setNoting(true);
+  }, true);
+
   function moveToken(id, goal, route) {
     const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
     const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
@@ -1822,7 +2032,7 @@ export async function start(store, { build = null } = {}) {
   });
 
   function setView(v) {
-    if (v !== S.view) endAim();
+    if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); }
     S.view = v;
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
@@ -1833,6 +2043,7 @@ export async function start(store, { build = null } = {}) {
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
+    if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
     if (READONLY && v !== 'gm') shell.leavePreview();
   }
@@ -2147,6 +2358,22 @@ export async function start(store, { build = null } = {}) {
       if (changed) draw();
     };
     store.watchCollection('templates', onTemplates);
+    const onNotes = (list) => {
+      let changed = false;
+      const here = new Set();
+      for (const e of list) {
+        if (e.data.map !== MAP_ID) continue;
+        here.add(e.id);
+        if (busy(e.path)) continue;
+        const { map: _m, ...n } = e.data;
+        if (canon(n) !== canon(MAPNOTES[e.id])) { MAPNOTES[e.id] = n; changed = true; }
+      }
+      for (const id of Object.keys(MAPNOTES)) if (!here.has(id) && !busy('notes/' + id)) { delete MAPNOTES[id]; changed = true; }
+      // someone else changed or removed the note being edited: the editor stays; saving writes over it
+      if (changed) renderNotes();
+    };
+    store.watchCollection('notes', onNotes);
+    resync.notes = () => store.list('notes').then(onNotes).catch(() => {});
     resync.templates = () => store.list('templates').then(onTemplates).catch(() => {});
     resync.state = (p) => { if (p === 'state/table') store.get(p).then(onTable).catch(() => {}); };
     resync.mapstate = (p) => { if (p === 'mapstate/' + MAP_ID) store.get(p).then(onMapState).catch(() => {}); };
@@ -2216,6 +2443,8 @@ export async function start(store, { build = null } = {}) {
     selection: () => selectedIds(),
     targets: () => clone(TARGETS),
     templates: () => clone(TEMPLATES),
+    notes: () => clone(MAPNOTES),
+    noting: () => noting,
     aim: () => (aim ? { shape: aim.shape, pick: aim.pick, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
     command: (id) => onCommand(id),
     hover: () => hoverId,
@@ -2241,6 +2470,7 @@ export async function start(store, { build = null } = {}) {
   lightingCard();
   fit();
   shell.startMenu();
+  notesReady = true; renderNotes();
   await shell.startMapMenu();
   if (keepGM) setView('gm');
   if (PREVIEW && PREVIEW.link) centreOnLink(PREVIEW.link);

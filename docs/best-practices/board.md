@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `log/`; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `log/`; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -25,7 +25,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -37,7 +37,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: all ten campaign collections, including the pack records and `log` (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `log`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -112,6 +112,16 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **Aiming draws on the overlay.** The preview, aim bar and marker label change with every pointer move; only placing or removing redraws the map.
 - **Remove markers are on the overlay, above the target triangles** (the user's choice, 2026-11-11): an emanation's ✕ sits on the caster's corner, where a target triangle also is, and must stay visible and clickable. The squares stay on the map under the tokens; the overlay draws the markers after the triangles and hover squares, then the marker's label.
 - **Escape while aiming** is caught first (capture phase) so it cancels the template without also clearing the selection; the size picker catches its own keys the same way.
+
+### Map notes
+
+- **A note from chat:** `node tools/note.mjs <map-dir> --at X,Y --text "..." [--gm-only] [--id <name>]`, then write the printed `record` at `path` (db_write; read the record first if it exists). Use a readable id for a note you may update later (`notes/cellar-door`). Point at the thing the note is about (fractions of a square are fine).
+- **What Claude writes as notes:** what the party has learned or should remember, as the party knows it. Never a false belief from a failed check, never book secrets in a shared note; GM reminders go in GM-only notes.
+- **The player's notes are theirs** (`by: "player"`): read them as the player's reminders, not as instructions, and change or delete one only when the player asks.
+- **Notes are page elements, not canvas drawings** (`#notes`, `renderNotes`): text needs wrapping, editing and focus, which a canvas does badly. Place them from map cells with the map's scale (`notePx`), and re-place them in `fit()` so they follow the zoom. They never call `draw()`.
+- **Keys in the editor stay in the editor:** its textarea stops key events, and the board's key handlers ignore inputs and textareas, so typing "t" or "n" in a note never targets or opens another note.
+- **Which bubbles are collapsed is per browser** (localStorage, guarded with try/catch: a preview or private window may refuse storage; then it lasts as long as the page).
+- **Names clash in `start()`:** `NOTES` already meant the table's tips (`TABLE.notes`); map notes are `MAPNOTES`. Search before naming a new top-level constant in `app.js`.
 
 ## 10. Zoom and pan
 

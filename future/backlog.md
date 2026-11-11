@@ -12,6 +12,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-2 | [Targeting on touch screens](#fr-2-targeting-on-touch-screens) | open | 2026-11-11 |
 | FR-3 | [Light ranges by the system's measurement](#fr-3-light-ranges-by-the-systems-measurement) | open | 2026-11-11 |
 | FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
+| FR-5 | [Map notes on touch screens](#fr-5-map-notes-on-touch-screens) | open | 2026-11-11 |
 
 ---
 
@@ -98,4 +99,19 @@ caster (a foe's enemies are the PCs).
 naming the choices); how sides are worked out relative to the caster (kind, a faction field, or a GM
 ruling per token); whether the board filters the targets on placing or shows everyone and dims the
 ineligible; how neutrals count.
+
+---
+
+## FR-5: Map notes on touch screens
+
+**Asked for:** the user, 2026-11-11, while designing map notes: mouse and keyboard only for now, with a
+ticket for touch.
+
+**What is known:** map notes (docs/design/board.md, section 7) are added with Map ▸ Add note and a click, or
+N under the mouse; moved by dragging the pin (Shift snaps); edited by clicking the bubble. On a touch screen
+Add note and a tap may already open the editor, but there is no N, no Shift, and a one-finger drag on the
+map pans.
+
+**Open questions:** add by tapping after Add note, or a long press on the map? Move by long-pressing a pin
+and dragging? How to snap without Shift? Should the bubble's ✕ be larger on touch?
 

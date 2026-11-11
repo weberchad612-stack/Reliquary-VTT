@@ -67,11 +67,12 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `mapstate/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off, hidden markers | Claude; the board (doors, GM view) |
 | `tokens/<id>` | One record per token, with the map it is on | Claude; the board (the player's PCs, the GM view) |
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
+| `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (Play ▸ Templates); Claude (`tools/area.mjs`) |
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 
-The page listens to eight of these (the meta record, the table, the current map's state, and the token,
-explored, targets, templates and log collections), far under the platform's limit of 64. Records are per token and per map,
+The page listens to nine of these (the meta record, the table, the current map's state, and the token,
+explored, targets, templates, notes and log collections), far under the platform's limit of 64. Records are per token and per map,
 so the player and Claude changing different things never overwrite each other. Measured: the whole Sample
 Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 
@@ -263,6 +264,30 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
   is in one from its output.
 - **Later:** who an area may affect (creatures, enemies, allies) when spells and actions arrive (FR-4).
 
+**Map notes** (Map ▸ Add note, or N; designed with the user and built 2026-11-11, from the previous board's
+player notes). Helpers in `board/notes.js`; the notes section of `board/app.js`.
+
+- **Adding:** Map ▸ Add note turns note mode on (crosshair; Escape turns it off) and the next click on the map
+  opens the editor there; **N** opens it straight under the mouse (with the mouse off the map, N turns note
+  mode on). The editor: up to 500 characters, Enter saves, Shift+Enter a new line, Escape cancels, clicking
+  away saves. Both views add notes; the GM view's editor has a **GM only** box, ticked by default for a new
+  note. Claude adds notes from chat with `tools/note.mjs`.
+- **Where:** pinned to the exact point clicked (fractions of a square), on the map, not on a token.
+- **Showing:** a pin (a small note sheet) and a bubble to its right with the text and its author ("You" or
+  "Player", "GM", "Claude"; "GM only" when it is). Bubbles are open by default; clicking a pin collapses or
+  reopens its bubble, remembered in this browser only (per campaign and map). Notes show to players
+  everywhere, fog or not; GM-only notes show only in the GM view. Colours by author: the player view
+  orange, the GM view purple, Claude the board's accent (amber); GM-only notes have a dashed outline.
+- **Changing:** the player view edits, moves and deletes the notes it wrote; the GM view any note, Claude's
+  included. Click the bubble's text to edit (saving it empty deletes); drag the pin to move (Shift: the
+  centre of a square); the bubble's ✕ turns into "Delete?" for 3 seconds and a second click deletes.
+- **Data:** each note is a record (section 3), written as it changes, in the change log (added, edited,
+  moved, deleted, with the note's first line), and saved with the campaign (map state `notes`).
+- **Drawing:** pins, bubbles and the editor are page elements in a layer over the map (`#notes`), placed by
+  the map's scale; they follow zoom and pan, never redraw the map, and sit above the target triangles and
+  template markers. The right button still pans when pressed on a note.
+- **Later:** touch screens (FR-5).
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
 - **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration, Templates with
@@ -278,7 +303,7 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
 - **Views:** an entry marked `gm` shows only in the GM view.
 - **Data, not markup:** the menu is a definition (`MENU`); the page only reports what was chosen. Status:
   built on 2026-11-10 with nothing wired; items say "not built yet" until the page answers them (`onCommand`;
-Play ▸ Templates since 2026-11-11). The Export DB item of the
+Play ▸ Templates and Map ▸ Add note since 2026-11-11). The Export DB item of the
   previous board is gone: saving is Claude's job now (section 5). The rest of the menu is designed later.
 
 ## 8. Build order

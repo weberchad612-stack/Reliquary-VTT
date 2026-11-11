@@ -272,7 +272,7 @@ export function validateState(file, mapInfo, report = new Report()) {
       if (!p) report.error(file, `places_found: no place "${id}" on map "${map.id}"`);
       else if (p.public !== false) report.warn(file, `places_found: "${id}" is public already`);
     }
-    for (const k of ['doors', 'locked_known', 'links_found', 'explored', 'terrain', 'terrain_on', 'terrain_off', 'lights', 'regions', 'regions_off', 'hidden_marks', 'templates']) {
+    for (const k of ['doors', 'locked_known', 'links_found', 'explored', 'terrain', 'terrain_on', 'terrain_off', 'lights', 'regions', 'regions_off', 'hidden_marks', 'templates', 'notes']) {
       if (st[k] !== undefined) report.warn(file, `${k}: an area map has no grid; ignored`);
     }
     return report;
@@ -319,6 +319,10 @@ export function validateState(file, mapInfo, report = new Report()) {
   for (const id of Object.keys(st.regions || {})) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions.${id}: no lighting region "${id}" on map "${map.id}"`);
   if (st.sky_light && !map.outdoor && !(mapInfo.hasSky)) report.warn(file, 'sky_light is set but the map is indoor with no sky regions');
   const KINDS = new Set(['pc', 'ally', 'neutral', 'foe', 'marker', 'gm']);
+  for (const [id, n] of Object.entries(st.notes || {})) {
+    if (n.at && !cellInGrid([Math.floor(n.at[0]), Math.floor(n.at[1])], grid)) report.warn(file, `notes.${id}: point (${n.at[0]}, ${n.at[1]}) is outside the grid`);
+    if (typeof n.text === 'string' && !n.text.trim()) report.error(file, `notes.${id}: the text is empty`);
+  }
   for (const [id, a] of Object.entries(st.templates || {})) {
     if (a.caster && !(st.tokens || {})[a.caster]) report.warn(file, `templates.${id}: caster "${a.caster}" is not a token on this map`);
     if (a.shape === 'cone' && a.dir === undefined) report.error(file, `templates.${id}: a cone needs dir`);

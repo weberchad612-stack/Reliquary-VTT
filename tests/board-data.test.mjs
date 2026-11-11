@@ -93,6 +93,18 @@ test('records: placed templates get a record each and come back into their map s
   assert.deepEqual(back.mapStates[mapId].templates, { a1: tpl });
 });
 
+test('records: map notes get a record each and come back into their map state', () => {
+  const c = readCampaign(PACK, camp('keep-test'));
+  const mapId = Object.keys(c.mapStates)[0];
+  const note = { text: 'Rope ladder here', at: [3.25, 7.5], by: 'player', updated: 'x' };
+  const gm = { text: 'Trapdoor', at: [1, 1], by: 'gm', gm_only: true };
+  c.mapStates[mapId] = { ...c.mapStates[mapId], notes: { n1: note, n2: gm } };
+  const recs = campaignRecords({ ...c, now: 'x' });
+  assert.deepEqual(recs['notes/n1'], { ...note, map: mapId });
+  assert.equal(recs[`mapstate/${mapId}`].notes, undefined);
+  assert.deepEqual(saveFromRecords(recs, c.campaign).mapStates[mapId].notes, { n1: note, n2: gm });
+});
+
 test('records: a save for the wrong pack or ruleset is refused', () => {
   const c = readCampaign(PACK, camp('keep-test'));
   assert.throws(() => campaignRecords({ ...c, campaign: { ...c.campaign, pack: { id: 'other' } } }), /pack "other"/);
