@@ -1070,7 +1070,8 @@ export async function start(store, { build = null } = {}) {
     const label = `${d.feet} ${d.unit}`;
     ctx.save();
     ctx.font = '600 13px IBM Plex Sans, sans-serif';
-    const w = ctx.measureText(label).width + 12, x = P(d.b[0]) - w / 2, y = P(d.top) - 26;
+    const up = S.tokens[d.ids[1]] && S.tokens[d.ids[1]].elevation ? 18 : 0;   // above the elevation label
+    const w = ctx.measureText(label).width + 12, x = P(d.b[0]) - w / 2, y = P(d.top) - 26 - up;
     ctx.fillStyle = 'rgba(20, 22, 27, .92)'; ctx.strokeStyle = '#f4ecd6'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.roundRect(x, y, w, 20, 5); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#f4ecd6'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -1134,6 +1135,7 @@ export async function start(store, { build = null } = {}) {
       // concealed by light from the creature whose eyes the board shows (or from some PC): worked out, not stored
       if (seen && !t0.dead && concealedNow(F, id) && !hasStoredConcealed(t0)) badgeQueue.push((c) => drawConcealBadge(c, F, id, P(t.x), P(t.y), P(size)));
       badgeQueue.push((c) => drawBadges(c, id, t0, P(t.x), P(t.y), P(size)));
+      if (t0.elevation && !t0.dead) badgeQueue.push((c) => drawElevation(c, t0.elevation, cx, P(t.y)));
     }
     badgeDraws = badgeQueue;
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
@@ -1178,6 +1180,15 @@ export async function start(store, { build = null } = {}) {
       ctx.restore();
       badgeHits.push({ x, y, w: s, h: s, text: bd.text });
     });
+  }
+  /** "+15 ft" above the token, as Foundry shows elevation (on the overlay, with the badges). */
+  function drawElevation(c, v, cx, top) {
+    const text = `${elevText(v)} ${SYS.measurement.unit}`;
+    c.save();
+    c.font = '700 13px IBM Plex Sans, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'bottom';
+    c.lineJoin = 'round'; c.lineWidth = 3.5; c.strokeStyle = 'rgba(10, 12, 16, .9)'; c.strokeText(text, cx, top - 3);
+    c.fillStyle = '#ffffff'; c.fillText(text, cx, top - 3);
+    c.restore();
   }
   function drawDeadCross(cx, cy, r) {
     ctx.save();
@@ -1994,6 +2005,8 @@ export async function start(store, { build = null } = {}) {
 
   // ---- the token HUD (right-click a token): Target and Assign status effects, as Foundry's Token HUD ----
   const hudEl = document.getElementById('tokhud');
+  const hudLeftEl = document.getElementById('tokhud-left');   // the column on the token's left: elevation
+  let hudElevEdit = false;   // the elevation box is open for typing
   let hudFor = null;        // the token the HUD is open on
   let hudPanel = null;      // the flyout that is open: 'effects' (status palette) or 'template' (area templates)
   let hudShape = null;      // the template shape picked in the flyout, waiting for its size
@@ -2009,19 +2022,20 @@ export async function start(store, { build = null } = {}) {
   };
   function openHud(id) {
     endAim(); if (noting) setNoting(false);
-    hudFor = id; hudPanel = null; hudShape = null; hudKey = '';
+    hudFor = id; hudPanel = null; hudShape = null; hudKey = ''; hudElevEdit = false;
     renderHud();
   }
   function closeHud() {
     if (!hudFor) return;
-    hudFor = null; hudPanel = null; hudShape = null; hudKey = '';
+    hudFor = null; hudPanel = null; hudShape = null; hudKey = ''; hudElevEdit = false;
     hudEl.replaceChildren(); hudEl.hidden = true;
+    hudLeftEl.replaceChildren(); hudLeftEl.hidden = true;
   }
   /** The HUD beside the token's space; rebuilt only when what it shows changes (so hovering a tile keeps its tip). */
   function renderHud() {
     if (!hudFor || !S.tokens[hudFor] || !canHud(hudFor)) return closeHud();
     const t = S.tokens[hudFor];
-    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, tg: myTargets().includes(hudFor), v: S.view });
+    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, el: t.elevation || 0, ee: hudElevEdit, tg: myTargets().includes(hudFor), v: S.view });
     if (key !== hudKey) {
       hudKey = key;
       hudEl.replaceChildren();
@@ -2045,9 +2059,55 @@ export async function start(store, { build = null } = {}) {
       hudEl.appendChild(col);
       if (hudPanel === 'effects' && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
       if (hudPanel === 'template' && canEditEffects(hudFor) && AREAS) hudEl.appendChild(templatePanel(hudFor));
+      hudLeftEl.replaceChildren();
+      if (canEditEffects(hudFor)) hudLeftEl.appendChild(elevationControl(hudFor));
     }
     hudEl.hidden = false;
+    hudLeftEl.hidden = !hudLeftEl.childElementCount;
     placeHud();
+  }
+  /** Elevation, in the column on the token's left (as Foundry's): the height in feet, shown above the token as
+   *  "+15 ft". Click it to type a number (negative is below the ground); Enter saves, Escape cancels. */
+  const elevText = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
+  function elevationControl(id) {
+    const t = S.tokens[id], v = t.elevation || 0, unit = SYS.measurement.unit, box = document.createElement('div');
+    box.className = 'hud-col';
+    if (!hudElevEdit) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'hud-btn hud-elev' + (v ? ' on' : '');
+      b.textContent = String(v === 0 ? 0 : elevText(v));
+      b.title = `Elevation: ${v ? elevText(v) + ' ' + unit : 'on the ground'} (click to change)`;
+      b.setAttribute('aria-label', `Elevation ${v} ${unit}; click to change`);
+      b.addEventListener('click', (e) => { e.stopPropagation(); hudElevEdit = true; renderHud(); });
+      box.appendChild(b);
+      return box;
+    }
+    const form = document.createElement('form');
+    form.className = 'hud-elev-form'; form.noValidate = true;
+    const input = document.createElement('input');
+    input.type = 'number'; input.step = '1'; input.value = String(v); input.setAttribute('aria-label', `Elevation in ${unit}`);
+    const lab = document.createElement('small'); lab.textContent = `Elevation (${unit})`;
+    form.append(input, lab);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const n = Math.round(Number(input.value));
+      if (input.value.trim() === '' || !Number.isFinite(n)) { toast(`Give the elevation as a number of ${unit} (negative for below).`); input.focus(); return; }
+      hudElevEdit = false;
+      setElevation(id, n);
+    });
+    input.addEventListener('keydown', (e) => {
+      e.stopPropagation();   // typing never reaches the board's keys (T, N, arrows)
+      if (e.key === 'Escape') { e.preventDefault(); hudElevEdit = false; renderHud(); }
+    });
+    box.appendChild(form);
+    setTimeout(() => { input.focus(); input.select(); }, 0);
+    return box;
+  }
+  function setElevation(id, n) {
+    const t = { ...S.tokens[id] };
+    if (n) t.elevation = n; else delete t.elevation;
+    S.tokens[id] = t;
+    renderHud(); draw();   // persist() writes the token and logs the change
   }
   const SHAPE_ICONS = {
     burst: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/></svg>',
@@ -2154,12 +2214,24 @@ export async function start(store, { build = null } = {}) {
     const top = Math.max(gap, Math.min(window.innerHeight - h - gap, y0));
     hudEl.style.left = left + 'px'; hudEl.style.top = top + 'px';
     hudEl.classList.toggle('flip', left < x0);
+    if (!hudLeftEl.hidden) {   // elevation: on the token's left, its right edge a gap from the token
+      hudLeftEl.style.transform = `scale(${k})`;
+      const lw = hudLeftEl.offsetWidth * k;
+      hudLeftEl.style.left = Math.max(gap, x0 - gap - lw) + 'px';
+      hudLeftEl.style.top = Math.max(gap, Math.min(window.innerHeight - hudLeftEl.offsetHeight * k - gap, y0)) + 'px';
+    }
   }
   document.getElementById('stage').addEventListener('scroll', () => { if (hudFor) placeHud(); }, { passive: true });
   window.addEventListener('resize', () => { if (hudFor) placeHud(); });
-  hudEl.addEventListener('pointerdown', (e) => e.stopPropagation());
-  hudEl.addEventListener('contextmenu', (e) => e.preventDefault());
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && hudFor) { e.preventDefault(); e.stopPropagation(); closeHud(); } }, true);
+  for (const el of [hudEl, hudLeftEl]) {
+    el.addEventListener('pointerdown', (e) => e.stopPropagation());
+    el.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !hudFor) return;
+    e.preventDefault(); e.stopPropagation();
+    if (hudElevEdit) { hudElevEdit = false; renderHud(); } else closeHud();   // Escape while typing the elevation cancels only that
+  }, true);
 
   function moveToken(id, goal, route) {
     const t = S.tokens[id], tiny = Engine.isTiny(t), size = t.size || 1, off = tiny ? 0.25 : 0;
@@ -2299,6 +2371,7 @@ export async function start(store, { build = null } = {}) {
   };
   stageEl.addEventListener('wheel', onWheel, { passive: false });
   hudEl.addEventListener('wheel', onWheel, { passive: false });   // the token HUD floats outside the stage: zoom over it too
+  hudLeftEl.addEventListener('wheel', onWheel, { passive: false });
   window.addEventListener('keydown', (e) => {
     if (e.target.closest && e.target.closest('input, textarea')) return;
     if (e.key === '+' || e.key === '=') { e.preventDefault(); setZoom(zoom * 1.25); }
@@ -2385,7 +2458,8 @@ export async function start(store, { build = null } = {}) {
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);
       for (const k of ['colour', 'intensity', 'animation']) if (canon(lb[k]) !== canon(la[k])) out.push(`${name}'s light ${k}: ${typeof la[k] === 'object' ? canon(la[k]) : la[k]}`);
       out.push(...describeEffects(name, before, after, CONDS));
-      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead'].includes(k))) out.push(`${name}: ${k} changed`);
+      if ((before.elevation || 0) !== (after.elevation || 0)) out.push(after.elevation ? `${name} elevation ${elevText(after.elevation)} ${SYS.measurement.unit}` : `${name} back to the ground (elevation 0)`);
+      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead', 'elevation'].includes(k))) out.push(`${name}: ${k} changed`);
       return out;
     }
     if (coll === 'mapstate') {

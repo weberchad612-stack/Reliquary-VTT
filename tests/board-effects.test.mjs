@@ -111,6 +111,13 @@ test('effect CLI: add, custom, remove, clear, dead and alive on a token record',
   assert.equal(r.token.dead, true);
   r = applyEffect(r.token, 'alive', [], {}, C);
   assert.equal(r.token.dead, undefined);
+  r = applyEffect(r.token, 'elevation', ['15'], {}, C);
+  assert.equal(r.token.elevation, 15); assert.deepEqual(r.changed, ['elevation +15 ft']);
+  r = applyEffect(r.token, 'elevation', ['-10'], {}, C);
+  assert.equal(r.token.elevation, -10);
+  r = applyEffect(r.token, 'elevation', ['0'], {}, C);
+  assert.equal(r.token.elevation, undefined);
+  assert.throws(() => applyEffect(tok, 'elevation', ['high'], {}, C), /whole number/);
   assert.throws(() => applyEffect(tok, 'remove', ['prone'], {}, C), /no effect/);
   assert.throws(() => applyEffect(tok, 'custom', ['prone'], {}, C), /is a condition/);
   assert.equal(tok.effects, undefined, 'the input is not changed');

@@ -14,6 +14,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
 | FR-5 | [Map notes on touch screens](#fr-5-map-notes-on-touch-screens) | open | 2026-11-11 |
 | FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | done (token HUD, 2026-11-11) | 2026-11-11 |
+| FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | open | 2026-11-11 |
 
 ---
 
@@ -134,4 +135,22 @@ redesigned, so the editor should not be built into it.
 **Open questions:** where the editor opens (menu, E key, a badge, the new selection card); whether the
 player view may set effects on their own PCs (raising a shield); how it fits with initiative, which will
 tick frightened and durations down.
+
+---
+
+## FR-7: Height in the rules
+
+**Asked for:** the user, 2026-11-11, with token elevation: "Our rules engine will end up using height for
+some of its calculations."
+
+**What is known:** tokens carry `elevation` in feet (docs/design/board.md, section 7), shown as "+15 ft" and
+set from the token HUD or `tools/effect.mjs`. Nothing counts it yet: the distance label, reach, Stride
+outlines, area templates and sight are flat. In PF2E, distance in three dimensions is counted like flat
+distance, with the vertical gap as a third leg (diagonals alternating 5 and 10 feet); a flying creature
+above an area's squares may or may not be in it depending on the area (a burst reaches up as far as its
+radius, a cone or line in its direction).
+
+**Open questions:** the 3-D distance rule in the system configuration (`measurement`), and every place that
+measures (the distance label, reach, areas, sight over low walls); whether areas get a height; how to show
+a token's height when it changes during a move.
 

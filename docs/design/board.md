@@ -339,6 +339,13 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   (toggles this view's target, as T; refused on the dead), **Assign status effects** (opens the palette
   beside them) and **Area template** (the shapes and sizes, with this token as the caster; see Area
   templates). More buttons can be added later.
+- **Elevation** (asked for 2026-11-11, after Foundry's): a box in a column on the token's left, showing the
+  token's height in feet (0 on the ground). Click it to type a number (negative is below the ground); Enter
+  saves, Escape cancels the typing only. A token off the ground shows "+15 ft" (or "−10 ft") above it, with
+  the badges; the distance label moves up above it. Stored as `elevation` on the token (left out at 0),
+  shared and logged ("Kerra elevation +15 ft"). The player view sets it on its own PCs, the GM view on any
+  token; Claude with `tools/effect.mjs <token> elevation 15`. Nothing uses it in rules yet: distances,
+  reach, areas and sight ignore height until the rules engine does (FR-7).
 - **The status palette:** every condition of the system in a grid five wide (alphabetical), then **Dead**.
   Active ones are lit with an orange frame, the rest dimmed; valued ones show their number. Click toggles a
   plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at

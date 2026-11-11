@@ -28,7 +28,7 @@ The database is the truth during play; the PC save is the truth between sessions
   |---|---|---|
   | Place an area template (and see who is in it) | `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster <id> --dir north --state <save>/maps/<map>.json` | `templates/<id>` |
   | Pin a note to the map (shared or GM-only) | `node tools/note.mjs <map-dir> --at X,Y --text "..." [--gm-only]` | `notes/<id>` |
-  | Set conditions, custom effects, dead | `node tools/effect.mjs <token.json> add frightened 2` (`custom`, `remove`, `clear`, `dead`, `alive`; `list`) | `tokens/<id>` |
+  | Set conditions, custom effects, dead, elevation | `node tools/effect.mjs <token.json> add frightened 2` (`custom`, `remove`, `clear`, `dead`, `alive`, `elevation 15`; `list`) | `tokens/<id>` |
   | Know the player's targets | read `targets/player` | (nothing) |
   | Measure, route, sight, fog | `tools/move.mjs`, `tools/sight.mjs`, `tools/fog.mjs` | (nothing) |
 
@@ -178,6 +178,12 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Scaling it is a CSS transform** (`scale(k)` from its top-left), so zooming costs nothing extra; measure its size as `offsetWidth * k`.
 - **Place it again in the same frame as a zoom's scroll correction** (end of `setZoom` and `applyView`). `fit()` places it before the scroll is corrected, and the scroll event comes a frame later, so it showed a frame or two out of place: the user saw it bounce up while zooming (2026-11-11). Anything floating that follows the map must be placed after the scroll is set, not only on the scroll event.
 - **Effect changes go through the board's state** (`S.tokens`), then `recompute()`: who can see may change (blinded, unconscious), and `persist()` writes the record and the log lines (`describeEffects`).
+
+### Elevation
+
+- **Set it from chat** with `node tools/effect.mjs <token.json> elevation 15` (0 clears it); write the token back and log it. Use it for flying, climbing, ledges and swimming down.
+- **The board does not count height yet:** the distance label, reach, areas and sight are flat. Until the rules engine does (FR-7), count the vertical gap yourself when it matters, and say so ("Kerra is 15 ft up: 20 ft away, not 10").
+- The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there.
 
 ### Shared controls
 

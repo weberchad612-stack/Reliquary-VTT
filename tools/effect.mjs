@@ -9,6 +9,7 @@
 //   node tools/effect.mjs <token.json> remove <condition | custom name>
 //   node tools/effect.mjs <token.json> clear            (every effect)
 //   node tools/effect.mjs <token.json> dead | alive
+//   node tools/effect.mjs <token.json> elevation <FEET>   (height above the ground; negative below; 0 clears it)
 //   node tools/effect.mjs list                           (the system's conditions)
 //   Any of these takes [--ruleset ID] (default pf2e) for the system's conditions.
 //
@@ -55,6 +56,11 @@ export function applyEffect(token, cmd, args, opts, conditions) {
     t.dead = true; changed.push('dead');
   } else if (cmd === 'alive') {
     delete t.dead; changed.push('no longer dead');
+  } else if (cmd === 'elevation') {
+    const n = Number(args[0]);
+    if (args[0] === undefined || !Number.isInteger(n)) throw new Error('elevation needs a whole number of feet (negative for below)');
+    if (n) t.elevation = n; else delete t.elevation;
+    changed.push(n ? `elevation ${n > 0 ? '+' : ''}${n} ft` : 'elevation 0');
   } else throw new Error(`unknown command "${cmd}"`);
   if (!t.effects.length) delete t.effects;
   return { token: t, changed };
@@ -74,7 +80,7 @@ function main(argv) {
       return 0;
     }
     const [file, cmd, ...rest] = args;
-    if (!file || !cmd) throw new Error('give a token file and a command (add, custom, remove, clear, dead, alive)');
+    if (!file || !cmd) throw new Error('give a token file and a command (add, custom, remove, clear, dead, alive, elevation)');
     const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
     const token = raw.data && !raw.x ? raw.data : raw;   // a db_get/db_list entry, or the token itself
     console.log(JSON.stringify(applyEffect(token, cmd, rest, opts, conditions), null, 2));
