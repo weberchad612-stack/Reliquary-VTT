@@ -1002,6 +1002,19 @@ export async function start(store, { build = null } = {}) {
   }
 
   // ---- hover, distance and targets ----
+  /** The token's square (hover or selection) at space t with Tiny layout L, or null when it shows none. */
+  function boxFor(id, t, L) {
+    const picked = id === selected || multi.has(id);
+    if (!picked && !(id === hoverId && !drag)) return null;
+    const t0 = S.tokens[id], q = Engine.isTiny(t0) && L.spaces.get(id);
+    return { m: markSquare(t, Engine.isTiny(t0), !!q && q.slot !== null), colour: picked ? SELECTED_COLOUR : kindColour(t0.kind) };
+  }
+  function strokeBox(c, box) {
+    c.save();
+    c.lineWidth = 2; c.strokeStyle = box.colour;
+    c.strokeRect(P(box.m.x) + 1, P(box.m.y) + 1, P(box.m.size) - 2, P(box.m.size) - 2);
+    c.restore();
+  }
   const visibleToken = (F, full, id) => !!S.tokens[id] && (full || F.seen.has(id));
   /** With one token selected and another hovered (both visible): the line between them and the distance. */
   function distanceTo(F, full) {
@@ -1077,15 +1090,8 @@ export async function start(store, { build = null } = {}) {
       ctx.restore();
       // A thin square on the grid squares the token occupies (a Tiny creature alone: its square; sharing a
       // square with others: its own quarter): amber when selected, its kind's colour when hovered.
-      const picked = id === selected || multi.has(id);
-      if (picked || (id === hoverId && !drag)) {
-        const q = Engine.isTiny(t0) && L.spaces.get(id);
-        const m = markSquare(t, Engine.isTiny(t0), !!q && q.slot !== null);
-        ctx.save();
-        ctx.lineWidth = 2; ctx.strokeStyle = picked ? SELECTED_COLOUR : kindColour(t0.kind);
-        ctx.strokeRect(P(m.x) + 1, P(m.y) + 1, P(m.size) - 2, P(m.size) - 2);
-        ctx.restore();
-      }
+      const box = boxFor(id, t, L);
+      if (box) strokeBox(ctx, box);
       if (seen && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
     }
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
@@ -1438,6 +1444,9 @@ export async function start(store, { build = null } = {}) {
         else { tctx.strokeStyle = kindColour(t.kind); tctx.lineWidth = 1.5; tctx.stroke(); }
       }
       tctx.restore();
+      // the token's square stays on top of its triangles
+      const box = !drag && boxFor(id, sp, layout);
+      if (box) strokeBox(tctx, box);
     }
     if (!REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
   }

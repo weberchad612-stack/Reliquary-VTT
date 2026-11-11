@@ -31,13 +31,14 @@ export function markSquare(space, tiny, shared) {
 /**
  * Target markers in the four corners of a square (pixels: x, y, side), at pulse phase t (0-1): filled
  * triangles pointing inward, toward the middle of the square. They pulse inward: at rest each sits on its
- * corner, and once a cycle it slides in toward the token by about a tenth of the side and back.
+ * corner, and once a cycle it slides in toward the token by about 7% of the side and back. They are drawn
+ * under the token's square (hover or selection), which is drawn again on top of them.
  * Returns {paths: [[[x, y] x 3] x 4] (closed triangles), alpha}.
  */
 export function chevrons(x, y, side, t = 0) {
-  const len = Math.max(7, side * 0.2);                       // tip to base
-  const half = len * 0.75;                                   // half the base
-  const push = Math.max(2, side * 0.1) * (0.5 - 0.5 * Math.cos(t * Math.PI * 2));   // 0 at rest, in and back
+  const len = Math.max(4, side * 0.12);                      // tip to base
+  const half = len * 0.7;                                    // half the base
+  const push = Math.max(1.5, side * 0.07) * (0.5 - 0.5 * Math.cos(t * Math.PI * 2));   // 0 at rest, in and back
   const corners = [[x, y, 1, 1], [x + side, y, -1, 1], [x, y + side, 1, -1], [x + side, y + side, -1, -1]];
   const k = Math.SQRT1_2;
   const paths = corners.map(([cx, cy, sx, sy]) => {

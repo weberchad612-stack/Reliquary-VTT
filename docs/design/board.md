@@ -197,7 +197,8 @@ map, fitted to the window, its places as pins.
 - **T** over a hovered token targets it, and again un-targets it; T over others adds them. **Shift+T**
   clears this view's targets. Targets are any visible token (foes, PCs, the selected token itself), are
   independent of the selection, and show as filled triangles in the four corners of the token's square,
-  pointing inward, in its kind colour; they pulse inward toward the token and back (still with reduced
+  pointing inward, in its kind colour, small (about an eighth of the square), and under the token's
+  hover or selection square; they pulse inward toward the token and back (still with reduced
   motion; the user's choice of shape, 2026-11-11).
 - Targets are shared through the store: `targets/player` and `targets/gm`, each `{ids}`. The player view
   edits and shows the player's; the GM view edits its own and also shows the player's (as outlined,
