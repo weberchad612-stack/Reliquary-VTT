@@ -334,6 +334,9 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
 - **Saving:** each change writes the token record (shared at once) and a change-log line ("Lyra frightened
   3 (was 2)", "Lyra no longer prone", "Ogre is dead").
 - The HUD floats over the page and stays inside the window; it follows the token, the zoom and scrolling.
+- **It scales with the zoom**, as Foundry's does (asked for 2026-11-11): normal size when a square is 48 px
+  on screen, never below 0.7x or above 1.5x, by a CSS transform (no re-layout, so it keeps up with the wheel).
+  The wheel zooms over it too.
 
 **Shared controls** (`board/ui.js`; asked for 2026-11-11: "consistent UI elements"). A kind of control
 looks and behaves the same everywhere; a new feature uses the shared one rather than making its own.

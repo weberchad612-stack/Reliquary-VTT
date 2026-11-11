@@ -2137,11 +2137,16 @@ export async function start(store, { build = null } = {}) {
   }
   /** The HUD floats over the page (fixed), to the right of the token's space, or to its left when there is no
    *  room; kept inside the window. It follows the token, the zoom and scrolling. */
+  const HUD_SQUARE_PX = 48, HUD_SCALE = [0.7, 1.5];
   function placeHud() {
     if (!hudFor || !S.tokens[hudFor] || hudEl.hidden) return;
     const sp = space(hudFor), r = canvas.getBoundingClientRect(), gap = 8;
     const x0 = r.left + (OX + sp.x * CS) * scale, x1 = r.left + (OX + (sp.x + sp.size) * CS) * scale, y0 = r.top + (OY + sp.y * CS) * scale;
-    const w = hudEl.offsetWidth, h = hudEl.offsetHeight;
+    // Scale with the zoom, as Foundry's Token HUD does: normal size when a square is HUD_SQUARE_PX on screen,
+    // within HUD_SCALE. A CSS transform: no re-layout, so it keeps up with the wheel.
+    const k = Math.max(HUD_SCALE[0], Math.min(HUD_SCALE[1], (CS * scale) / HUD_SQUARE_PX));
+    hudEl.style.transform = `scale(${k})`;
+    const w = hudEl.offsetWidth * k, h = hudEl.offsetHeight * k;
     let left = x1 + gap;
     if (left + w > window.innerWidth - gap) left = Math.max(gap, x0 - gap - w);
     const top = Math.max(gap, Math.min(window.innerHeight - h - gap, y0));
@@ -2267,6 +2272,9 @@ export async function start(store, { build = null } = {}) {
     const r2 = canvas.getBoundingClientRect();
     stage.scrollLeft += r2.left + ix * scale - cx;
     stage.scrollTop += r2.top + iy * scale - cy;
+    // Place the token HUD again now, in the same frame: fit() placed it before the scroll was corrected, and
+    // the scroll event comes a frame later, so it would show a frame or two out of place (a bounce).
+    if (hudFor) placeHud();
   }
   document.getElementById('z-in').onclick = () => setZoom(zoom * 1.25);
   document.getElementById('z-out').onclick = () => setZoom(zoom / 1.25);
@@ -2281,12 +2289,14 @@ export async function start(store, { build = null } = {}) {
   function applyView() {
     const q = viewQ; viewQ = null;
     if (Math.abs(q.factor - 1) > 1e-4) setZoom(zoom * q.factor, q.cx, q.cy);
-    if (q.dx || q.dy) { stageEl.scrollLeft -= q.dx; stageEl.scrollTop -= q.dy; }
+    if (q.dx || q.dy) { stageEl.scrollLeft -= q.dx; stageEl.scrollTop -= q.dy; if (hudFor) placeHud(); }
   }
-  stageEl.addEventListener('wheel', (e) => {
+  const onWheel = (e) => {
     e.preventDefault();
     queueView(wheelZoomFactor(e, stageEl.clientHeight), e.clientX, e.clientY);
-  }, { passive: false });
+  };
+  stageEl.addEventListener('wheel', onWheel, { passive: false });
+  hudEl.addEventListener('wheel', onWheel, { passive: false });   // the token HUD floats outside the stage: zoom over it too
   window.addEventListener('keydown', (e) => {
     if (e.target.closest && e.target.closest('input, textarea')) return;
     if (e.key === '+' || e.key === '=') { e.preventDefault(); setZoom(zoom * 1.25); }

@@ -137,7 +137,9 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 
 - **Right-click is shared with panning:** the pan remembers the button and the point; a right press released without moving over a token opens the HUD. Keep that rule if the right button gets more uses.
 - **The HUD rebuilds only when what it shows changes** (a key of the token's effects, dead state, targets and the view), but it is placed on every redraw, so it follows the token. A rebuild on every redraw would drop the hover tooltip under the pointer.
-- **It floats (`position: fixed`) outside the scrolling stage**, so the stage cannot clip it; re-place it on scroll and resize.
+- **It floats (`position: fixed`) outside the scrolling stage**, so the stage cannot clip it; re-place it on scroll and resize, and forward the wheel from it to the zoom (the stage never sees events on it).
+- **Scaling it is a CSS transform** (`scale(k)` from its top-left), so zooming costs nothing extra; measure its size as `offsetWidth * k`.
+- **Place it again in the same frame as a zoom's scroll correction** (end of `setZoom` and `applyView`). `fit()` places it before the scroll is corrected, and the scroll event comes a frame later, so it showed a frame or two out of place: the user saw it bounce up while zooming (2026-11-11). Anything floating that follows the map must be placed after the scroll is set, not only on the scroll event.
 - **Effect changes go through the board's state** (`S.tokens`), then `recompute()`: who can see may change (blinded, unconscious), and `persist()` writes the record and the log lines (`describeEffects`).
 
 ### Shared controls
