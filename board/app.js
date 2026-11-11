@@ -1394,7 +1394,7 @@ export async function start(store, { build = null } = {}) {
     hoverCell = [Math.floor(p[0]), Math.floor(p[1])];
     if (aim && !aim.pick) { aimMove(p); return; }
     const ht = !drag && !READONLY ? markerAt(TEMPLATES, p, S.view, markerR() / CS + 0.05) : null;
-    if (ht !== hoverTpl) { hoverTpl = ht; draw(); }
+    if (ht !== hoverTpl) { hoverTpl = ht; targetsChanged(); }
     if (ht) { canvas.style.cursor = 'pointer'; if (hoverId) { hoverId = null; targetsChanged(); } return; }
     if (aim && aim.pick) { const o = clickTarget(p); canvas.style.cursor = o.token ? 'pointer' : 'crosshair'; return; }
     const over = drag ? {} : clickTarget(p);
@@ -1437,7 +1437,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; draw(); } hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; if (hoverId) { hoverId = null; targetsChanged(); } if (hoverTpl) { hoverTpl = null; targetsChanged(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1493,7 +1493,8 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverTpl) return;
+    const hasTpl = Object.keys(TEMPLATES).length > 0;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hasTpl) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1518,6 +1519,7 @@ export async function start(store, { build = null } = {}) {
       if (box) strokeBox(tctx, box);
     }
     if (hoverBox) strokeBox(tctx, hoverBox);
+    if (hasTpl) drawTplMarkers(tctx);   // remove markers above the target triangles
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
@@ -1730,13 +1732,23 @@ export async function start(store, { build = null } = {}) {
     if (id === 'tpl-clear') { if (READONLY) toast('This is a preview.'); else clearTemplates(); return true; }
     return false;
   }
-  /** Placed templates, on the map under the tokens: filled squares with an outline, and their remove markers. */
+  /** Placed templates, on the map under the tokens: filled squares with an outline. Their remove markers are on
+   *  the overlay (drawTplMarkers), above the target triangles, so they can always be seen and clicked. */
   function drawTemplates() {
-    const ids = Object.keys(TEMPLATES).sort();
-    if (!ids.length) return;
-    for (const id of ids) cellsPath(ctx, TEMPLATES[id].cells, colourOf(TEMPLATES[id]), false);
+    for (const id of Object.keys(TEMPLATES).sort()) cellsPath(ctx, TEMPLATES[id].cells, colourOf(TEMPLATES[id]), false);
+  }
+  function drawTplMarkers(c) {
     const pts = markerPoints(TEMPLATES);
-    for (const id of ids) drawMarker(ctx, pts[id], colourOf(TEMPLATES[id]), canRemove(TEMPLATES[id], S.view), hoverTpl === id);
+    for (const id of Object.keys(pts)) drawMarker(c, pts[id], colourOf(TEMPLATES[id]), canRemove(TEMPLATES[id], S.view), hoverTpl === id);
+    if (hoverTpl && TEMPLATES[hoverTpl]) {
+      const [x, y] = markerPoints(TEMPLATES)[hoverTpl];
+      const text = `${Engine.describeArea(TEMPLATES[hoverTpl], SYS.measurement.unit)} · click to remove`;
+      c.save(); c.font = '600 12px IBM Plex Sans, sans-serif';
+      const w = c.measureText(text).width + 14, lx = P(x) - w / 2, ly = P(y) + markerR() + 6;
+      c.fillStyle = 'rgba(13, 15, 18, .88)'; c.fillRect(lx, ly, w, 20);
+      c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, P(x), ly + 10.5);
+      c.restore();
+    }
   }
   function cellsPath(c, cells, col, preview) {
     c.save();
@@ -1760,22 +1772,13 @@ export async function start(store, { build = null } = {}) {
     }
     c.restore();
   }
-  /** On the overlay: the aimed template (dashed) and the label of the template under the pointer. */
+  /** On the overlay: the aimed template (dashed), under the target triangles. */
   function drawAimOverlay(c) {
     if (aim && aim.cur) {
       const col = TEMPLATE_COLOURS[nextColour(TEMPLATES)];
       cellsPath(c, aim.cur.cells, col, true);
       const [ox, oy] = aim.cur.origin;
       c.save(); c.beginPath(); c.arc(P(ox), P(oy), 5, 0, Math.PI * 2); c.fillStyle = col; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke(); c.restore();
-    }
-    if (hoverTpl && TEMPLATES[hoverTpl]) {
-      const [x, y] = markerPoints(TEMPLATES)[hoverTpl];
-      const text = `${Engine.describeArea(TEMPLATES[hoverTpl], SYS.measurement.unit)} · click to remove`;
-      c.save(); c.font = '600 12px IBM Plex Sans, sans-serif';
-      const w = c.measureText(text).width + 14, lx = P(x) - w / 2, ly = P(y) + markerR() + 6;
-      c.fillStyle = 'rgba(13, 15, 18, .88)'; c.fillRect(lx, ly, w, 20);
-      c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, P(x), ly + 10.5);
-      c.restore();
     }
   }
 

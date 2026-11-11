@@ -109,7 +109,8 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **Line of effect is not line of sight.** Glass windows block an area though they let sight through; grates and portcullises let both through. Areas use the movement value of a wall (`effectBlockers`), minus the system's `passes` list. Test both kinds of wall when changing it.
 - **Squares are fixed when placed.** The record keeps the squares reached; drawing never recomputes them. If a door opens and the GM wants the area to spread, remove the template and place it again.
 - **Placed templates are their own records** (`templates/<id>`), not part of `mapstate/<map>`: a placement and a door change by someone else never overwrite each other, and the late-echo rule applies (`sending`, `busy`, `resync.templates`). The save keeps them in the map state's `templates`; include the collection when clearing for a switch (it is in `SAVE_COLLECTIONS`).
-- **Aiming draws on the overlay.** The preview, aim bar and marker label change with every pointer move; only placing or removing (and entering or leaving a remove marker) redraws the map.
+- **Aiming draws on the overlay.** The preview, aim bar and marker label change with every pointer move; only placing or removing redraws the map.
+- **Remove markers are on the overlay, above the target triangles** (the user's choice, 2026-11-11): an emanation's ✕ sits on the caster's corner, where a target triangle also is, and must stay visible and clickable. The squares stay on the map under the tokens; the overlay draws the markers after the triangles and hover squares, then the marker's label.
 - **Escape while aiming** is caught first (capture phase) so it cancels the template without also clearing the selection; the size picker catches its own keys the same way.
 
 ## 10. Zoom and pan

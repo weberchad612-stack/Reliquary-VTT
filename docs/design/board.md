@@ -255,7 +255,7 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
   the area; T removes them. The toast names who is targeted.
 - **Placed templates** stay until removed, are shared on the board and saved with the campaign (map state
   `templates`). Each has its own palette colour (the first free of ten), drawn as filled squares with an
-  outline, above the fog and under the tokens. Each has a remove marker (✕) just past its start; hovering
+  outline, above the fog and under the tokens. Each has a remove marker (✕) just past its start, drawn above the target triangles; hovering
   it names the template, clicking removes it. The player view removes the templates it placed; the GM view
   removes any (others show a plain dot). Play ▸ Templates ▸ Clear templates removes all this view may
   remove. Placing and removing are in the change log.
