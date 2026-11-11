@@ -1,5 +1,7 @@
 # Future implementation ideas
 
+**Feature requests** from the user are tracked as tickets in [backlog.md](backlog.md).
+
 Write-ups of work we have thought through but not scheduled. Each one says why it is waiting, what it would take, and in what order to do it. When an idea is built, move what was decided into the design docs (`docs/design/`) and the best-practices guides, and delete or mark the write-up.
 
 | Idea | Write-up | Pick up |
