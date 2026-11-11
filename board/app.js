@@ -21,6 +21,7 @@ import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
+import { badgesFor, tokenState, cannotSee, KIND_COLOURS } from './effects.js';
 import { TEMPLATE_COLOURS, TEMPLATE_COMMANDS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
@@ -196,7 +197,9 @@ export async function start(store, { build = null } = {}) {
   const space = (id) => Engine.spaceOf({ id, ...S.tokens[id] }, layout);       // sight, being seen, drawing
   const mspace = (id) => Engine.moveSpaceOf({ id, ...S.tokens[id] });           // movement
   const tokenList = () => raw().map((t) => ({ ...t, ...space(t.id) }));
-  const opts = { rangeFt: RANGE, feetPerCell: FPC, grid: G };
+  const CONDS = SYS.conditions || {};   // the system's conditions: effect badges, and who cannot see (board/effects.js)
+  // Who looks for the party: living PCs who can see (not dead, blinded, unconscious, dying or petrified)
+  const opts = { rangeFt: RANGE, feetPerCell: FPC, grid: G, canLook: (t) => t.kind === 'pc' && !t.hidden && !cannotSee(t, CONDS) };
   let view = null, sightSegs = null, moveWalls = null, terrain = null;
   const PACK_TERRAIN = DATA.terrain || [];
   // ---------- light ----------
@@ -259,7 +262,7 @@ export async function start(store, { build = null } = {}) {
     if (!fid) return partyShown;
     const key = fid + '|' + gen;
     if (focusCache && focusCache.key === key) return focusCache.v;
-    const o = { ...(LIT ? litOpts() : opts), canLook: (t) => t.id === fid, alwaysShown: MARKERS_ONLY };
+    const o = { ...(LIT ? litOpts() : opts), canLook: (t) => t.id === fid && !cannotSee(t, CONDS), alwaysShown: MARKERS_ONLY };
     const v = Engine.partyView(tokenList(), sightSegs, o);
     const visible = LIT ? v.perceived.displayPolys() : v.visible;
     const out = {
@@ -1098,6 +1101,8 @@ export async function start(store, { build = null } = {}) {
   function drawTokens(F, full) {
     // biggest first, so a creature sharing a bigger one's space is drawn on top of it
     const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
+    badgeHits = [];
+    const badgeQueue = [];
     // During a group drag, Tiny creatures are laid out where the move will put them: those moving take free
     // quadrants where they land, and those left behind keep theirs (or are centred if now alone).
     const preview = dragPreview();
@@ -1113,6 +1118,9 @@ export async function start(store, { build = null } = {}) {
       ctx.save();
       if (preview && drag && (drag.id === id || (drag.group && drag.group.has(id)))) ctx.globalAlpha = 0.75;   // faded only once it moves
       if (full && !seen) ctx.globalAlpha = 0.6;
+      const look = tokenState(t0, S.view, CONDS);   // dead: faded and grey; down (unconscious, dying): greyed
+      if (look === 'dead') { ctx.globalAlpha *= 0.55; ctx.filter = 'grayscale(0.6)'; }
+      else if (look === 'down') ctx.filter = 'grayscale(0.75) brightness(0.8)';
       ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = '#0d0f12';
@@ -1121,12 +1129,15 @@ export async function start(store, { build = null } = {}) {
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
       ctx.restore();
+      if (look === 'dead') drawDeadCross(cx, cy, r);
       // A thin square on the grid squares the token occupies (a Tiny creature alone: its square; sharing a
       // square with others: its own quarter): amber when selected, its kind's colour when hovered.
       const box = boxFor(id, t, L);
       if (box) strokeBox(ctx, box);
-      if (seen && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
+      if (seen && !t0.dead && concealedNow(F, id)) drawConcealed(cx + r * 0.72, cy - r * 0.72, Math.max(6, r * 0.34));
+      badgeQueue.push(() => drawBadges(id, t0, cx, P(t.y), P(size)));   // after every token, so none covers them
     }
+    for (const f of badgeQueue) f();
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
     if (F.focus && S.tokens[F.focus].kind !== 'pc') return;
     for (const [id, sq] of Object.entries(S.hiddenMarks)) {
@@ -1136,6 +1147,68 @@ export async function start(store, { build = null } = {}) {
       ctx.fillStyle = '#e3a443'; ctx.font = `700 ${Math.max(11, r)}px IBM Plex Sans, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText('?', x, y + 1); ctx.restore();
     }
+  }
+  // ---- effect badges (board/effects.js; the conditions come from the system configuration) ----
+  let badgeHits = [];      // [{x, y, w, h, text}] in map pixels (grid origin), from the last drawTokens
+  let hoverBadge = null;   // the badge under the pointer: {x, y, w, h, text}
+  const BADGE_PX = 16;     // a badge's size on screen, at any zoom
+  /** Square badges in a row centred on the top edge of the token's space: icon or letter, the number in a
+   *  corner, the border by kind (good, bad, neutral); at most four, then +N. */
+  function drawBadges(id, t0, cx, top, spacePx) {
+    const { shown: list, more } = badgesFor(t0, S.view, CONDS);
+    if (!list.length) return;
+    const b = BADGE_PX / scale, gap = 2 / scale, n = list.length + (more.length ? 1 : 0);
+    let x = cx - (n * b + (n - 1) * gap) / 2;
+    const y = top - b * 0.55;
+    const one = (bd, label, text) => {
+      ctx.save();
+      ctx.fillStyle = '#1a2438'; ctx.strokeStyle = bd ? KIND_COLOURS[bd.kind] : '#aab'; ctx.lineWidth = 1.5 / scale;
+      ctx.beginPath(); ctx.roundRect(x, y, b, b, 3 / scale); ctx.fill(); ctx.stroke();
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (bd && bd.icon) { ctx.font = `${b * 0.66}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`; ctx.fillText(bd.icon, x + b / 2, y + b / 2 + b * 0.04); }
+      else { ctx.fillStyle = '#fff'; ctx.font = `700 ${b * (label.length > 2 ? 0.5 : 0.62)}px IBM Plex Sans, sans-serif`; ctx.fillText(label, x + b / 2, y + b / 2 + b * 0.03); }
+      if (bd && bd.value != null) {   // the number, in the bottom-right corner
+        const v = String(bd.value), w = Math.max(b * 0.5, b * 0.32 * v.length);
+        ctx.fillStyle = bd.kind === 'good' ? '#1f6f47' : bd.kind === 'bad' ? '#a82424' : '#7a5c12';
+        ctx.fillRect(x + b - w * 0.75, y + b - b * 0.42, w, b * 0.52);
+        ctx.fillStyle = '#fff'; ctx.font = `700 ${b * 0.46}px IBM Plex Sans, sans-serif`;
+        ctx.fillText(v, x + b - w * 0.75 + w / 2, y + b - b * 0.15);
+      }
+      if (bd && bd.gm) { ctx.setLineDash([2 / scale, 2 / scale]); ctx.strokeStyle = '#b48cff'; ctx.strokeRect(x - 1.5 / scale, y - 1.5 / scale, b + 3 / scale, b + 3 / scale); }
+      ctx.restore();
+      badgeHits.push({ x, y, w: b, h: b, text });
+      x += b + gap;
+    };
+    for (const bd of list) one(bd, bd.letter || '', bd.text);
+    if (more.length) one(null, '+' + more.length, more.map((m) => m.label).join('; '));
+  }
+  function drawDeadCross(cx, cy, r) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = Math.max(3, r * 0.34); ctx.lineCap = 'round';
+    const k = r * 0.62;
+    const cross = () => { ctx.beginPath(); ctx.moveTo(cx - k, cy - k); ctx.lineTo(cx + k, cy + k); ctx.moveTo(cx + k, cy - k); ctx.lineTo(cx - k, cy + k); ctx.stroke(); };
+    cross(); ctx.strokeStyle = '#e02020'; ctx.lineWidth = Math.max(2, r * 0.2); cross();
+    ctx.restore();
+  }
+  const badgeAt = (p) => { const x = P(p[0]), y = P(p[1]); for (let i = badgeHits.length - 1; i >= 0; i--) { const h = badgeHits[i]; if (x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h) return h; } return null; };
+  /** The hovered badge's text, under it, on the overlay. */
+  function drawBadgeTip(c) {
+    if (!hoverBadge) return;
+    const pad = 6 / scale, lh = 15 / scale, maxW = 280 / scale;
+    c.save(); c.font = `500 ${12 / scale}px IBM Plex Sans, sans-serif`;
+    const words = hoverBadge.text.split(' '), lines = [];
+    let line = '';
+    for (const w of words) { const t = line ? line + ' ' + w : w; if (c.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
+    if (line) lines.push(line);
+    const w = Math.max(...lines.map((l) => c.measureText(l).width)) + pad * 2, h = lines.length * lh + pad * 2;
+    let x = hoverBadge.x + hoverBadge.w / 2 - w / 2;
+    const y = hoverBadge.y - h - 4 / scale;
+    x = Math.max(-OX, x);
+    c.fillStyle = 'rgba(13, 15, 18, .94)'; c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = 1 / scale;
+    c.beginPath(); c.roundRect(x, y, w, h, 5 / scale); c.fill(); c.stroke();
+    c.fillStyle = '#fff'; c.textAlign = 'left'; c.textBaseline = 'top';
+    lines.forEach((l, i) => c.fillText(l, x + pad, y + pad + i * lh));
+    c.restore();
   }
   /** Concealed from the creature whose eyes the board shows, or (the party's view) from any PC who sees it. */
   function concealedNow(F, id) {
@@ -1401,6 +1474,8 @@ export async function start(store, { build = null } = {}) {
     if (noting) { canvas.style.cursor = 'crosshair'; return; }
     if (aim && !aim.pick) { aimMove(p); return; }
     if (aim && aim.pick) { const o = clickTarget(p); canvas.style.cursor = o.token ? 'pointer' : 'crosshair'; return; }
+    const hb = drag ? null : badgeAt(p);
+    if (hb !== hoverBadge) { hoverBadge = hb; targetsChanged(); }
     const over = drag ? {} : clickTarget(p);
     const h = !drag && over.token && (fullGM() || shown().seen.has(over.token)) ? over.token : null;
     if (h !== hoverId) { hoverId = h; targetsChanged(); }   // the overlay only: a full map redraw costs ~50 ms
@@ -1441,7 +1516,7 @@ export async function start(store, { build = null } = {}) {
   }
   canvas.addEventListener('pointerup', (ev) => pointerEnd(ev, false));
   canvas.addEventListener('pointercancel', (ev) => pointerEnd(ev, true));
-  canvas.addEventListener('pointerleave', () => { hoverCell = null; lastPoint = null; if (hoverId) { hoverId = null; targetsChanged(); } hud(); });
+  canvas.addEventListener('pointerleave', () => { hoverCell = null; lastPoint = null; if (hoverBadge) { hoverBadge = null; targetsChanged(); } if (hoverId) { hoverId = null; targetsChanged(); } hud(); });
 
   // ---- targeting (T): this view's own list; the GM view also shows the player's ----
   const myTargets = () => TARGETS[S.view === 'gm' ? 'gm' : 'player'];
@@ -1466,6 +1541,7 @@ export async function start(store, { build = null } = {}) {
     if (box) return;   // drawing a box: T makes it a targeting box, it does not toggle the hovered token
     if (e.shiftKey) { if (myTargets().length) setMyTargets([], 'Targets cleared.'); return; }
     if (!hoverId) return;
+    if (S.tokens[hoverId] && S.tokens[hoverId].dead && !myTargets().includes(hoverId)) { toast(`${S.tokens[hoverId].name} is dead: it can't be targeted.`); return; }
     setMyTargets(toggleTarget(myTargets(), hoverId));
   });
   window.addEventListener('keyup', (e) => { if (isT(e)) { tHeld = false; boxStyle(); } });
@@ -1497,7 +1573,7 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur)) return;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1524,6 +1600,7 @@ export async function start(store, { build = null } = {}) {
     if (hoverBox) strokeBox(tctx, hoverBox);
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
+    drawBadgeTip(tctx);
     if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
   }
 
@@ -1555,7 +1632,7 @@ export async function start(store, { build = null } = {}) {
     const [x0, x1] = [Math.min(p0[0], p1[0]), Math.max(p0[0], p1[0])], [y0, y1] = [Math.min(p0[1], p1[1]), Math.max(p0[1], p1[1])];
     const F = forTargets ? shown() : null, full = fullGM();
     return Object.keys(S.tokens).filter((id) => {
-      if (forTargets ? !(full || F.seen.has(id)) : S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
+      if (forTargets ? !(full || F.seen.has(id)) || S.tokens[id].dead : S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
       const sp = space(id), cx = sp.x + sp.size / 2, cy = sp.y + sp.size / 2;
       return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
     });
@@ -2419,6 +2496,7 @@ export async function start(store, { build = null } = {}) {
     targets: () => clone(TARGETS),
     templates: () => clone(TEMPLATES),
     notes: () => clone(MAPNOTES),
+    badges: () => clone(badgeHits),
     noting: () => noting,
     aim: () => (aim ? { shape: aim.shape, pick: aim.pick, ft: aim.ft, caster: aim.caster, cells: aim.cur ? aim.cur.cells.length : 0 } : null),
     command: (id) => onCommand(id),

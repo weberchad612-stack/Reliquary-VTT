@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { WALL_TYPES, SENSE, SENSES, DOOR_TYPES, onSnap } from '../engine/walls/presets.js';
 import { LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
+import { systemConfig } from '../rulesets/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -334,6 +335,22 @@ export function validateState(file, mapInfo, report = new Report()) {
     if (!cellInGrid([t.x, t.y], grid)) report.error(file, `tokens.${id}: cell (${t.x}, ${t.y}) is outside the grid`);
     if (t.kind !== undefined && !KINDS.has(t.kind)) report.warn(file, `tokens.${id}: kind "${t.kind}" is not one of pc, ally, neutral, foe, marker, gm (the board treats it as a foe)`);
     if (t.light) checkLightShape(t.light, `tokens.${id}.light`, file, report);
+    const conds = (systemConfig((report.pack && report.pack.ruleset) || 'pf2e') || {}).conditions || {};
+    const seenIds = new Set();
+    for (const [i, e] of (t.effects || []).entries()) {
+      const at = `tokens.${id}.effects[${i}]`;
+      if (e.id) {
+        const c = conds[e.id];
+        if (!c) { report.error(file, `${at}: "${e.id}" is not a condition of this system (a custom effect needs "name")`); continue; }
+        if (c.valued && e.value === undefined) report.error(file, `${at}: ${c.label} needs a value`);
+        if (!c.valued && e.value !== undefined) report.warn(file, `${at}: ${c.label} takes no value`);
+        if (c.max && e.value > c.max) report.error(file, `${at}: ${c.label} goes no higher than ${c.max}`);
+        if (e.kind !== undefined) report.warn(file, `${at}: "kind" is only for custom effects`);
+        if (seenIds.has(e.id)) report.warn(file, `${at}: ${c.label} is listed twice`);
+        seenIds.add(e.id);
+      }
+    }
+    if (t.dead && (t.effects || []).length) report.warn(file, `tokens.${id}: dead, so its effects are not shown`);
   }
   return report;
 }

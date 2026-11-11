@@ -53,8 +53,8 @@ export function markerPoints(templates) {
   return out;
 }
 
-/** Tokens that can be targeted: not markers, not GM-only notes. */
-export const TARGETABLE = (t) => !!t && t.kind !== 'marker' && t.kind !== 'gm';
+/** Tokens that can be targeted: not markers, not GM-only notes, not the dead. */
+export const TARGETABLE = (t) => !!t && t.kind !== 'marker' && t.kind !== 'gm' && !t.dead;
 
 /**
  * Whom placing an area targets: every targetable token in it that the view can see, the caster too when

@@ -123,6 +123,15 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - **Which bubbles are collapsed is per browser** (localStorage, guarded with try/catch: a preview or private window may refuse storage; then it lasts as long as the page).
 - **Names clash in `start()`:** `NOTES` already meant the table's tips (`TABLE.notes`); map notes are `MAPNOTES`. Search before naming a new top-level constant in `app.js`.
 
+### Effect badges
+
+- **Set effects from chat:** read the token (`db_get tokens/<id>`, save the entry as a file), then `node tools/effect.mjs <file> add frightened 2 --source "Demoralize by Kerra"` (or `custom "Bless" --kind good`, `remove <id or name>`, `clear`, `dead`, `alive`; `list` shows the conditions). Write the printed `token` back with `update` and the version you read, and add a log entry ("Lyra is frightened 2").
+- **Use the system's condition ids** (`off-guard`, `persistent`, ...); anything else is a custom effect with a name. Adding a condition the token has replaces it, so lowering frightened is `add frightened 1`, and removing it at 0 is `remove frightened`.
+- **Nothing ticks down by itself yet:** frightened at the end of the creature's turn, durations and "until" notes are Claude's to keep, by hand, until initiative exists.
+- **Unconscious and dying grey the token; dead fades it.** Put a PC at 0 HP as `add dying N` (and `add wounded N` when they recover), not as a custom effect, so the board greys them and stops using their eyes. A foe killed is `dead`, which also keeps it out of targets and movement blocking.
+- **GM-only effects** (`--gm-only`) are for what the players have not noticed: they show only in the GM view.
+- **The conditions are data in the system package** (`rulesets/<id>/conditions.js`): a condition's icon, kind, value rules and rules line are changed there, never in the board. Keep each icon unique (a test checks) and the rules line short and paraphrased.
+
 ### Shared controls
 
 - **Use the shared control** for anything it covers: `removeButton` from `board/ui.js` for removing a thing on the map (with `colour` the item's colour and `what` naming it). Do not draw a remove marker on a canvas or style a new ✕: the user asked for one look and one behaviour everywhere (2026-11-11). If a new feature needs a control that is close to an existing one, extend the shared one (and its tests in `tests/board-ui.test.mjs`).

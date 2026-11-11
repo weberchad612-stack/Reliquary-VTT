@@ -19,6 +19,10 @@
 // - An area only reaches squares in line of effect from its origin: solid barriers block it, glass
 //   windows included; gaps such as a grate or portcullis do not.
 
+// conditions: the effects the board shows as badges on tokens (rulesets/pf2e/conditions.js).
+
+import { PF2E_CONDITIONS } from './conditions.js';
+
 export const PF2E_SYSTEM = Object.freeze({
   id: 'pf2e',
   name: 'Pathfinder 2E',
@@ -43,4 +47,5 @@ export const PF2E_SYSTEM = Object.freeze({
       passes: Object.freeze(['grate']),   // ... except these types, which have gaps effects pass through
     }),
   }),
+  conditions: PF2E_CONDITIONS,
 });

@@ -156,6 +156,26 @@
         "properties": {
           "x": { "type": "integer", "minimum": 0 },
           "y": { "type": "integer", "minimum": 0 },
+          "dead": { "type": "boolean", "description": "Dead: drawn faded with a red cross; no longer blocks movement, sees or can be targeted." },
+          "effects": {
+            "description": "Effect badges: the system's conditions (by id) or custom effects (by name). Set by Claude (tools/effect.mjs).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "oneOf": [{ "required": ["id"] }, { "required": ["name"] }],
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z][a-z-]*$", "description": "A condition of the campaign's system (rulesets/<id>/conditions.js)." },
+                "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "A custom effect (a spell, an aura): shown by its first letter." },
+                "kind": { "enum": ["good", "bad", "neutral"], "description": "Custom effects: the badge's border (conditions take theirs from the system)." },
+                "value": { "type": "integer", "minimum": 1, "description": "The condition's number (frightened 2)." },
+                "detail": { "type": "string", "maxLength": 60, "description": "Extra words shown with it (persistent damage: 2d6 fire)." },
+                "gm_only": { "type": "boolean", "description": "Shown only in the GM view." },
+                "until": { "type": "string", "maxLength": 80, "description": "When it ends, in words (nothing ends by itself yet)." },
+                "source": { "type": "string", "maxLength": 80, "description": "Where it came from (Demoralize by Kerra)." }
+              }
+            }
+          },
           "light": {
             "description": "A light the token carries (always a circle). Presets come from the ruleset.",
             "type": "object", "additionalProperties": false,

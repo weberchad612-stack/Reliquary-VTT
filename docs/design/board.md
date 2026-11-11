@@ -65,7 +65,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `terrain/<map>`, `lighting/<map>` | Terrain areas; lighting regions and lights | Claude (loading) |
 | `state/table` | Current map, sky, colour and animation switches, notes (a test campaign's tips) | Claude; the GM view |
 | `mapstate/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off, hidden markers | Claude; the board (doors, GM view) |
-| `tokens/<id>` | One record per token, with the map it is on | Claude; the board (the player's PCs, the GM view) |
+| `tokens/<id>` | One record per token, with the map it is on; its effect badges (`effects`) and `dead` | Claude; the board (the player's PCs, the GM view) |
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (Play ▸ Templates); Claude (`tools/area.mjs`) |
@@ -287,6 +287,29 @@ player notes). Helpers in `board/notes.js`; the notes section of `board/app.js`.
   the map's scale; they follow zoom and pan, never redraw the map, and sit above the target triangles and
   template markers. The right button still pans when pressed on a note.
 - **Later:** touch screens (FR-5).
+
+**Effect badges and unconscious, dying, dead** (designed with the user and built 2026-11-11, from the previous
+board's status icons). Helpers in `board/effects.js`; the conditions are the system's.
+
+- **What:** a token's `effects` list holds the system's conditions by id (PF2E: every Player Core condition,
+  `rulesets/pf2e/conditions.js`, part of the system configuration as `conditions`) with an optional number
+  (frightened 2) or detail (persistent damage: 2d6 fire), and custom effects by name (a spell, an aura) with
+  good, bad or neutral. Any effect may be GM-only, and may say where it came from and when it ends (in
+  words: nothing ends or ticks down by itself until initiative exists).
+- **Who sets them:** Claude, from chat (`tools/effect.mjs`). Editing them on the board is later (FR-6).
+- **Look:** square badges in a row centred on the top edge of the token's space, a fixed 16 px on screen:
+  each condition its own emoji, a custom effect its first letter; the number in the bottom-right corner;
+  the border green, red or amber for good, bad or neutral; GM-only ones with a purple dashed frame (GM view
+  only). At most four, then a "+N" badge. Drawn after all tokens, so none covers them. Shown on every token
+  the view can see.
+- **Hover:** the badge's name and value, the condition's rules line (paraphrased in the system's list),
+  where it came from and when it ends; "+N" lists the rest. Drawn on the overlay.
+- **Unconscious and dying** (conditions the system marks `state: 'down'`) grey the token; **dead**
+  (`dead: true` on the token) fades it, greys it and draws a red ✕, and hides its badges. A dead token does
+  not block movement (as before), cannot be targeted (T, a targeting box or an area) and does not see.
+- **Who sees:** a PC who is dead, or has a condition the system marks `blinds` (PF2E: blinded,
+  unconscious, dying, petrified), adds nothing to what the party sees, and selecting them shows nothing:
+  they cannot see (Player Core: the unconscious are blinded).
 
 **Shared controls** (`board/ui.js`; asked for 2026-11-11: "consistent UI elements"). A kind of control
 looks and behaves the same everywhere; a new feature uses the shared one rather than making its own.
