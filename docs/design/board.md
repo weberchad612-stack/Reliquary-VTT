@@ -191,6 +191,9 @@ map, fitted to the window, its places as pins.
   green for PCs and allies, yellow for neutrals, red for foes (token kinds `pc`, `ally`, `neutral`, `foe`;
   any other kind counts as a foe). A selected token's square stays amber. Only tokens this view can see can
   be hovered; a hidden foe's "?" marker cannot.
+- The hovered token's name shows centred under its square, in a small label outlined in its kind colour;
+  a Tiny creature sharing a square gets its name under the whole square, not its quarter (the user's
+  choice, 2026-11-11). It is drawn on the overlay, like the hover square.
 - With exactly one token selected, hovering another draws a straight line between their centres, under both
   tokens (drawn on the overlay and cut away where the two tokens are, so hovering never redraws the map), and a label above the hovered one with the distance by the system's measurement (PF2E: nearest
   square to nearest square, diagonals 5-10-5, in feet).

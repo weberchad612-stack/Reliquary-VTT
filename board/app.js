@@ -1042,6 +1042,20 @@ export async function start(store, { build = null } = {}) {
     for (const id of d.ids) { const [cx, cy, r] = discOf(id); ctx.beginPath(); ctx.arc(cx, cy, r + 1.5, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
   }
+  /** The hovered token's name, centred under its square; a Tiny creature sharing a square: under the whole square. */
+  function drawNameLabel(ctx, id) {
+    const t0 = S.tokens[id], sp = space(id), tiny = Engine.isTiny(t0);
+    const sq = tiny ? { x: Math.floor(sp.x), y: Math.floor(sp.y), size: 1 } : sp;
+    const name = t0.name || id;
+    ctx.save();
+    ctx.font = '600 12px IBM Plex Sans, sans-serif';
+    const w = ctx.measureText(name).width + 12, cx = P(sq.x + sq.size / 2), y = P(sq.y + sq.size) + 4;
+    ctx.fillStyle = 'rgba(20, 22, 27, .92)'; ctx.strokeStyle = kindColour(t0.kind); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(cx - w / 2, y, w, 18, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f4ecd6'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(name, cx, y + 9.5);
+    ctx.restore();
+  }
   function drawDistanceLabel(ctx, d) {
     const label = `${d.feet} ${d.unit}`;
     ctx.save();
@@ -1451,7 +1465,8 @@ export async function start(store, { build = null } = {}) {
     const marks = targetMarks();
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
-    if (!marks.length && !dist && !hoverBox) return;
+    const hoverName = hoverId && S.tokens[hoverId] && !drag;
+    if (!marks.length && !dist && !hoverBox && !hoverName) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     if (dist) drawDistanceLine(tctx, dist);
     const phase = REDUCED ? 0.25 : ((now || 0) % 1400) / 1400;
@@ -1475,6 +1490,7 @@ export async function start(store, { build = null } = {}) {
       if (box) strokeBox(tctx, box);
     }
     if (hoverBox) strokeBox(tctx, hoverBox);
+    if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
   }
