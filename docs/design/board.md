@@ -200,6 +200,11 @@ map, fitted to the window, its places as pins.
   pointing inward, in its kind colour, small (about an eighth of the square), and under the token's
   hover or selection square; they pulse inward toward the token and back (still with reduced
   motion; the user's choice of shape, 2026-11-11).
+- **Holding T while drawing a selection box** makes it a targeting box (asked for 2026-11-11): what counts is
+  whether T is down on release, and the box shows a different border while it is. It adds every token
+  this view can see whose centre is inside to this view's targets (already targeted ones stay); the
+  selection is left as it was. A held key repeats, but only T's first press acts, so holding T over a
+  token does not flip its target.
 - Targets are shared through the store: `targets/player` and `targets/gm`, each `{ids}`. The player view
   edits and shows the player's; the GM view edits its own and also shows the player's (as outlined,
   unfilled triangles). Claude reads `targets/player` when the user says "I attack my target". Targets are not logged

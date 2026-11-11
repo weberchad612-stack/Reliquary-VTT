@@ -1400,15 +1400,24 @@ export async function start(store, { build = null } = {}) {
     if (what) toast(what);
     targetsChanged();
   }
+  // T held while drawing a selection box makes it a targeting box (on release). A held key repeats: only the
+  // first press acts, so holding T over a token does not flip its target on and off.
+  let tHeld = false;
+  const isT = (e) => e.key === 't' || e.key === 'T';
   window.addEventListener('keydown', (e) => {
-    if (e.key !== 't' && e.key !== 'T') return;
+    if (!isT(e)) return;
     if (e.ctrlKey || e.metaKey || e.altKey || (e.target.closest && e.target.closest('input, textarea, select, [role^=menu]'))) return;
     if (READONLY) return;
     e.preventDefault();
+    if (e.repeat) return;
+    tHeld = true; boxStyle();
+    if (box) return;   // drawing a box: T makes it a targeting box, it does not toggle the hovered token
     if (e.shiftKey) { if (myTargets().length) setMyTargets([], 'Targets cleared.'); return; }
     if (!hoverId) return;
     setMyTargets(toggleTarget(myTargets(), hoverId));
   });
+  window.addEventListener('keyup', (e) => { if (isT(e)) { tHeld = false; boxStyle(); } });
+  window.addEventListener('blur', () => { tHeld = false; boxStyle(); });
   /** What to mark: [{id, own}] for tokens on this map that this view may see. */
   function targetMarks() {
     const F = shown(), full = fullGM(), out = [];
@@ -1460,6 +1469,8 @@ export async function start(store, { build = null } = {}) {
     box = { x: ev.clientX, y: ev.clientY, p0: p, moved: false };
     canvas.setPointerCapture(ev.pointerId);
   }
+  /** The box looks different while T is held: it will target, not select. */
+  function boxStyle() { boxEl.classList.toggle('targeting', tHeld); }
   function moveBox(ev) {
     if (!box.moved && !isDrag(box.x, box.y, ev.clientX, ev.clientY)) return;
     box.moved = true; box.cx = ev.clientX; box.cy = ev.clientY; box.p1 = cellAt(ev);
@@ -1469,11 +1480,15 @@ export async function start(store, { build = null } = {}) {
     boxEl.style.width = Math.abs(ev.clientX - box.x) + 'px'; boxEl.style.height = Math.abs(ev.clientY - box.y) + 'px';
     boxEl.hidden = false;
   }
-  /** Tokens a box picks: centre inside it. Players pick their PCs only; the GM picks every token. */
-  function tokensInBox(p0, p1) {
+  /**
+   * Tokens a box picks: centre inside it. Selecting: players pick their PCs only, the GM every token.
+   * Targeting: any token this view can see.
+   */
+  function tokensInBox(p0, p1, forTargets = false) {
     const [x0, x1] = [Math.min(p0[0], p1[0]), Math.max(p0[0], p1[0])], [y0, y1] = [Math.min(p0[1], p1[1]), Math.max(p0[1], p1[1])];
+    const F = forTargets ? shown() : null, full = fullGM();
     return Object.keys(S.tokens).filter((id) => {
-      if (S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
+      if (forTargets ? !(full || F.seen.has(id)) : S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
       const sp = space(id), cx = sp.x + sp.size / 2, cy = sp.y + sp.size / 2;
       return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
     });
@@ -1481,6 +1496,13 @@ export async function start(store, { build = null } = {}) {
   function endBox(cancelled) {
     const b = box; box = null; boxEl.hidden = true;
     if (cancelled) return;
+    if (b.moved && tHeld) {
+      // a targeting box: add what it covers to this view's targets; the selection stays as it was
+      const ids = tokensInBox(b.p0, b.p1, true), own = myTargets();
+      const add = ids.filter((id) => !own.includes(id));
+      if (add.length) setMyTargets([...own, ...add], `${add.length} target${add.length > 1 ? 's' : ''} added.`);
+      return;
+    }
     setSelection(b.moved ? tokensInBox(b.p0, b.p1) : []);   // a click without a box clears the selection
     panel(); draw();
   }
