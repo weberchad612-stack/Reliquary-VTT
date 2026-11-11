@@ -15,6 +15,8 @@
 //   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
 //   templates/<id>     one placed area template, with the map it is on
 //   notes/<id>         one map note, with the map it is on
+//   fxlib/pack         the pack's visual effects ({palette, effects, fallbacks}; its effects.json), if it has any
+//   fx/<time>-<n>      a visual effect playing now (written by Claude; not part of the save; board/fx.js)
 //   log/<time>-<n>     the change log (not part of the save; written by whoever makes a change)
 //
 // Pure functions, no I/O: tools/campaign.mjs reads and writes the files, the board reads and writes the store.
@@ -42,10 +44,11 @@ const pad = (n) => String(n).padStart(3, '0');
  * @param {object} c.pack       pack.json: {id, title, version, ruleset, maps}
  * @param {Array}  c.maps       [{id, map (map.json), segs, terrain (areas), lighting, image: {asset, fingerprint, w, h}}]
  * @param {object} c.mapStates  {mapId: map state (as in saves/<campaign>/maps/<id>.json)}
+ * @param {object} [c.effects]  the pack's effects.json: {palette, effects, fallbacks} (rulesets/<id>/effects.js form)
  * @param {string} [c.now]      ISO time for board/meta
  * @returns {object}  {path: data}
  */
-export function campaignRecords({ campaign, pack, maps, mapStates = {}, now = new Date().toISOString() }) {
+export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, now = new Date().toISOString() }) {
   if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
     throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
   }
@@ -71,6 +74,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, now = ne
       r[`lighting/${m.id}`] = { map: m.id, ...lighting };
     }
   }
+  if (effects && effects.effects && Object.keys(effects.effects).length) r['fxlib/pack'] = { palette: effects.palette || {}, effects: effects.effects, fallbacks: effects.fallbacks || [] };
   r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
   if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
   for (const [mapId, st] of Object.entries(mapStates)) {

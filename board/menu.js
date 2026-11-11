@@ -31,6 +31,8 @@ export const MENU = [
     { id: 'add-note', label: 'Add note', kind: 'toggle', key: 'N', hint: 'Click the map to drop a note' },
     { id: 'walls', label: 'Show walls', kind: 'toggle', hint: 'Show the walls and doors the engine uses' },
     { id: 'turn-view', label: 'Turn view', kind: 'toggle', hint: 'Show what the creature whose turn it is can see' },
+    { id: 'fx-on', label: 'Visual effects', kind: 'toggle', hint: 'Show spell and attack effects on this screen' },
+    { id: 'fx-preview', label: 'Effects...', kind: 'command', gm: true, hint: 'GM: preview the visual effects on this screen' },
     { sep: true },
     { id: 'reload', label: 'Reload the board', kind: 'command' },
   ] },

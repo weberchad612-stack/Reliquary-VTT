@@ -22,6 +22,7 @@ import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from 
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
+import { FX_COLLECTION, STAGGER, newPlays, stale, playTargets, templateAim, libraries, paletteOf, previewList, prefStore } from './fx.js';
 import { TEMPLATE_COLOURS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
@@ -124,6 +125,8 @@ export async function start(store, { build = null } = {}) {
   for (const e of await store.list('notes')) if (e.data.map === MAP_ID) { const { map: _m, ...n } = e.data; MAPNOTES[e.id] = n; }
   const TEMPLATES = {};   // area templates on this map: {id: template} (records templates/<id>)
   for (const e of await store.list('templates')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TEMPLATES[e.id] = t; }
+  // visual effects: the pack's own effects (record fxlib/pack, from its effects.json), over the ruleset's
+  const FX_LIBS = libraries(await store.get('fxlib/pack').catch(() => null), SYS.effects);
   const ex = (await store.list('explored')).filter((e) => e.data.map === MAP_ID).map((e) => e.data);
   const EXPLORED0 = ex.length ? exploredFromRecords(ex) : null;
 
@@ -412,7 +415,7 @@ export async function start(store, { build = null } = {}) {
     animCanvas.style.width = canvas.style.width; animCanvas.style.height = canvas.style.height;
     animCanvas.width = canvas.width; animCanvas.height = canvas.height;
     animCanvas.style.left = canvas.offsetLeft + 'px'; animCanvas.style.top = canvas.offsetTop + 'px';
-    for (const c of [tgtCanvas]) {
+    for (const c of [tgtCanvas, fxCanvas]) {
       c.style.width = canvas.style.width; c.style.height = canvas.style.height;
       c.width = canvas.width; c.height = canvas.height;
       c.style.left = canvas.offsetLeft + 'px'; c.style.top = canvas.offsetTop + 'px';
@@ -578,6 +581,8 @@ export async function start(store, { build = null } = {}) {
   // never shows players an unseen room.
   const tgtCanvas = document.getElementById('tgt');   // targets' pulsing chevrons, drawn every frame while any show
   const tctx = tgtCanvas.getContext('2d');
+  const fxCanvas = document.getElementById('fxc');     // visual effects, drawn every frame while one plays
+  const fxg = fxCanvas.getContext('2d');
   const animCanvas = document.getElementById('anim');
   const actx = animCanvas.getContext('2d');
   const ANIM_LOOK = { darken: 1.6, brighten: 0.9, light: '#fff1d6', fps: 30 };
@@ -1784,6 +1789,8 @@ export async function start(store, { build = null } = {}) {
     draw();
   }
   function onCommand(id, item, state) {
+    if (id === 'fx-on') { setFxOn(state); return true; }
+    if (id === 'fx-preview') { openFxPanel(); return true; }
     if (id === NOTE_COMMAND) { if (READONLY) { toast('This is a preview: notes are added on the party\'s map.'); setNoting(false); } else setNoting(state); return true; }
     return false;
   }
@@ -2310,7 +2317,7 @@ export async function start(store, { build = null } = {}) {
   });
 
   function setView(v) {
-    if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); closeHud(); }
+    if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); closeHud(); fxPanel.hidden = true; fxPlayer.clear(); }
     S.view = v;
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
@@ -2659,6 +2666,7 @@ export async function start(store, { build = null } = {}) {
       if (changed) renderNotes();
     };
     store.watchCollection('notes', onNotes);
+    store.watchCollection(FX_COLLECTION, onFx);
     resync.notes = () => store.list('notes').then(onNotes).catch(() => {});
     resync.templates = () => store.list('templates').then(onTemplates).catch(() => {});
     resync.state = (p) => { if (p === 'state/table') store.get(p).then(onTable).catch(() => {}); };
@@ -2680,6 +2688,130 @@ export async function start(store, { build = null } = {}) {
       if (list.length > LOG_KEEP + 50) for (const e of list.slice(0, list.length - LOG_KEEP)) store.remove(e.path).catch(() => {});
     });
   }
+
+  // ---------- visual effects (engine/fx, board/fx.js; docs/design/board.md section 7) ----------
+  // Claude plays an effect by writing a record fx/<id> (tools/fx.mjs); every board plays it once as it arrives,
+  // on its own canvas over the map. Effects show only what this view can see: a play is drawn when the view sees
+  // either end, and a GM-only play (o.gm) only in the GM view.
+  const fxPlayer = new Engine.FxPlayer(), fxPref = prefStore(), FX_PALETTE = paletteOf(FX_LIBS);
+  let fxOn = fxPref.on(), fxRaf = null, fxN = 0;
+  const fxSeen = new Set(), fxRemoving = new Set();
+  /** Pixels (from the grid origin) of a cell point. */
+  const cellPx = (c) => ({ x: P(c[0]), y: P(c[1]) });
+  /** One end of a play: a token's centre (lifted toward its elevation label when it is up in the air) or a point. */
+  function fxEnd(ref, F, full) {
+    if (ref === undefined || ref === null) return null;
+    if (Array.isArray(ref)) return { pt: cellPx(ref), seen: full || F.at(ref[0], ref[1]) };
+    const t = S.tokens[ref];
+    if (!t) return null;
+    const sp = space(ref), lift = (t.elevation || 0) > 0 ? sp.size * 0.4 : 0;
+    return { pt: { x: P(sp.x + sp.size / 2), y: P(sp.y + sp.size / 2 - lift) }, seen: full || t.kind === 'pc' || F.seen.has(ref) };
+  }
+  /** The board's map under a token, drawn again offset: the shake on a hit. */
+  function fxSnapshot(g, x, y, r, dx, dy) {
+    const k = scale * (window.devicePixelRatio || 1), sx = (OX + x - r) * k, sy = (OY + y - r) * k, sw = 2 * r * k;
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+    g.beginPath(); g.arc((OX + x + dx) * k, (OY + y + dy) * k, r * k, 0, Math.PI * 2); g.clip();
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.shadowBlur = 0;
+    g.drawImage(canvas, Math.max(0, sx), Math.max(0, sy), sw, sw, Math.max(0, sx) + dx * k, Math.max(0, sy) + dy * k, sw, sw);
+    g.restore();
+  }
+  /**
+   * Play an effect record ({name, from?, to?, o?}) on this screen. Returns how many targets it played at.
+   * `local`: the GM's preview (plays even with effects turned off, nothing written).
+   */
+  function playFx(rec, { local = false } = {}) {
+    if ((!fxOn && !local) || !rec || !rec.name) return 0;
+    const o = rec.o || {};
+    if (o.gm && S.view !== 'gm') return 0;
+    const found = Engine.resolveEffect(rec.name, FX_LIBS, { kind: o.kind, traits: o.traits });
+    const F = shown(), full = S.view === 'gm';
+    const from = fxEnd(rec.from, F, full), now = performance.now();
+    const env = { cs: CS, rng: Engine.makeRng(1), reduced: REDUCED, snapshot: fxSnapshot };
+    let k = 0;
+    for (const t of playTargets(rec, { tokens: S.tokens, targets: TARGETS, templates: TEMPLATES })) {
+      let b = null, cells;
+      if (t.id || t.cell) b = fxEnd(t.id || t.cell, F, full);
+      else if (t.template) {
+        const aim = templateAim(TEMPLATES[t.template]);
+        cells = aim.cells.map(cellPx);
+        b = { pt: cellPx(aim.b), seen: full || aim.cells.some((c) => F.at(c[0] + 0.5, c[1] + 0.5)) };
+      }
+      const a = from || b, z = b || from;
+      if (!a || !(a.seen || z.seen)) continue;
+      const jobs = Engine.planEffect(found.effect, {
+        a: a.pt, b: z.pt, cells, cs: CS, palette: FX_PALETTE, reduced: REDUCED,
+        o: { ...o, result: t.result, text: t.text }, rng: Engine.makeRng(`${rec.id || 'local' + fxN++}/${k}`),
+      });
+      fxPlayer.add(jobs, now + k * STAGGER, env);
+      k++;
+    }
+    if (k && !fxRaf) fxRaf = requestAnimationFrame(fxFrame);
+    return k;
+  }
+  function fxFrame() {
+    fxRaf = null;
+    const dpr = window.devicePixelRatio || 1;
+    fxg.setTransform(1, 0, 0, 1, 0, 0); fxg.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    fxg.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); fxg.translate(OX, OY);
+    const live = fxPlayer.draw(fxg, performance.now());
+    if (fxPlayer.lastError) { console.warn('Visual effect:', fxPlayer.lastError); fxPlayer.lastError = null; }
+    if (live) fxRaf = requestAnimationFrame(fxFrame);
+  }
+  function setFxOn(on) {
+    fxOn = !!on; fxPref.set(fxOn);
+    const m = shellReady && shell.menu();
+    if (m) m.setToggle('fx-on', fxOn);
+    if (!fxOn) { fxPlayer.clear(); fxFrame(); }
+    toast(fxOn ? 'Visual effects on (this screen).' : 'Visual effects off (this screen).');
+  }
+  /** New play records: play each once; remove old ones. */
+  function onFx(list) {
+    const first = !fxSeen.size && !onFx.ran;
+    onFx.ran = true;
+    for (const e of newPlays(list, fxSeen, { map: PARTY_MAP, first })) if (!READONLY) playFx({ id: e.id, ...e.data });
+    if (READONLY) return;
+    for (const e of stale(list)) if (!fxRemoving.has(e.path)) { fxRemoving.add(e.path); store.remove(e.path).catch(() => {}); }
+  }
+  // the GM's preview: every effect by group, played from the selected token to the targets (or the hovered token)
+  const fxPanel = document.getElementById('fxpanel'), fxList = document.getElementById('fx-list'), fxSearch = document.getElementById('fx-search');
+  let fxLastHover = null;
+  function renderFxList() {
+    const groups = previewList(FX_LIBS, fxSearch.value);
+    fxList.textContent = '';
+    for (const g of groups) {
+      const h = document.createElement('h3'); h.textContent = g.group; fxList.appendChild(h);
+      for (const it of g.items) {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.dataset.fx = it.name; btn.title = it.name;
+        btn.innerHTML = `<span></span>${it.via === 'pack' ? '<span class="tag">pack</span>' : ''}<span class="nm"></span>`;
+        btn.children[0].textContent = it.label; btn.querySelector('.nm').textContent = it.name;
+        fxList.appendChild(btn);
+      }
+    }
+    if (!groups.length) fxList.innerHTML = '<p class="fxhint">No effect matches.</p>';
+  }
+  function previewFx(name) {
+    const src = selectedIds()[0], mine = myTargets().filter((id) => S.tokens[id] && id !== src);
+    const to = mine.length ? mine : fxLastHover && S.tokens[fxLastHover] && fxLastHover !== src ? [fxLastHover] : null;
+    const res = (document.querySelector('input[name=fx-res]:checked') || {}).value || 'hit';
+    const text = document.getElementById('fx-text').value.trim(), n = Number(document.getElementById('fx-n').value) || 3;
+    const e = Engine.resolveEffect(name, FX_LIBS).effect;
+    // an area effect plays over the newest template on the map when there is one
+    const tpl = e.kind === 'area' ? Object.keys(TEMPLATES).sort((x, y) => (TEMPLATES[y].at || '').localeCompare(TEMPLATES[x].at || ''))[0] : null;
+    const rec = { name, from: src || undefined, to: tpl ? 'template:' + tpl : to || (src ? undefined : null), o: { result: res, text: text || undefined, n } };
+    if (!src && !to && !tpl) { toast('Select a token to play from, and target or hover one to play at.'); return; }
+    if (!playFx(rec, { local: true })) toast('Nothing to play at here.');
+  }
+  function openFxPanel() {
+    if (S.view !== 'gm') return;
+    fxPanel.hidden = false; renderFxList(); fxSearch.focus();
+  }
+  fxSearch.addEventListener('input', renderFxList);
+  fxList.addEventListener('click', (ev) => { const b = ev.target.closest('button[data-fx]'); if (b) previewFx(b.dataset.fx); });
+  document.getElementById('fx-close').addEventListener('click', () => { fxPanel.hidden = true; });
+  fxPanel.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); fxPanel.hidden = true; } });
+  canvas.addEventListener('pointermove', () => { if (hoverId) fxLastHover = hoverId; });
 
   // ---------- the GM switch and the change log ----------
   function confirmGM() {
@@ -2728,6 +2860,7 @@ export async function start(store, { build = null } = {}) {
     select: (id) => { setSelection(id ? [id] : []); panel(); draw(); },
     selection: () => selectedIds(),
     targets: () => clone(TARGETS),
+    fx: { play: (rec) => playFx(rec, { local: true }), busy: () => fxPlayer.busy, jobs: () => fxPlayer.jobs.map((j) => ({ p: j.p, t0: j.t0, ms: j.ms })), on: () => fxOn, libs: () => FX_LIBS.map((l) => l.via) },
     templates: () => clone(TEMPLATES),
     notes: () => clone(MAPNOTES),
     badges: () => clone(badgeHits),
@@ -2758,6 +2891,7 @@ export async function start(store, { build = null } = {}) {
   lightingCard();
   fit();
   shell.startMenu();
+  shell.menu().setToggle('fx-on', fxOn);
   notesReady = true; renderNotes();
   await shell.startMapMenu();
   if (keepGM) setView('gm');

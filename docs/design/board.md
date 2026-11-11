@@ -70,9 +70,11 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
+| `fxlib/pack` | The pack's own visual effects (its `effects.json`: palette, effects, fallbacks), if it has any; read once when the board opens | Claude (loading) |
+| `fx/<time>-<n>` | A visual effect being played: name, from, to, result and text (section 7, Visual effects). Not part of the save; any board removes records older than ten minutes | Claude (`tools/fx.mjs`) |
 
-The page listens to nine of these (the meta record, the table, the current map's state, and the token,
-explored, targets, templates, notes and log collections), far under the platform's limit of 64. Records are per token and per map,
+The page listens to ten of these (the meta record, the table, the current map's state, and the token,
+explored, targets, templates, notes, fx and log collections), far under the platform's limit of 64. Records are per token and per map,
 so the player and Claude changing different things never overwrite each other. Measured: the whole Sample
 Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 
@@ -389,9 +391,52 @@ looks and behaves the same everywhere; a new feature uses the shared one rather 
   no button. The user's choices (2026-11-11): arm then confirm, the template look, a fixed size.
 - Not a remove button: the GM lighting card's "×" next to a colour means "make uncoloured".
 
+**Visual effects** (`engine/fx/fx.js`, `rulesets/<id>/effects.js`, `board/fx.js`, `tools/fx.mjs`; designed by
+questionnaire and built 2026-11-11). Claude plays an effect from chat (a sword's crit, a fireball over its template,
+lightning at a flyer); every open board draws it once, on its own canvas over the map.
+
+- **Three layers.** The engine holds only genre-neutral primitives: glow, ring, sparks, orb (a curving projectile
+  with a trail), streak, arc (a weapon swing), bolt (lightning), text, glyphs (rising symbols), wedge (a cone of
+  particles), fill (an area's squares), shake, flash, beam (with a width), and for other genres scanlines and
+  glitch (sci-fi) and muzzle, tracer, rocket, explosion and shockwave (modern), plus missile (a thrown arrow,
+  javelin, dart, stone, flask, boulder or bullet). A ruleset ships its own effects library as data
+  (`rulesets/pf2e/effects.js`, part of the system configuration as `effects`): a fantasy ruleset and a sci-fi one
+  have entirely different libraries on the same primitives. An adventure pack may add or restyle effects in its
+  `effects.json` (loaded into `fxlib/pack`). Lookup: the pack, then the ruleset, then the engine's plain ones.
+- **An effect is steps of primitives** with parameters and times: `{p: 'orb', from: 'a', to: 'b', colour: 'fire',
+  size: 0.18, ms: 340, after: 0}`. Positions are the source (`a`), the target (`b`; on a miss a point beside it),
+  the target itself (`b0`) or the middle; sizes are in squares, so effects scale with the map; colours are palette
+  names (by damage type and trait), `main` (the play's colour) or #hex. `repeat: 'n'` makes one per count (force
+  missiles), staggered and curved differently.
+- **Shared results** for attacks (`attack: true`): a hit glows, sparks and shakes the target; a critical hit is
+  bigger, with a gold ring and "CRIT!"; a miss flies wide and says "Miss". An effect may give its own hit, crit or
+  miss steps (a web shot says "Stuck"; Demoralize says "Unmoved" on a miss).
+- **Naming by what happens**, grouped: Weapon strikes, Ranged, Spell projectiles, Areas, Healing and buffs,
+  Conditions and social, Creature attacks, Movement. The previous board's ~100 effects were reworked into about 90:
+  one character's or one dungeon level's effects fold into generic ones (a finishing flourish is `strike_flourish`,
+  a tendril lance `tendril_lance`). An unknown name falls back by the play's kind and traits (a fire area plays as
+  `burst_fire`, a slashing strike as `strike_slash`), so Claude never has to stop for a missing effect.
+- **Triggering:** Claude only, from chat. One record per play (`fx/<time>-<n>`: `{map, name, from, to, o, by,
+  ts}`); `to` is a token, a list, `targets` (the GM's targets, else the player's), a point, or `template:<id>`
+  (its squares are filled; a burst aims at its point, a line at its far end, a cone at its middle). `o` holds the
+  result (or per-target `results`), the floating text (or per-target `texts`), a count, a colour, the kind and
+  traits for the fallback, and `gm` for a GM-only play. Several targets play one after another. A board plays each
+  record once as it arrives; a board that opens later does not replay old ones.
+- **Tie-ins:** targets (staggered plays); templates (fill over the squares); elevation (a creature up in the air is
+  aimed at toward its "+30 ft" label); fog (a play is drawn only when this view sees either end; GM-only plays in
+  the GM view only).
+- **On screen:** a canvas over the map, its notes and template buttons, under the HUD and menus, scaled with the
+  map. Floating text shows only what the players know: red damage, green healing, Miss, CRIT!, a condition's name;
+  never hit points, AC or an unseen ability. A short shake of the token on a hit (the map under it redrawn, offset).
+- **Settings per browser:** Map ▸ Visual effects (on by default, kept in this browser), and the system's reduced
+  motion setting: particles, rings and shakes are dropped, lightning becomes a calm streak, fades and text stay.
+- **The GM's preview:** Map ▸ Effects... (GM view): a searchable list by group; clicking one plays it from the
+  selected token to this view's targets (or the last hovered token), or over the newest template for an area
+  effect, with Hit, Crit or Miss, a text and a count. This screen only; nothing is written.
+
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
-- **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration), Records (Party loot, Quest log, Dice), and two
+- **Bar:** Map (Measure, Add note, Show walls, Turn view, Visual effects, Effects... for the GM; Reload), Play (Actions, Exploration), Records (Party loot, Quest log, Dice), and two
   buttons straight on the bar, Replay and Narration, which can show a count.
 - **Behaviour:** click a menu to open it; once one is open, pointing at another opens that one; one menu
   open at a time; picking an item, clicking outside or Escape closes it. A menu shows as active (amber)

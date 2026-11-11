@@ -10,7 +10,7 @@ How to use and change each core feature well. Written for Claude, who runs the t
 | Movement and tokens (`engine/movement/`, `engine/tokens/`; Stride bands on the board) | [movement-and-tokens.md](movement-and-tokens.md) |
 | Lighting and vision (`engine/light/` with daylight, colour, intensity and animation; light-aware `partyView`; a creature's own view; `rulesets/pf2e/light.js`; importer lighting step) | [lighting.md](lighting.md) |
 | Terrain and distance (`engine/terrain/`, `engine/measure/`, `rulesets/pf2e/terrain.js`, importer terrain step) | [terrain.md](terrain.md) |
-| The board: playing on it, saving to the PC, switching campaigns, the top menu, zoom and selection, targets, area templates, map notes, effect badges and the token HUD (`board/`, `tools/campaign.mjs`, `tools/area.mjs`, `tools/note.mjs`, `tools/effect.mjs`) | [board.md](board.md) |
+| The board: playing on it, saving to the PC, switching campaigns, the top menu, zoom and selection, targets, area templates, map notes, effect badges, the token HUD and visual effects (`board/`, `tools/campaign.mjs`, `tools/area.mjs`, `tools/note.mjs`, `tools/effect.mjs`, `tools/fx.mjs`) | [board.md](board.md) |
 | Working on the repository | [development.md](development.md) |
 
 The design behind these features is in [docs/design/maps.md](../design/maps.md) and, for light and vision, [docs/design/lighting.md](../design/lighting.md), and for the board, [docs/design/board.md](../design/board.md).

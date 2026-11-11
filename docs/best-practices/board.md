@@ -6,11 +6,11 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `log/`; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `log/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
-| The pack (`examples/sample-pack`, or a private `packs/<id>`) | Maps, walls, terrain and lighting: never changed by play | The importer |
+| The pack (`examples/sample-pack`, or a private `packs/<id>`) | Maps, walls, terrain and lighting, and optionally its own visual effects (`effects.json`): never changed by play | The importer; Claude for effects |
 
 The database is the truth during play; the PC save is the truth between sessions and for any campaign that is not loaded. `saves/` and `packs/` are private and git-ignored: book content goes only onto the user's own private board, never into the repository or anything shared.
 
@@ -29,6 +29,7 @@ The database is the truth during play; the PC save is the truth between sessions
   | Place an area template (and see who is in it) | `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster <id> --dir north --state <save>/maps/<map>.json` | `templates/<id>` |
   | Pin a note to the map (shared or GM-only) | `node tools/note.mjs <map-dir> --at X,Y --text "..." [--gm-only]` | `notes/<id>` |
   | Set conditions, custom effects, dead, elevation | `node tools/effect.mjs <token.json> add frightened 2` (`custom`, `remove`, `clear`, `dead`, `alive`, `elevation 15`; `list`) | `tokens/<id>` |
+  | Play a visual effect (an attack, a spell, a heal) | `node tools/fx.mjs play strike_slash --map <map> --from <id> --to <id> --result crit --text "-18"` (`list` shows the effects) | `fx/<time>-<n>` |
   | Know the player's targets | read `targets/player` | (nothing) |
   | Measure, route, sight, fog | `tools/move.mjs`, `tools/sight.mjs`, `tools/fog.mjs` | (nothing) |
 
@@ -127,7 +128,7 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.
 - A change to the record layout is a migration: save every campaign to the PC first, then load them again with the new tools.
 
-## 12. On the map: area templates, notes, effects and the token HUD
+## 12. On the map: area templates, notes, effects, the token HUD and visual effects
 
 Design: [board.md](../design/board.md), section 7. Each feature below has a chat tool for Claude (section 2).
 
@@ -192,3 +193,15 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Page buttons over the map** sit in their own layers (`#tplx`, `#notes`), placed from map cells with the map's scale and re-placed on zoom. Rebuild them only when their content changes (a key of what they show), never on every map redraw, or an armed button would disarm whenever anything moves.
 - **The page's own button styles win over a class on hover** (`button:hover` is more specific than `.rm-btn`): a control with its own colours sets them for `:hover`, `:active` and `:focus` too.
 - **Timers passed around as object methods** must be wrapped (`(f, ms) => setTimeout(f, ms)`): calling `timers.set(...)` with the real `setTimeout` throws "Illegal invocation" in the browser, though it works in Node.
+
+### Visual effects
+
+- **Play effects for what happens at the table**, after the dice: `node tools/fx.mjs play <effect> --map <party map> --from <id> --to <id|targets|X,Y|template:ID> [--result hit|crit|miss] [--text "-12"]`, then write the printed record (`db_write`, a new path; no read needed). Every open board plays it once. `node tools/fx.mjs list [--search fire] [--pack <pack-dir>]` shows the library.
+- **Name effects by what happens**, not by who does it: `strike_slash` for any sword, `burst_fire` for a fireball, `heal` for any healing. If nothing fits, use a new name with `--kind` and `--traits` (`meteor --kind area --traits fire`): it falls back to the nearest effect (the tool says which), and a pack can add the real one later.
+- **Floating text is for the players:** damage as "-12", healing as "+8", a condition's name. Never hit points, AC, DCs, or an ability the party has not seen; for something only the GM should see, add `--gm`.
+- **Several targets:** `--to targets` (or a list) plays at each in turn; give each its own result and text with `--results gob1=hit,gob2=miss --texts gob1=-9`. **Areas:** place the template first (`tools/area.mjs`), then play at `template:<id>` so its squares light up.
+- **Restyle or add effects for a pack** in its `effects.json` (`{palette, effects, fallbacks}`, the form of `rulesets/pf2e/effects.js`); check it with `node tools/fx.mjs check <pack-dir>` (the validator does too). A pack's effect with a ruleset name replaces the ruleset's for that campaign.
+- **A new ruleset brings its own library** (`rulesets/<id>/effects.js`, as `effects` in its system configuration): a sci-fi or modern game uses the same primitives (beam, scanlines, glitch, muzzle, tracer, rocket, explosion) with its own names, colours and fallbacks. `checkLibrary` (and `tests/fx.test.mjs`) check every step, colour and fallback.
+- **The board draws effects on their own canvas** (`#fxc`), redrawn every frame only while an effect plays: never through the map's `draw()` (35 to 50 ms). Effects are planned once (`planEffect`: positions in pixels, colours resolved, seeded randomness, so every screen sees the same sparks) and played by `FxPlayer`; a primitive that throws is skipped and reported in the console, never breaking the board.
+- **Clocks differ between Claude and the players' screens**, so a board never compares a record's time with its own clock to decide whether to play: it plays what arrives after it opened, and in a burst (after a reconnect) only records within a minute of the newest.
+- **Test a primitive or effect** with the fake canvas in `tests/fx.test.mjs` (every effect, every result, reduced motion), then headless in the board: write `fx/` records to the memory store and screenshot mid-play (the crit slash at about 300 ms, a fireball at about 550 ms).

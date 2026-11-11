@@ -81,6 +81,25 @@ canvas#map, .hud { margin: 0 auto; flex: none; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; }
 .zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
 canvas#anim, canvas#tgt { position: absolute; pointer-events: none; }
+canvas#fxc { position: absolute; pointer-events: none; z-index: 4; }   /* visual effects: over the map, notes and template buttons; under the HUD and menus */
+.fxpanel { position: fixed; right: 18px; top: 84px; z-index: 44; width: 300px; max-height: calc(100vh - 120px); display: grid; grid-template-rows: auto auto auto 1fr; gap: 8px;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; box-shadow: 0 12px 40px rgba(0,0,0,.5); font-size: 13px; }
+.fxpanel[hidden] { display: none; }
+.fxpanel header { display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; }
+.fxpanel header h2 { margin: 0; font-size: 14px; flex: 1; }
+.fxpanel input[type=search], .fxpanel input[type=text] { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
+.fxpanel .fxopts { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 12px; }
+.fxpanel .fxopts label { display: inline-flex; gap: 3px; align-items: center; }
+.fxpanel .fxopts input[type=text] { width: 64px; }
+.fxpanel .fxopts input[type=number] { width: 44px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 3px 4px; font: inherit; }
+.fxpanel .fxlist { overflow: auto; display: grid; gap: 2px; align-content: start; min-height: 0; }
+.fxpanel .fxlist h3 { margin: 8px 0 2px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.fxpanel .fxlist button { text-align: left; background: none; border: 1px solid transparent; border-radius: 6px; color: var(--ink); padding: 4px 6px; font: inherit; cursor: pointer; display: flex; gap: 6px; }
+.fxpanel .fxlist button:hover, .fxpanel .fxlist button:focus-visible { background: var(--bg); border-color: var(--line); }
+.fxpanel .fxlist button > span:first-child { flex: 1; }
+.fxpanel .fxlist button .nm { font: 11px var(--font-mono); color: var(--muted); align-self: center; }
+.fxpanel .fxlist button .tag { font-size: 10px; color: var(--accent); }
+.fxpanel .fxhint { color: var(--muted); font-size: 12px; margin: 0; }
 .arow { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); margin: -2px 0 4px 22px; }
 .arow select { font-size: 11px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 1px 2px; }
 .arow input[type=range] { width: 100%; }
@@ -318,11 +337,27 @@ ol.log li.foe { border-left-color: var(--foe); }
     </div>
   </header>
   <div class="preview-bar" id="preview-bar" hidden role="status"><span id="preview-text"></span><button id="preview-back">Back to the party's map</button></div>
+  <div class="fxpanel" id="fxpanel" hidden role="dialog" aria-label="Visual effects preview">
+    <header><h2>Visual effects</h2><button type="button" id="fx-close" aria-label="Close">✕</button></header>
+    <p class="fxhint" id="fx-hint">Plays from the selected token to your targets (or the hovered token). This screen only.</p>
+    <div>
+      <input type="search" id="fx-search" placeholder="Search effects" aria-label="Search effects">
+      <div class="fxopts" role="group" aria-label="Result">
+        <label><input type="radio" name="fx-res" value="hit" checked> Hit</label>
+        <label><input type="radio" name="fx-res" value="crit"> Crit</label>
+        <label><input type="radio" name="fx-res" value="miss"> Miss</label>
+        <label>Text <input type="text" id="fx-text" placeholder="-12"></label>
+        <label>n <input type="number" id="fx-n" min="1" max="10" value="3"></label>
+      </div>
+    </div>
+    <div class="fxlist" id="fx-list"></div>
+  </div>
   <main>
     <div class="stage" id="stage">
       <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
       <canvas id="anim" aria-hidden="true"></canvas>
       <canvas id="tgt" aria-hidden="true"></canvas>
+      <canvas id="fxc" aria-hidden="true"></canvas>
       <div class="tplx" id="tplx" aria-label="Area templates"></div>
       <div class="notes" id="notes" aria-label="Map notes"></div>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>

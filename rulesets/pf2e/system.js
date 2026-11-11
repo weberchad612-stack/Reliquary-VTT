@@ -25,6 +25,7 @@
 // conditions: the effects the board shows as badges on tokens (rulesets/pf2e/conditions.js).
 
 import { PF2E_CONDITIONS } from './conditions.js';
+import { PF2E_EFFECTS } from './effects.js';
 
 export const PF2E_SYSTEM = Object.freeze({
   id: 'pf2e',
@@ -53,4 +54,6 @@ export const PF2E_SYSTEM = Object.freeze({
     }),
   }),
   conditions: PF2E_CONDITIONS,
+  // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
+  effects: PF2E_EFFECTS,
 });

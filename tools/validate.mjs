@@ -15,6 +15,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import { WALL_TYPES, SENSE, SENSES, DOOR_TYPES, onSnap } from '../engine/walls/presets.js';
 import { LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 import { systemConfig } from '../rulesets/systems.js';
+import { checkLibrary } from '../engine/fx/fx.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -422,6 +423,17 @@ function checkLinkPairs(maps, report) {
 }
 
 /** Validate a pack (or a single map) and optionally a save. */
+/** The pack's visual effects (effects.json, or the file pack.effects names): the engine's checks against the ruleset's library. */
+export function validateEffects(target, pack, report) {
+  const file = path.join(target, pack.effects || 'effects.json');
+  if (!fs.existsSync(file)) { if (pack.effects) report.error(path.join(target, 'pack.json'), `effects: no file "${pack.effects}"`); return; }
+  const lib = readJson(file, report);
+  if (!lib) return;
+  if (!lib.effects || typeof lib.effects !== 'object') { report.error(file, 'effects: an object of named effects is missing'); return; }
+  const sys = systemConfig(pack.ruleset);
+  for (const msg of checkLibrary(lib, (sys && sys.effects) || {})) report.error(file, msg);
+}
+
 export function validate(target, { save = null } = {}) {
   const report = new Report();
   const maps = new Map();
@@ -436,6 +448,7 @@ export function validate(target, { save = null } = {}) {
       if (pack && schemaErrors(V.pack, pack, packFile, report)) {
         report.pack = pack;
         for (const id of pack.maps) if (!fs.existsSync(path.join(mapsDir, id, 'map.json'))) report.error(packFile, `maps: no map folder "${id}"`);
+        validateEffects(target, pack, report);
       }
     } else report.warn(target, 'no pack.json: the board cannot load this pack as a campaign');
     const dirs = fs.readdirSync(mapsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);

@@ -63,8 +63,11 @@ export function readCampaign(packDir, saveDir) {
       mapStates[path.basename(f, '.json')] = st;
     }
   }
+  // the pack's own visual effects (added to and restyling the ruleset's): effects.json, or the file pack.effects names
+  const fxFile = path.join(packDir, pack.effects || 'effects.json');
+  const effects = fs.existsSync(fxFile) ? (({ $schema: _s, ...e }) => e)(readJson(fxFile)) : null;
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images };
+  return { campaign: camp, pack, maps, mapStates, images, effects };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
