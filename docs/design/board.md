@@ -327,6 +327,25 @@ badge; when a creature has it, the light badge is not shown. A rules engine (lat
 badge: the light rules' `perceive` gives observed, concealed or unseen for one observer; a query for one
 observer and one target (`observe`) is the planned way to ask it.
 
+**Height** (designed with the user and built 2026-11-11; FR-7). The system's `measurement` says how height
+counts: PF2E `vertical: 'diagonal'` (the user's ruling: the vertical gap is a third direction with the same
+5-10-5 count, so 10 ft across and 45 ft up is 50 ft) and `creatureHeight: 'size'` (a creature is as tall as it
+is wide: Medium and Small 5 ft, Large 10 ft; it fills its elevation up to elevation + height).
+
+- **Distance between tokens** (`creatureDistance3D`, engine `spaceDistance3D`): the flat nearest-square
+  distance and the vertical gap between the two creatures' height columns (0 when they overlap, 1 square
+  when one is right above the other), combined with the diagonal pattern. The hover label shows the total
+  and, when the heights differ, a second line: "15 ft across · 15 ft up".
+- **Area templates have a height:** a burst's point (an optional "At height" box in the template flyout,
+  the ground by default); cones, lines and emanations start at the caster's elevation. Stored as `height`
+  on the template. A token in the area's squares is in the area only if the area reaches its height there
+  (engine `areaReaches`, `tokensInArea`): a burst or cone reaches as far up and down as is left of its size at
+  that square (with the same count), an emanation as far as its size from the caster's height column, and a
+  line is one square tall from its start. The aim bar and the toast list who is out of reach ("Out of reach:
+  Ogre (30 ft up)"); they are not targeted.
+- Not yet: flying movement (Stride outlines and routes are flat), sight over low walls, tilted cones and
+  lines, walls with a height.
+
 **The token HUD** (right-click a token; designed with the user and built 2026-11-11, after Foundry's Token
 HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
 
@@ -345,8 +364,8 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   the badges; the distance label moves up above it. Stored as `elevation` on the token (left out at 0),
   shared and logged ("Kerra elevation +15 ft"). The player view sets it on its own PCs, the GM view on any
   token; on foes and NPCs the player view's menu shows the height read-only (asked for 2026-11-11), and the
-  "+15 ft" label shows on every token the view can see; Claude with `tools/effect.mjs <token> elevation 15`. Nothing uses it in rules yet: distances,
-  reach, areas and sight ignore height until the rules engine does (FR-7).
+  "+15 ft" label shows on every token the view can see; Claude with `tools/effect.mjs <token> elevation 15`. Distances and area
+  templates count it (Height, below); movement and sight do not yet.
 - **The status palette:** every condition of the system in a grid five wide (alphabetical), then **Dead**.
   Active ones are lit with an orange frame, the rest dimmed; valued ones show their number. Click toggles a
   plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at

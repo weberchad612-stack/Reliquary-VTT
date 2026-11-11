@@ -182,7 +182,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### Elevation
 
 - **Set it from chat** with `node tools/effect.mjs <token.json> elevation 15` (0 clears it); write the token back and log it. Use it for flying, climbing, ledges and swimming down.
-- **The board does not count height yet:** the distance label, reach, areas and sight are flat. Until the rules engine does (FR-7), count the vertical gap yourself when it matters, and say so ("Kerra is 15 ft up: 20 ft away, not 10").
+- **Height counts in distances and areas** (design section 7, Height): use `Engine.creatureDistance3D` / `spaceDistance3D` for range and reach between creatures, and `tokensInArea` (with the area's `height`) for who an area hits; `tools/area.mjs --height` places an airburst and lists `outOfReach`. Movement and sight are still flat: a flyer's route and what it sees over low walls are Claude's to judge.
+- **A creature is as tall as it is wide** (Medium 5 ft): a flyer at +5 ft is right above a Medium creature's head, 5 ft away and in melee reach.
 - The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there.
 
 ### Shared controls

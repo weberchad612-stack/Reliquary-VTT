@@ -14,7 +14,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
 | FR-5 | [Map notes on touch screens](#fr-5-map-notes-on-touch-screens) | open | 2026-11-11 |
 | FR-6 | [Editing effects on the board](#fr-6-editing-effects-on-the-board) | done (token HUD, 2026-11-11) | 2026-11-11 |
-| FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | open | 2026-11-11 |
+| FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | done for distances and areas (2026-11-11); movement and sight open | 2026-11-11 |
 
 ---
 
@@ -139,6 +139,10 @@ tick frightened and durations down.
 ---
 
 ## FR-7: Height in the rules
+
+**Status:** distances and area templates count height (docs/design/board.md, section 7, Height), built
+2026-11-11 with the user's rulings: diagonal counting, creatures as tall as wide, bursts at a chosen height.
+Still open: flying movement (routes and Stride outlines), sight over low walls, tilted cones and lines.
 
 **Asked for:** the user, 2026-11-11, with token elevation: "Our rules engine will end up using height for
 some of its calculations."
