@@ -17,6 +17,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-7 | [Height in the rules](#fr-7-height-in-the-rules) | done for distances and areas (2026-11-11); movement and sight open | 2026-11-11 |
 | FR-8 | [Tilting area templates up and down](#fr-8-tilting-area-templates-up-and-down) | open (designed, not built) | 2026-11-11 |
 | FR-9 | [Light at a height](#fr-9-light-at-a-height) | open | 2026-11-11 |
+| FR-10 | [Roll visibility](#fr-10-roll-visibility) | open | 2026-11-12 |
 
 ---
 
@@ -315,3 +316,15 @@ Left over from importing all of Foundry PF2E 8.7.0 (docs/design/game-data.md sec
 - **Three creatures with impossible Strength** (Marala +30, Glittercrag Strix +25, Okoa +19): check the books
   and correct them with overrides.
 - **Kingmaker armies** (kingdom rules) were skipped.
+
+---
+
+## FR-10: Roll visibility
+
+**Asked for:** when rolling on the board (first in the initiative roll dialog), choosing who sees the roll, as
+Foundry's dialog does: public, private to the GM, or blind to the GM (2026-11-12). Not an immediate priority.
+
+**Known so far:** rolls are kept on the encounter record today, which every view reads, so a private or blind
+roll needs the result kept where only the GM view (or only Claude) reads it, and the tracker showing "rolled"
+without the number. It belongs with the dice service and the roll log (docs/design/game-data.md section 3.7,
+step 3).

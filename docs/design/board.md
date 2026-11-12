@@ -524,7 +524,10 @@ creature, hover a row to highlight its token, conditions and reactions on each r
 | Players see | **Only creatures the party can see** (a foe out of sight is not listed; a named NPC by its alias), and the GM can **hide a combatant** from players (an eye on the row) even when its token is seen. **Conditions** the players may see are shown on each row. Foes' initiative totals are shown. |
 | Defeated | **Marked defeated, turns skipped:** the row stays (struck through); a dead token is marked automatically. |
 | Highlight | The acting creature is marked on the map and in the tracker; hovering a row highlights its token. |
+| The roll dialog (the user, 2026-11-12, from Foundry's) | A row's die opens a **floating roll dialog**: the statistic (Perception first, then the creature's skills), **every modifier** with its name, **type** and value, each with an **on/off switch** (ones that do not apply now start off and struck through, as the rules worked them out); **add a modifier** of your own (a number and a type: the system's bonus types, such as circumstance, item, status, untyped); **Keep higher / Normal / Keep lower** (rolling twice); the total updates with the system's stacking rules (only the best bonus and worst penalty of each type count) and the button says it: "Roll (+20)". Roll NPCs and Claude roll without it. |
 
-Records: `state/encounter` as now (combatants gain `stat`, `roll` {die, mod, parts}, `hidden`, `defeated`); the
+Records: `state/encounter` as now (combatants gain `stat`, `roll` {dice, kept, mod, parts: the modifiers that counted, and the ones switched off or added}, `hidden`, `defeated`); the
 turn rules write `tokens/` and `actorstate/` as Claude's tool does. Anything a system defines (the initiative
 statistic, its tiebreak, the turn rules) comes from the system configuration.
+
+Later: **roll visibility** (public, private to the GM, blind to the GM), as Foundry's dialog has it: future/backlog.md FR-10.
