@@ -9,6 +9,8 @@
 // - Travel, the menus, the preview bar and the version banner are the shell's (board/shell.js).
 
 import { makeShell, confirmBox } from './shell.js';
+import { mountClock } from './clockui.js';
+import { publicName } from './names.js';
 
 /** The places a view may see, with what the pin and card need. */
 export function visiblePlaces(map, view, found = []) {
@@ -36,7 +38,7 @@ export async function startArea(store, c) {
   let TABLE = c.table;
   let found = (c.mapState && c.mapState.places_found) || [];
   let request = await store.get('state/request');
-  let view = 'player', selected = null, logN = 0, CHANGES = [];
+  let view = 'player', selected = null, logN = 0, CHANGES = [], clockUi = null;
   const tokensHere = {};
   for (const e of await store.list('tokens')) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
 
@@ -161,6 +163,7 @@ export async function startArea(store, c) {
     if (v === 'gm') changeLogCard();
     if (selected && !places().find((p) => p.id === selected)) selected = null;
     shell.setView(v);
+    if (clockUi) clockUi.render();
     drawPins(); drawCard();
     if (PAGE.readOnly && v !== 'gm') shell.leavePreview();
   }
@@ -221,6 +224,11 @@ export async function startArea(store, c) {
   document.getElementById('campaign-title').textContent = META.campaign.title;
   document.getElementById('subtitle').textContent = `${META.pack.title} · area map`;
   shell.startMenu();
+  const SYS = Engine.systemConfig(META.ruleset) || {};
+  clockUi = await mountClock({
+    store, T: { readClock: Engine.readClock, adventureDay: Engine.adventureDay, clockAt: Engine.clockAt, parseAmount: Engine.parseAmount, unitSeconds: Engine.unitSeconds, expireEffects: Engine.expireEffects }, cal: (SYS.time || {}).calendar, roundSeconds: (SYS.time || {}).roundSeconds || 6,
+    getView: () => view, readOnly: PAGE.readOnly, toast, logChange, names: (id, t) => publicName(t) || t.name || id, applyLocal: () => [],
+  });
   await shell.startMapMenu();
   if (PAGE.keepGM) setView('gm'); else { drawPins(); drawCard(); }
   fit();

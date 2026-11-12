@@ -54,6 +54,8 @@ write a number into an actor that the rules can work out. The board and the tool
 
 ## 2b. Time and encounters (Claude)
 
+- **The GM can move the clock on the board too** (click the date in the GM view): read `state/clock` before you
+  narrate time, and the log for what the GM changed.
 - **Set the clock when a campaign starts:** `node tools/clock.mjs <pack> <save> set "1 Pharast 4725 AR, 08:00"`
   (the first set makes that day Day 1; `start` moves Day 1 to today). `show` gives "Starday, 1 Pharast 4725 AR,
   08:00 (Day 1)". Move it on as the story does: `advance "10 minutes"`, `advance "8 hours"`, `until 07:00`.

@@ -8,7 +8,7 @@
 // Pure: takes the creatures and returns what changed (tokens' effects, live state) and lines for the log.
 // Docs: docs/design/game-data.md section 8.
 
-import { effectExpired } from '../../engine/time/clock.js';
+import { expireEffects } from '../../engine/time/clock.js';
 import { rollFormula, rollDie } from '../../engine/rules/dice.js';
 import { applyDamage, applyHealing, setTempHp, recoveryCheck } from './damage.js';
 
@@ -40,13 +40,9 @@ export function turnRules(ctx) {
 
   const expire = (event) => {
     for (const id of Object.keys(ctx.tokens)) {
-      const t = tok(id), fx = t.effects || [];
-      const gone = fx.filter((e) => e.duration && effectExpired(e, { now: ctx.now, event, combatants, roundSeconds: ctx.roundSeconds }));
+      const t = tok(id);
+      const { kept, gone } = expireEffects(t.effects, { now: ctx.now, event, combatants, roundSeconds: ctx.roundSeconds });
       if (!gone.length) continue;
-      const granted = new Set(gone.flatMap((e) => e.grants || []));
-      // a granted condition stays if another effect still on the token grants it too
-      for (const e of fx) if (!gone.includes(e)) for (const g of e.grants || []) granted.delete(g);
-      const kept = fx.filter((e) => !gone.includes(e) && !(e.id && granted.has(e.id)));
       setTok(id, { ...t, effects: kept });
       for (const e of gone) lines.push(`${name(id)}: ${e.name || e.id} ends${e.grants && e.grants.length ? ` (and ${e.grants.join(', ')})` : ''}`);
     }

@@ -128,6 +128,21 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .gm-confirm .box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; max-width: 420px; display: grid; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
 .gm-confirm h2 { margin: 0; font: 600 18px var(--font-display); color: var(--accent); }
 .gm-confirm .row { display: flex; gap: 8px; justify-content: flex-end; }
+.clock { background: none; border: 1px solid transparent; border-radius: 6px; padding: 2px 8px; font: 500 14px var(--font-body); color: var(--ink); white-space: nowrap; }
+.clock:not([disabled]) { cursor: pointer; border-color: var(--line); }
+.clock:not([disabled]):hover, .clock:not([disabled]):focus-visible { border-color: var(--accent); }
+.clock[disabled] { cursor: default; opacity: 1; }
+.clock.unset { color: var(--muted); font-style: italic; }
+.clock-panel .box { max-width: 520px; }
+.clock-panel .now { margin: 0; font-weight: 600; }
+.clock-panel .muted { margin: 0; color: var(--muted); font-size: 14px; }
+.clock-panel .quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.clock-panel form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0; }
+.clock-panel fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0; }
+.clock-panel legend { color: var(--muted); font-size: 13px; padding: 0 4px; }
+.clock-panel input[type=number] { width: 5.5em; }
+.clock-panel input[name=day] { width: 4em; }
+.clock-panel .row { justify-content: space-between; }
 aside h2 { font: 600 15px var(--font-display); letter-spacing: .03em; margin: 0 0 8px; color: var(--accent); }
 .card { display: grid; gap: 6px; }
 .sel-name { font-weight: 600; font-size: 16px; }
@@ -312,6 +327,7 @@ ol.log li.foe { border-left-color: var(--foe); }
   <header>
     <div class="titleline">
       <h1 id="title"><span id="campaign-title">Reliquary Virtual Tabletop</span></h1>
+      <button class="clock" id="clock" type="button" hidden></button>
       <span class="bver" id="bver" hidden></span>
       <nav class="menubar mapmenu" id="mapmenu" aria-label="Maps" hidden></nav>
       <small id="subtitle"></small>
@@ -393,6 +409,7 @@ ol.log li.foe { border-left-color: var(--foe); }
     <div class="row"><button data-a="no">Stay in player view</button><button data-a="yes" aria-pressed="true">Show GM view</button></div>
   </div>
 </div>
+<div class="gm-confirm clock-panel" id="clock-panel" hidden role="dialog" aria-modal="true" aria-labelledby="clock-title"></div>
 <div class="newver" id="newver" hidden role="status">
   <button id="newver-reload">A newer version of the board is ready. Reload</button>
   <button id="newver-x" aria-label="Dismiss" title="Dismiss">&#x2715;</button>

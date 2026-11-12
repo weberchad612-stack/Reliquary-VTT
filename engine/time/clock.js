@@ -74,3 +74,16 @@ export function remainingSeconds(effect, now, roundSeconds = 6) {
   if (!d || d.unit === 'unlimited' || d.unit === 'encounter' || !effect.start) return Infinity;
   return effect.start.time + durationSeconds(d, roundSeconds) - now;
 }
+
+/**
+ * A token's effects after an event: {kept, gone}. Effects that have run out go, and with them the conditions
+ * they granted (`grants`: condition ids), unless another effect that stays grants the same condition.
+ */
+export function expireEffects(effects, ctx) {
+  const fx = effects || [];
+  const gone = fx.filter((e) => e && e.duration && effectExpired(e, ctx));
+  if (!gone.length) return { kept: fx, gone: [] };
+  const granted = new Set(gone.flatMap((e) => e.grants || []));
+  for (const e of fx) if (!gone.includes(e)) for (const g of e.grants || []) granted.delete(g);
+  return { kept: fx.filter((e) => !gone.includes(e) && !(e.id && granted.has(e.id))), gone };
+}

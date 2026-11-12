@@ -21,6 +21,7 @@ import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
+import { mountClock } from './clockui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
@@ -168,6 +169,7 @@ export async function start(store, { build = null } = {}) {
   const pubName = (t) => publicName(t);
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
+  let clockUi = null;   // the clock in the title line (mounted near the end of start())
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
   let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
@@ -2338,6 +2340,7 @@ export async function start(store, { build = null } = {}) {
     panel(); lightingCard(); draw();
     if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
+    if (clockUi) clockUi.render();
     if (READONLY && v !== 'gm') shell.leavePreview();
   }
   document.getElementById('v-player').onclick = () => setView('player');
@@ -2901,6 +2904,14 @@ export async function start(store, { build = null } = {}) {
   shell.startMenu();
   shell.menu().setToggle('fx-on', fxOn);
   notesReady = true; renderNotes();
+  // the game clock in the title line; the GM view edits it (board/clockui.js)
+  clockUi = await mountClock({
+    store, T: { readClock: Engine.readClock, adventureDay: Engine.adventureDay, clockAt: Engine.clockAt, parseAmount: Engine.parseAmount, unitSeconds: Engine.unitSeconds, expireEffects: Engine.expireEffects }, cal: (SYS.time || {}).calendar, roundSeconds: (SYS.time || {}).roundSeconds || 6,
+    getView: () => S.view, readOnly: READONLY, toast, logChange,
+    names: (id, t) => publicName(S.tokens[id] || t) || (S.tokens[id] || t).name || id,
+    // tokens on this map change through the page's own state (persist() writes and logs them)
+    applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
+  });
   await shell.startMapMenu();
   if (keepGM) setView('gm');
   if (PREVIEW && PREVIEW.link) centreOnLink(PREVIEW.link);

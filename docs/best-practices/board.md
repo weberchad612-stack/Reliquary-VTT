@@ -205,6 +205,22 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **A creature is as tall as it is wide** (Medium 5 ft): a flyer at +5 ft is right above a Medium creature's head, 5 ft away and in melee reach.
 - The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there.
 
+### The clock (2026-11-12)
+
+- **Everyone sees the date and time** in the title line, beside the campaign title: "Starday, 1 Pharast 4725 AR ·
+  08:00 · Day 1" (seconds show while rounds move it). Players cannot change it; it is hidden until the clock is
+  set.
+- **The GM view edits it** (click it): quick steps (+1 minute, +10 minutes, +1 hour, rest 8 hours, next morning
+  at 07:00), any amount ("3 hours", "2 days"), a date and time (the calendar's months; a day that does not exist
+  is refused), and "Make today Day 1". While an encounter is under way, the editor only sets the date: rounds
+  move the clock (`tools/encounter.mjs`).
+- **Moving the clock on runs out timed effects** on every token, on every map, with the conditions they granted;
+  tokens on the page change through its own state (logged as "Kerra no longer Bless"), others are written
+  directly with a log line. Setting the date does not run anything out (it may go back, or jump to a new chapter).
+- Built in `board/clock.js` (pure: words, steps, dates, expiry; `tests/board-clock.test.mjs`) and
+  `board/clockui.js` (the title line and editor, shared by the battle map page and the area map page). Claude
+  moves the same clock with `tools/clock.mjs`: both write `state/clock`, and each page follows the record.
+
 ### Shared controls
 
 - **Use the shared control** for anything it covers: `removeButton` from `board/ui.js` for removing a thing on the map (with `colour` the item's colour and `what` naming it). Do not draw a remove marker on a canvas or style a new ✕: the user asked for one look and one behaviour everywhere (2026-11-11). If a new feature needs a control that is close to an existing one, extend the shared one (and its tests in `tests/board-ui.test.mjs`).

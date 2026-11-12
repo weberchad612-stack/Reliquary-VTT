@@ -482,3 +482,12 @@ Map ▸ Add note since 2026-11-11). The Export DB item of the
 4. Publish the board; load the Sample Keep as a campaign; play-test moves, doors, fog and Claude's changes.
 5. Save to the PC and switch to the Sample Crypt and back.
 6. Best-practice guide for running and maintaining the board.
+
+## The game clock on the board (built 2026-11-12)
+
+The user's decisions: the date and time in the **title line** for everyone (weekday and date, time of day, day
+of the adventure); **players only see it**; the **GM view edits it** with quick steps, any amount, a date and
+time, and "make today Day 1"; moving the clock on **removes timed effects that ran out** (the board does this
+itself: no dice are involved). `board/clock.js`, `board/clockui.js`; records `state/clock` and
+`state/encounter` (read, to refuse moving the clock during an encounter). See docs/design/game-data.md section 8.
+
