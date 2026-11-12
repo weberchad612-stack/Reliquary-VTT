@@ -21,6 +21,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-11 | [Several encounters at once](#fr-11-several-encounters-at-once) | open | 2026-11-12 |
 | FR-12 | [Encounter tracker settings](#fr-12-encounter-tracker-settings) | open | 2026-11-12 |
 | FR-13 | [Encounter threat and XP](#fr-13-encounter-threat-and-xp) | open | 2026-11-12 |
+| FR-14 | [Aura notes on the board's turns](#fr-14-aura-notes-on-the-boards-turns) | open | 2026-11-12 |
 
 ---
 
@@ -360,3 +361,14 @@ tracker as Foundry shows them (2026-11-12). Not high priority.
 **Known so far:** this is the system's encounter budget (PF2E: XP by each creature's level against the party's,
 and the party's size), so it belongs in `rulesets/pf2e/` and reaches the tracker through the system configuration;
 a system without one shows nothing.
+
+---
+
+## FR-14: Aura notes on the board's turns
+
+**Known so far (2026-11-12, from building the encounter tracker):** when Claude moves a turn on
+(`tools/encounter.mjs`), a creature starting its turn inside another's aura gets a line ("Kerra starts her turn in
+the ogre's Frightful Presence: Will save"). The board's tracker runs the same turn rules but not that note, because
+working out auras needs every creature's position and their prepared auras (`tools/actor.mjs auraEffects`), which
+only the tools have. To do: move the aura check into the ruleset or engine (pure, from tokens and prepared
+creatures) so the board and the tools share it. Until then Claude says it.

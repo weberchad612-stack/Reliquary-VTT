@@ -352,6 +352,8 @@ export const ENGINE_EFFECTS = Object.freeze({
   beam: { group: 'Engine', label: 'Beam (plain)', attack: true, impact: 260, steps: [{ p: 'streak', from: 'a', to: 'b', colour: 'main', width: 3 }] },
   burst: { group: 'Engine', label: 'Burst (plain)', kind: 'area', steps: [{ p: 'fill', cells: true, colour: 'main' }, { p: 'ring', at: 'b', colour: 'main', r0: 0.2, r1: 2 }] },
   buff: { group: 'Engine', label: 'Buff (plain)', steps: [{ p: 'ring', at: 'b', colour: 'main', r0: 0.2, r1: 0.9, ms: 800 }] },
+  // the encounter tracker's ping: rings closing in on a token, so every screen finds it
+  ping: { group: 'Engine', label: 'Ping', steps: [{ p: 'ring', at: 'b', colour: '#ffd166', r0: 2.2, r1: 0.5, ms: 700 }, { p: 'ring', at: 'b', colour: '#ffd166', r0: 2.2, r1: 0.5, ms: 700, after: 350 }, { p: 'glow', at: 'b', colour: '#ffd166', size: 0.9, ms: 1000 }] },
 });
 
 /**

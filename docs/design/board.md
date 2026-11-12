@@ -72,6 +72,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
+| `rolls/<time36>-<n>` | A roll card: who, the statistic, the dice, the modifiers that counted, the notes that triggered, the total; `gm: true` for the GM's eyes only. Not part of the save; the GM view keeps the newest 200 | Whoever rolled (the board, `tools/encounter.mjs roll`) |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
@@ -508,7 +509,7 @@ and features show their descriptions on hover (docs/design/game-data.md sections
 "sheets on the board" (docs/design/game-data.md section 3.7).
 
 
-## The encounter tracker (designed 2026-11-12, building)
+## The encounter tracker (designed and built 2026-11-12)
 
 The board's side of encounters (the rules side, `engine/time/encounter.js` and `tools/encounter.mjs`, was built
 first). Modelled on Foundry's combat tracker and the previous board's Initiative panel (round, order, the acting
@@ -532,6 +533,10 @@ creature, hover a row to highlight its token, conditions and reactions on each r
 Records: `state/encounter` as now (combatants gain `stat`, `roll` {dice, kept, mod, parts: the modifiers that counted, and the ones switched off or added}, `hidden`, `defeated`); the
 turn rules write `tokens/` and `actorstate/` as Claude's tool does. Anything a system defines (the initiative
 statistic, its tiebreak, the turn rules) comes from the system configuration.
+
+Built as designed, plus: a roll for a creature the players do not see (hidden in the tracker or out of the party's
+sight) is the GM's only (`gm: true` on the roll record). Not yet on the board: the note when a creature starts its
+turn inside an aura (FR-14; Claude's tool still gives it).
 
 Later (future/backlog.md): **roll visibility** (FR-10); **several encounters at once** (FR-11); **tracker settings**
 (the gear: skip defeated, which resource to show; FR-12); **threat and XP** for the encounter (the system's encounter

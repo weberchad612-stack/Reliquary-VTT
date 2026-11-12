@@ -44,7 +44,7 @@ const sideOf = (t) => (['pc', 'npc', 'foe'].includes(t.kind) ? t.kind : 'foe');
 export function describeEncounter(game, enc) {
   if (!enc) return ['no encounter'];
   const name = (id) => (game.tokens[id] || {}).name || id;
-  const out = [`${enc.ended ? 'ended' : enc.round > 0 ? `round ${enc.round}` : 'not begun'}${game.clock ? `; ${describeClock(game.sys.time.calendar, game.clock)}` : ''}`];
+  const out = [`${enc.ended != null ? 'ended' : enc.round > 0 ? `round ${enc.round}` : 'not begun'}${game.clock ? `; ${describeClock(game.sys.time.calendar, game.clock)}` : ''}`];
   enc.combatants.forEach((c, i) => out.push(`${i === enc.turn ? '▶' : ' '} ${typeof c.initiative === 'number' ? String(c.initiative).padStart(2) : ' ?'}  ${name(c.token)} (${c.side})${c.delayed ? ' delaying' : ''}${c.defeated ? ' defeated' : ''}${c.hidden ? ' hidden' : ''}`));
   return out;
 }
@@ -52,7 +52,7 @@ export function describeEncounter(game, enc) {
 /** Run one encounter command: {lines, writes}. */
 export function runEncounter(game, cmd, args, opts = {}) {
   const T = game.sys.time, tb = T.tiebreak, rng = randomSource(opts.seed);
-  let enc = game.encounter && !game.encounter.ended ? game.encounter : null;
+  let enc = game.encounter && game.encounter.ended == null ? game.encounter : null;
   const now0 = game.clock ? game.clock.now : 0;
   const who = (w) => resolveToken(game.tokens, w);
   const name = (id) => game.tokens[id].name || publicName(game.tokens[id]) || id;
@@ -104,7 +104,7 @@ export function runEncounter(game, cmd, args, opts = {}) {
     const parts = countedParts(st), notes = notesFor(c.prepared.notes, I.noteSelectors(slug), c.prepared.tags, c.prepared.facts);
     const roll = { dice: r.dice, kept: r.kept, mode: r.mode, sides: r.sides, mod: r.mod, parts };
     const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
-    out.writes.push({ op: 'set', path: rollPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), kind: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes }) });
+    out.writes.push({ op: 'set', path: rollPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), kind: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: !!(enc.combatants.find((x) => x.token === id) || {}).hidden }) });
     return out;
   }
   if (cmd === 'defeat' || cmd === 'hide') {

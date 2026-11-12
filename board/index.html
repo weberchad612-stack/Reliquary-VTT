@@ -143,6 +143,101 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .clock-panel input[type=number] { width: 5.5em; }
 .clock-panel input[name=day] { width: 4em; }
 .clock-panel .row { justify-content: space-between; }
+/* Board panels: docked at the top of the side panel or floating (board/panel.js) */
+.tl-btn { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 2px 8px; font: 600 13px var(--font-body); cursor: pointer; }
+.tl-btn:hover, .tl-btn.on { color: var(--accent); border-color: var(--accent); }
+.bpanel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; outline: none; }
+.bpanel.docked { position: relative; max-height: 60vh; }
+.bpanel.floating { position: fixed; width: 320px; max-height: 78vh; z-index: 55; box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+.bpanel.collapsed .bp-body, .bpanel.collapsed .bp-foot { display: none; }
+.bp-h { display: flex; align-items: center; gap: 6px; padding: 6px 8px 6px 12px; border-bottom: 2px solid var(--accent); user-select: none; }
+.bpanel.floating .bp-h { cursor: move; touch-action: none; }
+.bp-t { font: 700 15px var(--font-display); color: var(--accent); letter-spacing: .03em; }
+.bp-n { flex: 1; text-align: right; font: 600 13px var(--font-display); color: var(--ink); }
+.bp-b { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 3px; }
+.bp-b:hover { color: var(--ink); }
+.bp-body { overflow: auto; padding: 6px 8px; min-height: 0; }
+.bp-foot:empty { display: none; }
+.bp-foot { padding: 8px; border-top: 1px solid var(--line); }
+/* the encounter tracker (board/trackerui.js) */
+.trk-empty { font-size: 13px; }
+.trk-tools { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.trk-tools button, .trk-turns button, .trk-delay button { background: #2a2e36; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; }
+.trk-tools .danger { margin-left: auto; color: #ff8a7a; }
+.trk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.trk-row { position: relative; display: grid; grid-template-columns: 38px 1fr auto; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 8px; border: 1px solid transparent; }
+.trk-row:hover { background: rgba(255,255,255,.04); }
+.trk-row.acting { border-color: #ffd166; background: rgba(255,209,102,.08); }
+.trk-row.defeated .trk-name { text-decoration: line-through; color: var(--muted); }
+.trk-row.defeated .trk-pic { filter: grayscale(1); opacity: .6; }
+.trk-row.hidden { opacity: .55; }
+.trk-row.delayed .trk-name { font-style: italic; }
+.trk-pic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font: 700 16px var(--font-display); color: #10131a; background: var(--c); border: 2px solid rgba(0,0,0,.4); }
+.trk-name { font-weight: 600; font-size: 14px; }
+.trk-arrow { color: #ffd166; }
+.trk-icons { display: flex; gap: 2px; margin-top: 2px; }
+.trk-ib { width: 22px; height: 22px; padding: 2px; background: none; border: 0; color: var(--muted); cursor: pointer; border-radius: 4px; }
+.trk-ib svg { width: 100%; height: 100%; }
+.trk-ib:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+.trk-ib.on { color: var(--accent); }
+.trk-conds { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.trk-conds span { font-size: 11px; padding: 0 5px; border-radius: 3px; background: #3a2d22; color: #f1d9b5; }
+.trk-delay { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.trk-init { min-width: 40px; text-align: center; }
+.trk-n { background: none; border: 0; color: var(--ink); font: 700 20px var(--font-display); cursor: pointer; padding: 0 4px; }
+.trk-n:hover { color: var(--accent); }
+.trk-die { width: 38px; height: 38px; background: none; border: 0; color: #f4f1ea; cursor: pointer; padding: 0; }
+.trk-die:hover { color: var(--accent); }
+.trk-die svg { width: 100%; height: 100%; }
+.trk-q { color: var(--muted); }
+.trk-go { background: #3b2f1a !important; border-color: var(--accent) !important; color: var(--accent) !important; font-weight: 700; }
+.bp-foot > .trk-go { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--accent); cursor: pointer; font: 700 14px var(--font-body); }
+.trk-turns { display: flex; gap: 6px; }
+.trk-turns .trk-go { flex: 1; }
+.trk-menu { position: absolute; right: 6px; top: 100%; z-index: 5; background: #262a32; border: 1px solid var(--line); border-radius: 8px; padding: 4px; display: grid; min-width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+.trk-menu > button { text-align: left; background: none; border: 0; color: var(--ink); padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+.trk-menu > button:hover, .trk-menu > button:focus-visible { background: rgba(255,255,255,.07); }
+.trk-type { display: flex; gap: 4px; align-items: center; padding: 4px; font-size: 13px; }
+.trk-type input { width: 4.5em; }
+/* the roll dialog */
+.rolldlg { position: fixed; z-index: 70; width: 360px; max-height: 80vh; overflow: auto; background: #ece6d8; color: #222; border: 1px solid #b29c74; border-radius: 8px; box-shadow: 0 14px 40px rgba(0,0,0,.6); padding: 0 12px 12px; outline: none; font-size: 14px; }
+.rd-h { display: flex; justify-content: space-between; align-items: center; margin: 0 -12px 8px; padding: 8px 12px; background: #1d2a6b; color: #fff; font: 700 15px var(--font-display); border-radius: 8px 8px 0 0; }
+.rd-x { background: none; border: 0; color: #fff; cursor: pointer; font-size: 15px; }
+.rd-stat { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-weight: 600; }
+.rd-t { width: 100%; border-collapse: collapse; }
+.rd-t th { text-align: left; font-size: 13px; padding: 2px 0; }
+.rd-t td { padding: 4px 2px; border-top: 1px solid #cdbf9f; vertical-align: middle; }
+.rd-t td small { display: block; font-size: 11px; color: #6b5f48; }
+.rd-t tr.off td:first-child, .rd-t tr.off .rd-v { text-decoration: line-through; color: #8a7f6a; }
+.rd-type { font: 700 10px var(--font-body); text-transform: uppercase; letter-spacing: .04em; background: #5a5148; color: #f5f0e6; padding: 2px 6px; border-radius: 3px; }
+.rd-v { text-align: right; font-weight: 700; }
+.rd-sw { min-width: 46px; border-radius: 12px; border: 0; padding: 2px 6px; font: 700 11px var(--font-body); cursor: pointer; background: #1d2a6b; color: #fff; }
+.rd-sw[aria-checked=false] { background: #c9bfaa; color: #6b5f48; }
+.rd-rm { background: none; border: 0; cursor: pointer; color: #6b2a20; }
+.rd-add { display: flex; gap: 4px; margin: 8px 0; }
+.rd-add input[name=label] { flex: 1; min-width: 0; }
+.rd-add input[name=value] { width: 3.5em; }
+.rd-mode { border: 0; display: flex; justify-content: space-around; padding: 4px 0; margin: 0 0 8px; }
+.rd-roll { width: 100%; padding: 9px; font: 700 15px var(--font-body); background: #1d2a6b; color: #fff; border: 2px solid #b29c74; border-radius: 6px; cursor: pointer; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* roll cards and the roll log (board/rollsui.js) */
+.rc-stack { position: fixed; left: 16px; bottom: 16px; z-index: 65; display: flex; flex-direction: column; gap: 8px; width: 300px; pointer-events: none; }
+.rcard { position: relative; pointer-events: auto; background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.55); }
+.rc-x { position: absolute; top: 6px; right: 8px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+.rc-who { font: 700 15px var(--font-display); color: var(--accent); }
+.rc-what { font-weight: 700; font-size: 13px; margin: 2px 0 6px; }
+.rc-by { font-weight: 400; color: var(--muted); }
+.rc-gm { font: 700 10px var(--font-body); background: #54166e; color: #fff; padding: 1px 5px; border-radius: 3px; }
+.rc-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.rc-chip { font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; background: #2a2e36; }
+.rc-chip.added { border-color: var(--accent); }
+.rc-note { font-size: 13px; margin: 4px 0; line-height: 1.4; }
+.rc-formula { text-align: center; border: 1px solid var(--line); border-radius: 6px; padding: 4px; margin-top: 6px; font-family: var(--font-mono); font-size: 13px; }
+.rc-dice s { color: var(--muted); }
+.rc-total { text-align: center; border: 1px solid var(--line); border-radius: 6px; padding: 4px; margin-top: 4px; font: 700 22px var(--font-display); }
+.rl-item { border-bottom: 1px solid var(--line); padding: 6px 2px; position: relative; }
+.rl-item time { position: absolute; top: 6px; right: 2px; font-size: 11px; color: var(--muted); }
+.rl-item .rc-total { font-size: 17px; padding: 2px; }
 /* Token Quick-View (board/quickview.js) */
 .qvwin { position: fixed; width: 440px; max-width: calc(100vw - 16px); max-height: 72vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.55); outline: none; }
 .qvwin:focus-visible { border-color: var(--accent); }
@@ -355,6 +450,8 @@ ol.log li.foe { border-left-color: var(--foe); }
     <div class="titleline">
       <h1 id="title"><span id="campaign-title">Reliquary Virtual Tabletop</span></h1>
       <button class="clock" id="clock" type="button" hidden></button>
+      <button class="tl-btn" id="b-enc" type="button" title="The encounter tracker">⚔</button>
+      <button class="tl-btn" id="b-rolls" type="button" title="The roll log">🎲 Rolls</button>
       <span class="bver" id="bver" hidden></span>
       <nav class="menubar mapmenu" id="mapmenu" aria-label="Maps" hidden></nav>
       <small id="subtitle"></small>

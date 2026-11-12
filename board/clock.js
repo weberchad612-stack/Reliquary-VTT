@@ -56,7 +56,7 @@ export function setFields(T, cal, clock) {
 }
 
 /** Is an encounter under way? (Then time moves by rounds, not from the clock editor.) */
-export const encounterUnderWay = (enc) => !!(enc && !enc.ended && enc.round > 0);
+export const encounterUnderWay = (enc) => !!(enc && enc.ended == null && enc.round > 0);
 
 /**
  * Timed effects that ran out when the clock moved on to `now`: {changed: {id: effects}, lines: [{id, text:

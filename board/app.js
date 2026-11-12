@@ -23,10 +23,12 @@ import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from 
 import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { mountClock } from './clockui.js';
+import { mountTracker } from './trackerui.js';
+import { mountRolls } from './rollsui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
-import { FX_COLLECTION, STAGGER, newPlays, stale, playTargets, templateAim, libraries, paletteOf, previewList, prefStore } from './fx.js';
+import { fxRecord, fxId, FX_COLLECTION, STAGGER, newPlays, stale, playTargets, templateAim, libraries, paletteOf, previewList, prefStore } from './fx.js';
 import { TEMPLATE_COLOURS, hexA, colourOf, nextColour, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
@@ -171,6 +173,8 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
+  let trackerUi = null, rollsUi = null;   // the encounter tracker and the roll log (mounted after the clock)
+  let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
   let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
@@ -343,6 +347,7 @@ export async function start(store, { build = null } = {}) {
       if (was && !now && reason !== 'reset') log(`${pubName(t)} is out of sight.`);
     }
     lastSeen = new Set(view.seen);
+    if (trackerUi) trackerUi.tokensChanged();   // rows follow who is seen, conditions and deaths
     S.explored = explored;
     draw();
   }
@@ -1616,7 +1621,9 @@ export async function start(store, { build = null } = {}) {
     const F = shown(), dist = distanceTo(F, fullGM());
     const hoverBox = hoverId && S.tokens[hoverId] && !drag ? boxFor(hoverId, space(hoverId), layout, true) : null;
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge && !badgeDraws.length) return;
+    const F0 = F, isShown = (id) => !!S.tokens[id] && (fullGM() || F0.seen.has(id) || S.tokens[id].kind === 'pc');
+    const acting = actingId && isShown(actingId) ? actingId : null, trk = trkHover && isShown(trkHover) ? trkHover : null;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge && !badgeDraws.length && !acting && !trk) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1641,6 +1648,13 @@ export async function start(store, { build = null } = {}) {
       if (box) strokeBox(tctx, box);
     }
     if (hoverBox) strokeBox(tctx, hoverBox);
+    // the encounter: the acting creature's ring, and the row hovered in the tracker
+    if (acting) {
+      const sp = space(acting), r = P(sp.size) / 2;
+      tctx.save(); tctx.strokeStyle = '#ffd166'; tctx.lineWidth = 3; tctx.setLineDash([7, 4]);
+      tctx.beginPath(); tctx.arc(P(sp.x) + r, P(sp.y) + r, r + 3, 0, Math.PI * 2); tctx.stroke(); tctx.restore();
+    }
+    if (trk) { const sp = space(trk); strokeBox(tctx, { m: markSquare(sp, Engine.isTiny(S.tokens[trk]), false), colour: '#ffd166' }); }
     for (const f of badgeDraws) f(tctx);   // effect and concealment badges: above every square, under the labels
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
@@ -2155,6 +2169,7 @@ export async function start(store, { build = null } = {}) {
     effects: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.6" fill="currentColor"/><path d="M8.5 21v-6.5L7 10.5Q7 9 9 9h6q2 0 2 1.5l-1.5 4V21z" fill="currentColor"/><path d="M12 1.5v1.6M4.5 4.5l1.2 1.1M19.5 4.5l-1.2 1.1M2 11h1.7M20.3 11H22M3.5 17.5l1.4-.8M20.5 17.5l-1.4-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     template: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L12 4 L21 21 Z" fill="currentColor" fill-opacity=".35" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="currentColor"/></svg>',
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
+    combat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l9.5 9.5M3 4l9.5 9.5M20 3l-9.5 9.5M21 4l-9.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 15.5l-3 3M4 17l3 3M17.5 15.5l3 3M20 17l-3 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
   };
   function openHud(id) {
     endAim(); if (noting) setNoting(false);
@@ -2171,7 +2186,7 @@ export async function start(store, { build = null } = {}) {
   function renderHud() {
     if (!hudFor || !S.tokens[hudFor] || !canHud(hudFor)) return closeHud();
     const t = S.tokens[hudFor];
-    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, el: t.elevation || 0, ee: hudElevEdit, tg: myTargets().includes(hudFor), v: S.view });
+    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, el: t.elevation || 0, ee: hudElevEdit, tg: myTargets().includes(hudFor), v: S.view, c: !!(trackerUi && trackerUi.inEncounter(hudFor)) });
     if (key !== hudKey) {
       hudKey = key;
       hudEl.replaceChildren();
@@ -2189,6 +2204,15 @@ export async function start(store, { build = null } = {}) {
         if (t.dead && !myTargets().includes(hudFor)) return toast(`${nm(t)} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
+      // Enter Combat (the encounter tracker): the GM for any token (with the others selected), a player for a PC
+      if (trackerUi && (S.view === 'gm' || t.kind === 'pc')) {
+        const inEnc = trackerUi.inEncounter(hudFor);
+        btn('combat', inEnc ? 'Leave combat' : 'Enter Combat', inEnc, () => {
+          if (inEnc) return trackerUi.leave(hudFor);
+          const group = S.view === 'gm' && (multi.has(hudFor) || selected === hudFor) ? [...new Set([hudFor, ...multi])].filter((id) => S.tokens[id]) : [hudFor];
+          trackerUi.enter(group).then(() => renderHud());
+        });
+      }
       const panelBtn = (kind, label, panel) => btn(kind, label, hudPanel === panel, () => { hudPanel = hudPanel === panel ? null : panel; hudShape = null; renderHud(); });
       if (canEditEffects(hudFor)) panelBtn('effects', 'Assign status effects', 'effects');
       if (canEditEffects(hudFor) && AREAS) panelBtn('template', 'Area template', 'template');
@@ -2443,6 +2467,8 @@ export async function start(store, { build = null } = {}) {
     panel(); lightingCard(); draw();
     if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
+    if (trackerUi) trackerUi.render();
+    if (rollsUi) rollsUi.render();
     if (clockUi) clockUi.render();
     qvRefresh();
     if (READONLY && v !== 'gm') shell.leavePreview();
@@ -2954,6 +2980,14 @@ export async function start(store, { build = null } = {}) {
   });
   shellReady = true;
   const travelChanged = () => shell.travelChanged();
+  /** Scroll the map so a token is in the middle of the view (the tracker's ping). */
+  function centreOnToken(id) {
+    const sp = space(id), stage = document.getElementById('stage');
+    if (!sp || !stage) return;
+    const sr = stage.getBoundingClientRect(), r = canvas.getBoundingClientRect();
+    stage.scrollLeft += r.left - sr.left + (OX + (sp.x + sp.size / 2) * CS) * scale - stage.clientWidth / 2;
+    stage.scrollTop += r.top - sr.top + (OY + (sp.y + sp.size / 2) * CS) * scale - stage.clientHeight / 2;
+  }
   function centreOnLink(linkId) {
     const l = linkId === '_start' ? (map.start ? { label: 'Starting area', at: map.start } : null) : (map.links || []).find((x) => x.id === linkId);
     if (!l) return;
@@ -3015,6 +3049,41 @@ export async function start(store, { build = null } = {}) {
     names: (id, t) => publicName(S.tokens[id] || t) || (S.tokens[id] || t).name || id,
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
+  });
+  // the roll log and the encounter tracker (board/rollsui.js, board/trackerui.js)
+  rollsUi = mountRolls({ store, view: () => S.view, readOnly: READONLY, openButton: document.getElementById('b-rolls') });
+  trackerUi = await mountTracker({
+    store, Engine, SYS, readOnly: READONLY, view: () => S.view, tokens: () => S.tokens,
+    seen: (id) => S.view === 'gm' || shown().seen.has(id) || (S.tokens[id] && S.tokens[id].kind === 'pc'),
+    partySees: (id) => !!(view && view.seen && view.seen.has(id)),
+    name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id), publicName: (id) => (S.tokens[id] ? pubName(S.tokens[id]) || S.tokens[id].name : id) || id,
+    colour: kindColour, toast, logChange,
+    loadCreature: async (id) => {
+      const actor = await store.get(`actors/${id}`).catch(() => null);
+      if (!actor) return null;
+      const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+      return { actor, state, content: await qvContent(quickViewKeys(actor, S.tokens[id], SYS)) };
+    },
+    applyTokens: (changed) => {
+      const here = Object.keys(changed).filter((id) => S.tokens[id]);
+      for (const id of here) { setEffects(id, changed[id].effects); if (changed[id].dead && !S.tokens[id].dead) setDead(id, true); }
+      if (here.length) schedulePersist();
+      return here;
+    },
+    isTarget: (id) => myTargets().includes(id),
+    toggleTarget: (id) => { const t = S.tokens[id]; if (t && t.dead && !myTargets().includes(id)) return toast(`${nm(t)} is dead: it can't be targeted.`); setMyTargets(toggleTarget(myTargets(), id)); },
+    ping: (id) => {
+      if (!S.tokens[id]) return;
+      centreOnToken(id);
+      const rec = fxRecord({ map: MAP_ID, name: 'ping', to: id, by: by() });
+      if (READONLY) return playFx(rec, { local: true });
+      store.set(`${FX_COLLECTION}/${fxId()}`, rec).catch(() => playFx(rec, { local: true }));
+    },
+    hover: (id) => { if (trkHover !== id) { trkHover = id; targetsChanged(); } },
+    onActing: (id) => { actingId = id; targetsChanged(); },
+    reveal: (id) => { const t = S.tokens[id]; if (!t || !t.alias) return; S.tokens[id] = { ...t, known: true }; schedulePersist(); draw(); toast(`The party now knows ${t.name}.`); },
+    conditionWords: (t) => [...(t.dead ? ['dead'] : []), ...(t.effects || []).filter((e) => e && (S.view === 'gm' || !e.gm_only)).map((e) => (e.id ? ((CONDS[e.id] || {}).label || e.id) : e.name) + (e.value ? ` ${e.value}` : ''))],
+    rolls: rollsUi, openButton: document.getElementById('b-enc'),
   });
   await shell.startMapMenu();
   if (keepGM) setView('gm');

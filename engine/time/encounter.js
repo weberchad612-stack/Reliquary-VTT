@@ -120,7 +120,7 @@ function advance(enc, now, roundSeconds, { skipEnd = false } = {}) {
 /** End the current turn and start the next one: {encounter, now, events}. */
 export function next(enc, now, roundSeconds = 6) {
   if (!(enc.round > 0)) throw new Error('the encounter has not begun');
-  if (enc.ended) throw new Error('the encounter is over');
+  if (enc.ended != null) throw new Error('the encounter is over');
   return advance(enc, now, roundSeconds);
 }
 

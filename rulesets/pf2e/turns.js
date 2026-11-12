@@ -35,7 +35,7 @@ export function turnRules(ctx) {
   const st = (id) => states[id] || ctx.states[id] || {};
   const setTok = (id, t) => { tokens[id] = t; };
   const name = (id) => (ctx.names && ctx.names[id]) || (tok(id) || {}).name || id;
-  const combatants = ctx.encounter && !ctx.encounter.ended ? ctx.encounter.combatants.map((c) => c.token) : [];
+  const combatants = ctx.encounter && ctx.encounter.ended == null ? ctx.encounter.combatants.map((c) => c.token) : [];
   const rng = ctx.rng || Math.random;
 
   const expire = (event) => {

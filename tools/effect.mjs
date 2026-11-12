@@ -139,7 +139,7 @@ function main(argv) {
     const recs = recFile ? JSON.parse(fs.readFileSync(recFile, 'utf8')) : {};
     const clockNow = clockArg !== undefined ? Number(clockArg) : (recs['state/clock'] || {}).now;
     const enc = recs['state/encounter'];
-    const acting = enc && !enc.ended && enc.turn !== null && enc.turn !== undefined ? (enc.combatants[enc.turn] || {}).token : undefined;
+    const acting = enc && enc.ended == null && enc.turn !== null && enc.turn !== undefined ? (enc.combatants[enc.turn] || {}).token : undefined;
     if (args[0] === 'list') {
       for (const [id, c] of Object.entries(conditions)) console.log(`${c.icon}  ${id.padEnd(12)} ${c.kind.padEnd(8)} ${c.valued ? 'value' : '     '}  ${c.label}`);
       return 0;

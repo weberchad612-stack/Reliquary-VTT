@@ -34,7 +34,7 @@ export function runClock(game, cmd, args, opts = {}) {
   if (!T || !T.calendar) throw new Error('this ruleset has no calendar');
   const cal = T.calendar, clock = game.clock ? { ...game.clock } : null;
   const write = (c) => ({ op: 'set', path: 'state/clock', data: c });
-  if (cmd === 'show') return { lines: [describeClock(cal, clock), ...(game.encounter && !game.encounter.ended && game.encounter.round > 0 ? [`encounter: round ${game.encounter.round}`] : [])], writes: [] };
+  if (cmd === 'show') return { lines: [describeClock(cal, clock), ...(game.encounter && game.encounter.ended == null && game.encounter.round > 0 ? [`encounter: round ${game.encounter.round}`] : [])], writes: [] };
   if (cmd === 'set') {
     const now = clockAt(cal, parseDate(cal, args[0]));
     const c = { now, ...(clock && clock.start !== undefined && !opts.start ? { start: clock.start } : { start: now }) };
@@ -55,7 +55,7 @@ export function runClock(game, cmd, args, opts = {}) {
     const target = Number(m[1]) * HOUR + Number(m[2]) * MINUTE, into = clock.now % DAY;
     to = clock.now - into + target + (target <= into ? DAY : 0);
   } else throw new Error('commands: show, set, start, advance, until');
-  if (game.encounter && !game.encounter.ended && game.encounter.round > 0) throw new Error('an encounter is under way: rounds pass with encounter.mjs next (end it first)');
+  if (game.encounter && game.encounter.ended == null && game.encounter.round > 0) throw new Error('an encounter is under way: rounds pass with encounter.mjs next (end it first)');
   const c = { ...clock, now: to };
   const r = runTurnRules(game, [{ type: 'time', from: clock.now, to }], { now: to, encounter: null, rng: randomSource(opts.seed) });
   return { lines: [`${describeClock(cal, clock)} → ${describeClock(cal, c)}`, ...r.lines], writes: [write(c), ...r.writes] };

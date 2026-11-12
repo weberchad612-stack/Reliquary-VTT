@@ -8,13 +8,16 @@ export function rollPath(now = Date.now(), rnd = Math.random) {
   return `rolls/${Math.floor(now).toString(36).padStart(9, '0')}-${(seq++).toString(36)}${rnd().toString(36).slice(2, 6)}`;
 }
 
+/** Whether a view may see a roll: the GM every one, players those not marked GM only. */
+export const rollVisible = (rec, view) => view === 'gm' || !(rec && rec.gm);
+
 /** How many roll records the board keeps (the oldest go). */
 export const ROLLS_KEPT = 200;
 
 /**
  * A roll's record. o: {by ('claude' | 'gm' | 'player'), token, name (as shown to everyone), kind ('initiative'),
  * stat ({slug, label}), roll ({dice, kept, mode, sides}), mod, total, parts ([{label, type, value}]), notes
- * ([{text, from}]), at}.
+ * ([{text, from}]), at, gm (GM only: a creature hidden from the players or out of their sight)}.
  */
 export function rollRecord(o) {
   const r = o.roll || {};
@@ -22,6 +25,7 @@ export function rollRecord(o) {
     by: o.by || 'claude', at: o.at || new Date().toISOString(), token: o.token || null, name: o.name || '', kind: o.kind || 'check',
     stat: o.stat || null, dice: r.dice || [], kept: r.kept ?? null, mode: r.mode || 'normal', sides: r.sides || 20,
     mod: o.mod ?? 0, total: o.total ?? null, parts: o.parts || [], notes: o.notes || [],
+    ...(o.gm ? { gm: true } : {}),
   };
 }
 

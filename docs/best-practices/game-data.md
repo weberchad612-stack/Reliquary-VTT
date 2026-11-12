@@ -64,7 +64,14 @@ write a number into an actor that the rules can work out. The board and the tool
   map), `roll <who>` (d20 + Perception, or `--stat stealth` for someone sneaking; `--roll D` uses a die you
   were given), `init <who> N` for a player's own roll, `begin`, then `next` after each turn. Write every record
   it prints and put its lines in the log; tell the story from them. `delay`, `resume <who>`, `remove <who>`,
-  `end`. While an encounter is under way, time moves only by rounds.
+  `end`, `previous` (a correction), `defeat <who>` and `hide <who>` (`--undo` for either). `roll` takes
+  initiative's own modifiers and notes (Incredible Initiative, Battle Cry), `--mode higher|lower` for rolling
+  twice, and also writes the roll card (`rolls/`) every board shows. While an encounter is under way, time
+  moves only by rounds.
+- **The board runs encounters too** (the encounter tracker, 2026-11-12): the GM and the players add creatures
+  (Enter Combat), roll, and move turns on, writing the same `state/encounter`. Read it before acting
+  (`--records`), and expect the players to have rolled their own initiative. The board does not yet note a
+  creature starting its turn inside an aura: say it yourself (future/backlog.md FR-14).
 - **What happens by itself at turn boundaries:** persistent damage and its flat check, frightened going down
   (a ruling can hold it: `noDecrease: true` on the badge), fast healing and regeneration, renewing temporary HP,
   a dying creature's recovery check, effects running out with the conditions they granted, and a note when a

@@ -252,6 +252,50 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   creature of a type; these are per creature and computed.
 - **A creature without game data** says so; give it some with `tools/actor.mjs create`.
 
+### The encounter tracker (2026-11-12)
+
+- **Getting in:** right-click a token and choose **Enter Combat** (the crossed swords); the GM's choice adds every
+  selected token with it, and a player adds their own PC. The first creature in makes the encounter. **Leave
+  combat** on the same button takes one out. The ⚔ button in the title line opens the tracker; it opens by itself
+  when an encounter appears and shows the round.
+- **The panel** docks at the top of the side panel or floats (⇱ / ⇥ in its title), collapses and closes; each
+  browser remembers how. The roll log (🎲 Rolls) works the same way.
+- **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
+  it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
+  name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** and **ping** (rings
+  on every screen; your view scrolls to it); the ⋮ menu (yours: roll again, type a result, clear, remove). The
+  conditions this view may see show under the name. The acting row is outlined in gold, and its token gets a
+  dashed gold ring on the map; hovering a row outlines its token.
+- **Rolling:** the die opens the **roll dialog**: the statistic (Perception first, then skills and lores), every
+  modifier with its type and an on/off switch (those the rules left out start off, struck through, with the
+  reason), **+ Add** your own (a number and one of the system's types), **Keep higher / Normal / Keep lower**;
+  the button shows the total ("Roll (+10)") and stacking follows the system (two circumstance bonuses: only the
+  bigger counts). **Roll All** and **Roll NPCs** roll Perception for everyone still without initiative, no dialog.
+  **Type a result** (⋮) for physical dice.
+- **Roll cards:** every roll pops up on every screen (bottom left, 15 seconds, hover to keep it) and goes into
+  the roll log: who, "Initiative: Perception", the modifiers as chips, the features that trigger on it (a feat's
+  note on initiative, such as Battle Cry), the dice and the total. **A roll for a creature the players do not see**
+  (hidden in the tracker, or out of the party's sight) is the GM's only, marked GM; other private and blind rolls
+  are FR-10. The GM view keeps the newest 200 (`rolls/`).
+- **Turns:** the GM begins (every creature needs initiative), then **Next turn**, **Previous** (a correction: no
+  rule is undone; going back past a round takes the clock back too), **Delay**, and **Act now** on a delaying
+  row; **End encounter** in the tools. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
+  runs the system's turn rules on the board (frightened going down, persistent damage, effects running out...)
+  and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; the lines go to the change log
+  and a toast says whose turn it is.
+- **Defeated:** marked by the skull, or automatically by the GM view when a token dies; the row stays, struck
+  through, and its turns are skipped.
+- **Players see** only creatures the party sees (named NPCs by their alias), never rows the GM hid, and act only
+  for PCs.
+- **Lessons:** an encounter ended at time 0 (no clock set) is still ended: test `ended` against null, never for
+  truth (it bit the tracker, the clock and the tools at once). One action at a time: each reads the record fresh,
+  applies the action and writes it, so two people rolling at once do not undo each other.
+- Built in `board/tracker.js` (pure: rows by view, who may do what, the actions; `tests/board-tracker.test.mjs`),
+  `board/trackerui.js` (the panel, rows, roll dialog and turn rules), `board/rollsui.js` and `board/rolls.js` (roll
+  cards, the log, the record), `board/panel.js` (docked or floating panels), `engine/rules/check.js` (the dialog's
+  maths: rows, switches, added modifiers, rolling twice, notes; `tests/initiative.test.mjs`) and
+  `rulesets/pf2e/initiative.js` (which statistics, initiative's modifiers and notes, the types).
+
 ### The clock (2026-11-12)
 
 - **Everyone sees the date and time** in the title line, beside the campaign title: "Starday, 1 Pharast 4725 AR ·

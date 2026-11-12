@@ -108,3 +108,13 @@ test('Claude\'s tool: roll with a statistic, the roll card record, defeat and hi
   assert.ok(d.writes[0].data.combatants.find((c) => c.defeated));
   assert.match(runEncounter(g, 'show', [], {}).lines.join('\n'), /defeated/);
 });
+
+test('an encounter ended at time 0 (no clock set) is over', async () => {
+  const { openEncounter } = await import('../board/tracker.js');
+  const { encounterUnderWay } = await import('../board/clock.js');
+  const e = E.end({ round: 2, turn: 0, combatants: [{ token: 'tok-aaaaaaaa', initiative: 3 }] }, 0).encounter;
+  assert.equal(e.ended, 0);
+  assert.equal(openEncounter(e), false);
+  assert.equal(encounterUnderWay(e), false);
+  assert.throws(() => E.next(e, 0), /over/);
+});
