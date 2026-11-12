@@ -7,6 +7,52 @@ const load = (key) => { try { return JSON.parse(localStorage.getItem(key) || 'nu
 const save = (key, v) => { try { localStorage.setItem(key, JSON.stringify(v)); } catch { /* storage off: not remembered */ } };
 export const PANEL_SIZE = Object.freeze({ minW: 240, minH: 120, w: 340, h: 480 });
 let front = 55;   // floating windows: the one last touched comes to the front
+/** Bring a floating window to the front of every other (sidebar pop-outs and Token Quick-Views share the order). */
+export function bringToFront(el) { el.style.zIndex = String(++front); }
+
+/**
+ * A floating window's behaviour, for windows that never dock (Token Quick-View): it moves by its title (`head`),
+ * resizes from its corner (CSS resize), collapses with a [data-w=collapse] button in the title, comes to the front
+ * when touched, and remembers its position, its size and whether it is collapsed under `key` (per browser).
+ * defaults: {x, y, w, h?} (no h: as tall as its content). Returns {pref, place()}.
+ */
+export function makeFloating(el, head, { key, defaults = {} }) {
+  const pref = { x: defaults.x ?? 24, y: defaults.y ?? 120, w: defaults.w ?? PANEL_SIZE.w, h: defaults.h ?? null, collapsed: false, ...load(key) };
+  const col = head.querySelector('[data-w=collapse]');
+  const place = () => {
+    el.classList.add('floating');
+    el.classList.toggle('collapsed', !!pref.collapsed);
+    el.style.width = `${Math.max(PANEL_SIZE.minW, Math.min(window.innerWidth - 16, pref.w))}px`;
+    el.style.height = pref.collapsed || !pref.h ? '' : `${Math.max(PANEL_SIZE.minH, Math.min(window.innerHeight - 16, pref.h))}px`;
+    el.style.left = `${Math.max(0, Math.min(window.innerWidth - 80, pref.x))}px`;
+    el.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, pref.y))}px`;
+    if (col) {
+      col.textContent = pref.collapsed ? '▸' : '▾';
+      col.title = pref.collapsed ? 'Expand' : 'Collapse';
+      col.setAttribute('aria-label', col.title); col.setAttribute('aria-expanded', String(!pref.collapsed));
+    }
+  };
+  if (col) col.addEventListener('click', (e) => { e.stopPropagation(); pref.collapsed = !pref.collapsed; save(key, pref); place(); });
+  head.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || e.target.closest('button')) return;
+    e.preventDefault();
+    const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const mv = (ev) => { pref.x = Math.max(0, Math.min(window.innerWidth - 80, ev.clientX - dx)); pref.y = Math.max(0, Math.min(window.innerHeight - 40, ev.clientY - dy)); el.style.left = `${pref.x}px`; el.style.top = `${pref.y}px`; };
+    const up = () => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); save(key, pref); };
+    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+  });
+  // its size is remembered once the reader drags the corner (not while it grows with its content)
+  el.addEventListener('pointerdown', (e) => {
+    bringToFront(el);
+    const r = el.getBoundingClientRect();
+    if (pref.collapsed || e.clientX < r.right - 18 || e.clientY < r.bottom - 18) return;
+    const up = () => { window.removeEventListener('pointerup', up); pref.w = Math.round(el.offsetWidth); pref.h = Math.round(el.offsetHeight); save(key, pref); };
+    window.addEventListener('pointerup', up);
+  }, true);
+  bringToFront(el);
+  place();
+  return { pref, place };
+}
 
 /**
  * o: {id, title, key (localStorage), dockInto (the tab's pane), showTab() (open that tab), onDock(docked)
@@ -41,7 +87,7 @@ export function makePanel(o) {
       el.style.left = el.style.top = el.style.width = el.style.height = el.style.zIndex = '';
       if (el.parentNode !== o.dockInto) o.dockInto.prepend(el);
     } else {
-      if (el.parentNode !== document.body) { document.body.appendChild(el); el.style.zIndex = String(++front); }
+      if (el.parentNode !== document.body) { document.body.appendChild(el); bringToFront(el); }
       const w = Math.max(PANEL_SIZE.minW, Math.min(window.innerWidth - 16, pref.w)), h = Math.max(PANEL_SIZE.minH, Math.min(window.innerHeight - 16, pref.h));
       el.style.width = `${w}px`;
       el.style.height = pref.collapsed ? '' : `${h}px`;
@@ -82,7 +128,7 @@ export function makePanel(o) {
       t = setTimeout(() => { pref.w = Math.round(el.offsetWidth); pref.h = Math.round(el.offsetHeight); save(o.key, pref); }, 200);
     }).observe(el);
   }
-  el.addEventListener('pointerdown', () => { if (!pref.docked) el.style.zIndex = String(++front); }, true);
+  el.addEventListener('pointerdown', () => { if (!pref.docked) bringToFront(el); }, true);
   for (const ev of ['click', 'dblclick', 'wheel', 'contextmenu', 'keydown']) el.addEventListener(ev, (e) => e.stopPropagation(), { passive: ev === 'wheel' });
   place();
   return {

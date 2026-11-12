@@ -26,6 +26,7 @@ import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
 import { mountChat } from './chatui.js';
 import { mountSidebar } from './sidebar.js';
+import { makeFloating, bringToFront } from './panel.js';
 import { chatPath, logMessage, changeLog } from './chat.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
@@ -2060,8 +2061,7 @@ export async function start(store, { build = null } = {}) {
   // it can see as a public card. Read-only. ----
   const qvWins = new Map();   // token id -> {el, offs: [unwatch]}
   const qvContentCache = new Map();
-  let qvZ = 60, qvT = null;
-  const qvFront = (el) => { el.style.zIndex = String(++qvZ); };
+  let qvT = null;
   // keys: a key, or a list of candidate keys (the first the board holds is the one)
   async function qvContent(keys) {
     const out = {};
@@ -2085,28 +2085,19 @@ export async function start(store, { build = null } = {}) {
     const t = S.tokens[id];
     if (!t || !quickViewAccess(t, S.view, qvSeen(id))) return;
     const old = qvWins.get(id);
-    if (old) { qvFront(old.el); old.el.focus(); return; }
+    if (old) { bringToFront(old.el); old.el.focus(); return; }
     const el = document.createElement('div');
     el.className = 'qvwin'; el.tabIndex = -1;
     el.setAttribute('role', 'dialog');
-    el.innerHTML = '<div class="qv-h"><span class="qv-t"></span><span class="qv-k"></span><button type="button" class="qv-x" aria-label="Close Token Quick-View" title="Close (Esc)">✕</button></div><div class="qv-b">Loading…</div>';
-    const n = qvWins.size % 6;
-    el.style.left = `${Math.max(8, window.innerWidth - 470 - 28 * n)}px`; el.style.top = `${110 + 28 * n}px`;
-    qvFront(el);
-    el.querySelector('.qv-x').addEventListener('click', () => qvClose(id));
+    el.innerHTML = '<div class="qv-h"><span class="qv-t"></span><span class="qv-k"></span><button type="button" class="qv-x qv-c" data-w="collapse"></button><button type="button" class="qv-x" data-w="close" aria-label="Close Token Quick-View" title="Close (Esc)">✕</button></div><div class="qv-b">Loading…</div>';
+    el.querySelector('[data-w=close]').addEventListener('click', () => qvClose(id));
     el.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); qvClose(id); } });
-    el.addEventListener('pointerdown', () => qvFront(el), true);
     for (const ev of ['click', 'dblclick', 'wheel', 'contextmenu']) el.addEventListener(ev, (e) => e.stopPropagation(), { passive: ev === 'wheel' });
-    const head = el.querySelector('.qv-h');
-    head.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.qv-x') || e.button !== 0) return;
-      e.preventDefault();
-      const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
-      const mv = (ev) => { el.style.left = `${Math.max(0, Math.min(window.innerWidth - 80, ev.clientX - dx))}px`; el.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, ev.clientY - dy))}px`; };
-      const up = () => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); };
-      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
-    });
     document.body.appendChild(el);
+    // the pop-out windows' frame (board/panel.js): moved, resized, collapsed, in front; each token's window remembers
+    // its place and size (per browser); a first one opens near the right, the next ones stepped
+    const n = qvWins.size % 6;
+    makeFloating(el, el.querySelector('.qv-h'), { key: `reliquary.qv.${id}`, defaults: { x: Math.max(8, window.innerWidth - 470 - 28 * n), y: 110 + 28 * n, w: 440 } });
     const w = { el, offs: [] };
     qvWins.set(id, w);
     // live: the creature's game data and live state from the database; its token from the page (qvRefresh)

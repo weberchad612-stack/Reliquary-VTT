@@ -212,8 +212,11 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 ### Token Quick-View (2026-11-12)
 
-- **Double-click a token** (or select it and press Enter) for its stat block in a floating window: drag it by its
-  title, open several, Esc or ✕ closes one. It updates live as HP, conditions and effects change.
+- **Double-click a token** (or select it and press Enter) for its stat block in a floating window with the pop-out
+  windows' frame (`makeFloating` in `board/panel.js`, 2026-11-12): drag it by its title, **resize it from its
+  corner**, **collapse it** (▾), open several (the one touched last comes to the front, above the sidebar's
+  pop-outs too), Esc or ✕ closes one. **Each token's window remembers its position, size and collapse** per browser
+  (`reliquary.qv.<token>`), so it reopens where you left it. It updates live as HP, conditions and effects change.
 - **Who sees what** (the user's decision): the GM view opens any creature in full; the player view opens its PCs
   in full and, for any other creature the party can see, a public card: the name they know (the alias until it
   is learned), size, traits, health band and the conditions they can see (never GM-only ones, never numbers).
