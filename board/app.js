@@ -2097,7 +2097,7 @@ export async function start(store, { build = null } = {}) {
   let qvGlossary = null;   // the trait glossary (content/glossary.traits), read once
   async function qvRender(id) {
     // the glossary built into the board, else the campaign's record (a board loaded with one)
-    if (!qvGlossary) qvGlossary = (typeof TRAITS !== 'undefined' && TRAITS && TRAITS.entries) || ((await store.get('content/glossary.traits').catch(() => null)) || {}).entries || {};
+    if (!qvGlossary) qvGlossary = (typeof TRAITS !== 'undefined' && TRAITS && (TRAITS.data || TRAITS).entries) || ((await store.get('content/glossary.traits').catch(() => null)) || {}).entries || {};
     const w = qvWins.get(id), t = S.tokens[id];
     if (!w) return;
     const access = t && quickViewAccess(t, S.view, qvSeen(id));
