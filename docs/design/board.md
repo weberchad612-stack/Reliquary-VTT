@@ -507,3 +507,24 @@ the parts every system shares) and the system's layout (`rulesets/pf2e/statblock
 and features show their descriptions on hover (docs/design/game-data.md sections 8.4 and 8.5). This is the first part of
 "sheets on the board" (docs/design/game-data.md section 3.7).
 
+
+## The encounter tracker (designed 2026-11-12, building)
+
+The board's side of encounters (the rules side, `engine/time/encounter.js` and `tools/encounter.mjs`, was built
+first). Modelled on Foundry's combat tracker and the previous board's Initiative panel (round, order, the acting
+creature, hover a row to highlight its token, conditions and reactions on each row). The user's decisions:
+
+| Question | Decision |
+|---|---|
+| Who adds creatures | **The GM** (right-click a token: **Enter Combat**; also for a selection), **Claude** by chat (`tools/encounter.mjs`), and **players for their own PCs** (the same Enter Combat item). The first one in starts the encounter (not yet begun). |
+| Rolling initiative | **All four:** the board rolls for foes (a row's die, and **Roll NPCs**), **players roll their own PCs** (their row's die), a result can be **typed in** (physical dice), and **Claude rolls** by chat. The board rolls d20 + the statistic, with the breakdown on hover. |
+| Which statistic | **Picked per roll:** the die opens a small menu, Perception first, then the creature's skills (Stealth when Avoiding Notice, Deception...). |
+| The tracker | **Like Foundry's**, either **floating** (draggable, collapsible) or **docked** as a side panel; the user switches between them. |
+| Turns | **The GM** runs everything (begin, next and previous, delay, resume, end); **a player can end and delay their own PC's turn**. Turn changes run the system's turn rules and move the clock, as Claude's tool does. |
+| Players see | **Only creatures the party can see** (a foe out of sight is not listed; a named NPC by its alias), and the GM can **hide a combatant** from players (an eye on the row) even when its token is seen. **Conditions** the players may see are shown on each row. Foes' initiative totals are shown. |
+| Defeated | **Marked defeated, turns skipped:** the row stays (struck through); a dead token is marked automatically. |
+| Highlight | The acting creature is marked on the map and in the tracker; hovering a row highlights its token. |
+
+Records: `state/encounter` as now (combatants gain `stat`, `roll` {die, mod, parts}, `hidden`, `defeated`); the
+turn rules write `tokens/` and `actorstate/` as Claude's tool does. Anything a system defines (the initiative
+statistic, its tiebreak, the turn rules) comes from the system configuration.
