@@ -208,7 +208,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The clock (2026-11-12)
 
 - **Everyone sees the date and time** in the title line, beside the campaign title: "Starday, 1 Pharast 4725 AR ·
-  08:00 · Day 1" (seconds show while rounds move it). Players cannot change it; it is hidden until the clock is
+  8:00 AM · Day 1": a 12-hour clock, as the user asked (seconds show while rounds move it). Players cannot change it; it is hidden until the clock is
   set.
 - **The GM view edits it** (click it): quick steps (+1 minute, +10 minutes, +1 hour, rest 8 hours, next morning
   at 07:00), any amount ("3 hours", "2 days"), a date and time (the calendar's months; a day that does not exist

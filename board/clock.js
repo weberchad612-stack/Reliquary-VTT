@@ -13,11 +13,17 @@ export const QUICK_STEPS = Object.freeze([
   { id: 'q-morning', label: 'Next morning (07:00)', until: 7 * 3600 },
 ]);
 
-/** The clock in words for the title line: "Starday, 1 Pharast 4725 AR · 08:00 · Day 1" (null if not set). */
+/** A time of day on a 12-hour clock: "8:00 AM", "12:30 PM", "8:00:06 AM" (seconds when there are some). */
+export function time12(hour, minute, second = 0) {
+  const h = hour % 12 || 12, p = (n) => String(n).padStart(2, '0');
+  return `${h}:${p(minute)}${second ? `:${p(second)}` : ''} ${hour < 12 ? 'AM' : 'PM'}`;
+}
+
+/** The clock in words for the title line: "Starday, 1 Pharast 4725 AR · 8:00 AM · Day 1" (null if not set). */
 export function clockLabel(T, cal, clock) {
   if (!clock || typeof clock.now !== 'number') return null;
   const r = T.readClock(cal, clock.now);
-  const time = r.second ? `${r.time}:${String(r.second).padStart(2, '0')}` : r.time;
+  const time = time12(r.hour, r.minute, r.second);
   return `${r.weekdayName}, ${r.dateText} · ${time}${typeof clock.start === 'number' ? ` · Day ${T.adventureDay(clock.start, clock.now)}` : ''}`;
 }
 

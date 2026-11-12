@@ -5,16 +5,17 @@ import assert from 'node:assert/strict';
 import { readClock, adventureDay, clockAt } from '../engine/time/calendar.js';
 import { parseAmount, unitSeconds, expireEffects } from '../engine/time/clock.js';
 import { GOLARION_CALENDAR as G } from '../rulesets/pf2e/calendar.js';
-import { QUICK_STEPS, clockLabel, quickTarget, amountTarget, setTarget, setFields, encounterUnderWay, expireAll } from '../board/clock.js';
+import { QUICK_STEPS, time12, clockLabel, quickTarget, amountTarget, setTarget, setFields, encounterUnderWay, expireAll } from '../board/clock.js';
 
 const T = { readClock, adventureDay, clockAt, parseAmount, unitSeconds, expireEffects };
 const at = (d) => clockAt(G, d);
 const C = { now: at({ year: 4725, month: 3, day: 1, hour: 8 }), start: at({ year: 4725, month: 3, day: 1, hour: 8 }) };
 
 test('the title line: weekday, date, time and the day of the adventure; nothing when the clock is not set', () => {
-  assert.equal(clockLabel(T, G, C), 'Starday, 1 Pharast 4725 AR · 08:00 · Day 1');
-  assert.equal(clockLabel(T, G, { now: C.now + 6 }), 'Starday, 1 Pharast 4725 AR · 08:00:06', 'seconds show during rounds; no Day without a start');
-  assert.equal(clockLabel(T, G, { ...C, now: C.now + 2 * 86400 + 3600 }), 'Moonday, 3 Pharast 4725 AR · 09:00 · Day 3');
+  assert.equal(clockLabel(T, G, C), 'Starday, 1 Pharast 4725 AR · 8:00 AM · Day 1');
+  assert.equal(clockLabel(T, G, { now: C.now + 6 }), 'Starday, 1 Pharast 4725 AR · 8:00:06 AM', 'seconds show during rounds; no Day without a start');
+  assert.equal(clockLabel(T, G, { ...C, now: C.now + 2 * 86400 + 5 * 3600 }), 'Moonday, 3 Pharast 4725 AR · 1:00 PM · Day 3');
+  assert.deepEqual([time12(0, 0), time12(12, 0), time12(23, 59), time12(11, 5, 7)], ['12:00 AM', '12:00 PM', '11:59 PM', '11:05:07 AM']);
   assert.equal(clockLabel(T, G, null), null);
 });
 
