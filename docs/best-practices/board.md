@@ -205,6 +205,26 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **A creature is as tall as it is wide** (Medium 5 ft): a flyer at +5 ft is right above a Medium creature's head, 5 ft away and in melee reach.
 - The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there.
 
+### Token Quick-View (2026-11-12)
+
+- **Double-click a token** (or select it and press Enter) for its stat block in a floating window: drag it by its
+  title, open several, Esc or ✕ closes one. It updates live as HP, conditions and effects change.
+- **Who sees what** (the user's decision): the GM view opens any creature in full; the player view opens its PCs
+  in full and, for any other creature the party can see, a public card: the name they know (the alias until it
+  is learned), size, traits, health band and the conditions they can see (never GM-only ones, never numbers).
+  A creature the party cannot see does not open.
+- **Live, in the book's layout:** Monster Core order (traits; Perception, languages, skills, attributes, items;
+  AC, saves, HP, immunities, weaknesses, resistances, reactions; Speed, Strikes with the multiple attack
+  penalty, spellcasting, actions; description; source). Every number is worked out by the rules
+  (`Engine.prepareActor` with the token's effects and the live state); a number a condition or effect changed is
+  coloured, and every number's breakdown shows on hover. The GM also sees the alias, rules not automated, and
+  problems.
+- **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
+- Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
+  window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every
+  creature of a type; these are per creature and computed.
+- **A creature without game data** says so; give it some with `tools/actor.mjs create`.
+
 ### The clock (2026-11-12)
 
 - **Everyone sees the date and time** in the title line, beside the campaign title: "Starday, 1 Pharast 4725 AR ·

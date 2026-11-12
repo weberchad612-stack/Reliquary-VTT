@@ -491,3 +491,12 @@ time, and "make today Day 1"; moving the clock on **removes timed effects that r
 itself: no dice are involved). `board/clock.js`, `board/clockui.js`; records `state/clock` and
 `state/encounter` (read, to refuse moving the clock during an encounter). See docs/design/game-data.md section 8.
 
+## Token Quick-View (built 2026-11-12)
+
+The user's decisions: the GM view opens any token's full stat block, the player view its PCs' sheets and a public
+card for creatures it can see; live numbers in the book's layout, changed numbers marked with their breakdown on
+hover; floating windows, one per token; read-only for now. Researched from the previous board (double-click a
+creature for a draggable window of text stored per creature type, `statblocks/<key>`). Reads `actors/<id>`,
+`actorstate/<id>` and the `content/` records a creature uses; `board/quickview.js`. This is the first part of
+"sheets on the board" (docs/design/game-data.md section 3.7).
+

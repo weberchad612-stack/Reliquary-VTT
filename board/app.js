@@ -14,7 +14,8 @@
 
 import { MemoryStore } from './store.js';
 import { platformStore } from './platform.js';
-import { mapFromRecords, exploredFromRecords, exploredRecords } from './records.js';
+import { mapFromRecords, exploredFromRecords, exploredRecords, contentPath } from './records.js';
+import { quickViewAccess, quickViewTitle, quickViewBody, quickViewKeys } from './quickview.js';
 import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
@@ -2038,6 +2039,95 @@ export async function start(store, { build = null } = {}) {
     else setNoting(true);
   }, true);
 
+  // ---- Token Quick-View (board/quickview.js): double-click a token, or select it and press Enter, for its stat
+  // block in a floating window, live. GM view: any creature in full; player view: its PCs in full, other creatures
+  // it can see as a public card. Read-only. ----
+  const qvWins = new Map();   // token id -> {el, offs: [unwatch]}
+  const qvContentCache = new Map();
+  let qvZ = 60, qvT = null;
+  const qvFront = (el) => { el.style.zIndex = String(++qvZ); };
+  async function qvContent(keys) {
+    const out = {};
+    for (const k of keys) {
+      if (!qvContentCache.has(k)) qvContentCache.set(k, await store.get(contentPath(k)).catch(() => null));
+      if (qvContentCache.get(k)) out[k] = qvContentCache.get(k);
+    }
+    return out;
+  }
+  const qvSeen = (id) => S.view === 'gm' || (S.tokens[id] && S.tokens[id].kind === 'pc') || shown().seen.has(id);
+  function qvClose(id) {
+    const w = qvWins.get(id);
+    if (!w) return;
+    for (const off of w.offs) try { off(); } catch { /* already gone */ }
+    w.el.remove();
+    qvWins.delete(id);
+  }
+  function openQuickView(id) {
+    const t = S.tokens[id];
+    if (!t || !quickViewAccess(t, S.view, qvSeen(id))) return;
+    const old = qvWins.get(id);
+    if (old) { qvFront(old.el); old.el.focus(); return; }
+    const el = document.createElement('div');
+    el.className = 'qvwin'; el.tabIndex = -1;
+    el.setAttribute('role', 'dialog');
+    el.innerHTML = '<div class="qv-h"><span class="qv-t"></span><span class="qv-k"></span><button type="button" class="qv-x" aria-label="Close Token Quick-View" title="Close (Esc)">✕</button></div><div class="qv-b">Loading…</div>';
+    const n = qvWins.size % 6;
+    el.style.left = `${Math.max(8, window.innerWidth - 470 - 28 * n)}px`; el.style.top = `${110 + 28 * n}px`;
+    qvFront(el);
+    el.querySelector('.qv-x').addEventListener('click', () => qvClose(id));
+    el.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); qvClose(id); } });
+    el.addEventListener('pointerdown', () => qvFront(el), true);
+    for (const ev of ['click', 'dblclick', 'wheel', 'contextmenu']) el.addEventListener(ev, (e) => e.stopPropagation(), { passive: ev === 'wheel' });
+    const head = el.querySelector('.qv-h');
+    head.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.qv-x') || e.button !== 0) return;
+      e.preventDefault();
+      const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+      const mv = (ev) => { el.style.left = `${Math.max(0, Math.min(window.innerWidth - 80, ev.clientX - dx))}px`; el.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, ev.clientY - dy))}px`; };
+      const up = () => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); };
+      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    });
+    document.body.appendChild(el);
+    const w = { el, offs: [] };
+    qvWins.set(id, w);
+    // live: the creature's game data and live state from the database; its token from the page (qvRefresh)
+    w.offs.push(store.watch(`actors/${id}`, () => qvRender(id)), store.watch(`actorstate/${id}`, () => qvRender(id)));
+    qvRender(id).then(() => el.focus());
+  }
+  async function qvRender(id) {
+    const w = qvWins.get(id), t = S.tokens[id];
+    if (!w) return;
+    const access = t && quickViewAccess(t, S.view, qvSeen(id));
+    if (!access) return qvClose(id);
+    const actor = await store.get(`actors/${id}`).catch(() => null);
+    const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+    const content = await qvContent(quickViewKeys(actor, t));
+    let prepared = null;
+    const base = actor && actor.base ? content[actor.base] || null : null;
+    if (actor && SYS.actors) {
+      try { prepared = Engine.prepareActor({ actor, state, effects: t.effects || [], content, ruleset: SYS.actors }); if (!prepared.name) prepared.name = t.name; } catch (e) { prepared = null; console.warn('Quick-View', e); }
+    }
+    if (!qvWins.has(id)) return;
+    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName };
+    const title = quickViewTitle(o);
+    w.el.setAttribute('aria-label', `Token Quick-View: ${title.name}`);
+    w.el.querySelector('.qv-t').textContent = title.name;
+    w.el.querySelector('.qv-k').textContent = [title.kind, title.also].filter(Boolean).join(' · ');
+    w.el.querySelector('.qv-b').innerHTML = quickViewBody(o);
+  }
+  /** Tokens changed (effects, death, the view): redraw the open Quick-Views a moment later. */
+  function qvRefresh() { if (qvWins.size && !qvT) qvT = setTimeout(() => { qvT = null; for (const id of [...qvWins.keys()]) qvRender(id); }, 50); }
+  canvas.addEventListener('dblclick', (ev) => {
+    const target = clickTarget(cellAt(ev));
+    if (target.token) { ev.preventDefault(); openQuickView(target.token); }
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !selected || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, button, [role^=menu], .qvwin, .nedit')) return;
+    e.preventDefault();
+    openQuickView(selected);
+  });
+
   // ---- the token HUD (right-click a token): Target and Assign status effects, as Foundry's Token HUD ----
   const hudEl = document.getElementById('tokhud');
   const hudLeftEl = document.getElementById('tokhud-left');   // the column on the token's left: elevation
@@ -2244,12 +2334,14 @@ export async function start(store, { build = null } = {}) {
     if (effects.length) t.effects = effects; else delete t.effects;
     S.tokens[id] = t;
     renderHud(); recompute();   // who can see may change (blinded, unconscious); persist() writes it and logs the change
+    qvRefresh();
   }
   function setDead(id, dead) {
     const t = { ...S.tokens[id] };
     if (dead) { t.dead = true; if (myTargets().includes(id)) setMyTargets(myTargets().filter((x) => x !== id)); } else delete t.dead;
     S.tokens[id] = t;
     renderHud(); recompute();
+    qvRefresh();
   }
   /** The HUD floats over the page (fixed), to the right of the token's space, or to its left when there is no
    *  room; kept inside the window. It follows the token, the zoom and scrolling. */
@@ -2341,6 +2433,7 @@ export async function start(store, { build = null } = {}) {
     if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
     if (clockUi) clockUi.render();
+    qvRefresh();
     if (READONLY && v !== 'gm') shell.leavePreview();
   }
   document.getElementById('v-player').onclick = () => setView('player');
@@ -2574,7 +2667,7 @@ export async function start(store, { build = null } = {}) {
   }
 
   let remoteT = null;
-  function remoteChanged() { if (!remoteT) remoteT = setTimeout(() => { remoteT = null; panel(); lightingCard(); recompute(); }, 0); }
+  function remoteChanged() { if (!remoteT) remoteT = setTimeout(() => { remoteT = null; panel(); lightingCard(); recompute(); qvRefresh(); }, 0); }
   /** Has the store's value at p changed from what the board knows? If so, remember it and say yes. */
   function fresh(p, data) {
     const v = prune(data || {}), c = canon(v);
