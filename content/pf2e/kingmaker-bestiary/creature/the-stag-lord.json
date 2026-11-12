@@ -148,20 +148,18 @@
       "text": "The Stag Lord capitalizes on his enemies' fear; any creature that has the Frightened condition is also Off-Guard against his attacks.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "EphemeralEffect",
-            "predicate": [
-              "target:condition:frightened"
-            ],
-            "selectors": [
-              "strike-attack-roll",
-              "spell-attack-roll",
-              "strike-damage",
-              "attack-spell-damage"
-            ],
-            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
-          }
+          "key": "ephemeral",
+          "selector": [
+            "strike-attack-roll",
+            "spell-attack-roll",
+            "strike-damage",
+            "attack-spell-damage"
+          ],
+          "affects": "target",
+          "condition": "off-guard",
+          "when": [
+            "target:condition:frightened"
+          ]
         }
       ]
     },
@@ -176,13 +174,10 @@
       "text": "You designate a single creature as your prey and focus your attacks against that creature. You must be able to see or hear the prey, or you must be tracking the prey during exploration.\n\nYou gain a +2 circumstance bonus to Perception checks when you Seek your prey and a +2 circumstance bonus to Survival checks when you Track your prey. You also ignore the penalty for making ranged attacks within your second range increment against the prey you're hunting.\n\nYou can have only one creature designated as your prey at a time. If you use Hunt Prey against a creature when you already have a creature designated, the prior creature loses the designation and the new prey gains the designation. Your designation lasts until your next daily preparations.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
-            "option": "hunted-prey",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "hunted-prey",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey"
         },
         {
           "key": "modifier",
@@ -195,15 +190,12 @@
           ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "ranged-attack-roll",
-            "key": "RollOption",
-            "option": "ignore-range-penalty:2",
-            "predicate": [
-              "hunted-prey"
-            ]
-          }
+          "key": "roll-option",
+          "option": "ignore-range-penalty:2",
+          "domain": "ranged-attack-roll",
+          "when": [
+            "hunted-prey"
+          ]
         },
         {
           "key": "modifier",
@@ -224,26 +216,20 @@
       "text": "The Stag Lord deals 2d6 extra precision damage to Off-Guard creatures.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "precision",
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:off-guard"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "category": "precision",
+          "when": [
+            "target:condition:off-guard"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
-            "option": "target:condition:off-guard",
-            "toggleable": "totm"
-          }
+          "key": "roll-option",
+          "option": "target:condition:off-guard",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.TOTMToggle.OffGuard"
         }
       ]
     },
@@ -258,33 +244,22 @@
       "text": "The Stag Lord lines up a shot and then attempts a ranged Strike against a hunted prey. On this strike, he treats the target as if they were Off-Guard.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "disabledIf": [
-              {
-                "not": "hunted-prey"
-              }
-            ],
-            "disabledValue": false,
-            "key": "RollOption",
-            "option": "unfair-aim",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "unfair-aim",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "EphemeralEffect",
-            "predicate": [
-              "hunted-prey",
-              "unfair-aim"
-            ],
-            "selectors": [
-              "ranged-strike-attack-roll",
-              "ranged-strike-damage"
-            ],
-            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
-          }
+          "key": "ephemeral",
+          "selector": [
+            "ranged-strike-attack-roll",
+            "ranged-strike-damage"
+          ],
+          "affects": "target",
+          "condition": "off-guard",
+          "when": [
+            "hunted-prey",
+            "unfair-aim"
+          ]
         }
       ]
     }

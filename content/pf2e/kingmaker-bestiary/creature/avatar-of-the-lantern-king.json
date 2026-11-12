@@ -245,57 +245,22 @@
       "text": "The Lantern King illuminates his aura with bright light. At the start of his turn, this aura attempts to counteract any ongoing darkness effect in the aura (counteract check +44). The Lantern King can suppress or activate this aura as a free action.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "lantern-kings-glow",
-            "toggleable": true,
-            "value": true
-          }
+          "key": "roll-option",
+          "option": "lantern-kings-glow",
+          "toggleable": true,
+          "default": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "TokenLight",
-            "predicate": [
-              "fire-not-cold",
-              "lantern-kings-glow"
-            ],
-            "value": {
-              "animation": {
-                "intensity": 4,
-                "speed": 1,
-                "type": "pulse"
-              },
-              "bright": 120,
-              "color": "#f56707",
-              "dim": 120,
-              "shadows": 0.8
-            }
-          }
+          "key": "light",
+          "bright": 120,
+          "dim": 120,
+          "colour": "#f56707"
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "TokenLight",
-            "predicate": [
-              "lantern-kings-glow",
-              {
-                "not": "fire-not-cold"
-              }
-            ],
-            "value": {
-              "animation": {
-                "intensity": 4,
-                "speed": 1,
-                "type": "pulse"
-              },
-              "bright": 120,
-              "color": "#1464e9",
-              "dim": 120,
-              "shadows": 0.8
-            }
-          }
+          "key": "light",
+          "bright": 120,
+          "dim": 120,
+          "colour": "#1464e9"
         }
       ]
     },
@@ -313,18 +278,15 @@
       "text": "30 feet. Whenever a creature misses the Lantern King with an attack or fails a skill check or saving throw, the creature is overtaken by overwhelming mirth at its mistake, as Laughing Fit (DC 45 Will save save). The creature is thereafter temporarily immune to mocking laughter for 1 hour.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "Aura",
-            "radius": 30,
-            "slug": "mocking-laughter",
-            "traits": [
-              "emotion",
-              "incapacitation",
-              "mental",
-              "primal"
-            ]
-          }
+          "key": "aura",
+          "slug": "mocking-laughter",
+          "radius": 30,
+          "traits": [
+            "emotion",
+            "incapacitation",
+            "mental",
+            "primal"
+          ]
         }
       ]
     },
@@ -345,14 +307,11 @@
       "text": "The Lantern King adjusts the temperature of his flames. He shifts from orange to blue, and his Strikes inflict cold damage until he takes this action again to switch back to fire damage.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "Temperature is Hot",
-            "option": "fire-not-cold",
-            "toggleable": true,
-            "value": true
-          }
+          "key": "roll-option",
+          "option": "fire-not-cold",
+          "toggleable": true,
+          "label": "Temperature is Hot",
+          "default": true
         }
       ]
     },
@@ -414,37 +373,27 @@
       "text": "The Lantern King can take on the appearance of any fey or humanoid, but he typically does so only to trick and confuse creatures. He loses his searing rune and blinding beam Strikes, but he gains a melee fist Strike that inflicts 4d8 + 19 bludgeoning damage.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "change-shape",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "change-shape",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "unarmed",
-            "damage": {
-              "base": {
-                "damageType": "bludgeoning",
-                "dice": 4,
-                "die": "d8"
-              }
-            },
-            "group": "brawling",
-            "key": "Strike",
-            "label": "Fist",
-            "predicate": [
-              "change-shape"
-            ],
-            "traits": [
-              "agile",
-              "finesse",
-              "unarmed",
-              "nonlethal"
-            ]
-          }
+          "key": "strike",
+          "name": "Fist",
+          "category": "unarmed",
+          "group": "brawling",
+          "die": "d8",
+          "dice": 4,
+          "type": "bludgeoning",
+          "traits": [
+            "agile",
+            "finesse",
+            "unarmed",
+            "nonlethal"
+          ],
+          "when": [
+            "change-shape"
+          ]
         },
         {
           "key": "modifier",
@@ -457,30 +406,23 @@
           "damageType": "bludgeoning"
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "unarmed",
-            "damage": {
-              "base": {
-                "damageType": "bludgeoning",
-                "dice": 4,
-                "die": "d6"
-              }
-            },
-            "key": "Strike",
-            "label": "Searing Rune",
-            "predicate": [
-              {
-                "not": "change-shape"
-              }
-            ],
-            "traits": [
-              "agile",
-              "finesse",
-              "magical",
-              "reach-20"
-            ]
-          }
+          "key": "strike",
+          "name": "Searing Rune",
+          "category": "unarmed",
+          "die": "d6",
+          "dice": 4,
+          "type": "bludgeoning",
+          "traits": [
+            "agile",
+            "finesse",
+            "magical",
+            "reach-20"
+          ],
+          "when": [
+            {
+              "not": "change-shape"
+            }
+          ]
         },
         {
           "key": "modifier",
@@ -495,35 +437,23 @@
           "damageType": "bludgeoning"
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "attackModifier": 44,
-            "category": "unarmed",
-            "damage": {
-              "base": {
-                "damageType": "fire",
-                "dice": 4,
-                "die": "d8",
-                "modifier": 19
-              }
-            },
-            "key": "Strike",
-            "label": "Blinding Beam (Fire)",
-            "predicate": [
-              "fire-not-cold",
-              {
-                "not": "change-shape"
-              }
-            ],
-            "range": {
-              "max": 100
-            },
-            "traits": [
-              "fire",
-              "magical",
-              "mental"
-            ]
-          }
+          "key": "strike",
+          "name": "Blinding Beam (Fire)",
+          "category": "unarmed",
+          "die": "d8",
+          "dice": 4,
+          "type": "fire",
+          "traits": [
+            "fire",
+            "magical",
+            "mental"
+          ],
+          "when": [
+            "fire-not-cold",
+            {
+              "not": "change-shape"
+            }
+          ]
         },
         {
           "key": "unsupported",
@@ -559,20 +489,17 @@
           }
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "fire",
-            "diceNumber": 4,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "fire-not-cold",
-              {
-                "not": "change-shape"
-              }
-            ],
-            "selector": "searing-rune-damage"
-          }
+          "key": "damage-dice",
+          "selector": "searing-rune-damage",
+          "dice": 4,
+          "die": "d6",
+          "type": "fire",
+          "when": [
+            "fire-not-cold",
+            {
+              "not": "change-shape"
+            }
+          ]
         },
         {
           "key": "unsupported",
@@ -593,26 +520,20 @@
           }
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "CreatureSize",
-            "predicate": [
-              "change-shape"
-            ],
-            "value": "medium"
-          }
+          "key": "size",
+          "size": "medium",
+          "when": [
+            "change-shape"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "CreatureSize",
-            "predicate": [
-              {
-                "not": "change-shape"
-              }
-            ],
-            "value": "gargantuan"
-          }
+          "key": "size",
+          "size": "gargantuan",
+          "when": [
+            {
+              "not": "change-shape"
+            }
+          ]
         }
       ]
     },

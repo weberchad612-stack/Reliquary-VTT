@@ -45,6 +45,42 @@
     "ruleset": {
       "type": "string"
     },
+    "clock": {
+      "type": "object",
+      "description": "The game clock (tools/clock.mjs): seconds since the start of year 1 of the ruleset's calendar. `start` is when the adventure began (Day 1).",
+      "required": ["now"],
+      "additionalProperties": false,
+      "properties": {
+        "now": { "type": "integer", "minimum": 0 },
+        "start": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "encounter": {
+      "type": "object",
+      "description": "The encounter under way (tools/encounter.mjs; engine/time/encounter.js): round, the index of the creature acting, and the combatants in initiative order.",
+      "required": ["round", "combatants"],
+      "additionalProperties": false,
+      "properties": {
+        "round": { "type": "integer", "minimum": 0 },
+        "turn": { "type": ["integer", "null"], "minimum": 0 },
+        "started": { "type": "integer", "minimum": 0 },
+        "ended": { "type": "integer", "minimum": 0 },
+        "combatants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["token"],
+            "additionalProperties": false,
+            "properties": {
+              "token": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$" },
+              "side": { "enum": ["pc", "foe", "npc"] },
+              "initiative": { "type": "number" },
+              "delayed": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
     "current_map": {
       "type": "string",
       "description": "The map the table is on."

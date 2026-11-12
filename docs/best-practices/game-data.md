@@ -52,6 +52,33 @@ write a number into an actor that the rules can work out. The board and the tool
 - **Conditions are badges:** set them with `tools/effect.mjs` as before; the numbers change by themselves.
   Status penalties don't stack (clumsy 1 and frightened 2 is −2, not −3); a status and a circumstance penalty do.
 
+## 2b. Time and encounters (Claude)
+
+- **Set the clock when a campaign starts:** `node tools/clock.mjs <pack> <save> set "1 Pharast 4725 AR, 08:00"`
+  (the first set makes that day Day 1; `start` moves Day 1 to today). `show` gives "Starday, 1 Pharast 4725 AR,
+  08:00 (Day 1)". Move it on as the story does: `advance "10 minutes"`, `advance "8 hours"`, `until 07:00`.
+  Every effect with a duration counts against it; advancing removes the ones that ran out.
+- **Run an encounter:** `encounter.mjs start "Kerra" "Lyra" "Sleepy-Eyed Guard"` (or `--all` on the current
+  map), `roll <who>` (d20 + Perception, or `--stat stealth` for someone sneaking; `--roll D` uses a die you
+  were given), `init <who> N` for a player's own roll, `begin`, then `next` after each turn. Write every record
+  it prints and put its lines in the log; tell the story from them. `delay`, `resume <who>`, `remove <who>`,
+  `end`. While an encounter is under way, time moves only by rounds.
+- **What happens by itself at turn boundaries:** persistent damage and its flat check, frightened going down
+  (a ruling can hold it: `noDecrease: true` on the badge), fast healing and regeneration, renewing temporary HP,
+  a dying creature's recovery check, effects running out with the conditions they granted, and a note when a
+  creature starts its turn inside an aura. Read the lines: regeneration names what stops it, and a save from an
+  aura is yours to roll.
+- **Timed effects:** `effect.mjs <token.json> apply spell-effects:effect/spell-effect-heroism --level 6
+  --records <records.json>` takes the effect's own duration and starts it now, on the acting creature's turn;
+  `custom "Feinted" --duration "1 round" --expiry turn-end --turn-of tok-...` for an effect of your own
+  ("until the end of your next turn" counts from the creature whose turn it was). A condition with a time limit
+  is an effect that grants it.
+- **Switches:** when a player says "I rage" or "I'm flanking", `actor.mjs option <who> rage on`; `show` lists a
+  creature's switches. Situations no rule names can still be set as tags for your own rulings.
+- **Checks with the creature's own rules:** `check.mjs` applies degree of success changes, asks for two dice
+  when the creature rolls twice (`--roll 12,7`), and makes a target off-guard (or similar) for a Strike when the
+  attacker's rules say so.
+
 ## 3. Writing game data
 
 - **A PC** is a build: ancestry (HP, size, Speed, senses), class (HP per level, key attribute), attribute
@@ -165,4 +192,19 @@ write a number into an actor that the rules can work out. The board and the tool
   on it.
 - **Re-importing the same release is the test of the tracking**: 851 documents "changed on our side", 29,116
   untouched, none rewritten needlessly.
+
+## 8. Lessons (2026-11-12, time, encounters and rule keys)
+
+- **Read the source before deciding.** Foundry keeps conditions on the creature, but its unlinked tokens each
+  have their own creature, so "conditions on the token" is what it does in practice; and it gives durations
+  only to effects. Both shaped our design; its missing frightened decrease is one thing we do differently.
+- **Name tags the way the imported data does.** Foundry's conditions test "self:condition:frightened" and
+  "item:trait:agile": adding those names to our tags made thousands of imported conditions meaningful with no
+  rewriting.
+- **A rule value is not always a number.** Size was first stored as `value: "large"` and the validator, rightly,
+  tried to read it as a formula; each key now has a field of its own.
+- **An aura with no effects still matters**: frightful presence and its like have their rules in text. Saying
+  who is inside is most of what Claude needs.
+- **Event order is the log's order**: running the turn rules once per event (end of turn, new round, next turn)
+  keeps the lines in the order things happened.
 

@@ -23,12 +23,9 @@
   "text": "You run and climb across ropes and rigging almost as easily as on the ground. You gain a climb Speed of 15 feet, but only when climbing ropes and similar objects. Whenever you succeed at an Athletics check to Climb or an Acrobatics check to Balance, you get a critical success instead. You aren't Off-Guard while Climbing or Balancing on a rope or similar object.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "RollOption",
-        "option": "rope-runner",
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "rope-runner",
+      "toggleable": true
     },
     {
       "key": "speed",
@@ -39,33 +36,30 @@
       ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "adjustment": {
-          "success": "one-degree-better"
-        },
-        "key": "AdjustDegreeOfSuccess",
-        "predicate": [
-          "rope-runner",
-          {
-            "or": [
-              {
-                "and": [
-                  "action:balance",
-                  "check:statistic:acrobatics"
-                ]
-              },
-              {
-                "and": [
-                  "action:climb",
-                  "check:statistic:athletics"
-                ]
-              }
-            ]
-          }
-        ],
-        "selector": "skill-check"
-      }
+      "key": "degree",
+      "selector": "skill-check",
+      "adjust": {
+        "success": "one-degree-better"
+      },
+      "when": [
+        "rope-runner",
+        {
+          "or": [
+            {
+              "and": [
+                "action:balance",
+                "check:statistic:acrobatics"
+              ]
+            },
+            {
+              "and": [
+                "action:climb",
+                "check:statistic:athletics"
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

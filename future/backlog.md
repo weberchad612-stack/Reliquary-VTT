@@ -305,10 +305,11 @@ only; a group of more than 26 uses two letters ("HC").
 Left over from importing all of Foundry PF2E 8.7.0 (docs/design/game-data.md section 7.4):
 - **Character converter:** the 160 pregenerated characters (iconics, Paizo pregens) and 5 familiars were
   skipped; they need Foundry's character build turned into our actor format (with the character builder).
-- **Rule elements to support next**, by how often they appear (content/pf2e/import-report.md): RollOption,
-  ActiveEffectLike, ItemAlteration, DamageDice, GrantItem, Aura, ChoiceSet, each with the feature that uses it
-  (sheets, attacks, the character builder, areas). Formulas (`ternary`, comparisons, `@itemLevel`) and
-  number-comparing conditions were built 2026-11-12 (design section 7.5).
+- **Rule elements to support next** (content/pf2e/import-report.md): ActiveEffectLike, ItemAlteration,
+  ChoiceSet, GrantItem of features (the character builder); RollOption with choices (sheets); AdjustModifier,
+  DamageAlteration, the rest of AdjustStrike and DamageDice (attacks). Formulas, number conditions, roll options,
+  damage dice, auras, turn rules and the rest were built 2026-11-12 (design sections 7.5 and 8).
+- **Lights from effects** stay on the token when the effect ends; remove them by hand for now.
 - **Values still missing**: a weapon's damage dice, rune potency, sheet choices (`rulesSelections`), the
   creature's land Speed ("a climb Speed equal to your Speed", 30 rules), facts about the target (distance, size).
 - **Three creatures with impossible Strength** (Marala +30, Glittercrag Strix +25, Okoa +19): check the books

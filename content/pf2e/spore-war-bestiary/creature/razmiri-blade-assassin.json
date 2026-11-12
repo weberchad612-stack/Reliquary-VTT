@@ -133,13 +133,10 @@
       "text": "Trigger The blade assassin is targeted with a melee or ranged attack by an attacker they can see\n\n---\nEffect The blade assassin gains a +2 circumstance bonus to AC against the triggering attack",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "ac",
-            "key": "RollOption",
-            "option": "nimble-dodge",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "nimble-dodge",
+          "domain": "ac",
+          "toggleable": true
         },
         {
           "key": "modifier",
@@ -159,24 +156,21 @@
       "text": "The blade assassin is driven forward by a singular, otherworldly will, guiding their actions. Whenever the blade assassin attempts a Will saving throw against a mental effect that would control or dictate their actions, the blade assassin treats the result of the saving throw as one category better.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "adjustment": {
-              "all": "one-degree-better"
-            },
-            "key": "AdjustDegreeOfSuccess",
-            "predicate": [
-              {
-                "or": [
-                  "inflicts:controlled",
-                  "item:slug:command",
-                  "item:slug:suggestion",
-                  "item:slug:dominate"
-                ]
-              }
-            ],
-            "selector": "will"
-          }
+          "key": "degree",
+          "selector": "will",
+          "adjust": {
+            "all": "one-degree-better"
+          },
+          "when": [
+            {
+              "or": [
+                "inflicts:controlled",
+                "item:slug:command",
+                "item:slug:suggestion",
+                "item:slug:dominate"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -210,26 +204,20 @@
       "text": "The blade assassin deals an extra 2d6 precision damage to Off-Guard creatures.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "precision",
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:off-guard"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "category": "precision",
+          "when": [
+            "target:condition:off-guard"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
-            "option": "target:condition:off-guard",
-            "toggleable": "totm"
-          }
+          "key": "roll-option",
+          "option": "target:condition:off-guard",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.TOTMToggle.OffGuard"
         }
       ]
     },

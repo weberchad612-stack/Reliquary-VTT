@@ -122,13 +122,10 @@
       "text": "The bloody blade mercenary designates a single creature as their prey and focuses their attacks against that creature. The mercenary must be able to see or hear the prey, or must be tracking the prey during exploration.\n\nThe mercenary gains a +2 circumstance bonus to Perception checks to Seeks their prey and a +2 circumstance bonus to Survival checks when they Tracks their prey. The mercenary also ignores the penalty for making ranged attacks within their second range increment against the prey they are hunting.\n\nThe mercenary can have only one creature designated as their prey at a time. If they use Hunt Prey against a creature when they already have a creature designated, the prior creature loses the designation and the new prey gains the designation. This designation lasts until their next daily preparations.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
-            "option": "hunted-prey",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "hunted-prey",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey"
         },
         {
           "key": "modifier",
@@ -151,15 +148,12 @@
           ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "ranged-attack-roll",
-            "key": "RollOption",
-            "option": "ignore-range-penalty:2",
-            "predicate": [
-              "hunted-prey"
-            ]
-          }
+          "key": "roll-option",
+          "option": "ignore-range-penalty:2",
+          "domain": "ranged-attack-roll",
+          "when": [
+            "hunted-prey"
+          ]
         }
       ]
     },
@@ -181,28 +175,22 @@
       "text": "The first time the mercenary hits their hunted prey in a round, they deal 1d8 additional precision damage.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "damage",
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.HuntPrey.FirstHitSwitch",
-            "option": "first-attack",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "first-attack",
+          "domain": "damage",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.HuntPrey.FirstHitSwitch"
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "precision",
-            "diceNumber": 1,
-            "dieSize": "d8",
-            "key": "DamageDice",
-            "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
-            "predicate": [
-              "first-attack"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 1,
+          "die": "d8",
+          "category": "precision",
+          "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
+          "when": [
+            "first-attack"
+          ]
         }
       ]
     }

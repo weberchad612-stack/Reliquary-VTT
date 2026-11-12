@@ -17,64 +17,44 @@
   "text": "This simple wooden +1 striking mace transforms in the hands of a wielder with great faith in a deity.\n\n---\nActivate—Bow to a Higher Power 1 (concentrate)\n\nRequirements You worship a deity\n\nEffect You supplicate yourself to your deity, and the chaplain's cudgel becomes a conduit for their power. It transforms into your deity's favored weapon, as the Shifting rune except that it functions even if the favored weapon is a ranged weapon, a weapon requiring two hands, or both. Etchings of your deity's religious symbol and other divine depictions spread across the weapon from end to end. This lasts until this activation is used again. While the weapon is attuned to you in this way, you get the following benefits.\n- If you have the holy or unholy trait, you can add that trait to Strikes you make with the weapon.\n- Whenever you cast a divine spell that takes 2 actions or more to cast, the next Strike you make with this weapon before the end of your next turn gets a status bonus to its damage roll equal to the weapon's number of damage dice. Casting a spell matching the options from your deity's divine font grants this benefit no matter how many actions you spent casting it.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "disabledIf": [
-          {
-            "not": "deity"
-          }
-        ],
-        "disabledValue": false,
-        "key": "RollOption",
-        "label": "PF2E.SpecificRule.Equipment.ChaplainsCudgel.BowToAHigherPowerLabel",
-        "option": "chaplains-cudgel:bow-to-a-higher-power",
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "chaplains-cudgel:bow-to-a-higher-power",
+      "toggleable": true,
+      "label": "PF2E.SpecificRule.Equipment.ChaplainsCudgel.BowToAHigherPowerLabel"
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "domain": "damage",
-        "key": "RollOption",
-        "label": "PF2E.SpecificRule.Equipment.ChaplainsCudgel.CastTwoActionSpellLabel",
-        "option": "chaplains-cudgel:two-action-spell",
-        "predicate": [
-          "chaplains-cudgel:bow-to-a-higher-power"
-        ],
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "chaplains-cudgel:two-action-spell",
+      "domain": "damage",
+      "toggleable": true,
+      "label": "PF2E.SpecificRule.Equipment.ChaplainsCudgel.CastTwoActionSpellLabel",
+      "when": [
+        "chaplains-cudgel:bow-to-a-higher-power"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|_id}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "chaplains-cudgel:bow-to-a-higher-power",
-          "self:trait:holy"
-        ],
-        "property": "traits",
-        "value": "holy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "holy"
+      ],
+      "when": [
+        "item:id:{item|_id}",
+        "chaplains-cudgel:bow-to-a-higher-power",
+        "self:trait:holy"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|_id}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "chaplains-cudgel:bow-to-a-higher-power",
-          "self:trait:unholy"
-        ],
-        "property": "traits",
-        "value": "unholy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "unholy"
+      ],
+      "when": [
+        "item:id:{item|_id}",
+        "chaplains-cudgel:bow-to-a-higher-power",
+        "self:trait:unholy"
+      ]
     },
     {
       "key": "unsupported",

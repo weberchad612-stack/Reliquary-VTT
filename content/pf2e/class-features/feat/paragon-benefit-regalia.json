@@ -17,57 +17,39 @@
   "text": "Your regalia grants you the true gravitas of rulership, tying together the hearts and minds of your allies and making it impossible for you to leave a bad impression. If you roll a critical failure on a check to Coerce, Make an Impression, or Request, you get a failure instead. When others use Follow the Expert to follow you, you grant them a +3 circumstance bonus if you are trained or +4 if you are an expert or above.\n\nAllies in your inspiring aura aren't Off-Guard from being flanked unless you too are flanked. If one of your allies in the aura is Clumsy, Enfeebled, Frightened, Sickened, or Stupefied, the status penalty your ally takes from the condition is 1 lower than the condition's value as long as the ally remains in the aura, unless you too are affected by the same condition.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "adjustment": {
-          "criticalFailure": "to-failure"
-        },
-        "key": "AdjustDegreeOfSuccess",
-        "predicate": [
-          {
-            "or": [
-              "action:coerce",
-              "action:make-an-impression",
-              "action:request"
-            ]
-          }
-        ],
-        "selector": "skill-check"
-      }
+      "key": "degree",
+      "selector": "skill-check",
+      "adjust": {
+        "critical-failure": "to-failure"
+      },
+      "when": [
+        {
+          "or": [
+            "action:coerce",
+            "action:make-an-impression",
+            "action:request"
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "effects": [
-          {
-            "affects": "allies",
-            "alterations": [
-              {
-                "mode": "add",
-                "property": "other-tags",
-                "value": "adept-benefit"
-              },
-              {
-                "mode": "add",
-                "property": "other-tags",
-                "value": "paragon-benefit"
-              }
-            ],
-            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Regalia"
-          }
-        ],
-        "key": "Aura",
-        "predicate": [
-          "implement:regalia:equipped"
-        ],
-        "radius": 15,
-        "slug": "regalia-aura",
-        "traits": [
-          "emotion",
-          "visual",
-          "mental"
-        ]
-      }
+      "key": "aura",
+      "slug": "regalia-aura",
+      "radius": 15,
+      "effects": [
+        {
+          "ref": "feat-effects:effect/effect-regalia",
+          "affects": "allies"
+        }
+      ],
+      "traits": [
+        "emotion",
+        "visual",
+        "mental"
+      ],
+      "when": [
+        "implement:regalia:equipped"
+      ]
     }
   ]
 }

@@ -227,32 +227,20 @@
       "text": "- Bat Jack changes into a Giant Bat. He gains echolocation 40 feet, a land Speed of 20 feet and a fly Speed of 30 feet, and a fangs Strike +25 for 2d8+13 piercing\n\n---",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "change-shape",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "change-shape",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "attackModifier": 25,
-            "damage": {
-              "base": {
-                "damageType": "piercing",
-                "dice": 2,
-                "die": "d8",
-                "modifier": 13
-              }
-            },
-            "key": "Strike",
-            "label": "PF2E.BattleForm.Attack.Fangs",
-            "predicate": [
-              "change-shape"
-            ],
-            "slug": "fangs"
-          }
+          "key": "strike",
+          "name": "PF2E.BattleForm.Attack.Fangs",
+          "category": "unarmed",
+          "die": "d8",
+          "dice": 2,
+          "type": "piercing",
+          "when": [
+            "change-shape"
+          ]
         }
       ]
     },
@@ -286,20 +274,18 @@
       "text": "Any creature that has the Frightened condition is also Off-Guard to Weeping Jack's attacks.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "EphemeralEffect",
-            "predicate": [
-              "target:condition:frightened"
-            ],
-            "selectors": [
-              "strike-attack-roll",
-              "spell-attack-roll",
-              "strike-damage",
-              "attack-spell-damage"
-            ],
-            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
-          }
+          "key": "ephemeral",
+          "selector": [
+            "strike-attack-roll",
+            "spell-attack-roll",
+            "strike-damage",
+            "attack-spell-damage"
+          ],
+          "affects": "target",
+          "condition": "off-guard",
+          "when": [
+            "target:condition:frightened"
+          ]
         }
       ]
     },
@@ -320,26 +306,20 @@
       "text": "Weeping Jack deals 3d6 extra precision damage to Off-Guard creatures.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "precision",
-            "diceNumber": 3,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:off-guard"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 3,
+          "die": "d6",
+          "category": "precision",
+          "when": [
+            "target:condition:off-guard"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
-            "option": "target:condition:off-guard",
-            "toggleable": "totm"
-          }
+          "key": "roll-option",
+          "option": "target:condition:off-guard",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.TOTMToggle.OffGuard"
         }
       ]
     },
@@ -355,12 +335,9 @@
       "text": "The vampire turns into a cloud of vapor, as the Vapor Form spell, or back to its normal form. The vampire loses fast healing while in gaseous form.\n\nThe vampire can remain in this form indefinitely.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "turn-to-mist",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "turn-to-mist",
+          "toggleable": true
         }
       ]
     },

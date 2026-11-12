@@ -92,7 +92,17 @@ export function predicateOk(p) {
   return false;
 }
 
-export function convertRule(r) {
+const SIZE_SLUGS = { tiny: 'tiny', sm: 'small', med: 'medium', lg: 'large', huge: 'huge', grg: 'gargantuan', small: 'small', medium: 'medium', large: 'large', gargantuan: 'gargantuan' };
+const plain = (s) => typeof s === 'string' && s && !s.includes('{') && !s.includes('@');
+/** A Foundry link to a condition as our condition id ("Compendium.pf2e.conditionitems.Item.Off-Guard" -> off-guard). */
+function conditionOf(uuid, ctx) {
+  const key = ctx && ctx.ref ? ctx.ref(uuid) : null;
+  if (key && /^conditions:condition\//.test(key)) return key.split('/').pop().replace(/^persistent-damage$/, 'persistent');
+  const m = /conditionitems\.Item\.([A-Za-z -]+)$/.exec(String(uuid || ''));
+  return m ? slugify(m[1]) : null;
+}
+
+export function convertRule(r, ctx = null) {
   const keep = (why) => ({ rule: { key: 'unsupported', foundry: r }, why, unsupported: (r && r.key) || '(no key)' });
   if (!r || typeof r !== 'object') return keep('not a rule element');
   const when = r.predicate && r.predicate.length ? r.predicate : undefined;
@@ -124,6 +134,97 @@ export function convertRule(r) {
     }
     case 'Note':
       return { rule: { key: 'note', selector: r.selector, text: cleanText(r.text || r.title || ''), ...(r.outcome ? { outcome: r.outcome } : {}), ...(when ? { when } : {}) } };
+    // ---- PF2E's own keys (rulesets/pf2e/rule-keys.js) ----
+    case 'RollOption': {
+      if (!plain(r.option)) return keep('its option is built from data we do not have');
+      if (r.suboptions && (Array.isArray(r.suboptions) ? r.suboptions.length : true)) return keep('a switch with choices (comes with sheets)');
+      // an option for one kind of roll ("damage") holds for the creature: the rules it switches name their rolls
+      return { rule: { key: 'roll-option', option: r.option, ...(r.domain && r.domain !== 'all' ? { domain: r.domain } : {}), ...(r.toggleable ? { toggleable: true } : {}), ...(r.label ? { label: cleanText(r.label) } : {}), ...(r.toggleable && r.value === true ? { default: true } : {}), ...(when ? { when } : {}) } };
+    }
+    case 'ActorTraits': {
+      const add = [].concat(r.add || []), remove = [].concat(r.remove || []);
+      if (![...add, ...remove].every(plain)) return keep('traits built from data we do not have');
+      return { rule: { key: 'trait', ...(add.length ? { add } : {}), ...(remove.length ? { remove } : {}), ...(when ? { when } : {}) } };
+    }
+    case 'CreatureSize': {
+      const size = SIZE_SLUGS[r.value];
+      if (!size) return keep(`size "${r.value}" (a change by steps comes later)`);
+      return { rule: { key: 'size', size, ...(when ? { when } : {}) } };
+    }
+    case 'DamageDice': {
+      if (r.override || r.brackets) return keep('changes the dice or depends on level brackets');
+      const dice = convertValue(r.diceNumber ?? 1);
+      if (dice === null || !/^d(4|6|8|10|12|20)$/.test(String(r.dieSize || ''))) return keep('dice built from data we do not have');
+      if (r.damageType !== undefined && !plain(r.damageType)) return keep('a damage type chosen on the sheet');
+      return { rule: { key: 'damage-dice', selector: r.selector, dice, die: r.dieSize, ...(r.damageType ? { type: r.damageType } : {}), ...(r.category ? { category: r.category } : {}), ...(r.critical ? { critical: true } : {}), ...(r.label ? { label: cleanText(r.label) } : {}), ...(when ? { when } : {}) } };
+    }
+    case 'AdjustStrike': {
+      if (!['traits', 'weapon-traits'].includes(r.property) || !['add', 'remove'].includes(r.mode) || !plain(r.value)) return keep(`changes a Strike's ${r.property || 'data'} (comes with attacks)`);
+      if (r.definition && !predicateOk(r.definition)) return keep('picks Strikes by numbers our engine does not know yet');
+      const pick = [...(r.definition || []), ...(when || [])];
+      return { rule: { key: 'strike-trait', mode: r.mode, traits: [r.value], ...(pick.length ? { when: pick } : {}) } };
+    }
+    case 'Strike': {
+      const b = (r.damage || {}).base || {};
+      if (!/^d(4|6|8|10|12)$/.test(String(b.die || '')) || !plain(b.damageType || 'x') || (r.label && !plain(r.label))) return keep('a Strike built from data we do not have');
+      return { rule: { key: 'strike', name: cleanText(r.label || r.slug || 'Strike'), category: r.category || 'unarmed', ...(r.group ? { group: r.group } : {}), die: b.die, ...(b.dice > 1 ? { dice: b.dice } : {}), type: b.damageType, ...([].concat(r.traits || []).filter(plain).length ? { traits: [].concat(r.traits).filter(plain) } : {}), ...(r.range ? { range: typeof r.range === 'object' ? r.range.increment : r.range } : {}), ...(when ? { when } : {}) } };
+    }
+    case 'AdjustDegreeOfSuccess': {
+      const adj = r.adjustment || {};
+      if (!Object.keys(adj).length) return keep('no adjustment');
+      return { rule: { key: 'degree', selector: r.selector, adjust: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k.replace(/([A-Z])/g, '-$1').toLowerCase(), v])), ...(when ? { when } : {}) } };
+    }
+    case 'RollTwice':
+      return { rule: { key: 'roll-twice', selector: r.selector, keep: r.keep === 'lower' ? 'lower' : 'higher', ...(when ? { when } : {}) } };
+    case 'MultipleAttackPenalty': {
+      const value = convertValue(r.value);
+      if (value === null) return keep(`value "${r.value}" uses data we do not have`);
+      return { rule: { key: 'map', selector: r.selector, value, ...(when ? { when } : {}) } };
+    }
+    case 'CriticalSpecialization':
+      if (r.alternate) return keep('a different critical specialization effect');
+      return { rule: { key: 'crit-spec', ...(when ? { when } : {}) } };
+    case 'EphemeralEffect': {
+      const cond = conditionOf(r.uuid, ctx), ref = cond ? null : ctx && ctx.ref ? ctx.ref(r.uuid) : null;
+      if (!cond && !ref) return keep('an effect we could not find');
+      return { rule: { key: 'ephemeral', selector: r.selectors || r.selector, affects: r.affects === 'origin' ? 'origin' : 'target', ...(cond ? { condition: cond } : { ref }), ...(when ? { when } : {}) } };
+    }
+    case 'TempHP': {
+      const value = convertValue(r.value);
+      if (value === null) return keep(`value "${r.value}" uses data we do not have`);
+      const ev = r.events || {};
+      return { rule: { key: 'temp-hp', value, ...(ev.onCreate === false ? { onCreate: false } : {}), ...(ev.onTurnStart ? { onTurnStart: true } : {}) } };
+    }
+    case 'FastHealing': {
+      const value = convertValue(r.value);
+      if (value === null) return keep(`value "${r.value}" uses data we do not have`);
+      if (when) return keep('conditional fast healing');
+      return { rule: { key: 'fast-healing', value, kind: r.type === 'regeneration' ? 'regeneration' : 'fast-healing', ...(r.deactivatedBy && r.deactivatedBy.length ? { deactivatedBy: [].concat(r.deactivatedBy) } : {}) } };
+    }
+    case 'Aura': {
+      const radius = convertValue(r.radius);
+      if (radius === null) return keep(`radius "${r.radius}" uses data we do not have`);
+      const effects = [];
+      for (const e of r.effects || []) {
+        const ref = ctx && ctx.ref ? ctx.ref(e.uuid) : null;
+        if (!ref) return keep('an aura effect we could not find');
+        if (e.predicate && e.predicate.length) return keep('an aura effect with its own condition');
+        effects.push({ ref, affects: ['enemies', 'allies', 'all'].includes(e.affects) ? e.affects : 'all', ...(e.save ? { save: { type: e.save.type, dc: e.save.dc } } : {}), ...(e.includesSelf ? { includesSelf: true } : {}) });
+      }
+      // an aura with no effects of its own (frightful presence): who is in it is reported for Claude to rule on
+      return { rule: { key: 'aura', slug: r.slug || 'aura', radius, effects, ...([].concat(r.traits || []).filter(plain).length ? { traits: [].concat(r.traits).filter(plain) } : {}), ...(when ? { when } : {}) } };
+    }
+    case 'TokenLight': {
+      const v = r.value || {};
+      if (typeof v.bright !== 'number' && typeof v.dim !== 'number') return keep('a light built from data we do not have');
+      return { rule: { key: 'light', bright: v.bright || 0, dim: v.dim || 0, ...(typeof v.color === 'string' && /^#[0-9a-f]{6}$/i.test(v.color) ? { colour: v.color.toLowerCase() } : {}) } };
+    }
+    case 'GrantItem': {
+      const cond = conditionOf(r.uuid, ctx);
+      if (!cond) return keep('grants an item or feature (comes with the character builder)');
+      const alt = (r.alterations || []).find((a) => a.property === 'badge-value');
+      return { rule: { key: 'grant-condition', condition: cond, ...(alt && Number.isInteger(alt.value) ? { value: alt.value } : {}) } };
+    }
     default:
       return keep(`rule "${r.key}" is not supported yet`);
   }
@@ -132,7 +233,7 @@ export function convertRule(r) {
 export function convertRules(rules, where, ctx) {
   const out = [];
   for (const r of rules || []) {
-    const c = convertRule(r);
+    const c = convertRule(r, ctx);
     out.push(c.rule);
     if (c.unsupported) {
       const u = ctx.report.unsupported;

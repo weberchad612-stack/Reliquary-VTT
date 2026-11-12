@@ -173,13 +173,10 @@
       "text": "Silene's Strikes deal an additional 1d6 void damage to humans, an additional 1d6 void damage to creatures wielding axes, or an additional 1d8 void damage to humans wielding axes.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.NPCAbility.Silene.LumberjacksBane",
-            "option": "target:wielding-axe",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "target:wielding-axe",
+          "toggleable": true,
+          "label": "PF2E.NPCAbility.Silene.LumberjacksBane"
         },
         {
           "key": "unsupported",
@@ -200,18 +197,15 @@
           }
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "void",
-            "diceNumber": 1,
-            "dieSize": "d8",
-            "key": "DamageDice",
-            "predicate": [
-              "target:wielding-axe",
-              "target:trait:human"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 1,
+          "die": "d8",
+          "type": "void",
+          "when": [
+            "target:wielding-axe",
+            "target:trait:human"
+          ]
         }
       ]
     },
@@ -230,26 +224,20 @@
       },
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "possess-tree",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "possess-tree",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "add": [
-              "incorporeal"
-            ],
-            "key": "ActorTraits",
-            "predicate": [
-              {
-                "not": "possess-tree"
-              }
-            ]
-          }
+          "key": "trait",
+          "add": [
+            "incorporeal"
+          ],
+          "when": [
+            {
+              "not": "possess-tree"
+            }
+          ]
         },
         {
           "key": "speed",
@@ -273,14 +261,11 @@
           ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "CreatureSize",
-            "predicate": [
-              "possess-tree"
-            ],
-            "value": "huge"
-          }
+          "key": "size",
+          "size": "huge",
+          "when": [
+            "possess-tree"
+          ]
         },
         {
           "key": "resistance",
@@ -307,28 +292,18 @@
           ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "attackModifier": 20,
-            "damage": {
-              "base": {
-                "damageType": "bludgeoning",
-                "dice": 2,
-                "die": "d12",
-                "modifier": 9
-              }
-            },
-            "key": "Strike",
-            "label": "PF2E.BattleForm.Attack.Branch",
-            "predicate": [
-              "possess-tree"
-            ],
-            "replaceAll": true,
-            "slug": "branch",
-            "traits": [
-              "reach-15"
-            ]
-          }
+          "key": "strike",
+          "name": "PF2E.BattleForm.Attack.Branch",
+          "category": "unarmed",
+          "die": "d12",
+          "dice": 2,
+          "type": "bludgeoning",
+          "traits": [
+            "reach-15"
+          ],
+          "when": [
+            "possess-tree"
+          ]
         }
       ]
     }

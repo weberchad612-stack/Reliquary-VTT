@@ -15,29 +15,19 @@
   "text": "The target is impaled and anchored in place, becoming grabbed by the chain. The creature is unable to recover from persistent bleed damage until it gets free.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "GrantItem",
-        "onDeleteActions": {
-          "grantee": "cascade",
-          "granter": "cascade"
-        },
-        "uuid": "Compendium.pf2e.conditionitems.Item.Grabbed"
-      }
+      "key": "grant-condition",
+      "condition": "grabbed"
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "adjustment": {
-          "criticalSuccess": "to-failure",
-          "success": "to-failure"
-        },
-        "key": "AdjustDegreeOfSuccess",
-        "predicate": [
-          "item:damage:type:bleed"
-        ],
-        "selector": "pd-recovery-check"
-      }
+      "key": "degree",
+      "selector": "pd-recovery-check",
+      "adjust": {
+        "critical-success": "to-failure",
+        "success": "to-failure"
+      },
+      "when": [
+        "item:damage:type:bleed"
+      ]
     }
   ]
 }

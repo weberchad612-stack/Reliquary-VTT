@@ -32,62 +32,51 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "damageType": "spirit",
-        "diceNumber": 2,
-        "dieSize": "d6",
-        "key": "DamageDice",
-        "predicate": [
-          {
-            "or": [
-              {
-                "and": [
-                  "parent:origin:trait:holy",
-                  "target:trait:unholy"
-                ]
-              },
-              {
-                "and": [
-                  "parent:origin:trait:unholy",
-                  "target:trait:holy"
-                ]
-              }
-            ]
-          }
-        ],
-        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
-      }
+      "key": "damage-dice",
+      "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+      "dice": 2,
+      "die": "d6",
+      "type": "spirit",
+      "when": [
+        {
+          "or": [
+            {
+              "and": [
+                "parent:origin:trait:holy",
+                "target:trait:unholy"
+              ]
+            },
+            {
+              "and": [
+                "parent:origin:trait:unholy",
+                "target:trait:holy"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|flags.system.rulesSelections.weapon}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "parent:origin:trait:holy"
-        ],
-        "property": "traits",
-        "value": "holy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "holy"
+      ],
+      "when": [
+        "item:id:{item|flags.system.rulesSelections.weapon}",
+        "parent:origin:trait:holy"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|flags.system.rulesSelections.weapon}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "parent:origin:trait:unholy"
-        ],
-        "property": "traits",
-        "value": "unholy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "unholy"
+      ],
+      "when": [
+        "item:id:{item|flags.system.rulesSelections.weapon}",
+        "parent:origin:trait:unholy"
+      ]
     }
   ]
 }

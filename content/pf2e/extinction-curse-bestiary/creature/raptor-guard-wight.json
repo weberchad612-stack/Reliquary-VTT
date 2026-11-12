@@ -177,15 +177,12 @@
       "text": "30 feet. A creature that enters the area must attempt a DC 32 Fortitude save save. On a failure, the creature is Sickened 2 and Doomed 1 for as long as it is sickened; on a critical failure, the creature is instead Doomed 2 for as long as it is sickened. While within the aura, the creature takes a -2 circumstance penalty to saves to recover from the sickened condition. A creature that succeeds at its save is temporarily immune to any creature's death stench for 1 minute.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "Aura",
-            "radius": 30,
-            "slug": "death-stench",
-            "traits": [
-              "olfactory"
-            ]
-          }
+          "key": "aura",
+          "slug": "death-stench",
+          "radius": 30,
+          "traits": [
+            "olfactory"
+          ]
         }
       ]
     },
@@ -252,45 +249,36 @@
       "text": "As long as the Raptor Guard wears its dinosaur-skull helm, its Strikes deal an additional 1d10 void damage, or an additional 2d10 void damage to Frightened creatures.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "strike-damage",
-            "key": "RollOption",
-            "label": "PF2E.NPCAbility.RaptorGuardWight.TerrorMaster",
-            "option": "terror-master",
-            "toggleable": true,
-            "value": true
-          }
+          "key": "roll-option",
+          "option": "terror-master",
+          "domain": "strike-damage",
+          "toggleable": true,
+          "label": "PF2E.NPCAbility.RaptorGuardWight.TerrorMaster",
+          "default": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "void",
-            "diceNumber": 2,
-            "dieSize": "d10",
-            "key": "DamageDice",
-            "predicate": [
-              "terror-master",
-              "target:condition:frightened"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d10",
+          "type": "void",
+          "when": [
+            "terror-master",
+            "target:condition:frightened"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "void",
-            "diceNumber": 1,
-            "dieSize": "d10",
-            "key": "DamageDice",
-            "predicate": [
-              "terror-master",
-              {
-                "not": "target:condition:frightened"
-              }
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 1,
+          "die": "d10",
+          "type": "void",
+          "when": [
+            "terror-master",
+            {
+              "not": "target:condition:frightened"
+            }
+          ]
         }
       ]
     },

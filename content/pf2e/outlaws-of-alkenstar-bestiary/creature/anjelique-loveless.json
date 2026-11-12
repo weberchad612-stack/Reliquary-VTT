@@ -176,13 +176,10 @@
       "text": "When Anjelique makes a critical hit with a firearm, the target must succeed a DC 34 Fortitude save save or be Stunned 1.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "CriticalSpecialization",
-            "predicate": [
-              "item:group:firearm"
-            ]
-          }
+          "key": "crit-spec",
+          "when": [
+            "item:group:firearm"
+          ]
         },
         {
           "key": "unsupported",
@@ -239,40 +236,31 @@
       "text": "Anjelique makes a ranged Strike and deals an additional 2d8 piercing damage on a hit. If the target is frightened, it also takes 2d6 bleed on a hit.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "damage",
-            "key": "RollOption",
-            "option": "tormenting-shot",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "tormenting-shot",
+          "domain": "damage",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "piercing",
-            "diceNumber": 2,
-            "dieSize": "d8",
-            "key": "DamageDice",
-            "predicate": [
-              "tormenting-shot"
-            ],
-            "selector": "ranged-strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "ranged-strike-damage",
+          "dice": 2,
+          "die": "d8",
+          "type": "piercing",
+          "when": [
+            "tormenting-shot"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "bleed",
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:frightened",
-              "tormenting-shot"
-            ],
-            "selector": "ranged-strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "ranged-strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "type": "bleed",
+          "when": [
+            "target:condition:frightened",
+            "tormenting-shot"
+          ]
         }
       ]
     }

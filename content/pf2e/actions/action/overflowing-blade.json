@@ -19,29 +19,22 @@
   "text": "Requirements You are overflowing\n\n---\nEffect You conduct the magic in your internal nexus to coat your weapon or unarmed strike, empowering it with magical energy for a devastating attack. Make a melee Strike. If the Strike hits, you deal an additional 1d4 force damage. At 10th level, the additional damage increases to 2d4 force damage. At 18th level, the additional damage increases to 3d4 force damage. You are no longer overflowing.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "RollOption",
-        "option": "overflowing-blade",
-        "predicate": [
-          "self:effect:overflowing"
-        ],
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "overflowing-blade",
+      "toggleable": true,
+      "when": [
+        "self:effect:overflowing"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "damageType": "force",
-        "diceNumber": "ternary(gte(@actor.level,18),3,ternary(gte(@actor.level,10),2,1))",
-        "dieSize": "d4",
-        "key": "DamageDice",
-        "predicate": [
-          "overflowing-blade"
-        ],
-        "selector": "melee-strike-damage",
-        "slug": "overflowing-blade"
-      }
+      "key": "damage-dice",
+      "selector": "melee-strike-damage",
+      "dice": "ternary(gte(@level,18),3,ternary(gte(@level,10),2,1))",
+      "die": "d4",
+      "type": "force",
+      "when": [
+        "overflowing-blade"
+      ]
     }
   ]
 }

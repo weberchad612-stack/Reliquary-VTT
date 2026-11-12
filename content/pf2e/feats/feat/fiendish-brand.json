@@ -23,43 +23,35 @@
   "text": "Make a Strike with a weapon or unarmed attack that deals piercing or slashing damage. If it's successful and deals damage, you carve bleeding words into your target. The target takes 1d6 bleed damage, which has the unholy trait. Anytime the creature casts a holy spell while this bleed damage persists, it must succeed at a DC 5 Flat check or the spell is disrupted.\n\nEffect: Fiendish Brand",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "RollOption",
-        "option": "fiendish-brand",
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "fiendish-brand",
+      "toggleable": true
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "damageType": "bleed",
-        "diceNumber": 1,
-        "dieSize": "d6",
-        "key": "DamageDice",
-        "predicate": [
-          "fiendish-brand",
-          {
-            "or": [
-              "item:damage:type:slashing",
-              "item:damage:type:piercing"
-            ]
-          }
-        ],
-        "selector": "melee-strike-damage"
-      }
+      "key": "damage-dice",
+      "selector": "melee-strike-damage",
+      "dice": 1,
+      "die": "d6",
+      "type": "bleed",
+      "when": [
+        "fiendish-brand",
+        {
+          "or": [
+            "item:damage:type:slashing",
+            "item:damage:type:piercing"
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "fiendish-brand"
-        ],
-        "property": "weapon-traits",
-        "value": "unholy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "unholy"
+      ],
+      "when": [
+        "fiendish-brand"
+      ]
     },
     {
       "key": "note",

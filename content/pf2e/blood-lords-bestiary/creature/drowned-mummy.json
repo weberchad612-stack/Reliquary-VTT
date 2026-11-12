@@ -193,15 +193,12 @@
       "text": "30 feet. A creature that begins its turn within the aura feels overburdened by the weight of the water around it and must succeed at a DC 35 Fortitude save save or become Encumbered for as long as it remains in the area. A creature that succeeds is temporarily immune to water pressure for 24 hours. Water pressure only functions while the drowned mummy is underwater and can only affect creatures that are in contact with the same body of water.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "Aura",
-            "radius": 30,
-            "slug": "water-pressure",
-            "traits": [
-              "primal"
-            ]
-          }
+          "key": "aura",
+          "slug": "water-pressure",
+          "radius": 30,
+          "traits": [
+            "primal"
+          ]
         }
       ]
     },
@@ -212,24 +209,18 @@
       "text": "A drowned mummy's Strikes deal an additional 2d6 damage against creatures in the same body of water as the drowned mummy.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "aquatic-advantage",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "aquatic-advantage",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "aquatic-advantage"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "when": [
+            "aquatic-advantage"
+          ]
         }
       ]
     },
@@ -240,26 +231,21 @@
       "category": "offensive",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "aquatic-ambush",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "aquatic-ambush",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "EphemeralEffect",
-            "predicate": [
-              "aquatic-ambush"
-            ],
-            "selectors": [
-              "strike-attack-roll",
-              "strike-damage"
-            ],
-            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
-          }
+          "key": "ephemeral",
+          "selector": [
+            "strike-attack-roll",
+            "strike-damage"
+          ],
+          "affects": "target",
+          "condition": "off-guard",
+          "when": [
+            "aquatic-ambush"
+          ]
         }
       ]
     },

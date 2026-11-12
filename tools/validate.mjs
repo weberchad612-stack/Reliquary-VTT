@@ -533,7 +533,7 @@ function checkRules(rules, where, file, sys, report) {
   for (const [i, r] of (rules || []).entries()) {
     const at = `${where}.rules[${i}]`;
     if (r.foundry) { if (report.tally) report.tally.unsupported++; else report.warn(file, `${at}: imported rule "${r.foundry.key || r.key}" is not supported yet (kept as it was)`); continue; }
-    if (!BASE_RULE_KEYS.includes(r.key)) report.error(file, `${at}: unknown rule key "${r.key}"`);
+    if (!BASE_RULE_KEYS.includes(r.key) && !((sys && sys.actors && sys.actors.ruleKeys) || []).includes(r.key)) report.error(file, `${at}: unknown rule key "${r.key}"`);
     for (const k of ['value', 'range']) if (typeof r[k] === 'string') { try { parseExpr(r[k]); } catch (e) { report.error(file, `${at}.${k}: ${e.message}`); } }
     const sel = (sys && sys.actors && sys.actors.selectors) || [];
     for (const s of [].concat(r.selector || [])) {
@@ -643,6 +643,15 @@ export function validateActors(save, pack, content, report) {
     } catch (e) { report.error(file, `cannot be prepared: ${e.message}`); }
   }
   if (fs.existsSync(sdir)) for (const n of fs.readdirSync(sdir).filter((x) => x.endsWith('.json'))) if (!ids.includes(path.basename(n, '.json'))) report.error(path.join(sdir, n), 'live state for a creature with no actor');
+  // the encounter: every combatant a token of this save
+  const campFile = path.join(save, 'campaign.json');
+  if (fs.existsSync(campFile)) {
+    try {
+      const enc = JSON.parse(fs.readFileSync(campFile, 'utf8')).encounter;
+      for (const c of (enc && enc.combatants) || []) if (!tokens.has(c.token)) report.error(campFile, `encounter: no token "${c.token}" on any map of this save`);
+      if (enc && enc.turn !== null && enc.turn !== undefined && !(enc.combatants || [])[enc.turn]) report.error(campFile, `encounter: turn ${enc.turn} is not a combatant`);
+    } catch { /* reported with campaign.json */ }
+  }
 }
 
 function main(argv) {

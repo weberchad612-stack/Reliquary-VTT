@@ -38,7 +38,7 @@ const NPC = {
   },
   items: [
     { name: 'Fangs', type: 'melee', system: { bonus: { value: 9 }, damageRolls: { a: { damage: '1d6+2', damageType: 'piercing' } }, traits: { value: ['agile', 'finesse'] }, attackEffects: { value: ['gloom-drain'] } } },
-    { name: 'Gloom Drain', type: 'action', system: { actionType: { value: 'action' }, actions: { value: 1 }, traits: { value: ['void'] }, description: { value: '<p>The target attempts a @Check[fortitude|dc:17|basic] save or becomes @UUID[Compendium.pf2e.conditionitems.Item.Drained]{Drained 1} for [[/gmr 1d4 #rounds]]{1d4 rounds}; it takes @Damage[(1d6)[void]] damage.</p><hr /><p>Area @Template[emanation|distance:10].</p>' }, rules: [{ key: 'FlatModifier', selector: 'attack', type: 'status', value: 1, predicate: ['dark'] }, { key: 'RollOption', option: 'bat' }] } },
+    { name: 'Gloom Drain', type: 'action', system: { actionType: { value: 'action' }, actions: { value: 1 }, traits: { value: ['void'] }, description: { value: '<p>The target attempts a @Check[fortitude|dc:17|basic] save or becomes @UUID[Compendium.pf2e.conditionitems.Item.Drained]{Drained 1} for [[/gmr 1d4 #rounds]]{1d4 rounds}; it takes @Damage[(1d6)[void]] damage.</p><hr /><p>Area @Template[emanation|distance:10].</p>' }, rules: [{ key: 'FlatModifier', selector: 'attack', type: 'status', value: 1, predicate: ['dark'] }, { key: 'ChoiceSet', choices: [] }] } },
     { name: 'Innate Spells', type: 'spellcastingEntry', system: { description: { value: '' } } },
     { name: 'Cave Lore', type: 'lore', system: { mod: { value: 7 } } },
   ],
@@ -90,8 +90,8 @@ test('the importer converts creatures and items, keeps licences, and reports wha
   const feat = by['feat/thick-hide'];
   assert.deepEqual(feat.rules.map((r) => r.key), ['modifier', 'resistance', 'modifier', 'speed', 'sense']);
   assert.deepEqual(Object.keys(by).sort(), ['condition/clumsy', 'creature/gloomfang-bat', 'feat/thick-hide', 'hazard/trap', 'item/quilted-coat']);
-  assert.ok(report.flagged.some((f) => /RollOption/.test(f.what)));
-  assert.equal(report.unsupported.RollOption, 1);
+  assert.ok(report.flagged.some((f) => /ChoiceSet/.test(f.what)));
+  assert.equal(report.unsupported.ChoiceSet, 1);
   assert.deepEqual(bat.items[2], { kind: 'spellcasting', name: 'Innate Spells' });
   assert.deepEqual(report.skipped.map((s) => s.why.split(' ')[0]).sort(), ['not', 'pregenerated']);
   // an imported creature runs through the rules, its unsupported rules listed for Claude

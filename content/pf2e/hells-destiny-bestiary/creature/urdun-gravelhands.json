@@ -239,56 +239,42 @@
       "text": "Frequency once per round\n\n---\nEffect Urdun shatters a bottle and uses it to brawl. For the next 1 minute when he makes a fist Strike, he can choose for the Strike to lose the unarmed trait, gain the versatile P trait, and deal 1d6 persistent bleed damage on critical hits.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "break-bottle",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "break-bottle",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "definition": [
-              "item:slug:fist"
-            ],
-            "key": "AdjustStrike",
-            "mode": "remove",
-            "predicate": [
-              "break-bottle"
-            ],
-            "property": "weapon-traits",
-            "value": "unarmed"
-          }
+          "key": "strike-trait",
+          "mode": "remove",
+          "traits": [
+            "unarmed"
+          ],
+          "when": [
+            "item:slug:fist",
+            "break-bottle"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "definition": [
-              "item:slug:fist"
-            ],
-            "key": "AdjustStrike",
-            "mode": "add",
-            "predicate": [
-              "break-bottle"
-            ],
-            "property": "weapon-traits",
-            "value": "versatile-p"
-          }
+          "key": "strike-trait",
+          "mode": "add",
+          "traits": [
+            "versatile-p"
+          ],
+          "when": [
+            "item:slug:fist",
+            "break-bottle"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "critical": true,
-            "damageType": "bleed",
-            "diceNumber": 1,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "break-bottle"
-            ],
-            "selector": "fist-damage"
-          }
+          "key": "damage-dice",
+          "selector": "fist-damage",
+          "dice": 1,
+          "die": "d6",
+          "type": "bleed",
+          "critical": true,
+          "when": [
+            "break-bottle"
+          ]
         }
       ]
     },
@@ -309,26 +295,20 @@
       "text": "Urdun's Strikes deal an additional 2d6 precision damage against Off-Guard creatures.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "category": "precision",
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:off-guard"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "category": "precision",
+          "when": [
+            "target:condition:off-guard"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
-            "option": "target:condition:off-guard",
-            "toggleable": "totm"
-          }
+          "key": "roll-option",
+          "option": "target:condition:off-guard",
+          "toggleable": true,
+          "label": "PF2E.SpecificRule.TOTMToggle.OffGuard"
         }
       ]
     },

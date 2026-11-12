@@ -36,42 +36,35 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "RollOption",
-        "option": "graceless-domain-failure-first",
-        "predicate": [
-          "graceless-domain:failure"
-        ],
-        "toggleable": true,
-        "value": true
-      }
+      "key": "roll-option",
+      "option": "graceless-domain-failure-first",
+      "toggleable": true,
+      "default": true,
+      "when": [
+        "graceless-domain:failure"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "keep": "lower",
-        "key": "RollTwice",
-        "predicate": [
-          {
-            "or": [
-              "graceless-domain:critical-failure",
-              {
-                "and": [
-                  "graceless-domain:failure",
-                  "graceless-domain-failure-first"
-                ]
-              }
-            ]
-          }
-        ],
-        "removeAfterRoll": false,
-        "selector": [
-          "athletics",
-          "acrobatics",
-          "performance"
-        ]
-      }
+      "key": "roll-twice",
+      "selector": [
+        "athletics",
+        "acrobatics",
+        "performance"
+      ],
+      "keep": "lower",
+      "when": [
+        {
+          "or": [
+            "graceless-domain:critical-failure",
+            {
+              "and": [
+                "graceless-domain:failure",
+                "graceless-domain-failure-first"
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

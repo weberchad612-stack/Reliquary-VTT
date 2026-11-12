@@ -333,12 +333,9 @@
       "text": "As soon as Caydserris is reduced to 0 Hit Points, he shrieks in exaltation. His head rips free from his body, which crumbles to the ground as a matrix of flesh and bone extend outward around his head, transforming him into a monstrous unique sahkil. His head and face remain, but rather than atop a humanoid body, it sits at the center of a great wheel of bone and gristle, held in place at the center by thick strings of viscera, entrails, veins, and vertebrae. Eyes and mouths open and weep along the wheel's meat-and-bristle-encrusted rim, as do five long distorted skinless arms that end in seven-fingered talons. Caydserris's wheel body floats in the air and slowly rotates, yet his head remains at all times aligned upright as the grisly spokes that connect it to the wheel constantly rip free and reattach to hold the head in place. All PCs within 60 feet must succeed at a DC 33 Will save save or become Frightened 1 (Frightened 3 on a critical failure), and Caydserris regains 100 healing HP. At the same moment, Florin's soul wrenches completely free from Caydserris's dropped mace and rises up with a howl of rage to swoop back and forth through his new body.\n\nIn this new form, Caydserris's Cursebound condition increases to 2 (or increases his current cursebound condition value by 1). He loses his mace Strike but gains his fearful claw Strike. He can't cast spells in this form and loses his base Speed (but not his fly Speed). If he survives, whether or not Charg allows him to eventually return to his human form is up to you.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "chargs-final-gift",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "chargs-final-gift",
+          "toggleable": true
         },
         {
           "key": "speed",
@@ -351,60 +348,39 @@
           ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "attackModifier": 28,
-            "baseType": "claw",
-            "damage": {
-              "base": {
-                "damageType": "slashing",
-                "dice": 3,
-                "die": "d12",
-                "modifier": 11
-              }
-            },
-            "key": "Strike",
-            "label": "PF2E.NPCAbility.CaydserrisArudora.FearfulClaw",
-            "predicate": [
-              "chargs-final-gift"
-            ],
-            "slug": "fearful-claw",
-            "traits": [
-              "agile",
-              "magical",
-              "reach-10",
-              "unarmed"
-            ]
-          }
+          "key": "strike",
+          "name": "PF2E.NPCAbility.CaydserrisArudora.FearfulClaw",
+          "category": "unarmed",
+          "die": "d12",
+          "dice": 3,
+          "type": "slashing",
+          "traits": [
+            "agile",
+            "magical",
+            "reach-10",
+            "unarmed"
+          ],
+          "when": [
+            "chargs-final-gift"
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "attackModifier": 28,
-            "baseType": "mace",
-            "category": "simple",
-            "damage": {
-              "base": {
-                "damageType": "bludgeoning",
-                "dice": 3,
-                "die": "d6",
-                "modifier": 11
-              }
-            },
-            "group": "club",
-            "key": "Strike",
-            "label": "PF2E.Weapon.Base.mace",
-            "predicate": [
-              {
-                "not": "chargs-final-gift"
-              }
-            ],
-            "slug": "mace",
-            "traits": [
-              "magical",
-              "shove"
-            ]
-          }
+          "key": "strike",
+          "name": "PF2E.Weapon.Base.mace",
+          "category": "simple",
+          "group": "club",
+          "die": "d6",
+          "dice": 3,
+          "type": "bludgeoning",
+          "traits": [
+            "magical",
+            "shove"
+          ],
+          "when": [
+            {
+              "not": "chargs-final-gift"
+            }
+          ]
         },
         {
           "key": "unsupported",
@@ -460,27 +436,8 @@
       "text": "When Caydserris has the Cursebound condition, he becomes Clumsy with a value equal to his cursebound value as Arudora spirits—particularly that of Florin Kindler—vie for control of his mind and hinder his movements.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "allowDuplicate": false,
-            "alterations": [
-              {
-                "mode": "override",
-                "property": "badge-value",
-                "value": "@actor.conditions.cursebound.value"
-              }
-            ],
-            "inMemoryOnly": true,
-            "key": "GrantItem",
-            "onDeleteActions": {
-              "grantee": "restrict"
-            },
-            "predicate": [
-              "self:condition:cursebound"
-            ],
-            "reevaluateOnUpdate": true,
-            "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
-          }
+          "key": "grant-condition",
+          "condition": "clumsy"
         }
       ]
     },

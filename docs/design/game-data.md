@@ -419,3 +419,66 @@ release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `5
 - **Still kept** (the next candidates): values from a weapon's damage dice, rune potency, sheet choices, the
   creature's land Speed, and facts about the target (distance, size).
 
+
+## 8. Time, encounters, turn rules and PF2E's rule keys (decided and built 2026-11-12)
+
+### 8.1 Decisions (the user, 2026-11-12)
+
+| Question | Decision |
+|---|---|
+| Where conditions live | **On the token**, as badges (researched first: in Foundry PF2E a condition is an item on the creature, and an unlinked token has its own copy of the creature, so in practice conditions are per token). |
+| Durations | **On effects only, Foundry's way.** A timed condition comes from an effect that grants it and goes with it; plain conditions stay until removed. |
+| Initiative | **Build the underlying concept now** (encounters, order, rounds, turns, events); the board's tracker UI later. |
+| Frightened and the like | **Decrease automatically** at the end of the creature's turn (Foundry leaves it manual); a ruling can hold one (`noDecrease`). |
+| Effects running out | **Removed, and logged**, with the conditions they granted. |
+| Game clock | **One clock**, with Golarion's calendar (Absalom Reckoning) and the day of the adventure ("Day 1"). |
+| Rule types now | **Rules-only, turns and positions**; the character builder's (ActiveEffectLike, GrantItem of features, ChoiceSet, ItemAlteration) wait for the builder. |
+| Switches (roll options) | **Claude flips them by chat** until sheets exist. |
+
+### 8.2 Research: how Foundry PF2E does it (8.7.0 source)
+
+- Conditions are items on the actor (`ConditionPF2e`); the token HUD toggles them; the same condition from two
+  sources: the highest value is active. Conditions have no duration. Only persistent damage does anything at
+  the end of a turn (rolled; the recovery check is a button). Frightened's decrease is not automated.
+- Effects (`EffectPF2e`) have `duration {value, unit (rounds, minutes, hours, days, encounter, unlimited),
+  expiry (turn-start, turn-end, round-end)}` and `start {value (world time), initiative}`; an effect runs out
+  when world time passes start + duration, and on the last moment at the start or end of the turn of whoever's
+  initiative it began on, or at the end of the round (`calculateRemainingDuration`). Expired effects are removed
+  or kept per a world setting. Effects can grant conditions (`GrantItem`), which go with them.
+- Encounters: combatants with initiative; a round is 6 seconds of world time; ties go to foes before PCs
+  (tiebreak priority). `onStartTurn` runs rule hooks (fast healing, temporary HP) and recharges round abilities;
+  `onEndTurn` runs persistent damage and turn-end effect events.
+
+### 8.3 As built
+
+- **Calendar and clock** (`engine/time/calendar.js`, `rulesets/pf2e/calendar.js`): months, weekdays, leap day at
+  the end of Calistril every four years (4724 AR was one), weekdays matching ours 2,700 years on (1 Abadius 4724
+  AR was a Moonday: Pathfinder Wiki gives no anchor, this is Paizo's convention). The clock is seconds since
+  year 1; `state/clock {now, start}` on the board, `clock` in `campaign.json`. `tools/clock.mjs`: show, set,
+  start (Day 1), advance, until.
+- **Durations** (`engine/time/clock.js`): Foundry's counting, event-driven: an effect's `start {time, turnOf,
+  round}` names the creature whose turn it began on, and `effectExpired` answers each event. Outside an
+  encounter, an effect runs out once its time has passed.
+- **Encounters** (`engine/time/encounter.js`): add, initiative, sort (the ruleset's tiebreak), begin, next,
+  delay (turn-end rules happen now), resume (acts before whoever was next), remove, end; events turn-start,
+  turn-end, round-start, round-end, encounter-end; the clock moves one round per round. `state/encounter` on
+  the board, `encounter` in `campaign.json`; the validator checks its combatants. `tools/encounter.mjs` drives
+  it from chat.
+- **Turn rules** (`rulesets/pf2e/turns.js`): end of turn: persistent damage (rolled) and a DC 15 flat check per
+  damage type, frightened down by 1; start of turn: a dying creature's recovery check, fast healing and
+  regeneration, temporary HP that renews; at every boundary and as time passes, expired effects are removed
+  with the conditions they granted (unless another effect still grants them). Rolls use `engine/rules/dice.js`
+  (random, or seeded with `--seed`).
+- **Effects with durations** (`tools/effect.mjs`): `--duration`, `--expiry`, a start from the clock and the
+  encounter; `apply` takes the document's duration, adds the conditions it grants (`grants`) and its light.
+- **PF2E rule keys** (`rulesets/pf2e/rule-keys.js`), converted from Foundry: roll options (always-on, and
+  switches flipped by `actor.mjs option`), traits, size, damage dice (and critical-only dice), Strike traits,
+  granted Strikes, multiple attack penalty, critical specialization, degree of success, rolling twice, one-roll
+  effects on a target (`check.mjs`), temporary HP, fast healing and regeneration, auras (worked out from token
+  positions; effects on the creatures inside by side, saves listed; an aura with no effects reports who is
+  inside), light (on the token when it is given game data or the effect is applied), conditions granted by
+  effects. Our tags include Foundry's names (`self:trait:`, `self:condition:`, `self:effect:`, `item:trait:`,
+  `item:slug:`), so the imported conditions on rules mean what they say.
+- **Re-import of 8.7.0:** rules kept as unsupported went from 22,895 to **12,654** (10,241 more run); every
+  creature still prepares. The rest: ActiveEffectLike 3,009, ItemAlteration 2,693, ChoiceSet 1,418, GrantItem
+  (of features) 1,405, RollOption with choices 833, AdjustModifier 542, and formula values we do not have yet.

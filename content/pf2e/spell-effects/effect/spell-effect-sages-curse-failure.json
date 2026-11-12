@@ -15,18 +15,14 @@
   "text": "Granted by Sage's Curse\n\nThe target must roll twice and use the worse result whenever attempting an Arcana, Lore, Occultism, or Society check. On a critical failure, the target treats the outcomes of all checks to Recall Knowledge as one degree of success worse than the result rolled.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "keep": "lower",
-        "key": "RollTwice",
-        "removeAfterRoll": false,
-        "selector": [
-          "arcana",
-          "occultism",
-          "society",
-          "lore-skill-check"
-        ]
-      }
+      "key": "roll-twice",
+      "selector": [
+        "arcana",
+        "occultism",
+        "society",
+        "lore-skill-check"
+      ],
+      "keep": "lower"
     },
     {
       "key": "unsupported",
@@ -46,18 +42,15 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "adjustment": {
-          "all": "one-degree-worse"
-        },
-        "key": "AdjustDegreeOfSuccess",
-        "predicate": [
-          "action:recall-knowledge",
-          "sages-curse-result:critical-failure"
-        ],
-        "selector": "skill-check"
-      }
+      "key": "degree",
+      "selector": "skill-check",
+      "adjust": {
+        "all": "one-degree-worse"
+      },
+      "when": [
+        "action:recall-knowledge",
+        "sages-curse-result:critical-failure"
+      ]
     }
   ]
 }

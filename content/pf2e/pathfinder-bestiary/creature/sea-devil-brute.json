@@ -219,46 +219,39 @@
       "text": "When the sea devil deals piercing or slashing damage, it also deals 1d4 bleed if the target was Off-Guard or if the attack was a critical hit.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "critical": false,
-            "damageType": "bleed",
-            "diceNumber": 1,
-            "dieSize": "d4",
-            "key": "DamageDice",
-            "predicate": [
-              "target:condition:off-guard",
-              {
-                "or": [
-                  "item:damage:type:piercing",
-                  "item:damage:type:slashing"
-                ]
-              }
-            ],
-            "selector": "damage"
-          }
+          "key": "damage-dice",
+          "selector": "damage",
+          "dice": 1,
+          "die": "d4",
+          "type": "bleed",
+          "when": [
+            "target:condition:off-guard",
+            {
+              "or": [
+                "item:damage:type:piercing",
+                "item:damage:type:slashing"
+              ]
+            }
+          ]
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "critical": true,
-            "damageType": "bleed",
-            "diceNumber": 1,
-            "dieSize": "d4",
-            "key": "DamageDice",
-            "predicate": [
-              {
-                "not": "target:condition:off-guard"
-              },
-              {
-                "or": [
-                  "item:damage:type:piercing",
-                  "item:damage:type:slashing"
-                ]
-              }
-            ],
-            "selector": "damage"
-          }
+          "key": "damage-dice",
+          "selector": "damage",
+          "dice": 1,
+          "die": "d4",
+          "type": "bleed",
+          "critical": true,
+          "when": [
+            {
+              "not": "target:condition:off-guard"
+            },
+            {
+              "or": [
+                "item:damage:type:piercing",
+                "item:damage:type:slashing"
+              ]
+            }
+          ]
         }
       ]
     },

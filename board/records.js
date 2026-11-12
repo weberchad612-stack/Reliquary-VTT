@@ -10,6 +10,8 @@
 //   terrain/<map>      {map, areas}
 //   lighting/<map>     {map, regions, lights}
 //   state/table        the table's settings: current map, sky, colour and animation switches, notes
+//   state/clock        the game clock: {now, start} in seconds since year 1 of the ruleset's calendar
+//   state/encounter    the encounter under way: round, turn, combatants in initiative order (engine/time/encounter.js)
 //   mapstate/<map>     a map's state without its tokens and explored area
 //   tokens/<id>        one record per token, with the map it is on
 //   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
@@ -85,6 +87,8 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
   if (effects && effects.effects && Object.keys(effects.effects).length) r['fxlib/pack'] = { palette: effects.palette || {}, effects: effects.effects, fallbacks: effects.fallbacks || [] };
   r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
   if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
+  if (campaign.clock) r['state/clock'] = campaign.clock;
+  if (campaign.encounter) r['state/encounter'] = campaign.encounter;
   for (const [mapId, st] of Object.entries(mapStates)) {
     r[`mapstate/${mapId}`] = Object.fromEntries(Object.entries(st).filter(([k]) => !MAPSTATE_SKIP.has(k)));
     r[`mapstate/${mapId}`].map = mapId;
@@ -160,6 +164,7 @@ export function saveFromRecords(records, base = {}) {
   const table = records['state/table'] || {};
   const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
+  for (const k of ['clock', 'encounter']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
   const mapStates = {}, actors = {}, actorStates = {};
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {

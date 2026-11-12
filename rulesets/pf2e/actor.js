@@ -5,6 +5,11 @@
 
 import { collectRules, makeStatistic, modifiersFor, testPredicate } from '../../engine/rules/rules.js';
 import { ATTRIBUTES, ATTRIBUTE_NAMES, SKILLS, SAVES, RANKS, stacks, proficiency, CONDITION_RULES, activeConditions, healthBand } from './rules.js';
+import { PF2E_RULE_HANDLERS } from './rule-keys.js';
+
+const SIZE_ORDER = ['tiny', 'small', 'medium', 'large', 'huge', 'gargantuan'];
+/** Squares a creature of a size takes up across (tiny and small share a square). */
+export const sizeSquares = (size) => ({ tiny: 1, small: 1, medium: 1, large: 2, huge: 3, gargantuan: 4 }[size] || 1);
 
 const sign = (v) => (v < 0 ? `${v}` : `+${v}`);
 const rankName = (r) => RANKS[r] || 'untrained';
@@ -83,19 +88,38 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
   const content = ctx.content || {}, isPc = data.kind === 'character', level = data.level ?? 0;
   const problems = [];
   const items = (data.items || []).map((it) => { try { return resolveItem(it, content); } catch (e) { problems.push(e.message); return null; } }).filter(Boolean);
-  const rules = collectRules(ruleSources(data, effects, items, content, problems), { level });
+  const rules = collectRules(ruleSources(data, effects, items, content, problems), { level }, PF2E_RULE_HANDLERS);
+  for (const k of ['options', 'traitChanges', 'sizes', 'damageDice', 'strikeTraits', 'grantedStrikes', 'degree', 'rollTwice', 'mapRules', 'critSpec', 'ephemeral', 'tempHp', 'fastHealing', 'auras', 'lights', 'grantsConditions']) rules[k] = rules[k] || [];
   for (const u of rules.unknown) problems.push(`${u.origin.label}: unknown rule "${u.rule.key}"`);
   for (const e of rules.errors) problems.push(`${e.origin.label}: ${e.error}`);
   const unsupported = rules.skipped.map((x) => `${x.origin.label}: ${x.rule.foundry.key || 'rule'}`);
   const conds = activeConditions(effects);
-  const tags = new Set([...(data.traits || []), ...conds.map((c) => c.id), ...(state.tags || [])]);
+  // what holds now, in our words and in Foundry's (its rules test "self:condition:frightened", "self:trait:undead")
+  const traitList = [...(data.traits || [])];
+  const tags = new Set([...traitList, ...conds.map((c) => c.id), ...(state.tags || [])]);
+  for (const t of traitList) tags.add(`self:trait:${t}`);
+  for (const c of conds) tags.add(`self:condition:${c.id}`);
+  for (const e of effects || []) if (e && e.ref) { const slug = e.ref.split('/').pop(); tags.add(`self:effect:${slug}`); tags.add(`self:effect:${slug.replace(/^(spell-|feat-|equipment-|bestiary-|other-|stance-|aura-)?effect-/, '')}`); }
   const facts = factsOf(level, conds, hpFacts);
   const holds = (x) => testPredicate(x.when, tags, facts);
+  // roll options: always-on ones hold when their condition does; switches hold when Claude (or the sheet) turns
+  // them on (the live state's tags) or by default
+  const off = new Set((state.tags || []).filter((t) => t.startsWith('!')).map((t) => t.slice(1)));
+  const options = [];
+  for (const o of rules.options) {
+    if (!holds(o)) continue;
+    const on = o.toggleable ? (tags.has(o.option) || (o.default && !off.has(o.option))) : true;
+    if (on) tags.add(o.option);
+    if (o.toggleable && !options.some((x) => x.option === o.option)) options.push({ option: o.option, label: o.label, on, from: o.origin.label });
+  }
+  // traits gained and lost
+  for (const t of rules.traitChanges.filter(holds)) { for (const a of t.add) if (!traitList.includes(a)) { traitList.push(a); tags.add(a); tags.add(`self:trait:${a}`); } for (const r of t.remove) { const i = traitList.indexOf(r); if (i >= 0) traitList.splice(i, 1); } }
   // resistances, weaknesses, immunities, speeds and senses granted only sometimes ("while raging")
   for (const k of ['resistances', 'weaknesses', 'immunities', 'speeds', 'senses']) rules[k] = rules[k].filter(holds);
   const stat = (o) => makeStatistic({ ...o, modifiers: [...(o.modifiers || []), ...modifiersFor(rules.modifiers, o.selectors)], tags, facts, stacks });
   const attrs = isPc ? { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])), ...(data.attributes || {}) } : { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])), ...((data.stats || {}).attributes || {}) };
-  const out = { kind: data.kind, name: data.name, level, traits: data.traits || [], size: data.size || (data.ancestry || {}).size || 'medium', attributes: attrs, problems };
+  const sized = rules.sizes.filter(holds).map((s) => s.value).filter((s) => SIZE_ORDER.includes(s));
+  const out = { kind: data.kind, name: data.name, level, traits: traitList, size: sized.at(-1) || data.size || (data.ancestry || {}).size || 'medium', attributes: attrs, problems, options };
 
   // ---- armour and shield (characters) ----
   const armor = items.find((i) => i.kind === 'armor' && i.equipped !== false) || null;
@@ -147,7 +171,9 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
     const weapons = items.filter((i) => i.kind === 'weapon' && i.equipped !== false);
     const fist = { name: 'Fist', slug: 'fist', kind: 'weapon', category: 'unarmed', damage: { dice: 1, die: 'd4', type: 'bludgeoning' }, traits: ['agile', 'finesse', 'nonlethal', 'unarmed'] };
     const feats = (data.features || []).filter((x) => typeof x === 'string');
-    out.strikes = [...weapons, ...(weapons.some((w) => w.category === 'unarmed') ? [] : [fist])].map((w) => characterStrike(w, { attrs, P, level, stat, feats }));
+    // Strikes its features grant (claws, a kineticist's blast) beside its weapons
+    const granted = rules.grantedStrikes.filter(holds).map((g) => ({ name: g.name, slug: slugOf(g), category: g.category || 'unarmed', group: g.group, traits: g.traits || [], range: g.range || null, damage: { die: g.die, type: g.type, ...(g.dice > 1 ? { dice: g.dice } : {}) } }));
+    out.strikes = [...weapons, ...granted, ...(weapons.some((w) => w.category === 'unarmed') || granted.some((w) => w.category === 'unarmed') ? [] : [fist])].map((w) => characterStrike(w, { attrs, P, level, stat, feats }));
     // speed: the ancestry's, less the armour's penalty (5 feet less when its Strength is met)
     const anc = data.ancestry || {};
     const spMods = [];
@@ -194,6 +220,17 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
   out.dying = { value: dying ? dying.value : 0, max: 4 - (doomed ? doomed.value : 0) };
   out.wounded = (conds.find((c) => c.id === 'wounded') || {}).value || 0;
   out.notes = rules.notes;
+  // Strikes: traits added or removed, multiple attack penalty changes, extra damage dice, critical specialization
+  for (const s of out.strikes || []) applyStrikeRules(s, rules, tags, facts);
+  // what checks and turns need: degree changes, rolling twice, one-roll effects, temporary HP, fast healing,
+  // auras, light, conditions its effects put on it
+  out.checkRules = { degree: rules.degree.filter(holds), rollTwice: rules.rollTwice.filter(holds), ephemeral: rules.ephemeral.filter(holds) };
+  out.tempHpRules = rules.tempHp;
+  out.fastHealing = rules.fastHealing;
+  out.auras = rules.auras.filter(holds);
+  out.light = rules.lights.at(-1) || null;
+  out.grantsConditions = rules.grantsConditions;
+  out.tags = [...tags];
   out.unsupported = unsupported;   // imported rules not run yet: Claude applies them by hand
   out.usesDying = isPc || !!data.usesDying;
   out.band = healthBand(out.hp.value, max, !!state.dead);
@@ -205,6 +242,42 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
 /** Every condition (`when`) on the rules a creature has, including ones filtered out above. */
 function rulesWhens(data, effects, items, content) {
   return ruleSources(data, effects, items, content, []).flatMap((s) => (s.rules || []).map((r) => r.when).filter(Boolean));
+}
+
+/** A Strike's own tags for the rules that pick Strikes ("item:trait:agile", "item:melee"). */
+function strikeTags(s, tags) {
+  const t = new Set(tags);
+  for (const x of s.traits) { t.add(`item:trait:${x}`); t.add(x); }
+  t.add(`item:slug:${slugOf(s)}`); t.add(s.ranged ? 'item:ranged' : 'item:melee');
+  if (s.category) t.add(`item:category:${s.category}`);
+  if (s.group) t.add(`item:group:${s.group}`);
+  return t;
+}
+
+function applyStrikeRules(s, rules, tags, facts) {
+  let t = strikeTags(s, tags);
+  for (const r of rules.strikeTraits) {
+    if (!testPredicate(r.when, t, facts)) continue;
+    for (const x of r.traits) {
+      if (r.mode === 'add' && !s.traits.includes(x)) s.traits = [...s.traits, x];
+      if (r.mode === 'remove') s.traits = s.traits.filter((y) => y !== x);
+    }
+    t = strikeTags(s, tags);
+  }
+  const attackSel = [`${slugOf(s)}-attack`, 'strike-attack-roll', 'attack-roll', 'attack', 'all'];
+  const mapRule = rules.mapRules.filter((m) => m.selectors.some((x) => attackSel.includes(x)) && testPredicate(m.when, t, facts)).at(-1);
+  const second = mapRule ? mapRule.value : s.traits.includes('agile') ? -4 : -5;
+  s.map = [0, second, second * 2];
+  const damageSel = [`${slugOf(s)}-damage`, 'strike-damage', 'damage', s.ranged ? 'ranged-strike-damage' : 'melee-strike-damage', 'all'];
+  const extra = rules.damageDice.filter((d) => d.selectors.some((x) => damageSel.includes(x)) && d.die && testPredicate(d.when, t, facts));
+  if (extra.length) {
+    s.damage.extra = extra.map((d) => ({ dice: `${d.dice}${d.die}`, type: d.type || null, category: d.category || null, critical: d.critical, label: d.label }));
+    const always = s.damage.extra.filter((d) => !d.critical);
+    if (always.length) s.damage.formula += always.map((d) => ` plus ${d.dice}${d.type ? ` ${d.type}` : ''}${d.category ? ` (${d.category})` : ''}`).join('');
+    const crit = s.damage.extra.filter((d) => d.critical);
+    if (crit.length) s.damage.criticalExtra = crit.map((d) => `${d.dice}${d.type ? ` ${d.type}` : ''}`).join(' plus ');
+  }
+  if (rules.critSpec.some((c) => testPredicate(c.when, t, facts))) s.critSpec = true;
 }
 
 /** A character's Strike with a weapon: attack bonus (with the multiple attack penalty) and damage. */
@@ -230,7 +303,7 @@ function characterStrike(w, { attrs, P, level, stat, feats }) {
     modifiers: dmgMods, selectors: ['damage', 'strike-damage', ...(dmgAttr ? ['str-damage'] : []), `${slugOf(w)}-damage`],
   });
   const dice = 1 + striking, d = w.damage || { die: 'd4', type: 'bludgeoning' };
-  return { name: w.name, slug: w.slug || w.name, traits, ranged, range: w.range || null, attack, map: agile ? [0, -4, -8] : [0, -5, -10], damage: { dice, die: d.die, type: d.type, bonus: damage, formula: `${dice}${d.die}${damage.value ? sign(damage.value) : ''} ${d.type}` } };
+  return { name: w.name, slug: slugOf(w), traits, ranged, range: w.range || null, category: w.category, group: w.group, attack, map: agile ? [0, -4, -8] : [0, -5, -10], damage: { dice: d.dice ? d.dice + striking : dice, die: d.die, type: d.type, bonus: damage, formula: `${d.dice ? d.dice + striking : dice}${d.die}${damage.value ? sign(damage.value) : ''} ${d.type}` } };
 }
 
 /** A creature's Strike as printed: attack bonus, damage formula; conditions adjust the attack (and damage). */
@@ -241,5 +314,5 @@ function creatureStrike(w, { stat }) {
   const extra = stat({ slug: `${w.slug || w.name}-damage`, label: `${w.name} damage`, base: 0, parts: [], selectors: ['damage', 'strike-damage', ...(attr === 'str' ? ['str-damage'] : []), `${slugOf(w)}-damage`] });
   const agile = traits.includes('agile');
   const formula = (w.damage || []).map((d) => `${d.dice} ${d.type}`).join(' plus ') + (extra.value ? ` ${sign(extra.value)}` : '');
-  return { name: w.name, slug: w.slug || w.name, traits, ranged, range: w.range || null, attack, map: agile ? [0, -4, -8] : [0, -5, -10], damage: { parts: w.damage || [], bonus: extra, formula }, effects: w.effects || [] };
+  return { name: w.name, slug: slugOf(w), traits, ranged, range: w.range || null, attack, map: agile ? [0, -4, -8] : [0, -5, -10], damage: { parts: w.damage || [], bonus: extra, formula }, effects: w.effects || [] };
 }

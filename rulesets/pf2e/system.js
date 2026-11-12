@@ -26,8 +26,11 @@
 
 import { PF2E_CONDITIONS } from './conditions.js';
 import { PF2E_EFFECTS } from './effects.js';
-import { preparePf2e } from './actor.js';
+import { preparePf2e, sizeSquares } from './actor.js';
 import { kindDir, CONTENT_KINDS, CONTENT_FOLDERS } from './content.js';
+import { GOLARION_CALENDAR, ROUND_SECONDS } from './calendar.js';
+import { PF2E_RULE_KEYS, checkSelectors, adjustDegree } from './rule-keys.js';
+import { turnRules } from './turns.js';
 import { applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage } from './damage.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
@@ -60,10 +63,13 @@ export const PF2E_SYSTEM = Object.freeze({
   conditions: PF2E_CONDITIONS,
   // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
   effects: PF2E_EFFECTS,
+  // time: the calendar, a round's length, initiative ties (foes before PCs), the rules at turn boundaries
+  time: Object.freeze({ calendar: GOLARION_CALENDAR, roundSeconds: ROUND_SECONDS, tiebreak: (a, b) => (a.side === 'pc') - (b.side === 'pc'), turnRules }),
   // content: the kinds of game content and the folder each is kept in (rulesets/pf2e/content.js)
   content: Object.freeze({ kinds: CONTENT_KINDS, folders: CONTENT_FOLDERS, kindDir }),
   // actors: creatures' game data and rules (rulesets/pf2e/actor.js, damage.js, rules.js; docs/design/game-data.md)
   actors: Object.freeze({
+    ruleKeys: PF2E_RULE_KEYS, checkSelectors, adjustDegree, sizeSquares,
     prepare: preparePf2e, applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage, healthBand,
     selectors: SELECTORS, conditionRules: CONDITION_RULES, healthBands: HEALTH_BANDS, bonusTypes: BONUS_TYPES,
     skills: SKILLS, saves: SAVES, attributes: ATTRIBUTES, ranks: RANKS, kinds: Object.freeze(['character', 'npc']),

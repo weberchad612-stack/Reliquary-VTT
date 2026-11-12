@@ -152,12 +152,9 @@
       "text": "When the rocketeer is struck by a critical hit that deals piercing or fire damage, they must attempt a DC 5 Flat check. On a failure, the rocketeer's fuel tank explodes, dealing 6d6 fire damage to the rocketeer and all creatures in a 20-foot emanation and knocking the rocketeer Prone. The rocketeer loses their fly Speed and can't use Explosive Liftoff, Mid-air Collision, or Rocketing Strafe until they repair their jet pack, which requires an appropriate set of artisan's tools and takes 2 hours.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "fuel-tank-vulnerability",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "fuel-tank-vulnerability",
+          "toggleable": true
         },
         {
           "key": "speed",
@@ -190,23 +187,20 @@
       "text": "The rocketeer Flies twice, then attempts to trip options=mid-air-collision or shove options=mid-air-collision another flying creature. If they roll a success on the Athletics check, they get a critical success instead.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "adjustment": {
-              "success": "to-critical-success"
-            },
-            "key": "AdjustDegreeOfSuccess",
-            "predicate": [
-              "mid-air-collision",
-              {
-                "or": [
-                  "action:shove",
-                  "action:trip"
-                ]
-              }
-            ],
-            "selector": "athletics"
-          }
+          "key": "degree",
+          "selector": "athletics",
+          "adjust": {
+            "success": "to-critical-success"
+          },
+          "when": [
+            "mid-air-collision",
+            {
+              "or": [
+                "action:shove",
+                "action:trip"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -218,24 +212,18 @@
       "text": "The rocketeer Flies and makes two melee Strikes at any point during that movement. Each Strike must target a different creature. The rocketeer can forgo the melee Strikes to instead make one slide pistol Strike at any point during that movement and Interact to select the next loaded chamber of their slide pistol; they can do these in either order. Any Strike made as part of a Rocketing Strafe deals an additional 2d6 damage and takes the normal multiple attack penalty.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "key": "RollOption",
-            "option": "rocketing-strafe",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "rocketing-strafe",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "diceNumber": 2,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              "rocketing-strafe"
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 2,
+          "die": "d6",
+          "when": [
+            "rocketing-strafe"
+          ]
         }
       ]
     }

@@ -72,6 +72,8 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
+| `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
+| `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Removed after a save once nothing uses it (`tools/campaign.mjs tidy`) | Claude (loading, `tools/actor.mjs create`/`give`) |
 | `fxlib/pack` | The pack's own visual effects (its `effects.json`: palette, effects, fallbacks), if it has any; read once when the board opens | Claude (loading) |
 | `fx/<time>-<n>` | A visual effect being played: name, from, to, result and text (section 7, Visual effects). Not part of the save; any board removes records older than ten minutes | Claude (`tools/fx.mjs`) |

@@ -63,62 +63,51 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "damageType": "spirit",
-        "diceNumber": 2,
-        "dieSize": "d4",
-        "key": "DamageDice",
-        "predicate": [
-          {
-            "or": [
-              {
-                "and": [
-                  "self:trait:holy",
-                  "target:trait:unholy"
-                ]
-              },
-              {
-                "and": [
-                  "self:trait:unholy",
-                  "target:trait:holy"
-                ]
-              }
-            ]
-          }
-        ],
-        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
-      }
+      "key": "damage-dice",
+      "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+      "dice": 2,
+      "die": "d4",
+      "type": "spirit",
+      "when": [
+        {
+          "or": [
+            {
+              "and": [
+                "self:trait:holy",
+                "target:trait:unholy"
+              ]
+            },
+            {
+              "and": [
+                "self:trait:unholy",
+                "target:trait:holy"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|flags.system.rulesSelections.weapon}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "self:trait:holy"
-        ],
-        "property": "traits",
-        "value": "holy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "holy"
+      ],
+      "when": [
+        "item:id:{item|flags.system.rulesSelections.weapon}",
+        "self:trait:holy"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "item:id:{item|flags.system.rulesSelections.weapon}"
-        ],
-        "key": "AdjustStrike",
-        "mode": "add",
-        "predicate": [
-          "self:trait:unholy"
-        ],
-        "property": "traits",
-        "value": "unholy"
-      }
+      "key": "strike-trait",
+      "mode": "add",
+      "traits": [
+        "unholy"
+      ],
+      "when": [
+        "item:id:{item|flags.system.rulesSelections.weapon}",
+        "self:trait:unholy"
+      ]
     }
   ]
 }

@@ -216,23 +216,20 @@
       "text": "On a critical hit, the hamatula's barbs deal 3d6 bleed.",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "critical": true,
-            "damageType": "bleed",
-            "diceNumber": 3,
-            "dieSize": "d6",
-            "key": "DamageDice",
-            "predicate": [
-              {
-                "or": [
-                  "item:slug:barb",
-                  "item:slug:hurled-barb"
-                ]
-              }
-            ],
-            "selector": "strike-damage"
-          }
+          "key": "damage-dice",
+          "selector": "strike-damage",
+          "dice": 3,
+          "die": "d6",
+          "type": "bleed",
+          "critical": true,
+          "when": [
+            {
+              "or": [
+                "item:slug:barb",
+                "item:slug:hurled-barb"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -257,26 +254,20 @@
       "text": "The hamatula makes a barb Strike, then Strides up to half its Speed without triggering reactions. If the Strike hits, the hamatula impales the target with one of its barbs and snaps the barb free as it moves away from the target. This deals an additional 2d8 piercing damage to the target and pins it to an adjacent surface, rendering it Immobilized (escape dc=29).",
       "rules": [
         {
-          "key": "unsupported",
-          "foundry": {
-            "domain": "damage",
-            "key": "RollOption",
-            "option": "impaling-barb",
-            "toggleable": true
-          }
+          "key": "roll-option",
+          "option": "impaling-barb",
+          "domain": "damage",
+          "toggleable": true
         },
         {
-          "key": "unsupported",
-          "foundry": {
-            "damageType": "piercing",
-            "diceNumber": 2,
-            "dieSize": "d8",
-            "key": "DamageDice",
-            "predicate": [
-              "impaling-barb"
-            ],
-            "selector": "barb-damage"
-          }
+          "key": "damage-dice",
+          "selector": "barb-damage",
+          "dice": 2,
+          "die": "d8",
+          "type": "piercing",
+          "when": [
+            "impaling-barb"
+          ]
         }
       ]
     },

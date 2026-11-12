@@ -10,7 +10,13 @@
 //       an effect from the content (spells:effect/..., spell-effects:effect/spell-effect-heroism): a badge by its
 //       name whose rules change the creature's numbers, at the level given (a spell's rank; default the
 //       document's). Also prints the content record (content/...) for the board to hold; --pack resolves a key
-//       without a source through that pack's library.
+//       without a source through that pack's library. Conditions the effect grants are added with it (and go
+//       when it does); a light it sheds is put on the token.
+//   Durations (apply and custom): [--duration "1 round" | "10 minutes" | unlimited | encounter] [--expiry
+//       turn-start|turn-end|round-end] [--clock N] [--turn-of <token id>]; apply takes the document's duration
+//       unless one is given. The start is the clock (--clock, or --records FILE with the board's state/clock)
+//       and whose turn it is (--turn-of, or the encounter's acting creature from --records, or this token).
+//       tools/encounter.mjs and tools/clock.mjs remove effects when their time runs out.
 //   node tools/effect.mjs <token.json> remove <condition | custom name>
 //   node tools/effect.mjs <token.json> clear            (every effect)
 //   node tools/effect.mjs <token.json> dead | alive
@@ -28,7 +34,23 @@ import { fileURLToPath } from 'node:url';
 import { withEffect, withoutEffect } from '../board/effects.js';
 import { systemConfig } from '../rulesets/systems.js';
 import { contentLibrary, parseKey } from './library.mjs';
+import { parseAmount, UNITS, EXPIRY } from '../engine/time/clock.js';
+
+/** A duration from the options: {value, unit, expiry} or undefined. */
+export function durationFrom(opts, fallback) {
+  let d;
+  if (opts.duration === 'unlimited' || opts.duration === 'encounter') d = { unit: opts.duration };
+  else if (opts.duration) { const a = parseAmount(opts.duration); d = { value: a.value, unit: a.unit === 'weeks' ? 'days' : a.unit, ...(a.unit === 'weeks' ? { value: a.value * 7 } : {}) }; }
+  else if (fallback && fallback.unit && fallback.unit !== 'unlimited') d = { ...(fallback.value !== undefined ? { value: fallback.value } : {}), unit: fallback.unit, ...(fallback.expiry ? { expiry: fallback.expiry } : {}) };
+  if (!d) return undefined;
+  if (opts.expiry) { if (!EXPIRY.includes(opts.expiry)) throw new Error(`--expiry is ${EXPIRY.join(', ')}`); d.expiry = opts.expiry; }
+  if (!UNITS.includes(d.unit)) throw new Error(`"${d.unit}" is not a unit of time`);
+  if ((d.unit === 'rounds' || d.unit === 'minutes') && !d.expiry && d.unit === 'rounds') d.expiry = 'turn-start';
+  return d;
+}
 import { contentPath } from '../board/records.js';
+
+const describeDur = (d) => (d.unit === 'unlimited' ? 'unlimited' : d.unit === 'encounter' ? 'until the encounter ends' : `${d.value ?? 1} ${(d.value ?? 1) === 1 ? d.unit.replace(/s$/, '') : d.unit}${d.expiry ? `, ${d.expiry.replace('-', ' ')}` : ''}`);
 
 /** A friendly badge name for an effect document: "Spell Effect: Heroism" -> "Heroism". */
 export const effectName = (doc) => String(doc.name || '').replace(/^(Spell |Feat |Equipment |Bestiary |Other |Stance |Aura )?Effect: /i, '').trim() || doc.name;
@@ -51,8 +73,9 @@ export function applyEffect(token, cmd, args, opts, conditions) {
     const value = opts.value !== undefined ? Number(opts.value) : undefined;
     if (opts.kind && !['good', 'bad', 'neutral'].includes(opts.kind)) throw new Error('--kind is good, bad or neutral');
     if (name && conditions[name]) throw new Error(`"${name}" is a condition: use add`);
-    t.effects = withEffect(t.effects, { name, kind: opts.kind || 'neutral', value, ...base }, conditions);
-    changed.push(name);
+    const duration = durationFrom(opts);
+    t.effects = withEffect(t.effects, { name, kind: opts.kind || 'neutral', value, ...(duration ? { duration, start: opts.start } : {}), ...base }, conditions);
+    changed.push(`${name}${duration ? ` (${describeDur(duration)})` : ''}`);
   } else if (cmd === 'apply') {
     const [key] = args, doc = opts.doc;
     if (!key || !doc) throw new Error('apply needs a content key of an effect (spell-effects:effect/spell-effect-heroism)');
@@ -62,12 +85,27 @@ export function applyEffect(token, cmd, args, opts, conditions) {
     if (value !== undefined && !Number.isInteger(value)) throw new Error(`--value "${opts.value}" is not a whole number`);
     if (opts.kind && !['good', 'bad', 'neutral'].includes(opts.kind)) throw new Error('--kind is good, bad or neutral');
     const name = opts.name || effectName(doc);
-    t.effects = withEffect(t.effects, { name, kind: opts.kind || 'good', ref: key, level, value, ...base }, conditions);
-    changed.push(`${name}${level !== undefined ? ` (level ${level})` : ''}`);
+    const duration = durationFrom(opts, doc.duration);
+    // conditions the effect puts on the creature (they go when it does), and light it sheds
+    const grants = [];
+    for (const r of doc.rules || []) {
+      if (r.key !== 'grant-condition' || !conditions[r.condition]) continue;
+      const c = conditions[r.condition];
+      if (!t.effects.some((e) => e.id === r.condition)) { t.effects = withEffect(t.effects, { id: r.condition, value: c.valued ? (r.value || 1) : undefined, source: name }, conditions); grants.push(r.condition); }
+    }
+    t.effects = withEffect(t.effects, { name, kind: opts.kind || 'good', ref: key, level, value, ...(duration ? { duration, start: opts.start } : {}), ...(grants.length ? { grants } : {}), ...base }, conditions);
+    changed.push(`${name}${level !== undefined ? ` (level ${level})` : ''}${duration ? `, ${describeDur(duration)}` : ''}${grants.length ? `, with ${grants.join(', ')}` : ''}`);
+    for (const r of (doc.rules || []).filter((x) => x.key === 'temp-hp' && x.onCreate !== false)) changed.push(`grants temporary HP ${r.value}${level !== undefined ? ` at level ${level}` : ''}: apply it with actor.mjs temp`);
+    const light = (doc.rules || []).filter((r) => r.key === 'light').at(-1);
+    if (light && !t.light) { t.light = { bright: light.bright || 0, dim: light.dim || 0, ...(light.colour ? { colour: light.colour } : {}) }; changed.push(`sheds light (bright ${light.bright} ft, dim ${light.dim} ft)`); }
   } else if (cmd === 'remove') {
     const [key] = args;
     const before = t.effects.length;
+    const gone = t.effects.find((x) => x.id === key || x.name === key);
     t.effects = withoutEffect(t.effects, key);
+    // conditions it granted go with it, unless another effect still grants them
+    const still = new Set(t.effects.flatMap((x) => x.grants || []));
+    for (const g of (gone && gone.grants) || []) if (!still.has(g)) t.effects = withoutEffect(t.effects, g);
     if (t.effects.length === before) throw new Error(`the token has no effect "${key}"`);
     changed.push(`removed ${(conditions[key] && conditions[key].label) || key}`);
   } else if (cmd === 'clear') {
@@ -95,8 +133,13 @@ function main(argv) {
     const sys = systemConfig(opt('--ruleset') || 'pf2e');
     if (!sys) throw new Error('unknown --ruleset');
     const conditions = sys.conditions || {};
-    const opts = { detail: opt('--detail'), until: opt('--until'), source: opt('--source'), kind: opt('--kind'), value: opt('--value'), level: opt('--level'), name: opt('--name'), gmOnly: flag('--gm-only') };
-    const packDir = opt('--pack');
+    const opts = { detail: opt('--detail'), until: opt('--until'), source: opt('--source'), kind: opt('--kind'), value: opt('--value'), level: opt('--level'), name: opt('--name'), duration: opt('--duration'), expiry: opt('--expiry'), gmOnly: flag('--gm-only') };
+    const packDir = opt('--pack'), recFile = opt('--records'), clockArg = opt('--clock'), turnOf = opt('--turn-of');
+    // when it starts: the clock, and whose turn it is
+    const recs = recFile ? JSON.parse(fs.readFileSync(recFile, 'utf8')) : {};
+    const clockNow = clockArg !== undefined ? Number(clockArg) : (recs['state/clock'] || {}).now;
+    const enc = recs['state/encounter'];
+    const acting = enc && !enc.ended && enc.turn !== null && enc.turn !== undefined ? (enc.combatants[enc.turn] || {}).token : undefined;
     if (args[0] === 'list') {
       for (const [id, c] of Object.entries(conditions)) console.log(`${c.icon}  ${id.padEnd(12)} ${c.kind.padEnd(8)} ${c.valued ? 'value' : '     '}  ${c.label}`);
       return 0;
@@ -105,6 +148,11 @@ function main(argv) {
     if (!file || !cmd) throw new Error('give a token file and a command (add, custom, apply, remove, clear, dead, alive, elevation)');
     const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
     const token = raw.data && !raw.x ? raw.data : raw;   // a db_get/db_list entry, or the token itself
+    const tokenId = raw.path ? String(raw.path).split('/')[1] : raw.id;
+    if (opts.duration || cmd === 'apply') {
+      const who = turnOf || acting || (/^tok-[0-9a-z]{8}$/.test(tokenId || '') ? tokenId : undefined);
+      if (clockNow !== undefined) opts.start = { time: clockNow, ...(who ? { turnOf: who } : {}), ...(enc && enc.round ? { round: enc.round } : {}) };
+    }
     let content = null;
     if (cmd === 'apply') {
       parseKey(rest[0]);

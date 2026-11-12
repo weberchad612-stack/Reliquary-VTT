@@ -179,6 +179,27 @@
                 "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "A custom effect (a spell, an aura): shown by its first letter." },
                 "ref": { "type": "string", "pattern": "^(?:[a-z0-9][a-z0-9-]*:)?effect/[a-z0-9][a-z0-9-]*$", "description": "An effect in the content (spell-effects:effect/spell-effect-heroism): its rules change the creature's numbers (tools/effect.mjs apply)." },
                 "level": { "type": "integer", "minimum": -1, "maximum": 30, "description": "The level the effect applies at (a spell's rank): @itemLevel in its rules." },
+                "duration": {
+                  "type": "object", "additionalProperties": false, "required": ["unit"],
+                  "description": "How long it lasts (engine/time/clock.js): it runs out once its time has passed, at the expiry point of the turn it began in.",
+                  "properties": {
+                    "value": { "type": "integer", "minimum": 0 },
+                    "unit": { "enum": ["rounds", "minutes", "hours", "days", "encounter", "unlimited"] },
+                    "expiry": { "enum": ["turn-start", "turn-end", "round-end"] },
+                    "sustained": { "type": "boolean" }
+                  }
+                },
+                "start": {
+                  "type": "object", "additionalProperties": false, "required": ["time"],
+                  "description": "When it began: the clock, and whose turn it was (the creature its duration counts from).",
+                  "properties": {
+                    "time": { "type": "integer", "minimum": 0 },
+                    "turnOf": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$" },
+                    "round": { "type": "integer", "minimum": 0 }
+                  }
+                },
+                "grants": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }, "description": "Conditions this effect put on the token: they go when it does." },
+                "noDecrease": { "type": "boolean", "description": "A condition that does not go down by itself at the end of the turn (a ruling)." },
                 "kind": { "enum": ["good", "bad", "neutral"], "description": "Custom effects: the badge's border (conditions take theirs from the system)." },
                 "value": { "type": "integer", "minimum": 1, "description": "The condition's number (frightened 2)." },
                 "detail": { "type": "string", "maxLength": 60, "description": "Extra words shown with it (persistent damage: 2d6 fire)." },

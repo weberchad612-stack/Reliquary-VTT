@@ -75,7 +75,7 @@ export function withEffect(effects, e, conditions = {}) {
   if (c && c.max && e.value > c.max) throw new Error(`${c.label} goes no higher than ${c.max}`);
   if (!e.id && !String(e.name || '').trim()) throw new Error('a custom effect needs a name');
   const out = {};
-  for (const k of ['id', 'name', 'kind', 'value', 'ref', 'level', 'detail', 'gm_only', 'until', 'source']) if (e[k] !== undefined && e[k] !== null && e[k] !== false && e[k] !== '') out[k] = e[k];
+  for (const k of ['id', 'name', 'kind', 'value', 'ref', 'level', 'duration', 'start', 'grants', 'noDecrease', 'detail', 'gm_only', 'until', 'source']) if (e[k] !== undefined && e[k] !== null && e[k] !== false && e[k] !== '') out[k] = e[k];
   const same = (x) => (out.id ? x.id === out.id : !x.id && x.name === out.name);
   const list = (effects || []).filter((x) => !same(x));
   return [...list, out];

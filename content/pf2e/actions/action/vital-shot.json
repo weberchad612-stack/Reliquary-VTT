@@ -17,12 +17,9 @@
   "text": "Your careful shot against an unsuspecting opponent pierces a vital artery or organ. Make a ranged Strike. If the target is Off-Guard, the Strike deals an extra die of weapon damage, and the foe takes persistent bleed damage equal to the amount of precision damage from your One Shot, One Kill.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "RollOption",
-        "option": "vital-shot",
-        "toggleable": true
-      }
+      "key": "roll-option",
+      "option": "vital-shot",
+      "toggleable": true
     },
     {
       "key": "unsupported",
@@ -37,18 +34,15 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "damageType": "bleed",
-        "diceNumber": "ternary(gte(@actor.level,15),3,ternary(gte(@actor.level,9),2,1))",
-        "dieSize": "d6",
-        "key": "DamageDice",
-        "predicate": [
-          "vital-shot",
-          "target:condition:off-guard"
-        ],
-        "selector": "ranged-strike-damage"
-      }
+      "key": "damage-dice",
+      "selector": "ranged-strike-damage",
+      "dice": "ternary(gte(@level,15),3,ternary(gte(@level,9),2,1))",
+      "die": "d6",
+      "type": "bleed",
+      "when": [
+        "vital-shot",
+        "target:condition:off-guard"
+      ]
     }
   ]
 }
