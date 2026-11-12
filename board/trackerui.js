@@ -10,7 +10,7 @@
 //   reveal(id), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js), openButton}
 
-import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines } from './tracker.js';
+import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines, dropInitiative, canDrag } from './tracker.js';
 import { rollRecord } from './rolls.js';
 import { chatPath } from './chat.js';
 
@@ -39,7 +39,7 @@ export async function mountTracker(o) {
   const panel = o.panel;   // the Encounter tab's panel (board/sidebar.js): in its tab or popped out
   panel.el.classList.add('tracker');
   let ENC = await store.get('state/encounter').catch(() => null);
-  let lastKey = '', busy = false, menuFor = null, typing = null, lastActing = null;
+  let lastKey = '', busy = false, menuFor = null, typing = null, lastActing = null, editing = null, dragging = null, lastRows = [];
   const gm = () => o.view() === 'gm' && !o.readOnly;
   const hover = (id) => o.hover(id);
 
@@ -215,6 +215,7 @@ export async function mountTracker(o) {
     const view = o.view(), tokens = o.tokens();
     const live = openEncounter(ENC), started = begun(ENC);
     const rows = trackerRows(ENC, tokens, { view, seen: o.seen, name: o.name });
+    lastRows = rows;
     const acting = rows.find((r) => r.acting);
     const actingId = acting ? acting.token : null;
     if (actingId !== lastActing) { lastActing = actingId; o.onActing(actingId); }
@@ -233,7 +234,7 @@ export async function mountTracker(o) {
       return;
     }
     const key = JSON.stringify([rows, view, gm(), started, ENC.round, rows.map((r) => [o.isTarget(r.token), (o.tokens()[r.token] || {}).known, o.conditionWords(o.tokens()[r.token] || {})])]);
-    if (key === lastKey && !menuFor) return;
+    if ((key === lastKey && !menuFor) || editing || dragging) return;   // never redraw under a hand that is typing or dragging
     lastKey = key;
     const tools = gm() ? `<div class="trk-tools"><button type="button" data-a="roll-all">Roll All</button><button type="button" data-a="roll-npc">Roll NPCs</button></div>` : '';
     B.innerHTML = tools + `<ol class="trk-list">${rows.map(rowHtml).join('')}</ol>`;
@@ -266,12 +267,16 @@ export async function mountTracker(o) {
     const conds = r.present ? o.conditionWords(t) : [];
     let init;
     if (r.initiative !== null) {
-      const tip = r.roll && r.roll.typed ? 'typed in' : r.roll && r.roll.parts ? `${r.roll.typed ? 'typed in' : `${(r.roll.dice || []).join('/')} ${sgn(r.roll.mod || 0)}`}: ${r.roll.parts.map((p) => `${p.label} ${sgn(p.value)}`).join(', ')}` : 'initiative';
-      init = `<button type="button" class="trk-n" data-a="card" data-id="${r.token}" title="${esc(tip)} (click for the roll card)">${initiativeText(r.initiative)}</button>`;
+      const rolled = r.roll && r.roll.parts ? `${(r.roll.dice || []).join('/')} ${sgn(r.roll.mod || 0)}: ${r.roll.parts.map((p) => `${p.label} ${sgn(p.value)}`).join(', ')}` : '';
+      const tip = [r.roll && r.roll.set ? 'set by hand' : '', r.roll && r.roll.typed ? 'typed in' : '', rolled ? `rolled ${rolled}` : ''].filter(Boolean).join('; ') || 'initiative';
+      init = isGm
+        ? `<button type="button" class="trk-n" data-a="set-init" data-id="${r.token}" title="${esc(tip)} (click to change it)">${initiativeText(r.initiative)}</button>`
+        : `<button type="button" class="trk-n" data-a="card" data-id="${r.token}" title="${esc(tip)} (click for the roll card)">${initiativeText(r.initiative)}</button>`;
     } else if (r.mine && !o.readOnly) init = `<button type="button" class="trk-die" data-a="roll" data-id="${r.token}" title="Roll initiative" aria-label="Roll initiative for ${esc(r.name)}">${ICON.die}</button>`;
     else init = '<span class="trk-q" title="No initiative yet">—</span>';
     const extra = r.delayed ? `<div class="trk-delay">Delaying${r.mine && begun(ENC) ? ' <button type="button" data-a="resume" data-id="' + r.token + '">Act now</button>' : ''}</div>` : '';
-    return `<li class="trk-row${r.acting ? ' acting' : ''}${r.defeated ? ' defeated' : ''}${r.hidden ? ' hidden' : ''}${r.delayed ? ' delayed' : ''}" data-id="${r.token}"${r.acting ? ' aria-current="true"' : ''}>
+    const drag = !o.readOnly && canDrag(r, o.view() === 'gm' ? 'gm' : 'player') ? ' draggable="true"' : '';
+    return `<li${drag} class="trk-row${drag ? ' can-drag' : ''}${r.acting ? ' acting' : ''}${r.defeated ? ' defeated' : ''}${r.hidden ? ' hidden' : ''}${r.delayed ? ' delayed' : ''}" data-id="${r.token}"${r.acting ? ' aria-current="true"' : ''}>
       ${pic}<div class="trk-main"><div class="trk-name">${r.acting ? '<span class="trk-arrow" aria-label="acting">▶</span> ' : ''}${esc(r.name)}</div>
       <div class="trk-icons">${icons.join('')}</div>${conds.length ? `<div class="trk-conds">${conds.map((w) => `<span>${esc(w)}</span>`).join('')}</div>` : ''}${extra}</div>
       <div class="trk-init">${init}</div></li>`;
@@ -292,7 +297,7 @@ export async function mountTracker(o) {
     } else {
       const has = ENC && ENC.combatants.some((c) => c.token === id && typeof c.initiative === 'number');
       const actingNow = begun(ENC) && Engine.acting(ENC) === id;
-      m.innerHTML = [actingNow ? ['delay', 'Delay (act later this round)'] : null, ['roll', has ? 'Roll again…' : 'Roll initiative…'], ['type', 'Type a result…'], has ? ['clear', 'Clear initiative'] : null, ['remove', 'Remove from the encounter']].filter(Boolean)
+      m.innerHTML = [actingNow ? ['delay', 'Delay (act later this round)'] : null, has && gm() ? ['card', 'Show the roll card'] : null, ['roll', has ? 'Roll again…' : 'Roll initiative…'], ['type', 'Type a result…'], has ? ['clear', 'Clear initiative'] : null, ['remove', 'Remove from the encounter']].filter(Boolean)
         .map(([a, l]) => `<button type="button" role="menuitem" data-m="${a}">${l}</button>`).join('');
     }
     li.appendChild(m);
@@ -318,6 +323,7 @@ export async function mountTracker(o) {
       if (a === 'clear') return commit({ type: 'clear', token: id });
       if (a === 'remove') return commit({ type: 'remove', token: id });
       if (a === 'delay') return commit({ type: 'delay' });
+      if (a === 'card') { const rec = o.rolls.latest(id, 'initiative'); return rec ? o.rolls.show(rec) : o.toast('No roll card for this initiative (it was typed in).'); }
       return;
     }
     const b = e.target.closest('[data-a]');
@@ -326,6 +332,7 @@ export async function mountTracker(o) {
     if (a !== 'menu') closeMenu();
     if (a === 'menu') return openMenu(id);
     if (a === 'roll') return openDialog(id);
+    if (a === 'set-init') return editInitiative(id, b);
     if (a === 'card') { const rec = o.rolls.latest(id, 'initiative'); return rec && (o.view() === 'gm' || !rec.gm) ? o.rolls.show(rec) : o.toast('No roll card for this initiative (it was typed in, or rolled before roll cards).'); }
     if (a === 'hide') return commit({ type: 'flags', token: id, flags: { hidden: !(ENC.combatants.find((c) => c.token === id) || {}).hidden } });
     if (a === 'defeated') return commit({ type: 'flags', token: id, flags: { defeated: !(ENC.combatants.find((c) => c.token === id) || {}).defeated } });
@@ -342,6 +349,67 @@ export async function mountTracker(o) {
   panel.el.addEventListener('mouseleave', () => hover(null));
   panel.el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuFor) { closeMenu(); } });
   if (o.openButton) o.openButton.addEventListener('click', () => panel.open());
+
+  // the GM changes a number in place: Enter sets it (the order re-sorts), Escape or leaving cancels
+  function editInitiative(id, btn) {
+    if (!gm()) return;
+    const c = ENC.combatants.find((x) => x.token === id);
+    if (!c) return;
+    editing = id;
+    const input = document.createElement('input');
+    input.type = 'number'; input.step = 'any'; input.className = 'trk-edit'; input.value = String(c.initiative);
+    input.setAttribute('aria-label', `Initiative for ${o.name(id)}`);
+    btn.replaceWith(input);
+    input.focus(); input.select();
+    let done = false;
+    const finish = (save) => {
+      if (done) return;
+      done = true; editing = null; lastKey = '';
+      const n = Number(input.value);
+      if (save && input.value.trim() !== '' && Number.isFinite(n) && n !== c.initiative) commit({ type: 'set', token: id, initiative: n });
+      else render();
+    };
+    input.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); finish(true); } if (e.key === 'Escape') { e.preventDefault(); finish(false); } });
+    input.addEventListener('blur', () => finish(true));
+  }
+
+  // dragging a row in the order: the GM any row, a player their PCs and only down; the new initiative comes from
+  // the new neighbours (dropInitiative)
+  const listEl = () => panel.el.querySelector('.trk-list');
+  function dropIndex(y) {
+    const items = [...listEl().querySelectorAll('.trk-row')].filter((li) => li.dataset.id !== dragging);
+    let i = 0;
+    for (const li of items) { const r = li.getBoundingClientRect(); if (y > r.top + r.height / 2) i++; }
+    return i;
+  }
+  function markDrop(i) {
+    const items = [...listEl().querySelectorAll('.trk-row')].filter((li) => li.dataset.id !== dragging);
+    items.forEach((li, k) => { li.classList.toggle('drop-before', k === i); li.classList.toggle('drop-after', i === items.length && k === items.length - 1); });
+  }
+  panel.el.addEventListener('dragstart', (e) => {
+    const li = e.target.closest && e.target.closest('.trk-row[draggable="true"]');
+    if (!li) return;
+    dragging = li.dataset.id;
+    li.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragging);
+  });
+  panel.el.addEventListener('dragover', (e) => {
+    if (!dragging || !listEl()) return;
+    e.preventDefault();
+    markDrop(dropIndex(e.clientY));
+  });
+  panel.el.addEventListener('drop', (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const id = dragging, order = lastRows.filter((r) => r.token !== id), n = dropInitiative(order, dropIndex(e.clientY));
+    const was = (lastRows.find((r) => r.token === id) || {}).initiative;
+    dragging = null; lastKey = '';
+    if (n === null || n === was) return render();
+    if (!gm() && !(n < was)) { o.toast('Players can only move their characters down the order.'); return render(); }
+    commit({ type: 'move', token: id, initiative: n });
+  });
+  panel.el.addEventListener('dragend', () => { if (dragging) { dragging = null; lastKey = ''; render(); } });
 
   // the GM view marks dead creatures defeated (their turns are then skipped), once each
   const marking = new Set();

@@ -337,6 +337,12 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   runs the system's turn rules on the board (frightened going down, persistent damage, effects running out...)
   and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; the lines go to the change log
   and a toast says whose turn it is.
+- **Changing the order** (the user, 2026-11-12): the GM clicks a row's initiative to **type a new number** (Enter
+  sets it, Escape cancels; the GM's roll card is in the ⋮ menu); rows can be **dragged**: the GM any row up or down,
+  a player only their PCs and **only down**. The dropped creature's initiative is worked out from its new
+  neighbours (`dropInitiative`: a whole number between them when one fits, else the midpoint, shown as "14.5";
+  above the top, one more; below the bottom, one less). The order re-sorts at once and the acting creature keeps its
+  turn. A number set or moved by hand keeps its roll, marked "set by hand" in the tip (`roll.set`).
 - **Defeated:** marked by the skull, or automatically by the GM view when a token dies; the row stays, struck
   through, and its turns are skipped.
 - **Players see** only creatures the party sees (named NPCs by their alias), never rows the GM hid, and act only

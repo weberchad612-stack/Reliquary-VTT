@@ -42,8 +42,33 @@ export function trackerRows(enc, tokens, { view, seen = () => true, name = (id) 
   return out;
 }
 
-/** Initiative as shown: whole numbers; a resumed creature's half step shows as the whole number below. */
-export const initiativeText = (n) => (typeof n === 'number' ? String(Math.floor(n)) : '');
+/** Initiative as shown: whole numbers as they are, a placed creature's half step with its decimal ("17.5"). */
+export const initiativeText = (n) => (typeof n === 'number' ? String(Math.round(n * 100) / 100) : '');
+
+/**
+ * The initiative a creature takes when dropped at `index` in the order (`order`: the rows as shown, top first, the
+ * dragged one left out; each {token, initiative}): between its new neighbours, a whole number when one fits, else
+ * the midpoint; above the top one, one more; below the bottom one, one less. Neighbours with no initiative are
+ * passed over. Returns a number, or null when nobody around it has initiative.
+ */
+export function dropInitiative(order, index) {
+  const above = order.slice(0, index).reverse().find((r) => typeof r.initiative === 'number');
+  const below = order.slice(index).find((r) => typeof r.initiative === 'number');
+  if (!above && !below) return null;
+  if (!above) return Math.floor(below.initiative) + 1;
+  if (!below) return Math.ceil(above.initiative) - 1;
+  const a = above.initiative, b = below.initiative;
+  if (a <= b) return a;   // a tie: it goes with the one above (the tiebreak decides)
+  const whole = Math.ceil(b + 0.0001);
+  if (whole < a) return Math.floor((a + b) / 2) > b ? Math.floor((a + b) / 2) : whole;
+  return (a + b) / 2;
+}
+
+/**
+ * Whether this view may drag a row: the GM any row with initiative; a player only their PCs' (and only down, which
+ * the drop checks). rows: as trackerRows gives them.
+ */
+export const canDrag = (row, view) => row.initiative !== null && (view === 'gm' || row.mine);
 
 /**
  * Who still needs initiative, for Roll All (everyone) or Roll NPCs (everyone but PCs): token ids.
@@ -58,7 +83,8 @@ export function needInitiative(enc, tokens, which = 'all') {
  * Apply an action to the encounter. E: the engine's encounter functions; T: {tiebreak, roundSeconds}; now: the
  * clock's seconds. Returns {encounter, now, events, lines} or throws with a reason a person can read.
  * action: {type, token?, side?, initiative?, extra?, flags?} with type one of add, remove, initiative, clear,
- * flags, begin, next, previous, next-round, previous-round, delay, resume, end.
+ * set (the GM types a number), move (dragged in the order), flags, begin, next, previous, next-round,
+ * previous-round, delay, resume, end.
  */
 export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = {}, name = (id) => id }) {
   const t = action.token ? tokens[action.token] : null;
@@ -79,6 +105,22 @@ export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = 
       const r = E.removeCombatant(live, action.token, now, T.roundSeconds);
       const e = r.encounter.combatants.length ? r.encounter : { ...r.encounter, ended: now };
       return done(e, [`${name(action.token)} leaves the encounter`], r.events, r.now);
+    }
+    case 'move': {
+      // dragged in the order: a player only their own PC, and only down (later in the round)
+      if (!live) throw new Error('there is no encounter');
+      if (!mayAct(action.token)) throw new Error('players can only move their own characters');
+      const c = live.combatants.find((x) => x.token === action.token);
+      if (!c) throw new Error('that creature is not in the encounter');
+      if (view !== 'gm' && !(typeof c.initiative === 'number' && action.initiative < c.initiative)) throw new Error('players can only move their characters down the order');
+      return done(E.setInitiative(live, action.token, action.initiative, T.tiebreak, setByHand(c)), [`${name(action.token)} moves to initiative ${initiativeText(action.initiative)}`]);
+    }
+    case 'set': {
+      gmOnly();
+      if (!live) throw new Error('there is no encounter');
+      const c = live.combatants.find((x) => x.token === action.token);
+      if (!c) throw new Error('that creature is not in the encounter');
+      return done(E.setInitiative(live, action.token, action.initiative, T.tiebreak, setByHand(c)), [`${name(action.token)}: initiative set to ${initiativeText(action.initiative)}`]);
     }
     case 'initiative': {
       if (!live) throw new Error('there is no encounter');
@@ -128,6 +170,9 @@ export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = 
     default: throw new Error(`no encounter action "${action.type}"`);
   }
 }
+
+/** A creature's roll, kept when its initiative is set or moved by hand (and marked so). */
+const setByHand = (c) => ({ ...(c.stat ? { stat: c.stat } : {}), roll: { ...(c.roll || {}), set: true } });
 
 /** The event lines a turn change shows (the round, whose turn it is), in order. */
 export function eventLines(events, name = (id) => id) {

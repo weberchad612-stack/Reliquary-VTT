@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../engine/time/encounter.js';
 import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
-import { controls, trackerRows, applyAction, needInitiative, initiativeText, eventLines, newlyDefeated } from '../board/tracker.js';
+import { controls, trackerRows, applyAction, needInitiative, initiativeText, eventLines, newlyDefeated, dropInitiative, canDrag } from '../board/tracker.js';
 import { cardHtml } from '../board/chat.js';
 
 const T = { tiebreak: PF2E_SYSTEM.time.tiebreak, roundSeconds: 6 };
@@ -57,7 +57,8 @@ test('rows by view: hidden and unseen foes are the GM\'s; defeated and dead stru
   const dead = { ...tokens, 'tok-foe00002': { ...tokens['tok-foe00002'], dead: true } };
   assert.equal(trackerRows(e, dead, { view: 'gm' }).find((r) => r.token === 'tok-foe00002').defeated, true);
   assert.deepEqual(newlyDefeated(e, dead), ['tok-foe00002']);
-  assert.equal(initiativeText(26.5), '26');
+  assert.equal(initiativeText(26.5), '26.5');
+  assert.equal(initiativeText(20), '20');
   assert.deepEqual(trackerRows(null, tokens, { view: 'gm' }), []);
 });
 
@@ -91,4 +92,41 @@ test('a roll for a creature the players do not see is the GM\'s', async () => {
   assert.equal(chatVisible(secret, 'gm'), true);
   assert.equal(chatVisible(rollRecord({ name: 'Kerra', total: 9 }), 'player'), true);
   assert.match(messageHtml(secret, { view: 'gm' }), /class="cm-gm"/);
+});
+
+test('dragging the order: the new initiative from the new neighbours', () => {
+  const o = [{ token: 'a', initiative: 20 }, { token: 'b', initiative: 15 }, { token: 'c', initiative: 14 }, { token: 'd', initiative: null }];
+  assert.equal(dropInitiative(o, 0), 21, 'to the top: one more');
+  assert.equal(dropInitiative(o, 1), 17, 'between 20 and 15: a whole number between');
+  assert.equal(dropInitiative(o, 2), 14.5, 'between 15 and 14: the midpoint');
+  assert.equal(dropInitiative(o, 3), 13, 'below the last with initiative: one less');
+  assert.equal(dropInitiative(o, 4), 13);
+  assert.equal(dropInitiative([{ token: 'a', initiative: 12 }, { token: 'b', initiative: 12 }], 1), 12, 'a tie stays a tie');
+  assert.equal(dropInitiative([{ token: 'x', initiative: null }], 0), null);
+});
+
+test('who may drag, set and move: the GM anything; a player their PCs, down only', () => {
+  let e = E.newEncounter(0);
+  for (const [t, i] of [['tok-pc000001', 18], ['tok-foe00001', 12], ['tok-foe00002', 6]]) e = E.addCombatant(e, { token: t, side: tokens[t].kind, initiative: i, }, T.tiebreak);
+  e = E.setInitiative(e, 'tok-pc000001', 18, T.tiebreak, { stat: 'perception', roll: { dice: [10], mod: 8 } });
+  const rows = trackerRows(e, tokens, { view: 'player' });
+  assert.equal(canDrag(rows.find((r) => r.token === 'tok-pc000001'), 'player'), true);
+  assert.equal(canDrag(rows.find((r) => r.token === 'tok-foe00001'), 'player'), false);
+  assert.equal(canDrag(rows.find((r) => r.token === 'tok-foe00001'), 'gm'), true);
+  assert.throws(() => act(e, { type: 'move', token: 'tok-pc000001', initiative: 20 }, 'player'), /down/);
+  assert.throws(() => act(e, { type: 'move', token: 'tok-foe00001', initiative: 3 }, 'player'), /own characters/);
+  const down = act(e, { type: 'move', token: 'tok-pc000001', initiative: 9 }, 'player');
+  assert.deepEqual(down.encounter.combatants.map((c) => c.token), ['tok-foe00001', 'tok-pc000001', 'tok-foe00002']);
+  const pc = down.encounter.combatants.find((c) => c.token === 'tok-pc000001');
+  assert.deepEqual([pc.initiative, pc.stat, pc.roll.set, pc.roll.dice], [9, 'perception', true, [10]], 'the roll is kept, marked set by hand');
+  const up = act(e, { type: 'move', token: 'tok-foe00002', initiative: 19 });
+  assert.equal(up.encounter.combatants[0].token, 'tok-foe00002');
+  assert.throws(() => act(e, { type: 'set', token: 'tok-foe00001', initiative: 30 }, 'player'), /only the GM/);
+  const set = act(e, { type: 'set', token: 'tok-foe00002', initiative: 30 });
+  assert.equal(set.encounter.combatants[0].token, 'tok-foe00002', 'set re-sorts');
+  // the acting creature keeps its turn when the order changes
+  let b = E.begin(e, 0).encounter;
+  b = E.next(b, 0, 6).encounter;   // foe00001 acts
+  const moved = act(b, { type: 'set', token: 'tok-foe00002', initiative: 40 });
+  assert.equal(E.acting(moved.encounter), 'tok-foe00001');
 });
