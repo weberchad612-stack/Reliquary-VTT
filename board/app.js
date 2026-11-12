@@ -2458,6 +2458,7 @@ export async function start(store, { build = null } = {}) {
   function setView(v) {
     if (v !== S.view) { endAim(); closeNoteEditor(); setNoting(false); closeHud(); fxPanel.hidden = true; fxPlayer.clear(); }
     S.view = v;
+    if (v === 'player' && S.walls) setWalls(false);   // the walls are the GM's (the Walls tab)
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
     if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
@@ -2488,7 +2489,9 @@ export async function start(store, { build = null } = {}) {
     log(`GM: coloured light ${S.light_colour.on ? 'on' : 'off'} for the whole table.`, 'ok');
     draw();
   };
-  document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
+  const wallsBtn = document.getElementById('b-walls');
+  function setWalls(on) { S.walls = on; wallsBtn.setAttribute('aria-pressed', String(on)); wallsBtn.textContent = on ? 'Hide walls' : 'Show walls'; draw(); }
+  wallsBtn.onclick = () => setWalls(!S.walls);
   document.getElementById('lt-none').hidden = HAS_LIGHTING;
   if (HAS_LIGHTING) {
     const bl = document.getElementById('b-lighting');
@@ -3052,6 +3055,7 @@ export async function start(store, { build = null } = {}) {
   // the sidebar (board/sidebar.js): chat, the encounter tracker, the GM's lighting, the change log, the table log
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
+    { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'changes', label: 'Change log' }, { id: 'tablelog', label: 'Table log' }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });

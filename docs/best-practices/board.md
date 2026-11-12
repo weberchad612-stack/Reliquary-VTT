@@ -255,7 +255,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The sidebar and chat (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs: **Chat**, **Encounter**, **Lighting** (GM view only), **Change log**, **Table log**; an area
+  The battle map's tabs: **Chat**, **Encounter**, **Lighting** and **Walls** (GM view only), **Change log**, **Table log**; an area
   map's: **Place**, **Chat**, **Change log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
   the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
   (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
@@ -273,6 +273,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   Animation switches moved from the header into the **Lighting tab**, above the lamps and regions. That tab (and its
   window) is the GM view's only, so the player view has no lighting control at all. A map with no lighting says so
   there. Lighting off is this screen's only; Sky, Colour and Animation are the table's.
+- **Walls are the GM's** (the user, 2026-11-12): the **Walls** tab (GM only, below Lighting) holds **Show walls** /
+  **Hide walls**, moved from the header. Switching to the player view hides them again.
 - **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
   Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
   Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
