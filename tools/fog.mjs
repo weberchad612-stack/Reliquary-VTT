@@ -5,8 +5,9 @@
 //   node tools/fog.mjs <map-dir> --state FILE [--token ID:KIND:X,Y[,SIZE] ...] [--out FILE] [--range FEET]
 //
 // Tokens come from the state file's `tokens` (each needs kind, x, y and optionally size, hidden, dead)
-// plus any given with --token, e.g. --token kerra:pc:2,2 --token ogre:foe:8,7,2 (a --token overrides
-// a state token with the same id). Computes what the PCs see now, merges it into the explored area,
+// plus any given with --token, e.g. --token tok-cw77vfz9:pc:2,2 --token scout:foe:8,7,2 (a --token with a
+// state token's id moves that token; any other id is a scratch token for this check only, never written to --out,
+// since saves hold generated ids: board/ids.js). Computes what the PCs see now, merges it into the explored area,
 // and prints {visible, seen, explored, shown, changed}; `shown` is the outline to paint (straight diagonals). With --out, writes the updated map state there.
 
 import fs from 'node:fs';
@@ -16,6 +17,7 @@ import { prepare } from '../engine/sight/visibility.js';
 import { partyView } from '../engine/fog/view.js';
 import { mergeExplored, displayOutlines } from '../engine/fog/explored.js';
 import { loadMap } from './sight.mjs';
+import { isId } from '../board/ids.js';
 
 function main(argv) {
   const args = argv.slice(2);
@@ -42,7 +44,8 @@ function main(argv) {
     const { changed, explored } = mergeExplored(state.explored, view.visible, map.grid);
     const round = (p) => [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000];
     if (outFile) {
-      const next = { ...state, tokens, explored };
+      const kept = Object.fromEntries(Object.entries(tokens).filter(([id]) => (state.tokens || {})[id] || isId(id, 'token')));
+      const next = { ...state, tokens: kept, explored };
       fs.writeFileSync(outFile, JSON.stringify(next, null, 2) + '\n');
     }
     console.log(JSON.stringify({

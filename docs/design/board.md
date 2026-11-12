@@ -360,7 +360,7 @@ is wide: Medium and Small 5 ft, Large 10 ft; it fills its elevation up to elevat
   (engine `areaReaches`, `tokensInArea`): a burst or cone reaches as far up and down as is left of its size at
   that square (with the same count), an emanation as far as its size from the caster's height column, and a
   line is one square tall from its start. The aim bar and the toast list who is out of reach ("Out of reach:
-  Ogre (30 ft up)"); they are not targeted.
+  Scar-Browed Ogre (30 ft up)"); they are not targeted.
 - Not yet: flying movement (Stride outlines and routes are flat), sight over low walls, tilted cones and
   lines, walls with a height.
 
@@ -390,7 +390,7 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   0) or removes a plain one (Foundry PF2E's way). Dead switches the token's dead state. Hovering a tile
   shows its name and rules line.
 - **Saving:** each change writes the token record (shared at once) and a change-log line ("Lyra frightened
-  3 (was 2)", "Lyra no longer prone", "Ogre is dead").
+  3 (was 2)", "Lyra no longer prone", "Scar-Browed Ogre is dead").
 - The HUD floats over the page and stays inside the window; it follows the token, the zoom and scrolling.
 - **It scales with the zoom**, as Foundry's does (asked for 2026-11-11): normal size when a square is 48 px
   on screen, never below 0.7x or above 1.5x, by a CSS transform (no re-layout, so it keeps up with the wheel).
