@@ -10,7 +10,8 @@ import { importDocs, cleanText, convertRule, convertValue, privateTarget } from 
 import { loadGame, creature, runCommand } from '../tools/actor.mjs';
 import { resolveCheck, statOf } from '../tools/check.mjs';
 import { validate } from '../tools/validate.mjs';
-import { buildRecords, writeSave, verifySave } from '../tools/campaign.mjs';
+import { buildRecords, writeSave, verifySave, tidyOps } from '../tools/campaign.mjs';
+import { contentLibrary, contentView, parseKey, referencedKeys } from '../tools/library.mjs';
 import { contentFromRecords, contentPath, contentKey } from '../board/records.js';
 import { prepareActor } from '../engine/rules/rules.js';
 import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
@@ -83,12 +84,13 @@ test('the importer converts creatures and items, keeps licences, and reports wha
   assert.equal(bat.text, 'A bat with gloomy fangs.');
   const coat = by['item/quilted-coat'];
   assert.deepEqual([coat.kind, coat.category, coat.acBonus, coat.dexCap, coat.source.license, coat.text], ['armor', 'light', 1, 3, 'ORC', 'Soft & warm.']);
-  const feat = by['item/thick-hide'];
+  const feat = by['feat/thick-hide'];
   assert.deepEqual(feat.rules.map((r) => r.key), ['modifier', 'resistance', 'unsupported', 'speed', 'sense']);
-  assert.equal(report.converted.length, 3);
+  assert.deepEqual(Object.keys(by).sort(), ['condition/clumsy', 'creature/gloomfang-bat', 'feat/thick-hide', 'hazard/trap', 'item/quilted-coat']);
   assert.ok(report.flagged.some((f) => /RollOption/.test(f.what)));
-  assert.ok(report.flagged.some((f) => /spellcastingEntry/.test(f.what)));
-  assert.deepEqual(report.skipped.map((s) => s.why.split(' ')[0]).sort(), ['characters', 'conditions', 'hazards', 'not']);
+  assert.equal(report.unsupported.RollOption, 1);
+  assert.deepEqual(bat.items[2], { kind: 'spellcasting', name: 'Innate Spells' });
+  assert.deepEqual(report.skipped.map((s) => s.why.split(' ')[0]).sort(), ['not', 'pregenerated']);
   // an imported creature runs through the rules, its unsupported rules listed for Claude
   const p = prepareActor({ actor: { system: 'pf2e', kind: 'npc', base: 'creature/gloomfang-bat' }, content: by, ruleset: PF2E_SYSTEM.actors });
   assert.deepEqual([p.ac.value, p.hp.max.value, p.speeds.fly.value, p.problems.length], [16, 14, 30, 0]);
@@ -107,6 +109,61 @@ test('content records: keys and paths both ways', () => {
   const content = contentFromRecords(records);
   assert.ok(content['creature/rat'] && content['item/longsword']);
   assert.ok(records['actors/tok-cw77vfz9'] && records['actorstate/tok-cw77vfz9'].hp === 40);
+  // only what the creatures use: no creature in the keep is a bone giant, so it stays in the library
+  assert.equal(content['creature/bone-giant'], undefined);
+  assert.deepEqual(Object.keys(content).sort(), [...referencedKeys(Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p, d])))].sort());
+  // a key naming its source
+  assert.equal(contentPath('pathfinder-monster-core:creature/goblin-warrior'), 'content/pathfinder-monster-core.creature.goblin-warrior');
+  assert.equal(contentKey('content/pathfinder-monster-core.creature.goblin-warrior'), 'pathfinder-monster-core:creature/goblin-warrior');
+  assert.deepEqual(parseKey('spells:spell/fireball'), { source: 'spells', kind: 'spell', slug: 'fireball' });
+  assert.throws(() => parseKey('fireball'), /not a content key/);
+});
+
+test('the library: the pack first, then its sources in order, or one source by name; read only when asked', () => {
+  const t = fs.mkdtempSync(path.join(ROOT, 'content', 'test-lib-'));   // a scratch ruleset folder: content/<it>/<source>
+  const rs = path.basename(t);
+  try {
+    const put = (rel, d) => { fs.mkdirSync(path.dirname(path.join(t, rel)), { recursive: true }); fs.writeFileSync(path.join(t, rel), JSON.stringify(d)); };
+    put('src-a/creature/rat.json', { name: 'A rat' }); put('src-b/creature/rat.json', { name: 'B rat' }); put('src-b/spell/zap.json', { name: 'Zap' });
+    const lib = contentLibrary({ ruleset: rs, content: [`${rs}/src-a`, `${rs}/src-b`] }, PACK);
+    assert.equal(lib.get('creature/rat').name, 'Rat', 'the pack\'s own content first');
+    assert.equal(lib.get('src-b:creature/rat').name, 'B rat');
+    assert.equal(lib.get('spell/zap').name, 'Zap');
+    assert.equal(lib.get('spell/nothing'), undefined);
+    const lib2 = contentLibrary({ ruleset: rs, content: [`${rs}/src-a`, `${rs}/src-b`] }, null);
+    assert.equal(lib2.get('creature/rat').name, 'A rat', 'then the sources in the order listed');
+    assert.equal(contentView(lib2)['src-a:creature/rat'].name, 'A rat');
+  } finally { fs.rmSync(t, { recursive: true, force: true }); }
+});
+
+test('the board holds only what its creatures use: create and give add content, tidy removes what is left over', () => {
+  const t = tmpCopy();
+  fs.writeFileSync(path.join(t, 'pack/content/item/rope.json'), JSON.stringify({ kind: 'equipment', slug: 'rope', system: 'pf2e', name: 'Rope', source: { title: 'x', license: 'original' } }));
+  const tok = 'tok-9f53owtn';   // a rat: its game data removed, so it is a token with none
+  fs.rmSync(path.join(t, 'save/actors', `${tok}.json`));
+  fs.rmSync(path.join(t, 'save/actorstate', `${tok}.json`), { force: true });
+  const game = loadGame(path.join(t, 'pack'), path.join(t, 'save'));
+  assert.ok(game.tokens[tok] && !game.actors[tok]);
+  const made = runCommand(game, 'create', [tok, 'creature/bone-giant'], { name: 'Big Bones' });
+  assert.deepEqual(made.writes.map((w) => w.path), ['content/creature.bone-giant', `actors/${tok}`]);
+  assert.deepEqual(made.writes[1].data, { system: 'pf2e', kind: 'npc', base: 'creature/bone-giant', name: 'Big Bones' });
+  assert.match(made.lines[0], /game data from Bone Giant/);
+  // the board already holds the ogre's stat block: only the actor is written
+  assert.deepEqual(runCommand(game, 'create', [tok, 'creature/ogre']).writes.map((w) => w.path), [`actors/${tok}`]);
+  assert.throws(() => runCommand(game, 'create', ['Kerra', 'creature/ogre']), /already has game data/);
+  assert.throws(() => runCommand(game, 'create', [tok, 'item/dagger']), /not a creature/);
+  assert.throws(() => runCommand(game, 'create', [tok, 'creature/nope']), /no content "creature\/nope"/);
+  assert.deepEqual(runCommand(game, 'give', ['Kerra', 'item/dagger']).writes.map((w) => w.path), ['actors/tok-cw77vfz9']);
+  const rope = runCommand(game, 'give', ['Kerra', 'item/rope']);
+  assert.deepEqual(rope.writes.map((w) => w.path), ['content/item.rope', 'actors/tok-cw77vfz9']);
+  assert.equal(rope.writes[1].data.items.at(-1).ref, 'item/rope');
+  assert.throws(() => runCommand(game, 'give', ['Kerra', 'creature/ogre']), /not an item/);
+  // after a save: content records nothing uses any more
+  const { records } = buildRecords(path.join(t, 'pack'), path.join(t, 'save'), { now: 't' });
+  assert.deepEqual(tidyOps(records), []);
+  records['content/item.rope'] = { name: 'Rope' };
+  assert.deepEqual(tidyOps(records), [[{ op: 'delete', path: 'content/item.rope' }]]);
+  fs.rmSync(t, { recursive: true, force: true });
 });
 
 test('the actor tool: list, show, damage, heal, temporary HP, resources, shield, recovery', () => {
@@ -211,6 +268,7 @@ test('open content: only ORC and OGL documents in public mode; the validator che
   assert.deepEqual(validateOpenContent(path.join(ROOT, 'content', 'pf2e')).errors, []);
   fs.rmSync(t, { recursive: true, force: true });
   // a pack lists open sources; its own content overrides them; a missing source is an error
-  assert.throws(() => readContent({ content: ['pf2e/no-such-source'] }, PACK), /no open content "pf2e\/no-such-source"/);
-  assert.ok(readContent({}, PACK)['creature/rat'], 'the pack\'s own content');
+  assert.throws(() => readContent({ content: ['pf2e/no-such-source'] }, PACK, {}), /no open content "pf2e\/no-such-source"/);
+  assert.deepEqual(Object.keys(readContent({}, PACK, { a: { base: 'creature/rat' }, b: { items: [{ ref: 'item/dagger' }] } })), ['creature/rat', 'item/dagger'], 'only what the creatures use');
+  assert.throws(() => readContent({}, PACK, { a: { base: 'creature/no-such' } }), /content not found: creature\/no-such/);
 });

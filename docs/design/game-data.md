@@ -290,7 +290,7 @@ scratch folder, nothing kept):
 - **Selectors** are the ruleset's vocabulary (`ac`, `fortitude`, `saving-throw`, `perception`, skill names,
   `dex-based`, `attack-roll`, `damage`, `hp`, `speed`, `all`...).
 
-**The importer** (`tools/import/foundry-pf2e.mjs`):
+**The importer** (`tools/import/foundry-pf2e.mjs`; superseded in part by section 7: open content now comes from a whole release with `--release`, and every kind is converted):
 - Reads Foundry PF2E JSON (a pack folder or single files, from a copy of their repository or an export) and
   writes our format: `--public <source>` into the open content (`content/pf2e/<source>/`, ORC and OGL only),
   `--out` into a private pack (`packs/<pack>/content/...`) for anything else; it keeps each document's
@@ -365,3 +365,41 @@ The user wants all of Foundry's open PF2E data imported in one go, and every lat
 2. Manifest, change sorting, dry run, report, overrides, retired documents.
 3. Converters for hazards, spells and character options (each with its own schema and tests, against real Foundry samples).
 4. The full import from the latest tagged release, reviewed through the report before committing.
+
+### 7.4 As built (2026-11-12)
+
+All four steps built and run. Foundry stopped tagging releases in git after 7.8.0, so "a tagged release" is the
+release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `52dfeee`, 2026-11-04).
+
+- **The import:** 30,417 Foundry documents read; **29,967 imported** into 93 source folders (154 MB), 450
+  skipped: 160 pregenerated characters and 5 familiars (need the character converter), 22 Kingmaker armies,
+  81 macros, 113 journals and 69 tables (no licence recorded; not game data). Every imported document is
+  licensed ORC or OGL; every one passes the schema; all 6,606 creatures prepare through the rules.
+- **Converters** (`tools/import/foundry/convert.mjs`): creatures (now with spellcasting entries listing their
+  spells as links, and their gear), hazards, vehicles, every physical item kind (armour, shields, weapons,
+  equipment, consumables with their spells, ammunition, treasure, containers, kits with their contents), feats
+  and class features, actions, effects, conditions (reference text: the ruleset's own rules are what runs),
+  spells (rank, traditions, actions, range, area, defence, damage, heightening, variants), ancestries,
+  heritages, backgrounds, classes, deities, Kingmaker features.
+- **Links** between documents become content keys naming their source (`spells:spell/fireball`): by Foundry
+  id, then by name, following Foundry's redirects. 409 links point to documents Foundry no longer has (legacy
+  spells replaced in the remaster); they keep the name and text.
+- **Tracking** (`tools/import/foundry/track.mjs`): `content/pf2e/import-manifest.json` (5 MB) holds each
+  document's Foundry id, key and two fingerprints (Foundry's original, our converted file). A re-import sorts
+  every document into new, changed by Foundry, changed on our side (converter, correction, or a linked
+  document gone), renamed (new key; the old file kept, retired, pointing to it), retired (gone from Foundry,
+  kept) and unchanged (not rewritten). A retired document that comes back is new again.
+- **Overrides:** `content/pf2e/overrides/<source>/<folder>/<slug>.json` with `set` and `remove` by field path;
+  the report asks for review when Foundry changes a corrected document; a missing place is an error. None yet:
+  the validator flags three creatures with impossible Strength (Marala +30, Glittercrag Strix +25, Okoa +19)
+  to check against the books.
+- **Rules not supported yet:** about 24,000 rule elements kept as `unsupported`; the most common are
+  RollOption, ActiveEffectLike, ItemAlteration, DamageDice, GrantItem, Aura and ChoiceSet. The report's table is
+  the list of what to build next. Rules whose condition compares numbers are kept too.
+- **As-needed loading** (`tools/library.mjs`): content keys `<folder>/<slug>` (the pack's own content, then
+  the sources `pack.json` lists, in order) or `<source>:<folder>/<slug>`; loading copies only what the
+  creatures use; `actor.mjs create`/`give` add documents with the creature; `campaign.mjs tidy` gives the
+  deletes after a save. The validator and the tools read the library lazily.
+- **Validator:** `--content` checks each document against its own kind's schema, counts unsupported rules and
+  unknown selectors instead of listing 24,000 warnings, and warns about impossible attribute values.
+

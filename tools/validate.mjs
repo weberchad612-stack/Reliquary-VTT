@@ -19,6 +19,7 @@ import { checkLibrary } from '../engine/fx/fx.js';
 import { nameProblems } from '../board/names.js';
 import { prepareActor, BASE_RULE_KEYS } from '../engine/rules/rules.js';
 import { parseExpr } from '../engine/rules/expr.js';
+import { contentLibrary, contentView } from './library.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -47,6 +48,15 @@ function rulesetSchema(ruleset, name) {
     RULESET_SCHEMAS.set(key, fs.existsSync(f) ? ajv.compile(JSON.parse(fs.readFileSync(f, 'utf8'))) : null);
   }
   return RULESET_SCHEMAS.get(key);
+}
+
+/** The ruleset's content schema for one kind of document (its own $defs entry), so errors name only what matters. */
+function contentSchema(ruleset, kind) {
+  const all = rulesetSchema(ruleset, 'content');
+  if (!all) return null;
+  const sys = systemConfig(ruleset), dirOf = sys && sys.content && sys.content.kindDir;
+  const def = !dirOf ? null : dirOf(kind) === 'item' ? 'item' : kind === 'campaign-feature' ? 'campaignFeature' : dirOf(kind) ? kind : null;
+  return def ? ajv.getSchema(`${all.schema.$id}#/$defs/${def}`) || all : undefined;
 }
 
 // Doorway check: walls running into a door's span pinch it, so an open door cannot be seen or walked through.
@@ -522,61 +532,76 @@ export function validate(target, { save = null } = {}) {
 function checkRules(rules, where, file, sys, report) {
   for (const [i, r] of (rules || []).entries()) {
     const at = `${where}.rules[${i}]`;
-    if (r.foundry) { report.warn(file, `${at}: imported rule "${r.foundry.key || r.key}" is not supported yet (kept as it was)`); continue; }
+    if (r.foundry) { if (report.tally) report.tally.unsupported++; else report.warn(file, `${at}: imported rule "${r.foundry.key || r.key}" is not supported yet (kept as it was)`); continue; }
     if (!BASE_RULE_KEYS.includes(r.key)) report.error(file, `${at}: unknown rule key "${r.key}"`);
     for (const k of ['value', 'range']) if (typeof r[k] === 'string') { try { parseExpr(r[k]); } catch (e) { report.error(file, `${at}.${k}: ${e.message}`); } }
     const sel = (sys && sys.actors && sys.actors.selectors) || [];
-    for (const s of [].concat(r.selector || [])) if (sel.length && !sel.includes(s) && !/-(lore|attack|damage)$/.test(s)) report.warn(file, `${at}: selector "${s}" is not one this ruleset knows`);
+    for (const s of [].concat(r.selector || [])) {
+      if (!sel.length || sel.includes(s) || /-(lore|attack|damage)$/.test(s)) continue;
+      if (report.tally) report.tally.selectors[s] = (report.tally.selectors[s] || 0) + 1;
+      else report.warn(file, `${at}: selector "${s}" is not one this ruleset knows`);
+    }
   }
 }
 
 /**
- * A pack's game content: the open sources it lists (content/<source>/ in the repository, checked by
- * validateOpenContent) and its own content/<kind>/<slug>.json (the ruleset's schema, unique slugs, rule elements).
+ * A pack's game content: the open sources it lists must exist (validateOpenContent checks them), and its own
+ * content/<folder>/<slug>.json is checked here (the ruleset's schema, unique slugs, rule elements). Returns the
+ * pack's library (tools/library.mjs) as {key: document}, read from files only when asked for.
  */
 export function validateContent(target, pack, report) {
-  const out = {};
   for (const src of pack.content || []) {
-    const dir = path.join(ROOT, 'content', src);
-    if (!fs.existsSync(dir)) { report.error(path.join(target, 'pack.json'), `content: no open content "${src}" (content/${src})`); continue; }
-    Object.assign(out, contentDir(dir, pack.ruleset, report, false));
+    if (!fs.existsSync(path.join(ROOT, 'content', src))) report.error(path.join(target, 'pack.json'), `content: no open content "${src}" (content/${src})`);
   }
-  Object.assign(out, contentDir(path.join(target, 'content'), pack.ruleset, report, false));
-  return out;
+  contentDir(path.join(target, 'content'), pack.ruleset, report, false);
+  try { return contentView(contentLibrary({ ...pack, content: (pack.content || []).filter((src) => fs.existsSync(path.join(ROOT, 'content', src))) }, target)); } catch (e) { report.error(path.join(target, 'pack.json'), e.message); return {}; }
 }
 
 /**
- * The repository's open content (content/<system>/<source>/<kind>/<slug>.json): the ruleset's schema and an
- * open licence (ORC or OGL) on every document (NOTICE.md).
+ * The repository's open content (content/<system>/<source>/<folder>/<slug>.json): the ruleset's schema and an
+ * open licence (ORC or OGL) on every document (NOTICE.md). The importer's own files (import-manifest.json,
+ * import-report.*) and our corrections (overrides/) are not content.
  */
 export function validateOpenContent(dir, ruleset = 'pf2e', report = new Report()) {
   if (!fs.existsSync(dir)) return report;
-  const kinds = new Set(['creature', 'item']);
-  const sources = fs.readdirSync(dir).filter((n) => fs.statSync(path.join(dir, n)).isDirectory());
-  if (sources.some((s) => kinds.has(s))) contentDir(dir, ruleset, report, true);
-  else for (const s of sources) contentDir(path.join(dir, s), ruleset, report, true);
+  const folders = new Set(((systemConfig(ruleset) || {}).content || {}).folders || ['creature', 'item']);
+  const subdirs = fs.readdirSync(dir).filter((n) => fs.statSync(path.join(dir, n)).isDirectory());
+  // imported rules our engine cannot run yet are counted, not listed one by one (import-report.md lists them)
+  report.tally = { unsupported: 0, selectors: {} };
+  if (subdirs.some((s) => folders.has(s))) contentDir(dir, ruleset, report, true);
+  else for (const s of subdirs) if (s !== 'overrides') contentDir(path.join(dir, s), ruleset, report, true);
+  const { unsupported, selectors } = report.tally;
+  delete report.tally;
+  if (unsupported) report.warn(dir, `${unsupported} imported rule(s) are not supported yet (kept as they were; import-report.md counts them by type)`);
+  const sels = Object.entries(selectors).sort((a, b) => b[1] - a[1]);
+  if (sels.length) report.warn(dir, `${sels.reduce((n, [, c]) => n + c, 0)} rule(s) use ${sels.length} selector(s) this ruleset does not know yet: ${sels.slice(0, 12).map(([k, c]) => `${k} (${c})`).join(', ')}${sels.length > 12 ? ', ...' : ''}`);
   return report;
 }
 
-/** One folder of content (<kind>/<slug>.json); `open`: every document must carry an open licence. */
+/** One folder of content (<folder>/<slug>.json); `open`: every document must carry an open licence. */
 function contentDir(dir, ruleset, report, open) {
   const out = {};
   if (!fs.existsSync(dir)) return out;
-  const check = rulesetSchema(ruleset, 'content'), sys = systemConfig(ruleset);
+  const sys = systemConfig(ruleset);
+  const dirOf = (sys && sys.content && sys.content.kindDir) || ((k) => (k === 'creature' ? 'creature' : 'item'));
   for (const kind of fs.readdirSync(dir)) {
     const kdir = path.join(dir, kind);
     if (!fs.statSync(kdir).isDirectory()) continue;
     for (const f of fs.readdirSync(kdir).filter((n) => n.endsWith('.json'))) {
       const file = path.join(kdir, f), d = readJson(file, report);
       if (!d) continue;
+      const check = contentSchema(ruleset, d.kind);
+      if (check === undefined) { report.error(file, `kind "${d.kind}" is not a kind of content (rulesets/${ruleset}/content.js)`); continue; }
       if (check && !schemaErrors(check, d, file, report)) continue;
       if (open && !['ORC', 'OGL'].includes((d.source || {}).license)) report.error(file, `licence "${(d.source || {}).license}": open content must be ORC or OGL (NOTICE.md)`);
-      const key = `${d.kind === 'creature' ? 'creature' : 'item'}/${d.slug}`;
+      const key = `${dirOf(d.kind)}/${d.slug}`;
       if (`${kind}/${path.basename(f, '.json')}` !== key) report.error(file, `its kind and slug make "${key}", not the file's place "${kind}/${path.basename(f, '.json')}"`);
       if (out[key]) report.error(file, `"${key}" is defined twice`);
-      out[key] = d;
+      out[key] = true;
       checkRules(d.rules, d.slug, file, sys, report);
       for (const [i, it] of (d.items || []).entries()) checkRules(it.rules, `items[${i}]`, file, sys, report);
+      // numbers no stat block has: most likely a data error at the source, corrected with an override
+      for (const [a, v] of Object.entries(((d.stats || {}).attributes) || {})) if (v > 15 || v < -5) report.warn(file, `stats.attributes.${a} is ${v}: no creature has that; check the book and correct it with an override (content/pf2e/overrides/)`);
     }
   }
   return out;
@@ -600,9 +625,11 @@ export function validateActors(save, pack, content, report) {
     else if (!tokens.has(id)) report.warn(file, `no token "${id}" on any map of this save`);
     if (a.system !== pack.ruleset) { report.error(file, `system "${a.system}" is not the campaign's ruleset "${pack.ruleset}"`); continue; }
     if (check && !schemaErrors(check, a, file, report)) continue;
-    if (a.base && !content[a.base]) { report.error(file, `base: no "${a.base}" in the pack's content`); continue; }
+    const look = (k) => { try { return content[k]; } catch (e) { report.error(file, e.message); return undefined; } };
+    if (a.base && !look(a.base)) { report.error(file, `base: no "${a.base}" in the pack's content or the open sources pack.json lists`); continue; }
     const before = report.errors.length;
-    for (const [i, it] of (a.items || []).entries()) if (it.ref && !content[it.ref]) report.error(file, `items[${i}]: no "${it.ref}" in the pack's content`);
+    for (const [i, it] of (a.items || []).entries()) if (it.ref && !look(it.ref)) report.error(file, `items[${i}]: no "${it.ref}" in the pack's content or the open sources pack.json lists`);
+    for (const k of [a.base, ...(a.items || []).map((it) => it.ref)].filter(Boolean)) { const d = look(k); if (d && d.retired) report.warn(file, `"${k}" is retired in Foundry since ${d.retired.since}${d.retired.replacedBy ? `: use "${d.retired.replacedBy}"` : ''}`); }
     checkRules(a.rules, id, file, sys, report);
     for (const [i, f] of (a.feats || []).entries()) checkRules(f.rules, `feats[${i}]`, file, sys, report);
     let st = {};

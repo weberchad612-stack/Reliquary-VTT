@@ -13,6 +13,12 @@
 //     recover <who> --roll N                   a recovery check while dying (N: the d20)
 //     resource <who> <name> <+N|-N|N>          hero points, focus points...
 //     shield <who> raise|lower
+//     create <who> <content-key> [--name NAME]   give a token game data: a creature from the library
+//                                              (creature/goblin-warrior, or pathfinder-monster-core:creature/...)
+//     give <who> <content-key>                 an item from the library, carried by reference
+//
+// create and give also write the content record the creature now uses (content/...), so the board holds it;
+// tools/campaign.mjs tidy removes the ones nothing uses after a save.
 //
 // <who> is a token's name, alias or id. --records: a JSON file of the board's records ({path: data}, as db_list
 // gives them: tokens/, actors/, actorstate/), used over the save so the numbers are the live ones. Prints JSON
@@ -26,6 +32,8 @@ import { fileURLToPath } from 'node:url';
 import { prepareActor, describeStatistic } from '../engine/rules/rules.js';
 import { systemConfig } from '../rulesets/systems.js';
 import { readCampaign } from './campaign.mjs';
+import { contentLibrary, contentView, parseKey } from './library.mjs';
+import { contentPath, contentKey } from '../board/records.js';
 import { resolveToken, nameFor, publicName } from '../board/names.js';
 
 /**
@@ -36,18 +44,21 @@ export function loadGame(packDir, saveDir, records = null) {
   const c = readCampaign(packDir, saveDir);
   const tokens = {};
   for (const [map, st] of Object.entries(c.mapStates)) for (const [id, t] of Object.entries(st.tokens || {})) tokens[id] = { ...t, map };
-  const actors = { ...c.actors }, states = { ...c.actorStates };
+  const actors = { ...c.actors }, states = { ...c.actorStates }, onBoard = { ...c.content };
   if (records) {
     for (const [p, d] of Object.entries(records)) {
       const [coll, id] = p.split('/');
       if (coll === 'tokens') tokens[id] = d;
       if (coll === 'actors') actors[id] = d;
       if (coll === 'actorstate') states[id] = d;
+      if (coll === 'content') onBoard[contentKey(p)] = d;
     }
   }
+  // the content: what the board holds first, then the whole library (read from files only when asked for)
+  const lib = contentLibrary(c.pack, packDir, { extra: onBoard });
   const sys = systemConfig(c.campaign.ruleset || c.pack.ruleset);
   if (!sys || !sys.actors) throw new Error(`the ruleset "${c.campaign.ruleset}" has no creature rules`);
-  return { tokens, actors, states, content: c.content, sys, ruleset: sys.actors };
+  return { tokens, actors, states, content: contentView(lib), lib, onBoard, sys, ruleset: sys.actors };
 }
 
 /** A creature ready to use: {id, token, actor, state, effects, prepared}. */
@@ -97,6 +108,16 @@ export function showCreature(c, { all = false } = {}) {
   return out;
 }
 
+/** A document from the library, or an error naming the key. */
+function libDoc(game, key) {
+  parseKey(key);
+  const doc = game.lib.get(key);
+  if (!doc) throw new Error(`no content "${key}" (the pack's content/, the open sources pack.json lists, or <source>:<kind>/<slug>)`);
+  return doc;
+}
+/** Writes putting content on the board that it does not hold yet. */
+const contentWrites = (game, keys) => keys.filter((k) => !game.onBoard[k]).map((k) => ({ op: 'set', path: contentPath(k), data: game.lib.get(k) }));
+
 /** Run one command; returns {lines, writes}. */
 export function runCommand(game, cmd, args, opts = {}) {
   const R = game.ruleset;
@@ -108,6 +129,26 @@ export function runCommand(game, cmd, args, opts = {}) {
       lines.push(`${c.name}: HP ${p.hp.value}/${p.hp.max.value}${p.hp.temp ? ` +${p.hp.temp}` : ''}, ${p.band}${p.conditions.length ? `, ${p.conditions.map((x) => x.id + (x.value ? ' ' + x.value : '')).join(', ')}` : ''}${c.token.dead ? ', dead' : ''}`);
     }
     return { lines, writes: [] };
+  }
+  if (cmd === 'create') {
+    const [who, key] = args;
+    const id = resolveToken(game.tokens, who), token = game.tokens[id];
+    if (game.actors[id]) throw new Error(`${token.name || id} already has game data (actors/${id})`);
+    if (!key) throw new Error('create <who> <content-key>: which stat block (creature/goblin-warrior)');
+    const doc = libDoc(game, key);
+    if (doc.kind !== 'creature' && doc.kind !== 'hazard') throw new Error(`${key} is ${doc.kind === 'item' ? 'an item' : `a ${doc.kind}`}, not a creature or hazard`);
+    const actor = { system: doc.system || 'pf2e', kind: 'npc', base: key, ...(opts.name ? { name: opts.name } : {}) };
+    const g2 = { ...game, actors: { ...game.actors, [id]: actor } }, made = creature(g2, id);
+    return { lines: [`${made.name}: game data from ${doc.name} (level ${doc.level}${doc.source ? `, ${doc.source.title}` : ''}); HP ${made.prepared.hp.max.value}, AC ${made.prepared.ac.value}`, ...made.prepared.problems.map((x) => `PROBLEM: ${x}`)],
+      writes: [...contentWrites(game, [key]), { op: 'set', path: `actors/${id}`, data: actor }] };
+  }
+  if (cmd === 'give') {
+    const [who, key] = args, c = creature(game, who);
+    if (!key) throw new Error('give <who> <content-key>: which item (item/longsword)');
+    const doc = libDoc(game, key);
+    if (parseKey(key).kind !== 'item') throw new Error(`${key} is not an item (item/<slug>)`);
+    const actor = { ...c.actor, items: [...(c.actor.items || []), { ref: key }] };
+    return { lines: [`${c.name} now carries ${doc.name}`], writes: [...contentWrites(game, [key]), { op: 'set', path: `actors/${c.id}`, data: actor }] };
   }
   const c = creature(game, args[0]), p = c.prepared;
   if (cmd === 'show') return { lines: showCreature(c, { all: opts.all }), writes: [] };
@@ -158,7 +199,7 @@ export function runCommand(game, cmd, args, opts = {}) {
     const st = { ...c.state, shieldRaised: raise || undefined };
     return { lines: [`${c.shown} ${raise ? `raises the ${p.shield.name}: +${p.shield.acBonus} circumstance to AC until the start of the next turn` : 'lowers the shield'}`], writes: [stateWrite(c.id, st)] };
   }
-  throw new Error('commands: list, show, damage, heal, temp, recover, resource, shield');
+  throw new Error('commands: list, show, damage, heal, temp, recover, resource, shield, create, give');
 }
 
 function main(argv) {
@@ -166,8 +207,8 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
-    const rec = opt('--records'), parts = opt('--parts'), roll = opt('--roll');
-    const o = { crit: flag('--crit'), nonlethal: flag('--nonlethal'), all: flag('--all'), parts, roll };
+    const rec = opt('--records'), parts = opt('--parts'), roll = opt('--roll'), name = opt('--name');
+    const o = { crit: flag('--crit'), nonlethal: flag('--nonlethal'), all: flag('--all'), parts, roll, name };
     const [pack, save, cmd, ...rest] = args;
     if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);

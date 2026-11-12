@@ -14,7 +14,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 - **Document best practices for every core feature** you build or change, in `docs/best-practices/`, including the lessons learned while doing it.
 - **Map importing:** read the adventure text for every keyed area and use the book's labelled map, not only the map image. Where the map explicitly draws something, the drawing wins; the text fills in what the drawing cannot show. Record every decision in the map's `import.json`.
 - **Never commit or publish book content.** Text, maps and art from the user's books stay private: `pdfsource/`, `extracted/`, `packs/` and `saves/` are git-ignored. Check before every commit.
-- **Open game content may be committed** (the user's decision, 2026-11-12): Pathfinder data converted from the Foundry VTT PF2E system's open data, licensed **ORC or OGL**, flavour descriptions and adventure bestiaries included, goes in `content/pf2e/` (only through `tools/import/foundry-pf2e.mjs --public`, never by hand), with the notices in `NOTICE.md` and `licenses/`. The project must stay free (Paizo's Community Use Policy).
+- **Open game content may be committed** (the user's decision, 2026-11-12): Pathfinder data converted from the Foundry VTT PF2E system's open data, licensed **ORC or OGL**, flavour descriptions and adventure bestiaries included, goes in `content/pf2e/` (only through `tools/import/foundry-pf2e.mjs --release`, never by hand; data errors are corrected with overrides in `content/pf2e/overrides/`), with the notices in `NOTICE.md` and `licenses/`. The project must stay free (Paizo's Community Use Policy).
 - Run `npm test` and the validator before every commit. Commit to `main`.
 
 ## Layout
@@ -25,8 +25,8 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 | `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout ([guide](docs/best-practices/board.md)) |
 | `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
 | `rulesets/` | Game-system rules and configuration (PF2E: measurement, areas, conditions, movement, terrain, light and senses, visual effects library, creatures' rules: statistics, damage and healing); `systems.js` lists the systems |
-| `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), creatures' numbers, damage and checks (`actor.mjs`, `check.mjs`), the Foundry PF2E importer (`import/`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
-| `content/` | Open game content converted from the Foundry PF2E system's open data (ORC and OGL; [NOTICE.md](NOTICE.md)) |
+| `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), creatures' numbers, damage and checks (`actor.mjs`, `check.mjs`), the content library (`library.mjs`), the Foundry PF2E importer (`import/`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
+| `content/` | Open game content: all of the Foundry PF2E system's open data in our format (ORC and OGL; [NOTICE.md](NOTICE.md)), with the import manifest and report ([content/pf2e/README.md](content/pf2e/README.md)) |
 | `examples/` | Original sample pack (Sample Crypt for tests, Sample Keep as the 48 x 48 test bench), save, test campaigns (`campaigns/keep-test`, `crypt-test`) and the engine demo page |
 | `tests/` | `npm test` |
 | `future/` | Thought-through ideas not yet scheduled (for example, faster sight); check here before planning new work |

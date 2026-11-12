@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/rulesets/pf2e/content.schema.json",
   "title": "PF2E content",
-  "description": "Game content in a pack (content/<kind>/<slug>.json): creatures (stat blocks) and items. Our own format; tools/import/foundry-pf2e.mjs converts Foundry PF2E data into it.",
+  "description": "A piece of PF2E game content (content/pf2e/<source>/<folder>/<slug>.json, or a pack's content/<folder>/<slug>.json): a creature, hazard or vehicle stat block; an item; a feat or class feature, action, effect, condition or spell; an ancestry, heritage, background, class or deity; or a campaign feature. Physical items are kept under item/, every other kind in a folder of its own name (rulesets/pf2e/content.js). See docs/design/game-data.md.",
   "$defs": {
     "rule": {
       "type": "object",
@@ -197,34 +197,22 @@
               "additionalProperties": false,
               "properties": {
                 "str": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 },
                 "dex": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 },
                 "con": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 },
                 "int": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 },
                 "wis": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 },
                 "cha": {
-                  "type": "integer",
-                  "minimum": -5,
-                  "maximum": 10
+                  "type": "integer"
                 }
               }
             },
@@ -273,89 +261,29 @@
                   "type": "array"
                 }
               }
+            },
+            "notes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         },
         "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "kind",
-              "name"
-            ],
-            "properties": {
-              "kind": {
-                "enum": [
-                  "strike",
-                  "ability",
-                  "spell",
-                  "item"
-                ]
-              },
-              "name": {
-                "type": "string"
-              },
-              "attack": {
-                "type": "integer"
-              },
-              "traits": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "range": {
-                "type": "integer"
-              },
-              "damage": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "dice",
-                    "type"
-                  ],
-                  "properties": {
-                    "dice": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "effects": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "actions": {
-                "type": [
-                  "string",
-                  "integer",
-                  "null"
-                ]
-              },
-              "text": {
-                "type": "string"
-              },
-              "rules": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/$defs/rule"
-                }
-              }
-            }
-          }
+          "$ref": "#/$defs/statBlockItems"
         },
         "rules": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/rule"
           }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "blurb": {
+          "type": "string"
         }
       }
     },
@@ -379,8 +307,10 @@
             "weapon",
             "equipment",
             "consumable",
-            "feat",
-            "effect"
+            "ammo",
+            "treasure",
+            "backpack",
+            "kit"
           ]
         },
         "slug": {
@@ -490,6 +420,1572 @@
           "items": {
             "$ref": "#/$defs/rule"
           }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "reload": {
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "splash": {
+          "type": "integer"
+        },
+        "bonusDamage": {
+          "type": "integer"
+        },
+        "baseItem": {
+          "type": "string"
+        },
+        "uses": {
+          "type": "object"
+        },
+        "spell": {
+          "$ref": "#/$defs/link"
+        },
+        "capacity": {
+          "type": "number"
+        },
+        "ignored": {
+          "type": "number"
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "usage": {
+          "type": "string"
+        },
+        "material": {
+          "type": "object"
+        },
+        "durability": {
+          "type": "object",
+          "properties": {
+            "hardness": {
+              "type": "integer"
+            },
+            "hp": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "retired": {
+      "type": "object",
+      "description": "Foundry no longer has this document (removed, or renamed: replacedBy). Kept so saves that use it still load.",
+      "required": [
+        "since"
+      ],
+      "properties": {
+        "since": {
+          "type": "string"
+        },
+        "replacedBy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "link": {
+      "type": "object",
+      "description": "Another document: its name, and its content key when it was imported (<source>:<folder>/<slug>).",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string",
+          "pattern": "^(?:[a-z0-9][a-z0-9-]*:)?[a-z0-9][a-z0-9-]*/[a-z0-9][a-z0-9-]*$"
+        },
+        "level": {
+          "type": "integer"
+        },
+        "rank": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "actions": {
+      "description": "Actions to use: 1-3, reaction, free, or none (passive).",
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        {
+          "enum": [
+            "reaction",
+            "free",
+            "passive"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "frequency": {
+      "type": "object",
+      "required": [
+        "max",
+        "per"
+      ],
+      "properties": {
+        "max": {
+          "type": "integer"
+        },
+        "per": {
+          "type": "string"
+        }
+      }
+    },
+    "statBlockItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "name"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "strike",
+              "ability",
+              "spell",
+              "spellcasting",
+              "gear",
+              "item"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "attack": {
+            "type": "integer"
+          },
+          "traits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "range": {
+            "type": "integer"
+          },
+          "damage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "dice",
+                "type"
+              ],
+              "properties": {
+                "dice": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "effects": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actions": {
+            "$ref": "#/$defs/actions"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/rule"
+            }
+          },
+          "category": {
+            "type": "string"
+          },
+          "maxRange": {
+            "type": "integer"
+          },
+          "frequency": {
+            "$ref": "#/$defs/frequency"
+          },
+          "tradition": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "dc": {
+            "type": "integer"
+          },
+          "spells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "rank": {
+                  "type": "integer"
+                },
+                "ref": {
+                  "type": "string"
+                },
+                "uses": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ref": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "uses": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "hazard": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "level",
+        "stats"
+      ],
+      "properties": {
+        "kind": {
+          "const": "hazard"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "complex": {
+          "type": "boolean"
+        },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "ac": {
+              "type": "integer"
+            },
+            "hardness": {
+              "type": "integer"
+            },
+            "hp": {
+              "type": "integer"
+            },
+            "saves": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "iwr": {
+              "type": "object"
+            },
+            "stealth": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "details": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "disable": {
+          "type": "string"
+        },
+        "reset": {
+          "type": "string"
+        },
+        "routine": {
+          "type": "string"
+        },
+        "items": {
+          "$ref": "#/$defs/statBlockItems"
+        }
+      }
+    },
+    "vehicle": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "level",
+        "stats"
+      ],
+      "properties": {
+        "kind": {
+          "const": "vehicle"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "size": {
+          "enum": [
+            "tiny",
+            "small",
+            "medium",
+            "large",
+            "huge",
+            "gargantuan"
+          ]
+        },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "ac": {
+              "type": "integer"
+            },
+            "hardness": {
+              "type": "integer"
+            },
+            "hp": {
+              "type": "integer"
+            },
+            "saves": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "iwr": {
+              "type": "object"
+            },
+            "collision": {
+              "type": "object"
+            }
+          }
+        },
+        "crew": {
+          "type": "string"
+        },
+        "passengers": {
+          "type": "string"
+        },
+        "piloting": {
+          "type": "string"
+        },
+        "speed": {
+          "type": "string"
+        },
+        "space": {
+          "type": "object"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "items": {
+          "$ref": "#/$defs/statBlockItems"
+        }
+      }
+    },
+    "feat": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "level"
+      ],
+      "properties": {
+        "kind": {
+          "const": "feat"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "category": {
+          "type": "string"
+        },
+        "actions": {
+          "$ref": "#/$defs/actions"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "frequency": {
+          "$ref": "#/$defs/frequency"
+        },
+        "maxTakable": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "action"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "category": {
+          "type": "string"
+        },
+        "actions": {
+          "$ref": "#/$defs/actions"
+        },
+        "frequency": {
+          "$ref": "#/$defs/frequency"
+        },
+        "selfEffect": {
+          "$ref": "#/$defs/link"
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "effect"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "duration": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "expiry": {
+              "type": "string"
+            },
+            "sustained": {
+              "type": "boolean"
+            }
+          }
+        },
+        "badge": {
+          "type": "object"
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "condition"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "valued": {
+          "type": "boolean"
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    },
+    "campaignFeature": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "campaign-feature"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "campaign": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "actions": {
+          "$ref": "#/$defs/actions"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "spell": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "rank"
+      ],
+      "properties": {
+        "kind": {
+          "const": "spell"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "cantrip": {
+          "type": "boolean"
+        },
+        "focus": {
+          "type": "boolean"
+        },
+        "ritual": {
+          "type": "object"
+        },
+        "traditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "actions": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "cost": {
+          "type": "string"
+        },
+        "requirements": {
+          "type": "string"
+        },
+        "range": {
+          "type": "string"
+        },
+        "area": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "value": {
+              "type": "integer"
+            },
+            "details": {
+              "type": "string"
+            }
+          }
+        },
+        "target": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "object"
+        },
+        "defense": {
+          "type": "object"
+        },
+        "damage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "formula"
+            ],
+            "properties": {
+              "formula": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "heightening": {
+          "type": "object"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "counteraction": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ancestry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "hp"
+      ],
+      "properties": {
+        "kind": {
+          "const": "ancestry"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "size": {
+          "enum": [
+            "tiny",
+            "small",
+            "medium",
+            "large",
+            "huge",
+            "gargantuan"
+          ]
+        },
+        "speed": {
+          "type": "integer"
+        },
+        "reach": {
+          "type": "integer"
+        },
+        "hands": {
+          "type": "integer"
+        },
+        "vision": {
+          "type": "string"
+        },
+        "boosts": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "flaws": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additionalLanguages": {
+          "type": "object"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "heritage": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "heritage"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "ancestry": {
+          "$ref": "#/$defs/link"
+        },
+        "versatile": {
+          "type": "boolean"
+        }
+      }
+    },
+    "background": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "background"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "boosts": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "feats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "class": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source",
+        "hp"
+      ],
+      "properties": {
+        "kind": {
+          "const": "class"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "keyAttribute": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "perception": {
+          "type": "integer"
+        },
+        "saves": {
+          "type": "object"
+        },
+        "skills": {
+          "type": "object"
+        },
+        "attacks": {
+          "type": "object"
+        },
+        "defenses": {
+          "type": "object"
+        },
+        "classDC": {
+          "type": "integer"
+        },
+        "spellcasting": {
+          "type": "integer"
+        },
+        "featLevels": {
+          "type": "object"
+        },
+        "skillIncreaseLevels": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "deity": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "const": "deity"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "retired": {
+          "$ref": "#/$defs/retired"
+        },
+        "category": {
+          "type": "string"
+        },
+        "attribute": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skill": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "weapons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "font": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "domains": {
+          "type": "object"
+        },
+        "sanctification": {
+          "type": "object"
+        },
+        "spells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
         }
       }
     }
@@ -499,7 +1995,46 @@
       "$ref": "#/$defs/creature"
     },
     {
+      "$ref": "#/$defs/hazard"
+    },
+    {
+      "$ref": "#/$defs/vehicle"
+    },
+    {
       "$ref": "#/$defs/item"
+    },
+    {
+      "$ref": "#/$defs/feat"
+    },
+    {
+      "$ref": "#/$defs/action"
+    },
+    {
+      "$ref": "#/$defs/effect"
+    },
+    {
+      "$ref": "#/$defs/condition"
+    },
+    {
+      "$ref": "#/$defs/spell"
+    },
+    {
+      "$ref": "#/$defs/ancestry"
+    },
+    {
+      "$ref": "#/$defs/heritage"
+    },
+    {
+      "$ref": "#/$defs/background"
+    },
+    {
+      "$ref": "#/$defs/class"
+    },
+    {
+      "$ref": "#/$defs/deity"
+    },
+    {
+      "$ref": "#/$defs/campaignFeature"
     }
   ]
 }

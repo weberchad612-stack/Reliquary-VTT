@@ -30,7 +30,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { campaignRecords, saveFromRecords } from '../board/records.js';
+import { campaignRecords, saveFromRecords, contentKey } from '../board/records.js';
+import { contentLibrary, referencedContent, referencedKeys } from './library.mjs';
 
 export const BACKUPS = 5;
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -38,25 +39,12 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
 
 /**
- * The game content a pack's campaigns use: the open sources it lists (pack.json `content`: content/<source>/
- * in the repository), then its own content/ folder, which overrides them. {'<kind>/<slug>': document}.
+ * The game content a campaign uses: only the documents its creatures reference (each base stat block and each
+ * item carried by reference), from the pack's library (tools/library.mjs). Throws naming any that is missing.
  */
-export function readContent(pack, packDir) {
-  const content = {};
-  const readKinds = (dir) => {
-    if (!fs.existsSync(dir)) return;
-    for (const kind of fs.readdirSync(dir)) {
-      const kdir = path.join(dir, kind);
-      if (!fs.statSync(kdir).isDirectory()) continue;
-      for (const n of fs.readdirSync(kdir).filter((x) => x.endsWith('.json'))) { const { $schema: _s, ...d } = readJson(path.join(kdir, n)); content[`${kind}/${d.slug || path.basename(n, '.json')}`] = d; }
-    }
-  };
-  for (const src of pack.content || []) {
-    const dir = path.join(REPO, 'content', src);
-    if (!fs.existsSync(dir)) throw new Error(`pack.json content: no open content "${src}" (content/${src})`);
-    readKinds(dir);
-  }
-  readKinds(path.join(packDir, 'content'));
+export function readContent(pack, packDir, actors) {
+  const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors);
+  if (missing.length) throw new Error(`content not found: ${missing.join(', ')} (the pack's content/ or the open sources pack.json lists)`);
   return content;
 }
 
@@ -90,10 +78,10 @@ export function readCampaign(packDir, saveDir) {
   // the pack's own visual effects (added to and restyling the ruleset's): effects.json, or the file pack.effects names
   const fxFile = path.join(packDir, pack.effects || 'effects.json');
   const effects = fs.existsSync(fxFile) ? (({ $schema: _s, ...e }) => e)(readJson(fxFile)) : null;
-  // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the pack's content (content/<kind>/<slug>.json)
+  // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the content they use
   const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
   const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
-  const content = readContent(pack, packDir);
+  const content = readContent(pack, packDir, actors);
   const { $schema, ...camp } = campaign;
   return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content };
 }
@@ -191,6 +179,16 @@ export function loadOps(packDir, saveDir, assets = [], { now } = {}) {
   return { batches: batches(ops), meta: { op: 'set', path: 'board/meta', data: records['board/meta'] }, upload };
 }
 
+/**
+ * After a save: delete ops for the board's content records no creature uses any more (records: {path: data}, or
+ * a listing {path: version} with `actors`, the actor records). Content stays on the board during play.
+ */
+export function tidyOps(records) {
+  const actors = Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p.slice(7), d]));
+  const used = referencedKeys(actors);
+  return batches(Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))).map((p) => ({ op: 'delete', path: p })));
+}
+
 /** Delete ops for a whole-database listing {path: version}. */
 export function clearOps(listing) {
   return batches(Object.entries(listing).map(([path, ifVersion]) => ({ op: 'delete', path, ifVersion })));
@@ -225,7 +223,9 @@ function main(argv) {
   if (cmd === 'save' && a && b) {
     const data = readJson(a);
     const files = writeSave(data.records || data, b);
+    const tidy = tidyOps(data.records || data);
     console.log(`wrote ${files.length} file(s) to ${b}`);
+    if (tidy.length) console.log(`${tidy.flat().length} content record(s) on the board no creature uses: node tools/campaign.mjs tidy ${a} gives the delete ops`);
     return 0;
   }
   if (cmd === 'ops-load' && a && b) {
@@ -233,6 +233,7 @@ function main(argv) {
     emit(loadOps(a, b, assets));
     return 0;
   }
+  if (cmd === 'tidy' && a) { const data = readJson(a); emit({ batches: tidyOps(data.records || data) }); return 0; }
   if (cmd === 'ops-clear' && a) { emit({ batches: clearOps(readJson(a)) }); return 0; }
   if (cmd === 'verify' && a && b && c) {
     const data = readJson(a);
@@ -250,6 +251,7 @@ function main(argv) {
   console.error('Usage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>' +
     '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
     '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
+    '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses, after a save)' +
     '\n       node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>');
   return 2;
 }

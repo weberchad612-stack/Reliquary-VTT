@@ -27,6 +27,7 @@
 import { PF2E_CONDITIONS } from './conditions.js';
 import { PF2E_EFFECTS } from './effects.js';
 import { preparePf2e } from './actor.js';
+import { kindDir, CONTENT_KINDS, CONTENT_FOLDERS } from './content.js';
 import { applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage } from './damage.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
@@ -59,6 +60,8 @@ export const PF2E_SYSTEM = Object.freeze({
   conditions: PF2E_CONDITIONS,
   // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
   effects: PF2E_EFFECTS,
+  // content: the kinds of game content and the folder each is kept in (rulesets/pf2e/content.js)
+  content: Object.freeze({ kinds: CONTENT_KINDS, folders: CONTENT_FOLDERS, kindDir }),
   // actors: creatures' game data and rules (rulesets/pf2e/actor.js, damage.js, rules.js; docs/design/game-data.md)
   actors: Object.freeze({
     prepare: preparePf2e, applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage, healthBand,

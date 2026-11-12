@@ -18,7 +18,8 @@
 //   actors/<id>        a creature's game data (same id as its token): a PC's build, or a stat block reference
 //                      and its own differences (docs/design/game-data.md)
 //   actorstate/<id>    what is happening to it now: HP, temporary HP, resources spent (written often)
-//   content/<kind>.<slug>  the pack's game content the campaign uses: creatures, items (content key <kind>/<slug>)
+//   content/<kind>.<slug>  the game content the campaign's creatures use, only those documents: stat blocks, items
+//                          (content key <kind>/<slug>; one naming its source is content/<source>.<kind>.<slug>)
 //   fxlib/pack         the pack's visual effects ({palette, effects, fallbacks}; its effects.json), if it has any
 //   fx/<time>-<n>      a visual effect playing now (written by Claude; not part of the save; board/fx.js)
 //   log/<time>-<n>     the change log (not part of the save; written by whoever makes a change)
@@ -99,8 +100,15 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
 }
 
 /** A content key ('item/longsword') as a record path ('content/item.longsword'), and back. */
-export function contentPath(key) { const [kind, slug] = String(key).split('/'); return `content/${kind}.${slug}`; }
-export function contentKey(path) { const id = String(path).split('/')[1] || '', i = id.indexOf('.'); return `${id.slice(0, i)}/${id.slice(i + 1)}`; }
+// A key naming one source ('pathfinder-monster-core:creature/goblin-warrior') is 'content/<source>.<kind>.<slug>'.
+export function contentPath(key) {
+  const s = String(key), c = s.indexOf(':'), src = c >= 0 ? s.slice(0, c) : null, [kind, slug] = s.slice(c + 1).split('/');
+  return `content/${src ? `${src}.` : ''}${kind}.${slug}`;
+}
+export function contentKey(path) {
+  const parts = (String(path).split('/')[1] || '').split('.');
+  return parts.length === 3 ? `${parts[0]}:${parts[1]}/${parts[2]}` : `${parts[0]}/${parts.slice(1).join('.')}`;
+}
 /** The content held in records: {'<kind>/<slug>': document}. */
 export function contentFromRecords(records) {
   const out = {};

@@ -1,0 +1,93 @@
+// The content library: every game document a pack's campaigns can draw on, read from files only when asked for.
+//
+// A content key names one document:
+//   <kind>/<slug>            the pack's own content/<kind>/<slug>.json first, then each open source the pack lists
+//                            (pack.json `content`, in order: content/<ruleset>/<source>/<kind>/<slug>.json)
+//   <source>:<kind>/<slug>   one open source by name (content/<ruleset>/<source>/), listed in pack.json or not;
+//                            used when two sources have a document of the same name
+//
+// The board only ever holds the documents its creatures use (docs/design/game-data.md section 7):
+// referencedContent() finds them for loading a campaign, the tools add one when they add a creature or an item,
+// and tidyOps() removes the ones nothing uses any more when the game is saved.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const NAME = /^[a-z0-9][a-z0-9-]*$/;
+
+/** A content key's parts: {source|null, kind, slug}; throws on a malformed key. */
+export function parseKey(key) {
+  const m = /^(?:([a-z0-9][a-z0-9-]*):)?([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/.exec(String(key || ''));
+  if (!m) throw new Error(`"${key}" is not a content key (<kind>/<slug>, or <source>:<kind>/<slug>)`);
+  return { source: m[1] || null, kind: m[2], slug: m[3] };
+}
+
+/** The folder of an open source: pack.json lists them as '<ruleset>/<source>'. */
+export const sourceDir = (entry) => path.join(REPO, 'content', entry);
+
+/**
+ * The library for a pack: get(key) -> document or undefined (cached), where(key) -> the file it came from.
+ * `extra` ({key: document}) is consulted first (the board's own records, for the tools).
+ */
+export function contentLibrary(pack, packDir, { extra = null } = {}) {
+  const ruleset = pack.ruleset || 'pf2e';
+  const listed = (pack.content || []).map((e) => {
+    const dir = sourceDir(e);
+    if (!fs.existsSync(dir)) throw new Error(`pack.json content: no open content "${e}" (content/${e})`);
+    return dir;
+  });
+  const own = packDir ? path.join(packDir, 'content') : null;
+  const cache = new Map();
+  const fileFor = (key) => {
+    const { source, kind, slug } = parseKey(key);
+    const dirs = source ? [path.join(REPO, 'content', ruleset, source)] : [own, ...listed].filter(Boolean);
+    for (const d of dirs) { const f = path.join(d, kind, `${slug}.json`); if (fs.existsSync(f)) return f; }
+    return null;
+  };
+  const lib = {
+    where: (key) => { try { return fileFor(key); } catch { return null; } },
+    get(key) {
+      if (extra && extra[key]) return extra[key];
+      if (cache.has(key)) return cache.get(key);
+      const f = lib.where(key);
+      const doc = f ? (({ $schema: _s, ...d }) => d)(JSON.parse(fs.readFileSync(f, 'utf8'))) : undefined;
+      cache.set(key, doc);
+      return doc;
+    },
+    has: (key) => lib.get(key) !== undefined,
+  };
+  return lib;
+}
+
+/** The library as a plain-looking object ({key: document}) for code that indexes content directly. */
+export function contentView(lib) {
+  return new Proxy({}, {
+    get: (_, k) => (typeof k === 'string' ? lib.get(k) : undefined),
+    has: (_, k) => typeof k === 'string' && lib.has(k),
+  });
+}
+
+/** The content keys a set of creatures uses: each one's base stat block and each item it carries by reference. */
+export function referencedKeys(actors) {
+  const keys = new Set();
+  for (const a of Object.values(actors || {})) {
+    if (a && a.base) keys.add(a.base);
+    for (const it of (a && a.items) || []) if (it && it.ref) keys.add(it.ref);
+  }
+  return keys;
+}
+
+/** The documents the creatures use, from the library: {content: {key: document}, missing: [key]}. */
+export function referencedContent(lib, actors) {
+  const content = {}, missing = [];
+  for (const k of [...referencedKeys(actors)].sort()) {
+    let doc; try { doc = lib.get(k); } catch { doc = undefined; }
+    if (doc) content[k] = doc; else missing.push(k);
+  }
+  return { content, missing };
+}
+
+/** A key is well formed and every part a plain name. */
+export function isKey(key) { try { const p = parseKey(key); return [p.kind, p.slug, ...(p.source ? [p.source] : [])].every((x) => NAME.test(x)); } catch { return false; } }

@@ -14,8 +14,10 @@ const cap = (s) => s[0].toUpperCase() + s.slice(1);
 const slugOf = (w) => w.slug || String(w.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 /** An item of a character: a reference into the content ({ref: 'item/longsword', ...own}) or written in full. */
+// a stat block's own entries (its strikes, abilities, spells, gear) may name content too; that is a note, not a use
+const STAT_BLOCK_ENTRIES = new Set(['strike', 'ability', 'spell', 'spellcasting', 'gear']);
 function resolveItem(it, content) {
-  if (!it.ref) return it;
+  if (!it.ref || STAT_BLOCK_ENTRIES.has(it.kind)) return it;
   const base = content[it.ref];
   if (!base) throw new Error(`no content "${it.ref}"`);
   const { ref: _r, ...own } = it;

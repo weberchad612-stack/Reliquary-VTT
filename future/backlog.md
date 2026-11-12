@@ -299,3 +299,17 @@ looked up by it (replacing the old `artKey`/`statKey`).
 of the adjective (of the proper name for a named NPC), unique within the token's **`group`** (its encounter
 set, such as `b14-morlocks`, set when Claude places it; no group = a group of one). A repeat is a warning
 only; a group of more than 26 uses two letters ("HC").
+
+## FR-11: After the full Foundry import (noted 2026-11-12, not scheduled)
+
+Left over from importing all of Foundry PF2E 8.7.0 (docs/design/game-data.md section 7.4):
+- **Character converter:** the 160 pregenerated characters (iconics, Paizo pregens) and 5 familiars were
+  skipped; they need Foundry's character build turned into our actor format (with the character builder).
+- **Rule elements to support next**, by how often they appear (content/pf2e/import-report.md): RollOption,
+  ActiveEffectLike, ItemAlteration, DamageDice, GrantItem, Aura, ChoiceSet. Many values use Foundry's
+  `ternary`/`gte` functions and `@item.level` (an effect's or spell's level): adding those to the expression
+  language would turn a large share of the kept rules into working ones.
+- **Predicates that compare numbers** (`{"gte": ["self:level", 5]}`): rules carrying them are kept, not run.
+- **Three creatures with impossible Strength** (Marala +30, Glittercrag Strix +25, Okoa +19): check the books
+  and correct them with overrides.
+- **Kingmaker armies** (kingdom rules) were skipped.
