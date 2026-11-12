@@ -299,6 +299,11 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   (or `npc --as "Name" [--alias A]`), `--gm` for the GM's eyes only; write the record it prints.
 - **The chat is in the save** (`chat.json`, oldest first; `chat/` records on the board) and loads with the campaign.
   It replaces the roll log (`rolls/`) and the change log (`log/`), which are gone.
+- **Lessons:** the map is centred in its area and its overlay canvases (hover squares, rings, labels, effects) and
+  layers (notes, template buttons) are placed to match it in `fit()`. Anything that changes the area's size must
+  refit: the board watches the stage with a ResizeObserver, and the sidebar dispatches a resize when it restores a
+  collapsed or resized state at load. Without that, a board loaded with the sidebar collapsed drew every overlay
+  half the sidebar's change away from its token (seen as rings and labels four squares off, 2026-11-12).
 - **Lessons:** the page's main row was sized by its content, and the old side panel's long content had been hiding
   that: `main` now takes the grid's stretching row (`grid-row: 3`). Check a panel's height with little in it.
 - Built in `board/sidebar.js` (the strip, tabs, collapse, resize, a panel per tab), `board/panel.js` (docked or

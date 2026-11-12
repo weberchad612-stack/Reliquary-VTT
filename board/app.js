@@ -2561,6 +2561,18 @@ export async function start(store, { build = null } = {}) {
     else if (e.key === '0') { e.preventDefault(); zoom = 1; fit(); }
   });
   window.addEventListener('resize', fit);
+  // the map area can change size without the window doing so (the sidebar restored collapsed or at another width,
+  // resized, a tab's content): refit then too, so the overlays (hover squares, rings, labels, effects, notes) stay
+  // on the map, which is centred in the area
+  if (typeof ResizeObserver !== 'undefined') {
+    let fitRaf = null, lastW = 0, lastH = 0;
+    new ResizeObserver(() => {
+      const st = document.getElementById('stage');
+      if (st.clientWidth === lastW && st.clientHeight === lastH) return;
+      lastW = st.clientWidth; lastH = st.clientHeight;
+      if (!fitRaf) fitRaf = requestAnimationFrame(() => { fitRaf = null; fit(); });
+    }).observe(document.getElementById('stage'));
+  }
   img.onload = () => draw();
 
   // ---------- keeping the table in step with the store ----------

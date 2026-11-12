@@ -113,6 +113,7 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
     handle.addEventListener('dblclick', () => { pref.width = SIDEBAR_WIDTH.initial; save(key, pref); apply(); resized(); });
   }
   apply();
+  resized();   // a sidebar restored collapsed or at another width changes the map's room after the page fitted it
   const api = {
     select: (id) => select(id),
     current: () => pref.tab,
