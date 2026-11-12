@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { quickViewAccess, quickViewTitle, quickViewBody, quickViewKeys } from '../board/quickview.js';
 import { describeStatistic } from '../engine/rules/rules.js';
 import { PF2E_CONDITIONS } from '../rulesets/pf2e/conditions.js';
+import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
 import { publicName } from '../board/names.js';
 import { loadGame, creature } from '../tools/actor.mjs';
 
@@ -15,7 +16,7 @@ const game = () => loadGame(path.join(ROOT, 'examples/sample-pack'), path.join(R
 const strip = (html) => html.replace(/<[^>]+>/g, ' ').replace(/&quot;/g, '"').replace(/\s+/g, ' ');
 const view = (g, who, v, extra = {}) => {
   const c = creature(g, who), base = c.actor.base ? g.content[c.actor.base] : null;
-  const o = { token: c.token, actor: c.actor, state: c.state, prepared: c.prepared, base, view: v, access: quickViewAccess(c.token, v, true), conditions: PF2E_CONDITIONS, describe: describeStatistic, publicName, ...extra };
+  const o = { token: c.token, actor: c.actor, state: c.state, prepared: c.prepared, base, view: v, access: quickViewAccess(c.token, v, true), conditions: PF2E_CONDITIONS, describe: describeStatistic, publicName, system: PF2E_SYSTEM, ...extra };
   return { o, title: quickViewTitle(o), html: quickViewBody(o) };
 };
 
@@ -68,14 +69,14 @@ test('a PC sheet: trained skills only, items, shield, class DC, resources, feats
 test('a creature with spellcasting and no game data; the content a Quick-View needs', () => {
   const html = quickViewBody({ token: { name: 'Mage' }, actor: {}, state: {}, base: { items: [{ kind: 'spellcasting', name: 'Arcane Prepared Spells', dc: 20, attack: 12, spells: [{ name: 'Fireball', rank: 3 }, { name: 'Light', rank: 0 }, { name: 'Shield', rank: 0 }] }], stats: {} },
     prepared: { kind: 'npc', level: 5, traits: [], size: 'medium', attributes: {}, skills: {}, saves: {}, speeds: {}, strikes: [], iwr: {}, hp: { value: 30, max: { value: 30 } }, abilities: [] },
-    view: 'gm', access: 'full', conditions: {}, describe: () => '', publicName: () => '' });
+    view: 'gm', access: 'full', conditions: {}, describe: () => '', publicName: () => '', system: PF2E_SYSTEM });
   assert.match(strip(html), /Arcane Prepared Spells DC 20, attack \+12 ; 3rd Fireball; Cantrips Light, Shield/);
   assert.match(strip(quickViewBody({ token: { name: 'Statue' }, prepared: null, view: 'gm', access: 'full', conditions: {} })), /Statue has no game data yet/);
   assert.deepEqual(quickViewKeys({ base: 'creature/rat', items: [{ ref: 'item/dagger' }, { name: 'x' }] }, { effects: [{ ref: 'x:effect/y' }, { id: 'prone' }] }), ['creature/rat', 'item/dagger', 'x:effect/y']);
 });
 
 test('traits: written the Pathfinder way, their rules on hover, and what the board applies', async () => {
-  const { traitLabel, traitEntry, traitApplied } = await import('../board/quickview.js');
+  const { traitLabel, traitEntry, traitApplied } = await import('../rulesets/pf2e/traits.js');
   const { traitGlossary } = await import('../tools/library.mjs');
   assert.deepEqual(['reach-10', 'deadly-d10', 'versatile-p', 'two-hand-d8', 'thrown-20', 'backswing'].map(traitLabel), ['reach 10 feet', 'deadly d10', 'versatile P', 'two hand d8', 'thrown 20 feet', 'backswing']);
   const G = (traitGlossary('pf2e') || {}).entries;
@@ -95,4 +96,22 @@ test('traits: written the Pathfinder way, their rules on hover, and what the boa
   assert.match(html, /title="Backswing: You can use the momentum from a missed attack[^"]*printed numbers count it[^"]*">backswing<\/span>/);
   assert.match(html, />reach 10 feet<\/span>/);
   assert.match(html, /title="Giant: [^"]*">Giant<\/span>/);
+});
+
+test('the board knows no game system: a system without a layout gets a plain card, and no other system\'s traits', async () => {
+  const src = (await import('node:fs')).readFileSync(path.join(ROOT, 'board/quickview.js'), 'utf8');
+  assert.doesNotMatch(src, /Fort|Monster Core|Recall Knowledge|agile|feet'/, 'nothing Pathfinder in the board\'s Quick-View');
+  const prepared = { kind: 'npc', level: 2, traits: ['undead', 'skeleton'], hp: { value: 4, max: { value: 10 } }, band: 'Badly hurt' };
+  const o = { token: { name: 'Bones', effects: [{ id: 'prone' }] }, actor: {}, state: {}, prepared, base: null, view: 'gm', access: 'full', conditions: {}, describe: () => '', publicName: () => '', system: { id: 'other' }, glossary: { undead: { name: 'Undead', text: 'x' } } };
+  const text = strip(quickViewBody(o));
+  assert.match(text, /Traits undead, skeleton/);
+  assert.match(text, /HP 4\/10/);
+  assert.match(text, /no stat block layout/);
+  assert.doesNotMatch(quickViewBody(o), /title="Undead/, 'no trait descriptions without the system\'s layout');
+  assert.equal(quickViewTitle(o).kind, 'Level 2');
+  assert.match(strip(quickViewBody({ ...o, view: 'player', access: 'public' })), /Traits undead, skeleton Health Badly hurt Now Prone/);
+  assert.equal(PF2E_SYSTEM.statBlock.kind({ kind: 'npc', level: 1 }), 'Creature 1');
+  const { traitGlossary } = await import('../tools/library.mjs');
+  assert.equal(traitGlossary('no-such-system'), null);
+  assert.equal(traitGlossary('pf2e').system, 'pf2e');
 });

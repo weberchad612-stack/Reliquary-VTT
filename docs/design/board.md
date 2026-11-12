@@ -251,6 +251,11 @@ first entry is `measurement`: the unit, the square's size (`squareFeet`), the di
 distance label, movement routes and costs, the Stride outlines (through the movement options) and
 `tools/move.mjs` (`--ruleset`). A map's own `feet_per_cell` still sets its scale; without one, the system's
 square is used. PF2E's terrain rules take their diagonals from the same configuration.
+Token Quick-View's layout is the system's too: `statBlock` ({kind, card, body}; PF2E's is
+`rulesets/pf2e/statblock.js`) and `traits` (how traits are written and explained; `rulesets/pf2e/traits.js`).
+The board's own Quick-View code (`board/quickview.js`) knows no game system: a system without a `statBlock` gets
+a plain card. Trait glossaries built into the board are keyed by ruleset id (`GLOSSARIES`), and the board uses
+only the campaign's own system's.
 
 **Area templates** (the token HUD's Area template; designed with the user and built 2026-11-11, from the previous board's
 templates). The shapes are defined in the system configuration (`areas`) and built by `engine/areas`; the
@@ -497,6 +502,7 @@ The user's decisions: the GM view opens any token's full stat block, the player 
 card for creatures it can see; live numbers in the book's layout, changed numbers marked with their breakdown on
 hover; floating windows, one per token; read-only for now. Researched from the previous board (double-click a
 creature for a draggable window of text stored per creature type, `statblocks/<key>`). Reads `actors/<id>`,
-`actorstate/<id>` and the `content/` records a creature uses; `board/quickview.js`. This is the first part of
+`actorstate/<id>` and the `content/` records a creature uses; `board/quickview.js` (who may open what, the name,
+the parts every system shares) and the system's layout (`rulesets/pf2e/statblock.js`, `traits.js`). This is the first part of
 "sheets on the board" (docs/design/game-data.md section 3.7).
 

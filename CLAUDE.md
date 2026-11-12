@@ -15,6 +15,11 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 - **Map importing:** read the adventure text for every keyed area and use the book's labelled map, not only the map image. Where the map explicitly draws something, the drawing wins; the text fills in what the drawing cannot show. Record every decision in the map's `import.json`.
 - **Never commit or publish book content.** Text, maps and art from the user's books stay private: `pdfsource/`, `extracted/`, `packs/` and `saves/` are git-ignored. Check before every commit.
 - **Open game content may be committed** (the user's decision, 2026-11-12): Pathfinder data converted from the Foundry VTT PF2E system's open data, licensed **ORC or OGL**, flavour descriptions and adventure bestiaries included, goes in `content/pf2e/` (only through `tools/import/foundry-pf2e.mjs --release`, never by hand; data errors are corrected with overrides in `content/pf2e/overrides/`), with the notices in `NOTICE.md` and `licenses/`. The project must stay free (Paizo's Community Use Policy).
+- **Keep the board, engine and tools free of any one game system.** Anything a game system defines (its words,
+  layouts, traits, numbers, rules text, glossaries) lives in `rulesets/<system>/` and reaches the board through the
+  system's configuration (`rulesets/<system>/system.js`) or data keyed by system. Built-in data is keyed by ruleset
+  id and used only for a campaign of that system. A system that lacks a piece gets a plain fallback, never another
+  system's.
 - Run `npm test` and the validator before every commit. Commit to `main`.
 
 ## Layout

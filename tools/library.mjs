@@ -103,13 +103,17 @@ export const GLOSSARY_KEY = 'glossary/traits';
  * (content/<ruleset>/traits/trait/*.json), as one document {kind: 'glossary', entries: {slug: {name, text}}};
  * null if there is none.
  */
-export function traitGlossary(ruleset = 'pf2e') {
+export function traitGlossary(ruleset) {
   const dir = path.join(REPO, 'content', ruleset, 'traits', 'trait');
   if (!fs.existsSync(dir)) return null;
   const entries = {};
+  let source = null;
   for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.json')).sort()) {
     const d = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-    if (!d.retired) entries[d.slug] = { name: d.name, text: d.text };
+    if (d.retired) continue;
+    entries[d.slug] = { name: d.name, text: d.text };
+    if (!source && d.source) source = { title: d.source.title, license: d.source.license };
   }
-  return { kind: 'glossary', slug: 'traits', system: ruleset, source: { title: 'Pathfinder rules text (Foundry PF2E trait descriptions)', license: 'ORC/OGL' }, entries };
+  // the system's own trait descriptions only: each document says which system it is for and where it is from
+  return { kind: 'glossary', slug: 'traits', system: ruleset, source, entries };
 }

@@ -31,6 +31,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { campaignRecords, saveFromRecords, contentKey } from '../board/records.js';
+import { SYSTEMS } from '../rulesets/systems.js';
 import { contentLibrary, referencedContent, referencedKeys, traitGlossary, GLOSSARY_KEY } from './library.mjs';
 
 export const BACKUPS = 5;
@@ -238,7 +239,14 @@ function main(argv) {
     emit(loadOps(a, b, assets));
     return 0;
   }
-  if (cmd === 'glossary') { const g = traitGlossary(a || 'pf2e'); if (!g) throw new Error('no trait glossary'); emit({ op: 'set', path: 'content/glossary.traits', data: g }); return 0; }
+  if (cmd === 'glossaries') {
+    // every system's trait glossary, by ruleset id: built into the board (bundle.mjs --data glossaries=FILE)
+    const all = {};
+    for (const id of Object.keys(SYSTEMS)) { const g = traitGlossary(id); if (g) all[id] = g; }
+    emit(all);
+    return 0;
+  }
+  if (cmd === 'glossary' && a) { const g = traitGlossary(a); if (!g) throw new Error(`no trait glossary for ${a}`); emit({ op: 'set', path: 'content/glossary.traits', data: g }); return 0; }
   if (cmd === 'tidy' && a) { const data = readJson(a); emit({ batches: tidyOps(data.records || data) }); return 0; }
   if (cmd === 'ops-clear' && a) { emit({ batches: clearOps(readJson(a)) }); return 0; }
   if (cmd === 'verify' && a && b && c) {
@@ -258,7 +266,8 @@ function main(argv) {
     '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
     '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
     '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses, after a save)' +
-    '\n       node tools/campaign.mjs glossary [ruleset] [--out FILE]   (the trait glossary record, content/glossary.traits)' +
+    '\n       node tools/campaign.mjs glossary <ruleset> [--out FILE]   (the trait glossary record, content/glossary.traits)' +
+    '\n       node tools/campaign.mjs glossaries [--out FILE]   (every system\'s trait glossary, for bundle.mjs --data glossaries=FILE)' +
     '\n       node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>');
   return 2;
 }

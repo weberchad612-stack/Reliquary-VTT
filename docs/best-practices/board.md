@@ -89,9 +89,11 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 ## 7. The version badge and publishing
 
 - The bundler stamps every build (`/*@BUILD@*/`): the badge shows the version, the tooltip the commit and whether there were uncommitted changes. Commit before publishing when you can, so the badge points at real code.
-- **Build the published board with the trait glossary:** `node tools/campaign.mjs glossary --out /tmp/glossary.json`
-  then `node tools/bundle.mjs board/index.html <out.html> --data traits=/tmp/glossary.json` (about 160 KB more; it
-  is the same for every campaign, so it travels with the page rather than through the database).
+- **Build the published board with the trait glossaries:** `node tools/campaign.mjs glossaries --out /tmp/glossaries.json`
+  then `node tools/bundle.mjs board/index.html <out.html> --data glossaries=/tmp/glossaries.json`. The file holds
+  every system's glossary keyed by ruleset id (Pathfinder's is about 160 KB); the board uses only the campaign's
+  own system's. It is the same for every campaign of a system, so it travels with the page rather than through
+  the database.
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 
 ## 8. The top menu
@@ -216,20 +218,26 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   in full and, for any other creature the party can see, a public card: the name they know (the alias until it
   is learned), size, traits, health band and the conditions they can see (never GM-only ones, never numbers).
   A creature the party cannot see does not open.
-- **Live, in the book's layout:** Monster Core order (traits; Perception, languages, skills, attributes, items;
+- **The layout is the game system's** (the user's rule, 2026-11-12: game-specific wording and data live in
+  `rulesets/<system>/`). `board/quickview.js` decides who may open what, writes the name and the shared parts (the
+  effects line, rules not automated, problems, source) and calls the system configuration's `statBlock`
+  ({kind, card, body}), passing its helpers as `o.kit`. A system without one gets a plain card (traits as words,
+  HP, effects). Never put a system's words in `board/quickview.js`; a test checks it.
+- **Live, in the book's layout (Pathfinder, `rulesets/pf2e/statblock.js`):** Monster Core order (traits; Perception, languages, skills, attributes, items;
   AC, saves, HP, immunities, weaknesses, resistances, reactions; Speed, Strikes with the multiple attack
   penalty, spellcasting, actions; description; source). Every number is worked out by the rules
   (`Engine.prepareActor` with the token's effects and the live state); a number a condition or effect changed is
   coloured, and every number's breakdown shows on hover. The GM also sees the alias, rules not automated, and
   problems.
 - **Traits on hover:** every trait (the chips, and the words in brackets after a Strike or an ability) shows
-  its rule on hover or focus, written the Pathfinder way ("reach 10 feet", "deadly d10"). A Strike's traits
+  its rule on hover or focus, written the Pathfinder way ("reach 10 feet", "deadly d10"; `rulesets/pf2e/traits.js`,
+  the system configuration's `traits`). A Strike's traits
   also say what the board applies (agile: the multiple attack penalty −4/−8; finesse, thrown, propulsive,
   unarmed for a character) and otherwise "not automated: Claude applies it". The descriptions are Foundry's
-  568 trait descriptions (`content/pf2e/traits/`), carried by every campaign as one record,
-  `content/glossary.traits`, and built into the board itself (see publishing): `node tools/campaign.mjs glossary
-  --out /tmp/glossary.json`, then `bundle.mjs ... --data traits=/tmp/glossary.json`. A board built without it uses
-  the campaign's record.
+  568 trait descriptions (`content/pf2e/traits/`; Pathfinder only). They are built into the board keyed by
+  system (`GLOSSARIES`, see publishing), and every campaign also carries its own system's as one record,
+  `content/glossary.traits` (`system` says which). The board uses the built-in glossary for the campaign's system,
+  else the record only when its `system` matches: never another system's descriptions.
 - **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
 - Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
   window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every

@@ -32,11 +32,16 @@ import { GOLARION_CALENDAR, ROUND_SECONDS } from './calendar.js';
 import { PF2E_RULE_KEYS, checkSelectors, adjustDegree } from './rule-keys.js';
 import { turnRules } from './turns.js';
 import { applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage } from './damage.js';
+import { PF2E_STAT_BLOCK } from './statblock.js';
+import { PF2E_TRAITS } from './traits.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
 export const PF2E_SYSTEM = Object.freeze({
   id: 'pf2e',
   name: 'Pathfinder 2E',
+  // Token Quick-View's layout (rulesets/pf2e/statblock.js) and how traits are written and explained (traits.js)
+  statBlock: PF2E_STAT_BLOCK,
+  traits: PF2E_TRAITS,
   measurement: Object.freeze({
     unit: 'ft',
     squareFeet: 5,

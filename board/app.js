@@ -2094,10 +2094,15 @@ export async function start(store, { build = null } = {}) {
     w.offs.push(store.watch(`actors/${id}`, () => qvRender(id)), store.watch(`actorstate/${id}`, () => qvRender(id)));
     qvRender(id).then(() => el.focus());
   }
-  let qvGlossary = null;   // the trait glossary (content/glossary.traits), read once
+  let qvGlossary = null;   // the campaign's system's trait glossary, read once
   async function qvRender(id) {
-    // the glossary built into the board, else the campaign's record (a board loaded with one)
-    if (!qvGlossary) qvGlossary = (typeof TRAITS !== 'undefined' && TRAITS && (TRAITS.data || TRAITS).entries) || ((await store.get('content/glossary.traits').catch(() => null)) || {}).entries || {};
+    // the glossary built into the board for the campaign's system (GLOSSARIES, by ruleset id), else the campaign's
+    // record when it is for the same system; another system's descriptions are never shown
+    if (!qvGlossary) {
+      const built = typeof GLOSSARIES !== 'undefined' && GLOSSARIES ? GLOSSARIES[META.ruleset] : null;
+      const rec = built ? null : await store.get('content/glossary.traits').catch(() => null);
+      qvGlossary = (built && built.entries) || (rec && rec.system === META.ruleset && rec.entries) || {};
+    }
     const w = qvWins.get(id), t = S.tokens[id];
     if (!w) return;
     const access = t && quickViewAccess(t, S.view, qvSeen(id));
@@ -2111,7 +2116,7 @@ export async function start(store, { build = null } = {}) {
       try { prepared = Engine.prepareActor({ actor, state, effects: t.effects || [], content, ruleset: SYS.actors }); if (!prepared.name) prepared.name = t.name; } catch (e) { prepared = null; console.warn('Quick-View', e); }
     }
     if (!qvWins.has(id)) return;
-    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName, glossary: qvGlossary };
+    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName, system: SYS, glossary: qvGlossary };
     const title = quickViewTitle(o);
     w.el.setAttribute('aria-label', `Token Quick-View: ${title.name}`);
     w.el.querySelector('.qv-t').textContent = title.name;
