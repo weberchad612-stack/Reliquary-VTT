@@ -67,8 +67,17 @@ write a number into an actor that the rules can work out. The board and the tool
   when two sources share a slug.
 - **Rule elements** are `{key, selector, type, value, when}`; keys `modifier`, `resistance`, `weakness`,
   `immunity`, `speed`, `sense`, `note`; values are expressions (`-@value`, `@level`, `min(-1 * @level, -1) *
-  @value`), parsed, never run as code; `when` is a predicate over tags (a condition's id, a trait, a situation
-  Claude sets in the live state's `tags`). Selectors are the ruleset's (`rulesets/pf2e/rules.js`: `ac`,
+  @value`, `ternary(gte(@itemLevel, 6), 2, 1)`), parsed, never run as code. In a value, `@value` is the
+  source's badge value, `@level` the creature's level and `@itemLevel` the level of what grants the rule (a
+  feat's, an item's, or an effect's as cast: a spell's rank). Functions: `min max floor ceil abs round`, the
+  comparisons `gt gte lt lte eq ne` (1 or 0) and `ternary(test, then, else)`. `when` is a predicate over tags (a
+  condition's id, a trait, a situation Claude sets in the live state's `tags`) that may also compare numbers:
+  `{"lt": ["hp-percent", 50]}`, with the facts `self:level`, `hp-percent`, `hp-remaining` and
+  `self:condition:<id>` (its value); a fact the rules don't know never holds. Every key takes `when` (a
+  resistance only while raging).
+- **Effects from the content on a token** (`{name, ref, level}`, set by `tools/effect.mjs apply`): the effect
+  document's rules apply at that level. A token's effects are part of what the campaign uses, so loading keeps
+  the document on the board and tidying leaves it while the badge is there. Selectors are the ruleset's (`rulesets/pf2e/rules.js`: `ac`,
   `saving-throw`, `dex-based`, `attack-roll`, `<strike>-damage`...).
 - **Check with the validator** (`tools/validate.mjs <pack> --save <save>`): schemas, references into the
   content, unknown rule keys and bad expressions are errors; imported rules not supported yet are warnings.
@@ -144,3 +153,16 @@ write a number into an actor that the rules can work out. The board and the tool
   so the rules do not resolve them.
 - **30,000 small files are fine**: the import takes six seconds and the validator one; one file per document
   keeps every later import's diff readable.
+
+## 7. Lessons (2026-11-12, formulas and effects)
+
+- **Measure before promising.** The estimate of 1,700 rules was the ones whose key we support; 1,117 now run.
+  The rest need values we do not have yet: a weapon's damage dice, rune potency, choices made on a sheet
+  ("@item.flags.system.rulesSelections"), "a climb Speed equal to your land Speed", or facts about the target.
+- **One statistic can depend on HP** ("+2 AC while below half HP"), and HP is itself a statistic: the creature
+  is prepared once, and again with its HP known only when a rule asks.
+- **Only the branch taken is worked out** in `ternary`, so a formula guarded against an edge case does not fail
+  on it.
+- **Re-importing the same release is the test of the tracking**: 851 documents "changed on our side", 29,116
+  untouched, none rewritten needlessly.
+

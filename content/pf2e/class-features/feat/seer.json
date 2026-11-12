@@ -24,50 +24,41 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "FlatModifier",
-        "predicate": [
-          {
-            "or": [
-              "origin:trait:haunt",
-              "origin:trait:spirit",
-              {
-                "and": [
-                  "origin:trait:undead",
-                  "origin:trait:incorporeal"
-                ]
-              }
-            ]
-          }
-        ],
-        "selector": [
-          "ac",
-          "saving-throw"
-        ],
-        "slug": "seer-defense-bonus",
-        "type": "status",
-        "value": "ternary(gte(@actor.level,17),3,ternary(gte(@actor.level,9),2,1))"
-      }
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": "ternary(gte(@level,17),3,ternary(gte(@level,9),2,1))",
+      "slug": "seer-defense-bonus",
+      "when": [
+        {
+          "or": [
+            "origin:trait:haunt",
+            "origin:trait:spirit",
+            {
+              "and": [
+                "origin:trait:undead",
+                "origin:trait:incorporeal"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "Resistance",
-        "predicate": [
-          {
-            "gte": [
-              "self:level",
-              9
-            ]
-          }
-        ],
-        "type": [
-          "spirit",
-          "void"
-        ],
-        "value": "floor(@actor.level/2)"
-      }
+      "key": "resistance",
+      "type": "spirit",
+      "value": "floor(@level/2)",
+      "when": [
+        {
+          "gte": [
+            "self:level",
+            9
+          ]
+        }
+      ]
     }
   ]
 }

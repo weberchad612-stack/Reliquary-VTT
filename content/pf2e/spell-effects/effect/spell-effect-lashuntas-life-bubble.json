@@ -18,26 +18,23 @@
   "text": "Granted by Lashunta's Life Bubble\n\nYou gain a status bonus to saves against inhaled dangers.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "FlatModifier",
-        "predicate": [
-          {
-            "or": [
-              "item:slug:toxic-cloud",
-              {
-                "and": [
-                  "item:trait:poison",
-                  "item:trait:inhaled"
-                ]
-              }
-            ]
-          }
-        ],
-        "selector": "saving-throw",
-        "type": "status",
-        "value": "ternary(gte(@item.level,8),2,1)"
-      }
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": "ternary(gte(@itemLevel,8),2,1)",
+      "when": [
+        {
+          "or": [
+            "item:slug:toxic-cloud",
+            {
+              "and": [
+                "item:trait:poison",
+                "item:trait:inhaled"
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

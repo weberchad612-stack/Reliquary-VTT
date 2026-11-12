@@ -3,7 +3,7 @@
 // through the engine's rules (engine/rules). Nothing computed here is stored. Rules from Player Core (ORC),
 // paraphrased. Docs: docs/design/game-data.md.
 
-import { collectRules, makeStatistic, modifiersFor } from '../../engine/rules/rules.js';
+import { collectRules, makeStatistic, modifiersFor, testPredicate } from '../../engine/rules/rules.js';
 import { ATTRIBUTES, ATTRIBUTE_NAMES, SKILLS, SAVES, RANKS, stacks, proficiency, CONDITION_RULES, activeConditions, healthBand } from './rules.js';
 
 const sign = (v) => (v < 0 ? `${v}` : `+${v}`);
@@ -24,13 +24,25 @@ function resolveItem(it, content) {
   return { ...base, ...own, runes: { ...(base.runes || {}), ...(own.runes || {}) } };
 }
 
-/** The rule sources of a creature: its feats, features, items (equipped ones), own rules, effects and conditions. */
-function ruleSources(data, effects, items) {
+/**
+ * The rule sources of a creature: its feats, features, items (equipped ones), own rules, effects and conditions.
+ * Each with its level (@itemLevel in a rule's value). An effect on the token may name an effect document in the
+ * content ({name, ref, level}: Spell Effect: Heroism at rank 6): its rules apply at that level.
+ */
+function ruleSources(data, effects, items, content, problems) {
   const out = [];
-  for (const f of [...(data.feats || []), ...(data.features || []).filter((x) => typeof x === 'object')]) out.push({ origin: { kind: 'feat', id: f.slug || f.name, label: f.name }, rules: f.rules || [] });
-  for (const it of items) if (it.rules && it.equipped !== false) out.push({ origin: { kind: 'item', id: it.slug || it.name, label: it.name }, rules: it.rules });
+  for (const f of [...(data.feats || []), ...(data.features || []).filter((x) => typeof x === 'object')]) out.push({ origin: { kind: 'feat', id: f.slug || f.name, label: f.name }, level: f.level, rules: f.rules || [] });
+  for (const it of items) if (it.rules && it.equipped !== false) out.push({ origin: { kind: 'item', id: it.slug || it.name, label: it.name }, level: it.level, rules: it.rules });
   if (data.rules) out.push({ origin: { kind: 'creature', id: data.slug || 'own', label: data.name }, rules: data.rules });
-  for (const e of effects || []) if (e && !e.id && e.rules) out.push({ origin: { kind: 'effect', id: e.name, label: e.name }, value: e.value, rules: e.rules });
+  for (const e of effects || []) {
+    if (!e || e.id) continue;
+    if (e.ref) {
+      const doc = content[e.ref];
+      if (!doc) { problems.push(`${e.name || e.ref}: no content "${e.ref}"`); continue; }
+      const label = `${e.name || doc.name}${e.level !== undefined ? ` (level ${e.level})` : ''}`;
+      out.push({ origin: { kind: 'effect', id: e.ref, label }, value: e.value, level: e.level ?? doc.level, rules: doc.rules || [] });
+    } else if (e.rules) out.push({ origin: { kind: 'effect', id: e.name, label: e.name }, value: e.value, level: e.level, rules: e.rules });
+  }
   for (const c of activeConditions(effects)) {
     const def = CONDITION_RULES[c.id];
     if (def && def.rules) out.push({ origin: { kind: 'condition', id: c.id, label: c.value ? `${cap(c.id)} ${c.value}` : cap(c.id) }, value: c.value, rules: def.rules });
@@ -53,16 +65,35 @@ const SEL = {
  * Statistics come as engine statistics (value plus breakdown). `ctx.content` resolves item references.
  */
 export function preparePf2e(data, state = {}, effects = [], ctx = {}) {
+  const first = prepareOnce(data, state, effects, ctx, null);
+  if (!first.usesHpFacts) return first;
+  // a rule depends on how hurt the creature is ("while below half HP"): prepare again knowing its HP
+  const max = first.hp.max.value, hp = first.hp.value;
+  return prepareOnce(data, state, effects, ctx, { 'hp-remaining': hp, 'hp-percent': max ? Math.floor((hp / max) * 100) : 0 });
+}
+
+/** The numbers a rule's condition can compare (testPredicate's facts). */
+function factsOf(level, conds, hpFacts) {
+  const f = { 'self:level': level, ...(hpFacts || {}) };
+  for (const c of conds) f[`self:condition:${c.id}`] = c.value || 1;
+  return f;
+}
+
+function prepareOnce(data, state, effects, ctx, hpFacts) {
   const content = ctx.content || {}, isPc = data.kind === 'character', level = data.level ?? 0;
   const problems = [];
   const items = (data.items || []).map((it) => { try { return resolveItem(it, content); } catch (e) { problems.push(e.message); return null; } }).filter(Boolean);
-  const rules = collectRules(ruleSources(data, effects, items), { level });
+  const rules = collectRules(ruleSources(data, effects, items, content, problems), { level });
   for (const u of rules.unknown) problems.push(`${u.origin.label}: unknown rule "${u.rule.key}"`);
   for (const e of rules.errors) problems.push(`${e.origin.label}: ${e.error}`);
   const unsupported = rules.skipped.map((x) => `${x.origin.label}: ${x.rule.foundry.key || 'rule'}`);
   const conds = activeConditions(effects);
   const tags = new Set([...(data.traits || []), ...conds.map((c) => c.id), ...(state.tags || [])]);
-  const stat = (o) => makeStatistic({ ...o, modifiers: [...(o.modifiers || []), ...modifiersFor(rules.modifiers, o.selectors)], tags, stacks });
+  const facts = factsOf(level, conds, hpFacts);
+  const holds = (x) => testPredicate(x.when, tags, facts);
+  // resistances, weaknesses, immunities, speeds and senses granted only sometimes ("while raging")
+  for (const k of ['resistances', 'weaknesses', 'immunities', 'speeds', 'senses']) rules[k] = rules[k].filter(holds);
+  const stat = (o) => makeStatistic({ ...o, modifiers: [...(o.modifiers || []), ...modifiersFor(rules.modifiers, o.selectors)], tags, facts, stacks });
   const attrs = isPc ? { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])), ...(data.attributes || {}) } : { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])), ...((data.stats || {}).attributes || {}) };
   const out = { kind: data.kind, name: data.name, level, traits: data.traits || [], size: data.size || (data.ancestry || {}).size || 'medium', attributes: attrs, problems };
 
@@ -145,6 +176,8 @@ export function preparePf2e(data, state = {}, effects = [], ctx = {}) {
     out.strikes = (data.items || []).filter((i) => i.kind === 'strike').map((w) => creatureStrike(w, { stat, attrs }));
     out.speeds = {};
     for (const [t, v] of Object.entries(S.speeds || { land: 25 })) out.speeds[t] = stat({ slug: `${t}-speed`, label: t === 'land' ? 'Speed' : `${cap(t)} Speed`, base: v, parts: [{ label: 'stat block', value: v }], selectors: [`${t}-speed`, 'all-speeds'], floor: 5 });
+    // speeds its rules grant (a climb Speed from an ability), unless the stat block already has a better one
+    for (const s of rules.speeds) if (!out.speeds[s.type] || out.speeds[s.type].base < s.value) out.speeds[s.type] = stat({ slug: `${s.type}-speed`, label: `${cap(s.type)} Speed`, base: s.value, parts: [{ label: s.origin.label, value: s.value }], selectors: [`${s.type}-speed`, 'all-speeds'], floor: 5 });
     out.hp = { max: stat({ slug: 'hp', label: 'Max HP', base: S.hp || 1, parts: [{ label: 'stat block', value: S.hp || 1 }], selectors: ['hp'], floor: 1 }) };
     out.senses = [...(S.senses || []), ...rules.senses];
     const iwr = S.iwr || {};
@@ -164,7 +197,14 @@ export function preparePf2e(data, state = {}, effects = [], ctx = {}) {
   out.unsupported = unsupported;   // imported rules not run yet: Claude applies them by hand
   out.usesDying = isPc || !!data.usesDying;
   out.band = healthBand(out.hp.value, max, !!state.dead);
+  // does any condition compare HP? (then preparePf2e prepares again with the HP known)
+  if (!hpFacts) out.usesHpFacts = /"hp-(percent|remaining)"/.test(JSON.stringify(rules.modifiers.map((m) => m.when).concat(rulesWhens(data, effects, items, content))));
   return out;
+}
+
+/** Every condition (`when`) on the rules a creature has, including ones filtered out above. */
+function rulesWhens(data, effects, items, content) {
+  return ruleSources(data, effects, items, content, []).flatMap((s) => (s.rules || []).map((r) => r.when).filter(Boolean));
 }
 
 /** A character's Strike with a weapon: attack bonus (with the multiple attack penalty) and damage. */

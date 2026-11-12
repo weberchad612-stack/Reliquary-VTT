@@ -6,18 +6,24 @@
 import { evalExpr } from './expr.js';
 
 /**
- * Does a predicate hold for a set of tags? A predicate is a list that must all hold; each entry a tag
- * (string), {or: [...]}, {and: [...]} or {not: entry}. No predicate always holds.
+ * Does a predicate hold for a set of tags? A predicate is a list that must all hold; each entry a tag (a
+ * string), {or: [...]}, {and: [...]}, {not: entry}, or a comparison of numbers {gt|gte|lt|lte|eq: [a, b]},
+ * each side a number or the name of a fact (`facts`: {name: number}, such as 'self:level' or 'hp-percent').
+ * A comparison with a fact that is not known does not hold.
  */
-export function testPredicate(pred, tags) {
+export const COMPARISONS = Object.freeze({ gt: (x, y) => x > y, gte: (x, y) => x >= y, lt: (x, y) => x < y, lte: (x, y) => x <= y, eq: (x, y) => x === y });
+export function testPredicate(pred, tags, facts = {}) {
   if (pred === undefined || pred === null) return true;
   const has = (t) => (tags instanceof Set ? tags.has(t) : (tags || []).includes(t));
+  const num = (x) => (typeof x === 'number' ? x : typeof x === 'string' && facts && typeof facts[x] === 'number' ? facts[x] : undefined);
   const one = (p) => {
     if (typeof p === 'string') return has(p);
     if (Array.isArray(p)) return p.every(one);
     if (p && Array.isArray(p.or)) return p.or.some(one);
     if (p && Array.isArray(p.and)) return p.and.every(one);
     if (p && typeof p === 'object' && 'not' in p) return !one(p.not);
+    const op = p && typeof p === 'object' && Object.keys(p).length === 1 && COMPARISONS[Object.keys(p)[0]] ? Object.keys(p)[0] : null;
+    if (op && Array.isArray(p[op]) && p[op].length === 2) { const [x, y] = p[op].map(num); return x !== undefined && y !== undefined && COMPARISONS[op](x, y); }
     throw new Error(`bad predicate ${JSON.stringify(p)}`);
   };
   return Array.isArray(pred) ? pred.every(one) : one(pred);
@@ -32,12 +38,12 @@ export function testPredicate(pred, tags) {
  *   and the worst penalty of that type count; floor: lowest value allowed (speeds).
  * @returns {{slug, label, value, base, parts, modifiers: Array<{..., applied: boolean, reason?: string}>}}
  */
-export function makeStatistic({ slug, label, base = 0, parts = [], modifiers = [], tags = [], stacks = () => false, floor = -Infinity }) {
+export function makeStatistic({ slug, label, base = 0, parts = [], modifiers = [], tags = [], facts = {}, stacks = () => false, floor = -Infinity }) {
   const rows = modifiers.map((m) => ({ ...m, value: Number(m.value) || 0, applied: false }));
   const live = [];
   for (const m of rows) {
     if (!m.value) { m.reason = 'zero'; continue; }
-    if (!testPredicate(m.when, tags)) { m.reason = 'does not apply now'; continue; }
+    if (!testPredicate(m.when, tags, facts)) { m.reason = 'does not apply now'; continue; }
     live.push(m);
   }
   // the same modifier twice (frightened from two sources, a condition granted twice): only the strongest
@@ -86,7 +92,9 @@ export function collectRules(sources, vars = {}, extra = {}) {
   for (const src of sources) {
     for (const rule of src.rules || []) {
       if (rule.foundry) { out.skipped.push({ origin: src.origin, rule }); continue; }   // imported, not supported yet: listed, not run
-      const ctx = { origin: src.origin, vars: { ...vars, value: src.value ?? 0 } };
+      // @value: the source's badge value; @itemLevel: the level of what grants the rule (a feat's, an item's, an
+      // effect's or spell's rank), else the creature's
+      const ctx = { origin: src.origin, vars: { ...vars, value: src.value ?? 0, itemLevel: src.level ?? vars.level ?? 0 } };
       const val = (v) => (v === undefined ? undefined : evalExpr(v, ctx.vars));
       try {
         switch (rule.key) {
@@ -94,16 +102,16 @@ export function collectRules(sources, vars = {}, extra = {}) {
             out.modifiers.push({ slug: rule.slug || src.origin.id, label: rule.label || src.origin.label, type: rule.type || 'untyped', value: val(rule.value), selectors: [].concat(rule.selector || []), when: rule.when, origin: src.origin, damageType: rule.damageType });
             break;
           case 'resistance': case 'weakness':
-            out[rule.key === 'resistance' ? 'resistances' : 'weaknesses'].push({ type: rule.type, value: val(rule.value), except: rule.except, origin: src.origin });
+            out[rule.key === 'resistance' ? 'resistances' : 'weaknesses'].push({ type: rule.type, value: val(rule.value), except: rule.except, when: rule.when, origin: src.origin });
             break;
           case 'immunity':
-            out.immunities.push({ type: rule.type, except: rule.except, origin: src.origin });
+            out.immunities.push({ type: rule.type, except: rule.except, when: rule.when, origin: src.origin });
             break;
           case 'speed':
-            out.speeds.push({ type: rule.type || 'land', value: val(rule.value), origin: src.origin });
+            out.speeds.push({ type: rule.type || 'land', value: val(rule.value), when: rule.when, origin: src.origin });
             break;
           case 'sense':
-            out.senses.push({ type: rule.type, range: val(rule.range), acuity: rule.acuity, origin: src.origin });
+            out.senses.push({ type: rule.type, range: val(rule.range), acuity: rule.acuity, when: rule.when, origin: src.origin });
             break;
           case 'note':
             out.notes.push({ selectors: [].concat(rule.selector || []), text: rule.text, outcome: rule.outcome, when: rule.when, origin: src.origin });

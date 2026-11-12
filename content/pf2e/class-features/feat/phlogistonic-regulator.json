@@ -17,38 +17,26 @@
   "text": "A layer of insulation within your armor protects you from rapid temperature fluctuations. You gain resistance equal to half your level to cold and fire damage. When under the effects of Overdrive, the resistance increases by 2.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "Resistance",
-        "predicate": [
-          "armor:id:{actor|flags.system.innovationId}"
-        ],
-        "type": [
-          "cold",
-          "fire"
-        ],
-        "value": "floor(@actor.level / 2)"
-      }
+      "key": "resistance",
+      "type": "cold",
+      "value": "floor(@level / 2)",
+      "when": [
+        "armor:id:{actor|flags.system.innovationId}"
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "Resistance",
-        "predicate": [
-          "armor:id:{actor|flags.system.innovationId}",
-          {
-            "or": [
-              "self:effect:overdrive-success",
-              "self:effect:overdrive-critical-success"
-            ]
-          }
-        ],
-        "type": [
-          "cold",
-          "fire"
-        ],
-        "value": "2 + floor(@actor.level / 2)"
-      }
+      "key": "resistance",
+      "type": "cold",
+      "value": "2 + floor(@level / 2)",
+      "when": [
+        "armor:id:{actor|flags.system.innovationId}",
+        {
+          "or": [
+            "self:effect:overdrive-success",
+            "self:effect:overdrive-critical-success"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -160,6 +160,12 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 - **The player and the GM view set effects too** (right-click a token: the token HUD). Read the log before changing a token's effects, so you do not undo what the player just set; read the token right before writing it.
 - **Set effects from chat:** read the token (`db_get tokens/<id>`, save the entry as a file), then `node tools/effect.mjs <file> add frightened 2 --source "Demoralize by Kerra"` (or `custom "Bless" --kind good`, `remove <id or name>`, `clear`, `dead`, `alive`; `list` shows the conditions). Write the printed `token` back with `update` and the version you read, and add a log entry ("Lyra is frightened 2").
+- **A spell or other effect with rules** comes from the content: `node tools/effect.mjs <file> apply
+  spell-effects:effect/spell-effect-heroism --level 6 --source "Pip's heroism"` puts a "Heroism" badge on the
+  token that names the effect document and the rank it was cast at; its rules change the creature's numbers
+  (`actor.mjs show` lists "+2 Heroism (level 6) (status)"). Write the printed `content` record too if the
+  board does not hold it yet. Remove it by its name (`remove Heroism`). Effect documents are under
+  `content/pf2e/spell-effects/`, `feat-effects/`, `equipment-effects/`, `bestiary-effects/`, `other-effects/`.
 - **Use the system's condition ids** (`off-guard`, `persistent`, ...); anything else is a custom effect with a name. Adding a condition the token has replaces it, so lowering frightened is `add frightened 1`, and removing it at 0 is `remove frightened`.
 - **Nothing ticks down by itself yet:** frightened at the end of the creature's turn, durations and "until" notes are Claude's to keep, by hand, until initiative exists.
 - **Unconscious and dying grey the token; dead fades it.** Put a PC at 0 HP as `add dying N` (and `add wounded N` when they recover), not as a custom effect, so the board greys them and stops using their eyes. A foe killed is `dead`, which also keeps it out of targets and movement blocking.

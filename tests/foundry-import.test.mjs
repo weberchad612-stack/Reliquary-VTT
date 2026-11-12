@@ -57,9 +57,11 @@ test('content kinds: physical items share item/, every other kind has its own fo
 
 test('rules with conditions our engine cannot test are kept, not run', () => {
   assert.equal(predicateOk(['a', { or: ['b', { not: 'c' }] }]), true);
-  assert.equal(predicateOk([{ gte: ['self:level', 5] }]), false);
-  assert.equal(convertRule({ key: 'FlatModifier', selector: 'ac', value: 1, predicate: [{ lt: ['hp-percent', 50] }] }).rule.key, 'unsupported');
-  assert.equal(convertRule({ key: 'Sense', selector: 'darkvision', predicate: ['night'] }).rule.key, 'unsupported');
+  assert.equal(predicateOk([{ gte: ['self:level', 5] }, { lt: ['hp-percent', 50] }, { gte: ['self:condition:frightened', 2] }]), true, 'facts our engine knows');
+  assert.equal(predicateOk([{ lte: ['target:distance', 30] }]), false, 'a fact it does not know yet');
+  assert.equal(convertRule({ key: 'FlatModifier', selector: 'ac', value: 1, predicate: [{ lte: ['target:distance', 30] }] }).rule.key, 'unsupported');
+  assert.deepEqual(convertRule({ key: 'Sense', selector: 'darkvision', predicate: ['night'] }).rule, { key: 'sense', type: 'darkvision', when: ['night'] });
+  assert.deepEqual(convertRule({ key: 'Resistance', type: 'fire', value: 5, predicate: ['raging'] }).rule, { key: 'resistance', type: 'fire', value: 5, when: ['raging'] });
   assert.deepEqual(convertRule({ key: 'Sense', selector: 'scent', range: 30, acuity: 'imprecise' }).rule, { key: 'sense', type: 'scent', range: 30, acuity: 'imprecise' });
 });
 

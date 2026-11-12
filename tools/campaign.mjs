@@ -42,8 +42,8 @@ const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'i
  * The game content a campaign uses: only the documents its creatures reference (each base stat block and each
  * item carried by reference), from the pack's library (tools/library.mjs). Throws naming any that is missing.
  */
-export function readContent(pack, packDir, actors) {
-  const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors);
+export function readContent(pack, packDir, actors, tokens = {}) {
+  const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors, tokens);
   if (missing.length) throw new Error(`content not found: ${missing.join(', ')} (the pack's content/ or the open sources pack.json lists)`);
   return content;
 }
@@ -81,7 +81,8 @@ export function readCampaign(packDir, saveDir) {
   // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the content they use
   const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
   const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
-  const content = readContent(pack, packDir, actors);
+  const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
+  const content = readContent(pack, packDir, actors, tokens);
   const { $schema, ...camp } = campaign;
   return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content };
 }
@@ -180,12 +181,12 @@ export function loadOps(packDir, saveDir, assets = [], { now } = {}) {
 }
 
 /**
- * After a save: delete ops for the board's content records no creature uses any more (records: {path: data}, or
- * a listing {path: version} with `actors`, the actor records). Content stays on the board during play.
+ * After a save: delete ops for the board's content records nothing uses any more (records: {path: data}: the
+ * actors/ and tokens/ records say what is in use). Content stays on the board during play.
  */
 export function tidyOps(records) {
-  const actors = Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p.slice(7), d]));
-  const used = referencedKeys(actors);
+  const of = (coll) => Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith(`${coll}/`)).map(([p, d]) => [p.slice(coll.length + 1), d]));
+  const used = referencedKeys(of('actors'), of('tokens'));
   return batches(Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))).map((p) => ({ op: 'delete', path: p })));
 }
 

@@ -18,22 +18,19 @@
   "text": "Granted by Penumbral Disguise\n\nYou gain a status bonus to Stealth checks to Hide while in dim light or darkness.",
   "rules": [
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "FlatModifier",
-        "predicate": [
-          "action:hide",
-          {
-            "or": [
-              "lighting:darkness",
-              "lighting:dim-light"
-            ]
-          }
-        ],
-        "selector": "stealth",
-        "type": "status",
-        "value": "ternary(gte(@item.level,8),4,ternary(gte(@item.level,6),3,ternary(gte(@item.level,4),2,1)))"
-      }
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "status",
+      "value": "ternary(gte(@itemLevel,8),4,ternary(gte(@itemLevel,6),3,ternary(gte(@itemLevel,4),2,1)))",
+      "when": [
+        "action:hide",
+        {
+          "or": [
+            "lighting:darkness",
+            "lighting:dim-light"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,8 +1,17 @@
 // A small, safe expression language for rule values: numbers, references (@value, @level, @actor.level),
-// + - * / with the usual precedence, unary minus, parentheses and the functions min, max, floor, ceil, abs.
-// Parsed into a tree and evaluated by walking it: never run as code. Docs: docs/design/game-data.md.
+// + - * / with the usual precedence, unary minus, parentheses and the functions min, max, floor, ceil, abs,
+// round, the comparisons gt, gte, lt, lte, eq, ne (1 when true, 0 when false) and ternary(test, then, else)
+// (test non-zero: then). Parsed into a tree and evaluated by walking it: never run as code.
+// Docs: docs/design/game-data.md.
 
-const FUNCS = { min: Math.min, max: Math.max, floor: Math.floor, ceil: Math.ceil, abs: Math.abs, round: Math.round };
+const b = (x) => (x ? 1 : 0);
+const FUNCS = {
+  min: Math.min, max: Math.max, floor: Math.floor, ceil: Math.ceil, abs: Math.abs, round: Math.round,
+  gt: (x, y) => b(x > y), gte: (x, y) => b(x >= y), lt: (x, y) => b(x < y), lte: (x, y) => b(x <= y), eq: (x, y) => b(x === y), ne: (x, y) => b(x !== y),
+  ternary: (t, x, y) => (t ? x : y),
+};
+/** The functions an expression may call. */
+export const EXPR_FUNCTIONS = Object.freeze(Object.keys(FUNCS));
 
 function tokenize(src) {
   const out = [], s = String(src);
@@ -63,7 +72,10 @@ export function evalExpr(e, vars = {}) {
   if ('n' in t) return t.n;
   if ('ref' in t) return lookup(vars, t.ref);
   if ('neg' in t) return -evalExpr(t.neg, vars);
-  if ('fn' in t) return FUNCS[t.fn](...t.args.map((a) => evalExpr(a, vars)));
+  if ('fn' in t) {
+    if (t.fn === 'ternary') { if (t.args.length !== 3) throw new Error('ternary takes three values: test, then, else'); return evalExpr(t.args[0], vars) ? evalExpr(t.args[1], vars) : evalExpr(t.args[2], vars); }
+    return FUNCS[t.fn](...t.args.map((a) => evalExpr(a, vars)));
+  }
   const a = evalExpr(t.a, vars), b = evalExpr(t.b, vars);
   if (t.op === '+') return a + b;
   if (t.op === '-') return a - b;

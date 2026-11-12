@@ -79,29 +79,26 @@
       }
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "key": "FlatModifier",
-        "predicate": [
-          {
-            "or": [
-              "item:trait:curse",
-              "item:trait:death",
-              "item:trait:emotion",
-              "item:trait:fear",
-              {
-                "not": "check:type:saving-throw"
-              }
-            ]
-          }
-        ],
-        "selector": [
-          "saving-throw",
-          "{item|flags.system.rulesSelections.skill}"
-        ],
-        "type": "status",
-        "value": "ternary(gte(@item.level,8),3,ternary(gte(@item.level,4),2,1))"
-      }
+      "key": "modifier",
+      "selector": [
+        "saving-throw",
+        "{item|flags.system.rulesSelections.skill}"
+      ],
+      "type": "status",
+      "value": "ternary(gte(@itemLevel,8),3,ternary(gte(@itemLevel,4),2,1))",
+      "when": [
+        {
+          "or": [
+            "item:trait:curse",
+            "item:trait:death",
+            "item:trait:emotion",
+            "item:trait:fear",
+            {
+              "not": "check:type:saving-throw"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

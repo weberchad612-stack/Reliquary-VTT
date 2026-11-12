@@ -6,6 +6,11 @@
 // Usage:
 //   node tools/effect.mjs <token.json> add <condition> [VALUE] [--detail TEXT] [--until TEXT] [--source TEXT] [--gm-only]
 //   node tools/effect.mjs <token.json> custom "<name>" [--kind good|bad|neutral] [--value N] [--detail ...] [--until ...] [--source ...] [--gm-only]
+//   node tools/effect.mjs <token.json> apply <content-key> [--level N] [--value N] [--name NAME] [--kind ...] [--pack DIR] [...]
+//       an effect from the content (spells:effect/..., spell-effects:effect/spell-effect-heroism): a badge by its
+//       name whose rules change the creature's numbers, at the level given (a spell's rank; default the
+//       document's). Also prints the content record (content/...) for the board to hold; --pack resolves a key
+//       without a source through that pack's library.
 //   node tools/effect.mjs <token.json> remove <condition | custom name>
 //   node tools/effect.mjs <token.json> clear            (every effect)
 //   node tools/effect.mjs <token.json> dead | alive
@@ -22,6 +27,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withEffect, withoutEffect } from '../board/effects.js';
 import { systemConfig } from '../rulesets/systems.js';
+import { contentLibrary, parseKey } from './library.mjs';
+import { contentPath } from '../board/records.js';
+
+/** A friendly badge name for an effect document: "Spell Effect: Heroism" -> "Heroism". */
+export const effectName = (doc) => String(doc.name || '').replace(/^(Spell |Feat |Equipment |Bestiary |Other |Stance |Aura )?Effect: /i, '').trim() || doc.name;
 
 /** Apply one command to a token. Returns {token, changed}. */
 export function applyEffect(token, cmd, args, opts, conditions) {
@@ -43,6 +53,17 @@ export function applyEffect(token, cmd, args, opts, conditions) {
     if (name && conditions[name]) throw new Error(`"${name}" is a condition: use add`);
     t.effects = withEffect(t.effects, { name, kind: opts.kind || 'neutral', value, ...base }, conditions);
     changed.push(name);
+  } else if (cmd === 'apply') {
+    const [key] = args, doc = opts.doc;
+    if (!key || !doc) throw new Error('apply needs a content key of an effect (spell-effects:effect/spell-effect-heroism)');
+    if (doc.kind !== 'effect') throw new Error(`${key} is ${doc.kind === 'item' ? 'an item' : `a ${doc.kind}`}, not an effect`);
+    const level = opts.level !== undefined ? Number(opts.level) : undefined, value = opts.value !== undefined ? Number(opts.value) : undefined;
+    if (level !== undefined && !Number.isInteger(level)) throw new Error(`--level "${opts.level}" is not a whole number`);
+    if (value !== undefined && !Number.isInteger(value)) throw new Error(`--value "${opts.value}" is not a whole number`);
+    if (opts.kind && !['good', 'bad', 'neutral'].includes(opts.kind)) throw new Error('--kind is good, bad or neutral');
+    const name = opts.name || effectName(doc);
+    t.effects = withEffect(t.effects, { name, kind: opts.kind || 'good', ref: key, level, value, ...base }, conditions);
+    changed.push(`${name}${level !== undefined ? ` (level ${level})` : ''}`);
   } else if (cmd === 'remove') {
     const [key] = args;
     const before = t.effects.length;
@@ -74,16 +95,26 @@ function main(argv) {
     const sys = systemConfig(opt('--ruleset') || 'pf2e');
     if (!sys) throw new Error('unknown --ruleset');
     const conditions = sys.conditions || {};
-    const opts = { detail: opt('--detail'), until: opt('--until'), source: opt('--source'), kind: opt('--kind'), value: opt('--value'), gmOnly: flag('--gm-only') };
+    const opts = { detail: opt('--detail'), until: opt('--until'), source: opt('--source'), kind: opt('--kind'), value: opt('--value'), level: opt('--level'), name: opt('--name'), gmOnly: flag('--gm-only') };
+    const packDir = opt('--pack');
     if (args[0] === 'list') {
       for (const [id, c] of Object.entries(conditions)) console.log(`${c.icon}  ${id.padEnd(12)} ${c.kind.padEnd(8)} ${c.valued ? 'value' : '     '}  ${c.label}`);
       return 0;
     }
     const [file, cmd, ...rest] = args;
-    if (!file || !cmd) throw new Error('give a token file and a command (add, custom, remove, clear, dead, alive, elevation)');
+    if (!file || !cmd) throw new Error('give a token file and a command (add, custom, apply, remove, clear, dead, alive, elevation)');
     const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
     const token = raw.data && !raw.x ? raw.data : raw;   // a db_get/db_list entry, or the token itself
-    console.log(JSON.stringify(applyEffect(token, cmd, rest, opts, conditions), null, 2));
+    let content = null;
+    if (cmd === 'apply') {
+      parseKey(rest[0]);
+      const pack = packDir ? JSON.parse(fs.readFileSync(path.join(packDir, 'pack.json'), 'utf8')) : { ruleset: 'pf2e' };
+      opts.doc = contentLibrary(pack, packDir || null).get(rest[0]);
+      if (!opts.doc) throw new Error(`no content "${rest[0]}"${packDir ? '' : ' (a key without a source needs --pack)'}`);
+      content = { op: 'set', path: contentPath(rest[0]), data: opts.doc };
+    }
+    const out = applyEffect(token, cmd, rest, opts, conditions);
+    console.log(JSON.stringify(content ? { ...out, content } : out, null, 2));
     return 0;
   } catch (e) {
     console.error(`effect: ${e.message}`);

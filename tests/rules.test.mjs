@@ -73,7 +73,7 @@ test('rule elements: modifiers with values and selectors, IWR, speeds, senses, n
   assert.equal(out.modifiers.length, 2);
   assert.deepEqual(out.modifiers.map((m) => m.value), [-2, 3]);
   assert.deepEqual(modifiersFor(out.modifiers, ['reflex', 'dex-based']).map((m) => m.slug), ['clumsy']);
-  assert.deepEqual(out.resistances[0], { type: 'fire', value: 5, except: undefined, origin: { kind: 'item', id: 'ring', label: 'Ring' } });
+  assert.deepEqual(out.resistances[0], { type: 'fire', value: 5, except: undefined, when: undefined, origin: { kind: 'item', id: 'ring', label: 'Ring' } });
   assert.equal(out.weaknesses[0].value, 3);
   assert.equal(out.immunities[0].type, 'poison');
   assert.equal(out.speeds[0].value, 20);

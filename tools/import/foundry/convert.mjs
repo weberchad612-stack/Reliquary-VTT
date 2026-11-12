@@ -57,24 +57,37 @@ export function cleanText(html) {
   return s.split('\n').map((l) => l.trim()).filter((l, i, a) => l || (i && a[i - 1])).join('\n').trim();
 }
 
-/** Foundry's value expressions in ours (@item.badge.value -> @value, @actor.level -> @level); null if not ours. */
+/**
+ * Foundry's value expressions in ours: @item.badge.value -> @value, @actor.level -> @level, the level of what
+ * grants the rule (@item.level, a spell's rank) -> @itemLevel; Foundry's ternary and comparisons are ours too.
+ * Null if it uses anything else.
+ */
+const VALUE_REFS = new Set(['value', 'level', 'itemLevel']);
 export function convertValue(v) {
   if (typeof v === 'number') return v;
   if (typeof v !== 'string') return null;
-  const s = v.replace(/@item\.badge\.value/g, '@value').replace(/@actor\.level/g, '@level').replace(/@actor\.system\.details\.level\.value/g, '@level');
-  try { const refs = []; (function walk(x) { if ('ref' in x) refs.push(x.ref); if ('neg' in x) walk(x.neg); if ('args' in x) x.args.forEach(walk); if ('a' in x) { walk(x.a); walk(x.b); } })(parseExpr(s)); return refs.every((r) => r === 'value' || r === 'level') ? s : null; } catch { return null; }
+  const s = v.replace(/@item\.badge\.value/g, '@value').replace(/@actor\.(system\.details\.)?level(\.value)?\b/g, '@level')
+    .replace(/@(item\.(system\.)?level(\.value)?|spell\.level|spell\.rank)\b/g, '@itemLevel');
+  try { const refs = []; (function walk(x) { if ('ref' in x) refs.push(x.ref); if ('neg' in x) walk(x.neg); if ('args' in x) x.args.forEach(walk); if ('a' in x) { walk(x.a); walk(x.b); } })(parseExpr(s)); return refs.every((r) => VALUE_REFS.has(r)) ? s : null; } catch { return null; }
 }
 
 /** One Foundry rule element in our form, or kept as it was ({key: 'unsupported', foundry}) with the reason. */
-/** A predicate our engine can test: option strings combined with and, or, not (engine/rules/rules.js). */
+/** The numbers a condition may compare (rulesets/pf2e/actor.js gives them to engine/rules testPredicate). */
+const FACT = /^(self:level|hp-percent|hp-remaining|self:condition:[a-z-]+)$/;
+/**
+ * A predicate our engine can test: option strings combined with and, or, not, and comparisons
+ * ({gte: [a, b]}...) of numbers and the facts it knows (engine/rules/rules.js).
+ */
 export function predicateOk(p) {
   if (typeof p === 'string') return true;
   if (Array.isArray(p)) return p.every(predicateOk);
   if (p && typeof p === 'object') {
     const keys = Object.keys(p);
     if (keys.length !== 1) return false;
-    if (keys[0] === 'and' || keys[0] === 'or') return Array.isArray(p[keys[0]]) && p[keys[0]].every(predicateOk);
-    if (keys[0] === 'not') return predicateOk(p.not);
+    const k = keys[0];
+    if (k === 'and' || k === 'or') return Array.isArray(p[k]) && p[k].every(predicateOk);
+    if (k === 'not') return predicateOk(p.not);
+    if (['gt', 'gte', 'lt', 'lte', 'eq'].includes(k)) return Array.isArray(p[k]) && p[k].length === 2 && p[k].every((x) => typeof x === 'number' || (typeof x === 'string' && FACT.test(x)));
   }
   return false;
 }
@@ -83,7 +96,7 @@ export function convertRule(r) {
   const keep = (why) => ({ rule: { key: 'unsupported', foundry: r }, why, unsupported: (r && r.key) || '(no key)' });
   if (!r || typeof r !== 'object') return keep('not a rule element');
   const when = r.predicate && r.predicate.length ? r.predicate : undefined;
-  if (when && !predicateOk(when)) return keep('its condition compares numbers, which our engine cannot test yet');
+  if (when && !predicateOk(when)) return keep('its condition compares numbers our engine does not know yet');
   switch (r.key) {
     case 'FlatModifier': {
       const value = convertValue(r.value);
@@ -95,22 +108,19 @@ export function convertRule(r) {
     case 'Resistance': case 'Weakness': {
       const value = convertValue(r.value);
       if (value === null) return keep(`value "${r.value}" uses data we do not have`);
-      if (when) return keep('conditional resistance or weakness');
-      return { rule: { key: r.key.toLowerCase(), type: [].concat(r.type)[0], value, ...(r.exceptions && r.exceptions.length ? { except: [].concat(r.exceptions).map((e) => (typeof e === 'string' ? e : e.type || e.label)).join(', ') } : {}) } };
+      return { rule: { key: r.key.toLowerCase(), type: [].concat(r.type)[0], value, ...(r.exceptions && r.exceptions.length ? { except: [].concat(r.exceptions).map((e) => (typeof e === 'string' ? e : e.type || e.label)).join(', ') } : {}), ...(when ? { when } : {}) } };
     }
     case 'Immunity':
-      if (when) return keep('conditional immunity');
-      return { rule: { key: 'immunity', type: [].concat(r.type)[0], ...(r.exceptions && r.exceptions.length ? { except: [].concat(r.exceptions).map((e) => (typeof e === 'string' ? e : e.type || e.label)).join(', ') } : {}) } };
+      return { rule: { key: 'immunity', type: [].concat(r.type)[0], ...(r.exceptions && r.exceptions.length ? { except: [].concat(r.exceptions).map((e) => (typeof e === 'string' ? e : e.type || e.label)).join(', ') } : {}), ...(when ? { when } : {}) } };
     case 'BaseSpeed': {
       const value = convertValue(r.value);
       if (value === null) return keep(`value "${r.value}" uses data we do not have`);
-      return { rule: { key: 'speed', type: r.selector, value } };
+      return { rule: { key: 'speed', type: r.selector, value, ...(when ? { when } : {}) } };
     }
     case 'Sense': {
       const range = r.range === undefined || r.range === null || r.range === '' ? undefined : convertValue(r.range);
       if (range === null) return keep(`range "${r.range}" uses data we do not have`);
-      if (when) return keep('conditional sense');
-      return { rule: { key: 'sense', type: r.selector, ...(range !== undefined ? { range } : {}), ...(r.acuity ? { acuity: r.acuity } : {}) } };
+      return { rule: { key: 'sense', type: r.selector, ...(range !== undefined ? { range } : {}), ...(r.acuity ? { acuity: r.acuity } : {}), ...(when ? { when } : {}) } };
     }
     case 'Note':
       return { rule: { key: 'note', selector: r.selector, text: cleanText(r.text || r.title || ''), ...(r.outcome ? { outcome: r.outcome } : {}), ...(when ? { when } : {}) } };

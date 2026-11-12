@@ -59,7 +59,10 @@ test('Foundry markup becomes plain text with checks, damage, links and templates
 test('rule elements: ours where we can, kept untouched (and reported) where not', () => {
   assert.equal(convertValue('-@item.badge.value'), '-@value');
   assert.equal(convertValue('min(-1 * @actor.level,-1) * @item.badge.value'), 'min(-1 * @level,-1) * @value');
-  assert.equal(convertValue('@item.system.level.value'), null, 'data we do not have');
+  assert.equal(convertValue('@item.system.level.value'), '@itemLevel');
+  assert.equal(convertValue('ternary(gte(@item.level,9),3,ternary(gte(@item.level,6),2,1))'), 'ternary(gte(@itemLevel,9),3,ternary(gte(@itemLevel,6),2,1))');
+  assert.equal(convertValue('@actor.abilities.str.mod'), null, 'data we do not have');
+  assert.equal(convertValue('when(@actor.level, 2)'), null, 'a function we do not have');
   assert.deepEqual(convertRule({ key: 'FlatModifier', selector: 'attack', type: 'status', value: 1, predicate: ['dark'] }).rule, { key: 'modifier', selector: 'attack-roll', type: 'status', value: 1, when: ['dark'] });
   assert.deepEqual(convertRule({ key: 'Weakness', type: 'silver', value: 5 }).rule, { key: 'weakness', type: 'silver', value: 5 });
   const kept = convertRule({ key: 'ChoiceSet', choices: [] });
@@ -85,7 +88,7 @@ test('the importer converts creatures and items, keeps licences, and reports wha
   const coat = by['item/quilted-coat'];
   assert.deepEqual([coat.kind, coat.category, coat.acBonus, coat.dexCap, coat.source.license, coat.text], ['armor', 'light', 1, 3, 'ORC', 'Soft & warm.']);
   const feat = by['feat/thick-hide'];
-  assert.deepEqual(feat.rules.map((r) => r.key), ['modifier', 'resistance', 'unsupported', 'speed', 'sense']);
+  assert.deepEqual(feat.rules.map((r) => r.key), ['modifier', 'resistance', 'modifier', 'speed', 'sense']);
   assert.deepEqual(Object.keys(by).sort(), ['condition/clumsy', 'creature/gloomfang-bat', 'feat/thick-hide', 'hazard/trap', 'item/quilted-coat']);
   assert.ok(report.flagged.some((f) => /RollOption/.test(f.what)));
   assert.equal(report.unsupported.RollOption, 1);

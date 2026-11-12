@@ -69,20 +69,24 @@ export function contentView(lib) {
   });
 }
 
-/** The content keys a set of creatures uses: each one's base stat block and each item it carries by reference. */
-export function referencedKeys(actors) {
+/**
+ * The content keys a campaign uses: each creature's base stat block and each item it carries by reference, and
+ * each effect on a token that names an effect in the content. `tokens`: {id: token}.
+ */
+export function referencedKeys(actors, tokens = {}) {
   const keys = new Set();
   for (const a of Object.values(actors || {})) {
     if (a && a.base) keys.add(a.base);
     for (const it of (a && a.items) || []) if (it && it.ref) keys.add(it.ref);
   }
+  for (const t of Object.values(tokens || {})) for (const e of (t && t.effects) || []) if (e && e.ref) keys.add(e.ref);
   return keys;
 }
 
-/** The documents the creatures use, from the library: {content: {key: document}, missing: [key]}. */
-export function referencedContent(lib, actors) {
+/** The documents the campaign uses, from the library: {content: {key: document}, missing: [key]}. */
+export function referencedContent(lib, actors, tokens = {}) {
   const content = {}, missing = [];
-  for (const k of [...referencedKeys(actors)].sort()) {
+  for (const k of [...referencedKeys(actors, tokens)].sort()) {
     let doc; try { doc = lib.get(k); } catch { doc = undefined; }
     if (doc) content[k] = doc; else missing.push(k);
   }

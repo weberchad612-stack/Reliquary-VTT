@@ -25,82 +25,46 @@
       "value": "-1 * @level"
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "doubleVs": [
-          "non-magical"
-        ],
-        "exceptions": [
-          "force",
-          "vitality",
-          "ghost-touch"
-        ],
-        "key": "Resistance",
-        "predicate": [
-          {
-            "lt": [
-              "self:level",
-              16
-            ]
-          }
-        ],
-        "type": "all-damage",
-        "value": "ternary(lt(@actor.level, 10), 1, 2)"
-      }
+      "key": "resistance",
+      "type": "all-damage",
+      "value": "ternary(lt(@level, 10), 1, 2)",
+      "except": "force, vitality, ghost-touch",
+      "when": [
+        {
+          "lt": [
+            "self:level",
+            16
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "damage",
-          "item:magical"
-        ],
-        "exceptions": [
-          "force",
-          "vitality",
-          "ghost-touch"
-        ],
-        "key": "Resistance",
-        "label": "PF2E.IWR.Custom.AllMagicalDamage",
-        "predicate": [
-          {
-            "gte": [
-              "self:level",
-              16
-            ]
-          }
-        ],
-        "type": "custom",
-        "value": 3
-      }
+      "key": "resistance",
+      "type": "custom",
+      "value": 3,
+      "except": "force, vitality, ghost-touch",
+      "when": [
+        {
+          "gte": [
+            "self:level",
+            16
+          ]
+        }
+      ]
     },
     {
-      "key": "unsupported",
-      "foundry": {
-        "definition": [
-          "damage",
-          {
-            "not": "item:magical"
-          }
-        ],
-        "exceptions": [
-          "force",
-          "vitality",
-          "ghost-touch"
-        ],
-        "key": "Resistance",
-        "label": "PF2E.IWR.Custom.AllNonMagicalDamage",
-        "predicate": [
-          {
-            "gte": [
-              "self:level",
-              16
-            ]
-          }
-        ],
-        "type": "custom",
-        "value": 5
-      }
+      "key": "resistance",
+      "type": "custom",
+      "value": 5,
+      "except": "force, vitality, ghost-touch",
+      "when": [
+        {
+          "gte": [
+            "self:level",
+            16
+          ]
+        }
+      ]
     }
   ]
 }

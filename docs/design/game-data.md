@@ -403,3 +403,19 @@ release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `5
 - **Validator:** `--content` checks each document against its own kind's schema, counts unsupported rules and
   unknown selectors instead of listing 24,000 warnings, and warns about impossible attribute values.
 
+### 7.5 Formulas and effects on tokens (built 2026-11-12)
+
+- **Formulas:** the expression language has `ternary` and the comparisons; `@itemLevel` is the level of what
+  grants a rule (Foundry's `@item.level`, a spell's rank). Only the branch taken is evaluated.
+- **Conditions comparing numbers:** `testPredicate` takes facts: `self:level`, `hp-percent`, `hp-remaining`,
+  `self:condition:<id>`. A creature whose rules compare its HP is prepared a second time with its HP known.
+- **Every rule key takes `when`**: conditional resistances, weaknesses, immunities, speeds and senses.
+  Creatures also gain speeds their rules grant.
+- **Effects from the content on tokens:** an effect badge may carry `ref` (an effect document) and `level`;
+  its rules apply at that level. `tools/effect.mjs apply` sets it; such effects count as content in use.
+- **Re-import of 8.7.0:** 851 documents changed on our side; rules kept as unsupported went from 24,012 to
+  22,895 (1,117 now run). The real Heroism at rank 6 gives Kerra +2 status to attacks, saves, skills and
+  Perception, with its breakdown.
+- **Still kept** (the next candidates): values from a weapon's damage dice, rune potency, sheet choices, the
+  creature's land Speed, and facts about the target (distance, size).
+
