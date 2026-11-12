@@ -89,6 +89,9 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 ## 7. The version badge and publishing
 
 - The bundler stamps every build (`/*@BUILD@*/`): the badge shows the version, the tooltip the commit and whether there were uncommitted changes. Commit before publishing when you can, so the badge points at real code.
+- **Build the published board with the trait glossary:** `node tools/campaign.mjs glossary --out /tmp/glossary.json`
+  then `node tools/bundle.mjs board/index.html <out.html> --data traits=/tmp/glossary.json` (about 160 KB more; it
+  is the same for every campaign, so it travels with the page rather than through the database).
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 
 ## 8. The top menu
@@ -224,7 +227,9 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   also say what the board applies (agile: the multiple attack penalty −4/−8; finesse, thrown, propulsive,
   unarmed for a character) and otherwise "not automated: Claude applies it". The descriptions are Foundry's
   568 trait descriptions (`content/pf2e/traits/`), carried by every campaign as one record,
-  `content/glossary.traits` (`node tools/campaign.mjs glossary --out FILE` builds it for a board loaded before).
+  `content/glossary.traits`, and built into the board itself (see publishing): `node tools/campaign.mjs glossary
+  --out /tmp/glossary.json`, then `bundle.mjs ... --data traits=/tmp/glossary.json`. A board built without it uses
+  the campaign's record.
 - **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
 - Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
   window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every
