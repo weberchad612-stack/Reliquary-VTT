@@ -14,7 +14,7 @@
 //                                      roll initiative: d20 (or D) + Perception (or the skill S, such as stealth),
 //                                      with initiative's modifiers and notes; also writes the roll card (a chat message, chat/)
 //   defeat <who> [--undo]              mark defeated (its turns are skipped) or not
-//   hide <who> [--undo]                hide from players in the tracker or show again
+//   hide <who> [--undo]                hide the token from players (map, tracker, rolls) or show it again
 //   previous                           back one turn (a correction: no turn rules run)
 //   next-round                         end this turn and the round; the next round's first turn (the rest skipped)
 //   previous-round                     back to the start of the round before (a correction)
@@ -110,9 +110,16 @@ export function runEncounter(game, cmd, args, opts = {}) {
     out.writes.push({ op: 'set', path: chatPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: !!(enc.combatants.find((x) => x.token === id) || {}).hidden }) });
     return out;
   }
-  if (cmd === 'defeat' || cmd === 'hide') {
-    const id = who(args[0]), k = cmd === 'defeat' ? 'defeated' : 'hidden';
-    return done(E.setFlags(enc, id, { [k]: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}${k === 'defeated' ? 'defeated' : 'hidden from players'}`]);
+  if (cmd === 'defeat') {
+    const id = who(args[0]);
+    return done(E.setFlags(enc, id, { defeated: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}defeated`]);
+  }
+  if (cmd === 'hide') {
+    // the token itself is hidden (as the board's token menu and the tracker's eye do): players never see it
+    const id = who(args[0]), out = done(E.setFlags(enc, id, { hidden: false }), [`${name(id)}: ${opts.undo ? 'shown to' : 'hidden from'} players`]);
+    out.writes.push({ op: 'update', path: `tokens/${id}`, data: { hidden: opts.undo ? { __delete__: true } : true } });
+    if (opts.undo) delete game.tokens[id].hidden; else game.tokens[id].hidden = true;
+    return out;
   }
   if (cmd === 'next-round') { const r = E.nextRound(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'previous-round') { const r = E.previousRound(enc, now0, T.roundSeconds); return done(r.encounter, [`back to the start of round ${r.encounter.round}`], [], r.now); }

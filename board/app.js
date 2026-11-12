@@ -333,6 +333,8 @@ export async function start(store, { build = null } = {}) {
       if (mask.add(view.visible)) exploredChanged();
     }
     gen++;
+    // tokens the GM hid are never the party's to see (the player view skips them; the GM view draws them faint)
+    for (const [id, t] of Object.entries(S.tokens)) if (t.hidden) view.seen.delete(id);
     for (const id of Object.keys(S.hiddenMarks)) if (view.seen.has(id)) delete S.hiddenMarks[id];   // seen again: the marker goes
     const explored = mask.toPolys();     // stored in the save: pixel-exact
     partyShown = {
@@ -1150,6 +1152,7 @@ export async function start(store, { build = null } = {}) {
       ctx.save();
       if (preview && drag && (drag.id === id || (drag.group && drag.group.has(id)))) ctx.globalAlpha = 0.75;   // faded only once it moves
       if (full && !seen) ctx.globalAlpha = 0.6;
+      if (full && t0.hidden) ctx.globalAlpha = 0.35;   // hidden by the GM: transparent in the GM view
       const look = tokenState(t0, S.view, CONDS);   // dead: faded and grey; down (unconscious, dying): greyed
       if (look === 'dead') { ctx.globalAlpha *= 0.55; ctx.filter = 'grayscale(0.6)'; }
       else if (look === 'down') ctx.filter = 'grayscale(0.75) brightness(0.8)';
@@ -2162,6 +2165,8 @@ export async function start(store, { build = null } = {}) {
     effects: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.6" fill="currentColor"/><path d="M8.5 21v-6.5L7 10.5Q7 9 9 9h6q2 0 2 1.5l-1.5 4V21z" fill="currentColor"/><path d="M12 1.5v1.6M4.5 4.5l1.2 1.1M19.5 4.5l-1.2 1.1M2 11h1.7M20.3 11H22M3.5 17.5l1.4-.8M20.5 17.5l-1.4-.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     template: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 L12 4 L21 21 Z" fill="currentColor" fill-opacity=".35" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="currentColor"/></svg>',
     target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
     combat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l9.5 9.5M3 4l9.5 9.5M20 3l-9.5 9.5M21 4l-9.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 15.5l-3 3M4 17l3 3M17.5 15.5l3 3M20 17l-3 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
   };
   function openHud(id) {
@@ -2179,7 +2184,7 @@ export async function start(store, { build = null } = {}) {
   function renderHud() {
     if (!hudFor || !S.tokens[hudFor] || !canHud(hudFor)) return closeHud();
     const t = S.tokens[hudFor];
-    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, el: t.elevation || 0, ee: hudElevEdit, tg: myTargets().includes(hudFor), v: S.view, c: !!(trackerUi && trackerUi.inEncounter(hudFor)) });
+    const key = canon({ id: hudFor, p: hudPanel, sh: hudShape, e: t.effects || [], d: !!t.dead, hid: !!t.hidden, el: t.elevation || 0, ee: hudElevEdit, tg: myTargets().includes(hudFor), v: S.view, c: !!(trackerUi && trackerUi.inEncounter(hudFor)) });
     if (key !== hudKey) {
       hudKey = key;
       hudEl.replaceChildren();
@@ -2197,6 +2202,8 @@ export async function start(store, { build = null } = {}) {
         if (t.dead && !myTargets().includes(hudFor)) return toast(`${nm(t)} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
+      // Hide / Show (the GM's only): a hidden token is never the players'; the GM sees it transparent
+      if (S.view === 'gm') btn(t.hidden ? 'eyeOff' : 'eye', t.hidden ? 'Show to players' : 'Hide from players', !!t.hidden, () => setHidden(hudFor, !t.hidden));
       // Enter Combat (the encounter tracker): the GM for any token (with the others selected), a player for a PC
       if (trackerUi && (S.view === 'gm' || t.kind === 'pc')) {
         const inEnc = trackerUi.inEncounter(hudFor);
@@ -2363,6 +2370,16 @@ export async function start(store, { build = null } = {}) {
     S.tokens[id] = t;
     renderHud(); recompute();   // who can see may change (blinded, unconscious); persist() writes it and logs the change
     qvRefresh();
+  }
+  /** The GM hides a token from the players or shows it again (the token HUD, the tracker's eye). */
+  function setHidden(id, hidden) {
+    if (S.view !== 'gm' || !S.tokens[id]) return;
+    const t = { ...S.tokens[id] };
+    if (hidden) t.hidden = true; else delete t.hidden;
+    S.tokens[id] = t;
+    renderHud(); recompute(); draw();
+    qvRefresh();
+    schedulePersist();
   }
   function setDead(id, dead) {
     const t = { ...S.tokens[id] };
@@ -2654,8 +2671,9 @@ export async function start(store, { build = null } = {}) {
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);
       for (const k of ['colour', 'intensity', 'animation']) if (canon(lb[k]) !== canon(la[k])) out.push(`${name}'s light ${k}: ${typeof la[k] === 'object' ? canon(la[k]) : la[k]}`);
       out.push(...describeEffects(name, before, after, CONDS));
+      if (!!before.hidden !== !!after.hidden) out.push(after.hidden ? `${name} hidden from players` : `${name} shown to players`);
       if ((before.elevation || 0) !== (after.elevation || 0)) out.push(after.elevation ? `${name} elevation ${elevText(after.elevation)} ${SYS.measurement.unit}` : `${name} back to the ground (elevation 0)`);
-      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead', 'elevation'].includes(k))) out.push(`${name}: ${k} changed`);
+      for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead', 'elevation', 'hidden'].includes(k))) out.push(`${name}: ${k} changed`);
       return out;
     }
     if (coll === 'mapstate') {
@@ -2853,7 +2871,7 @@ export async function start(store, { build = null } = {}) {
     const t = S.tokens[ref];
     if (!t) return null;
     const sp = space(ref), lift = lifted && (t.elevation || 0) > 0 ? sp.size * 0.4 : 0;
-    return { pt: { x: P(sp.x + sp.size / 2), y: P(sp.y + sp.size / 2 - lift) }, seen: full || t.kind === 'pc' || F.seen.has(ref) };
+    return { pt: { x: P(sp.x + sp.size / 2), y: P(sp.y + sp.size / 2 - lift) }, seen: full || (t.kind === 'pc' && !t.hidden) || F.seen.has(ref) };
   }
   /** The board's map under a token, drawn again offset: the shake on a hit. */
   function fxSnapshot(g, x, y, r, dx, dy) {
@@ -3092,6 +3110,7 @@ export async function start(store, { build = null } = {}) {
     },
     hover: (id) => { if (trkHover !== id) { trkHover = id; targetsChanged(); } },
     onActing: (id) => { actingId = id; targetsChanged(); },
+    setHidden: (id, hidden) => setHidden(id, hidden),
     reveal: (id) => { const t = S.tokens[id]; if (!t || !t.alias) return; S.tokens[id] = { ...t, known: true }; schedulePersist(); draw(); toast(`The party now knows ${t.name}.`); },
     conditionWords: (t) => [...(t.dead ? ['dead'] : []), ...(t.effects || []).filter((e) => e && (S.view === 'gm' || !e.gm_only)).map((e) => (e.id ? ((CONDS[e.id] || {}).label || e.id) : e.name) + (e.value ? ` ${e.value}` : ''))],
     rolls: chatUi, panel: sidebar.panel('encounter'), openButton: document.getElementById('b-enc'),

@@ -182,6 +182,16 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Never store light concealment as an effect.** It is per observer and changes as anyone moves or a light changes; the board works it out (`concealedFrom` in the party view). Use the `concealed` condition only for concealment that applies to everyone (Blur, fog, an obscuring cloud).
 - **Answer "is it concealed from X?" from the engine, not from the board's badge:** the light rules (`rulesets/pf2e/light.js` `perceive`) for observer X's senses and the light at the target. Remember that low-light vision and darkvision see dim light clearly.
 
+### Hiding tokens (2026-11-12)
+
+- **The GM hides a token** from the token menu (right-click: the eye, **Hide from players** / **Show to players**), from
+  the encounter tracker's eye (the same flag), or with `node tools/token.mjs hide|show <who> --state FILE` (and
+  `tools/encounter.mjs hide <who> [--undo]`). The token gets `hidden: true`.
+- **Players never see a hidden token**: it is taken out of the party's seen set (`recompute`), so it is not drawn, hovered,
+  targeted, opened in Quick-View, listed in the tracker, or shown in effects, and its rolls are the GM's. A hidden PC
+  is not one of the party's lookers either. **The GM view draws it transparent** (35%).
+- The change log says "<name> hidden from players" (the GM's line) and "<name> shown to players".
+
 ### The token HUD
 
 - **Layer order on a token, bottom to top:** the token (map), the target triangles, the selection and hover squares (overlay), the effect and concealment badges (overlay), then the name and distance labels and the badge tip. Badges are worked out in `drawTokens` (positions, hover areas) but drawn on the overlay in `drawTargets`, after the squares: drawn on the map, the hover square (overlay) covered them while the selection square (map) did not (the user saw the mismatch, 2026-11-11).

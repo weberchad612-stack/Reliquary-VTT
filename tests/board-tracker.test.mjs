@@ -130,3 +130,15 @@ test('who may drag, set and move: the GM anything; a player their PCs, down only
   const moved = act(b, { type: 'set', token: 'tok-foe00002', initiative: 40 });
   assert.equal(E.acting(moved.encounter), 'tok-foe00001');
 });
+
+test('a token the GM hid: no row for players, marked for the GM; the token tool hides and shows', async () => {
+  const { hideToken } = await import('../tools/token.mjs');
+  let e = E.newEncounter(0);
+  for (const [t, i] of [['tok-pc000001', 10], ['tok-foe00002', 8]]) e = E.addCombatant(e, { token: t, side: tokens[t].kind, initiative: i }, T.tiebreak);
+  const hid = { ...tokens, 'tok-foe00002': { ...tokens['tok-foe00002'], hidden: true } };
+  assert.deepEqual(trackerRows(e, hid, { view: 'player' }).map((r) => r.token), ['tok-pc000001']);
+  assert.equal(trackerRows(e, hid, { view: 'gm' }).find((r) => r.token === 'tok-foe00002').hidden, true);
+  const h = hideToken(tokens, 'Rat');
+  assert.deepEqual([h.path, h.record.hidden], ['tokens/tok-foe00002', true]);
+  assert.equal(hideToken(hid, 'Rat', false).record.hidden, undefined);
+});

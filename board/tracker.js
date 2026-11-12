@@ -29,13 +29,13 @@ export function trackerRows(enc, tokens, { view, seen = () => true, name = (id) 
   enc.combatants.forEach((c, i) => {
     const t = tokens[c.token];
     if (view !== 'gm') {
-      if (c.hidden || !t) return;
+      if (c.hidden || !t || t.hidden) return;   // hidden by the GM (the token, or the row): never the players'
       if (t.kind !== 'pc' && !seen(c.token)) return;
     }
     out.push({
       token: c.token, name: t ? name(c.token) : '(not on this map)', kind: t ? t.kind : c.side, side: c.side,
       initiative: typeof c.initiative === 'number' ? c.initiative : null, stat: c.stat || null, roll: c.roll || null,
-      acting: i === enc.turn, delayed: !!c.delayed, defeated: !!c.defeated || !!(t && t.dead), hidden: !!c.hidden,
+      acting: i === enc.turn, delayed: !!c.delayed, defeated: !!c.defeated || !!(t && t.dead), hidden: !!c.hidden || !!(t && t.hidden),
       mine: controls(view, t), present: !!t,
     });
   });

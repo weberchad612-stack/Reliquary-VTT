@@ -55,6 +55,12 @@ export function revealToken(tokens, ref) {
   return { id, path: `tokens/${id}`, record: { ...t, known: true } };
 }
 
+/** The GM hides a token from the players, or shows it again: the token with hidden: true, or without it. */
+export function hideToken(tokens, ref, hide = true) {
+  const id = resolveToken(tokens, ref), { hidden: _h, ...t } = tokens[id];
+  return { id, path: `tokens/${id}`, record: hide ? { ...t, hidden: true } : t };
+}
+
 function main(argv) {
   const args = argv.slice(2);
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
@@ -70,6 +76,12 @@ function main(argv) {
       });
       for (const w of out.warnings) console.error(`token: warning: ${w}`);
       console.log(JSON.stringify({ path: out.path, record: out.record }, null, 2));
+      return 0;
+    }
+    if (cmd === 'hide' || cmd === 'show') {
+      if (args.length !== 1) throw new Error('give one token (name, alias or id)');
+      const r = hideToken(tokens, args[0], cmd === 'hide');
+      console.log(JSON.stringify({ path: r.path, record: { ...r.record, map: mapId } }, null, 2));
       return 0;
     }
     if (cmd === 'reveal' || cmd === 'find') {

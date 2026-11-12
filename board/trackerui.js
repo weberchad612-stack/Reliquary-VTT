@@ -7,7 +7,7 @@
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, isTarget(id), toggleTarget(id), ping(id), hover(id | null), onActing(id | null),
-//   reveal(id), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
+//   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js), openButton}
 
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines, dropInitiative, canDrag } from './tracker.js';
@@ -334,7 +334,12 @@ export async function mountTracker(o) {
     if (a === 'roll') return openDialog(id);
     if (a === 'set-init') return editInitiative(id, b);
     if (a === 'card') { const rec = o.rolls.latest(id, 'initiative'); return rec && (o.view() === 'gm' || !rec.gm) ? o.rolls.show(rec) : o.toast('No roll card for this initiative (it was typed in, or rolled before roll cards).'); }
-    if (a === 'hide') return commit({ type: 'flags', token: id, flags: { hidden: !(ENC.combatants.find((c) => c.token === id) || {}).hidden } });
+    if (a === 'hide') {
+      // the token's own hidden flag (the token menu's Hide / Show); a row whose token is on another map keeps its own
+      const t = o.tokens()[id], c = ENC.combatants.find((x) => x.token === id) || {};
+      if (t) { if (c.hidden) commit({ type: 'flags', token: id, flags: { hidden: false } }); o.setHidden(id, !(t.hidden || c.hidden)); lastKey = ''; return render(); }
+      return commit({ type: 'flags', token: id, flags: { hidden: !c.hidden } });
+    }
     if (a === 'defeated') return commit({ type: 'flags', token: id, flags: { defeated: !(ENC.combatants.find((c) => c.token === id) || {}).defeated } });
     if (a === 'reveal') { o.reveal(id); lastKey = ''; return render(); }
     if (a === 'target') { o.toggleTarget(id); lastKey = ''; return render(); }
