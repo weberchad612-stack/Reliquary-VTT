@@ -24,6 +24,10 @@ const ICON = {
   target: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4" stroke="currentColor" stroke-width="2"/></svg>',
   ping: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M7.5 7.5a6.4 6.4 0 0 0 0 9M16.5 7.5a6.4 6.4 0 0 1 0 9M4.4 4.4a10.8 10.8 0 0 0 0 15.2M19.6 4.4a10.8 10.8 0 0 1 0 15.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
   die: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8 21.3 7.2v9.6L12 22.2 2.7 16.8V7.2z" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6.5 17.2 15H6.8z M12 1.8V6.5M2.7 7.2 6.8 15M21.3 7.2 17.2 15M6.8 15 2.7 16.8M17.2 15l4.1 1.8M6.8 15 12 22.2 17.2 15" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><text x="12" y="13.6" text-anchor="middle" font-size="5.2" font-weight="700" fill="currentColor" font-family="sans-serif">20</text></svg>',
+  prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  prevRound: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M19 5 8.5 12 19 19z" fill="currentColor"/></svg>',
+  nextRound: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M5 5l10.5 7L5 19z" fill="currentColor"/></svg>',
   menu: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="19" r="2" fill="currentColor"/></svg>',
 };
 
@@ -231,11 +235,17 @@ export async function mountTracker(o) {
     const key = JSON.stringify([rows, view, gm(), started, ENC.round, rows.map((r) => [o.isTarget(r.token), (o.tokens()[r.token] || {}).known, o.conditionWords(o.tokens()[r.token] || {})])]);
     if (key === lastKey && !menuFor) return;
     lastKey = key;
-    const tools = gm() ? `<div class="trk-tools"><button type="button" data-a="roll-all">Roll All</button><button type="button" data-a="roll-npc">Roll NPCs</button><button type="button" data-a="end" class="danger">End encounter</button></div>` : '';
+    const tools = gm() ? `<div class="trk-tools"><button type="button" data-a="roll-all">Roll All</button><button type="button" data-a="roll-npc">Roll NPCs</button></div>` : '';
     B.innerHTML = tools + `<ol class="trk-list">${rows.map(rowHtml).join('')}</ol>`;
     let foot = '';
     if (!started) foot = gm() ? '<button type="button" class="trk-go" data-a="begin">⚔ Begin Encounter</button>' : '<p class="muted">Waiting for the GM to begin.</p>';
-    else if (gm()) foot = `<div class="trk-turns"><button type="button" data-a="previous" title="Back one turn (a correction: nothing is undone)">◀ Previous</button><button type="button" data-a="delay" ${actingId ? '' : 'disabled'}>Delay</button><button type="button" class="trk-go" data-a="next">Next turn ▶</button></div>`;
+    // the GM's controls, as Foundry's: previous round, previous turn, End Encounter, next turn, next round
+    else if (gm()) foot = `<div class="trk-nav">
+      <button type="button" class="trk-ic" data-a="previous-round" title="Previous round: back to the start of the round before (a correction: nothing is undone)" aria-label="Previous round">${ICON.prevRound}</button>
+      <button type="button" class="trk-ic" data-a="previous" title="Previous turn (a correction: nothing is undone)" aria-label="Previous turn">${ICON.prev}</button>
+      <button type="button" class="trk-end" data-a="end">✕ End Encounter</button>
+      <button type="button" class="trk-ic" data-a="next" title="Next turn" aria-label="Next turn">${ICON.next}</button>
+      <button type="button" class="trk-ic" data-a="next-round" title="Next round: the rest of this round's turns are skipped" aria-label="Next round">${ICON.nextRound}</button></div>`;
     else if (acting && acting.mine) foot = '<div class="trk-turns"><button type="button" data-a="delay">Delay</button><button type="button" class="trk-go" data-a="next">End turn ▶</button></div>';
     panel.foot.innerHTML = foot;
     if (menuFor) openMenu(menuFor, true);
@@ -281,7 +291,8 @@ export async function mountTracker(o) {
       m.innerHTML = `<form class="trk-type"><label>Initiative total <input type="number" step="1" required aria-label="Initiative total"></label><button>Set</button><button type="button" data-m="cancel">Cancel</button></form>`;
     } else {
       const has = ENC && ENC.combatants.some((c) => c.token === id && typeof c.initiative === 'number');
-      m.innerHTML = [['roll', has ? 'Roll again…' : 'Roll initiative…'], ['type', 'Type a result…'], has ? ['clear', 'Clear initiative'] : null, ['remove', 'Remove from the encounter']].filter(Boolean)
+      const actingNow = begun(ENC) && Engine.acting(ENC) === id;
+      m.innerHTML = [actingNow ? ['delay', 'Delay (act later this round)'] : null, ['roll', has ? 'Roll again…' : 'Roll initiative…'], ['type', 'Type a result…'], has ? ['clear', 'Clear initiative'] : null, ['remove', 'Remove from the encounter']].filter(Boolean)
         .map(([a, l]) => `<button type="button" role="menuitem" data-m="${a}">${l}</button>`).join('');
     }
     li.appendChild(m);
@@ -306,6 +317,7 @@ export async function mountTracker(o) {
       if (a === 'roll') return openDialog(id);
       if (a === 'clear') return commit({ type: 'clear', token: id });
       if (a === 'remove') return commit({ type: 'remove', token: id });
+      if (a === 'delay') return commit({ type: 'delay' });
       return;
     }
     const b = e.target.closest('[data-a]');
@@ -323,7 +335,7 @@ export async function mountTracker(o) {
     if (a === 'resume') return commit({ type: 'resume', token: id });
     if (a === 'roll-all') return rollMany('all');
     if (a === 'roll-npc') return rollMany('npc');
-    if (a === 'begin' || a === 'next' || a === 'previous' || a === 'delay') return commit({ type: a });
+    if (['begin', 'next', 'previous', 'next-round', 'previous-round', 'delay'].includes(a)) return commit({ type: a });
     if (a === 'end') return commit({ type: 'end' });
   });
   panel.el.addEventListener('mouseover', (e) => { const li = e.target.closest('.trk-row'); hover(li ? li.dataset.id : null); });

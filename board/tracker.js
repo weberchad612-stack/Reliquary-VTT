@@ -58,7 +58,7 @@ export function needInitiative(enc, tokens, which = 'all') {
  * Apply an action to the encounter. E: the engine's encounter functions; T: {tiebreak, roundSeconds}; now: the
  * clock's seconds. Returns {encounter, now, events, lines} or throws with a reason a person can read.
  * action: {type, token?, side?, initiative?, extra?, flags?} with type one of add, remove, initiative, clear,
- * flags, begin, next, previous, delay, resume, end.
+ * flags, begin, next, previous, next-round, previous-round, delay, resume, end.
  */
 export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = {}, name = (id) => id }) {
   const t = action.token ? tokens[action.token] : null;
@@ -108,6 +108,8 @@ export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = 
       return done(r.encounter, [], r.events, r.now);
     }
     case 'previous': gmOnly(); { const r = E.previous(live, now, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
+    case 'next-round': gmOnly(); { if (!begun(live)) throw new Error('the encounter has not begun'); const r = E.nextRound(live, now, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
+    case 'previous-round': gmOnly(); { if (!begun(live)) throw new Error('the encounter has not begun'); const r = E.previousRound(live, now, T.roundSeconds); return done(r.encounter, [`back to the start of round ${r.encounter.round}`], r.events, r.now); }
     case 'delay': {
       if (!begun(live)) throw new Error('the encounter has not begun');
       const acting = E.acting(live);

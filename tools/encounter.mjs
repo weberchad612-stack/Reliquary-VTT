@@ -16,6 +16,8 @@
 //   defeat <who> [--undo]              mark defeated (its turns are skipped) or not
 //   hide <who> [--undo]                hide from players in the tracker or show again
 //   previous                           back one turn (a correction: no turn rules run)
+//   next-round                         end this turn and the round; the next round's first turn (the rest skipped)
+//   previous-round                     back to the start of the round before (a correction)
 //   begin                              round 1, the first turn
 //   next                               end this turn, start the next (and a new round after the last)
 //   delay                              the acting creature delays (its end-of-turn rules happen now)
@@ -112,6 +114,8 @@ export function runEncounter(game, cmd, args, opts = {}) {
     const id = who(args[0]), k = cmd === 'defeat' ? 'defeated' : 'hidden';
     return done(E.setFlags(enc, id, { [k]: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}${k === 'defeated' ? 'defeated' : 'hidden from players'}`]);
   }
+  if (cmd === 'next-round') { const r = E.nextRound(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
+  if (cmd === 'previous-round') { const r = E.previousRound(enc, now0, T.roundSeconds); return done(r.encounter, [`back to the start of round ${r.encounter.round}`], [], r.now); }
   if (cmd === 'previous') { const r = E.previous(enc, now0, T.roundSeconds); return done(r.encounter, [E.acting(r.encounter) ? `back to ${name(E.acting(r.encounter))}'s turn` : 'already at the first turn'], [], r.now); }
   if (cmd === 'begin') { const r = E.begin(enc, now0); return done(r.encounter, ['the encounter begins'], r.events, r.now); }
   if (cmd === 'next') { const r = E.next(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
@@ -119,7 +123,7 @@ export function runEncounter(game, cmd, args, opts = {}) {
   if (cmd === 'resume') { const id = who(args[0]); const r = E.resume(enc, id, now0); return done(r.encounter, [`${name(id)} stops delaying`], r.events, r.now); }
   if (cmd === 'remove') { const id = who(args[0]); const r = E.removeCombatant(enc, id, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} leaves the encounter`], r.events, r.now); }
   if (cmd === 'end') { const r = E.end(enc, now0); return done(r.encounter, [`the encounter ends after ${enc.round} round(s)`], r.events, r.now); }
-  throw new Error('commands: show, start, add, init, roll, defeat, hide, begin, next, previous, delay, resume, remove, end');
+  throw new Error('commands: show, start, add, init, roll, defeat, hide, begin, next, previous, next-round, previous-round, delay, resume, remove, end');
 }
 
 function main(argv) {

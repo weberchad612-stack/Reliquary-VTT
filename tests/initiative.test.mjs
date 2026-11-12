@@ -119,3 +119,18 @@ test('an encounter ended at time 0 (no clock set) is over', async () => {
   assert.equal(encounterUnderWay(e), false);
   assert.throws(() => E.next(e, 0), /over/);
 });
+
+test('next round and previous round: skip the rest of the round; go back to its start', () => {
+  const tb = PF2E_SYSTEM.time.tiebreak;
+  let e = E.newEncounter(0);
+  for (const [t, i] of [['tok-aaaaaaaa', 20], ['tok-bbbbbbbb', 15], ['tok-cccccccc', 10]]) e = E.addCombatant(e, { token: t, side: 'foe', initiative: i }, tb);
+  let r = E.begin(e, 100);
+  r = E.nextRound(r.encounter, r.now, 6);
+  assert.deepEqual([r.encounter.round, E.acting(r.encounter), r.now], [2, 'tok-aaaaaaaa', 106]);
+  assert.deepEqual(r.events.map((x) => x.type), ['turn-end', 'round-end', 'round-start', 'turn-start']);
+  r = E.next(r.encounter, r.now, 6);   // b acts in round 2
+  const back = E.previousRound(r.encounter, r.now, 6);
+  assert.deepEqual([back.encounter.round, E.acting(back.encounter), back.now, back.events.length], [1, 'tok-aaaaaaaa', 100, 0]);
+  const r1 = E.previousRound(E.begin(e, 0).encounter, 0, 6);
+  assert.deepEqual([r1.encounter.round, r1.encounter.turn, r1.now], [1, 0, 0], 'round 1: its first turn');
+});

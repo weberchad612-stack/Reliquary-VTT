@@ -329,9 +329,11 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   features that trigger on it (a feat's note on initiative, such as Battle Cry), the dice and the total. **A roll
   for a creature the players do not see** (hidden in the tracker, or out of the party's sight) is the GM's only,
   marked GM; other private and blind rolls are FR-10.
-- **Turns:** the GM begins (every creature needs initiative), then **Next turn**, **Previous** (a correction: no
-  rule is undone; going back past a round takes the clock back too), **Delay**, and **Act now** on a delaying
-  row; **End encounter** in the tools. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
+- **Turns:** the GM begins (every creature needs initiative); then the footer is Foundry's (the user, 2026-11-12):
+  **previous round** (back to the start of the round before), **previous turn** (both corrections: no rule is undone,
+  and going back past a round takes the clock back too), **End Encounter**, **next turn**, **next round** (ends this
+  turn and the round; the rest of the round's turns are skipped, so their turn rules do not run). The GM delays the
+  acting creature from its row's ⋮ menu; **Act now** on a delaying row brings it back. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
   runs the system's turn rules on the board (frightened going down, persistent damage, effects running out...)
   and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; the lines go to the change log
   and a toast says whose turn it is.

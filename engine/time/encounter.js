@@ -144,6 +144,37 @@ export function previous(enc, now, roundSeconds = 6) {
 }
 
 /**
+ * On to the next round (Foundry's "next round"): the acting creature's turn ends, the round ends, and the next
+ * round begins with its first creature (not delaying or defeated); the rest of this round's turns are skipped.
+ * The clock moves one round. Returns {encounter, now, events}.
+ */
+export function nextRound(enc, now, roundSeconds = 6) {
+  if (!(enc.round > 0)) throw new Error('the encounter has not begun');
+  if (enc.ended != null) throw new Error('the encounter is over');
+  const events = [], cur = current(enc);
+  if (cur) events.push({ type: 'turn-end', token: cur.token, round: enc.round });
+  events.push({ type: 'round-end', round: enc.round });
+  const round = enc.round + 1, t = now + roundSeconds;
+  events.push({ type: 'round-start', round });
+  const first = enc.combatants.findIndex((c) => !skipped(c));
+  if (first < 0) return { encounter: { ...enc, round, turn: null }, now: t, events };
+  events.push({ type: 'turn-start', token: enc.combatants[first].token, round });
+  return { encounter: { ...enc, round, turn: first }, now: t, events };
+}
+
+/**
+ * Back to the start of the previous round (a correction, as previous(): no turn rules run): its first creature
+ * acts again and the clock goes back one round. In round 1, back to its first turn. Returns {encounter, now, events: []}.
+ */
+export function previousRound(enc, now, roundSeconds = 6) {
+  if (!(enc.round > 0)) throw new Error('the encounter has not begun');
+  const first = enc.combatants.findIndex((c) => !skipped(c));
+  const turn = first < 0 ? null : first;
+  if (enc.round <= 1) return { encounter: { ...enc, turn }, now, events: [] };
+  return { encounter: { ...enc, round: enc.round - 1, turn }, now: now - roundSeconds, events: [] };
+}
+
+/**
  * The acting creature delays: its turn ends (its turn-end rules happen now, as the rules say) and it leaves the
  * order until it comes back with resume().
  */
