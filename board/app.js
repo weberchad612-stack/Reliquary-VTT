@@ -2489,6 +2489,7 @@ export async function start(store, { build = null } = {}) {
     draw();
   };
   document.getElementById('b-walls').onclick = (e) => { S.walls = !S.walls; e.currentTarget.setAttribute('aria-pressed', String(S.walls)); draw(); };
+  document.getElementById('lt-none').hidden = HAS_LIGHTING;
   if (HAS_LIGHTING) {
     const bl = document.getElementById('b-lighting');
     bl.hidden = false;

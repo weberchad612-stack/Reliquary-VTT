@@ -41,7 +41,7 @@ Paraphrase in notes; never copy the book's sentences.
 - Senses come from the creature (darkvision, low-light vision); a temporary one (a darkvision elixir, a spell) goes on the token's `senses` with its `source`, and comes off when it ends.
 - A lit area with no lamp mark is a lighting region (glowing fungus, an altar's glow): hover over it in GM view to see its name; GM view outlines every region.
 - Colour and intensity can change in play (a brazier burning low, a spell turning a flame blue): change them in the GM's Lighting card (lamps, regions) or a token's selection panel (carried light), so they are kept in the save, and describe the change.
-- Animation can be turned off for the whole table with the header's Animation button (GM view), for a player who finds it distracting or a slow machine; the hover bar shows its cost per frame.
+- Animation can be turned off for the whole table with the Animation button in the sidebar's Lighting tab (GM view), for a player who finds it distracting or a slow machine; the hover bar shows its cost per frame.
 - Lamp marks on the board are GM-only (players see the light, not the mark). Describe a lamp to players only as their characters would see it.
 - To check what one creature sees, select it on the board: the board then shows only its own view. Deselect for the party's explored map.
 - Light fades in the drawing, not in the rules: a creature in the faint outer edge of a torch's light is still in dim light (concealed). Read the light level from the engine (the board's hover readout shows both the level and the brightness).

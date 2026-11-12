@@ -78,6 +78,10 @@ canvas#map, .hud { margin: 0 auto; flex: none; }
 .sky[hidden] { display: none; }
 #b-lighting[hidden] { display: none; }
 .sky { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.lt-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lt-controls button { background: #2a2e36; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; font-size: 13px; cursor: pointer; }
+.lt-controls button[aria-pressed=true] { background: #3b2f1a; border-color: var(--accent); color: var(--accent); }
+.lt-controls button[hidden] { display: none; }
 .sky select { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font: inherit; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; }
 .zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
@@ -517,12 +521,6 @@ ol.log li.foe { border-left-color: var(--foe); }
         <button id="z-in" aria-label="Zoom in" title="Zoom in (+)">+</button>
         <button id="z-fit" title="Fit the map to the window (0)">Fit</button>
       </div>
-      <label class="sky" id="sky-wrap" hidden>Sky
-        <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
-      </label>
-      <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off: off, everything counts as bright">Lighting on</button>
-      <button id="b-colour" aria-pressed="true" hidden title="GM: coloured light on or off for the whole table">Colour on</button>
-      <button id="b-anim" aria-pressed="true" hidden title="GM: light animation (flicker) on or off for the whole table">Animation on</button>
       <button id="b-walls" aria-pressed="false">Show walls</button>
     </div>
   </header>
@@ -560,7 +558,19 @@ ol.log li.foe { border-left-color: var(--foe); }
         <section class="sb-pane" data-pane="place" id="pane-place" hidden></section>
         <section class="sb-pane" data-pane="chat" id="pane-chat" aria-label="Chat" hidden></section>
         <section class="sb-pane" data-pane="encounter" id="pane-encounter" aria-label="Encounter" hidden></section>
-        <section class="sb-pane" data-pane="lighting" aria-label="Lighting" hidden><section class="card" id="lightcard"></section></section>
+        <section class="sb-pane" data-pane="lighting" aria-label="Lighting" hidden>
+          <!-- the GM's lighting controls (moved from the header, 2026-11-12): the Lighting tab is the GM view's only -->
+          <div class="lt-controls">
+            <button id="b-lighting" aria-pressed="true" hidden title="Switch the light system on or off on this screen: off, everything counts as bright">Lighting on</button>
+            <label class="sky" id="sky-wrap" hidden>Sky
+              <select id="sky" aria-label="Sky light"><option value="bright">Day (bright)</option><option value="dim">Dusk (dim)</option><option value="dark">Night (dark)</option></select>
+            </label>
+            <button id="b-colour" aria-pressed="true" hidden title="Coloured light on or off for the whole table">Colour on</button>
+            <button id="b-anim" aria-pressed="true" hidden title="Light animation (flicker) on or off for the whole table">Animation on</button>
+          </div>
+          <p class="muted" id="lt-none" hidden>This map has no lighting: everything counts as bright.</p>
+          <section class="card" id="lightcard"></section>
+        </section>
         <section class="sb-pane" data-pane="changes" aria-label="Change log" hidden><section class="card" id="changelog"></section></section>
         <section class="sb-pane" data-pane="tablelog" aria-label="Table log" hidden><h2>Table log</h2><ol class="log" id="log"></ol></section>
       </div>

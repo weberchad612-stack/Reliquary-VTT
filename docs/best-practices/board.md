@@ -269,6 +269,10 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   cards or unread count). GM-only tabs' windows are hidden in the player view. The cards' own first headings are
   hidden in a panel (the panel's title says it). Build new tabs this way: give the tab a pane, let the sidebar
   wrap it, and draw into `sidebar.panel(id).body`.
+- **Lighting is the GM's** (the user, 2026-11-12): the Lighting on/off switch, the Sky, and the Colour and
+  Animation switches moved from the header into the **Lighting tab**, above the lamps and regions. That tab (and its
+  window) is the GM view's only, so the player view has no lighting control at all. A map with no lighting says so
+  there. Lighting off is this screen's only; Sky, Colour and Animation are the table's.
 - **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
   Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
   Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
