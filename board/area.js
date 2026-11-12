@@ -218,7 +218,7 @@ export async function startArea(store, c) {
       for (const k of Object.keys(tokensHere)) delete tokensHere[k];
       for (const e of list) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
     });
-    chatUi = mountChat({ store, view: () => view, readOnly: PAGE.readOnly, sidebar, pane: document.getElementById('pane-chat'),
+    chatUi = mountChat({ store, view: () => view, readOnly: PAGE.readOnly, sidebar, pane: sidebar.panel('chat').body,
       names: (id) => (tokensHere[id] ? (view === 'gm' ? tokensHere[id].name : publicName(tokensHere[id])) : null), colour: kindColour, kindOf: (id) => (tokensHere[id] ? tokensHere[id].kind : null) });
     chatUi.onChange(() => changeLogCard());
   }

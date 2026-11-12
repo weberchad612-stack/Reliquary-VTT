@@ -3052,7 +3052,7 @@ export async function start(store, { build = null } = {}) {
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
     { id: 'changes', label: 'Change log' }, { id: 'tablelog', label: 'Table log' }] });
-  chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: document.getElementById('pane-chat'),
+  chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   chatUi.onChange(() => changeLogCard());
   trackerUi = await mountTracker({
@@ -3086,7 +3086,7 @@ export async function start(store, { build = null } = {}) {
     onActing: (id) => { actingId = id; targetsChanged(); },
     reveal: (id) => { const t = S.tokens[id]; if (!t || !t.alias) return; S.tokens[id] = { ...t, known: true }; schedulePersist(); draw(); toast(`The party now knows ${t.name}.`); },
     conditionWords: (t) => [...(t.dead ? ['dead'] : []), ...(t.effects || []).filter((e) => e && (S.view === 'gm' || !e.gm_only)).map((e) => (e.id ? ((CONDS[e.id] || {}).label || e.id) : e.name) + (e.value ? ` ${e.value}` : ''))],
-    rolls: chatUi, pane: document.getElementById('pane-encounter'), showTab: () => sidebar.select('encounter'), openButton: document.getElementById('b-enc'),
+    rolls: chatUi, panel: sidebar.panel('encounter'), openButton: document.getElementById('b-enc'),
   });
   await shell.startMapMenu();
   if (keepGM) setView('gm');

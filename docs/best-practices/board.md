@@ -260,6 +260,15 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
   (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
   collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar changes size.
+- **Every tab pops out** (the user's standard, 2026-11-12: any new tab must too). Each tab's content sits in a
+  panel (`board/panel.js`, made by `board/sidebar.js`): ⇱ in its title pops it out as a floating window, which moves
+  by its title, **resizes from its bottom-right corner**, collapses to its title (▾), and goes back with ✕ or ⇥
+  (its tab then shows "popped out" with **Bring it back**). The window touched last comes to the front. Each
+  window **remembers its position, its size, whether it is out and whether it is collapsed** per browser
+  (`reliquary.sidebar.<tab>`), so a reload puts everything back. A popped-out Chat counts as showing (no pop-up
+  cards or unread count). GM-only tabs' windows are hidden in the player view. The cards' own first headings are
+  hidden in a panel (the panel's title says it). Build new tabs this way: give the tab a pane, let the sidebar
+  wrap it, and draw into `sidebar.panel(id).body`.
 - **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
   Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
   Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
@@ -281,7 +290,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   It replaces the roll log (`rolls/`) and the change log (`log/`), which are gone.
 - **Lessons:** the page's main row was sized by its content, and the old side panel's long content had been hiding
   that: `main` now takes the grid's stretching row (`grid-row: 3`). Check a panel's height with little in it.
-- Built in `board/sidebar.js` (the strip, tabs, collapse, resize), `board/chat.js` (pure: messages, visibility,
+- Built in `board/sidebar.js` (the strip, tabs, collapse, resize, a panel per tab), `board/panel.js` (docked or
+  floating, moved, resized, remembered), `board/chat.js` (pure: messages, visibility,
   HTML, the change log, `tests/board-chat.test.mjs`), `board/chatui.js` (the Chat tab, pop-ups, unread, delete),
   `tools/chat.mjs`, `schemas/chat.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
 
@@ -291,8 +301,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   selected token with it, and a player adds their own PC. The first creature in makes the encounter. **Leave
   combat** on the same button takes one out. The tracker is the sidebar's **Encounter** tab; the ⚔ button in the
   title line opens it and shows the round.
-- **The panel** lives in its tab or pops out as a window (⇱ in its title; ✕ or ⇥ puts it back), and a popped-out
-  one collapses to its title; each browser remembers how.
+- **The panel** is the Encounter tab's, and pops out like every tab's (see the sidebar).
 - **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
   it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
   name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** and **ping** (rings
@@ -324,7 +333,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   applies the action and writes it, so two people rolling at once do not undo each other.
 - Built in `board/tracker.js` (pure: rows by view, who may do what, the actions; `tests/board-tracker.test.mjs`),
   `board/trackerui.js` (the panel, rows, roll dialog and turn rules), `board/rolls.js` (a roll's chat message),
-  `board/panel.js` (a tab's panel that pops out), `engine/rules/check.js` (the dialog's
+   `engine/rules/check.js` (the dialog's
   maths: rows, switches, added modifiers, rolling twice, notes; `tests/initiative.test.mjs`) and
   `rulesets/pf2e/initiative.js` (which statistics, initiative's modifiers and notes, the types).
 

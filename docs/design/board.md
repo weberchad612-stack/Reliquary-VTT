@@ -550,6 +550,7 @@ a collapse/expand control does the same. The user's decisions:
 | Question | Decision |
 |---|---|
 | Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
+| Pop-out windows | **Every tab pops out** as a floating window (the user's standard for all sidebar tabs, 2026-11-12), **resizable**, and each **remembers its position** and size (and whether it is out) per browser. |
 | Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Change log**, **Table log**, and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **change-log lines** as small grey lines. Typed messages, whispers and the chat box come later. |

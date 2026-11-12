@@ -3,6 +3,9 @@
 // map takes the room); dragging the inner edge resizes it. The width, the open tab and whether it is collapsed
 // are remembered per browser. Tabs marked gm show in the GM view only. Docs: docs/design/board.md (the sidebar
 // and chat), docs/best-practices/board.md (the sidebar).
+//
+// Every tab's content sits in a panel (board/panel.js) that pops out as a floating, resizable window (the user's
+// standard, 2026-11-12); while it is out, its tab shows a note and a button to bring it back.
 
 const ICONS = {
   chat: '<path d="M4 5h16v10H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
@@ -14,6 +17,8 @@ const ICONS = {
   collapse: '<path d="M14 6l6 6-6 6M4 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   expand: '<path d="M10 6l-6 6 6 6M20 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
 };
+import { makePanel } from './panel.js';
+
 const svg = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ''}</svg>`;
 const load = (key) => { try { return JSON.parse(localStorage.getItem(key) || 'null') || {}; } catch { return {}; } };
 const save = (key, v) => { try { localStorage.setItem(key, JSON.stringify(v)); } catch { /* storage off: not remembered */ } };
@@ -22,7 +27,8 @@ export const SIDEBAR_WIDTH = Object.freeze({ min: 260, max: 720, initial: 340 })
 /**
  * root: the sidebar element (holding .sb-strip and .sb-pane[data-pane=<id>] for each tab). tabs: [{id, label,
  * icon?, gm?}] in order. view() -> 'gm' | 'player'. Returns {select(id), current(), showing(id), setBadge(id, n),
- * refresh(), onShow(id, fn), collapsed()}.
+ * refresh(), onShow(id, fn), collapsed(), panel(id)}. showing(id) is true while a tab is open in the sidebar or
+ * popped out.
  */
 export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliquary.sidebar' }) {
   const pref = { tab: tabs[0] && tabs[0].id, collapsed: false, width: SIDEBAR_WIDTH.initial, ...load(key) };
@@ -32,6 +38,21 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
   strip.innerHTML = tabs.map((t) => `<button type="button" class="sb-tab" role="tab" data-tab="${t.id}" title="${t.label}" aria-label="${t.label}">${svg(t.icon || t.id)}<span class="sb-badge" hidden></span></button>`).join('')
     + '<span class="sb-gap"></span><button type="button" class="sb-tab sb-fold" data-fold="1"></button>';
   const fold = strip.querySelector('[data-fold]');
+  // each tab's content goes into its panel, which can pop out
+  const panels = new Map();
+  tabs.forEach((t, i) => {
+    const pane = root.querySelector(`.sb-pane[data-pane="${t.id}"]`);
+    if (!pane) return;
+    const kids = [...pane.childNodes];
+    const p = makePanel({ id: `panel-${t.id}`, title: t.label, key: `${key}.${t.id}`, dockInto: pane, offset: i, showTab: () => select(t.id), onDock: () => { apply(); if (api.showing(t.id)) for (const fn of shows.get(t.id) || []) fn(); } });
+    for (const k of kids) p.body.appendChild(k);
+    const note = document.createElement('div');
+    note.className = 'sb-popped';
+    note.innerHTML = `<p>${t.label} is popped out as a window.</p><button type="button">Bring it back</button>`;
+    note.querySelector('button').addEventListener('click', () => p.dockBack());
+    pane.appendChild(note);
+    panels.set(t.id, { panel: p, note });
+  });
   const resized = () => window.dispatchEvent(new Event('resize'));
   function apply() {
     if (!tabs.some((t) => t.id === pref.tab && allowed(t))) pref.tab = (tabs.find(allowed) || {}).id;
@@ -44,6 +65,8 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
       b.classList.toggle('on', on && !pref.collapsed);
       b.setAttribute('aria-selected', String(on));
       if (pane) pane.hidden = !on || pref.collapsed;
+      const P = panels.get(t.id);
+      if (P) { P.note.hidden = P.panel.docked(); P.panel.el.hidden = !allowed(t); }
     }
     fold.innerHTML = svg(pref.collapsed ? 'expand' : 'collapse');
     fold.title = pref.collapsed ? 'Expand the sidebar' : 'Collapse the sidebar';
@@ -93,7 +116,8 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
     select: (id) => select(id),
     current: () => pref.tab,
     collapsed: () => !!pref.collapsed,
-    showing: (id) => !pref.collapsed && pref.tab === id,
+    showing: (id) => (!pref.collapsed && pref.tab === id) || !!(panels.get(id) && !panels.get(id).panel.docked()),
+    panel: (id) => (panels.get(id) || {}).panel || null,
     setBadge(id, n) { badges.set(id, n); paintBadge(id); },
     badge: (id) => badges.get(id) || 0,
     refresh() { apply(); },

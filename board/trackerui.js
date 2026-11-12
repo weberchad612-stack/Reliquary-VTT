@@ -7,10 +7,9 @@
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, isTarget(id), toggleTarget(id), ping(id), hover(id | null), onActing(id | null),
-//   reveal(id), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), pane (the
-//   Encounter tab's pane), showTab() (open that tab), openButton}
+//   reveal(id), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
+//   Encounter tab's panel, board/panel.js), openButton}
 
-import { makePanel } from './panel.js';
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines } from './tracker.js';
 import { rollRecord } from './rolls.js';
 import { chatPath } from './chat.js';
@@ -33,7 +32,8 @@ export async function mountTracker(o) {
   const I = SYS.initiative || null;
   const Tm = SYS.time || {};
   const TT = { tiebreak: Tm.tiebreak || (() => 0), roundSeconds: Tm.roundSeconds || 6 };
-  const panel = makePanel({ id: 'tracker', title: 'Encounter', key: 'reliquary.tracker', dockInto: o.pane, showTab: o.showTab });
+  const panel = o.panel;   // the Encounter tab's panel (board/sidebar.js): in its tab or popped out
+  panel.el.classList.add('tracker');
   let ENC = await store.get('state/encounter').catch(() => null);
   let lastKey = '', busy = false, menuFor = null, typing = null, lastActing = null;
   const gm = () => o.view() === 'gm' && !o.readOnly;
