@@ -4,9 +4,10 @@ All of the open game data of the Pathfinder Second Edition system for Foundry VT
 (`rulesets/pf2e/schemas/content.schema.json`) by `tools/import/foundry-pf2e.mjs --release`. Licences and
 notices: [NOTICE.md](../../NOTICE.md), [licenses/](../../licenses/).
 
-Currently Foundry PF2E **8.7.0**: 29,967 documents from 93 Foundry packs (creatures, hazards, vehicles, items,
-feats and class features, actions, effects, conditions, spells, ancestries, heritages, backgrounds, classes,
-deities, Kingmaker features). What was imported, skipped and not yet supported: [import-report.md](import-report.md).
+Currently Foundry PF2E **8.7.0**: 30,535 documents: 29,967 from 93 Foundry packs (creatures, hazards, vehicles,
+items, feats and class features, actions, effects, conditions, spells, ancestries, heritages, backgrounds,
+classes, deities, Kingmaker features) and 568 trait descriptions (`traits/`, from Foundry's language file,
+licence `ORC/OGL`; every campaign carries them as one board record, `content/glossary.traits`). What was imported, skipped and not yet supported: [import-report.md](import-report.md).
 
 Layout:
 

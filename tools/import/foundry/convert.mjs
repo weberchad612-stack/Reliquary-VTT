@@ -8,7 +8,7 @@ import { kindDir, ITEM_KINDS } from '../../../rulesets/pf2e/content.js';
 
 export const SIZES = { tiny: 'tiny', sm: 'small', med: 'medium', lg: 'large', huge: 'huge', grg: 'gargantuan' };
 /** The licences open content may carry (NOTICE.md). */
-export const OPEN_LICENSES = Object.freeze(['ORC', 'OGL']);
+export const OPEN_LICENSES = Object.freeze(['ORC', 'OGL', 'ORC/OGL']);   // ORC/OGL: Foundry's trait descriptions, Paizo's rules text without a per-entry licence (both kinds)
 
 /** Foundry document type -> our kind (null: not imported, with the reason in SKIP). */
 export const KIND_OF = {
@@ -17,7 +17,7 @@ export const KIND_OF = {
   ammo: 'ammo', treasure: 'treasure', backpack: 'backpack', kit: 'kit',
   feat: 'feat', action: 'action', effect: 'effect', condition: 'condition', spell: 'spell',
   ancestry: 'ancestry', heritage: 'heritage', background: 'background', class: 'class', deity: 'deity',
-  campaignFeature: 'campaign-feature',
+  campaignFeature: 'campaign-feature', trait: 'trait',
 };
 export const SKIP = {
   character: 'pregenerated characters need the character converter (the character-builder step)',
@@ -592,6 +592,11 @@ export function convertDeity(d, ctx) {
   }));
 }
 
+/** A trait's description (from Foundry's language file: Paizo's rules text for the trait). */
+export function convertTrait(d, ctx) {
+  return prune({ kind: 'trait', slug: ctx.slug, system: 'pf2e', name: d.name, source: sourceOf(d) || { title: 'unknown', license: 'unknown' }, text: cleanText((d.system.description || {}).value) });
+}
+
 /** The converter for each of our kinds. */
 export const CONVERTERS = {
   creature: convertCreature, hazard: convertHazard, vehicle: convertVehicle,
@@ -599,5 +604,5 @@ export const CONVERTERS = {
   ammo: convertItem, treasure: convertItem, backpack: convertItem, kit: convertItem,
   feat: convertFeat, action: convertAction, effect: convertEffect, condition: convertCondition, spell: convertSpell,
   ancestry: convertAncestry, heritage: convertHeritage, background: convertBackground, class: convertClass, deity: convertDeity,
-  'campaign-feature': convertCampaignFeature,
+  'campaign-feature': convertCampaignFeature, trait: convertTrait,
 };

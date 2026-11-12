@@ -73,17 +73,20 @@ export function privateTarget(dir) {
 export function importRelease(root, { dest = OPEN_DIR, sources = null, version, dryRun = false, today } = {}) {
   const rel = readRelease(root, { version });
   const packs = rel.packs.filter((p) => !sources || sources.includes(p.source));
-  if (sources) for (const s of sources) if (!packs.some((p) => p.source === s)) throw new Error(`--sources: no Foundry pack "${s}" in this release`);
+  if (sources) for (const s of sources) if (s !== 'traits' && !packs.some((p) => p.source === s)) throw new Error(`--sources: no Foundry pack "${s}" in this release`);
   const entries = [];
   for (const p of packs) for (const f of listJson(p.dir)) {
     let data = null;
     try { data = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { /* reported as not a document */ }
     entries.push({ source: p.source, compendium: p.name, file: path.relative(root, f), data });
   }
+  // the trait descriptions from Foundry's language file: one more source, "traits"
+  if (!sources || sources.includes('traits')) for (const t of rel.traits || []) entries.push({ source: 'traits', compendium: 'traits', ...t });
   const mf = path.join(dest, 'import-manifest.json');
   const manifest = fs.existsSync(mf) ? JSON.parse(fs.readFileSync(mf, 'utf8')) : null;
   const plan = planImport(entries, { manifest, open: true });
-  const result = runImport(plan, { manifest, overrides: readOverrides(path.join(dest, 'overrides')), redirects: rel.redirects, release: rel, sources: packs.map((p) => p.source), today });
+  const covered = [...packs.map((p) => p.source), ...((!sources || sources.includes('traits')) && (rel.traits || []).length ? ['traits'] : [])];
+  const result = runImport(plan, { manifest, overrides: readOverrides(path.join(dest, 'overrides')), redirects: rel.redirects, release: rel, sources: covered, today });
   if (!dryRun) { fs.mkdirSync(dest, { recursive: true }); result.written = writeImport(dest, result); }
   return result;
 }

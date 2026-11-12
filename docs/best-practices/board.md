@@ -219,6 +219,12 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   (`Engine.prepareActor` with the token's effects and the live state); a number a condition or effect changed is
   coloured, and every number's breakdown shows on hover. The GM also sees the alias, rules not automated, and
   problems.
+- **Traits on hover:** every trait (the chips, and the words in brackets after a Strike or an ability) shows
+  its rule on hover or focus, written the Pathfinder way ("reach 10 feet", "deadly d10"). A Strike's traits
+  also say what the board applies (agile: the multiple attack penalty −4/−8; finesse, thrown, propulsive,
+  unarmed for a character) and otherwise "not automated: Claude applies it". The descriptions are Foundry's
+  568 trait descriptions (`content/pf2e/traits/`), carried by every campaign as one record,
+  `content/glossary.traits` (`node tools/campaign.mjs glossary --out FILE` builds it for a board loaded before).
 - **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
 - Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
   window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every

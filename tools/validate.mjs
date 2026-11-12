@@ -593,7 +593,7 @@ function contentDir(dir, ruleset, report, open) {
       const check = contentSchema(ruleset, d.kind);
       if (check === undefined) { report.error(file, `kind "${d.kind}" is not a kind of content (rulesets/${ruleset}/content.js)`); continue; }
       if (check && !schemaErrors(check, d, file, report)) continue;
-      if (open && !['ORC', 'OGL'].includes((d.source || {}).license)) report.error(file, `licence "${(d.source || {}).license}": open content must be ORC or OGL (NOTICE.md)`);
+      if (open && !['ORC', 'OGL', 'ORC/OGL'].includes((d.source || {}).license)) report.error(file, `licence "${(d.source || {}).license}": open content must be ORC or OGL (NOTICE.md)`);
       const key = `${dirOf(d.kind)}/${d.slug}`;
       if (`${kind}/${path.basename(f, '.json')}` !== key) report.error(file, `its kind and slug make "${key}", not the file's place "${kind}/${path.basename(f, '.json')}"`);
       if (out[key]) report.error(file, `"${key}" is defined twice`);

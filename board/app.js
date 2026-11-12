@@ -2094,7 +2094,9 @@ export async function start(store, { build = null } = {}) {
     w.offs.push(store.watch(`actors/${id}`, () => qvRender(id)), store.watch(`actorstate/${id}`, () => qvRender(id)));
     qvRender(id).then(() => el.focus());
   }
+  let qvGlossary = null;   // the trait glossary (content/glossary.traits), read once
   async function qvRender(id) {
+    if (!qvGlossary) qvGlossary = ((await store.get('content/glossary.traits').catch(() => null)) || {}).entries || {};
     const w = qvWins.get(id), t = S.tokens[id];
     if (!w) return;
     const access = t && quickViewAccess(t, S.view, qvSeen(id));
@@ -2108,7 +2110,7 @@ export async function start(store, { build = null } = {}) {
       try { prepared = Engine.prepareActor({ actor, state, effects: t.effects || [], content, ruleset: SYS.actors }); if (!prepared.name) prepared.name = t.name; } catch (e) { prepared = null; console.warn('Quick-View', e); }
     }
     if (!qvWins.has(id)) return;
-    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName };
+    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName, glossary: qvGlossary };
     const title = quickViewTitle(o);
     w.el.setAttribute('aria-label', `Token Quick-View: ${title.name}`);
     w.el.querySelector('.qv-t').textContent = title.name;

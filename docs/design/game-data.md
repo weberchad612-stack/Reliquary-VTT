@@ -482,3 +482,12 @@ release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `5
 - **Re-import of 8.7.0:** rules kept as unsupported went from 22,895 to **12,654** (10,241 more run); every
   creature still prepares. The rest: ActiveEffectLike 3,009, ItemAlteration 2,693, ChoiceSet 1,418, GrantItem
   (of features) 1,405, RollOption with choices 833, AdjustModifier 542, and formula values we do not have yet.
+
+### 8.4 Trait descriptions (built 2026-11-12)
+
+The user's decisions: import Foundry's 568 trait descriptions (its language file, `PF2E.TraitDescription*`);
+show them on hover for every trait on Token Quick-View; for a Strike's traits, also say what the board applies.
+They are a source of their own, `traits` (kind `trait`, tracked by the manifest like the rest), licence
+`ORC/OGL` (the file gives no per-entry licence; Paizo's rules text is under one or the other). Every campaign
+carries them as one board record, `content/glossary.traits`, built by `tools/library.mjs traitGlossary`.
+

@@ -5,7 +5,9 @@
 **Pathfinder game content.** The open game content in [content/pf2e/](content/pf2e/README.md) (conditions,
 items, spells, feats, effects and creatures, including adventure bestiaries) is converted from the
 Pathfinder Second Edition system for Foundry VTT (github.com/foundryvtt/pf2e), whose game data is published
-under open licences. Each document records its licence and book (`source.license`, `source.title`):
+under open licences. Each document records its licence and book (`source.license`, `source.title`). The trait
+descriptions (`content/pf2e/traits/`) come from the Foundry system's English language file, which gives no
+per-entry licence: they are Paizo's rules text under the ORC License or the OGL, and are marked `ORC/OGL`.
 
 - **ORC:** this product is licensed under the ORC License located at the Library of Congress at TX 9-307-067
   and available online at various locations. All warranties are disclaimed as set forth therein. Attribution

@@ -31,7 +31,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { campaignRecords, saveFromRecords, contentKey } from '../board/records.js';
-import { contentLibrary, referencedContent, referencedKeys } from './library.mjs';
+import { contentLibrary, referencedContent, referencedKeys, traitGlossary, GLOSSARY_KEY } from './library.mjs';
 
 export const BACKUPS = 5;
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -45,6 +45,9 @@ const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'i
 export function readContent(pack, packDir, actors, tokens = {}) {
   const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors, tokens);
   if (missing.length) throw new Error(`content not found: ${missing.join(', ')} (the pack's content/ or the open sources pack.json lists)`);
+  // and the trait glossary (Token Quick-View's descriptions), always
+  const glossary = traitGlossary(pack.ruleset || 'pf2e');
+  if (glossary) content[GLOSSARY_KEY] = glossary;
   return content;
 }
 
@@ -187,6 +190,7 @@ export function loadOps(packDir, saveDir, assets = [], { now } = {}) {
 export function tidyOps(records) {
   const of = (coll) => Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith(`${coll}/`)).map(([p, d]) => [p.slice(coll.length + 1), d]));
   const used = referencedKeys(of('actors'), of('tokens'));
+  used.add(GLOSSARY_KEY);   // the trait glossary stays
   return batches(Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))).map((p) => ({ op: 'delete', path: p })));
 }
 
@@ -234,6 +238,7 @@ function main(argv) {
     emit(loadOps(a, b, assets));
     return 0;
   }
+  if (cmd === 'glossary') { const g = traitGlossary(a || 'pf2e'); if (!g) throw new Error('no trait glossary'); emit({ op: 'set', path: 'content/glossary.traits', data: g }); return 0; }
   if (cmd === 'tidy' && a) { const data = readJson(a); emit({ batches: tidyOps(data.records || data) }); return 0; }
   if (cmd === 'ops-clear' && a) { emit({ batches: clearOps(readJson(a)) }); return 0; }
   if (cmd === 'verify' && a && b && c) {
@@ -253,6 +258,7 @@ function main(argv) {
     '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
     '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
     '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses, after a save)' +
+    '\n       node tools/campaign.mjs glossary [ruleset] [--out FILE]   (the trait glossary record, content/glossary.traits)' +
     '\n       node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>');
   return 2;
 }

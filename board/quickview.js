@@ -10,6 +10,44 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const sgn = (v) => (v < 0 ? `−${-v}` : `+${v}`);
 const cap = (s) => String(s || '').replace(/(^|[-\s])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/-/g, ' ');
 const ACTIONS = { 1: '◆', 2: '◆◆', 3: '◆◆◆', reaction: '⟲', free: '◇' };
+
+// ---- traits: the words in brackets and the chips, each with its rule on hover ----
+/** A trait as Pathfinder writes it: "reach-10" -> "reach 10 feet", "deadly-d10" -> "deadly d10", "versatile-p" -> "versatile P". */
+export function traitLabel(t) {
+  const s = String(t);
+  let m = /^(reach|thrown|volley|range|range-increment|splash|jousting-reach)-(\d+)$/.exec(s);
+  if (m) return `${m[1].replace(/-/g, ' ')} ${m[2]} feet`;
+  m = /^(.*)-(d\d+)$/.exec(s);
+  if (m) return `${m[1].replace(/-/g, ' ')} ${m[2]}`;
+  m = /^versatile-([a-z]+)$/.exec(s);
+  if (m) return `versatile ${m[1].toUpperCase()}`;
+  return s.replace(/-/g, ' ');
+}
+/** A trait's entry in the glossary ({slug: {name, text}}): the trait itself, or the trait without its number or die. */
+export function traitEntry(t, glossary = {}) {
+  const s = String(t);
+  return glossary[s] || glossary[s.replace(/-(d\d+|\d+)$/, '')] || glossary[s.replace(/-[a-z]$/, '')] || null;
+}
+/**
+ * What the board's rules do with a Strike's trait (shown under its description), or null when the trait is not a
+ * Strike's. strike: {pc: a character's Strike (worked out from its build) or a creature's (printed)}.
+ */
+export function traitApplied(t, strike) {
+  const base = String(t).replace(/-(d\d+|\d+|[a-z])$/, '');
+  if (!strike) return null;
+  if (base === 'agile') return 'Applied: the multiple attack penalty is −4 and −8.';
+  if (!strike.pc) return 'The printed numbers count it; anything else it does is not automated: Claude applies it.';
+  if (base === 'finesse') return 'Applied: Dexterity for the attack when it is higher than Strength.';
+  if (base === 'thrown') return 'Applied: thrown at its range, with Strength added to damage.';
+  if (base === 'propulsive') return 'Applied: half your Strength (if positive) added to damage.';
+  if (base === 'unarmed') return 'Applied: your unarmed proficiency.';
+  return 'Not automated: Claude applies it.';
+}
+function traitTip(t, glossary, strike) {
+  const e = traitEntry(t, glossary), applied = traitApplied(t, strike);
+  return [e ? `${e.name}: ${e.text}` : `${traitLabel(t)}: no description in the glossary.`, applied].filter(Boolean).join('\n\n');
+}
+const traitWord = (t, glossary, strike) => `<span class="qv-trait" tabindex="0" title="${esc(traitTip(t, glossary, strike))}">${esc(traitLabel(t))}</span>`;
 const actionGlyph = (a) => (ACTIONS[a] ? `<span class="qv-act" title="${a === 'reaction' ? 'reaction' : a === 'free' ? 'free action' : `${a} action${a > 1 ? 's' : ''}`}">${ACTIONS[a]}</span>` : '');
 
 /**
@@ -44,10 +82,12 @@ function effectsLine(token, view, conditions) {
   return words.length ? `<p class="qv-live"><b>Now</b> ${words.join(', ')}</p>` : '';
 }
 
-const traitsRow = (rarity, size, traits) => {
-  const chips = [...(rarity && rarity !== 'common' ? [`<span class="qv-tr ${esc(rarity)}">${esc(cap(rarity))}</span>`] : []),
-    ...(size ? [`<span class="qv-tr size">${esc(cap(size))}</span>`] : []),
-    ...(traits || []).map((t) => `<span class="qv-tr">${esc(cap(t))}</span>`)];
+const SIZE_SPACE = { tiny: 'less than a 5-foot square (several can share one)', small: 'a 5-foot square', medium: 'a 5-foot square', large: 'a 10-foot square (2 by 2 squares)', huge: 'a 15-foot square (3 by 3 squares)', gargantuan: 'a 20-foot square or more (4 by 4 squares)' };
+const traitsRow = (rarity, size, traits, glossary = {}) => {
+  const chip = (t, cls, tip) => `<span class="qv-tr${cls ? ` ${cls}` : ''}" tabindex="0" title="${esc(tip || traitTip(t, glossary))}">${esc(cap(traitLabel(t)))}</span>`;
+  const chips = [...(rarity && rarity !== 'common' ? [chip(rarity, esc(rarity))] : []),
+    ...(size ? [chip(size, 'size', `Size ${cap(size)}: takes up ${SIZE_SPACE[size] || 'its space'}.`)] : []),
+    ...(traits || []).map((t) => chip(t))];
   return chips.length ? `<div class="qv-traits">${chips.join('')}</div>` : '';
 };
 
@@ -61,16 +101,18 @@ const iwrLine = (iwr) => {
 
 const hpLine = (p) => `<b>HP</b> <span class="qv-n${p.hp.value < p.hp.max.value ? ' down' : ''}" title="current of maximum">${p.hp.value}</span>/${p.hp.max.value}${p.hp.temp ? ` (+${p.hp.temp} temporary)` : ''}`;
 
-function strikeLine(s, describe) {
+function strikeLine(s, describe, glossary, pc) {
   const kind = s.ranged ? 'Ranged' : 'Melee';
   const maps = `<span class="qv-map">[${sgn(s.attack.value + s.map[1])}/${sgn(s.attack.value + s.map[2])}]</span>`;
-  const traits = s.traits && s.traits.length ? ` (${esc(s.traits.join(', '))}${s.range ? `, range ${s.range} feet` : ''})` : s.range ? ` (range ${s.range} feet)` : '';
+  const words = (s.traits || []).map((t) => traitWord(t, glossary, { pc }));
+  if (s.range && !(s.traits || []).some((t) => /^thrown-/.test(t))) words.push(`range ${s.range} feet`);
+  const traits = words.length ? ` (${words.join(', ')})` : '';
   const crit = s.damage.criticalExtra ? `; critical also ${esc(s.damage.criticalExtra)}` : '';
   return `<p><b>${kind}</b> ${actionGlyph(1)} ${esc(s.name)} ${num(s.attack, describe, { printed: s.attack.parts.reduce((n, x) => n + x.value, 0) })} ${maps}${traits}, <b>Damage</b> ${esc(s.damage.formula)}${crit}${s.effects && s.effects.length ? ` plus ${esc(s.effects.join(', '))}` : ''}</p>`;
 }
 
-function abilityLine(a) {
-  const traits = a.traits && a.traits.length ? ` (${esc(a.traits.join(', '))})` : '';
+function abilityLine(a, glossary) {
+  const traits = a.traits && a.traits.length ? ` (${a.traits.map((t) => traitWord(t, glossary)).join(', ')})` : '';
   const text = a.text ? ` ${esc(a.text).replace(/\n+/g, ' ')}` : '';
   return `<p><b>${esc(a.name)}</b> ${actionGlyph(a.actions)}${traits}${text}</p>`;
 }
@@ -97,11 +139,12 @@ export function quickViewTitle({ token, prepared, base, view, access, publicName
  */
 export function quickViewBody(o) {
   const { token, prepared: p, base, view, access, conditions = {}, describe } = o;
+  const G = o.glossary || {};
   const out = [];
   // the public card: what anyone at the table can tell by looking
   if (access === 'public') {
     const traits = p ? p.traits : (base && base.traits) || [];
-    out.push(traitsRow(null, p ? p.size : base && base.size, traits));
+    out.push(traitsRow(null, p ? p.size : base && base.size, traits, G));
     out.push(`<p><b>Health</b> ${esc(p ? p.band : token.dead ? 'Dead' : 'Unknown')}</p>`);
     out.push(effectsLine(token, view, conditions));
     out.push('<p class="qv-muted">What the party can tell by looking. Recall Knowledge may tell you more: ask Claude.</p>');
@@ -114,7 +157,7 @@ export function quickViewBody(o) {
   }
   const sec = (rows) => { const r = rows.filter(Boolean); if (r.length) out.push(`<div class="qv-sec">${r.join('')}</div>`); };
   const S = (base && base.stats) || {};
-  out.push(traitsRow(base ? base.rarity : null, p.size, p.traits));
+  out.push(traitsRow(base ? base.rarity : null, p.size, p.traits, G));
   out.push(effectsLine(token, view, conditions));
   if (p.dying && p.dying.value) out.push(`<p class="qv-live"><b>Dying ${p.dying.value}</b> (dies at ${p.dying.max})${p.wounded ? `; wounded ${p.wounded}` : ''}</p>`);
   const isPc = p.kind === 'character';
@@ -141,7 +184,7 @@ export function quickViewBody(o) {
     `<p><b>AC</b> ${num(p.ac, describe, { bonus: false })}${notes.ac ? ` (${esc(notes.ac)})` : ''}; ${saves}${notes.saves ? `; ${esc(notes.saves)}` : ''}</p>`,
     `<p>${hpLine(p)}${notes.hp ? ` (${esc(notes.hp)})` : ''}${iwr ? `; ${iwr}` : ''}</p>`,
     p.shield ? `<p><b>Shield</b> ${esc(p.shield.name)}: Hardness ${p.shield.hardness}, HP ${p.shield.hp}/${p.shield.maxHp} (broken at ${p.shield.brokenAt})${p.shield.raised ? ', raised' : ''}</p>` : '',
-    ...passive.map(abilityLine),
+    ...passive.map((a) => abilityLine(a, G)),
   ]);
   // offence
   const speeds = Object.values(p.speeds || {}).map((s) => `${s.label === 'Speed' ? '' : `${esc(s.label.replace(/ Speed$/, '').toLowerCase())} `}<span class="qv-n${s.value !== s.base ? (s.value > s.base ? ' up' : ' down') : ''}" title="${esc(describe(s))}">${s.value} feet</span>`).join(', ');
@@ -149,11 +192,11 @@ export function quickViewBody(o) {
   const active = (p.abilities || []).filter((a) => a.actions && a.actions !== 'reaction' && a.category !== 'defensive');
   sec([
     `<p><b>Speed</b> ${speeds}</p>`,
-    ...(p.strikes || []).map((s) => strikeLine(s, describe)),
+    ...(p.strikes || []).map((s) => strikeLine(s, describe, G, isPc)),
     p.classDC ? `<p><b>Class DC</b> ${num(p.classDC, describe, { bonus: false })}</p>` : '',
     p.spell ? `<p><b>Spell attack</b> ${num(p.spell.attack, describe)}, <b>DC</b> ${num(p.spell.dc, describe, { bonus: false })}</p>` : '',
     ...casting.map(spellcasting),
-    ...active.map(abilityLine),
+    ...active.map((a) => abilityLine(a, G)),
   ]);
   if (isPc) {
     const res = Object.entries(p.resources || {}).map(([k, r]) => `${esc(cap(k.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()))} ${typeof r === 'object' ? `${(o.state.resources || {})[k] ?? r.max}/${r.max}` : r}`);

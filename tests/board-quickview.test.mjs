@@ -73,3 +73,26 @@ test('a creature with spellcasting and no game data; the content a Quick-View ne
   assert.match(strip(quickViewBody({ token: { name: 'Statue' }, prepared: null, view: 'gm', access: 'full', conditions: {} })), /Statue has no game data yet/);
   assert.deepEqual(quickViewKeys({ base: 'creature/rat', items: [{ ref: 'item/dagger' }, { name: 'x' }] }, { effects: [{ ref: 'x:effect/y' }, { id: 'prone' }] }), ['creature/rat', 'item/dagger', 'x:effect/y']);
 });
+
+test('traits: written the Pathfinder way, their rules on hover, and what the board applies', async () => {
+  const { traitLabel, traitEntry, traitApplied } = await import('../board/quickview.js');
+  const { traitGlossary } = await import('../tools/library.mjs');
+  assert.deepEqual(['reach-10', 'deadly-d10', 'versatile-p', 'two-hand-d8', 'thrown-20', 'backswing'].map(traitLabel), ['reach 10 feet', 'deadly d10', 'versatile P', 'two hand d8', 'thrown 20 feet', 'backswing']);
+  const G = (traitGlossary('pf2e') || {}).entries;
+  assert.ok(G && Object.keys(G).length > 500, 'the glossary from the open content');
+  assert.equal(traitEntry('reach-10', G).name, 'Reach');
+  assert.equal(traitEntry('deadly-d10', G).name, 'Deadly');
+  assert.equal(traitEntry('versatile-p', G).name, 'Versatile');
+  assert.equal(traitEntry('no-such-trait', G), null);
+  assert.match(traitApplied('agile', { pc: false }), /−4 and −8/);
+  assert.match(traitApplied('finesse', { pc: true }), /Dexterity for the attack/);
+  assert.match(traitApplied('backswing', { pc: true }), /Not automated/);
+  assert.match(traitApplied('backswing', { pc: false }), /printed numbers count it/);
+  assert.equal(traitApplied('undead', null), null, 'a creature trait: no Strike line');
+  // the ogre's greatclub: every trait with its description on hover
+  const g = game();
+  const html = view(g, 'Scar-Browed Ogre', 'gm', { glossary: G }).html;
+  assert.match(html, /title="Backswing: You can use the momentum from a missed attack[^"]*printed numbers count it[^"]*">backswing<\/span>/);
+  assert.match(html, />reach 10 feet<\/span>/);
+  assert.match(html, /title="Giant: [^"]*">Giant<\/span>/);
+});

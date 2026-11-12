@@ -39,7 +39,27 @@ export function readRelease(root, { version } = {}) {
     return { name: p.name, source, dir, type: p.type };
   });
   const redirFile = path.join(root, 'build', 'uuid-redirects', 'pf2e.json');
-  return { version: version || sys.version, commit, packs, redirects: fs.existsSync(redirFile) ? readJson(redirFile) : {} };
+  return { version: version || sys.version, commit, packs, redirects: fs.existsSync(redirFile) ? readJson(redirFile) : {}, traits: readTraits(root) };
+}
+
+/**
+ * Foundry's trait descriptions (static/lang/en.json: PF2E.TraitDescription<Name>, labelled by PF2E.Trait<Name>):
+ * Paizo's rules text for each trait, as documents of type "trait" (source "traits"). Foundry gives them no
+ * per-entry licence; its game text is ORC or OGL, so they carry "ORC/OGL".
+ */
+export function readTraits(root) {
+  const f = path.join(root, 'static', 'lang', 'en.json');
+  if (!fs.existsSync(f)) return [];
+  const pf = (readJson(f) || {}).PF2E || {};
+  const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase();
+  const out = [];
+  for (const [k, text] of Object.entries(pf)) {
+    if (!k.startsWith('TraitDescription') || typeof text !== 'string') continue;
+    const name = k.slice('TraitDescription'.length), slug = kebab(name);
+    const label = typeof pf[`Trait${name}`] === 'string' ? pf[`Trait${name}`] : name.replace(/([a-z])([A-Z])/g, '$1 $2');
+    out.push({ file: `static/lang/en.json#${k}`, data: { _id: `trait-${slug}`, name: label, type: 'trait', system: { description: { value: text }, publication: { title: 'Pathfinder rules text (Foundry PF2E trait descriptions)', license: 'ORC/OGL' } } } });
+  }
+  return out;
 }
 
 /** Is a manifest's record for this document, and does it name the same folder? */

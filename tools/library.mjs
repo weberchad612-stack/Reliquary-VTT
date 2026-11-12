@@ -95,3 +95,21 @@ export function referencedContent(lib, actors, tokens = {}) {
 
 /** A key is well formed and every part a plain name. */
 export function isKey(key) { try { const p = parseKey(key); return [p.kind, p.slug, ...(p.source ? [p.source] : [])].every((x) => NAME.test(x)); } catch { return false; } }
+
+/** The key of the trait glossary every campaign carries on the board (one record). */
+export const GLOSSARY_KEY = 'glossary/traits';
+/**
+ * The trait glossary for a ruleset: every trait's name and description from the open content's "traits" source
+ * (content/<ruleset>/traits/trait/*.json), as one document {kind: 'glossary', entries: {slug: {name, text}}};
+ * null if there is none.
+ */
+export function traitGlossary(ruleset = 'pf2e') {
+  const dir = path.join(REPO, 'content', ruleset, 'traits', 'trait');
+  if (!fs.existsSync(dir)) return null;
+  const entries = {};
+  for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.json')).sort()) {
+    const d = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+    if (!d.retired) entries[d.slug] = { name: d.name, text: d.text };
+  }
+  return { kind: 'glossary', slug: 'traits', system: ruleset, source: { title: 'Pathfinder rules text (Foundry PF2E trait descriptions)', license: 'ORC/OGL' }, entries };
+}

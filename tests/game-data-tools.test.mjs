@@ -114,7 +114,8 @@ test('content records: keys and paths both ways', () => {
   assert.ok(records['actors/tok-cw77vfz9'] && records['actorstate/tok-cw77vfz9'].hp === 40);
   // only what the creatures use: no creature in the keep is a bone giant, so it stays in the library
   assert.equal(content['creature/bone-giant'], undefined);
-  assert.deepEqual(Object.keys(content).sort(), [...referencedKeys(Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p, d])))].sort());
+  assert.ok(content['glossary/traits'] && content['glossary/traits'].entries.agile, 'the trait glossary rides along');
+  assert.deepEqual(Object.keys(content).filter((k) => k !== 'glossary/traits').sort(), [...referencedKeys(Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p, d])))].sort());
   // a key naming its source
   assert.equal(contentPath('pathfinder-monster-core:creature/goblin-warrior'), 'content/pathfinder-monster-core.creature.goblin-warrior');
   assert.equal(contentKey('content/pathfinder-monster-core.creature.goblin-warrior'), 'pathfinder-monster-core:creature/goblin-warrior');
@@ -250,7 +251,7 @@ test('open content: only ORC and OGL documents in public mode; the validator che
   const { OPEN_LICENSES } = await import('../tools/import/foundry-pf2e.mjs');
   const { validateOpenContent } = await import('../tools/validate.mjs');
   const { readContent } = await import('../tools/campaign.mjs');
-  assert.deepEqual([...OPEN_LICENSES], ['ORC', 'OGL']);
+  assert.deepEqual([...OPEN_LICENSES], ['ORC', 'OGL', 'ORC/OGL']);
   const closed = { ...ARMOR, name: 'Secret Coat', system: { ...ARMOR.system, publication: { license: 'Paizo', title: 'X' } } };
   const none = { ...ARMOR, name: 'Unknown Coat', system: { ...ARMOR.system, publication: undefined } };
   const ogl = { ...NPC, name: 'Old Bat', system: { ...NPC.system, details: { ...NPC.system.details, publication: { license: 'OGL', title: 'Old Book' } } } };
@@ -272,6 +273,6 @@ test('open content: only ORC and OGL documents in public mode; the validator che
   fs.rmSync(t, { recursive: true, force: true });
   // a pack lists open sources; its own content overrides them; a missing source is an error
   assert.throws(() => readContent({ content: ['pf2e/no-such-source'] }, PACK, {}), /no open content "pf2e\/no-such-source"/);
-  assert.deepEqual(Object.keys(readContent({}, PACK, { a: { base: 'creature/rat' }, b: { items: [{ ref: 'item/dagger' }] } })), ['creature/rat', 'item/dagger'], 'only what the creatures use');
+  assert.deepEqual(Object.keys(readContent({}, PACK, { a: { base: 'creature/rat' }, b: { items: [{ ref: 'item/dagger' }] } })), ['creature/rat', 'item/dagger', 'glossary/traits'], 'only what the creatures use, and the trait glossary');
   assert.throws(() => readContent({}, PACK, { a: { base: 'creature/no-such' } }), /content not found: creature\/no-such/);
 });
