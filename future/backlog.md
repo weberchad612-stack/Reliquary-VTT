@@ -18,6 +18,9 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-8 | [Tilting area templates up and down](#fr-8-tilting-area-templates-up-and-down) | open (designed, not built) | 2026-11-11 |
 | FR-9 | [Light at a height](#fr-9-light-at-a-height) | open | 2026-11-11 |
 | FR-10 | [Roll visibility](#fr-10-roll-visibility) | open | 2026-11-12 |
+| FR-11 | [Several encounters at once](#fr-11-several-encounters-at-once) | open | 2026-11-12 |
+| FR-12 | [Encounter tracker settings](#fr-12-encounter-tracker-settings) | open | 2026-11-12 |
+| FR-13 | [Encounter threat and XP](#fr-13-encounter-threat-and-xp) | open | 2026-11-12 |
 
 ---
 
@@ -328,3 +331,32 @@ Foundry's dialog does: public, private to the GM, or blind to the GM (2026-11-12
 roll needs the result kept where only the GM view (or only Claude) reads it, and the tracker showing "rolled"
 without the number. It belongs with the dice service and the roll log (docs/design/game-data.md section 3.7,
 step 3).
+
+---
+
+## FR-11: Several encounters at once
+
+**Asked for:** more than one encounter running at the same time, as Foundry's tracker allows (a number box to
+switch between them; 2026-11-12). Not high priority.
+
+**Known so far:** the board keeps one encounter, `state/encounter`; several would become `encounters/<id>` with
+one marked current, and the clock moves only with the current one's rounds (two encounters must not both move
+it).
+
+---
+
+## FR-12: Encounter tracker settings
+
+**Asked for:** the tracker's settings (Foundry's gear: whether to skip defeated creatures, which resource to
+show on each row; 2026-11-12). Not high priority.
+
+---
+
+## FR-13: Encounter threat and XP
+
+**Asked for:** the encounter's threat (trivial, low, moderate, severe, extreme) and the XP it awards, shown in the
+tracker as Foundry shows them (2026-11-12). Not high priority.
+
+**Known so far:** this is the system's encounter budget (PF2E: XP by each creature's level against the party's,
+and the party's size), so it belongs in `rulesets/pf2e/` and reaches the tracker through the system configuration;
+a system without one shows nothing.

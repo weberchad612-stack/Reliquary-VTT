@@ -522,6 +522,8 @@ creature, hover a row to highlight its token, conditions and reactions on each r
 | The tracker | **Like Foundry's**, either **floating** (draggable, collapsible) or **docked** as a side panel; the user switches between them. |
 | Turns | **The GM** runs everything (begin, next and previous, delay, resume, end); **a player can end and delay their own PC's turn**. Turn changes run the system's turn rules and move the clock, as Claude's tool does. |
 | Players see | **Only creatures the party can see** (a foe out of sight is not listed; a named NPC by its alias), and the GM can **hide a combatant** from players (an eye on the row) even when its token is seen. **Conditions** the players may see are shown on each row. Foes' initiative totals are shown. |
+| Each row (GM, from Foundry's tracker, 2026-11-12) | The token's picture, name and initiative die, and row buttons: **hide** from players, **reveal name** (a named NPC's alias gives way to its name: `known`, as `tools/token.mjs reveal`), **mark defeated**, **toggle target** (the same targets as T on the map), and **ping** (a brief mark on the token on every screen, and the GM's view pans to it). |
+| Before it begins | The header says **Not Started** and a **Begin Encounter** button sits at the bottom; once begun, the round and turn controls take its place. |
 | Defeated | **Marked defeated, turns skipped:** the row stays (struck through); a dead token is marked automatically. |
 | Highlight | The acting creature is marked on the map and in the tracker; hovering a row highlights its token. |
 | The roll dialog (the user, 2026-11-12, from Foundry's) | A row's die opens a **floating roll dialog**: the statistic (Perception first, then the creature's skills), **every modifier** with its name, **type** and value, each with an **on/off switch** (ones that do not apply now start off and struck through, as the rules worked them out); **add a modifier** of your own (a number and a type: the system's bonus types, such as circumstance, item, status, untyped); **Keep higher / Normal / Keep lower** (rolling twice); the total updates with the system's stacking rules (only the best bonus and worst penalty of each type count) and the button says it: "Roll (+20)". Roll NPCs and Claude roll without it. |
@@ -530,4 +532,6 @@ Records: `state/encounter` as now (combatants gain `stat`, `roll` {dice, kept, m
 turn rules write `tokens/` and `actorstate/` as Claude's tool does. Anything a system defines (the initiative
 statistic, its tiebreak, the turn rules) comes from the system configuration.
 
-Later: **roll visibility** (public, private to the GM, blind to the GM), as Foundry's dialog has it: future/backlog.md FR-10.
+Later (future/backlog.md): **roll visibility** (FR-10); **several encounters at once** (FR-11); **tracker settings**
+(the gear: skip defeated, which resource to show; FR-12); **threat and XP** for the encounter (the system's encounter
+budget; FR-13). **Roll All** and **Roll NPCs** are cheap and come with the first build.
