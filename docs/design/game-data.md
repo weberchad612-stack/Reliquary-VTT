@@ -330,3 +330,38 @@ the same shapes), never on Foundry's real data in the repository.
   no schema errors, and every creature prepared without problems.
 - **Health bands (PF2E, approved by the user 2026-11-12):** Unharmed, Scratched, Wounded, Badly wounded,
   Near death, Down, Dead.
+
+## 7. Full Foundry import: change tracking and as-needed loading (decided 2026-11-12, not built)
+
+The user wants all of Foundry's open PF2E data imported in one go, and every later import to show what is new and what changed, because Foundry keeps adding data and sometimes fixes data bugs.
+
+### 7.1 Decisions (the user, 2026-11-12)
+
+| Question | Decision |
+|---|---|
+| Snapshot | Import only from Foundry's **tagged releases**. The manifest records the release version and commit. |
+| Corrections to Foundry's data bugs | **Patch files**: `content/pf2e/overrides/<source>/<kind>/<slug>.json`, listing only the corrected fields, applied after every import. |
+| Documents gone from Foundry | **Keep, mark retired**: the file stays (saves that use it still load), it is flagged `retired` and the report lists it. Renames are matched by Foundry id. |
+| Report | **Markdown + JSON**: a readable summary committed with each import, a full JSON list for tools, and a summary in chat. |
+| Kinds | **Everything**: creatures and hazards, equipment, spells, character options (feats, ancestries, heritages, backgrounds, classes, class features, deities). Converters for hazards, spells and character options still need building. |
+| Storage | **One file per document**: `content/pf2e/<source>/<kind>/<slug>.json`, so each re-import's diff stays small. |
+| Unsupported Foundry rules | **Import, list in the report** (counted by rule type, so we know what to build next); the GM view shows them on the sheet. |
+| Tidying the board | **At save**: content stays on the board during play; saving removes records no actor references. |
+
+### 7.2 Proposed design
+
+- **Manifest** `content/pf2e/import-manifest.json`: the Foundry release and commit; for every document its Foundry id, our slug, source and kind, a hash of Foundry's original, a hash of our converted file, and `retired` if Foundry dropped it.
+- **Each import sorts every document** into new, changed by Foundry (original's hash differs), changed by us (same original, converter output differs), removed or renamed (by Foundry id), and unchanged. Unchanged files are not rewritten.
+- **Dry run first**: the report is produced before anything is written; I show the summary and wait for the go-ahead.
+- **Overrides**: when Foundry changes a document we have an override for, the report flags it so we can check whether Foundry fixed the same bug and drop our patch. An override whose field paths no longer exist is an error.
+- **Report files**: `content/pf2e/import-report.md` (counts by source and kind; lists of new, changed, retired; overrides to review; unsupported rules by type; documents skipped for licence) and `import-report.json`.
+- **Licence**: only ORC or OGL documents are written; everything else is counted in the report. No art or icons.
+- **As-needed loading**: `campaign.mjs` copies onto the board only the content referenced by the campaign's actors (each `base` and item `ref`, following references inside content); tools that add a creature or give an item write its content record at the same time; saving drops content no actor references. The validator checks every reference resolves.
+- **Size**: about 30,000 documents, roughly 100 to 150 MB. One file per document, plain JSON.
+
+### 7.3 Build order (proposed)
+
+1. As-needed loading and the content-reference checks.
+2. Manifest, change sorting, dry run, report, overrides, retired documents.
+3. Converters for hazards, spells and character options (each with its own schema and tests, against real Foundry samples).
+4. The full import from the latest tagged release, reviewed through the report before committing.
