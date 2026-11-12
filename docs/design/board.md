@@ -541,3 +541,25 @@ turn inside an aura (FR-14; Claude's tool still gives it).
 Later (future/backlog.md): **roll visibility** (FR-10); **several encounters at once** (FR-11); **tracker settings**
 (the gear: skip defeated, which resource to show; FR-12); **threat and XP** for the encounter (the system's encounter
 budget; FR-13). **Roll All** and **Roll NPCs** are cheap and come with the first build.
+
+## The sidebar and chat (designed 2026-11-12)
+
+The right-hand panel becomes Foundry's sidebar (v13): a **strip of tab icons** down its left edge and the open
+tab's pane beside it. Clicking the open tab's icon collapses the sidebar to the strip (the map takes the room);
+a collapse/expand control does the same. The user's decisions:
+
+| Question | Decision |
+|---|---|
+| Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Change log**, **Table log**, and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
+| Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
+| Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **change-log lines** as small grey lines. Typed messages, whispers and the chat box come later. |
+| Change-log lines | **The GM sees every line; players see the public ones**: about PCs, about creatures the party sees, rounds and turns (not hidden combatants). The same lines are the Change log tab. |
+| Chat not showing | When the Chat tab is not open (collapsed or another tab), a new card **pops up beside the sidebar** and fades, and the **Chat icon counts unread** messages. |
+| Keeping | **In the save**: the chat is part of the campaign, saved and loaded with it (`chat.json` in the save). |
+| Deleting | **GM only**: a trash icon on each message, and clearing the whole chat. |
+
+Records: `chat/<time36>-<n>` {at, by ('claude' | 'gm' | 'player'), kind ('roll' | 'narration' | 'ruling' | 'npc' |
+'log'), speaker, token?, text?, gm? (GM only), and for a roll the card's fields (stat, dice, kept, mode, sides, mod,
+parts, notes, total)}. They replace `rolls/` (the roll log) and `log/` (the change log). Claude posts with a new
+tool, `tools/chat.mjs`. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
+"Speaking in Taldane" is the system's), the formatting bar.
