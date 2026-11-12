@@ -189,7 +189,9 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   `tools/encounter.mjs hide <who> [--undo]`). The token gets `hidden: true`.
 - **Players never see a hidden token**: it is taken out of the party's seen set (`recompute`), so it is not drawn, hovered,
   targeted, opened in Quick-View, listed in the tracker, or shown in effects, and its rolls are the GM's. A hidden PC
-  is not one of the party's lookers either. **The GM view draws it transparent** (35%).
+  is not one of the party's lookers either. **Players cannot select or catch one**: a click on its square, a selection
+  box around it, a targeting box (T held while dragging), T over its square and an area template over it all pass it by (the seen set, also through one creature's own view; the
+  box's own PC check; `setSelection` drops it), and a token hidden while a player holds it is let go. **The GM view draws it transparent** (35%).
 - The change log says "<name> hidden from players" (the GM's line) and "<name> shown to players".
 
 ### The token HUD

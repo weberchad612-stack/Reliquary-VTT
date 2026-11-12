@@ -191,7 +191,7 @@ export async function start(store, { build = null } = {}) {
   const selectedIds = () => (multi.size ? [...multi] : selected ? [selected] : []);
   /** Set the selection from a list of ids: one becomes the single selection, two or more a multi-selection. */
   function setSelection(ids) {
-    const list = [...new Set(ids)].filter((id) => S.tokens[id]);
+    const list = [...new Set(ids)].filter((id) => S.tokens[id] && (S.view === 'gm' || !S.tokens[id].hidden));   // players never hold a hidden token
     multi = new Set(list.length > 1 ? list : []);
     selected = list.length === 1 ? list[0] : null;
   }
@@ -289,7 +289,8 @@ export async function start(store, { build = null } = {}) {
     const visible = LIT ? v.perceived.displayPolys() : v.visible;
     const out = {
       focus: fid, visible, explored: [], mono: LIT ? v.mono.displayPolys() : [], perceived: LIT ? v.perceived : null, monoMask: LIT ? v.mono : null,
-      seen: new Set([...v.seen, fid]), concealedFrom: v.concealedFrom || {},
+      // a token the GM hid is never seen in the player view, through any creature's eyes
+      seen: new Set([...v.seen, fid].filter((id) => S.view === 'gm' || !(S.tokens[id] && S.tokens[id].hidden))), concealedFrom: v.concealedFrom || {},
       at: LIT ? (x, y) => !!v.perceived.at(x, y) : inPolys(v.visible),
     };
     focusCache = { key, v: out };
@@ -335,6 +336,8 @@ export async function start(store, { build = null } = {}) {
     gen++;
     // tokens the GM hid are never the party's to see (the player view skips them; the GM view draws them faint)
     for (const [id, t] of Object.entries(S.tokens)) if (t.hidden) view.seen.delete(id);
+    // a token hidden while a player holds it is let go
+    if (S.view !== 'gm' && ((selected && S.tokens[selected] && S.tokens[selected].hidden) || [...multi].some((id) => S.tokens[id] && S.tokens[id].hidden))) setSelection([...(selected ? [selected] : []), ...multi]);
     for (const id of Object.keys(S.hiddenMarks)) if (view.seen.has(id)) delete S.hiddenMarks[id];   // seen again: the marker goes
     const explored = mask.toPolys();     // stored in the save: pixel-exact
     partyShown = {
@@ -1696,7 +1699,7 @@ export async function start(store, { build = null } = {}) {
     const [x0, x1] = [Math.min(p0[0], p1[0]), Math.max(p0[0], p1[0])], [y0, y1] = [Math.min(p0[1], p1[1]), Math.max(p0[1], p1[1])];
     const F = forTargets ? shown() : null, full = fullGM();
     return Object.keys(S.tokens).filter((id) => {
-      if (forTargets ? !(full || F.seen.has(id)) || S.tokens[id].dead : S.view !== 'gm' && S.tokens[id].kind !== 'pc') return false;
+      if (forTargets ? !(full || F.seen.has(id)) || S.tokens[id].dead : S.view !== 'gm' && (S.tokens[id].kind !== 'pc' || S.tokens[id].hidden)) return false;
       const sp = space(id), cx = sp.x + sp.size / 2, cy = sp.y + sp.size / 2;
       return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
     });
