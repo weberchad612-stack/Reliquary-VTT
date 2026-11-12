@@ -16,6 +16,7 @@ import { WALL_TYPES, SENSE, SENSES, DOOR_TYPES, onSnap } from '../engine/walls/p
 import { LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 import { systemConfig } from '../rulesets/systems.js';
 import { checkLibrary } from '../engine/fx/fx.js';
+import { nameProblems } from '../board/names.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -92,6 +93,13 @@ function schemaErrors(validate, data, file, report) {
   if (validate(data)) return true;
   for (const e of validate.errors) {
     const where = e.instancePath || '(root)';
+    if (e.keyword === 'propertyNames') continue;   // said with the name itself, below
+    if (e.propertyName !== undefined || (e.params && e.params.propertyName)) {
+      const name = e.propertyName ?? e.params.propertyName;
+      const ids = /tokens|notes|templates|hidden_marks/.test(where) ? ' (ids are generated: tools/ids.mjs converts a save)' : '';
+      report.error(file, `${where}: "${name}" ${e.message}${ids}`);
+      continue;
+    }
     const extra = e.params && e.params.allowedValues ? ` (${e.params.allowedValues.join(', ')})` : '';
     report.error(file, `${where}: ${e.message}${extra}`);
   }
@@ -352,7 +360,10 @@ export function validateState(file, mapInfo, report = new Report()) {
       }
     }
     if (t.dead && (t.effects || []).length) report.warn(file, `tokens.${id}: dead, so its effects are not shown`);
+    if (t.known !== undefined && !t.alias) report.warn(file, `tokens.${id}: "known" without an alias does nothing (players see the name)`);
   }
+  // names and letters: duplicates are warnings only (docs/best-practices/board.md, names and ids)
+  for (const w of nameProblems(st.tokens || {})) report.warn(file, `names: ${w}`);
   return report;
 }
 

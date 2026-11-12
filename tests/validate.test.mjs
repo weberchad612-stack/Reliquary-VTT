@@ -9,6 +9,7 @@ import { validate, doorwayClearance, DOORWAY_END_SLACK, DOORWAY_MIN_CELLS } from
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PACK = path.join(ROOT, 'examples', 'sample-pack');
 const SAVE = path.join(ROOT, 'examples', 'sample-save');
+const HERO = 'tok-s4rmvlg6';   // the sample save's torch-bearer
 
 /** Copy the sample pack and save into a temp dir, apply a change, and validate. */
 function withCopy(change) {
@@ -122,7 +123,7 @@ test('state: unknown link id', () => {
 });
 
 test('state: token outside the grid', () => {
-  expectError(({ editState }) => editState((d) => { d.tokens.hero = { x: 12, y: 0 }; }), /tokens\.hero: cell \(12, 0\) is outside the grid/);
+  expectError(({ editState }) => editState((d) => { d.tokens[HERO] = { x: 12, y: 0 }; }), /tokens\.tok-s4rmvlg6: cell \(12, 0\) is outside the grid/);
 });
 
 test('warning, not error: override equal to the default', () => {
@@ -261,7 +262,7 @@ test('lighting: the save can only switch lights the map has', () => {
 });
 
 test('lighting: a carried light needs a known preset', () => {
-  expectError(({ editState }) => editState((d) => { d.tokens.hero.light = { preset: 'lamp' }; }), /tokens.hero.light: unknown light preset "lamp"/);
+  expectError(({ editState }) => editState((d) => { d.tokens[HERO].light = { preset: 'lamp' }; }), /tokens.tok-s4rmvlg6.light: unknown light preset "lamp"/);
 });
 
 test('lighting: the lighting file named in map.json must exist', () => {

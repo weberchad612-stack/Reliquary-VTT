@@ -17,10 +17,6 @@ export const noteVisible = (n, view) => !!n && (view === 'gm' || !n.gm_only);
 /** The player view edits, moves and deletes the notes it wrote; the GM view any note, Claude's included. */
 export const canEditNote = (n, view) => !!n && (view === 'gm' || n.by === 'player');
 
-/** A new note id: time-ordered, lower case (map-state schema: ^[a-z0-9][a-z0-9-]*$). */
-export function noteId(now = Date.now(), rand = Math.random()) {
-  return 'n' + now.toString(36).padStart(9, '0') + '-' + Math.floor(rand * 36 ** 3).toString(36).padStart(3, '0');
-}
 
 /** Text as stored: trimmed, at most NOTE_MAX characters. Empty means "no note". */
 export const cleanText = (t) => String(t || '').trim().slice(0, NOTE_MAX);

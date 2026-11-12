@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  NOTE_COLOURS, noteColour, authorName, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore, NOTE_MAX,
+  NOTE_COLOURS, noteColour, authorName, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore, NOTE_MAX,
 } from '../board/notes.js';
 import { noteFromOptions } from '../tools/note.mjs';
 import { loadMap } from '../tools/sight.mjs';
@@ -27,8 +27,6 @@ test('colours and names by author', () => {
 });
 
 test('ids, text, points and records', () => {
-  assert.match(noteId(1000, 0.5), /^[a-z0-9][a-z0-9-]*$/);
-  assert.ok(noteId(1000, 0.9) < noteId(2000, 0.1));
   assert.equal(cleanText('  hi \n'), 'hi');
   assert.equal(cleanText('x'.repeat(600)).length, NOTE_MAX);
   assert.deepEqual(notePoint(3.14159, 2.71828), [3.142, 2.718]);
@@ -56,8 +54,10 @@ test('collapsed notes are kept per browser, and survive a missing or refusing st
 
 test('note CLI: the record Claude writes, and its checks', () => {
   const { map } = loadMap('examples/sample-pack/maps/sample-keep');
-  const o = noteFromOptions({ map, at: [24.5, 40.5], text: 'Barred door', gmOnly: true, id: 'c1' });
-  assert.equal(o.path, 'notes/c1');
+  const o = noteFromOptions({ map, at: [24.5, 40.5], text: 'Barred door', gmOnly: true, id: 'note-test0001' });
+  assert.equal(o.path, 'notes/note-test0001');
+  assert.match(noteFromOptions({ map, at: [1, 1], text: 'x' }).path, /^notes\/note-[0-9a-z]{8}$/);
+  assert.throws(() => noteFromOptions({ map, at: [1, 1], text: 'x', id: 'c1' }), /--id/);
   assert.equal(o.record.by, 'claude');
   assert.equal(o.record.gm_only, true);
   assert.equal(o.record.map, 'sample-keep');

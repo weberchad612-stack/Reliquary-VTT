@@ -79,6 +79,7 @@
     "hidden_marks": {
       "description": "GM-placed hidden markers: creature id -> the square where the party believes it is (shown to players as a ? until the creature is seen).",
       "type": "object",
+      "propertyNames": { "pattern": "^tok-[0-9a-z]{8}$" },
       "additionalProperties": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 }
     },
     "regions_off": {
@@ -109,7 +110,7 @@
     "notes": {
       "description": "Map notes on this map, by id: reminders pinned to a point, written by the player view, the GM view or Claude.",
       "type": "object",
-      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "propertyNames": { "pattern": "^note-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
       "additionalProperties": {
         "type": "object",
         "required": ["text", "at", "by"],
@@ -126,7 +127,7 @@
     "templates": {
       "description": "Area templates placed on this map (bursts, cones, emanations, lines), by id. They stay until removed.",
       "type": "object",
-      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "propertyNames": { "pattern": "^tpl-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
       "additionalProperties": {
         "type": "object",
         "required": ["shape", "ft", "by", "origin", "cells", "col"],
@@ -136,8 +137,8 @@
           "ft": { "type": "number", "exclusiveMinimum": 0, "description": "Size in feet: radius, length or distance." },
           "width_ft": { "type": "number", "exclusiveMinimum": 0, "description": "Lines: width in feet (default one square)." },
           "by": { "enum": ["player", "gm"], "description": "Which view placed it: players remove their own, the GM any." },
-          "caster": { "type": "string", "description": "Token id of the creature it comes from (none for a burst placed by Claude at a point)." },
-          "casterName": { "type": "string" },
+          "caster": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$", "description": "Token id of the creature it comes from (none for a burst placed by Claude at a point)." },
+          "casterName": { "type": "string", "description": "The caster's public name when it was placed (what players may see)." },
           "origin": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Grid point the area starts from, in cells." },
           "height": { "type": "integer", "description": "Feet: a burst's point above the ground, or the caster's elevation for a cone, line or emanation (0 is left out)." },
           "dir": { "type": "integer", "minimum": 0, "maximum": 7, "description": "Cones: direction, 0 north, clockwise in 45-degree steps." },
@@ -149,12 +150,19 @@
       }
     },
     "tokens": {
-      "description": "Token positions on this map. The token schema is defined separately; positions, carried lights and senses are checked here.",
+      "description": "Tokens on this map, by generated id (board/ids.js). Positions, names, carried lights and senses are checked here.",
       "type": "object",
+      "propertyNames": { "pattern": "^tok-[0-9a-z]{8}$" },
       "additionalProperties": {
         "type": "object",
         "required": ["x", "y"],
         "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "The token's name: a PC's name, an NPC's proper name (never changed), or a unique adjective and the creature's type (Wet-Nosed Rat), never a number." },
+          "alias": { "type": "string", "minLength": 1, "maxLength": 60, "description": "What players see until the party learns the proper name (an adjective and the type: Soot-Skinned Imp)." },
+          "known": { "type": "boolean", "description": "The party has learned the proper name: players see the name, not the alias." },
+          "type": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "What kind of creature (giant-rat): art and stat blocks are looked up by it." },
+          "group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "The encounter set it belongs to (b14-morlocks): letters are unique within a group." },
+          "short": { "type": "string", "minLength": 1, "maxLength": 2, "description": "The letter drawn when the token has no image: the first letter of its adjective (of the alias, else the name)." },
           "x": { "type": "integer", "minimum": 0 },
           "y": { "type": "integer", "minimum": 0 },
           "elevation": { "type": "integer", "description": "Height above the ground in feet (negative: below); shown above the token as +15 ft. 0 is left out." },

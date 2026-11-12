@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  TEMPLATE_COLOURS, nextColour, templateId, canRemove, markerOf, markerPoints, areaTargets, sizeFeet, templateRecord, hexA,
+  TEMPLATE_COLOURS, nextColour, canRemove, markerOf, markerPoints, areaTargets, sizeFeet, templateRecord, hexA,
 } from '../board/templates.js';
 
 test('colours: the first free palette colour, wrapping when all are used', () => {
@@ -12,11 +12,6 @@ test('colours: the first free palette colour, wrapping when all are used', () =>
   assert.equal(hexA('#ff8a1f', 0.5), 'rgba(255, 138, 31, 0.5)');
 });
 
-test('ids are lower case and time-ordered', () => {
-  const a = templateId(1000, 0.5), b = templateId(2000, 0.1);
-  assert.match(a, /^[a-z0-9][a-z0-9-]*$/);
-  assert.ok(a < b);
-});
 
 test('who may remove: players their own, the GM any', () => {
   assert.equal(canRemove({ by: 'player' }, 'player'), true);

@@ -19,11 +19,13 @@ import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
-import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, noteId, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
+import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
+import { makeId } from './ids.js';
+import { publicName, nameFor, letterOf } from './names.js';
 import { FX_COLLECTION, STAGGER, newPlays, stale, playTargets, templateAim, libraries, paletteOf, previewList, prefStore } from './fx.js';
-import { TEMPLATE_COLOURS, hexA, colourOf, nextColour, templateId, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
+import { TEMPLATE_COLOURS, hexA, colourOf, nextColour, canRemove, markerPoints, areaTargets, sizeFeet, templateRecord } from './templates.js';
 
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 
@@ -158,6 +160,13 @@ export async function start(store, { build = null } = {}) {
     tokens: clone(TOKENS0),
   });
   let S = START();
+  // Names (board/names.js): the screen shows this view's name (the GM view the real one, players the alias of a
+  // creature whose name they have not learned); anything players can read later (the change log, a template's
+  // caster) uses the public name, whichever view wrote it.
+  const nm = (t) => nameFor(t, S.view);
+  const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pubName = (t) => publicName(t);
+  const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
@@ -327,8 +336,8 @@ export async function start(store, { build = null } = {}) {
     for (const t of tokenList()) {
       if (t.kind === 'pc') continue;
       const was = lastSeen.has(t.id), now = view.seen.has(t.id);
-      if (!was && now) log(`${t.name} comes into view.`, 'foe');
-      if (was && !now && reason !== 'reset') log(`${t.name} is out of sight.`);
+      if (!was && now) log(`${pubName(t)} comes into view.`, 'foe');
+      if (was && !now && reason !== 'reset') log(`${pubName(t)} is out of sight.`);
     }
     lastSeen = new Set(view.seen);
     S.explored = explored;
@@ -1064,7 +1073,7 @@ export async function start(store, { build = null } = {}) {
   function drawNameLabel(ctx, id) {
     const t0 = S.tokens[id], sp = space(id), tiny = Engine.isTiny(t0);
     const sq = tiny ? { x: Math.floor(sp.x), y: Math.floor(sp.y), size: 1 } : sp;
-    const name = t0.name || id;
+    const name = nm(t0) || id;
     ctx.save();
     ctx.font = '600 12px IBM Plex Sans, sans-serif';
     const w = ctx.measureText(name).width + 12, cx = P(sq.x + sq.size / 2), y = P(sq.y + sq.size) + 4;
@@ -1139,7 +1148,7 @@ export async function start(store, { build = null } = {}) {
       if (full && !seen) ctx.setLineDash([4, 3]);
       ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t.short, cx, cy + 1);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(letterOf(t), cx, cy + 1);
       ctx.restore();
       if (look === 'dead') drawDeadCross(cx, cy, r);
       // A thin square on the grid squares the token occupies (a Tiny creature alone: its square; sharing a
@@ -1255,13 +1264,13 @@ export async function start(store, { build = null } = {}) {
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#ebe6dc'; ctx.fill();
     ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2); ctx.closePath(); ctx.fillStyle = '#4b5263'; ctx.fill();
     ctx.restore();
-    const from = (F.concealedFrom[id] || []).filter((pid) => S.tokens[pid]).map((pid) => S.tokens[pid].name);
-    const who = F.focus ? S.tokens[F.focus].name : from.join(', ');
+    const from = (F.concealedFrom[id] || []).filter((pid) => S.tokens[pid]).map((pid) => nm(S.tokens[pid]));
+    const who = F.focus ? nm(S.tokens[F.focus]) : from.join(', ');
     const others = F.focus ? '' : ' Any other PC who sees it sees it clearly.';
     badgeHits.push({ x, y, w: sz, h: sz, text: `Concealed from ${who}: in dim light. Targeting it takes a DC 5 flat check.${others} (Worked out from light and senses; changes as they move.)` });
   }
 
-  const namesOf = (ids) => ids.map((i) => S.tokens[i].name).join(' and ');
+  const namesOf = (ids) => ids.map((i) => nm(S.tokens[i])).join(' and ');
 
   function hud() {
     const parts = [];
@@ -1282,7 +1291,7 @@ export async function start(store, { build = null } = {}) {
     }
     const bytes = JSON.stringify({ v: 1, polys: S.explored }).length;
     parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
-    parts.push(focusId() ? `view <b>${S.tokens[focusId()].name} only</b>` : `lookers <b>${view.lookers.length}</b>`);
+    parts.push(focusId() ? `view <b>${esc(nm(S.tokens[focusId()]))} only</b>` : `lookers <b>${view.lookers.length}</b>`);
     parts.push(`<span id="animstat">${animStatText()}</span>`);
     document.getElementById('hud').innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
   }
@@ -1296,7 +1305,7 @@ export async function start(store, { build = null } = {}) {
     const t = S.tokens[selected], size = t.size || 1;
     const seen = view.seen.has(selected);
     el.innerHTML = `<h2>Selection</h2>
-      <div class="sel-name">${t.name}</div>
+      <div class="sel-name">${esc(nm(t))}</div>${S.view === 'gm' && t.alias ? `<div class="sel-alias">Players see: <b>${esc(t.known ? t.name : t.alias)}</b>${t.known ? ' (name learned)' : ' (name not learned yet)'}</div>` : ''}
       <div class="chips">
         <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
         <span class="chip">${t.small && size === 1 ? 'Small' : size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
@@ -1312,28 +1321,28 @@ export async function start(store, { build = null } = {}) {
       <div class="sel-actions">
         ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
       </div>
-      <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${t.name} perceives now. ` : ''}${canDrag(selected) ? 'Dashed green: where one, two and three Strides reach (light, medium, dark green).' : ''}</div>`;
+      <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${esc(nm(t))} perceives now. ` : ''}${canDrag(selected) ? 'Dashed green: where one, two and three Strides reach (light, medium, dark green).' : ''}</div>`;
     const cr = el.querySelector('.lrow[data-kind=carried]');
     if (cr) {
       const set = (k, v) => { t.light = { ...t.light, [k]: v }; };
-      cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); log(`${t.name} ${e.target.checked ? 'lights' : 'puts out'} the light.`, 'ok'); panel(); recompute(); };
-      cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${t.name}'s light colour ${e.target.value}.`, 'ok'); panel(); relight(); };
-      cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${t.name}'s light uncoloured.`, 'ok'); panel(); relight(); };
+      cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); log(`${pubName(t)} ${e.target.checked ? 'lights' : 'puts out'} the light.`, 'ok'); panel(); recompute(); };
+      cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${pubName(t)}'s light colour ${e.target.value}.`, 'ok'); panel(); relight(); };
+      cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${pubName(t)}'s light uncoloured.`, 'ok'); panel(); relight(); };
       cr.querySelector('[data-f=intensity]').oninput = (e) => { cr.querySelector('.pct').textContent = e.target.value + '%'; };
-      cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${t.name}'s light intensity ${e.target.value}%.`, 'ok'); panel(); relight(); };
-      wireAnimRow(el.querySelector('[data-anim-for="carried"]'), () => Engine.lightSpec(t.light).animation, (a) => set('animation', a), `${t.name}'s light`);
+      cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${pubName(t)}'s light intensity ${e.target.value}%.`, 'ok'); panel(); relight(); };
+      wireAnimRow(el.querySelector('[data-anim-for="carried"]'), () => Engine.lightSpec(t.light).animation, (a) => set('animation', a), `${pubName(t)}'s light`);
     }
     const bl = document.getElementById('b-light');
     if (bl) bl.onclick = () => {
       const on = t.light.on === false;
       t.light = { ...t.light, on };
-      log(`${t.name} ${on ? 'lights' : 'puts out'} the ${((Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light').toLowerCase()}.`, 'ok');
+      log(`${pubName(t)} ${on ? 'lights' : 'puts out'} the ${((Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light').toLowerCase()}.`, 'ok');
       panel(); recompute();
     };
     const bm = document.getElementById('b-mark');
     if (bm) bm.onclick = () => {
-      if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; log(`GM: hidden marker for ${t.name} cleared.`, 'ok'); }
-      else { S.hiddenMarks[selected] = [t.x, t.y]; log(`GM: the party knows something is at ${t.x},${t.y} (${t.name}, hidden).`, 'ok'); }
+      if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; log(`GM: hidden marker for ${pubName(t)} cleared.`, 'ok'); }
+      else { S.hiddenMarks[selected] = [t.x, t.y]; log(`GM: the party knows something is at ${t.x},${t.y} (${pubName(t)}, hidden).`, 'ok'); }
       panel(); draw();
     };
   }
@@ -1392,7 +1401,6 @@ export async function start(store, { build = null } = {}) {
     return best;
   }
   /** "the Ogre" for creatures, plain "Kerra" for player characters. */
-  const theName = (t) => (t.kind === 'pc' ? t.name : `the ${t.name}`);
   const canDrag = (id) => S.view === 'gm' || S.tokens[id].kind === 'pc';
 
   function goalFor(id, p) {
@@ -1573,7 +1581,7 @@ export async function start(store, { build = null } = {}) {
     if (box) return;   // drawing a box: T makes it a targeting box, it does not toggle the hovered token
     if (e.shiftKey) { if (myTargets().length) setMyTargets([], 'Targets cleared.'); return; }
     if (!hoverId) return;
-    if (S.tokens[hoverId] && S.tokens[hoverId].dead && !myTargets().includes(hoverId)) { toast(`${S.tokens[hoverId].name} is dead: it can't be targeted.`); return; }
+    if (S.tokens[hoverId] && S.tokens[hoverId].dead && !myTargets().includes(hoverId)) { toast(`${nm(S.tokens[hoverId])} is dead: it can't be targeted.`); return; }
     setMyTargets(toggleTarget(myTargets(), hoverId));
   });
   window.addEventListener('keyup', (e) => { if (isT(e)) { tHeld = false; boxStyle(); } });
@@ -1698,7 +1706,7 @@ export async function start(store, { build = null } = {}) {
       const t = S.tokens[id];
       t.x += dx; t.y += dy;
       delete t.slot;
-      moved.push(t.name);
+      moved.push(pubName(t));
     }
     if (moved.length) log(`${moved.join(', ')} moved together.`);
     panel(); recompute();
@@ -1732,7 +1740,7 @@ export async function start(store, { build = null } = {}) {
     aim = { shape, ft, caster, R: Math.max(1, Math.round(ft / FPC)), width, height, blockers: tplBlockers(), cur: null };
     if (shape === 'emanation') { aim.cur = aimAt([0, 0]); return placeTemplate(); }
     canvas.style.cursor = 'crosshair';
-    aimMessage(`Aim the ${ft}-${SYS.measurement.unit} ${shape} from ${S.tokens[caster].name}: click to place. Esc or right-click cancels.`);
+    aimMessage(`Aim the ${ft}-${SYS.measurement.unit} ${shape} from ${nm(S.tokens[caster])}: click to place. Esc or right-click cancels.`);
     canvas.focus();
   }
   function endAim(msg) {
@@ -1749,18 +1757,18 @@ export async function start(store, { build = null } = {}) {
     const inArea = (pool) => (SYS.measurement.vertical ? Engine.tokensInArea({ ...area, shape }, pool, opts) : { in: Engine.tokensInCells(area.cells, pool), over: [] });
     return areaTargets(S.tokens, { inArea, visible: canSeeId, caster, includesCaster: !!(AREAS.shapes[shape] && AREAS.shapes[shape].includesCaster) });
   }
-  const overText = (ids) => ids.map((id) => { const e = S.tokens[id].elevation || 0; return `${S.tokens[id].name} (${e ? `${Math.abs(e)} ${SYS.measurement.unit} ${e > 0 ? 'up' : 'down'}` : 'on the ground'})`; }).join(', ');
+  const overText = (ids) => ids.map((id) => { const e = S.tokens[id].elevation || 0; return `${nm(S.tokens[id])} (${e ? `${Math.abs(e)} ${SYS.measurement.unit} ${e > 0 ? 'up' : 'down'}` : 'on the ground'})`; }).join(', ');
   function aimMove(p) {
     const c = aimAt(p);
     if (!c) return;
     aim.cur = c;
-    const unit = SYS.measurement.unit, name = S.tokens[aim.caster].name;
+    const unit = SYS.measurement.unit, name = nm(S.tokens[aim.caster]);
     let text = `${aim.ft}-${unit} ${aim.shape} from ${name}`;
     if (aim.shape === 'cone') text += `, facing ${Engine.DIRECTION_NAMES[c.dir]}`;
     if (aim.shape === 'line') text += `, angle ${Math.round(((c.angle * 180) / Math.PI + 360) % 360)}°`;
     if (aim.shape === 'burst') text = `${aim.ft}-${unit} burst, ${Engine.cornerDistance(casterSpace(aim.caster), c.origin[0], c.origin[1], SYS.measurement.diagonalCosts) * FPC} ${unit} from ${name}`;
     if (aim.height && aim.shape === 'burst') text += `, ${aim.height} ${unit} up`;
-    const w = whoIn(c, aim.caster, aim.shape, aim.R, aim.height), who = w.ids.map((id) => S.tokens[id].name);
+    const w = whoIn(c, aim.caster, aim.shape, aim.R, aim.height), who = w.ids.map((id) => nm(S.tokens[id]));
     aimMessage(text + '. Click to place, Esc cancels.', (who.length ? `In the area: ${who.join(', ')}.` : 'Nobody in the area.') + (w.over.length ? ` Out of reach: ${overText(w.over)}.` : ''));
     targetsChanged();
   }
@@ -1769,15 +1777,15 @@ export async function start(store, { build = null } = {}) {
     if (!aim || !aim.cur) return;
     const { shape, ft, caster, cur, R, height } = aim;
     endAim();
-    const id = templateId(), by = S.view === 'gm' ? 'gm' : 'player';
-    const rec = templateRecord({ map: MAP_ID, shape, ft, area: cur, caster, casterName: S.tokens[caster].name, by, col: nextColour(TEMPLATES), at: new Date().toISOString(), widthFeet: shape === 'line' ? AREAS.shapes.line.widthFeet : undefined, height });
+    const id = makeId('template', { taken: TEMPLATES }), by = S.view === 'gm' ? 'gm' : 'player';
+    const rec = templateRecord({ map: MAP_ID, shape, ft, area: cur, caster, casterName: pubName(S.tokens[caster]), by, col: nextColour(TEMPLATES), at: new Date().toISOString(), widthFeet: shape === 'line' ? AREAS.shapes.line.widthFeet : undefined, height });
     const { map: _m, ...t } = rec;
     TEMPLATES[id] = t;
     sending('templates/' + id, store.set('templates/' + id, rec)).catch((e) => { delete TEMPLATES[id]; draw(); toast(`Could not save the template (${e.message || e}).`); });
     const { ids, over } = whoIn({ ...t, cells: t.cells }, caster, shape, R, height);
     const what = Engine.describeArea(t, SYS.measurement.unit);
     logChange(`placed a ${what}`);
-    setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => S.tokens[i].name).join(', ')}` : 'nobody in the area'}.${over.length ? ` Out of reach: ${overText(over)}.` : ''}`);
+    setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => nm(S.tokens[i])).join(', ')}` : 'nobody in the area'}.${over.length ? ` Out of reach: ${overText(over)}.` : ''}`);
     draw();
   }
   function removeTemplate(id) {
@@ -1990,7 +1998,7 @@ export async function start(store, { build = null } = {}) {
     const text = cleanText(raw);
     if (!o.id) {
       if (!text) return;
-      const id = noteId();
+      const id = makeId('note', { taken: MAPNOTES });
       writeNote(id, noteRecord({ map: MAP_ID, text, at: o.at, by: noteBy(), gmOnly }), `added a note${gmOnly ? ' (GM only)' : ''}: "${noteGist(text)}"`);
       return;
     }
@@ -2075,7 +2083,7 @@ export async function start(store, { build = null } = {}) {
         return b;
       };
       btn('target', myTargets().includes(hudFor) ? 'Untarget' : 'Target', myTargets().includes(hudFor), () => {
-        if (t.dead && !myTargets().includes(hudFor)) return toast(`${t.name} is dead: it can't be targeted.`);
+        if (t.dead && !myTargets().includes(hudFor)) return toast(`${nm(t)} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
       const panelBtn = (kind, label, panel) => btn(kind, label, hudPanel === panel, () => { hudPanel = hudPanel === panel ? null : panel; hudShape = null; renderHud(); });
@@ -2153,7 +2161,7 @@ export async function start(store, { build = null } = {}) {
    *  is the caster. Picking a size starts aiming (an emanation is placed at once). */
   function templatePanel(id) {
     const pan = document.createElement('div'), unit = SYS.measurement.unit, sq = SYS.measurement.squareFeet;
-    pan.className = 'hud-tpl'; pan.setAttribute('role', 'group'); pan.setAttribute('aria-label', `Area template from ${S.tokens[id].name}`);
+    pan.className = 'hud-tpl'; pan.setAttribute('role', 'group'); pan.setAttribute('aria-label', `Area template from ${nm(S.tokens[id])}`);
     const row = document.createElement('div'); row.className = 'hud-shapes';
     for (const shape of Object.keys(AREAS.shapes)) {
       const b = document.createElement('button');
@@ -2207,7 +2215,7 @@ export async function start(store, { build = null } = {}) {
    *  valued ones. Click toggles or raises, right-click lowers or removes (board/effects.js stepCondition). */
   function statusPalette(id) {
     const t = S.tokens[id], pal = document.createElement('div');
-    pal.className = 'hud-palette'; pal.setAttribute('role', 'group'); pal.setAttribute('aria-label', `Status effects for ${t.name}`);
+    pal.className = 'hud-palette'; pal.setAttribute('role', 'group'); pal.setAttribute('aria-label', `Status effects for ${nm(t)}`);
     const mine = (t.effects || []).filter((e) => S.view === 'gm' || !e.gm_only);
     const tile = (icon, label, rule, on, value, kind, act) => {
       const b = document.createElement('button');
@@ -2282,16 +2290,16 @@ export async function start(store, { build = null } = {}) {
     const fits = Engine.fits(moveWalls, goal[0] + off, goal[1] + off, size);
     const tinyHere = tiny ? Object.entries(S.tokens).filter(([o, u]) => o !== id && Engine.isTiny(u) && u.x === goal[0] && u.y === goal[1]).length : 0;
     const blocking = tiny ? [] : Engine.blockersAt({ id, ...t }, goal[0], goal[1], raw());
-    if (blocking.length) { const who = blocking.map(theName).join(' and '); toast(`${t.name} cannot share a square with ${who}.`); log(`${t.name} placed on ${who} (GM call).`, 'warn'); }
-    if (tiny && tinyHere >= Engine.MAX_PER_SQUARE) { toast(`Only ${Engine.MAX_PER_SQUARE} Tiny creatures fit in one square.`); log(`${t.name} squeezed into a full square (GM call).`, 'warn'); }
+    if (blocking.length) { const who = blocking.map(theName).join(' and '); toast(`${nm(t)} cannot share a square with ${who}.`); log(`${pubName(t)} placed on ${blocking.map((b) => pubName(b)).join(' and ')} (GM call).`, 'warn'); }
+    if (tiny && tinyHere >= Engine.MAX_PER_SQUARE) { toast(`Only ${Engine.MAX_PER_SQUARE} Tiny creatures fit in one square.`); log(`${pubName(t)} squeezed into a full square (GM call).`, 'warn'); }
     // The board warns but never prevents: the GM decides.
-    if (!fits) { toast(`${t.name} does not fit there.`); log(`${t.name} placed where it does not fit (GM call).`, 'warn'); }
-    else if (!route) { toast(`No route for ${t.name}: walls are in the way.`); log(`${t.name} moved with no legal route (GM call).`, 'warn'); }
-    else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${t.name}'s ${t.speed} ft Speed.`); log(`${t.name} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
+    if (!fits) { toast(`${nm(t)} does not fit there.`); log(`${pubName(t)} placed where it does not fit (GM call).`, 'warn'); }
+    else if (!route) { toast(`No route for ${nm(t)}: walls are in the way.`); log(`${pubName(t)} moved with no legal route (GM call).`, 'warn'); }
+    else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${nm(t)}'s ${t.speed} ft Speed.`); log(`${pubName(t)} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
     else {
       const tn = routeNotes(id, route);
-      log(`${t.name} moved ${route.feet} ft to ${goal[0]},${goal[1]}${tn.extraFt ? `, ${tn.extraFt} ft of it for difficult terrain` : ''}.`);
-      for (const n of tn.notes) log(`${t.name}: ${n}.`, 'warn');
+      log(`${pubName(t)} moved ${route.feet} ft to ${goal[0]},${goal[1]}${tn.extraFt ? `, ${tn.extraFt} ft of it for difficult terrain` : ''}.`);
+      for (const n of tn.notes) log(`${pubName(t)}: ${n}.`, 'warn');
     }
     t.x = goal[0]; t.y = goal[1];
     delete t.slot; // a token arriving in a square takes the next free quadrant
@@ -2306,13 +2314,13 @@ export async function start(store, { build = null } = {}) {
     ev.preventDefault();
     const t = S.tokens[selected];
     if (!Engine.canStep(moveWalls, mspace(selected), k[0], k[1])) {
-      toast(`${t.name} cannot step that way.`); return;
+      toast(`${nm(t)} cannot step that way.`); return;
     }
     const entered = terrain.entered(t.x, t.y, t.x + k[0], t.y + k[1], mspace(selected).size);
     const stepOk = Engine.canStepInto(entered, moverOf(selected));
     t.x += k[0]; t.y += k[1]; delete t.slot;
-    if (stepOk) log(`${t.name} steps to ${t.x},${t.y}.`);
-    else log(`${t.name} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
+    if (stepOk) log(`${pubName(t)} steps to ${t.x},${t.y}.`);
+    else log(`${pubName(t)} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
     panel(); recompute();
   });
 
@@ -2496,7 +2504,7 @@ export async function start(store, { build = null } = {}) {
   function describe(p, before = {}, after = {}) {
     const [coll, id] = p.split('/');
     if (coll === 'tokens') {
-      const name = after.name || id, out = [];
+      const name = pubName(after) || id, out = [];
       if (before.x !== after.x || before.y !== after.y) out.push(`${name} moved to ${after.x},${after.y}`);
       const lb = before.light || {}, la = after.light || {};
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);

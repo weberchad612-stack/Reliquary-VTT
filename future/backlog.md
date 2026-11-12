@@ -257,3 +257,45 @@ lights need heights now or only carried ones; whether the floor patch of an elev
 dimmer than the same light on the floor (PF2E has only bright and dim, so the rules level is enough);
 whether to do this together with FR-3.
 
+
+## FR-10: Generated ids and unique names (decided and built 2026-11-12)
+
+Today tokens have hand-picked ids (`rat1`, `kerra`) and duplicates share a name ("Rat"), so the hover label,
+the change log and chat cannot tell three rats apart; notes, templates and effect plays each use a slightly
+different id scheme. The previous board solved names with rule D1 (a unique adjective plus the creature type,
+"Hollow-Cheeked Morlock"; `game/rules/gm-rules.md`), with plain numbered ids behind them and shared
+`artKey`/`statKey` for art and stat blocks. Decided with the user by questionnaire:
+
+**Ids**
+- **Format:** a type prefix and 8 random base-36 characters (`tok-k3x9q2m7`, `note-…`, `tpl-…`), from one
+  shared id maker (replacing `templateId`, `noteId` and hand-picked token ids).
+- **Scope: game objects only** (tokens, notes, templates and future objects such as items, journal entries,
+  quests). Streams keep time-sortable ids (`log/<time36>-…`, `fx/<time>-<n>`): they are read in order and never
+  pointed at. Map chunks keep their map names (`walls/<map>.<n>`, `explored/<map>.<n>`). Maps and packs keep
+  their authored ids (`sample-keep`, `sample-pack`).
+- **PCs get generated ids too** (one rule for everything).
+- **Convert every existing id now**, with every reference: the test campaigns' saves, targets, templates'
+  casters, records on the live board, and docs and tests that name `kerra` or `rat1`.
+
+**Names**
+- **Creatures and NPCs without a proper name:** a unique adjective plus the creature type ("Wet-Nosed Rat"),
+  never a number. Claude chooses the adjectives, fitting how the creature looks.
+- **PCs keep their names.**
+- **Proper names are never changed:** a named NPC ("Djarek Evergloam", "Chillwind", "Xinthe Y'Baine") keeps
+  its `name` exactly as written; no tool, check, conversion or board code renames, shortens, numbers or
+  makes it generic.
+- **Names the party has not learned:** an optional `alias` (written by the adjective rule, "Soot-Skinned Imp")
+  is what players see until Claude sets `known: true`; then players see the proper name everywhere (hover, log,
+  effects, replay). No alias: the proper name shows from the start. The GM view and Claude always see the name.
+- **Duplicates are a warning only** (validator and the add-token tool), never an error.
+
+**Tools** accept a name or an id (`--to "Wet-Nosed Rat"` or `--to tok-k3x9q2m7`); a name matching two tokens
+is refused.
+
+**Type key:** one `type` field (`giant-rat`) for what kind of creature a token is; art and stat blocks are
+looked up by it (replacing the old `artKey`/`statKey`).
+
+**Token letter:** a fallback, drawn only when a token has no image (token images are coming): the first letter
+of the adjective (of the proper name for a named NPC), unique within the token's **`group`** (its encounter
+set, such as `b14-morlocks`, set when Claude places it; no group = a group of one). A repeat is a warning
+only; a group of more than 26 uses two letters ("HC").

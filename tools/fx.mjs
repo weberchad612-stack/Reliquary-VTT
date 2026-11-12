@@ -3,13 +3,14 @@
 // ruleset (and a pack) has, and a check of a pack's effects.json.
 //
 // Usage:
-//   node tools/fx.mjs play <effect> --map MAP [--from TOKEN|X,Y] [--to TOKEN|ID,ID|targets|X,Y|template:ID]
+//   node tools/fx.mjs play <effect> --map MAP [--state FILE] [--from TOKEN|X,Y] [--to TOKEN|TOKEN,TOKEN|targets|X,Y|template:ID]
 //        [--result hit|crit|miss] [--results ID=hit,ID=miss] [--text "-12"] [--texts ID=-12,ID=-6]
 //        [--n 3] [--colour #hex] [--kind strike|ranged|projectile|area|heal|buff|condition] [--traits fire,cold] [--gm]
 //   node tools/fx.mjs list [--ruleset pf2e] [--pack PACK-DIR] [--group TEXT] [--search TEXT]
 //   node tools/fx.mjs check <pack-dir>
 //
-// play prints JSON {path, record}: write `record` to the board's store at `path` (db_write, a new record; it is
+// A TOKEN is an id, or a name or alias with --state (the map's state, or a JSON object of tokens): a name two
+// tokens share is refused. play prints JSON {path, record}: write `record` to the board's store at `path` (db_write, a new record; it is
 // played once by every open board and removed after ten minutes). X,Y are cells (3.5,4.5 is the centre of square
 // 3,4). An unknown effect name still plays: the board falls back by --kind and --traits (a fire area becomes the
 // ruleset's fire burst). Floating text shows only what the players know: damage ("-12"), healing ("+8"), a
@@ -22,6 +23,8 @@ import { fileURLToPath } from 'node:url';
 import { fxRecord, fxId, FX_COLLECTION, libraries, previewList } from '../board/fx.js';
 import { resolveEffect, checkLibrary } from '../engine/fx/fx.js';
 import { systemConfig } from '../rulesets/systems.js';
+import { resolveToken } from '../board/names.js';
+import { isId } from '../board/ids.js';
 
 const KINDS = ['strike', 'ranged', 'projectile', 'beam', 'area', 'heal', 'buff', 'condition'];
 const num = (v) => v !== '' && Number.isFinite(Number(v));
@@ -42,9 +45,20 @@ export function packEffects(packDir) {
   return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null;
 }
 
-/** Build a play from options (the CLI's work, without printing). */
-export function playFromOptions({ name, map, from, to, result, results, text, texts, n, colour, kind, traits, gm, now = Date.now(), ruleset = 'pf2e', pack = null }) {
+/** A token reference made an id: ids pass, names and aliases are looked up in `tokens` (refused when two share it). */
+export function tokenRef(ref, tokens) {
+  if (typeof ref !== 'string' || ref === 'targets' || ref.startsWith('template:') || isId(ref, 'token')) return ref;
+  if (!tokens) throw new Error(`"${ref}" is not a token id: give --state to use names`);
+  return resolveToken(tokens, ref);
+}
+
+/** Build a play from options (the CLI's work, without printing). `tokens`: the map's tokens, for names. */
+export function playFromOptions({ name, map, from, to, result, results, text, texts, n, colour, kind, traits, gm, now = Date.now(), ruleset = 'pf2e', pack = null, tokens = null }) {
   if (kind && !KINDS.includes(kind)) throw new Error(`--kind is one of ${KINDS.join(', ')}`);
+  const ref = (r) => tokenRef(r, tokens), rekey = (o) => (o ? Object.fromEntries(Object.entries(o).map(([k, v]) => [ref(k), v])) : o);
+  from = Array.isArray(from) ? from : from === undefined ? from : ref(from);
+  to = to === undefined || (Array.isArray(to) && typeof to[0] === 'number') ? to : Array.isArray(to) ? to.map(ref) : ref(to);
+  results = rekey(results); texts = rekey(texts);
   const o = { result, results, text, texts, n, colour, kind, traits: traits && traits.length ? traits : undefined, gm: gm || undefined };
   const record = fxRecord({ map, name, from, to, o, by: 'claude', now });
   const sys = systemConfig(ruleset);
@@ -65,6 +79,8 @@ function main(argv) {
         traits: (opt('--traits') || '').split(',').map((x) => x.trim()).filter(Boolean), gm: flag('--gm'),
         ruleset: opt('--ruleset') || 'pf2e', pack: packEffects(opt('--pack')),
       };
+      const sf = opt('--state');
+      if (sf) { const st = JSON.parse(fs.readFileSync(sf, 'utf8')); o.tokens = st.tokens || st; }
       const nv = opt('--n'); if (nv !== undefined) o.n = Number(nv);
       if (Array.isArray(o.from) && typeof o.from[0] === 'string') throw new Error('--from is one token or X,Y');
       if (args.length !== 1) throw new Error('give one effect name');

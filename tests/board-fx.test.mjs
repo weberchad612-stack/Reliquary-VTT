@@ -1,6 +1,7 @@
 // Visual effect plays on the board: records, which plays start, where they go, the pack's library, the tool.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fxRecord, fxId, recordTime, newPlays, stale, playTargets, templateAim, libraries, paletteOf, previewList, prefStore, PLAY_WINDOW, KEEP } from '../board/fx.js';
@@ -110,10 +111,20 @@ test('tools/fx.mjs: targets parsed, plays built, unknown names fall back', () =>
   assert.deepEqual(parseTo('a,b'), ['a', 'b']);
   assert.equal(parseTo('targets'), 'targets');
   assert.equal(parseTo('template:t1'), 'template:t1');
-  const p = playFromOptions({ name: 'lightning_bolt', map: 'keep', from: 'pip', to: 'template:t2', kind: 'area', traits: ['electricity'], now: 42 });
+  const p = playFromOptions({ name: 'lightning_bolt', map: 'keep', from: 'tok-rf053o2i', to: 'template:tpl-t2t2t2t2', kind: 'area', traits: ['electricity'], now: 42 });
   assert.equal(p.plays, 'line_lightning'); assert.equal(p.via, 'fallback');
   assert.deepEqual(p.record.o, { kind: 'area', traits: ['electricity'] });
   const g = playFromOptions({ name: 'brazier_flare', map: 'keep', to: [5, 5], gm: true, pack: packEffects(PACK), now: 1 });
   assert.equal(g.via, 'pack'); assert.equal(g.record.o.gm, true);
   assert.throws(() => playFromOptions({ name: 'heal', map: 'k', kind: 'spell' }), /--kind/);
+  // tokens by name or alias, with the map's tokens
+  const tokens = JSON.parse(fs.readFileSync(path.join(ROOT, 'examples/campaigns/keep-test/maps/sample-keep.json'), 'utf8')).tokens;
+  const byName = playFromOptions({ name: 'force_missiles', map: 'keep', from: 'Pip', to: ['Wet-Nosed Rat', 'hooded cultist'], results: { 'Wet-Nosed Rat': 'miss' }, texts: { 'Varsha Kell': '-4' }, tokens, now: 1 });
+  assert.equal(byName.record.from, 'tok-rf053o2i');
+  assert.deepEqual(byName.record.to, ['tok-gqrwstot', 'tok-u1t8r9h7'], 'names and aliases, any letter case');
+  assert.deepEqual(byName.record.o.results, { 'tok-gqrwstot': 'miss' });
+  assert.deepEqual(byName.record.o.texts, { 'tok-u1t8r9h7': '-4' });
+  assert.throws(() => playFromOptions({ name: 'heal', map: 'k', to: 'Pip' }), /--state/, 'names need the state');
+  assert.throws(() => playFromOptions({ name: 'heal', map: 'k', to: 'Nobody', tokens }), /no token is called/);
+  assert.equal(playFromOptions({ name: 'heal', map: 'k', to: [3, 4], tokens, now: 1 }).record.to.length, 2, 'a point stays a point');
 });

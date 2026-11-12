@@ -65,13 +65,29 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `terrain/<map>`, `lighting/<map>` | Terrain areas; lighting regions and lights | Claude (loading) |
 | `state/table` | Current map, sky, colour and animation switches, notes (a test campaign's tips) | Claude; the GM view |
 | `mapstate/<map>` | Door states, found secrets, lights and regions changed in play, terrain switched on or off, hidden markers | Claude; the board (doors, GM view) |
-| `tokens/<id>` | One record per token, with the map it is on; its effect badges (`effects`) and `dead` | Claude; the board (the player's PCs, the GM view) |
+| `tokens/<id>` | One record per token, with the map it is on: its name (and `alias` and `known` for a named NPC), `type`, `group`, letter (`short`), effect badges (`effects`) and `dead` | Claude; the board (the player's PCs, the GM view) |
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
 | `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 | `fxlib/pack` | The pack's own visual effects (its `effects.json`: palette, effects, fallbacks), if it has any; read once when the board opens | Claude (loading) |
 | `fx/<time>-<n>` | A visual effect being played: name, from, to, result and text (section 7, Visual effects). Not part of the save; any board removes records older than ten minutes | Claude (`tools/fx.mjs`) |
+
+**Ids** (`board/ids.js`; decided 2026-11-12, backlog FR-10). Game objects that other records point at get a type
+prefix and 8 random base-36 characters: tokens `tok-k3x9q2m7`, notes `note-…`, templates `tpl-…` (about 2.8 trillion
+per type, so ids made by Claude and by the board never collide, and a dead creature's id is never reused). PCs
+too. Streams keep time-sortable ids (`log/<time36>-…`, `fx/<time>-<n>`): they are read in order, never pointed at.
+Map pieces keep their map's name (`walls/<map>.<n>`), and maps and packs keep their authored ids
+(`sample-keep`). The schema refuses other ids; `tools/ids.mjs` converts a save or the board's records.
+
+**Names** (`board/names.js`). A creature or NPC without a proper name is named by a unique adjective and its type
+("Wet-Nosed Rat"), never a number (the previous board's rule D1); PCs keep their names; a proper name ("Djarek
+Evergloam", "Chillwind") is never changed or made generic. A named NPC the party has not met has an `alias` (an
+adjective name, "Hooded Cultist") that players see until Claude sets `known: true`; the GM view always shows the
+name. Everything players can read later (the change log, a template's caster) uses the public name, whichever
+view wrote it. `type` (`giant-rat`) says what kind of creature it is (art and stat blocks will be looked up by
+it); `group` is its encounter set (`cellar-rats`); `short` is the letter drawn when a token has no image, the
+first letter of its adjective, unique within its group. Duplicate names and letters are warnings, never errors.
 
 The page listens to ten of these (the meta record, the table, the current map's state, and the token,
 explored, targets, templates, notes, fx and log collections), far under the platform's limit of 64. Records are per token and per map,

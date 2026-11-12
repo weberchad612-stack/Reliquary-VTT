@@ -12,11 +12,12 @@
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { noteRecord, noteId, cleanText, NOTE_MAX } from '../board/notes.js';
+import { noteRecord, cleanText, NOTE_MAX } from '../board/notes.js';
+import { makeId, isId } from '../board/ids.js';
 import { loadMap } from './sight.mjs';
 
 /** Build a note record from options (the CLI's work, without the file reading). */
-export function noteFromOptions({ map, at, text, gmOnly = false, by = 'claude', id = noteId() }) {
+export function noteFromOptions({ map, at, text, gmOnly = false, by = 'claude', id = makeId('note') }) {
   if (!Array.isArray(at) || at.length !== 2 || at.some((v) => !Number.isFinite(v))) throw new Error('--at must be X,Y in cells');
   const g = map.grid;
   if (at[0] < 0 || at[1] < 0 || at[0] > g.cols || at[1] > g.rows) throw new Error(`--at ${at} is outside the ${g.cols} x ${g.rows} grid`);
@@ -24,7 +25,7 @@ export function noteFromOptions({ map, at, text, gmOnly = false, by = 'claude', 
   if (!t) throw new Error('--text is empty');
   if (String(text).trim().length > NOTE_MAX) throw new Error(`--text is longer than ${NOTE_MAX} characters`);
   if (!['claude', 'gm', 'player'].includes(by)) throw new Error('--by is claude, gm or player');
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error('--id: lower-case letters, digits and dashes');
+  if (!isId(id, 'note')) throw new Error('--id: a note id, note- and 8 lower-case letters or digits (leave it out for a new one)');
   return { path: `notes/${id}`, record: noteRecord({ map: map.id, text: t, at, by, gmOnly }) };
 }
 

@@ -3,10 +3,10 @@
 // covers on a map, who is in it, and the template record to put on the board (templates/<id>).
 //
 // Usage:
-//   node tools/area.mjs <map-dir> --shape burst     --ft N --at X,Y                [--caster ID|X,Y[,SIZE]]
-//   node tools/area.mjs <map-dir> --shape cone      --ft N --caster ID|X,Y[,SIZE]  (--dir NAME | --toward X,Y)
-//   node tools/area.mjs <map-dir> --shape line      --ft N --caster ID|X,Y[,SIZE]  (--angle DEG | --toward X,Y)
-//   node tools/area.mjs <map-dir> --shape emanation --ft N --caster ID|X,Y[,SIZE]
+//   node tools/area.mjs <map-dir> --shape burst     --ft N --at X,Y                [--caster ID|NAME|X,Y[,SIZE]]
+//   node tools/area.mjs <map-dir> --shape cone      --ft N --caster ID|NAME|X,Y[,SIZE]  (--dir NAME | --toward X,Y)
+//   node tools/area.mjs <map-dir> --shape line      --ft N --caster ID|NAME|X,Y[,SIZE]  (--angle DEG | --toward X,Y)
+//   node tools/area.mjs <map-dir> --shape emanation --ft N --caster ID|NAME|X,Y[,SIZE]
 //   Options: [--state FILE] the map's state (saves/<campaign>/maps/<id>.json): door states, tokens (a caster
 //            named by id, and who is in the area), templates already placed (for the colour);
 //            [--by gm|player] (default gm); [--ruleset ID] (default pf2e); [--no-walls]; [--id ID];
@@ -23,7 +23,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildArea, effectBlockers, tokensInArea, DIRECTION_NAMES, describeArea } from '../engine/areas/areas.js';
-import { templateRecord, templateId, nextColour, TARGETABLE } from '../board/templates.js';
+import { templateRecord, nextColour, TARGETABLE } from '../board/templates.js';
+import { makeId } from '../board/ids.js';
+import { resolveToken, publicName } from '../board/names.js';
 import { loadMap } from './sight.mjs';
 import { systemConfig } from '../rulesets/systems.js';
 
@@ -37,21 +39,24 @@ const nums = (s, name, n) => {
  * Build a template from options (the CLI's work, without the file reading).
  * @returns {{path, record, covered, reached, inArea}}
  */
-export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster, at, dir, toward, angle, by = 'gm', walls = true, id = templateId(), height }) {
+export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster, at, dir, toward, angle, by = 'gm', walls = true, id = makeId('template'), height }) {
   if (!sys.areas || !sys.areas.shapes[shape]) throw new Error(`${sys.name} has no "${shape}" area`);
   if (!(ft > 0)) throw new Error('--ft must be a positive number of feet');
   const FPC = map.grid.feet_per_cell || sys.measurement.squareFeet;
   const tokens = state.tokens || {};
   let space = null, casterId, casterName;
   if (caster !== undefined) {
-    if (typeof caster === 'string' && tokens[caster]) {
-      const t = tokens[caster];
-      space = { x: Math.floor(t.x), y: Math.floor(t.y), size: Math.max(1, Math.ceil(t.size || 1)), elevation: t.elevation || 0 };
-      casterId = caster; casterName = t.name || caster;
-    } else if (typeof caster === 'string' && /^[\d.]+,[\d.]+(,[\d.]+)?$/.test(caster)) {
+    if (typeof caster === 'string' && /^[\d.]+,[\d.]+(,[\d.]+)?$/.test(caster)) {
       const c = nums(caster, '--caster', [2, 3]);
       space = { x: c[0], y: c[1], size: c[2] ?? 1 };
-    } else throw new Error(`--caster "${caster}" is not a token in the state or X,Y[,SIZE]`);
+    } else {
+      // a token by id, name or alias (a name two tokens share is refused: give the id)
+      let id;
+      try { id = resolveToken(tokens, caster); } catch (e) { throw new Error(`--caster: ${e.message} (a token in the state, by id or name, or X,Y[,SIZE])`); }
+      const t = tokens[id];
+      space = { x: Math.floor(t.x), y: Math.floor(t.y), size: Math.max(1, Math.ceil(t.size || 1)), elevation: t.elevation || 0 };
+      casterId = id; casterName = publicName(t) || id;   // the record is seen by players: never an unlearned name
+    }
   }
   if (shape !== 'burst' && !space) throw new Error(`a ${shape} needs --caster`);
   let gx, gy;
@@ -93,7 +98,7 @@ export function areaFromOptions({ map, segs, state = {}, sys, shape, ft, caster,
     record,
     covered: area.covered.length,
     reached: area.cells.length,
-    inArea: inArea.map((t) => ({ id: t, name: tokens[t].name || t })),
+    inArea: inArea.map((t) => ({ id: t, name: tokens[t].name || t, ...(publicName(tokens[t]) !== tokens[t].name ? { shown: publicName(tokens[t]) } : {}) })),
     outOfReach: reach.over.filter((t) => t !== casterId).map((t) => ({ id: t, name: tokens[t].name || t, elevation: tokens[t].elevation || 0 })),
   };
 }

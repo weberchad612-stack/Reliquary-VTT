@@ -26,10 +26,11 @@ The database is the truth during play; the PC save is the truth between sessions
 
   | To | Use | Writes |
   |---|---|---|
-  | Place an area template (and see who is in it) | `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster <id> --dir north --state <save>/maps/<map>.json` | `templates/<id>` |
+  | Add a creature (fresh id, free letter) | `node tools/token.mjs add --state <save>/maps/<map>.json --name "Wet-Nosed Rat" --type rat --group cellar-rats --at 12,27` (`reveal`, `find`, `check`) | `tokens/<id>` |
+  | Place an area template (and see who is in it) | `node tools/area.mjs <map-dir> --shape cone --ft 15 --caster "Lyra" --dir north --state <save>/maps/<map>.json` | `templates/<id>` |
   | Pin a note to the map (shared or GM-only) | `node tools/note.mjs <map-dir> --at X,Y --text "..." [--gm-only]` | `notes/<id>` |
   | Set conditions, custom effects, dead, elevation | `node tools/effect.mjs <token.json> add frightened 2` (`custom`, `remove`, `clear`, `dead`, `alive`, `elevation 15`; `list`) | `tokens/<id>` |
-  | Play a visual effect (an attack, a spell, a heal) | `node tools/fx.mjs play strike_slash --map <map> --from <id> --to <id> --result crit --text "-18"` (`list` shows the effects) | `fx/<time>-<n>` |
+  | Play a visual effect (an attack, a spell, a heal) | `node tools/fx.mjs play strike_slash --map <map> --state <save>/maps/<map>.json --from "Kerra" --to "Wet-Nosed Rat" --result crit --text "-18"` (`list` shows the effects) | `fx/<time>-<n>` |
   | Know the player's targets | read `targets/player` | (nothing) |
   | Measure, route, sight, fog | `tools/move.mjs`, `tools/sight.mjs`, `tools/fog.mjs` | (nothing) |
 
@@ -128,7 +129,7 @@ A full map redraw (`draw()`: light, fog, terrain, walls, tokens) takes about 50 
 - `npm test` runs the board on a memory store headless (`tests/board-*.test.mjs`, `tests/demo.test.mjs`); add a test for any change to the record layout, and keep `records.js`, the schemas and the design's section 3 in step.
 - A change to the record layout is a migration: save every campaign to the PC first, then load them again with the new tools.
 
-## 12. On the map: area templates, notes, effects, the token HUD and visual effects
+## 12. On the map: area templates, notes, effects, the token HUD, visual effects, names and ids
 
 Design: [board.md](../design/board.md), section 7. Each feature below has a chat tool for Claude (section 2).
 
@@ -179,6 +180,16 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Scaling it is a CSS transform** (`scale(k)` from its top-left), so zooming costs nothing extra; measure its size as `offsetWidth * k`.
 - **Place it again in the same frame as a zoom's scroll correction** (end of `setZoom` and `applyView`). `fit()` places it before the scroll is corrected, and the scroll event comes a frame later, so it showed a frame or two out of place: the user saw it bounce up while zooming (2026-11-11). Anything floating that follows the map must be placed after the scroll is set, not only on the scroll event.
 - **Effect changes go through the board's state** (`S.tokens`), then `recompute()`: who can see may change (blinded, unconscious), and `persist()` writes the record and the log lines (`describeEffects`).
+
+### Names and ids
+
+- **Never pick ids by hand.** Every token, note and template gets a generated id (`tok-`, `note-`, `tpl-` and 8 base-36 characters) from `board/ids.js`; the tools make them (`token.mjs add`, `note.mjs`, `area.mjs`) and the schema refuses anything else. A save with old ids is converted with `node tools/ids.mjs convert <save-dir>` (it keeps a backup); the board's records with `node tools/ids.mjs records <records.json>`, which prints the `db_write` operations (new records, old ones deleted, targets, templates' casters and hidden markers rewritten).
+- **Name every creature when it is placed:** a unique adjective that fits how it looks, and its type: "Wet-Nosed Rat", "Moss-Draped Acolyte". Never a number ("Rat 2", "Bound Thief (one)"); the validator warns about one. PCs keep their names.
+- **Never change a proper name.** A named NPC ("Djarek Evergloam", "Chillwind", "Xinthe Y'Baine") keeps its name exactly. If the party has not learned it, give the token an `alias` by the adjective rule (`--alias "Grey-Cloaked Stranger"`): players see the alias on hover, in the log and everywhere else until `node tools/token.mjs reveal --state … "Grey-Cloaked Stranger"` sets `known: true`. In chat, use the name the players know.
+- **Refer to tokens by name** in the tools (`--to "Wet-Nosed Rat"`, `--caster "Lyra"`, with `--state`); a name that matches two tokens is refused, and then the id is needed. `token.mjs find` shows a token's id, name and what players see.
+- **Give creatures a `type` and a `group`:** the type (`rat`, `hill-giant`) is what art and stat blocks will be looked up by, shared by every rat; the group is the encounter set (`cellar-rats`), within which each token's letter is unique (the letter shows only when a token has no image). `token.mjs add` picks a free letter (the adjective's initial, then another word's, then two letters). Duplicate names and letters are warnings only; `token.mjs check` lists them.
+- **Anything players can read later uses the public name**, whichever view writes it: the board's change log and a template's caster name use the alias of a creature whose name the party has not learned. Check this whenever a new feature writes a name.
+- **Lesson (2026-11-12):** three rats all named "Rat" could not be told apart on the board, in the log or in chat. The previous board solved it with adjective names (its rule D1) and kept plain numbered ids behind them; this board keeps the names and makes ids generated and unique, so that nothing has to be renamed when a creature is renamed, moved or killed.
 
 ### Elevation
 

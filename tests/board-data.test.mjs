@@ -10,6 +10,7 @@ import { buildRecords, readCampaign, writeSave, roundTrip, BACKUPS } from '../to
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PACK = path.join(ROOT, 'examples', 'sample-pack');
+const KERRA = 'tok-cw77vfz9', OGRE = 'tok-sxodpi74';   // Kerra and the Scar-Browed Ogre in the keep test campaign
 const camp = (id) => path.join(ROOT, 'examples', 'campaigns', id);
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
@@ -55,7 +56,7 @@ test('records: a campaign becomes small two-part records and comes back the same
   }
   assert.equal(records['board/meta'].ruleset, 'pf2e');
   assert.equal(records['state/table'].current_map, 'sample-keep');
-  assert.equal(records['tokens/kerra'].map, 'sample-keep');
+  assert.equal(records['tokens/' + KERRA].map, 'sample-keep');
 });
 
 test('records: a map comes back from its records whole, walls in order', () => {
@@ -115,11 +116,11 @@ test('saving writes campaign.json and map states, keeps a dated backup, and keep
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rvtt-save-'));
   fs.cpSync(camp('keep-test'), tmp, { recursive: true });
   const { records } = buildRecords(PACK, tmp, { now: 't' });
-  records['tokens/kerra'] = { ...records['tokens/kerra'], x: 30, y: 30 };
+  records['tokens/' + KERRA] = { ...records['tokens/' + KERRA], x: 30, y: 30 };
   records['mapstate/sample-keep'] = { ...records['mapstate/sample-keep'], doors: { 'door-library': { state: 'open' } } };
   for (let i = 0; i < BACKUPS + 2; i++) writeSave(records, tmp, { now: new Date(Date.UTC(2026, 10, 10, 12, i)) });
   const saved = JSON.parse(fs.readFileSync(path.join(tmp, 'maps', 'sample-keep.json'), 'utf8'));
-  assert.equal(saved.tokens.kerra.x, 30);
+  assert.equal(saved.tokens[KERRA].x, 30);
   assert.equal(saved.doors['door-library'].state, 'open');
   assert.ok(JSON.parse(fs.readFileSync(path.join(tmp, 'campaign.json'), 'utf8')).saved_at.startsWith('2026-11-10'));
   assert.equal(fs.readdirSync(path.join(tmp, 'backups')).length, BACKUPS);
@@ -156,10 +157,10 @@ test('verify: a save matches the records it was written from, and a moved token 
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rvtt-verify-'));
   fs.cpSync(camp('keep-test'), tmp, { recursive: true });
   const { records } = buildRecords(PACK, tmp, { now: 't' });
-  records['tokens/ogre'] = { ...records['tokens/ogre'], x: 23, y: 17 };
+  records['tokens/' + OGRE] = { ...records['tokens/' + OGRE], x: 23, y: 17 };
   writeSave(records, tmp);
   assert.deepEqual(verifySave(records, PACK, tmp), []);
-  records['tokens/ogre'].x = 30;
-  assert.ok(verifySave(records, PACK, tmp).some((d) => d.includes('ogre')));
+  records['tokens/' + OGRE].x = 30;
+  assert.ok(verifySave(records, PACK, tmp).some((d) => d.includes(OGRE)));
   fs.rmSync(tmp, { recursive: true, force: true });
 });

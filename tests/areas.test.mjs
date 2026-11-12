@@ -152,24 +152,28 @@ test('area CLI: builds the record the board stores, with who is in the area', as
   const { map, segs } = loadMap('examples/sample-pack/maps/sample-keep');
   const state = JSON.parse(fs.readFileSync('examples/campaigns/keep-test/maps/sample-keep.json', 'utf8'));
   const sys = PF2E_SYSTEM;
-  const b = areaFromOptions({ map, segs, state, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'cultist', id: 'x1' });
-  assert.equal(b.path, 'templates/x1');
+  const CULTIST = 'tok-u1t8r9h7', SKEL1 = 'tok-e6km1o1q', LYRA = 'tok-s85mkapz';   // Varsha Kell (alias Hooded Cultist), Cracked-Skull Skeleton, Lyra
+  const b = areaFromOptions({ map, segs, state, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'Hooded Cultist', id: 'tpl-test0001' });
+  assert.equal(b.path, 'templates/tpl-test0001');
+  assert.equal(b.record.caster, CULTIST, 'found by the name players see');
+  assert.equal(b.record.casterName, 'Hooded Cultist', 'the record players see never names her');
   assert.equal(b.record.map, 'sample-keep');
-  assert.ok(b.inArea.some((t) => t.id === 'skel1'));
-  const e = areaFromOptions({ map, segs, state, sys, shape: 'emanation', ft: 10, caster: 'lyra' });
-  assert.equal(e.inArea[0].id, 'lyra', 'an emanation targets its caster');
-  const l = areaFromOptions({ map, segs, state, sys, shape: 'line', ft: 60, caster: 'lyra', angle: 30 });
+  assert.ok(b.inArea.some((t) => t.id === SKEL1));
+  const e = areaFromOptions({ map, segs, state, sys, shape: 'emanation', ft: 10, caster: 'Lyra' });
+  assert.equal(e.inArea[0].id, LYRA, 'an emanation targets its caster');
+  const l = areaFromOptions({ map, segs, state, sys, shape: 'line', ft: 60, caster: 'Lyra', angle: 30 });
   assert.match(l.describe, /angle 30°/);
   assert.ok(l.reached < l.covered, 'the keep wall stops the line');
-  const open = areaFromOptions({ map, segs, state, sys, shape: 'line', ft: 60, caster: 'lyra', angle: 30, walls: false });
+  const open = areaFromOptions({ map, segs, state, sys, shape: 'line', ft: 60, caster: 'Lyra', angle: 30, walls: false });
   assert.equal(open.reached, open.covered);
-  const flyer = { ...state, tokens: { ...state.tokens, skel1: { ...state.tokens.skel1, elevation: 40 } } };
-  const hi = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'cultist' });
-  assert.ok(hi.outOfReach.some((t) => t.id === 'skel1' && t.elevation === 40), 'a skeleton 40 ft up is over the burst');
-  const air = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'cultist', height: 40 });
-  assert.ok(air.inArea.some((t) => t.id === 'skel1') && air.record.height === 40, 'an airburst at 40 ft reaches it');
+  const flyer = { ...state, tokens: { ...state.tokens, [SKEL1]: { ...state.tokens[SKEL1], elevation: 40 } } };
+  const hi = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: 'Varsha Kell' });
+  assert.ok(hi.outOfReach.some((t) => t.id === SKEL1 && t.elevation === 40), 'a skeleton 40 ft up is over the burst');
+  const air = areaFromOptions({ map, segs, state: flyer, sys, shape: 'burst', ft: 15, at: [34, 10], caster: CULTIST, height: 40 });
+  assert.ok(air.inArea.some((t) => t.id === SKEL1) && air.record.height === 40, 'an airburst at 40 ft reaches it');
   assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'cone', ft: 15 }), /needs --caster/);
-  assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'cone', ft: 15, caster: 'pip', dir: 'up' }), /--dir must be/);
+  assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'cone', ft: 15, caster: 'Pip', dir: 'up' }), /--dir must be/);
+  assert.throws(() => areaFromOptions({ map, segs, state, sys, shape: 'emanation', ft: 10, caster: 'Nobody' }), /no token is called "Nobody"/);
 });
 
 test('three dimensions: creature height, vertical gap and 3-D distance (10 ft across, 45 ft up = 50 ft)', async () => {

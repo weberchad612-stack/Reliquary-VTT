@@ -24,7 +24,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 | `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout ([guide](docs/best-practices/board.md)) |
 | `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
 | `rulesets/` | Game-system rules and configuration (PF2E: measurement, areas, conditions, movement, terrain, light and senses, visual effects library); `systems.js` lists the systems |
-| `tools/` | Validator, sight/move/fog query tools, area templates, map notes, effect badges and visual effects from chat (`area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
+| `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `examples/` | Original sample pack (Sample Crypt for tests, Sample Keep as the 48 x 48 test bench), save, test campaigns (`campaigns/keep-test`, `crypt-test`) and the engine demo page |
 | `tests/` | `npm test` |
 | `future/` | Thought-through ideas not yet scheduled (for example, faster sight); check here before planning new work |

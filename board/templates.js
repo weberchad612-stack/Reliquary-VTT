@@ -21,10 +21,6 @@ export function nextColour(templates) {
   return list.length % TEMPLATE_COLOURS.length;
 }
 
-/** A new template id: time-ordered, lower case (map-state schema: ^[a-z0-9][a-z0-9-]*$). */
-export function templateId(now = Date.now(), rand = Math.random()) {
-  return now.toString(36).padStart(9, '0') + '-' + Math.floor(rand * 36 ** 3).toString(36).padStart(3, '0');
-}
 
 /** Players remove the templates the player view placed; the GM view removes any. */
 export const canRemove = (t, view) => view === 'gm' || t.by === 'player';
