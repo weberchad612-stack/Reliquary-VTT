@@ -269,6 +269,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   cards or unread count). GM-only tabs' windows are hidden in the player view. The cards' own first headings are
   hidden in a panel (the panel's title says it). Build new tabs this way: give the tab a pane, let the sidebar
   wrap it, and draw into `sidebar.panel(id).body`.
+- **Modal dialogs stay on top:** "Show the GM view?", the clock editor and the travel confirmation (`.gm-confirm`)
+  sit above every window, pop-out and card, however often a window has been brought to the front.
 - **Lighting is the GM's** (the user, 2026-11-12): the Lighting on/off switch, the Sky, and the Colour and
   Animation switches moved from the header into the **Lighting tab**, above the lamps and regions. That tab (and its
   window) is the GM view's only, so the player view has no lighting control at all. A map with no lighting says so
