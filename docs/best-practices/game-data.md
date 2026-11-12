@@ -12,7 +12,7 @@ and `import/foundry-pf2e.mjs`. Design: [game-data.md](../design/game-data.md).
 | A creature's build or stat-block reference | `actors/<id>` on the board; `saves/<campaign>/actors/<id>.json` (same id as its token) | Claude |
 | What is happening to it now: HP, temporary HP, resources, a raised shield | `actorstate/<id>`; `saves/<campaign>/actorstate/<id>.json` | Claude (later the board) |
 | Its conditions | the token's `effects` (the badges), as before; the rules read them from there | Claude, the GM view, the player (own PCs) |
-| Game content: stat blocks, items, spells, feats, ancestries... | the library: the open content `content/pf2e/<source>/<folder>/<slug>.json` (all of Foundry's open PF2E data) and a pack's own `content/<folder>/<slug>.json`; on the board only the documents its creatures use, `content/<folder>.<slug>` | the importer (open content), the sample pack (original), private packs, Claude |
+| Game content: stat blocks, items, spells, feats, ancestries... | the library: the open content `content/pf2e/<source>/<folder>/<slug>.json` (all of Foundry's open PF2E data) and a pack's own `content/<folder>/<slug>.json`; on the board only the documents its creatures use, `content/<folder>.<slug>`, plus its characters' feat and feature descriptions and the system's trait glossary (`content/glossary.traits`) | the importer (open content), the sample pack (original), private packs, Claude |
 | Condition rules, bonus stacking, selectors, health bands | `rulesets/pf2e/rules.js` | code |
 
 **Content keys** name one document: `<folder>/<slug>` (`creature/goblin-warrior`, `item/longsword`,

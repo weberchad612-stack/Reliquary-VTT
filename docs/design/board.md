@@ -74,7 +74,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
-| `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Removed after a save once nothing uses it (`tools/campaign.mjs tidy`) | Claude (loading, `tools/actor.mjs create`/`give`) |
+| `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
 | `fxlib/pack` | The pack's own visual effects (its `effects.json`: palette, effects, fallbacks), if it has any; read once when the board opens | Claude (loading) |
 | `fx/<time>-<n>` | A visual effect being played: name, from, to, result and text (section 7, Visual effects). Not part of the save; any board removes records older than ten minutes | Claude (`tools/fx.mjs`) |
 
@@ -503,6 +503,7 @@ card for creatures it can see; live numbers in the book's layout, changed number
 hover; floating windows, one per token; read-only for now. Researched from the previous board (double-click a
 creature for a draggable window of text stored per creature type, `statblocks/<key>`). Reads `actors/<id>`,
 `actorstate/<id>` and the `content/` records a creature uses; `board/quickview.js` (who may open what, the name,
-the parts every system shares) and the system's layout (`rulesets/pf2e/statblock.js`, `traits.js`). This is the first part of
+the parts every system shares) and the system's layout (`rulesets/pf2e/statblock.js`, `traits.js`). Traits, feats
+and features show their descriptions on hover (docs/design/game-data.md sections 8.4 and 8.5). This is the first part of
 "sheets on the board" (docs/design/game-data.md section 3.7).
 

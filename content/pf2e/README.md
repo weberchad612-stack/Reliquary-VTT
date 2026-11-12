@@ -7,7 +7,7 @@ notices: [NOTICE.md](../../NOTICE.md), [licenses/](../../licenses/).
 Currently Foundry PF2E **8.7.0**: 30,535 documents: 29,967 from 93 Foundry packs (creatures, hazards, vehicles,
 items, feats and class features, actions, effects, conditions, spells, ancestries, heritages, backgrounds,
 classes, deities, Kingmaker features) and 568 trait descriptions (`traits/`, from Foundry's language file,
-licence `ORC/OGL`; every campaign carries them as one board record, `content/glossary.traits`). What was imported, skipped and not yet supported: [import-report.md](import-report.md).
+licence `ORC/OGL`; Pathfinder's only: the board is built with them keyed by system, and every PF2E campaign also carries them as one record, `content/glossary.traits`). What was imported, skipped and not yet supported: [import-report.md](import-report.md).
 
 Layout:
 

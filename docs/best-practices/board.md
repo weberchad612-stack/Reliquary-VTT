@@ -246,7 +246,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   first key it holds. One missing says "no description in the content". To give a hand-written feat a
   description from a particular source, set its `ref` (`feats:feat/toughness`).
 - **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
-- Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
+- Built in `board/quickview.js` (pure, system-free: access, the name, the shared parts, a plain fallback), the
+  Pathfinder layout in `rulesets/pf2e/statblock.js` and `traits.js` (`tests/board-quickview.test.mjs`), and the
   window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every
   creature of a type; these are per creature and computed.
 - **A creature without game data** says so; give it some with `tools/actor.mjs create`.

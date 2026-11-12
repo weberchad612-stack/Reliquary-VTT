@@ -168,7 +168,8 @@ on the PC (`characters/<id>.json`) when one PC moves to another campaign. One pl
 1. The statistic pipeline and rule elements in the engine; the PF2E actor schema, statistics and condition
    rules; actor and state records; sample content; derived values in tools for Claude.
 2. On the board: the GM's stat window, the player's own PC sheet (live state), foe health bands, conditions
-   changing the numbers.
+   changing the numbers. **Read-only part built 2026-11-12** as Token Quick-View (docs/design/board.md); editing
+   on the board waits.
 3. The dice service and roll records; Claude's dice tool; the roll log.
 4. Actions: Strike, saving throws, damage and healing for PCs on the board, resolved and queued for Claude.
 5. Replay of queued and NPC actions with effects.
@@ -331,7 +332,7 @@ the same shapes), never on Foundry's real data in the repository.
 - **Health bands (PF2E, approved by the user 2026-11-12):** Unharmed, Scratched, Wounded, Badly wounded,
   Near death, Down, Dead.
 
-## 7. Full Foundry import: change tracking and as-needed loading (decided 2026-11-12, not built)
+## 7. Full Foundry import: change tracking and as-needed loading (decided and built 2026-11-12)
 
 The user wants all of Foundry's open PF2E data imported in one go, and every later import to show what is new and what changed, because Foundry keeps adding data and sometimes fixes data bugs.
 
@@ -492,6 +493,19 @@ release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `5
 The user's decisions: import Foundry's 568 trait descriptions (its language file, `PF2E.TraitDescription*`);
 show them on hover for every trait on Token Quick-View; for a Strike's traits, also say what the board applies.
 They are a source of their own, `traits` (kind `trait`, tracked by the manifest like the rest), licence
-`ORC/OGL` (the file gives no per-entry licence; Paizo's rules text is under one or the other). Every campaign
-carries them as one board record, `content/glossary.traits`, built by `tools/library.mjs traitGlossary`.
+`ORC/OGL` (the file gives no per-entry licence; Paizo's rules text is under one or the other). They are Pathfinder's
+only (the user, 2026-11-12: game-specific data stays with its system). The board is built with every system's
+glossary keyed by ruleset id (`tools/campaign.mjs glossaries`, bundled as `GLOSSARIES`) and uses the campaign's own
+system's; every campaign also carries its system's as one record, `content/glossary.traits` (`traitGlossary`,
+with `system`), used only when that matches. How traits are written and what a Strike's trait does on the board
+are in `rulesets/pf2e/traits.js`.
+
+### 8.5 Feats and features on hover (built 2026-11-12)
+
+The user asked for a character's feats and features to show their descriptions on Token Quick-View, as traits do
+("Arcane Bond", "Arcane School" on Pip). Each shows once, with its kind, level and traits, then the description
+from the open content. A character names its features by slug and its feats by name, so the system says where
+to look (`rulesets/pf2e/content.js`: `featKeys`, the feat's own `ref` first, then `feat/<slug>` in the pack, then
+Foundry's class features, feats and ancestry features). These are optional content (`actorContent`, section 7):
+loading copies the first one found, tidy keeps them, and the board fetches the first key it holds.
 

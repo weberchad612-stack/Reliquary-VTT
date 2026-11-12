@@ -1,6 +1,6 @@
 # engine
 
-Board page source and the game-system-independent logic behind it: maps and grid, walls, sight and fog, tokens, dice, initiative, replay, effects, music, notes and handouts.
+The game-system-independent logic behind the board and the tools: maps and grid, walls, sight and fog, light, movement and terrain, tokens, areas, visual effects, the rules machinery, dice and time (calendars, clocks, durations, encounters). The board page itself is in `board/`.
 
 The engine has no game-system or adventure knowledge. Rulesets fill its extension points.
 
