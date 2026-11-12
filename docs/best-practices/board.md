@@ -333,7 +333,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **The panel** is the Encounter tab's, and pops out like every tab's (see the sidebar).
 - **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
   it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
-  name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** and **ping** (rings
+  name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** (targets that token alone, Shift adds it to your targets; it is an action, not a toggle, so it shows no on state: to drop a target use T on the map) and **ping** (rings
   on every screen, centred on the token even when it is up in the air, unlike effects, which aim at the height
   label; your view scrolls to it); the ⋮ menu (yours: roll again, type a result, clear, remove). The
   conditions this view may see show under the name. The acting row is outlined in gold, and its token gets a

@@ -6,7 +6,7 @@
 // o: {store, Engine, SYS, readOnly, view() -> 'gm' | 'player', tokens() -> {id: token} (this map's),
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
-//   handled on this page, isTarget(id), toggleTarget(id), ping(id), hover(id | null), onActing(id | null),
+//   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null),
 //   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js), openButton}
 
@@ -233,7 +233,7 @@ export async function mountTracker(o) {
       panel.foot.innerHTML = '';
       return;
     }
-    const key = JSON.stringify([rows, view, gm(), started, ENC.round, rows.map((r) => [o.isTarget(r.token), (o.tokens()[r.token] || {}).known, o.conditionWords(o.tokens()[r.token] || {})])]);
+    const key = JSON.stringify([rows, view, gm(), started, ENC.round, rows.map((r) => [(o.tokens()[r.token] || {}).known, o.conditionWords(o.tokens()[r.token] || {})])]);
     if ((key === lastKey && !menuFor) || editing || dragging) return;   // never redraw under a hand that is typing or dragging
     lastKey = key;
     const tools = gm() ? `<div class="trk-tools"><button type="button" data-a="roll-all">Roll All</button><button type="button" data-a="roll-npc">Roll NPCs</button></div>` : '';
@@ -262,7 +262,7 @@ export async function mountTracker(o) {
       if (t.alias && !t.known) icons.push(ib('reveal', 'reveal', `Reveal the name (players see "${t.alias}")`));
       icons.push(ib('defeated', 'defeated', r.defeated ? 'Defeated: not defeated' : 'Mark defeated', r.defeated));
     }
-    if (r.present) icons.push(ib('target', 'target', o.isTarget(r.token) ? 'Untarget' : 'Target', o.isTarget(r.token)), ib('ping', 'ping', 'Ping on the map'));
+    if (r.present) icons.push(ib('target', 'target', 'Target (Shift-click: add to your targets)'), ib('ping', 'ping', 'Ping on the map'));
     if (r.mine && !o.readOnly) icons.push(ib('menu', 'menu', 'More'));
     const conds = r.present ? o.conditionWords(t) : [];
     let init;
@@ -342,7 +342,7 @@ export async function mountTracker(o) {
     }
     if (a === 'defeated') return commit({ type: 'flags', token: id, flags: { defeated: !(ENC.combatants.find((c) => c.token === id) || {}).defeated } });
     if (a === 'reveal') { o.reveal(id); lastKey = ''; return render(); }
-    if (a === 'target') { o.toggleTarget(id); lastKey = ''; return render(); }
+    if (a === 'target') return o.target(id, e.shiftKey);
     if (a === 'ping') return o.ping(id);
     if (a === 'resume') return commit({ type: 'resume', token: id });
     if (a === 'roll-all') return rollMany('all');

@@ -3102,8 +3102,8 @@ export async function start(store, { build = null } = {}) {
       if (here.length) schedulePersist();
       return here;
     },
-    isTarget: (id) => myTargets().includes(id),
-    toggleTarget: (id) => { const t = S.tokens[id]; if (t && t.dead && !myTargets().includes(id)) return toast(`${nm(t)} is dead: it can't be targeted.`); setMyTargets(toggleTarget(myTargets(), id)); },
+    // the tracker's target button: target this token alone, or add it to the targets (Shift)
+    target: (id, add) => { const t = S.tokens[id]; if (!t) return; if (t.dead) return toast(`${nm(t)} is dead: it can't be targeted.`); const now = myTargets(); setMyTargets(add ? (now.includes(id) ? now : [...now, id]) : [id]); },
     ping: (id) => {
       if (!S.tokens[id]) return;
       centreOnToken(id);
