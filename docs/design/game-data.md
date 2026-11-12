@@ -400,6 +400,10 @@ release's "Release notes X.Y.Z" commit; the first import is **8.7.0** (commit `5
   the sources `pack.json` lists, in order) or `<source>:<folder>/<slug>`; loading copies only what the
   creatures use; `actor.mjs create`/`give` add documents with the creature; `campaign.mjs tidy` gives the
   deletes after a save. The validator and the tools read the library lazily.
+  Optional documents (2026-11-12): a system may name documents a creature's sheet shows without its rules needing
+  them (`system.content.actorContent`; PF2E: each feat's and feature's description, `rulesets/pf2e/content.js`
+  `featKeys`: its `ref`, else `feat/<slug>`, then `class-features:`, `feats:`, `ancestry-features:`). Loading
+  copies the first one found of each; none found is not an error; tidy keeps any of the candidates.
 - **Validator:** `--content` checks each document against its own kind's schema, counts unsupported rules and
   unknown selectors instead of listing 24,000 warnings, and warns about impossible attribute values.
 

@@ -238,6 +238,13 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   system (`GLOSSARIES`, see publishing), and every campaign also carries its own system's as one record,
   `content/glossary.traits` (`system` says which). The board uses the built-in glossary for the campaign's system,
   else the record only when its `system` matches: never another system's descriptions.
+- **Feats and features on hover** (a character's sheet): each once (a feature also listed as a feat shows once),
+  its description on hover with its kind, level and traits ("Arcane Bond (Class feature 1; wizard)"), long ones
+  cut at about 1,400 characters. The documents are found by the system's candidate keys (PF2E `featKeys`: the
+  feat's own `ref`, else by slug in the pack's content, then Foundry's class features, feats and ancestry
+  features), loaded with the campaign as optional content (`actorContent`), and fetched by the board from the
+  first key it holds. One missing says "no description in the content". To give a hand-written feat a
+  description from a particular source, set its `ref` (`feats:feat/toughness`).
 - **Read-only for now**: changes go through chat with Claude and the token's right-click menu.
 - Built in `board/quickview.js` (pure: access, title, the body's HTML; `tests/board-quickview.test.mjs`) and the
   window code in `board/app.js`. The previous board's version showed hand-written text blocks shared by every

@@ -63,12 +63,12 @@ export function quickViewTitle({ token, prepared, base, view, access, publicName
  * The window's body. o: {token, actor, state, prepared (or null), base (the stat block document, or null), view,
  * access ('full' | 'public'), conditions (the system's), describe (engine describeStatistic), publicName,
  * system (the campaign's system configuration: its statBlock lays the creature out), glossary (the system's
- * trait glossary entries)}.
+ * trait glossary entries), content (the documents quickViewKeys named that were found, by key)}.
  */
 export function quickViewBody(o) {
   const { token, prepared: p, base, view, access, conditions = {} } = o;
   const L = o.system && o.system.statBlock;
-  const so = { ...o, kit: QV_KIT, glossary: o.glossary || {} };
+  const so = { ...o, kit: QV_KIT, glossary: o.glossary || {}, content: o.content || {} };
   const out = [];
   // the public card: what anyone at the table can tell by looking
   if (access === 'public') {
@@ -95,11 +95,16 @@ export function quickViewBody(o) {
   return out.join('');
 }
 
-/** The content keys a creature's Quick-View needs: its stat block, its items, its token's content effects. */
-export function quickViewKeys(actor, token) {
+/**
+ * The content a creature's Quick-View needs: its stat block, its items, its token's content effects (keys), and
+ * the optional documents its system shows (a list of candidate keys each, the first found being the one; the
+ * system configuration's content.actorContent).
+ */
+export function quickViewKeys(actor, token, system = null) {
   const keys = new Set();
   if (actor && actor.base) keys.add(actor.base);
   for (const it of (actor && actor.items) || []) if (it && it.ref) keys.add(it.ref);
   for (const e of (token && token.effects) || []) if (e && e.ref) keys.add(e.ref);
-  return [...keys];
+  const more = system && system.content && system.content.actorContent;
+  return [...keys, ...(more && actor ? more(actor) : [])];
 }

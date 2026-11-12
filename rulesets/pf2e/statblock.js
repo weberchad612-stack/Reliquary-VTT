@@ -5,6 +5,7 @@
 // imports nothing from the board. Docs: docs/best-practices/board.md (Token Quick-View).
 
 import { traitLabel, traitEntry, traitApplied } from './traits.js';
+import { featKeys } from './content.js';
 
 const ACTIONS = { 1: '◆', 2: '◆◆', 3: '◆◆◆', reaction: '⟲', free: '◇' };
 const SIZE_SPACE = { tiny: 'less than a 5-foot square (several can share one)', small: 'a 5-foot square', medium: 'a 5-foot square', large: 'a 10-foot square (2 by 2 squares)', huge: 'a 15-foot square (3 by 3 squares)', gargantuan: 'a 20-foot square or more (4 by 4 squares)' };
@@ -48,6 +49,31 @@ function iwrLine(iwr, { esc, cap }) {
   if ((iwr.weaknesses || []).length) out.push(`<b>Weaknesses</b> ${iwr.weaknesses.map((x) => esc(`${cap(x.type)} ${x.value}`)).join(', ')}`);
   if ((iwr.resistances || []).length) out.push(`<b>Resistances</b> ${iwr.resistances.map((x) => esc(`${cap(x.type)} ${x.value}${x.except ? ` (except ${x.except})` : ''}`)).join(', ')}`);
   return out.join('; ');
+}
+
+const FEAT_KIND = { classfeature: 'Class feature', ancestryfeature: 'Ancestry feature', general: 'General feat', skill: 'Skill feat', class: 'Class feat', ancestry: 'Ancestry feat', archetype: 'Archetype feat', bonus: 'Bonus feat', pfsboon: 'Boon' };
+const TIP_MAX = 1400;
+/**
+ * A character's feats and features, once each (a feature may also be listed as a feat), as hoverable names: the
+ * description from the content (featKeys: the first document found), with its kind and level.
+ */
+function featWords(actor, content, { esc, cap }) {
+  const seen = new Set(), out = [];
+  for (const f of [...(actor.feats || []), ...(actor.features || [])]) {
+    const keys = featKeys(f), slug = (keys[0] || '').split('/').pop() || (typeof f === 'string' ? f : f && f.name);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    const doc = keys.map((k) => content[k]).find(Boolean);
+    const name = (doc && doc.name) || (typeof f === 'string' ? cap(f) : f.name);
+    let tip = `${name}: no description in the content.`;
+    if (doc) {
+      const kind = [FEAT_KIND[doc.category] || 'Feat', doc.level].filter((x) => x != null).join(' ');
+      const text = String(doc.text || '').length > TIP_MAX ? `${String(doc.text).slice(0, TIP_MAX).replace(/\s+\S*$/, '')} …` : String(doc.text || '');
+      tip = `${name} (${kind}${(doc.traits || []).length ? `; ${doc.traits.join(', ')}` : ''})${text ? `\n\n${text}` : ''}`;
+    }
+    out.push(`<span class="qv-trait" tabindex="0" title="${esc(tip)}">${esc(name)}</span>`);
+  }
+  return out;
 }
 
 const hpLine = (p) => `<b>HP</b> <span class="qv-n${p.hp.value < p.hp.max.value ? ' down' : ''}" title="current of maximum">${p.hp.value}</span>/${p.hp.max.value}${p.hp.temp ? ` (+${p.hp.temp} temporary)` : ''}`;
@@ -129,8 +155,8 @@ function body(o) {
   ]);
   if (isPc) {
     const res = Object.entries(p.resources || {}).map(([key, r]) => `${esc(cap(key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()))} ${typeof r === 'object' ? `${((o.state || {}).resources || {})[key] ?? r.max}/${r.max}` : r}`);
-    const feats = [...new Set([...(o.actor.feats || []).map((f) => f.name), ...(o.actor.features || []).filter((f) => typeof f === 'string').map(cap)])];
-    sec([res.length ? `<p><b>Resources</b> ${res.join(', ')}</p>` : '', feats.length ? `<p><b>Feats and features</b> ${esc(feats.join(', '))}</p>` : '']);
+    const feats = featWords(o.actor, o.content || {}, k);
+    sec([res.length ? `<p><b>Resources</b> ${res.join(', ')}</p>` : '', feats.length ? `<p><b>Feats and features</b> ${feats.join(', ')}</p>` : '']);
   }
   if ((p.options || []).length) sec([`<p><b>Switches</b> ${p.options.map((x) => `${esc(x.label)} ${x.on ? 'on' : 'off'}`).join(', ')}</p>`]);
   if (base && base.text && !isPc) out.push(`<p class="qv-text">${esc(base.text).replace(/\n+/g, '<br>')}</p>`);

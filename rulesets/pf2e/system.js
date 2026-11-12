@@ -27,7 +27,7 @@
 import { PF2E_CONDITIONS } from './conditions.js';
 import { PF2E_EFFECTS } from './effects.js';
 import { preparePf2e, sizeSquares } from './actor.js';
-import { kindDir, CONTENT_KINDS, CONTENT_FOLDERS } from './content.js';
+import { kindDir, CONTENT_KINDS, CONTENT_FOLDERS, featKeys, actorContent } from './content.js';
 import { GOLARION_CALENDAR, ROUND_SECONDS } from './calendar.js';
 import { PF2E_RULE_KEYS, checkSelectors, adjustDegree } from './rule-keys.js';
 import { turnRules } from './turns.js';
@@ -71,7 +71,9 @@ export const PF2E_SYSTEM = Object.freeze({
   // time: the calendar, a round's length, initiative ties (foes before PCs), the rules at turn boundaries
   time: Object.freeze({ calendar: GOLARION_CALENDAR, roundSeconds: ROUND_SECONDS, tiebreak: (a, b) => (a.side === 'pc') - (b.side === 'pc'), turnRules }),
   // content: the kinds of game content and the folder each is kept in (rulesets/pf2e/content.js)
-  content: Object.freeze({ kinds: CONTENT_KINDS, folders: CONTENT_FOLDERS, kindDir }),
+  // actorContent(actor): the optional documents a creature's sheet shows (its feats' and features' descriptions),
+  // each as candidate keys, the first found being the one; featKeys(f) for one of them
+  content: Object.freeze({ kinds: CONTENT_KINDS, folders: CONTENT_FOLDERS, kindDir, featKeys, actorContent }),
   // actors: creatures' game data and rules (rulesets/pf2e/actor.js, damage.js, rules.js; docs/design/game-data.md)
   actors: Object.freeze({
     ruleKeys: PF2E_RULE_KEYS, checkSelectors, adjustDegree, sizeSquares,

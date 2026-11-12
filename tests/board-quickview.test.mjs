@@ -16,7 +16,7 @@ const game = () => loadGame(path.join(ROOT, 'examples/sample-pack'), path.join(R
 const strip = (html) => html.replace(/<[^>]+>/g, ' ').replace(/&quot;/g, '"').replace(/\s+/g, ' ');
 const view = (g, who, v, extra = {}) => {
   const c = creature(g, who), base = c.actor.base ? g.content[c.actor.base] : null;
-  const o = { token: c.token, actor: c.actor, state: c.state, prepared: c.prepared, base, view: v, access: quickViewAccess(c.token, v, true), conditions: PF2E_CONDITIONS, describe: describeStatistic, publicName, system: PF2E_SYSTEM, ...extra };
+  const o = { token: c.token, actor: c.actor, state: c.state, prepared: c.prepared, base, view: v, access: quickViewAccess(c.token, v, true), conditions: PF2E_CONDITIONS, describe: describeStatistic, publicName, system: PF2E_SYSTEM, content: g.content, ...extra };
   return { o, title: quickViewTitle(o), html: quickViewBody(o) };
 };
 
@@ -73,6 +73,10 @@ test('a creature with spellcasting and no game data; the content a Quick-View ne
   assert.match(strip(html), /Arcane Prepared Spells DC 20, attack \+12 ; 3rd Fireball; Cantrips Light, Shield/);
   assert.match(strip(quickViewBody({ token: { name: 'Statue' }, prepared: null, view: 'gm', access: 'full', conditions: {} })), /Statue has no game data yet/);
   assert.deepEqual(quickViewKeys({ base: 'creature/rat', items: [{ ref: 'item/dagger' }, { name: 'x' }] }, { effects: [{ ref: 'x:effect/y' }, { id: 'prone' }] }), ['creature/rat', 'item/dagger', 'x:effect/y']);
+  // a character's feats and features: candidate keys from the system, the first found being the one
+  assert.deepEqual(quickViewKeys({ features: ['arcane-bond'], feats: [{ name: 'Toughness', ref: 'feats:feat/toughness' }] }, {}, PF2E_SYSTEM),
+    [['feats:feat/toughness'], ['feat/arcane-bond', 'class-features:feat/arcane-bond', 'feats:feat/arcane-bond', 'ancestry-features:feat/arcane-bond']]);
+  assert.deepEqual(quickViewKeys({ features: ['x'] }, {}, { id: 'other' }), [], 'a system that shows none: none');
 });
 
 test('traits: written the Pathfinder way, their rules on hover, and what the board applies', async () => {
@@ -114,4 +118,18 @@ test('the board knows no game system: a system without a layout gets a plain car
   const { traitGlossary } = await import('../tools/library.mjs');
   assert.equal(traitGlossary('no-such-system'), null);
   assert.equal(traitGlossary('pf2e').system, 'pf2e');
+});
+
+test('feats and features on a sheet: each once, its description from the content on hover', () => {
+  const g = game();
+  const pip = strip(view(g, 'Pip', 'player').html), html = view(g, 'Pip', 'player').html;
+  assert.match(pip, /Feats and features Arcane Bond , Arcane School/);
+  assert.match(html, /title="Arcane Bond \(Class feature 1; wizard\)\n\nYou place some of your magical power in a bonded item[^"]*">Arcane Bond<\/span>/);
+  const kerra = view(g, 'Kerra', 'player').html;
+  assert.equal((kerra.match(/>Bravery</g) || []).length, 1, 'a feature listed as a feat too: once');
+  assert.match(kerra, /title="Toughness \(General feat 1; general\)/);
+  assert.match(kerra, /title="Shield Block \(/);
+  // not in the content: the name, saying so
+  const o = view(g, 'Pip', 'player', { content: {} });
+  assert.match(o.html, /title="Arcane Bond: no description in the content\.">Arcane Bond</);
 });

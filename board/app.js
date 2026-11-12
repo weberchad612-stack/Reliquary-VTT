@@ -2046,11 +2046,14 @@ export async function start(store, { build = null } = {}) {
   const qvContentCache = new Map();
   let qvZ = 60, qvT = null;
   const qvFront = (el) => { el.style.zIndex = String(++qvZ); };
+  // keys: a key, or a list of candidate keys (the first the board holds is the one)
   async function qvContent(keys) {
     const out = {};
-    for (const k of keys) {
-      if (!qvContentCache.has(k)) qvContentCache.set(k, await store.get(contentPath(k)).catch(() => null));
-      if (qvContentCache.get(k)) out[k] = qvContentCache.get(k);
+    for (const entry of keys) {
+      for (const k of Array.isArray(entry) ? entry : [entry]) {
+        if (!qvContentCache.has(k)) qvContentCache.set(k, await store.get(contentPath(k)).catch(() => null));
+        if (qvContentCache.get(k)) { out[k] = qvContentCache.get(k); break; }
+      }
     }
     return out;
   }
@@ -2109,14 +2112,14 @@ export async function start(store, { build = null } = {}) {
     if (!access) return qvClose(id);
     const actor = await store.get(`actors/${id}`).catch(() => null);
     const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
-    const content = await qvContent(quickViewKeys(actor, t));
+    const content = await qvContent(quickViewKeys(actor, t, SYS));
     let prepared = null;
     const base = actor && actor.base ? content[actor.base] || null : null;
     if (actor && SYS.actors) {
       try { prepared = Engine.prepareActor({ actor, state, effects: t.effects || [], content, ruleset: SYS.actors }); if (!prepared.name) prepared.name = t.name; } catch (e) { prepared = null; console.warn('Quick-View', e); }
     }
     if (!qvWins.has(id)) return;
-    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName, system: SYS, glossary: qvGlossary };
+    const o = { token: t, actor: actor || {}, state, prepared, base, view: S.view, access, conditions: CONDS, describe: Engine.describeStatistic, publicName, system: SYS, glossary: qvGlossary, content };
     const title = quickViewTitle(o);
     w.el.setAttribute('aria-label', `Token Quick-View: ${title.name}`);
     w.el.querySelector('.qv-t').textContent = title.name;

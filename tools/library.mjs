@@ -83,12 +83,29 @@ export function referencedKeys(actors, tokens = {}) {
   return keys;
 }
 
-/** The documents the campaign uses, from the library: {content: {key: document}, missing: [key]}. */
-export function referencedContent(lib, actors, tokens = {}) {
+/**
+ * The optional documents creatures show (a character's feats' and features' descriptions), as the system says
+ * (system.content.actorContent): a list of candidate-key groups, the first key found in each being the one.
+ */
+export function optionalGroups(actors, system) {
+  const f = system && system.content && system.content.actorContent;
+  return f ? Object.values(actors || {}).flatMap((a) => f(a)) : [];
+}
+
+/**
+ * The documents the campaign uses, from the library: {content: {key: document}, missing: [key]}. With the
+ * system, also the first document found of each optional group (none found is not an error).
+ */
+export function referencedContent(lib, actors, tokens = {}, system = null) {
   const content = {}, missing = [];
+  const get = (k) => { try { return lib.get(k); } catch { return undefined; } };
   for (const k of [...referencedKeys(actors, tokens)].sort()) {
-    let doc; try { doc = lib.get(k); } catch { doc = undefined; }
+    const doc = get(k);
     if (doc) content[k] = doc; else missing.push(k);
+  }
+  for (const group of optionalGroups(actors, system)) {
+    const k = group.find((x) => content[x] || get(x));
+    if (k && !content[k]) content[k] = get(k);
   }
   return { content, missing };
 }

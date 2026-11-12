@@ -17,3 +17,25 @@ export function kindDir(kind) {
   if (ITEM_KINDS.includes(kind)) return 'item';
   return OWN_KINDS.includes(kind) ? kind : undefined;
 }
+
+/** The open sources a character's feats and features are looked for in, after the pack's own (and listed) feat/. */
+export const FEAT_SOURCES = Object.freeze(['class-features', 'feats', 'ancestry-features']);
+const slugOf = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+/**
+ * The content keys a character's feat or feature may be, in order (the first found is the one): its own `ref`
+ * if it names one, else feat/<slug> (the pack's own or a source it lists), then each of FEAT_SOURCES.
+ * f: a feature's slug ('arcane-bond') or a feat ({name, slug, ref}).
+ */
+export function featKeys(f) {
+  if (f && typeof f === 'object' && f.ref) return [f.ref];
+  const slug = typeof f === 'string' ? f : f && (f.slug || slugOf(f.name));
+  if (!slug || !/^[a-z0-9][a-z0-9-]*$/.test(slug)) return [];
+  return [`feat/${slug}`, ...FEAT_SOURCES.map((src) => `${src}:feat/${slug}`)];
+}
+
+/** The descriptions a character's sheet shows, beyond what its rules need: each feat and feature, as its candidate keys. */
+export function actorContent(actor) {
+  if (!actor) return [];
+  return [...(actor.feats || []), ...(actor.features || [])].map(featKeys).filter((g) => g.length);
+}

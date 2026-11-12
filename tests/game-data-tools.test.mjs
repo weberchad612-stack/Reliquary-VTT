@@ -115,7 +115,13 @@ test('content records: keys and paths both ways', () => {
   // only what the creatures use: no creature in the keep is a bone giant, so it stays in the library
   assert.equal(content['creature/bone-giant'], undefined);
   assert.ok(content['glossary/traits'] && content['glossary/traits'].entries.agile, 'the trait glossary rides along');
-  assert.deepEqual(Object.keys(content).filter((k) => k !== 'glossary/traits').sort(), [...referencedKeys(Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p, d])))].sort());
+  const actorsOf = Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('actors/')).map(([p, d]) => [p, d]));
+  const required = referencedKeys(actorsOf);
+  for (const k of required) assert.ok(content[k], `required ${k}`);
+  // beyond the required: only the feats' and features' descriptions characters show
+  const extra = Object.keys(content).filter((k) => k !== 'glossary/traits' && !required.has(k));
+  assert.ok(extra.length && extra.every((k) => /^([a-z-]+:)?feat\//.test(k)), extra.join(' '));
+  assert.ok(content['class-features:feat/arcane-bond'], "Pip's Arcane Bond rides along");
   // a key naming its source
   assert.equal(contentPath('pathfinder-monster-core:creature/goblin-warrior'), 'content/pathfinder-monster-core.creature.goblin-warrior');
   assert.equal(contentKey('content/pathfinder-monster-core.creature.goblin-warrior'), 'pathfinder-monster-core:creature/goblin-warrior');

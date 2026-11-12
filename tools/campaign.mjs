@@ -31,8 +31,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { campaignRecords, saveFromRecords, contentKey } from '../board/records.js';
-import { SYSTEMS } from '../rulesets/systems.js';
-import { contentLibrary, referencedContent, referencedKeys, traitGlossary, GLOSSARY_KEY } from './library.mjs';
+import { SYSTEMS, systemConfig } from '../rulesets/systems.js';
+import { contentLibrary, referencedContent, referencedKeys, optionalGroups, traitGlossary, GLOSSARY_KEY } from './library.mjs';
 
 export const BACKUPS = 5;
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -44,7 +44,7 @@ const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'i
  * item carried by reference), from the pack's library (tools/library.mjs). Throws naming any that is missing.
  */
 export function readContent(pack, packDir, actors, tokens = {}) {
-  const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors, tokens);
+  const { content, missing } = referencedContent(contentLibrary(pack, packDir), actors, tokens, systemConfig(pack.ruleset || 'pf2e'));
   if (missing.length) throw new Error(`content not found: ${missing.join(', ')} (the pack's content/ or the open sources pack.json lists)`);
   // and the trait glossary (Token Quick-View's descriptions), always
   const glossary = traitGlossary(pack.ruleset || 'pf2e');
@@ -192,6 +192,9 @@ export function tidyOps(records) {
   const of = (coll) => Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith(`${coll}/`)).map(([p, d]) => [p.slice(coll.length + 1), d]));
   const used = referencedKeys(of('actors'), of('tokens'));
   used.add(GLOSSARY_KEY);   // the trait glossary stays
+  // and the feats' and features' descriptions characters show (any of each one's candidate keys)
+  const meta = records['board/meta'] || {};
+  for (const g of optionalGroups(of('actors'), systemConfig(meta.ruleset || 'pf2e'))) for (const k of g) used.add(k);
   return batches(Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))).map((p) => ({ op: 'delete', path: p })));
 }
 
