@@ -17,10 +17,11 @@ Built so far:
 - Fog of war: explored-area merging and the three-state player and GM fog, and one creature's own view (`engine/fog/`)
 - The Pathfinder 2e rules and configuration the engine and board ask for: measurement, area shapes and line of effect, conditions, movement and terrain, light and senses, and a library of about 90 visual effects (`rulesets/pf2e/`)
 - Area templates (burst, cone, emanation, line) with line of effect (`engine/areas/`)
+- Game data and rules: creatures' statistics computed from PC builds and stat blocks with breakdowns, every condition's effect on the numbers, damage and healing with resistances, dying and wounded, degrees of success, and an importer for Foundry PF2E's open data into private packs (`engine/rules/`, `rulesets/pf2e/`)
 - Visual effects: genre-neutral drawing primitives (fantasy, sci-fi and modern shapes) that rulesets and packs compose into named effects, with hit, critical and miss results (`engine/fx/`)
 - The board, Reliquary Virtual Tabletop (`board/`): one page with the player and GM views, a top menu, travel between maps and area maps (towns), zoom and pan, multi-select and group moves, hover and distance, targeting, area templates, map notes, effect badges with unconscious, dying and dead, a right-click token menu with a status palette, visual effects played from chat, and tokens with generated ids and unique names (a named NPC shows players an alias until they learn the name); it runs on its own private database, and Claude loads, saves and switches campaigns with `tools/campaign.mjs`
 - A map importer that turns a map in a PDF you own into wall, terrain and lighting data for a private pack (`tools/mapimport/`)
-- A validator; sight, movement and fog query tools; token, area template, map note, effect badge and visual effect tools for Claude, and an id converter; and a wall overlay renderer (`tools/`)
+- A validator; sight, movement and fog query tools; token, area template, map note, effect badge, visual effect, creature and check tools for Claude, a Foundry PF2E importer, and an id converter; and a wall overlay renderer (`tools/`)
 - An original sample map pack and save, and an interactive demo of the engine on it (`examples/`)
 
 ## Development

@@ -1,0 +1,510 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/rulesets/pf2e/actor.schema.json",
+  "title": "PF2E actor",
+  "description": "A Pathfinder 2E creature: a character's build, or an NPC (a stat block reference with differences, or a whole stat block).",
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z-]*$"
+        },
+        "selector": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "slug": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "when": {},
+        "except": {
+          "type": "string"
+        },
+        "range": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "acuity": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "damageType": {
+          "type": "string"
+        },
+        "foundry": {
+          "type": "object",
+          "description": "An imported rule this ruleset does not support yet, kept as it was."
+        }
+      },
+      "additionalProperties": false
+    },
+    "character": {
+      "type": "object",
+      "required": [
+        "system",
+        "kind",
+        "name",
+        "level",
+        "ancestry",
+        "class",
+        "attributes",
+        "proficiencies"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "kind": {
+          "const": "character"
+        },
+        "name": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "ancestry": {
+          "type": "object",
+          "required": [
+            "name",
+            "hp",
+            "speed"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "hp": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "size": {
+              "enum": [
+                "tiny",
+                "small",
+                "medium",
+                "large",
+                "huge",
+                "gargantuan"
+              ]
+            },
+            "speed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "traits": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "senses": {
+              "type": "array"
+            }
+          }
+        },
+        "heritage": {
+          "type": "string"
+        },
+        "background": {
+          "type": "string"
+        },
+        "class": {
+          "type": "object",
+          "required": [
+            "name",
+            "hp",
+            "keyAttribute"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "hp": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "keyAttribute": {
+              "enum": [
+                "str",
+                "dex",
+                "con",
+                "int",
+                "wis",
+                "cha"
+              ]
+            }
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "str": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            },
+            "dex": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            },
+            "con": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            },
+            "int": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            },
+            "wis": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            },
+            "cha": {
+              "type": "integer",
+              "minimum": -5,
+              "maximum": 10
+            }
+          }
+        },
+        "proficiencies": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "perception": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "fortitude": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "reflex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "will": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "classDC": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "armor": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              }
+            },
+            "weapons": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              }
+            },
+            "skills": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              }
+            },
+            "lore": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              }
+            },
+            "spellcasting": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              }
+            }
+          }
+        },
+        "spellcasting": {
+          "type": "object",
+          "required": [
+            "tradition",
+            "attribute"
+          ],
+          "properties": {
+            "tradition": {
+              "enum": [
+                "arcane",
+                "divine",
+                "occult",
+                "primal"
+              ]
+            },
+            "attribute": {
+              "enum": [
+                "str",
+                "dex",
+                "con",
+                "int",
+                "wis",
+                "cha"
+              ]
+            },
+            "kind": {
+              "enum": [
+                "prepared",
+                "spontaneous",
+                "innate"
+              ]
+            }
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "rules": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/rule"
+                    }
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "feats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/rule"
+                }
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "pattern": "^item/[a-z0-9-]+$"
+              },
+              "equipped": {
+                "type": "boolean"
+              },
+              "runes": {
+                "type": "object"
+              },
+              "name": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/rule"
+                }
+              }
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "max": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "npc": {
+      "type": "object",
+      "required": [
+        "system",
+        "kind"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "kind": {
+          "const": "npc"
+        },
+        "base": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "usesDying": {
+          "type": "boolean",
+          "description": "Knocked out and dying at 0 HP, as a character, rather than dead."
+        },
+        "level": {
+          "type": "integer"
+        },
+        "stats": {
+          "type": "object"
+        },
+        "items": {
+          "type": "array"
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/character"
+    },
+    {
+      "$ref": "#/$defs/npc"
+    }
+  ]
+}

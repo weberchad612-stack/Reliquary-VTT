@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/actorstate.schema.json",
+  "title": "Actor state",
+  "description": "What is happening to a creature now (actorstate/<id>, saves/<campaign>/actorstate/<id>.json): written often, kept small. Conditions are the token's effects. See docs/design/game-data.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "hp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current HP (missing: full)."
+    },
+    "temp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Temporary HP."
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Resources left by name (heroPoints, focus...)."
+    },
+    "shield": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hp": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "shieldRaised": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Situations that hold now, for rules with a `when` (leader-in-sight)."
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

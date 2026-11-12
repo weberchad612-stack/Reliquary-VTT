@@ -5,7 +5,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 ## Read first
 
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
-- Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md); the board (client): [docs/design/board.md](docs/design/board.md).
+- Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md); the board (client): [docs/design/board.md](docs/design/board.md); game data and rules: [docs/design/game-data.md](docs/design/game-data.md).
 - Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.
 - Plan for the whole rebuild: the user's `PF2E_Claude_VTT\future\reimplementation-plan.md` (not in this repo).
 
@@ -20,11 +20,11 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 | Folder | What |
 |---|---|
-| `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens, visual effect primitives (dependency-free JavaScript) |
+| `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens, visual effect primitives, the system-free rules machinery (dependency-free JavaScript) |
 | `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout ([guide](docs/best-practices/board.md)) |
 | `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
-| `rulesets/` | Game-system rules and configuration (PF2E: measurement, areas, conditions, movement, terrain, light and senses, visual effects library); `systems.js` lists the systems |
-| `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
+| `rulesets/` | Game-system rules and configuration (PF2E: measurement, areas, conditions, movement, terrain, light and senses, visual effects library, creatures' rules: statistics, damage and healing); `systems.js` lists the systems |
+| `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), creatures' numbers, damage and checks (`actor.mjs`, `check.mjs`), the Foundry PF2E importer (`import/`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `examples/` | Original sample pack (Sample Crypt for tests, Sample Keep as the 48 x 48 test bench), save, test campaigns (`campaigns/keep-test`, `crypt-test`) and the engine demo page |
 | `tests/` | `npm test` |
 | `future/` | Thought-through ideas not yet scheduled (for example, faster sight); check here before planning new work |

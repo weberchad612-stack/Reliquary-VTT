@@ -66,8 +66,13 @@ export function readCampaign(packDir, saveDir) {
   // the pack's own visual effects (added to and restyling the ruleset's): effects.json, or the file pack.effects names
   const fxFile = path.join(packDir, pack.effects || 'effects.json');
   const effects = fs.existsSync(fxFile) ? (({ $schema: _s, ...e }) => e)(readJson(fxFile)) : null;
+  // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the pack's content (content/<kind>/<slug>.json)
+  const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
+  const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
+  const content = {}, cdir = path.join(packDir, 'content');
+  if (fs.existsSync(cdir)) for (const kind of fs.readdirSync(cdir)) for (const [slug, d] of Object.entries(readDir(path.join(cdir, kind)))) content[`${kind}/${d.slug || slug}`] = d;
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
@@ -88,7 +93,7 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const campFile = path.join(saveDir, 'campaign.json');
   const base = fs.existsSync(campFile) ? readJson(campFile) : {};
   if (fs.existsSync(campFile)) backup(saveDir, now);
-  const { campaign, mapStates } = saveFromRecords(records, base);
+  const { campaign, mapStates, actors, actorStates } = saveFromRecords(records, base);
   campaign.saved_at = now.toISOString();
   const written = [];
   const write = (f, obj) => {
@@ -102,6 +107,12 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
     const prev = fs.existsSync(f) ? readJson(f) : {};
     write(f, { $schema: prev.$schema || '../../../../schemas/map-state.schema.json', ...st });
   }
+  // one file per creature; files of creatures no longer on the board are removed (the backup keeps them)
+  for (const [dir, docs] of [['actors', actors], ['actorstate', actorStates]]) {
+    const d = path.join(saveDir, dir);
+    for (const [id, doc] of Object.entries(docs)) write(path.join(d, id + '.json'), doc);
+    if (fs.existsSync(d)) for (const n of fs.readdirSync(d)) if (n.endsWith('.json') && !docs[path.basename(n, '.json')]) fs.rmSync(path.join(d, n));
+  }
   return written;
 }
 
@@ -110,7 +121,7 @@ function backup(saveDir, now) {
   const dest = path.join(saveDir, 'backups', stamp);
   fs.mkdirSync(dest, { recursive: true });
   fs.copyFileSync(path.join(saveDir, 'campaign.json'), path.join(dest, 'campaign.json'));
-  if (fs.existsSync(path.join(saveDir, 'maps'))) fs.cpSync(path.join(saveDir, 'maps'), path.join(dest, 'maps'), { recursive: true });
+  for (const sub of ['maps', 'actors', 'actorstate']) if (fs.existsSync(path.join(saveDir, sub))) fs.cpSync(path.join(saveDir, sub), path.join(dest, sub), { recursive: true });
   const all = fs.readdirSync(path.join(saveDir, 'backups')).sort();
   for (const old of all.slice(0, Math.max(0, all.length - BACKUPS))) fs.rmSync(path.join(saveDir, 'backups', old), { recursive: true, force: true });
 }
@@ -134,10 +145,11 @@ export function roundTrip(packDir, saveDir) {
   for (const id of new Set([...Object.keys(c.mapStates), ...Object.keys(back.mapStates)])) {
     out.push(...diff({ map: id, ...strip(c.mapStates[id] || {}) }, strip(back.mapStates[id] || {}), `maps/${id}`));
   }
+  out.push(...diff(strip(c.actors), strip(back.actors), 'actors'), ...diff(strip(c.actorStates), strip(back.actorStates), 'actorstate'));
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 
@@ -169,6 +181,7 @@ export function verifySave(records, packDir, saveDir) {
   const out = diff(strip({ v: 1, ...fromDb.campaign }), strip({ v: 1, ...disk.campaign }), 'campaign');
   const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
   for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
+  out.push(...diff(strip(fromDb.actors), strip(disk.actors), 'actors'), ...diff(strip(fromDb.actorStates), strip(disk.actorStates), 'actorstate'));
   return out;
 }
 

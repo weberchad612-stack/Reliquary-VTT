@@ -17,11 +17,13 @@ import { LIGHT_PRESETS } from '../rulesets/pf2e/light.js';
 import { systemConfig } from '../rulesets/systems.js';
 import { checkLibrary } from '../engine/fx/fx.js';
 import { nameProblems } from '../board/names.js';
+import { prepareActor, BASE_RULE_KEYS } from '../engine/rules/rules.js';
+import { parseExpr } from '../engine/rules/expr.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
 
-const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false, useDefaults: false });
+const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false, useDefaults: false, allowUnionTypes: true });
 const schema = (name) => ajv.compile(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8')));
 ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, 'terrain.schema.json'), 'utf8')));
 ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, 'lighting.schema.json'), 'utf8')));
@@ -33,7 +35,19 @@ const V = {
   state: schema('map-state.schema.json'),
   pack: schema('pack.schema.json'),
   campaign: schema('campaign.schema.json'),
+  actor: schema('actor.schema.json'),
+  actorstate: schema('actorstate.schema.json'),
 };
+/** A ruleset's own schemas (rulesets/<id>/schemas/<name>.schema.json), compiled once. */
+const RULESET_SCHEMAS = new Map();
+function rulesetSchema(ruleset, name) {
+  const key = `${ruleset}/${name}`;
+  if (!RULESET_SCHEMAS.has(key)) {
+    const f = path.join(ROOT, 'rulesets', ruleset, 'schemas', `${name}.schema.json`);
+    RULESET_SCHEMAS.set(key, fs.existsSync(f) ? ajv.compile(JSON.parse(fs.readFileSync(f, 'utf8'))) : null);
+  }
+  return RULESET_SCHEMAS.get(key);
+}
 
 // Doorway check: walls running into a door's span pinch it, so an open door cannot be seen or walked through.
 // Probe across the door at many points along it; a point is clear when the probe crosses no other wall
@@ -100,7 +114,7 @@ function schemaErrors(validate, data, file, report) {
       report.error(file, `${where}: "${name}" ${e.message}${ids}`);
       continue;
     }
-    const extra = e.params && e.params.allowedValues ? ` (${e.params.allowedValues.join(', ')})` : '';
+    const extra = e.params && e.params.allowedValues ? ` (${e.params.allowedValues.join(', ')})` : e.params && e.params.additionalProperty ? `: "${e.params.additionalProperty}"` : '';
     report.error(file, `${where}: ${e.message}${extra}`);
   }
   return false;
@@ -460,6 +474,7 @@ export function validate(target, { save = null } = {}) {
         report.pack = pack;
         for (const id of pack.maps) if (!fs.existsSync(path.join(mapsDir, id, 'map.json'))) report.error(packFile, `maps: no map folder "${id}"`);
         validateEffects(target, pack, report);
+        report.content = validateContent(target, pack, report);
       }
     } else report.warn(target, 'no pack.json: the board cannot load this pack as a campaign');
     const dirs = fs.readdirSync(mapsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
@@ -498,8 +513,80 @@ export function validate(target, { save = null } = {}) {
         validateState(file, maps.get(id), report);
       }
     }
+    if (report.pack) validateActors(save, report.pack, report.content || {}, report);
   }
   return report;
+}
+
+/** Rule elements: known keys (the engine's and the ruleset's), values that parse, known selectors. */
+function checkRules(rules, where, file, sys, report) {
+  for (const [i, r] of (rules || []).entries()) {
+    const at = `${where}.rules[${i}]`;
+    if (r.foundry) { report.warn(file, `${at}: imported rule "${r.foundry.key || r.key}" is not supported yet (kept as it was)`); continue; }
+    if (!BASE_RULE_KEYS.includes(r.key)) report.error(file, `${at}: unknown rule key "${r.key}"`);
+    for (const k of ['value', 'range']) if (typeof r[k] === 'string') { try { parseExpr(r[k]); } catch (e) { report.error(file, `${at}.${k}: ${e.message}`); } }
+    const sel = (sys && sys.actors && sys.actors.selectors) || [];
+    for (const s of [].concat(r.selector || [])) if (sel.length && !sel.includes(s) && !/-(lore|attack|damage)$/.test(s)) report.warn(file, `${at}: selector "${s}" is not one this ruleset knows`);
+  }
+}
+
+/** A pack's game content (content/<kind>/<slug>.json): the ruleset's schema, unique slugs, rule elements. */
+export function validateContent(target, pack, report) {
+  const dir = path.join(target, 'content'), out = {};
+  if (!fs.existsSync(dir)) return out;
+  const check = rulesetSchema(pack.ruleset, 'content'), sys = systemConfig(pack.ruleset);
+  for (const kind of fs.readdirSync(dir)) {
+    const kdir = path.join(dir, kind);
+    if (!fs.statSync(kdir).isDirectory()) continue;
+    for (const f of fs.readdirSync(kdir).filter((n) => n.endsWith('.json'))) {
+      const file = path.join(kdir, f), d = readJson(file, report);
+      if (!d) continue;
+      if (check && !schemaErrors(check, d, file, report)) continue;
+      const key = `${d.kind === 'creature' ? 'creature' : 'item'}/${d.slug}`;
+      if (`${kind}/${path.basename(f, '.json')}` !== key) report.error(file, `its kind and slug make "${key}", not the file's place "${kind}/${path.basename(f, '.json')}"`);
+      if (out[key]) report.error(file, `"${key}" is defined twice`);
+      out[key] = d;
+      checkRules(d.rules, d.slug, file, sys, report);
+      for (const [i, it] of (d.items || []).entries()) checkRules(it.rules, `items[${i}]`, file, sys, report);
+    }
+  }
+  return out;
+}
+
+/**
+ * A save's creatures (actors/<id>.json) and their live state (actorstate/<id>.json): the schemas, a stat block or
+ * items that exist in the pack's content, a token for each, and the ruleset preparing each one without problems.
+ */
+export function validateActors(save, pack, content, report) {
+  const sys = systemConfig(pack.ruleset), check = rulesetSchema(pack.ruleset, 'actor');
+  const tokens = new Set(), tokenEffects = {};
+  const mdir = path.join(save, 'maps');
+  if (fs.existsSync(mdir)) for (const f of fs.readdirSync(mdir).filter((n) => n.endsWith('.json'))) { try { const st = JSON.parse(fs.readFileSync(path.join(mdir, f), 'utf8')); for (const [id, t] of Object.entries(st.tokens || {})) { tokens.add(id); tokenEffects[id] = t.effects || []; } } catch { /* reported by validateState */ } }
+  const adir = path.join(save, 'actors'), sdir = path.join(save, 'actorstate');
+  const ids = fs.existsSync(adir) ? fs.readdirSync(adir).filter((n) => n.endsWith('.json')).map((n) => path.basename(n, '.json')) : [];
+  for (const id of ids) {
+    const file = path.join(adir, id + '.json'), a = readJson(file, report);
+    if (!a || !schemaErrors(V.actor, a, file, report)) continue;
+    if (!/^tok-[0-9a-z]{8}$/.test(id)) report.error(file, `"${id}" is not a token id: an actor has its token's id`);
+    else if (!tokens.has(id)) report.warn(file, `no token "${id}" on any map of this save`);
+    if (a.system !== pack.ruleset) { report.error(file, `system "${a.system}" is not the campaign's ruleset "${pack.ruleset}"`); continue; }
+    if (check && !schemaErrors(check, a, file, report)) continue;
+    if (a.base && !content[a.base]) { report.error(file, `base: no "${a.base}" in the pack's content`); continue; }
+    const before = report.errors.length;
+    for (const [i, it] of (a.items || []).entries()) if (it.ref && !content[it.ref]) report.error(file, `items[${i}]: no "${it.ref}" in the pack's content`);
+    checkRules(a.rules, id, file, sys, report);
+    for (const [i, f] of (a.feats || []).entries()) checkRules(f.rules, `feats[${i}]`, file, sys, report);
+    let st = {};
+    const sfile = path.join(sdir, id + '.json');
+    if (fs.existsSync(sfile)) { st = readJson(sfile, report) || {}; schemaErrors(V.actorstate, st, sfile, report); }
+    if (!sys || !sys.actors || report.errors.length > before) continue;   // the rules would only repeat these
+    try {
+      const p = prepareActor({ actor: a, state: st, effects: tokenEffects[id] || [], content, ruleset: sys.actors });
+      for (const msg of p.problems) report.error(file, msg);
+      if (st.hp !== undefined && st.hp > p.hp.max.value) report.warn(sfile, `hp ${st.hp} is above the maximum ${p.hp.max.value}`);
+    } catch (e) { report.error(file, `cannot be prepared: ${e.message}`); }
+  }
+  if (fs.existsSync(sdir)) for (const n of fs.readdirSync(sdir).filter((x) => x.endsWith('.json'))) if (!ids.includes(path.basename(n, '.json'))) report.error(path.join(sdir, n), 'live state for a creature with no actor');
 }
 
 function main(argv) {

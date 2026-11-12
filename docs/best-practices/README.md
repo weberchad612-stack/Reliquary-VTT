@@ -11,6 +11,7 @@ How to use and change each core feature well. Written for Claude, who runs the t
 | Lighting and vision (`engine/light/` with daylight, colour, intensity and animation; light-aware `partyView`; a creature's own view; `rulesets/pf2e/light.js`; importer lighting step) | [lighting.md](lighting.md) |
 | Terrain and distance (`engine/terrain/`, `engine/measure/`, `rulesets/pf2e/terrain.js`, importer terrain step) | [terrain.md](terrain.md) |
 | The board: playing on it, saving to the PC, switching campaigns, the top menu, zoom and selection, targets, area templates, map notes, effect badges, the token HUD, visual effects, names and ids (`board/`, `tools/campaign.mjs`, `tools/area.mjs`, `tools/note.mjs`, `tools/effect.mjs`, `tools/fx.mjs`, `tools/token.mjs`, `tools/ids.mjs`) | [board.md](board.md) |
+| Game data and rules: creatures' numbers, conditions, damage and healing, checks, PC builds, stat blocks, importing Foundry PF2E data (`engine/rules/`, `rulesets/pf2e/`, `tools/actor.mjs`, `tools/check.mjs`, `tools/import/`) | [game-data.md](game-data.md) |
 | Working on the repository | [development.md](development.md) |
 
-The design behind these features is in [docs/design/maps.md](../design/maps.md) and, for light and vision, [docs/design/lighting.md](../design/lighting.md), and for the board, [docs/design/board.md](../design/board.md).
+The design behind these features is in [docs/design/maps.md](../design/maps.md) and, for light and vision, [docs/design/lighting.md](../design/lighting.md), for the board, [docs/design/board.md](../design/board.md), and for game data, [docs/design/game-data.md](../design/game-data.md).

@@ -1,0 +1,505 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/rulesets/pf2e/content.schema.json",
+  "title": "PF2E content",
+  "description": "Game content in a pack (content/<kind>/<slug>.json): creatures (stat blocks) and items. Our own format; tools/import/foundry-pf2e.mjs converts Foundry PF2E data into it.",
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z-]*$"
+        },
+        "selector": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "slug": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "when": {},
+        "except": {
+          "type": "string"
+        },
+        "range": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "acuity": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "damageType": {
+          "type": "string"
+        },
+        "foundry": {
+          "type": "object",
+          "description": "An imported rule this ruleset does not support yet, kept as it was."
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "title",
+        "license"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "remaster": {
+          "type": "boolean"
+        }
+      }
+    },
+    "creature": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "level",
+        "stats",
+        "source"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "creature"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 30
+        },
+        "size": {
+          "enum": [
+            "tiny",
+            "small",
+            "medium",
+            "large",
+            "huge",
+            "gargantuan"
+          ]
+        },
+        "rarity": {
+          "enum": [
+            "common",
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "note": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "required": [
+            "ac",
+            "hp"
+          ],
+          "properties": {
+            "ac": {
+              "type": "integer"
+            },
+            "hp": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "perception": {
+              "type": "integer"
+            },
+            "saves": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "attributes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "str": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                },
+                "dex": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                },
+                "con": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                },
+                "int": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                },
+                "wis": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                },
+                "cha": {
+                  "type": "integer",
+                  "minimum": -5,
+                  "maximum": 10
+                }
+              }
+            },
+            "skills": {
+              "type": "object",
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ]
+                  }
+                ]
+              }
+            },
+            "speeds": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "senses": {
+              "type": "array"
+            },
+            "languages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "iwr": {
+              "type": "object",
+              "properties": {
+                "immunities": {
+                  "type": "array"
+                },
+                "weaknesses": {
+                  "type": "array"
+                },
+                "resistances": {
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "name"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "strike",
+                  "ability",
+                  "spell",
+                  "item"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "attack": {
+                "type": "integer"
+              },
+              "traits": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "range": {
+                "type": "integer"
+              },
+              "damage": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "dice",
+                    "type"
+                  ],
+                  "properties": {
+                    "dice": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "effects": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "actions": {
+                "type": [
+                  "string",
+                  "integer",
+                  "null"
+                ]
+              },
+              "text": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/rule"
+                }
+              }
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "kind",
+        "slug",
+        "system",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "armor",
+            "shield",
+            "weapon",
+            "equipment",
+            "consumable",
+            "feat",
+            "effect"
+          ]
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "system": {
+          "const": "pf2e"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "level": {
+          "type": "integer"
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "group": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "acBonus": {
+          "type": "integer"
+        },
+        "dexCap": {
+          "type": "integer"
+        },
+        "checkPenalty": {
+          "type": "integer",
+          "maximum": 0
+        },
+        "speedPenalty": {
+          "type": "integer",
+          "maximum": 0
+        },
+        "strength": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "hardness": {
+          "type": "integer"
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "brokenAt": {
+          "type": "integer"
+        },
+        "damage": {
+          "type": "object",
+          "properties": {
+            "die": {
+              "type": "string",
+              "pattern": "^d(4|6|8|10|12)$"
+            },
+            "type": {
+              "type": "string"
+            },
+            "dice": {
+              "type": "integer"
+            }
+          }
+        },
+        "hands": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "range": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "bulk": {
+          "type": "number"
+        },
+        "price": {
+          "type": "object"
+        },
+        "runes": {
+          "type": "object"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/creature"
+    },
+    {
+      "$ref": "#/$defs/item"
+    }
+  ]
+}

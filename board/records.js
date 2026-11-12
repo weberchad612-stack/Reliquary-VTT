@@ -15,6 +15,10 @@
 //   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
 //   templates/<id>     one placed area template, with the map it is on
 //   notes/<id>         one map note, with the map it is on
+//   actors/<id>        a creature's game data (same id as its token): a PC's build, or a stat block reference
+//                      and its own differences (docs/design/game-data.md)
+//   actorstate/<id>    what is happening to it now: HP, temporary HP, resources spent (written often)
+//   content/<kind>.<slug>  the pack's game content the campaign uses: creatures, items (content key <kind>/<slug>)
 //   fxlib/pack         the pack's visual effects ({palette, effects, fallbacks}; its effects.json), if it has any
 //   fx/<time>-<n>      a visual effect playing now (written by Claude; not part of the save; board/fx.js)
 //   log/<time>-<n>     the change log (not part of the save; written by whoever makes a change)
@@ -48,7 +52,7 @@ const pad = (n) => String(n).padStart(3, '0');
  * @param {string} [c.now]      ISO time for board/meta
  * @returns {object}  {path: data}
  */
-export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, now = new Date().toISOString() }) {
+export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, actors = {}, actorStates = {}, content = {}, now = new Date().toISOString() }) {
   if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
     throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
   }
@@ -74,6 +78,9 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
       r[`lighting/${m.id}`] = { map: m.id, ...lighting };
     }
   }
+  for (const [id, a] of Object.entries(actors)) r[`actors/${id}`] = a;
+  for (const [id, s] of Object.entries(actorStates)) r[`actorstate/${id}`] = s;
+  for (const [key, doc] of Object.entries(content)) r[contentPath(key)] = doc;
   if (effects && effects.effects && Object.keys(effects.effects).length) r['fxlib/pack'] = { palette: effects.palette || {}, effects: effects.effects, fallbacks: effects.fallbacks || [] };
   r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
   if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
@@ -89,6 +96,16 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
     }
   }
   return r;
+}
+
+/** A content key ('item/longsword') as a record path ('content/item.longsword'), and back. */
+export function contentPath(key) { const [kind, slug] = String(key).split('/'); return `content/${kind}.${slug}`; }
+export function contentKey(path) { const id = String(path).split('/')[1] || '', i = id.indexOf('.'); return `${id.slice(0, i)}/${id.slice(i + 1)}`; }
+/** The content held in records: {'<kind>/<slug>': document}. */
+export function contentFromRecords(records) {
+  const out = {};
+  for (const [p, d] of Object.entries(records)) if (p.startsWith('content/')) out[contentKey(p)] = d;
+  return out;
 }
 
 /** Records belonging to one map, from a {path: data} object or a list: walls joined, chunks in order. */
@@ -127,7 +144,7 @@ export function exploredRecords(mapId, explored) {
  * The save on disk from the records: campaign.json and one map state per map.
  * @param {object} records  {path: data} (everything the store holds)
  * @param {object} [base]   the campaign.json being updated (fields the board does not hold are kept)
- * @returns {{campaign: object, mapStates: object}}
+ * @returns {{campaign: object, mapStates: object, actors: object, actorStates: object}}
  */
 export function saveFromRecords(records, base = {}) {
   const meta = records['board/meta'];
@@ -135,7 +152,7 @@ export function saveFromRecords(records, base = {}) {
   const table = records['state/table'] || {};
   const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
-  const mapStates = {};
+  const mapStates = {}, actors = {}, actorStates = {};
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {
     const [coll] = p.split('/');
@@ -143,11 +160,13 @@ export function saveFromRecords(records, base = {}) {
     if (coll === 'tokens') { const { map, ...t } = d; (ensure(map).tokens = ensure(map).tokens || {})[p.split('/')[1]] = t; }
     if (coll === 'templates') { const { map, ...t } = d; (ensure(map).templates = ensure(map).templates || {})[p.split('/')[1]] = t; }
     if (coll === 'notes') { const { map, ...n } = d; (ensure(map).notes = ensure(map).notes || {})[p.split('/')[1]] = n; }
+    if (coll === 'actors') actors[p.split('/')[1]] = d;
+    if (coll === 'actorstate') actorStates[p.split('/')[1]] = d;
   }
   for (const id of meta.maps || []) {
     const ex = Object.entries(records).filter(([p, d]) => p.startsWith('explored/') && d.map === id).map(([, d]) => d);
     if (ex.length) ensure(id).explored = exploredFromRecords(ex);
   }
   for (const st of Object.values(mapStates)) delete st.$schema;
-  return { campaign, mapStates };
+  return { campaign, mapStates, actors, actorStates };
 }
