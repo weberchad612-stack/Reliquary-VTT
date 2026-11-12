@@ -34,6 +34,7 @@ import { turnRules } from './turns.js';
 import { applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage } from './damage.js';
 import { PF2E_STAT_BLOCK } from './statblock.js';
 import { PF2E_TRAITS } from './traits.js';
+import { PF2E_INITIATIVE } from './initiative.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
 export const PF2E_SYSTEM = Object.freeze({
@@ -41,6 +42,8 @@ export const PF2E_SYSTEM = Object.freeze({
   name: 'Pathfinder 2E',
   // Token Quick-View's layout (rulesets/pf2e/statblock.js) and how traits are written and explained (traits.js)
   statBlock: PF2E_STAT_BLOCK,
+  // initiative: the statistics a creature may roll, with initiative's modifiers and notes (rulesets/pf2e/initiative.js)
+  initiative: PF2E_INITIATIVE,
   traits: PF2E_TRAITS,
   measurement: Object.freeze({
     unit: 'ft',

@@ -36,7 +36,7 @@ function resolveItem(it, content) {
  */
 function ruleSources(data, effects, items, content, problems) {
   const out = [];
-  for (const f of [...(data.feats || []), ...(data.features || []).filter((x) => typeof x === 'object')]) out.push({ origin: { kind: 'feat', id: f.slug || f.name, label: f.name }, level: f.level, rules: f.rules || [] });
+  for (const f of [...(data.feats || []), ...(data.features || []).filter((x) => typeof x === 'object')]) out.push({ origin: { kind: 'feat', id: f.slug || f.name, label: f.name, ...(f.text ? { text: f.text } : {}) }, level: f.level, rules: f.rules || [] });
   for (const it of items) if (it.rules && it.equipped !== false) out.push({ origin: { kind: 'item', id: it.slug || it.name, label: it.name }, level: it.level, rules: it.rules });
   if (data.rules) out.push({ origin: { kind: 'creature', id: data.slug || 'own', label: data.name }, rules: data.rules });
   for (const e of effects || []) {
@@ -45,7 +45,7 @@ function ruleSources(data, effects, items, content, problems) {
       const doc = content[e.ref];
       if (!doc) { problems.push(`${e.name || e.ref}: no content "${e.ref}"`); continue; }
       const label = `${e.name || doc.name}${e.level !== undefined ? ` (level ${e.level})` : ''}`;
-      out.push({ origin: { kind: 'effect', id: e.ref, label }, value: e.value, level: e.level ?? doc.level, rules: doc.rules || [] });
+      out.push({ origin: { kind: 'effect', id: e.ref, label, ...(doc.text ? { text: doc.text } : {}) }, value: e.value, level: e.level ?? doc.level, rules: doc.rules || [] });
     } else if (e.rules) out.push({ origin: { kind: 'effect', id: e.name, label: e.name }, value: e.value, level: e.level, rules: e.rules });
   }
   for (const c of activeConditions(effects)) {
@@ -231,6 +231,8 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
   out.light = rules.lights.at(-1) || null;
   out.grantsConditions = rules.grantsConditions;
   out.tags = [...tags];
+  out.facts = facts;
+  out.rollModifiers = rules.modifiers;   // every modifier the rules made: checks that are not statistics (initiative) pick theirs
   out.unsupported = unsupported;   // imported rules not run yet: Claude applies them by hand
   out.usesDying = isPc || !!data.usesDying;
   out.band = healthBand(out.hp.value, max, !!state.dead);

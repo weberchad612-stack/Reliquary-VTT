@@ -10,7 +10,12 @@
 //                                       data on the current map, not dead)
 //   add <who> [--init N]               join (sides from the token: pc, foe, npc)
 //   init <who> <N>                     set an initiative result
-//   roll <who> [--roll D] [--stat S]   roll initiative: d20 (or D) + Perception (or the skill S, such as stealth)
+//   roll <who> [--roll D] [--stat S] [--mode higher|lower]
+//                                      roll initiative: d20 (or D) + Perception (or the skill S, such as stealth),
+//                                      with initiative's modifiers and notes; also writes the roll card (rolls/)
+//   defeat <who> [--undo]              mark defeated (its turns are skipped) or not
+//   hide <who> [--undo]                hide from players in the tracker or show again
+//   previous                           back one turn (a correction: no turn rules run)
 //   begin                              round 1, the first turn
 //   next                               end this turn, start the next (and a new round after the last)
 //   delay                              the acting creature delays (its end-of-turn rules happen now)
@@ -26,7 +31,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as E from '../engine/time/encounter.js';
-import { rollDie } from '../engine/rules/dice.js';
+import { rollCheck, countedParts, notesFor } from '../engine/rules/check.js';
+import { rollRecord, rollPath } from '../board/rolls.js';
 import { resolveToken, publicName } from '../board/names.js';
 import { loadGame, creature } from './actor.mjs';
 import { runTurnRules, randomSource } from './turns.mjs';
@@ -39,7 +45,7 @@ export function describeEncounter(game, enc) {
   if (!enc) return ['no encounter'];
   const name = (id) => (game.tokens[id] || {}).name || id;
   const out = [`${enc.ended ? 'ended' : enc.round > 0 ? `round ${enc.round}` : 'not begun'}${game.clock ? `; ${describeClock(game.sys.time.calendar, game.clock)}` : ''}`];
-  enc.combatants.forEach((c, i) => out.push(`${i === enc.turn ? '▶' : ' '} ${typeof c.initiative === 'number' ? String(c.initiative).padStart(2) : ' ?'}  ${name(c.token)} (${c.side})${c.delayed ? ' delaying' : ''}`));
+  enc.combatants.forEach((c, i) => out.push(`${i === enc.turn ? '▶' : ' '} ${typeof c.initiative === 'number' ? String(c.initiative).padStart(2) : ' ?'}  ${name(c.token)} (${c.side})${c.delayed ? ' delaying' : ''}${c.defeated ? ' defeated' : ''}${c.hidden ? ' hidden' : ''}`));
   return out;
 }
 
@@ -89,19 +95,30 @@ export function runEncounter(game, cmd, args, opts = {}) {
     return done(E.setInitiative(enc, id, n, tb), [`${name(id)}: initiative ${n}`]);
   }
   if (cmd === 'roll') {
-    const id = who(args[0]), c = creature(game, id), stat = opts.stat || 'perception';
-    const s = stat === 'perception' ? c.prepared.perception : (c.prepared.skills || {})[stat];
-    if (!s) throw new Error(`${name(id)} has no ${stat}`);
-    const die = opts.roll !== undefined ? Number(opts.roll) : rollDie(20, rng), total = die + s.value;
-    return done(E.setInitiative(enc, id, total, tb), [`${name(id)}: initiative ${die} + ${s.value} (${stat}) = ${total}`]);
+    const id = who(args[0]), c = creature(game, id), slug = opts.stat || 'perception', I = game.sys.initiative;
+    if (!I) throw new Error('this game system has no initiative rules');
+    const st = I.statistic(c.prepared, slug);
+    if (!st) throw new Error(`${name(id)} has no ${slug}`);
+    const r = rollCheck(st, { mode: opts.mode || 'normal', rng, dice: opts.roll !== undefined ? [Number(opts.roll)] : null, sides: I.die });
+    const label = (I.statistics(c.prepared).find((x) => x.slug === slug) || {}).label || slug;
+    const parts = countedParts(st), notes = notesFor(c.prepared.notes, I.noteSelectors(slug), c.prepared.tags, c.prepared.facts);
+    const roll = { dice: r.dice, kept: r.kept, mode: r.mode, sides: r.sides, mod: r.mod, parts };
+    const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
+    out.writes.push({ op: 'set', path: rollPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), kind: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes }) });
+    return out;
   }
+  if (cmd === 'defeat' || cmd === 'hide') {
+    const id = who(args[0]), k = cmd === 'defeat' ? 'defeated' : 'hidden';
+    return done(E.setFlags(enc, id, { [k]: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}${k === 'defeated' ? 'defeated' : 'hidden from players'}`]);
+  }
+  if (cmd === 'previous') { const r = E.previous(enc, now0, T.roundSeconds); return done(r.encounter, [E.acting(r.encounter) ? `back to ${name(E.acting(r.encounter))}'s turn` : 'already at the first turn'], [], r.now); }
   if (cmd === 'begin') { const r = E.begin(enc, now0); return done(r.encounter, ['the encounter begins'], r.events, r.now); }
   if (cmd === 'next') { const r = E.next(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'delay') { const id = E.acting(enc); const r = E.delay(enc, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} delays`], r.events, r.now); }
   if (cmd === 'resume') { const id = who(args[0]); const r = E.resume(enc, id, now0); return done(r.encounter, [`${name(id)} stops delaying`], r.events, r.now); }
   if (cmd === 'remove') { const id = who(args[0]); const r = E.removeCombatant(enc, id, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} leaves the encounter`], r.events, r.now); }
   if (cmd === 'end') { const r = E.end(enc, now0); return done(r.encounter, [`the encounter ends after ${enc.round} round(s)`], r.events, r.now); }
-  throw new Error('commands: show, start, add, init, roll, begin, next, delay, resume, remove, end');
+  throw new Error('commands: show, start, add, init, roll, defeat, hide, begin, next, previous, delay, resume, remove, end');
 }
 
 function main(argv) {
@@ -109,11 +126,11 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
-    const rec = opt('--records'), seed = opt('--seed'), init = opt('--init'), roll = opt('--roll'), stat = opt('--stat'), all = flag('--all');
+    const rec = opt('--records'), seed = opt('--seed'), init = opt('--init'), roll = opt('--roll'), stat = opt('--stat'), mode = opt('--mode'), all = flag('--all'), undo = flag('--undo');
     const [pack, save, cmd, ...rest] = args;
     if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
-    const out = runEncounter(game, cmd, rest, { seed, init, roll, stat, all });
+    const out = runEncounter(game, cmd, rest, { seed, init, roll, stat, mode, all, undo });
     console.log(cmd === 'show' ? out.lines.join('\n') : JSON.stringify(out, null, 2));
     return 0;
   } catch (e) {

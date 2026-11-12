@@ -1,6 +1,8 @@
 // Encounters, for any game system: who is in it, initiative order, round and turn, and the events a turn change
 // makes (turn-end, round-end, turn-start, encounter-end) for the system's rules to answer. Pure functions over
-// an encounter record: {round, turn, combatants: [{token, initiative, side, delayed?}], started, ended?}.
+// an encounter record: {round, turn, combatants: [{token, initiative, side, delayed?, defeated?, hidden?, stat?,
+// roll?}], started, ended?}. Defeated creatures stay listed and their turns are skipped; hidden ones are hidden
+// from players only (the board's business).
 // `turn` is the index of the creature acting (null before the first turn). The clock moves on one round's
 // length at each new round. Docs: docs/design/game-data.md section 8.
 
@@ -39,11 +41,34 @@ export function addCombatant(enc, { token, side = 'foe', initiative = null }, ti
   return resort({ ...enc, combatants: [...enc.combatants, { token, side, ...(initiative === null ? {} : { initiative }) }] }, tiebreak);
 }
 
-export function setInitiative(enc, token, initiative, tiebreak) {
+/**
+ * Set a creature's initiative; `extra` keeps how it was rolled ({stat, roll}). initiative null clears it (to roll
+ * again).
+ */
+export function setInitiative(enc, token, initiative, tiebreak, extra = {}) {
   if (!enc.combatants.some((c) => c.token === token)) throw new Error(`${token} is not in the encounter`);
-  if (typeof initiative !== 'number' || !Number.isFinite(initiative)) throw new Error('initiative is a number');
-  return resort({ ...enc, combatants: enc.combatants.map((c) => (c.token === token ? { ...c, initiative } : c)) }, tiebreak);
+  if (initiative !== null && (typeof initiative !== 'number' || !Number.isFinite(initiative))) throw new Error('initiative is a number');
+  return resort({ ...enc, combatants: enc.combatants.map((c) => {
+    if (c.token !== token) return c;
+    if (initiative === null) { const { initiative: _i, roll: _r, stat: _s, ...rest } = c; return rest; }
+    const { roll: _r, stat: _s, ...rest } = c;
+    return { ...rest, initiative, ...extra };
+  }) }, tiebreak);
 }
+
+/** Mark flags on a combatant: {defeated, hidden} (true sets, false clears). */
+export function setFlags(enc, token, flags) {
+  if (!enc.combatants.some((c) => c.token === token)) throw new Error(`${token} is not in the encounter`);
+  return { ...enc, combatants: enc.combatants.map((c) => {
+    if (c.token !== token) return c;
+    const out = { ...c };
+    for (const k of ['defeated', 'hidden']) if (k in flags) { if (flags[k]) out[k] = true; else delete out[k]; }
+    return out;
+  }) };
+}
+
+/** Whether a combatant's turn is skipped: delaying or defeated. */
+const skipped = (c) => !!(c && (c.delayed || c.defeated));
 
 /** Take a creature out (dead, fled). If it was acting, the next creature's turn begins: events as next(). */
 export function removeCombatant(enc, token, now, roundSeconds) {
@@ -63,10 +88,11 @@ export function removeCombatant(enc, token, now, roundSeconds) {
 /** Start the first round: every creature needs an initiative. Events: round-start, the first turn-start. */
 export function begin(enc, now) {
   if (!enc.combatants.length) throw new Error('nobody is in the encounter');
-  const missing = enc.combatants.filter((c) => typeof c.initiative !== 'number').map((c) => c.token);
+  const missing = enc.combatants.filter((c) => typeof c.initiative !== 'number' && !c.defeated).map((c) => c.token);
   if (missing.length) throw new Error(`no initiative yet for ${missing.join(', ')}`);
   if (enc.round > 0) throw new Error('the encounter has already begun');
-  const first = enc.combatants.findIndex((c) => !c.delayed);
+  const first = enc.combatants.findIndex((c) => !skipped(c));
+  if (first < 0) throw new Error('everyone is delaying or defeated');
   const out = { ...enc, round: 1, turn: first, started: now };
   return { encounter: out, now, events: [{ type: 'round-start', round: 1 }, { type: 'turn-start', token: out.combatants[first].token, round: 1 }] };
 }
@@ -83,10 +109,10 @@ function advance(enc, now, roundSeconds, { skipEnd = false } = {}) {
       round++; turn = 0; t += roundSeconds;
       events.push({ type: 'round-start', round });
     }
-    if (!enc.combatants[turn].delayed) break;
+    if (!skipped(enc.combatants[turn])) break;
   }
   const out = { ...enc, round, turn };
-  if (enc.combatants[turn].delayed) return { encounter: { ...out, turn: null }, now: t, events };   // everyone is delaying
+  if (skipped(enc.combatants[turn])) return { encounter: { ...out, turn: null }, now: t, events };   // everyone is delaying or defeated
   events.push({ type: 'turn-start', token: out.combatants[turn].token, round });
   return { encounter: out, now: t, events };
 }
@@ -96,6 +122,25 @@ export function next(enc, now, roundSeconds = 6) {
   if (!(enc.round > 0)) throw new Error('the encounter has not begun');
   if (enc.ended) throw new Error('the encounter is over');
   return advance(enc, now, roundSeconds);
+}
+
+/**
+ * Back one turn (a correction): the previous creature not delaying or defeated acts again. No turn rules run
+ * (what happened stays done); going back past the start of a round takes the clock back one round.
+ * Returns {encounter, now, events: []}.
+ */
+export function previous(enc, now, roundSeconds = 6) {
+  if (!(enc.round > 0)) throw new Error('the encounter has not begun');
+  let turn = enc.turn === null ? enc.combatants.length : enc.turn, round = enc.round, t = now;
+  for (let step = 0; step <= enc.combatants.length; step++) {
+    turn--;
+    if (turn < 0) {
+      if (round <= 1) return { encounter: enc, now, events: [] };   // the first turn: nothing before it
+      round--; turn = enc.combatants.length - 1; t -= roundSeconds;
+    }
+    if (!skipped(enc.combatants[turn])) return { encounter: { ...enc, round, turn }, now: t, events: [] };
+  }
+  return { encounter: enc, now, events: [] };
 }
 
 /**

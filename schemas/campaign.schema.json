@@ -75,7 +75,23 @@
               "token": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$" },
               "side": { "enum": ["pc", "foe", "npc"] },
               "initiative": { "type": "number" },
-              "delayed": { "type": "boolean" }
+              "delayed": { "type": "boolean" },
+              "defeated": { "type": "boolean", "description": "Defeated: listed, its turns skipped." },
+              "hidden": { "type": "boolean", "description": "Hidden from players in the tracker (the GM's eye)." },
+              "stat": { "type": "string", "description": "The statistic its initiative was rolled with (perception, stealth, lore:<name>)." },
+              "roll": {
+                "type": "object",
+                "description": "How the initiative was rolled: the dice, the one kept, the modifier and the parts that counted.",
+                "properties": {
+                  "dice": { "type": "array", "items": { "type": "number" } },
+                  "kept": { "type": "number" },
+                  "mode": { "enum": ["normal", "higher", "lower"] },
+                  "sides": { "type": "integer" },
+                  "mod": { "type": "number" },
+                  "parts": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "type": { "type": "string" }, "value": { "type": "number" }, "added": { "type": "boolean" } } } },
+                  "typed": { "type": "boolean", "description": "Typed in (physical dice)." }
+                }
+              }
             }
           }
         }
