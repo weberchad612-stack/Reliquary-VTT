@@ -321,7 +321,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
   it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
   name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** and **ping** (rings
-  on every screen; your view scrolls to it); the ⋮ menu (yours: roll again, type a result, clear, remove). The
+  on every screen, centred on the token even when it is up in the air, unlike effects, which aim at the height
+  label; your view scrolls to it); the ⋮ menu (yours: roll again, type a result, clear, remove). The
   conditions this view may see show under the name. The acting row is outlined in gold, and its token gets a
   dashed gold ring on the map; hovering a row outlines its token.
 - **Rolling:** the die opens the **roll dialog**: the statistic (Perception first, then skills and lores), every

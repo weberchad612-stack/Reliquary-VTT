@@ -2847,12 +2847,12 @@ export async function start(store, { build = null } = {}) {
   /** Pixels (from the grid origin) of a cell point. */
   const cellPx = (c) => ({ x: P(c[0]), y: P(c[1]) });
   /** One end of a play: a token's centre (lifted toward its elevation label when it is up in the air) or a point. */
-  function fxEnd(ref, F, full) {
+  function fxEnd(ref, F, full, lifted = true) {
     if (ref === undefined || ref === null) return null;
     if (Array.isArray(ref)) return { pt: cellPx(ref), seen: full || F.at(ref[0], ref[1]) };
     const t = S.tokens[ref];
     if (!t) return null;
-    const sp = space(ref), lift = (t.elevation || 0) > 0 ? sp.size * 0.4 : 0;
+    const sp = space(ref), lift = lifted && (t.elevation || 0) > 0 ? sp.size * 0.4 : 0;
     return { pt: { x: P(sp.x + sp.size / 2), y: P(sp.y + sp.size / 2 - lift) }, seen: full || t.kind === 'pc' || F.seen.has(ref) };
   }
   /** The board's map under a token, drawn again offset: the shake on a hit. */
@@ -2879,7 +2879,7 @@ export async function start(store, { build = null } = {}) {
     let k = 0;
     for (const t of playTargets(rec, { tokens: S.tokens, targets: TARGETS, templates: TEMPLATES })) {
       let b = null, cells;
-      if (t.id || t.cell) b = fxEnd(t.id || t.cell, F, full);
+      if (t.id || t.cell) b = fxEnd(t.id || t.cell, F, full, rec.name !== 'ping');   // a ping marks the token itself, not its height
       else if (t.template) {
         const aim = templateAim(TEMPLATES[t.template]);
         cells = aim.cells.map(cellPx);
