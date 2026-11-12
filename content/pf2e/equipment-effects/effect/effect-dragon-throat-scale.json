@@ -1,0 +1,170 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragon-throat-scale",
+  "system": "pf2e",
+  "name": "Effect: Dragon Throat Scale",
+  "source": {
+    "title": "Pathfinder Treasure Vault",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Dragon Throat Scale\n\nYour force barrage loses the force trait and damage type, and instead it has the damage type of the breath weapon belonging to the dragon the scale came from, along with that trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:acid",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:cold",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:electricity",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:fire",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitMental",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:mental",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "mental"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:poison",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitVoid",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:void",
+                  {
+                    "not": "parent:origin:item:slug:dragon-throat-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "void"
+          }
+        ],
+        "flag": "dragonThroatScale",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:force-barrage"
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.dragonThroatScale}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:force-barrage"
+        ],
+        "property": "traits",
+        "value": "force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "item:slug:force-barrage"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage"
+        ],
+        "slug": "base",
+        "value": "{item|flags.system.rulesSelections.dragonThroatScale}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "kind": "creature",
+  "slug": "animated-boiler",
+  "system": "pf2e",
+  "name": "Animated Boiler",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "clockwork",
+    "construct",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 44,
+    "hp": 400,
+    "perception": 26,
+    "saves": {
+      "fortitude": 35,
+      "reflex": 24,
+      "will": 26
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 9,
+      "dex": 0,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 35
+    },
+    "speeds": {
+      "land": 10
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(40 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Door",
+      "attack": 35,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "3d8",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 15)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated furnace has Hardness. This Hardness reduces any damage the furnace takes by an amount equal to the Hardness. Once an animated furnace is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 40.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fan the Flames",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The animated furnace opens its door and fans its flames in a 30-foot cone that deals 9d6 fire damage (DC 40 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Hungry Gears",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The animated boiler attempts to Grab all adjacent creatures."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 3d8+17 fire, Rupture 25\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "This huge forge or oven is animated to protect a workspace or kitchen, travel alongside its owner, or both.\n\n---\n\nMany animated objects have useful functions but become dangerous when left uncontrolled.",
+  "blurb": "Variant animated furnace"
+}

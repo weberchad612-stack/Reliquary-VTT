@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "dalos",
+  "system": "pf2e",
+  "name": "Dalos",
+  "source": {
+    "title": "Pathfinder #148: Fires of the Haunted City",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "earth",
+    "evil",
+    "fey",
+    "fire"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 34,
+    "hp": 240,
+    "perception": 23,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 19,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 4,
+      "int": 2,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 29,
+      "nature": 23,
+      "survival": 23
+    },
+    "speeds": {
+      "land": 30,
+      "burrow": 20,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "fey",
+      "petran",
+      "pyric"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 10
+        },
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 15,
+          "except": "bludgeoning"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 31,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Earthbind",
+          "rank": 7,
+          "ref": "spells:spell/earthbind",
+          "uses": 3
+        },
+        {
+          "name": "Slow",
+          "rank": 7,
+          "ref": "spells:spell/slow"
+        },
+        {
+          "name": "Stinking Cloud",
+          "rank": 7,
+          "ref": "spells:spell/stinking-cloud"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 27,
+      "traits": [
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+11",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 25,
+      "range": 150,
+      "damage": [
+        {
+          "dice": "2d10+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Magma Splash",
+      "category": "defensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "Whenever the dalos takes damage from a melee Strike, magma splashes from its open wound and sticks to nearby creatures. Each creature in a 10-foot emanation must attempt a DC 31 Reflex save save. On a failure, the creature takes 3d6 persistent,fire damage as the superheated rock sticks to them and cools. The DC to end this persistent damage decreases by 5 each turn after the first as the magma cools."
+    },
+    {
+      "kind": "ability",
+      "name": "Volcanic Heat",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fire"
+      ],
+      "text": "10 feet. 3d6 fire damage (DC 29 basic Reflex save save).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "volcanic-heat",
+            "traits": [
+              "fire"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Belch Smoke",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The dalos blasts smoke from its head, creating a 20-foot burst of smoke that drifts to a location within 120 feet. This has the effects of Mist."
+    },
+    {
+      "kind": "ability",
+      "name": "Heat Rock",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "The dalos uses an Interact action to pluck a rock from its body or the nearby environment, then uses its internal fires to heat a rock it's holding until the rock is red hot. A heated rock that hits a target on a ranged Strike deals an additional 4d6 fire damage.\n\nOnce the dalos heats a rock, that rock retains its heat for 2 rounds before cooling.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "heat-rock"
+            ],
+            "selector": "rock-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "heat-rock",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lava Bomb",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "earth",
+        "fire"
+      ],
+      "text": "The dalos causes a volcanic explosion to erupt from its head, lobbing a mass of molten rock up to 100 feet. This lava bomb deals 6d8 fire damage and 6d8 bludgeoning damage to each creature in a 20-foot radius of its impact point, with a DC 33 basic Reflex save save.\n\nThe dalos can't use Lava Bomb again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Dalos are reclusive fey that dwell within or near remote volcanoes and volcanic vents and resemble the massive calderas they call home. They more often dwell within the superheated confines of these locales than in the \"cold wastelands\" beyond their warmth and are therefore rarely encountered outside such environments. Like most fey, dalos are capricious and vengeful. They hate being disturbed above all else and will often warn away intruders with only the throw of a red-hot boulder before attacking outright.\n\nA dalos stands 25 feet tall and weighs in excess of 20,000 pounds."
+}

@@ -1,0 +1,197 @@
+{
+  "kind": "creature",
+  "slug": "fetchling-sneak",
+  "system": "pf2e",
+  "name": "Fetchling Sneak",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-06: Struck by Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fetchling",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 8,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 4,
+      "deception": 4,
+      "diplomacy": 4,
+      "intimidation": 4,
+      "occultism": 5,
+      "society": 5,
+      "stealth": 7,
+      "survival": 4,
+      "thievery": 7,
+      "shadow-plane-lore": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril",
+      "sakvroth",
+      "shadowtongue"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Minor)",
+      "ref": "equipment:item/elixir-of-life-minor",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Slink",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The fetchling sneak is in an area of dim light or darkness\n\n---\n\nEffect The fetchling sneak sticks to the shadows as it moves to ambush an enemy. The fetchling sneak Strides up to half their Speed and makes a Strike. The sneak's target is Off-Guard against this attack. The fetchling sneak can choose to Stride up to their full speed, but doing causes the sneak to take a -2 penalty to their Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Shadow Slink (stride at full speed)",
+            "option": "shadow-slink",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "shadow-slink"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The fetchling sneak deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

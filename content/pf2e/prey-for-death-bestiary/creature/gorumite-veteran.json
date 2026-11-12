@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "gorumite-veteran",
+  "system": "pf2e",
+  "name": "Gorumite Veteran",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 240,
+    "perception": 21,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 21,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 6,
+      "dex": 4,
+      "int": 2,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 23,
+      "crafting": 16,
+      "intimidation": 20,
+      "medicine": 21,
+      "warfare-lore": 20
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common",
+      "skald"
+    ],
+    "notes": {
+      "saves": "+2 circumstance vs. fear"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greatsword",
+      "ref": "equipment:item/greatsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greatsword",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 26,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Circumstance to All Saves Vs. Fear",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "item:trait:fear"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Consecrated",
+      "category": "offensive",
+      "text": "As long as the Consecrate ritual effects persist in Crownhold, a Gorumite veteran gains a +1 status bonus to attack rolls, skill checks, saving throws, and Perception checks; these bonuses are not calculated into the stat block.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "self:deity:slug:gorum"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greatsword Critical Specialization",
+      "category": "offensive",
+      "text": "On a critical hit with a greatsword, the target of the critical hit is knocked off-balance and becomes Off-Guard until the start of the Gorumite veteran's next turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "greatsword-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heavy Swing",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Gorumite veteran Strikes with their greatsword, dealing 4d12+22 slashing damage plus 1d6 persistent bleed. This counts as two attacks when calculating their multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "heavy-swing",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "key": "DamageDice",
+            "predicate": [
+              "heavy-swing"
+            ],
+            "selector": "greatsword-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "greatsword-damage",
+          "type": "untyped",
+          "value": 11,
+          "when": [
+            "heavy-swing"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pinning Throw",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Gorumite veteran attempts a ranged Strike with their javelin, dealing 3d6+22 piercing damage. If the target is adjacent to a solid surface, they become stuck to that surface by the javelin. The target is Immobilized until they escape dc=33. The creature doesn't become stuck if it is incorporeal, is liquid (like a water elemental or some oozes), or could otherwise escape without effort."
+    }
+  ],
+  "blurb": "Human fighter"
+}

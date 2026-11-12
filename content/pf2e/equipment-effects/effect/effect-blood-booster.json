@@ -1,0 +1,170 @@
+{
+  "kind": "effect",
+  "slug": "effect-blood-booster",
+  "system": "pf2e",
+  "name": "Effect: Blood Booster",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Blood Booster (Lesser), Blood Booster (Moderate), Blood Booster (Greater)\n\nYou receive resistance to persistent bleed and persistent poison damage, and you lower the DC for any flat checks to end persistent bleed or persistent poison damage as if you received particularly appropriate aid.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:blood-booster-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Blood Booster (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:blood-booster-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Blood Booster (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:blood-booster-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Blood Booster (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "blood-booster"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blood-booster:blood-booster-lesser"
+        ],
+        "type": "bleed",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blood-booster:blood-booster-moderate"
+        ],
+        "type": "bleed",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blood-booster:blood-booster-greater"
+        ],
+        "type": "bleed",
+        "value": 20
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "damage:category:persistent",
+          "damage:type:poison"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.PersistentPoison",
+        "predicate": [
+          "blood-booster:blood-booster-lesser"
+        ],
+        "type": "custom",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "damage:category:persistent",
+          "damage:type:poison"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.PersistentPoison",
+        "predicate": [
+          "blood-booster:blood-booster-moderate"
+        ],
+        "type": "custom",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "damage:category:persistent",
+          "damage:type:poison"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.PersistentPoison",
+        "predicate": [
+          "blood-booster:blood-booster-greater"
+        ],
+        "type": "custom",
+        "value": 20
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          {
+            "or": [
+              "item:damage:type:bleed",
+              "item:damage:type:poison"
+            ]
+          }
+        ],
+        "property": "pd-recovery-dc",
+        "value": 10
+      }
+    }
+  ]
+}

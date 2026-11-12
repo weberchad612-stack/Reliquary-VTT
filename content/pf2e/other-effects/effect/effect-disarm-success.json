@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "effect-disarm-success",
+  "system": "pf2e",
+  "name": "Effect: Disarm (Success)",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Disarm\n\nYou take a –2 circumstance penalty to attacks using the targeted item. Further attempts to Disarm you gain a +2 circumstance bonus.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "attacks": true,
+          "predicate": [
+            "item:equipped",
+            {
+              "not": "item:category:unarmed"
+            }
+          ]
+        },
+        "flag": "disarmWeakenedGrasp",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.disarmWeakenedGrasp}-attack",
+      "type": "circumstance",
+      "value": -2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "key": "EphemeralEffect",
+        "selectors": "skill-check",
+        "uuid": "Compendium.pf2e.other-effects.Item.Effect: Disarm (Bonus)"
+      }
+    }
+  ]
+}

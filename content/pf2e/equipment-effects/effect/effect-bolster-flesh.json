@@ -1,0 +1,129 @@
+{
+  "kind": "effect",
+  "slug": "effect-bolster-flesh",
+  "system": "pf2e",
+  "name": "Effect: Bolster Flesh",
+  "source": {
+    "title": "Pathfinder #219: Lord of the Trinity Star",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 8,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sihedron Medallion, Sihedron Medallion (Greater), Sihedron Medallion (Major)\n\nYou gain temporary hit points and an item bonus to saving throws for the greater and major versions.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sihedron-medallion",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sihedron Medallion"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sihedron-medallion-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sihedron Medallion (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sihedron-medallion-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sihedron Medallion (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "sihedron-medallion"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "sihedron-medallion:sihedron-medallion"
+        ],
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "sihedron-medallion:sihedron-medallion-greater"
+        ],
+        "value": 16
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "sihedron-medallion:sihedron-medallion-major"
+        ],
+        "value": 25
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "sihedron-medallion-bonus",
+      "when": [
+        {
+          "or": [
+            "sihedron-medallion:sihedron-medallion-greater",
+            "sihedron-medallion:sihedron-medallion-major"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "sihedron-medallion:sihedron-medallion-major"
+        ],
+        "selector": "saving-throw",
+        "slug": "sihedron-medallion-bonus",
+        "value": 2
+      }
+    }
+  ]
+}

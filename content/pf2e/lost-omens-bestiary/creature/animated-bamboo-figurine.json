@@ -1,0 +1,153 @@
+{
+  "kind": "creature",
+  "slug": "animated-bamboo-figurine",
+  "system": "pf2e",
+  "name": "Animated Bamboo Figurine",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia World Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 8,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 3,
+      "dex": 4,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 10
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "16 when broken; construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 10,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 3)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated bamboo figuring has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated bamboo figuring is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 16.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spring Forward",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The animated bamboo figure jumps up to 30 feet and makes two fist Strikes against different targets. It can use Knockdown following this activity, attempting to Trip each creature struck."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Supple but strong bamboo strips woven into intricate patterns form the base of the animated bamboo figure. These materials are plentiful and easy to come by, though they require great care and patience to prepare, making them ideal guardians for isolated communities. These hollow and pliable handcrafts can stretch or compress, jumping and springing farther than most humanoids."
+}

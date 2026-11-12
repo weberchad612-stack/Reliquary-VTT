@@ -1,0 +1,276 @@
+{
+  "kind": "creature",
+  "slug": "gliminal",
+  "system": "pf2e",
+  "name": "Gliminal",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "incorporeal",
+    "spirit",
+    "vitality"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 160,
+    "perception": 18,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 4,
+      "dex": 6,
+      "int": 2,
+      "str": -5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 19,
+      "arcana": 15,
+      "medicine": 18,
+      "religion": 16,
+      "forge-of-creation-lore": 19
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "jyoti"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "void",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "telepathy 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Chromatic Wall",
+          "rank": 5,
+          "ref": "spells:spell/chromatic-wall"
+        },
+        {
+          "name": "Searing Light",
+          "rank": 5,
+          "ref": "spells:spell/holy-light",
+          "uses": 3
+        },
+        {
+          "name": "Heal (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/heal"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Scintillating Claw",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d8 + 7",
+          "type": "vitality"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Radiant Ray",
+      "attack": 19,
+      "traits": [
+        "light",
+        "magical",
+        "vitality"
+      ],
+      "maxRange": 30,
+      "damage": [
+        {
+          "dice": "4d8",
+          "type": "vitality"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 60 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Positive Nature",
+      "category": "defensive",
+      "text": "A gliminal doesn't gain the automatic or temporary Hit Points from being on a plane with the vitality planar essence."
+    },
+    {
+      "kind": "ability",
+      "name": "Radiant Mantle",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "light",
+        "visual",
+        "vitality"
+      ],
+      "text": "30 feet. The gliminal emits bright light in the area, and dim light out to 60 feet. When a creature enters or starts its turn in the area of bright light, it must succeed at a DC 25 Fortitude save save or become Dazzled until the end of its turn.\n\nIf the mantle is counteracted or suppressed, the gliminal loses their resistance and can't use Bond in Light until the mantle returns.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "radiant-mantle",
+            "priority": 50,
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "radiant-mantle"
+            ],
+            "value": {
+              "alpha": 0.3,
+              "animation": {
+                "intensity": 1,
+                "reverse": false,
+                "speed": 3,
+                "type": "pulse"
+              },
+              "bright": 30,
+              "color": "#fff9a3",
+              "coloration": 0.1,
+              "contrast": 0,
+              "darkness": {
+                "max": 1,
+                "min": 0
+              },
+              "dim": 60,
+              "gradual": true,
+              "luminosity": 0.5,
+              "saturation": 0,
+              "shadows": 0
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "radiant-mantle"
+            ],
+            "radius": 30,
+            "slug": "radiant-mantle",
+            "traits": [
+              "light",
+              "vitality",
+              "visual"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "void"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              "radiant-mantle"
+            ],
+            "type": "all-damage",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bond in Light",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "healing",
+        "primal",
+        "vitality"
+      ],
+      "text": "The gliminal magically links to one living creature within the radius of their radiant mantle. This creature glows with bright light in a 20-foot emanation and dim light to 40 feet.\n\nWhile the link is in effect, the target has fast healing 10, and any time the target needs to defend against an attack or attempt a save, the gliminal can substitute their own AC or corresponding save bonus if it's higher than the target's.\n\nAny time the target takes damage, the gliminal can choose to divert any amount of that damage to themself. The damage has the same type and still applies the gliminal's immunities, resistances, and weaknesses.\n\nThe link remains until the target is more than 120 feet away, the gliminal falls unconscious, or the gliminal uses Bond in Light again.\n\nEffect: Bond in Light"
+    },
+    {
+      "kind": "ability",
+      "name": "Overpowering Healing",
+      "category": "offensive",
+      "traits": [
+        "primal",
+        "vitality"
+      ],
+      "text": "When a gliminal grants vitality healing that would heal a living creature above their maximum Hit Points, including the fast healing HP from their Bond in Light ability, the excess is granted as temporary Hit Points.\n\nUnlike normal, these temporary HP combine with each other, and they last for 1 hour. If a creature's temporary HP from a gliminal ever exceeds its maximum HP, it becomes overloaded and explodes in a burst of vitality energy.\n\nA creature with temporary HP from overpowering healing becomes Sickened 1, or Sickened 2 if the temporary HP equal half their maximum HP or more. The creature can't reduce this sickened condition unless it has 0 temporary HP.\n\nOverpowering healing doesn't apply to creatures with the vitality trait."
+    }
+  ],
+  "text": "Beholding the blinding light of a gliminal is akin to staring into the sun, and consequently, only gliminals themselves fully understand what they are or how they truly look. Gliminals exude a constant aura of vitality energy, suffusing everything they encounter without regard for whether a creature's body can withstand these excesses of vitality energy.\n\nOn the Forge of Creation they call home, gliminals view outsiders as unfortunate creatures afflicted with the malady called mortality. They seek to suffuse mortals with light and healing until they no longer suffer, and they consider those who explode into vitality energy cured. Gliminals pulled to other planes, whether summoned or through interplanar rifts, find themselves overwhelmed, and usually lash out in increasingly desperate attempts to escape the oppressive onslaught of matter and negative energies."
+}

@@ -1,0 +1,145 @@
+{
+  "kind": "creature",
+  "slug": "zombie-hound",
+  "system": "pf2e",
+  "name": "Zombie Hound",
+  "source": {
+    "title": "Pathfinder #181: Zombie Feast",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "mindless",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 13,
+    "hp": 18,
+    "perception": 1,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 0,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 2,
+      "dex": -1,
+      "int": -5,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 6,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "interaction",
+      "text": "A zombie is permanently Slowed 1 and can't use reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flesh Tearer",
+      "category": "offensive",
+      "text": "The zombie hound's Strikes deal 1d4 extra damage to Prone creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:prone"
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

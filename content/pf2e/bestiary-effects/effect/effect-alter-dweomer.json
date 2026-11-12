@@ -1,0 +1,73 @@
+{
+  "kind": "effect",
+  "slug": "effect-alter-dweomer",
+  "system": "pf2e",
+  "name": "Effect: Alter Dweomer",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "- Divine You gain a +1 status bonus to all skill checks.\n\n- Occult You become invisible.\n\n- Primal You gain 10 temporary Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitDivine",
+            "value": "divine"
+          },
+          {
+            "label": "PF2E.TraitOccult",
+            "value": "occult"
+          },
+          {
+            "label": "PF2E.TraitPrimal",
+            "value": "primal"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Tradition",
+        "rollOption": "alter-dweomer"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "alter-dweomer:divine"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "alter-dweomer:occult"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Invisible"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "alter-dweomer:primal"
+        ],
+        "value": 10
+      }
+    }
+  ]
+}

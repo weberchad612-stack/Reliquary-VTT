@@ -1,0 +1,101 @@
+{
+  "kind": "feat",
+  "slug": "elemental-spark",
+  "system": "pf2e",
+  "name": "Elemental Spark",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "sprite"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "Sprite's Spark"
+  ],
+  "text": "Access Tian Xia origin (but see Special)\n\n---\nYou've learned to alter the magic of your sprite's spark, imparting them with elemental energies. The range of the unarmed strike from your sprite's spark increases to 30 feet. Choose one of the elements below. Your sprite's spark gains the versatile trait, allowing you to choose a different damage type when attacking with it. When dealing this different damage type, your sprite's spark gains the element's trait.\n- Water versatile B\n\n- Wood versatile vitality\n\n- Fire versatile fire\n\n- Earth versatile P\n\n- Metal versatile S\n\n---\nSpecial If you're a kineticist, an elemental sorcerer, or a geniekin versatile heritage other than suli, you also have access to Elemental Spark, though you must take the corresponding element; for instance, a hydrokineticist would have access to water, or an ardande geniekin would have access to wood.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitEarth",
+            "value": {
+              "damage": "piercing",
+              "element": "earth",
+              "trait": "versatile-p"
+            }
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": {
+              "damage": "fire",
+              "element": "fire",
+              "trait": "versatile-fire"
+            }
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": {
+              "damage": "slashing",
+              "element": "metal",
+              "trait": "versatile-s"
+            }
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": {
+              "damage": "bludgeoning",
+              "element": "water",
+              "trait": "versatile-b"
+            }
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": {
+              "damage": "vitality",
+              "element": "wood",
+              "trait": "versatile-vitality"
+            }
+          }
+        ],
+        "flag": "elementalSpark",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:sprites-spark"
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.elementalSpark.trait}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:sprites-spark",
+          "item:damage:type:{item|flags.system.rulesSelections.elementalSpark.damage}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.elementalSpark.element}"
+      }
+    }
+  ]
+}

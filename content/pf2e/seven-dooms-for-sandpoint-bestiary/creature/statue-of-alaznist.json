@@ -1,0 +1,137 @@
+{
+  "kind": "creature",
+  "slug": "statue-of-alaznist",
+  "system": "pf2e",
+  "name": "Statue of Alaznist",
+  "source": {
+    "title": "Pathfinder #200: Seven Dooms for Sandpoint",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "construct",
+    "earth",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 54,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 11,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": 4,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 13
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(19 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Ranseur",
+      "ref": "equipment:item/ranseur",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Ranseur",
+      "attack": 13,
+      "traits": [
+        "disarm",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 7)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated statue has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness.\n\nOnce an animated statue is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 19.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Animated statues are often used to guard crypts, small shrines, or areas in government buildings where they can be positioned amid normal statues to hide their true nature until an intruder arouses their ire. Adventurers' suspicions regarding statues suddenly animating and attacking has led many less scrupulous adventurers to automatically attack any statues they encounter, ruining harmless, ancient relics.\n\n---\n\nGranted a semblance of life through the use of rituals or other strange magic, animated objects take many forms and serve a variety of uses. A few examples of typical animated objects are listed below. Many of these creatures serve as guardians, surprising unsuspecting adventurers when they suddenly attack. Others serve as idle distractions for the exceptionally rich, simple servants created to handle odd jobs, and the like.",
+  "blurb": "Variant animated statue"
+}

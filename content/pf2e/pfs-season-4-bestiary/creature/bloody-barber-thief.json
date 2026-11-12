@@ -1,0 +1,284 @@
+{
+  "kind": "creature",
+  "slug": "bloody-barber-thief",
+  "system": "pf2e",
+  "name": "Bloody Barber Thief",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-07: A Most Wondrous Exchange!",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 9,
+      "deception": 10,
+      "society": 8,
+      "stealth": 13,
+      "thievery": 13,
+      "underworld-lore": 10
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "ac": "23 vs. traps",
+      "saves": "+1 circumstance to all saves vs. traps",
+      "perception": "(+12 to find traps)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sap",
+      "ref": "equipment:item/sap",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkvision Elixir (Lesser)",
+      "ref": "equipment:item/darkvision-elixir-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sap",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "nonlethal"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 14,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Circumstance to All Saves vs. Traps",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "trap"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The thief isn't off-guard to creatures of 5th level or lower that are Hidden, Undetected, flanking, or using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 4
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The thief is targeted with a melee or ranged attack by an attacker it can see.\n\n---\n\nEffect The thief gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "offensive",
+      "text": "When the thief Strides half their speed or less, that movement does not trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The thief deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, if the thief rolls Deception or Stealth for initiative, creatures that haven't acted are Off-Guard to them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Burglars specialize in breaking and entering to rob homes and businesses. These criminals focus on gaining access to secure buildings and bypassing traps and other security measures while remaining undetected all the while.\n\n---\n\nSome criminals are the desperate who have no option but to break the law to survive, while others choose a life of crime for thrills, forming gangs or underworld guilds that specialize in certain illegal ventures.",
+  "blurb": "Variant burgler"
+}

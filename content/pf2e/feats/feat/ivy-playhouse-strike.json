@@ -1,0 +1,73 @@
+{
+  "kind": "feat",
+  "slug": "ivy-playhouse-strike",
+  "system": "pf2e",
+  "name": "Ivy Playhouse Strike",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "flourish"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "Dandy Dedication"
+  ],
+  "text": "You've spent so many hours at the Ivy Playhouse or sparring with the Street Performers and Actors' Guild that you've picked up some stage combat techniques. In a fight, you can apply these approaches to make an attack less harmful but more confounding to your foes. Make a melee Strike. If you hit, you take a circumstance penalty to damage equal to the number of weapon damage dice, and the damage gains the nonlethal trait. However, the target is perplexed by the theatricality of your attack and becomes Clumsy 1 until the end of your next turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "ivy-playhouse-strike",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "ivy-playhouse-strike",
+          "item:melee"
+        ],
+        "selector": [
+          "melee-strike-damage"
+        ],
+        "type": "circumstance",
+        "value": "-1*(@weapon.system.damage.dice)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "ivy-playhouse-strike",
+          "item:melee"
+        ],
+        "property": "weapon-traits",
+        "value": "nonlethal"
+      }
+    },
+    {
+      "key": "note",
+      "selector": [
+        "melee-strike-damage"
+      ],
+      "text": "The target becomes Clumsy 1 until the end of your next turn.",
+      "when": [
+        "ivy-playhouse-strike",
+        "item:melee"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "kind": "creature",
+  "slug": "ghastly-bear",
+  "system": "pf2e",
+  "name": "Ghastly Bear",
+  "source": {
+    "title": "Pathfinder #147: Tomorrow Must Burn",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 135,
+    "perception": 16,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 6,
+      "dex": 1,
+      "int": -4,
+      "str": 6,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 19,
+      "survival": 14
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 20,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ghast-ghast-fever",
+        "ghast-paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "ghast-paralysis",
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stench",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "10 feet. A creature entering the aura or starting its turn in the aura must succeed at a DC 26 Fortitude save save or become Sickened 1 (plus Slowed 1 as long as it's sickened on a critical failure).\n\nWhile within the aura, the creature takes a -2 circumstance penalty to saves against disease and to recover from the sickened condition. A creature that succeeds at its save is temporarily immune for 1 minute.\n\nEffect: Stench",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The ghastly bear is adjacent to the corpse of a creature that died within the last hour.\n\n---\n\nEffect The ghastly bear devours a chunk of the corpse and regains 6d6 healing Hit Points.\n\nIt can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghast Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 26 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 3d8 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 3d8 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a Ghast the next midnight"
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "A ghastly bear gains a +4 circumstance bonus to damage rolls against creatures it has Grabbed.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "grabbing-target"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Target Grabbed by This Bear",
+            "option": "grabbing-target",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Any living creature hit by a ghastly bear's attack must succeed at a DC 26 Fortitude save save or become Paralyzed. It can attempt a new save at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

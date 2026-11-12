@@ -1,0 +1,347 @@
+{
+  "kind": "creature",
+  "slug": "sea-dragon-adult",
+  "system": "pf2e",
+  "name": "Sea Dragon (Adult)",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "amphibious",
+    "arcane",
+    "dragon",
+    "water"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 32,
+    "hp": 225,
+    "perception": 21,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 25,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 5,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 23,
+      "arcana": 18,
+      "athletics": 26,
+      "deception": 19,
+      "intimidation": 21,
+      "nature": 22,
+      "society": 18,
+      "stealth": 18,
+      "survival": 20
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 120,
+      "swim": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "sussuran",
+      "thalassic"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "ac": "fed by metal",
+      "speed": "water walk"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 32,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Environmental Endurance (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/environmental-endurance"
+        },
+        {
+          "name": "Water Walk (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/water-walk"
+        },
+        {
+          "name": "Create Water",
+          "rank": 1,
+          "ref": "spells:spell/create-water"
+        },
+        {
+          "name": "Create Water (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/create-water"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "hyponatremia"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Countered by Earth",
+      "category": "defensive",
+      "text": "If the sea dragon is targeted by a spell with the earth trait, Liquefy ends and they can't use it until the end of their next turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|description}",
+          "when": [
+            "item:trait:earth",
+            "item:type:spell",
+            "self:effect:liquefy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fed by Metal",
+      "category": "defensive",
+      "traits": [
+        "arcane"
+      ],
+      "text": "When a sea dragon is damaged by a spell or unarmed Strike of a creature with the metal trait, or a metallic weapon, the dragon's scales transform and grant them a +1 item bonus to AC until the start of their next turn.\n\nEffect: Fed by Metal",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.fedByMetalAC",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 30 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Liquefy",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "water"
+      ],
+      "text": "Trigger The dragon takes fire damage\n\n---\nEffect The dragon turns momentarily into water while maintaining their shape. They gain fire resistance 15, including against the triggering effect, until the end of their next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.liquefyResistance",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vortex",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "water"
+      ],
+      "text": "40 feet. Water in the aura that's also in the same body of water as the dragon is difficult terrain for Swimming creatures who don't have the water trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 40,
+            "slug": "vortex",
+            "traits": [
+              "water"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Black Water Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "water"
+      ],
+      "text": "The dragon shoots a ball of water that deals 13d6 bludgeoning damage in a 25-foot burst within 50 feet (DC 32 basic Reflex save save). All non-magical fire in the radius is extinguished. The dragon can't use Black Water Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Coiling Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes one claw Strike and one tail Strike in either order, each against the same target. If either Strike hits, the dragon can attempt to Grab the target with that limb as a free action. The dragon can have up to three creatures Grabbed or Restrained at a time; one in each of its front claws, and a third with their tail."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Black Water Breath whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "3d8+6 bludgeoning, DC 30 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Hyponatremia",
+      "category": "offensive",
+      "traits": [
+        "water"
+      ],
+      "text": "A living creature that takes damage from the sea dragon's jaws Strike must succeed at a DC 32 Fortitude save save or become Sickened 1 as a surge of excess water floods its body."
+    },
+    {
+      "kind": "spell",
+      "name": "Control Weather (No Secondary Caster Required)",
+      "rank": 8,
+      "ref": "spells:spell/control-weather"
+    }
+  ],
+  "text": "Imperial sea dragons are associated with elemental water and oversee rain, storms, rivers, and oceans. They live adjacent to the civilizations of Tian Xia, ready to aid mortal affairs and prove their worth. For some sea dragons, providing assistance in matters of the weather and arcane knowledge is a duty. For others, it's a perk that leads to valuable tributes or delicious meals. Visiting petitioners are all too eager to provide, for it's said that when a sea dragon is pleased, the rain is gentle and plentiful. In contrast, when they're angered, the storm spares none from its fury.\n\nDespite common Tian belief, civilization hardly lives at the mercy of the sea dragons, for most are subjects of kingdoms sworn to assist mortals. Most sea dragons are subjects of one of the four sea dragon kings, whose nation or united territories are based out in the Embaral Ocean, Ivory Sea, Okaiyo Ocean, and Songil Sea. Given the lack of native sea dragons on the Plane of Water, it's theorized that these kingdoms might be remnants of a mass exodus from the Boundless Sea. The sea dragon's own myths say their kings of old took oaths to escape persecution from the Elemental Lord Kelizandri. While it's uncertain if the Brackish Emperor yet seeks to exterminate the sea dragons, most uphold the sworn promise as part of their cultural heritage or in honor of their forebears."
+}

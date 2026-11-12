@@ -1,0 +1,116 @@
+{
+  "kind": "feat",
+  "slug": "armigers-protection",
+  "system": "pf2e",
+  "name": "Armiger's Protection",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Hellknight Dedication"
+  ],
+  "text": "You've learned to wear the iconic Hellknight armor. You become trained in light armor and Hellknight Breastplate, a medium armor. If you were already trained in light armor and medium armor, you gain training in Hellknight Half Plate and Hellknight Plate. Whenever you gain a class feature that grants you expert or greater proficiency in any type of armor (but not unarmored defense), you also gain that proficiency in the armor types granted to you by this feat. If you have a class feature that grants you expert proficiency in unarmored defense and you're 13th level or higher, you also become an expert in the armor types granted to you by this feat.\n\nIn addition, when you choose this feat, you receive a non-magical suit of Hellknight armor of a type you become trained in (Hellknight Breastplate, Hellknight Half Plate, or Hellknight Plate).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.hellknightArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.MartialProficiency.HellknightBreastplate",
+            "predicate": [
+              {
+                "or": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "hellknight-breastplate"
+          },
+          {
+            "label": "PF2E.SpecificRule.MartialProficiency.HellknightPlates",
+            "predicate": [
+              {
+                "nor": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "hellknight-plates"
+          }
+        ],
+        "flag": "hellknightDedication",
+        "key": "ChoiceSet",
+        "rollOption": "armigers-protection"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:hellknight-breastplate"
+        ],
+        "key": "MartialProficiency",
+        "kind": "defense",
+        "label": "PF2E.SpecificRule.MartialProficiency.HellknightBreastplate",
+        "predicate": [
+          "armigers-protection:hellknight-breastplate"
+        ],
+        "slug": "hellknight-breastplate-proficiency",
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.light.rank",
+        "predicate": [
+          "armigers-protection:hellknight-breastplate"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:slug:hellknight-half-plate",
+              "item:slug:hellknight-plate"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "kind": "defense",
+        "label": "PF2E.SpecificRule.MartialProficiency.HellknightPlates",
+        "predicate": [
+          "armigers-protection:hellknight-plates"
+        ],
+        "slug": "hellknight-plate-proficiency",
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    }
+  ]
+}

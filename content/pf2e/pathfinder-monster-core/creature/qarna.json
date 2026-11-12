@@ -1,0 +1,270 @@
+{
+  "kind": "creature",
+  "slug": "qarna",
+  "system": "pf2e",
+  "name": "Qarna",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archon",
+    "celestial",
+    "holy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 65,
+    "perception": 11,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 10,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 11,
+      "intimidation": 11,
+      "nature": 11,
+      "religion": 9,
+      "stealth": 10,
+      "survival": {
+        "value": 11,
+        "special": [
+          {
+            "value": 15,
+            "label": "to Track",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Translocate",
+          "rank": 4,
+          "ref": "spells:spell/translocate",
+          "uses": 3
+        },
+        {
+          "name": "Animal Messenger",
+          "rank": 2,
+          "ref": "spells:spell/animal-messenger",
+          "uses": 3
+        },
+        {
+          "name": "Charm (Animals Only)",
+          "rank": 1,
+          "ref": "spells:spell/charm",
+          "uses": 3
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        },
+        {
+          "name": "Sure Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 13,
+      "traits": [
+        "holy",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 14,
+      "traits": [
+        "deadly-d10",
+        "holy",
+        "magical",
+        "propulsive",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Protection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages the archon's ally and both are within 15 feet of the archon\n\n---\n\nEffect The ally gains resistance 5 to all damage against the triggering damage and the archon can make a Strike against the enemy."
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Pursuit",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per day\n\nRequirements The qarna saw another creature teleport within the last round and has at least one Translocate spell remaining\n\n---\n\nEffect The qarna casts one of their translocate spells, which is heightened to 5th rank and causes the qarna to arrive in an unoccupied space it chooses within 30 feet of the creature it's pursuing. If the creature is too far away, the qarna arrives as close as possible.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Distracting Arrow",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "mental"
+      ],
+      "text": "The qarna makes a composite longbow Strike. If it hits, the arrow lodges in the target and that creature's senses focus on the archon, leaving all else blurry. That creature takes a –2 status penalty to attack rolls and Perception checks against any target other than the qarna. The creature can Interact to remove the arrow, which ends the effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Touch of Charity",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "healing",
+        "manipulate",
+        "vitality"
+      ],
+      "text": "The qarna touches a willing living creature to take on that creature's wounds. The qarna transfers up to 30 of their own HP to the touched creature. (The qarna can't transfer more HP than they currently have.)"
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Qarnas are secretive and tireless sentinels and scouts, patrolling the Outer Sphere's untamed wilds for evil to eliminate and keeping small communities safe from demons, devils, and worse. They resemble ornate statuesque creations with four stag-like heads and golden horns. When requested to do so by their allies, especially the god Erastil, they journey into the Universe and patrol dangerous frontier areas, secretly performing acts of kindness such as leading hunters to food, helping lost children, and driving off evil creatures.\n\n---\n\nArchons are guardians of Heaven and enemies of corruption. Before gods and their servants set foot in the celestial planes, archons already resided in Heaven, the original inhabitants of the realm. Upon meeting, the archons and divine angels quickly discovered they were of a kind, holding justice and righteousness in their hearts. An alliance was formed, and archons now serve as stalwart allies to all celestials and mortals they find worthy.\n\nWhile the first archons coalesced from the immense seven-tiered mountain of Heaven, they choose willing and worthy Heaven-bound souls to join their ranks. These mortals hear and answer the call of a mysterious voice, manifesting in the Garden at the mountain's peak. There they swear to forever serve the cause of justice and transform into their new archon forms.\n\nThough deeply concerned with defending mortal life and willing to sacrifice themselves in battle against fiends, archons often feel rote and inscrutable to others, and their forms can border on frightening and bizarre. For this reason, they often have issues with interacting with mortals, or with the free spirited azatas. Despite this, archons draw great strength from others, especially those who exemplify virtue.\n\nBeyond their celestial allies, archons also maintain ancient ties with aeons. The inscrutable factions can still be seen working together to defend longforgotten secrets and enforce rules that predate mortal life. Archons explain these missions as necessary without further elaboration, leaving even their angelic allies frustrated with archons' obstinance."
+}

@@ -1,0 +1,129 @@
+{
+  "kind": "creature",
+  "slug": "sicklehand-construct",
+  "system": "pf2e",
+  "name": "Sicklehand Construct",
+  "source": {
+    "title": "Pathfinder #169: Kindled Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 15,
+    "perception": 6,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 1,
+      "dex": 3,
+      "int": -5,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": {
+        "value": 5,
+        "special": [
+          {
+            "value": 6,
+            "label": "to trip",
+            "when": [
+              "action:trip"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Wooden Sickle",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Wooden Sickle",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Critical Vulnerability",
+      "category": "defensive",
+      "text": "A critical hit damages the construct's controls, making it Clumsy 1 until repaired. Additional critical hits increase this value, up to Clumsy 4."
+    },
+    {
+      "kind": "ability",
+      "name": "Ridden Construct",
+      "category": "defensive",
+      "text": "The construct is piloted by a Leaf Leshy who can be targeted separately but has greater cover. The leshy can't take actions of their own while inside the construct, other than to leave it, which takes 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Menacing Sickles",
+      "category": "offensive",
+      "text": "The construct deals an additional 1d4 precision damage to Off-Guard or Prone creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "slashing",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "target:condition:off-guard",
+                  "target:condition:prone"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

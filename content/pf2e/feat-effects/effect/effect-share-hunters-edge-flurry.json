@@ -1,0 +1,85 @@
+{
+  "kind": "effect",
+  "slug": "effect-share-hunters-edge-flurry",
+  "system": "pf2e",
+  "name": "Effect: Share Hunter's Edge (Flurry)",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Animal Companion (Ranger), Shared Prey, Triple Threat, Warden's Boon\n\nYour multiple attack penalty for attacks against the marked creature is –3 (–2 with an agile attack) on your second attack of the turn instead of –5, and –6 (–4 with an agile attack) on your third or subsequent attack of the turn, instead of –10.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "share-hunters-edge"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:seek",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:track",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          "target:mark:share-hunters-edge"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "MultipleAttackPenalty",
+        "label": "PF2E.SpecificRule.Ranger.HuntersEdge.Flurry.Label",
+        "predicate": [
+          "item:trait:agile",
+          "target:mark:share-hunters-edge"
+        ],
+        "selector": "attack",
+        "value": -2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "MultipleAttackPenalty",
+        "label": "PF2E.SpecificRule.Ranger.HuntersEdge.Flurry.Label",
+        "predicate": [
+          "target:mark:share-hunters-edge",
+          {
+            "not": "item:trait:agile"
+          }
+        ],
+        "selector": "attack",
+        "value": -3
+      }
+    }
+  ]
+}

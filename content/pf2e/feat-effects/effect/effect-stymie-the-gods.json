@@ -1,0 +1,74 @@
+{
+  "kind": "effect",
+  "slug": "effect-stymie-the-gods",
+  "system": "pf2e",
+  "name": "Effect: Stymie the Gods",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "duration": {
+    "value": 3,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Stymie the Gods\n\nYou gain a status bonus to AC and to saving throws against divine spells, as well as the spells, Strikes, and abilities of extraplanar creatures.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": 2
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": 4
+          }
+        ],
+        "flag": "bonus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Mythic.PointSpentPrompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Godling.StymieTheGods.BonusToggle",
+        "option": "stymie-the-gods:extraplanar-creature",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "item:type:spell",
+                  "spellcasting:tradition:divine"
+                ]
+              },
+              "stymie-the-gods:extraplanar-creature"
+            ]
+          }
+        ],
+        "selector": [
+          "ac",
+          "saving-throw"
+        ],
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bonus"
+      }
+    }
+  ]
+}

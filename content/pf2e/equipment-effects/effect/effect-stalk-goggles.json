@@ -1,0 +1,119 @@
+{
+  "kind": "effect",
+  "slug": "effect-stalk-goggles",
+  "system": "pf2e",
+  "name": "Effect: Stalk Goggles",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Stalk Goggles, Stalk Goggles (Greater), Stalk Goggles (Major)\n\nYou gain all-around vision and can't be flanked, gain an item bonus to Perception checks involving sight (greater and major), and gain low-light vision (major).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:stalk-goggles",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Stalk Goggles"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:stalk-goggles-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Stalk Goggles (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:stalk-goggles-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Stalk Goggles (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "stalk-goggles"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.flankable",
+        "value": false
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "item",
+      "value": 1,
+      "slug": "stalk-goggles-bonus",
+      "when": [
+        {
+          "or": [
+            "stalk-goggles:stalk-goggles-greater",
+            "stalk-goggles:stalk-goggles-major"
+          ]
+        },
+        "item:trait:visual"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "stalk-goggles:stalk-goggles-major"
+        ],
+        "selector": "perception",
+        "slug": "stalk-goggles-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "stalk-goggles:stalk-goggles-major"
+        ],
+        "selector": "low-light-vision"
+      }
+    }
+  ]
+}

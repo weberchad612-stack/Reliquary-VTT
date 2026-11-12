@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "enchanting-shot",
+  "system": "pf2e",
+  "name": "Enchanting Shot",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype",
+    "emotion",
+    "magical",
+    "mental"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Eldritch Archer Dedication"
+  ],
+  "text": "With a single whisper carried on the wind, you enchant your ammunition to make a foe more vulnerable to your attacks.\n\nMake a bow or crossbow Strike. On a hit, the target takes an additional 2d6 mental damage. On a critical hit, the target also becomes Stunned 1. The mental damage increases to 3d6 if your weapon has a greater striking rune, or to 4d6 if your weapon has a major striking rune.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "enchanting-shot",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "mental",
+        "diceNumber": "max(2,@weapon.system.damage.dice)",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "enchanting-shot",
+          {
+            "or": [
+              "item:group:bow",
+              "item:group:crossbow"
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.EldritchArcher.EnchantingArrow.Note",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "enchanting-shot",
+        {
+          "or": [
+            "item:group:bow",
+            "item:group:crossbow"
+          ]
+        }
+      ]
+    }
+  ]
+}

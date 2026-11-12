@@ -1,0 +1,271 @@
+{
+  "kind": "creature",
+  "slug": "gwibble-3-4",
+  "system": "pf2e",
+  "name": "Gwibble (3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-02: The Mosquito Witch",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "fey",
+    "gremlin",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 20,
+    "hp": 44,
+    "perception": 9,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": -1,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 11,
+      "diplomacy": {
+        "value": 6,
+        "special": [
+          {
+            "value": 12,
+            "label": "vs. arthropods",
+            "when": [
+              "target:tag:arthropod"
+            ]
+          }
+        ]
+      },
+      "nature": 7,
+      "stealth": 11,
+      "thievery": 11
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Speak with Animals (At Will) (Arthropods only)",
+          "rank": 2,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dart",
+      "ref": "equipment:item/dart",
+      "type": "weapon",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Black Adder Venom",
+      "ref": "equipment:item/black-adder-venom",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dart",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "thrown"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "black-adder-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Loathing",
+      "category": "interaction",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "A mitflit's self-loathing makes it easy to influence. It takes a -4 penalty to its Will DC against checks to Coerce, Demoralize, Make an Impression, and Request.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "untyped",
+          "value": -4,
+          "when": [
+            {
+              "or": [
+                "action:coerce",
+                "action:demoralize",
+                "action:make-an-impression",
+                "action:request"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vermin Empathy",
+      "category": "interaction",
+      "text": "Mitflits can use Diplomacy to make-an-impression on and request things of arthropods (insects, spiders, scorpions, crabs, and similar invertebrate animals). Most arthropods have a starting attitude of Indifferent to mitflits."
+    },
+    {
+      "kind": "ability",
+      "name": "Baleful Blade",
+      "category": "offensive",
+      "text": "Any creature affected by the Bane spell is Off-Guard to Gwibble."
+    },
+    {
+      "kind": "ability",
+      "name": "Hidden Movement",
+      "category": "offensive",
+      "text": "If Gwibble starts his turn Undetected by a creature or merely Hidden from it, that creature is Off-Guard against Gwibble's attacks until the end of Gwibble's turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Gwibble deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Anger",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "As long as it isn't Frightened, a mitflit gains a +2 status bonus to damage rolls against a creature that has previously damaged or tormented it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "vengeful-anger",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "vengeful-anger",
+            {
+              "not": "self:condition:frightened"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

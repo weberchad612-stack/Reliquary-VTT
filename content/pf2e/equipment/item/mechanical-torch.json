@@ -1,0 +1,102 @@
+{
+  "kind": "equipment",
+  "slug": "mechanical-torch",
+  "system": "pf2e",
+  "name": "Mechanical Torch",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "clockwork"
+  ],
+  "text": "Powered by electricity, you can turn a mechanical torch on and off by toggling a lever on the torch with an Interact action. When active, the torch sheds bright light in either a 20-foot radius (and dim light to the next 40 feet) or a 40-foot cone (and dim light to the next 40 feet). Changing this area requires a single Interact action to flip a switch. The torch carries sufficient charge to operate for ten minutes. You can recharge the torch in 1 minute via an integrated crank-charging mechanism, turning the clockwork gears and generating sparks to power the torch, though doing so requires two hands.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.MechanicalTorch.Label",
+        "option": "lit-mechanical-torch",
+        "suboptions": [
+          {
+            "label": "PF2E.Area.Shape.cone",
+            "value": "cone"
+          },
+          {
+            "label": "PF2E.Area.Shape.emanation",
+            "value": "radius"
+          }
+        ],
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "lit-mechanical-torch:radius"
+        ],
+        "value": {
+          "animation": {
+            "intensity": 4,
+            "speed": 1,
+            "type": "torch"
+          },
+          "bright": 20,
+          "color": "#535387",
+          "coloration": 101,
+          "dim": 60,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "lit-mechanical-torch:cone"
+        ],
+        "value": {
+          "angle": 90,
+          "animation": {
+            "intensity": 4,
+            "speed": 1,
+            "type": "torch"
+          },
+          "bright": 40,
+          "color": "#535387",
+          "coloration": 101,
+          "dim": 80,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenEffectIcon",
+        "predicate": [
+          {
+            "or": [
+              "lit-mechanical-torch-radius",
+              "lit-mechanical-torch-cone"
+            ]
+          }
+        ],
+        "value": "systems/pf2e/icons/equipment/held-items/mechanical-torch.webp"
+      }
+    }
+  ],
+  "usage": "held-in-one-hand",
+  "bulk": 0.1,
+  "price": {
+    "gp": 10
+  }
+}

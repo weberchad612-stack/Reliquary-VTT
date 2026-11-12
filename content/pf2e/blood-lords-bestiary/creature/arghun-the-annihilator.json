@@ -1,0 +1,183 @@
+{
+  "kind": "creature",
+  "slug": "arghun-the-annihilator",
+  "system": "pf2e",
+  "name": "Arghun the Annihilator",
+  "source": {
+    "title": "Pathfinder #181: Zombie Feast",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 12,
+    "hp": 8,
+    "perception": 5,
+    "saves": {
+      "fortitude": 2,
+      "reflex": 5,
+      "will": 2
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 0,
+      "dex": 3,
+      "int": -2,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 5,
+      "stealth": 6,
+      "survival": 2,
+      "warfare-lore": 3
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "taldane"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious",
+        "visual"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grip Throat",
+      "category": "offensive",
+      "text": "A Medium or smaller creature that is Grabbed by the crawling hand has difficulty speaking and must spend an extra action to perform any action with the verbal trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Mark Quarry",
+      "category": "offensive",
+      "text": "A crawling hand can be assigned a quarry by anointing the hand with a drop of the intended quarry's blood. If the hand ever has no quarry, it automatically gains the next creature it damages as its quarry. The hand gains a +1 circumstance bonus to Perception checks when it Seek its quarry, to Survival checks when it Tracks its quarry, and damage rolls when it Strikes its quarry.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mark-quarry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "mark-quarry",
+            "action:seek"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "mark-quarry",
+            "action:track"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "mark-quarry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Typically, crawling hands are formed when severed appendages are endowed with a crude sentience by evil necromantic energies that turn them into tireless killers. Yet crawling hands can also arise spontaneously, usually when a creature loses an appendage in a place rife with necromantic energy or with a connection to the Void.\n\n---\n\nA crawling hand formed from the appendage of a Medium creature is quick and agile, skittering in the shadows until it can strike its prey.",
+  "blurb": "Variant elite crawling hand"
+}

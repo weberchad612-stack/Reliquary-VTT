@@ -1,0 +1,121 @@
+{
+  "kind": "effect",
+  "slug": "effect-lastwall-soup",
+  "system": "pf2e",
+  "name": "Effect: Lastwall Soup",
+  "source": {
+    "title": "Pathfinder Lost Omens Character Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Lastwall Soup, Lastwall Soup (Improved), Lastwall Soup (Greater)\n\nThe creature gains an item bonus to Stealth checks and DCs against undead. If greater, you also gain 10 temporary hit points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:lastwall-soup",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Lastwall Soup"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:lastwall-soup-improved",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Lastwall Soup (Improved)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:lastwall-soup-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Lastwall Soup (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "lastwall-soup"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "item",
+      "value": 2,
+      "slug": "lastwall-soup-bonus",
+      "when": [
+        {
+          "or": [
+            "target:mode:undead",
+            "origin:mode:undead"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "lastwall-soup:lastwall-soup-improved"
+        ],
+        "selector": "stealth",
+        "slug": "lastwall-soup-bonus",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "lastwall-soup:lastwall-soup-greater"
+        ],
+        "selector": "stealth",
+        "slug": "lastwall-soup-bonus",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "lastwall-soup:lastwall-soup-greater"
+        ],
+        "value": 10
+      }
+    }
+  ]
+}

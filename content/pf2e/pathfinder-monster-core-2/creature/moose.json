@@ -1,0 +1,170 @@
+{
+  "kind": "creature",
+  "slug": "moose",
+  "system": "pf2e",
+  "name": "Moose",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 18,
+    "hp": 50,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 10,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": {
+        "value": 12,
+        "special": [
+          {
+            "value": 14,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 8
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Antler",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d10+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cold Adaptation",
+      "category": "defensive",
+      "text": "The moose reduces the effects it suffers from cold environments by one step."
+    },
+    {
+      "kind": "ability",
+      "name": "Kick Back",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The moose bucks and kicks back with both hind hooves, making a Strike with a -2 circumstance penalty to the attack roll. If it hits, it deals an extra 1d8 bludgeoning damage.\n\nThis counts as two attacks when calculating the moose's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "kick-back",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hoof-attack",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "kick-back"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "kick-back"
+            ],
+            "selector": "hoof-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Thundering Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The moose Strides twice and then makes an antler Strike. A Medium or smaller creature damaged by this attack must succeed at a DC 18 Fortitude save save or be Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "thundering-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "note",
+          "selector": "antler-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "thundering-charge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Medium or smaller, hoof, DC 20 basic Reflex save\n\n---"
+    }
+  ],
+  "text": "Moose are a large, solitary type of deer. They're majestic, territorial, and extremely grumpy-traits that make them dangerous to unwary travelers and would-be predators alike. Males are instantly recognizable, standing 7 feet tall at the shoulder, with large heads and thick necks to support their impressive palmate antlers. They shed their antlers come winter and grow a new set each year at a rapid rate.\n\nFor most of the year, moose roam tundra, forest, and wilderness territories by themselves. Their hooves are wide, allowing them to more easily traverse the frequent snowfall of their native terrain, and they typically journey alone. Moose come together only during mating season, a time in which they become oddly social with one another, loud, and even more aggressive to other creatures than usual.\n\nA moose's diet consists of leaves, woody plant matter like twigs or bark, and buds of trees and shrubs. Moose are so large they prefer to eat the leaves of trees taller than humans instead of lowering their giant heads all the way to the ground. This can make them easy to track, though hunters will find actually killing a moose is a far greater challenge than finding it. Despite their size, moose have many natural predators, especially pack animals like wolves and large carnivores like tigers. Large humanoids like ogres and trolls dwelling in the wilderness sometimes make sport of chasing down and wrestling moose.\n\nDespite their large size, moose are expert swimmers in both fresh and salt water, and they readily feed on aquatic vegetation. Moose rarely swim into open seas, however, and usually stay close to land, though ocean predators have been known to hunt swimming moose. To an observer watching from the safe distance of a dry shore, the large branching antlers of a swimming moose can sometimes be mistaken for a tree bobbing along in the water."
+}

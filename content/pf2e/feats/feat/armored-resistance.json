@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "armored-resistance",
+  "system": "pf2e",
+  "name": "Armored Resistance",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Guardian's Intercept"
+  ],
+  "text": "While you are wearing medium or heavy armor, you gain resistance to physical damage equal to half your character level when you use the Intercept Attack reaction to take damage instead of your ally.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.guardianDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "nor": [
+              "armor:category:medium",
+              "armor:category:heavy"
+            ]
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "option": "armored-resistance",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armored-resistance"
+        ],
+        "type": "physical",
+        "value": "floor(@actor.level / 2)"
+      }
+    }
+  ]
+}

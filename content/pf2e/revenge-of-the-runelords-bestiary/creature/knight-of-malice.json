@@ -1,0 +1,253 @@
+{
+  "kind": "creature",
+  "slug": "knight-of-malice",
+  "system": "pf2e",
+  "name": "Knight of Malice",
+  "source": {
+    "title": "Pathfinder #221: Into the Apocalypse Archive",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "aberration"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 38,
+    "hp": 330,
+    "perception": 27,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 28,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 9,
+      "dex": 6,
+      "int": 2,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 28,
+      "athletics": 32,
+      "deception": 30,
+      "intimidation": 30,
+      "stealth": 28,
+      "survival": 27,
+      "warfare-lore": 26
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "jotun",
+      "thassilonian"
+    ],
+    "iwr": {
+      "immunities": [
+        "controlled"
+      ],
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to saves vs. magic, +4 status to saves vs. mental",
+      "perception": "sin scent (precise) 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 32,
+      "traits": [
+        "magical",
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 31,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "sinful-bite"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 31,
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sin Scent",
+      "category": "interaction",
+      "text": "A knight of malice can smell envious creatures as the scent ability, but as a precise sense. The GM determines which creatures are appropriately envious."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+4 Status to All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Jealous Enmity",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Another knight of malice successfully Strikes a creature within 15 feet\n\nRequirements The knight of malice Seethed during their last turn\n\n---\nEffect The knight of malice Strides up to 15 feet and makes a melee Strike against the same creature. The knight of malice who rolled a higher result on their attack becomes Quickened for 1 round and can use the extra action only to Seethe or Stride."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Spiteful Eye",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "visual"
+      ],
+      "text": "30 feet. Knights of malice hate to see others succeed and sabotage the efforts of other knights whenever they can. The knight of malice takes a –2 circumstance penalty to Reflex saving throws and their Strikes deal an extra 1d6 mental damage if there's at least one other knight of malice in the aura.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "self:effect:spiteful-eye"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "self:effect:spiteful-eye"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Spiteful Eye"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "emotion",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Seethe",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "Requirements Another knight of malice is within the area of the knight's spiteful eye aura\n\n---\nEffect The knight of malice ruminates on their unjust treatment and plots a new method of overthrowing and outshining another knight. The knight of malice gains a second reaction until the start of their next turn, though they still can't use more than one reaction on the same triggering action."
+    },
+    {
+      "kind": "ability",
+      "name": "Sinful Bite",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "emotion",
+        "mental"
+      ],
+      "text": "A creature hit by the jaws Strike of a knight of malice must attempt a DC 37 Will save save as it's assaulted by envious thoughts.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is Stupefied 1 for 1 round.\n\nFailure The creature is Stupefied 2 and Confused for 1 minute. For as long as it remains stupefied, the flat check to end the confused condition when the creature is damaged is DC 14.\n\nCritical Failure As failure, but Stupefied 3."
+    }
+  ],
+  "text": "Knights of malice are powerful, winged sinspawn, cultivated for the abundance of jealousy and hatred in their hearts. The knights scheme and strive to undermine each other, nourishing their animosity like any other soldier might train to foster camaraderie and teamwork with their allies. Each knight dreams of the day they prove their power and worthiness to the runelord of envy and reap their just rewards.\nA Source of Malice\nWhile other runelords abandoned the original sinspawn creation ritual in favor of using minor runewells, Belimarius instead innovated and perfected the original ritual used to create sinspawn, using it to empower a sinspawn through repeated and nested castings. Her knights of malice are washed in the souls of dozens of envious creatures each, reaching greater heights of envy than any other sinspawn."
+}

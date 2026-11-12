@@ -1,0 +1,258 @@
+{
+  "kind": "creature",
+  "slug": "shino-hakusa-level-20",
+  "system": "pf2e",
+  "name": "Shino Hakusa (Level 20)",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 45,
+    "hp": 360,
+    "perception": 34,
+    "saves": {
+      "fortitude": 33,
+      "reflex": 36,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 7,
+      "int": 2,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 38,
+      "athletics": 35,
+      "deception": 33,
+      "medicine": 35,
+      "occultism": 35,
+      "thievery": 33
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "goblin",
+      "taldane",
+      "tien",
+      "ysoki"
+    ],
+    "notes": {
+      "saves": "+3 status to all saves vs. necromancy",
+      "perception": "lifesense"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+3 Major Striking Greater Shock Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Potion of Flying (Greater)",
+      "ref": "equipment:item/potion-of-flying-greater",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Potion of Quickness",
+      "ref": "equipment:item/potion-of-quickness",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Fingers",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d6+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ki-absorption"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Palm",
+      "attack": 37,
+      "traits": [
+        "forceful",
+        "magical",
+        "shove",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "6d6+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "ki-absorption"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Vitality Blast",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "unarmed",
+        "versatile-vitality",
+        "void"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "4d8+8",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+3 status to all saves vs. necromancy",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 3,
+          "when": [
+            "necromancy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Hakusa is targeted with a melee or ranged attack by an attacker she can see.\n\n---\n\nEffect Hakusa gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ki Absorption",
+      "category": "offensive",
+      "text": "Hakusa absorbs vitality with each blow. She gains fast healing 10 for 1 round whenever she successfully Strikes with a melee unarmed attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:trait:unarmed"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "greater-shock"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pressure Point Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Hakusa rapidly strikes at pressure points to debilitate a foe. She makes a fingers Strike. On a hit, the target takes damage as normal and must attempt a DC 43 Fortitude save save. Regardless of the result of the save, the target is then temporarily immune to Pressure Point Attack for 1 minute.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target's muscles become temporarily weaker. For 1 round, the target is Enfeebled 2, and any time it attempts to take an action with the manipulate trait, the action is disrupted unless it succeeds at a flat check with a DC equal to 5 + its enfeebled value.\n\nFailure As success, but the duration is 1 minute.\n\nCritical Failure As success, but the duration is 1 minute, the flat check is DC 11, and the target takes a –10-foot status penalty to all Speeds for the duration."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Hakusa's Strikes deal an extra 5d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 5,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swallows in Flight",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "certain-kill",
+        "void"
+      ],
+      "text": "Frequency once per round\n\n---\n\nEffect Hakusa strikes a series of pressure points on her target's body that redirects its ki to the heart, before following up with a palm strike to the sternum. She makes a fingers Strike and a palm Strike, dealing damage as normal. If both hit, the target takes 8d10 void damage as its life energy escapes from its body in a shower of bird-shaped sparks. The target attempts a DC 43 Fortitude save save.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target takes half the void damage.\n\nFailure The target takes full damage, its life energy exploding violently from its back in a 30-foot cone originating from the target. All of Hakusa's other enemies in the cone also take the void damage (DC 43 basic Fortitude save save).\n\nCritical Failure As failure, but the target takes double void damage.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "blurb": "Female Tian-Shu ninja"
+}

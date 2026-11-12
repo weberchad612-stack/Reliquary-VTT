@@ -1,0 +1,254 @@
+{
+  "kind": "creature",
+  "slug": "eseneth",
+  "system": "pf2e",
+  "name": "Eseneth",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "monitor",
+    "psychopomp"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 290,
+    "perception": 29,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 32,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 8,
+      "int": 6,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 33,
+      "athletics": 33,
+      "medicine": 31,
+      "stealth": 33,
+      "boneyard-lore": 29,
+      "sewing-lore": 35
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 120,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease"
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 15
+        },
+        {
+          "type": "void",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "speed": "unfettered movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 38,
+      "attack": 30,
+      "spells": [
+        {
+          "name": "Spirit Blast",
+          "rank": 8,
+          "ref": "spells:spell/spirit-blast",
+          "uses": 3
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Unfettered Movement (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Invisibility (At will, Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spirit Needle",
+      "attack": 33,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab",
+        "shepherds-touch"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spirit Needle",
+      "attack": 33,
+      "traits": [
+        "magical",
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "shepherds-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 120 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Mend Soul",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Frequency once per round\n\n---\n\nEffect The eseneth restores 25 healing HP to itself or an incorporeal creature it has Grabbed.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Seize Soul",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "incapacitation"
+      ],
+      "text": "Requirements The eseneth has a corporeal creature Grabbed or Restrained\n\n---\nEffect The eseneth tries to yank the soul out of the required creature. The eseneth attempts an Athletics check against the target's Fortitude DC.\n\n---\nCritical Success The eseneth grabs the target's soul. The body is released and is Paralyzed for 2 rounds. When the body ceases being paralyzed, its soul returns instantly, and the target wakes. The soul—grabbed by the eseneth—is incorporeal, is Invisible, has a fly Speed equal to the creature's Speed, and otherwise has all the same statistics. It can't attack, cast spells, or attempt any skill checks that require a physical body other than checks to Escape (DC 38), and it must always maintain line of effect to its body.\n\nSuccess As critical success, but the paralysis ends after 1 round.\n\nFailure The target remains grabbed or restrained, but its soul remains in its body.\n\nCritical Failure The target is no longer grabbed or restrained."
+    },
+    {
+      "kind": "ability",
+      "name": "Shepherd's Touch",
+      "category": "offensive",
+      "text": "A eseneth's Strikes affect incorporeal creatures with the effects of a Ghost Touch property rune and deal 2d6 void damage to living creatures and 2d6 vitality damage to undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shred Soul",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirements The eseneth has an incorporeal creature Grabbed or Restrained\n\n---\nEffect The eseneth deals 3d10+14 force damage to the required creature.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Spirit Grasp",
+      "category": "offensive",
+      "text": "An eseneth can Grapple incorporeal creatures despite being corporeal. The eseneth uses Athletics to Grapple incorporeal creatures as normal but can't use Athletics for other actions against incorporeal creatures, like Shove or Trip."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Eseneths, commonly known as soul-stitchers, are dispassionate surgeons who repair damaged souls. They operate with professional efficiency, manifesting large stitching needles composed of spirit energy to do their necessary work. An eseneth appears as a slim, hairless, gray-skinned humanoid with no facial features. Patches of dark, raised flesh dot their upper chest and shoulders.\n\n---\nMany psychopomps are intimately involved with the Boneyard's massive bureaucracy. Few pursue mercy, justice, or personal gain; their duties to Pharasma and her Boneyard are supreme. Nevertheless, individual psychopomps interpret their duties in different ways, which might put them in conflict with mortals or even with each other."
+}

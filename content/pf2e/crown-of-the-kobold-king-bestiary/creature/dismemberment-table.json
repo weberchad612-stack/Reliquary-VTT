@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "dismemberment-table",
+  "system": "pf2e",
+  "name": "Dismemberment Table",
+  "source": {
+    "title": "Pathfinder Adventure: Crown of the Kobold King",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 56,
+    "perception": 11,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 2,
+      "int": -5,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "ac": "18 when broken"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Blade",
+      "attack": 14,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Strap",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "2d4+7",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 8)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated armor has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated armor is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 18.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Haunted",
+      "category": "defensive",
+      "text": "The dismemberment table is powered by unquiet spirits, and it takes damage from vitality energy as if it were undead. Vitality energy bypasses the table's hardness.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        },
+        {
+          "key": "immunity",
+          "type": "vitality"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disabling Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The dismemberment table attempts a blade Strike on a single target that it has Grabbed or Restrained. If this Strike hits, the blade cuts deep into one of the target's limbs. The target must attempt a DC 22 Fortitude save save.\n\n---\nCritical Success The creature suffers no additional effect.\n\nSuccess The creature takes 1d6 bleed damage.\n\nFailure The creature takes 2d6 bleed damage and is Clumsy 1. This clumsy condition ends once the creature is restored to full Hit Points.\n\nCritical Failure As failure, but Clumsy 2."
+    }
+  ],
+  "blurb": "Variant animated object"
+}

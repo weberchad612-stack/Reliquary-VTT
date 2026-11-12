@@ -1,0 +1,73 @@
+{
+  "kind": "feat",
+  "slug": "animal-actor",
+  "system": "pf2e",
+  "name": "Animal Actor",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Kitharodian Actor Dedication"
+  ],
+  "text": "You participated in a performance of The Leaping Lion, a play focusing on Cyricas, the animal-loving adventurer who traveled with his ape friend Mardu and remains a favorite hero among Taldan youth. You become trained in Nature and a Lore skill related to a particular type of animal commonly used in show business (such as Canine Lore, Ursine Lore, or Primate Lore); if you were already trained in either, you become an expert in that skill instead. You gain a +2 circumstance bonus to all checks to Command an Animal and Recall Knowledge about creatures with the animal trait. You can use your chosen animal Lore to Command an Animal of that type.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "animal-actor",
+        {
+          "or": [
+            "action:recall-knowledge",
+            "action:command-an-animal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "predicate": [
+              "skill:nature:rank:1"
+            ],
+            "value": 2
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "predicate": [
+              {
+                "not": "skill:nature:rank:1"
+              }
+            ],
+            "value": 1
+          }
+        ],
+        "flag": "rank",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.nature.rank",
+        "value": "@item.flags.system.rulesSelections.rank"
+      }
+    }
+  ]
+}

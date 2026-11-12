@@ -1,0 +1,187 @@
+{
+  "kind": "creature",
+  "slug": "aspis-veteran-guard",
+  "system": "pf2e",
+  "name": "Aspis Veteran Guard",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-12: Snakes in the Grass",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 14,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 9,
+      "deception": 10,
+      "diplomacy": 8,
+      "intimidation": 8,
+      "stealth": 12,
+      "survival": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "goblin"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 13,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 14,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running Reload",
+      "actions": 1,
+      "category": "interaction",
+      "text": "The Aspis veteran guard Stride, Steps, or Sneaks, and then Interacts to reload"
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The Aspis veteran guard designates a single creature they can see and hear, or one they're Tracking, as their prey. The Aspis veteran guard gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. This effect lasts until the Aspis veteran guard uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Precision Edge",
+      "category": "offensive",
+      "text": "The first time the Aspis veteran guard hits their hunted prey in a round, they deal an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "onryo",
+  "system": "pf2e",
+  "name": "Onryo",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 180,
+    "perception": 21,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 23,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 5,
+      "dex": 7,
+      "int": 2,
+      "str": 2,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 20,
+      "stealth": 25,
+      "survival": 23
+    },
+    "speeds": {
+      "land": 35,
+      "climb": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 8,
+          "except": "force"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "flicker, spider climb, water walk"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 32,
+      "attack": 24,
+      "spells": [
+        {
+          "name": "Blink (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/flicker"
+        },
+        {
+          "name": "Nightmare",
+          "rank": 6,
+          "ref": "spells:spell/nightmare"
+        },
+        {
+          "name": "Spider Climb (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/gecko-grip"
+        },
+        {
+          "name": "Water Walk (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/water-walk"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+8",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "mental"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flicker",
+      "category": "offensive",
+      "text": "An onryo's erratic movement makes them difficult to target. If an onryo moves at least 10 feet during a move action, they gain Concealment until the start of their next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Onryo's Rancor",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "mental",
+        "occult"
+      ],
+      "text": "Requirements The onryo's last action was a successful claw Strike\n\n---\n\nEffect The onryo attempts to instill its need for vengeance into the creature. The onryo, with their touch, casts a 5th-rank Geas on the creature they hit (DC 30 Will save). On a failure, it's forced to seek and slay loved ones of the onryo's wrongdoer and anyone who attempts to defend them for up to one week. On a critical failure, the duration is 1 month and the creature gains Onryo's Rancor, which it's also compelled to use by the geas. Regardless of the outcome, the creature is temporarily immune to Onryo's Rancor from this individual for 1 year."
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Suffocation",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Frequency once per hour\n\n---\n\nEffect The onryo channels their boundless resentment, manifesting it as a tangled clump of wet hair, a clot of rancid swamp mud, or other disgusting mass of matter in the throat of a creature within 30 feet. The creature must attempt a DC 32 Fortitude save save.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature becomes Sickened 1.\n\nFailure The creature becomes Sickened 2.\n\nCritical Failure The creature becomes Sickened 3 and the mass fully blocks the creature's airway. The creature begins suffocating.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    }
+  ],
+  "text": "Onryos are created when a person dies violently in the grip of extreme emotion, such as unbridled rage or overwhelming sorrow. These twisted undead return as beings of pure vengeance, seeking to endlessly spread suffering. Onryos torment those who killed them, but not by directly attacking their murderer. Instead, an onryo hunts down the friends, family members, and anyone connected to their foe. In doing so, the onryo inflicts as much torment as possible on the person responsible for their demise. An onryo's vengeful nature persists indefinitely; not even the death of their killer sates their lust for destruction. Vengeance is just a way for them to spread their pain to others, and they quickly find new targets for their ire. Onryos always wear funeral clothing, often dripping wet or covered in filth. Most of them also display wounds or signs indicating how they died. As they move, onryos seem to pop in and out of existence, making them difficult to track in combat."
+}

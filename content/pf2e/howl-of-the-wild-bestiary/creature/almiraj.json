@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "almiraj",
+  "system": "pf2e",
+  "name": "Almiraj",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "animal"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 20,
+    "hp": 63,
+    "perception": 14,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 13,
+      "stealth": 10,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 35,
+      "burrow": 25
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 40,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 13,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 13,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "5 feet. DC 22 Will save\n\n---\n\nCreatures that critically fail are also Fleeing for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 5,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Horn only)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Fleeing creatures take an additional 1d6 persistent bleed damage. On a critical hit, the target is knocked Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "reactive-strike-horn",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "reactive-strike-horn",
+              "target:condition:fleeing"
+            ],
+            "selector": "horn-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": [
+            "horn-attack"
+          ],
+          "text": "PF2E.AttackEffects.KnockProneCriticalHit",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "reactive-strike-horn"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Final Shake",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The almiraj has a creature Grabbed\n\n---\n\nEffect The almiraj clamps its jaws down on the creature and shakes it vigorously, attempting to finish it off. The creature takes 2d6 bludgeoning damage and must succeed at a DC 20 Fortitude save save or become Enfeebled 1. Small or smaller creatures take a –2 circumstance penalty to their save."
+    },
+    {
+      "kind": "ability",
+      "name": "Goring Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The almiraj lowers its head and moves with ferocity toward its selected prey. The almiraj Strides twice. If it ends its movement within melee reach of at least one enemy, it makes a horn Strike against that enemy. This Strike deals an additional 1d6 persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "goring-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "goring-charge"
+            ],
+            "selector": "horn-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Into the Earth",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The almiraj has a Medium or smaller creature Grabbed\n\n---\n\nEffect The almiraj attempts to flee with its meal, burrowing into the ground. The grabbed creature must succeed at a DC 20 Reflex save save or be dragged beneath the ground as the almiraj Burrows up to its Speed. If the target succeeds at its save, it Escapes and the almiraj continues burrowing as normal; if it fails, the grabbed creature must hold its breath or begin suffocating under the dirt."
+    }
+  ],
+  "text": "An almiraj closely resembles a yellow hare in almost all ways... except for the 2-foot-long black horn jutting from its forehead. Though it shares this trait with the docile unicorn, that's where their similarities end. Almirajes are vicious creatures, known to slaughter much larger cattle and, in times of desperation, people. Its stare is said to send even the bravest warrior running for their life.\n\nUnlike common hares, almirajes are solitary and intensely territorial. They're adaptable ambush hunters with the stamina and speed to chase down any prey. They attack with their jaws and claws but are primarily known for trying to gut their prey with a vicious stab from their horn. Many scholars believe that the terrifying magical aura the creatures exude originates from their horns. This line of thinking has led to an increase in almiraj attacks as local citizens try to capture the creature alive and remove the horn, hoping this will turn it into a more docile hare. These hopes have not proven fruitful, as an almiraj is just as aggressive, if not more so, after their horn has been removed.\n\nAdventurers often think themselves lucky if they manage to avoid the terrifying horn of this ferocious predator, but it's a much better alternative than being caught in its jaws. Almirajes have a nasty habit of grabbing their prey and vigorously shaking them until they go limp. If this fails, they'll drag their prey underground until they suffocate deep in the earth. Few have ever escaped the burrow of an almiraj."
+}

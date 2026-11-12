@@ -1,0 +1,72 @@
+{
+  "kind": "heritage",
+  "slug": "mottle-coat-centaur",
+  "system": "pf2e",
+  "name": "Mottle-Coat Centaur",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Centaur",
+    "ref": "ancestries:ancestry/centaur"
+  },
+  "text": "Your coat is mottled or striped, granting you natural camouflage in your home environment. Select a terrain from the following: arctic, desert, forest, mountain, plains, or swamp. In your selected terrain, you gain a +1 circumstance bonus to Stealth checks to Hide or Sneak and to Deception checks to Feint.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Terrain.Arctic",
+            "value": "arctic"
+          },
+          {
+            "label": "PF2E.Terrain.Desert",
+            "value": "desert"
+          },
+          {
+            "label": "PF2E.Terrain.Forest",
+            "value": "forest"
+          },
+          {
+            "label": "PF2E.Terrain.Mountain",
+            "value": "mountain"
+          },
+          {
+            "label": "PF2E.Terrain.Plains",
+            "value": "plain"
+          },
+          {
+            "label": "PF2E.Terrain.Swamp",
+            "value": "swamp"
+          }
+        ],
+        "flag": "terrain",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.TerrainExpertise.Prompt"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "stealth",
+        "deception"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "terrain:{item|flags.system.rulesSelections.terrain}",
+        {
+          "or": [
+            "action:hide",
+            "action:sneak",
+            "action:feint"
+          ]
+        }
+      ]
+    }
+  ]
+}

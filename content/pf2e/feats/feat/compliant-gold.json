@@ -1,0 +1,85 @@
+{
+  "kind": "feat",
+  "slug": "compliant-gold",
+  "system": "pf2e",
+  "name": "Compliant Gold",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a melee weapon ikon\n\n---\nYou can command your weapon to shrink or grow, for convenience or power. Even when your ikon is not empowered, you can shrink it to a miniature size (with negligible Bulk) and keep it tucked behind an ear, in your hair, or in a similar discreet location. You can shrink your weapon or regrow it to its normal size as part of drawing it, putting it away, swapping it, or picking it up.\n\nImmanence Your ikon gains the reach trait. If it already had the reach trait, it instead increases your reach by an additional 10 feet, instead of the usual additional 5 feet.\n\nTranscendence—Topple the Pillar of Heaven 2 (transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Topple the Pillar of Heaven"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "chosen-ikon:{item|flags.system.rulesSelections.ikon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}",
+          "divine-spark:{item|flags.system.rulesSelections.ikon}"
+        ],
+        "priority": 121,
+        "property": "traits",
+        "value": "reach"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.CompliantGold.ExtraReachToggle",
+        "option": "compliant-gold-extra-reach",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.reach.base",
+        "phase": "afterDerived",
+        "predicate": [
+          "compliant-gold-extra-reach",
+          "divine-spark:{item|flags.system.rulesSelections.ikon}"
+        ],
+        "value": 5
+      }
+    }
+  ]
+}

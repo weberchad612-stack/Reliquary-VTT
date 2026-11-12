@@ -1,0 +1,66 @@
+{
+  "kind": "feat",
+  "slug": "discerning-strike",
+  "system": "pf2e",
+  "name": "Discerning Strike",
+  "source": {
+    "title": "Pathfinder Lost Omens Pathfinder Society Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "Pathfinder Agent Dedication",
+    "Thorough Reports"
+  ],
+  "text": "Requirements You have successfully identified the target with Recall Knowledge during this combat.\n\n---\n\nIdentifying a creature is the first step in finding its weaknesses. Attempt a Strike against the target; if successful, you deal an additional 1d6 precision damage. If you have succeeded on a Recall Knowledge check against the target during this combat and their creature type was previously recorded using Thorough Reports, you also deal 1 point of persistent bleed damage. The creature is then temporarily immune to Discerning Strike for 1 day.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "discerning-strike",
+        "suboptions": [
+          {
+            "label": "PF2E.Actions.RecallKnowledge.Title",
+            "value": "recall-knowledge"
+          },
+          {
+            "label": "PF2E.SpecificRule.PathfinderAgentDedication.ThoroughReports",
+            "value": "thorough-reports"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "discerning-strike"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "when": [
+        "discerning-strike:thorough-reports"
+      ],
+      "damageType": "bleed"
+    }
+  ]
+}

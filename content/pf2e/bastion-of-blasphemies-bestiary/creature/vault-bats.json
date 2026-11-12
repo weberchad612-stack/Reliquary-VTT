@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "vault-bats",
+  "system": "pf2e",
+  "name": "Vault Bats",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "ethereal",
+    "incorporeal",
+    "phantom",
+    "spirit"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 120,
+    "perception": 18,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 1,
+      "dex": 6,
+      "int": 0,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "intimidation": 18,
+      "occultism": 14,
+      "thievery": 18
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 8,
+          "except": "force, ghost-touch, spirit",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "saves": "–1 status penalty to all saves vs. death effects",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Blood Vendetta",
+          "rank": 4,
+          "ref": "spells:spell/blood-vendetta"
+        },
+        {
+          "name": "Spiritual Armament",
+          "rank": 4,
+          "ref": "spells:spell/spiritual-armament"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Phantom Pain",
+          "rank": 4,
+          "ref": "spells:spell/phantom-pain"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Phantom Fangs",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bound to Bastardhall",
+      "category": "interaction",
+      "text": "Unlike the typical phantom, these phantoms exist fully in the Ethereal Plane and can't shift back and forth between this plane and the Universe."
+    },
+    {
+      "kind": "ability",
+      "name": "–1 Status Penalty to All Saves vs. Death Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "item:trait:death"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Susceptible to Death",
+      "category": "defensive",
+      "text": "Though phantoms aren't alive, neither are they undead, and they are uniquely vulnerable to the effects of death.\n\nA phantom whose Hit Points are reduced to 0 as a result of a death effect (such as from a spell like Execute) is immediately whisked away to the River of Souls, where their soul resumes the usual path to the afterlife."
+    },
+    {
+      "kind": "ability",
+      "name": "Phantom Touch",
+      "category": "offensive",
+      "traits": [
+        "spirit"
+      ],
+      "text": "Each time they make a Strike, a phantom can choose to deal spirit damage instead of the normal physical damage type.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "phantom-touch",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "phantom-touch"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "strike-damage"
+            ],
+            "slug": "base",
+            "value": "spirit"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unnerving Shriek",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental",
+        "move",
+        "occult"
+      ],
+      "text": "The vault bat swoops downward, Flying once and shrieking with a soul-chilling cry as they do so. This movement doesn't trigger reactions. Any adjacent creature the vault bat passes during its Fly must attempt a DC 28 Will save save or become Frightened 1 (or Frightened 3 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab Item",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The phantom beast attempts to Steal one item of up to 1 Bulk from a creature, even if the creature is in combat, though the object still must not be one that is actively in use. If they succeed, they carry the object along with them telekinetically."
+    }
+  ],
+  "blurb": "Variant phantom beast"
+}

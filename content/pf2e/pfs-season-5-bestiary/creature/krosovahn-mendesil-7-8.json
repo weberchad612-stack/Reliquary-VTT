@@ -1,0 +1,348 @@
+{
+  "kind": "creature",
+  "slug": "krosovahn-mendesil-7-8",
+  "system": "pf2e",
+  "name": "Krosovahn Mendesil (7-8)",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-03: Heidmarch Heist",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 111,
+    "perception": 18,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 17,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 4,
+      "int": 2,
+      "str": 4,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 13,
+      "arcana": 15,
+      "athletics": 13,
+      "deception": 15,
+      "intimidation": 17,
+      "society": 11,
+      "stealth": 13,
+      "thievery": 20,
+      "underworld-lore": 15
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "azlanti",
+      "common",
+      "thassilonian"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Tanglefoot Bag (Lesser)",
+      "ref": "equipment:item/glue-bomb-lesser",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Lesser)",
+      "ref": "equipment:item/healing-potion-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Climbing Bolt",
+      "ref": "equipment:item/climbing-bolt",
+      "type": "ammo"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 18,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Krosovahn Mendesil isn't Off-Guard to creatures of 7th level or lower that are Hidden, Undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Krosovahn Mendesil rolls a success on a Reflex save, he gets a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "defensive",
+      "text": "On the first round of combat, if Krosovahn Mendesil rolls Deception or Stealth for initiative, creatures who haven't acted are Off-Guard to Krosovahn Mendesil.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "You're Next",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger Krosovahn Mendesil reduces an enemy to 0 Hit Points\n\n---\nEffect After downing the foe, Krosovahn Mendesil menacingly reminds another foe that he's coming after them next. Krosovahn Mendesil attempts an Intimidation check with a +2 circumstance bonus to demoralize options=youre-next a single creature that he can see and that can see him.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:demoralize",
+            "youre-next"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brutal Rally",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Trigger Krosovahn Mendesil rolls a critical hit against a creature\n\n---\n\nEffect All allies that can see Krosovahn Mendesil gain a +1 circumstance bonus to attack rolls until the start of Krosovahn Mendesil's next turn.\n\nEffect: Brutal Rally"
+    },
+    {
+      "kind": "ability",
+      "name": "Gang Up",
+      "category": "offensive",
+      "text": "Any enemy is Off-Guard against Krosovahn Mendesil's melee attacks due to flanking as long as the enemy is within melee reach of both Krosovahn and one of his allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.attributes.flanking.canGangUp",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Krosovahn Mendesil Interacts to draw a weapon, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Krosovahn Mendesil deals an extra 2d6 precision damage to Off-Guard creatures",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant Gang Leader"
+}

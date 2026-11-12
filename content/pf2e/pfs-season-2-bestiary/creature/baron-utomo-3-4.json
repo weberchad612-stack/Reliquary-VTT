@@ -1,0 +1,280 @@
+{
+  "kind": "creature",
+  "slug": "baron-utomo-3-4",
+  "system": "pf2e",
+  "name": "Baron Utomo (3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-06: The Crashing Wave",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "amphibious",
+    "evil",
+    "humanoid",
+    "mutant",
+    "sea-devil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 10,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": {
+        "value": 12,
+        "special": [
+          {
+            "value": 15,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 9,
+      "stealth": 9,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "thalassic"
+    ],
+    "notes": {
+      "languages": "shark commune 150 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Lance",
+      "ref": "equipment:item/lance",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Lance",
+      "attack": 14,
+      "traits": [
+        "deadly-d8",
+        "jousting-d6",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 14,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shark Commune 150 feet",
+      "category": "interaction",
+      "traits": [
+        "mental"
+      ],
+      "text": "The sea devil can communicate telepathically with sharks within range. It can communicate only simple concepts like \"come,\" \"guard,\" or \"attack.\""
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Frenzy",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements The sea devil is not Fatigued or already in a frenzy\n\nTrigger The sea devil deals bleed damage to a living creature.\n\n---\nEffect The sea devil flies into a frenzy that lasts 1 minute. While frenzied, the sea devil gains a +1 status bonus to attack rolls with its claws and jaws, gains a +4 status bonus to damage rolls with its claws and jaws, gains 11 temporary HP until the end of the frenzy, and takes a -2 status penalty to AC. The sea devil can't voluntarily stop its frenzy. After its frenzy, the sea devil is Fatigued.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "claw-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "claw-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "flags.system.frenzyMod",
+            "value": 4
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": -2,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "When the sea devil deals piercing or slashing damage, it also deals 1d4 bleed if the target was Off-Guard or if the attack was a critical hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "target:condition:off-guard"
+              },
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    }
+  ]
+}

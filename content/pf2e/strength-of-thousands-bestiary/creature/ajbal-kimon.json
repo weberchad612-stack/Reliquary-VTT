@@ -1,0 +1,340 @@
+{
+  "kind": "creature",
+  "slug": "ajbal-kimon",
+  "system": "pf2e",
+  "name": "Ajbal Kimon",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 225,
+    "perception": 23,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 24,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 3,
+      "int": 1,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 26,
+      "deception": 24,
+      "intimidation": 24,
+      "religion": 25,
+      "society": 22,
+      "stealth": 24,
+      "survival": 25
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 27,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 25,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Ajbal isn't Off-Guard to creatures of 13th level or lower that are Hidden, undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 13
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Ajbal rolls a success on a Reflex save, he gets a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Ajbal is targeted with a melee or ranged attack by an attacker he can see\n\n---\n\nEffect Ajbal gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Ajbal designates a single creature he can see and hear, or one he's Tracking, as his prey. Ajbal gains a +2 circumstance bonus to Perception checks to Seek his prey and Survival checks to Track his prey.\n\nThe first time Ajbal hits his designated prey in a round, he deals an additional 2d8 precision damage. Ajbal also ignores the penalty for making ranged attacks within the second range increment when attacking his prey.\n\nThese effects last until Ajbal uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Ajbal deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tear the Wound",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Ajbal's last action was a melee Strike that dealt sneak attack damage to an Off-Guard target\n\n---\n\nEffect Ajbal deals 6 bleed damage to the target creature, and the target is Enfeebled 1 for as long as it's bleeding."
+    },
+    {
+      "kind": "ability",
+      "name": "Trident Bully",
+      "category": "offensive",
+      "text": "A trident Ajbal is using gains the shove trait, and any creature Ajbal critically hits with a trident is Off-Guard until the start of Ajbal's next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:base:trident",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "shove"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "item:base:trident"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "NE male human gang leader"
+}

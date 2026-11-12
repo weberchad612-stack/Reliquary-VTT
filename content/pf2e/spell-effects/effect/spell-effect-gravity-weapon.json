@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-gravity-weapon",
+  "system": "pf2e",
+  "name": "Spell Effect: Gravity Weapon",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Gravity Weapon\n\nOn your first weapon Strike each round, you gain a status bonus to damage equal to twice the number of weapon damage dice.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Ranger.FocusSpells.GravityWeapon.RollOptionLabel",
+        "option": "gravity-weapon",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "gravity-weapon",
+          {
+            "not": "item:category:unarmed"
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "gravity-weapon",
+        "type": "status",
+        "value": "@weapon.system.damage.dice * 2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "kind": "creature",
+  "slug": "rage-rider",
+  "system": "pf2e",
+  "name": "Rage Rider",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 175,
+    "perception": 19,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 17,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 3,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 21,
+      "intimidation": 16,
+      "nature": 19,
+      "survival": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "skald"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Exquisite Kokogiak Harness",
+      "ref": "equipment:item/harness",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 22,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Catch and Release",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements The rage rider has a hand free\n\nTrigger An enemy critically misses the rage rider with a thrown weapon attack\n\n---\nEffect The rage rider catches the thrown weapon and makes a ranged Strike with it."
+    },
+    {
+      "kind": "ability",
+      "name": "Exquisite Kokogiak Harness",
+      "category": "defensive",
+      "text": "A rage rider is equipped with an exquisitely crafted harness when riding a kokogiak. Two rage riders can ride a willing kokogiak at once using such a harness, and both of their hands remain free while doing so. When a rage rider is attached to a kokogiak, they can't use any action that uses their speed (such as Step or Stride), and all DCs to forcibly move the rage rider or to knock them from their mount are increased by 5. If a kokogiak being ridden by a rage rider using such a harness is killed or falls Unconscious, the rage rider takes 3d6 bludgeoning damage from the fall (DC 30 basic Reflex save save). A rage rider can release their harness with an Interact action.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "self:deity:slug:gorum"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ruinous Rage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "The rage rider enters a state of pure rage that lasts either for 1 minute, until there are no enemies they can perceive, or until they fall Unconscious, whichever comes first. While raging, the rage rider has AC 27 and their spear Strikes deal 2d6+15 damage plus 2d6 persistent bleed damage. While raging, the rage rider can't use actions that have the concentrate trait, except for Seek. After they've stopped raging, a rage rider can't use Rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "spear-damage",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 0
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "self:effect:rage"
+            ],
+            "selector": "spear-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Human barbarian"
+}

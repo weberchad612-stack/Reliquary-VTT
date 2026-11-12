@@ -1,0 +1,163 @@
+{
+  "kind": "feat",
+  "slug": "iruxi-armaments",
+  "system": "pf2e",
+  "name": "Iruxi Armaments",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "lizardfolk"
+  ],
+  "category": "ancestry",
+  "maxTakable": 3,
+  "text": "Your weapons are those you were born with. Choose one of the following options:\n- Claws Your claw attack deals 1d6 slashing damage instead of 1d4 and gains the versatile P trait.\n- Fangs You gain a fangs unarmed attack that deals 1d8 piercing damage and is in the brawling group.\n- Tail You gain a tail unarmed attack that deals 1d6 bludgeoning damage, is in the brawling group, and has the sweep trait.\nAt 5th level, whenever you get a critical hit with one of the unarmed attacks you have gained or improved with this feat, you get its critical specialization effect.\n\n---\nSpecial You can take this feat multiple times, choosing a different unarmed attack option each time.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "iruxi-armaments:claw"
+              }
+            ],
+            "value": "claw"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Fangs",
+            "predicate": [
+              {
+                "not": "iruxi-armaments:fangs"
+              }
+            ],
+            "value": "fangs"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Tail",
+            "predicate": [
+              {
+                "not": "iruxi-armaments:tail"
+              }
+            ],
+            "value": "tail"
+          }
+        ],
+        "flag": "iruxiArmaments",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.UnarmedAttack",
+        "rollOption": "iruxi-armaments"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "iruxi-armaments:claw",
+          "item:tag:lizardfolk-claws"
+        ],
+        "property": "damage-dice-faces"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:lizardfolk-claws",
+          "iruxi-armaments:claw"
+        ],
+        "property": "traits",
+        "value": "versatile-p"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/fangs.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Fangs",
+        "predicate": [
+          "iruxi-armaments:fangs"
+        ],
+        "slug": "fangs",
+        "traits": [
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/tail.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Tail",
+        "predicate": [
+          {
+            "not": "self:effect:shed-tail"
+          },
+          "iruxi-armaments:tail"
+        ],
+        "slug": "tail",
+        "traits": [
+          "sweep",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:tag:lizardfolk-claws",
+                  "iruxi-armaments:claw"
+                ]
+              },
+              "item:id:{item|id}"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

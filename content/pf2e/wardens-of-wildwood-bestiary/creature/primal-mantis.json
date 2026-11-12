@@ -1,0 +1,183 @@
+{
+  "kind": "creature",
+  "slug": "primal-mantis",
+  "system": "pf2e",
+  "name": "Primal Mantis",
+  "source": {
+    "title": "Pathfinder #203: Shepherd of Decay",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "animal"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 31,
+    "hp": 220,
+    "perception": 20,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 20,
+      "will": 18
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 5,
+      "dex": 3,
+      "int": -5,
+      "str": 8,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 25,
+      "stealth": 22
+    },
+    "speeds": {
+      "land": 50,
+      "climb": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Chain Lightning",
+          "rank": 6,
+          "ref": "spells:spell/chain-lightning"
+        },
+        {
+          "name": "Howling Blizzard",
+          "rank": 5,
+          "ref": "spells:spell/howling-blizzard"
+        },
+        {
+          "name": "Fly",
+          "rank": 4,
+          "ref": "spells:spell/fly"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Mandibles",
+      "attack": 25,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+14",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Leg",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fling",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The deadly mantis flings a Grabbed creature into the air, up to 30 feet overhead and up to 30 feet away from the mantis (the creature takes damage from the fall as normal). If the flung creature lands on another creature, the creature it lands on takes the same amount of bludgeoning damage with a DC 31 basic Reflex save save."
+    },
+    {
+      "kind": "ability",
+      "name": "Leaping Grab",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mantis Leaps up to 40 feet vertically and 20 feet horizontally. At any point during the jump, it can make a leg Strike. If it hits, it automatically Grabs the target, bringing the creature along until the end of the jump."
+    },
+    {
+      "kind": "ability",
+      "name": "Primal Toll",
+      "category": "offensive",
+      "text": "The primal mantis takes 2d6 mental damage whenever it casts a primal innate spell.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "spell-damage",
+          "text": "{item|description}",
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rending Mandibles",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The mantis makes a mandibles Strike against a creature it has Grabbed. If that Strike hits and the creature is wearing armor with Hardness 12 or lower, the armor is broken. This Strike doesn't further damage armor that's already broken."
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Strike",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted are Off-Guard to the deadly mantis.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "These gigantic mantids make their homes within prehistoric forests.\n\n---\n\nThese predators possess lightning-quick forelegs and a bone-breaking bite.",
+  "blurb": "Variant deadly mantis"
+}

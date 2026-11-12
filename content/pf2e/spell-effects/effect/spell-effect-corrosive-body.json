@@ -1,0 +1,69 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-corrosive-body",
+  "system": "pf2e",
+  "name": "Spell Effect: Corrosive Body",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Corrosive Body\n\nYou gain acid immunity. Your unarmed attacks deal additional acid damage. The first time each round that you deal acid damage to a creature in this way, you gain temporary Hit Points. Your acid spells deal one additional die of acid damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "acid",
+        "diceNumber": "ternary(gte(@item.level,9),2,1)",
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "item:category:unarmed"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.SpecificRule.CorrosiveBody.Note",
+      "outcome": [
+        "success"
+      ],
+      "when": [
+        "item:category:unarmed"
+      ]
+    },
+    {
+      "key": "immunity",
+      "type": "acid"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "acid",
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "item:damage:type:acid"
+        ],
+        "selector": "spell-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.corrosiveBody.rank",
+        "value": "@item.level"
+      }
+    }
+  ]
+}

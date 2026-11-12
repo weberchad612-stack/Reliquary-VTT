@@ -1,0 +1,199 @@
+{
+  "kind": "creature",
+  "slug": "scarecrow",
+  "system": "pf2e",
+  "name": "Scarecrow",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 8,
+      "will": 11
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 3,
+      "dex": 2,
+      "int": -4,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 12
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "slashing"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "unarmed",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "clawing-fear"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scarecrow's Leer",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental",
+        "occult",
+        "visual"
+      ],
+      "text": "40 feet.\n\nThe scarecrow's eyes flicker with an unnerving glow. A creature can't reduce its Frightened condition below 1 as long as it is in the aura's emanation. When a creature enters or starts its turn in the aura, it must attempt a DC 18 Will save save. Birds and other avian creatures take a -2 circumstance penalty to this save.\n\n---\n\nCritical Success The creature is unaffected and is then temporarily immune for 24 hours.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2 and is Fascinated by the scarecrow until the end of its next turn.\n\nCritical Failure As failure, but Frightened 3.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 40,
+            "slug": "scarecrows-leer",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental",
+              "occult",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Baleful Glow",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "light",
+        "mental",
+        "occult"
+      ],
+      "text": "The scarecrow's head bursts into ghostly, heatless flame that sheds bright light in a 20-foot emanation (and dim light to the next 20 feet). If the scarecrow uses this ability on the first round of combat, any creature that has not acted yet is startled and becomes Off-Guard against the scarecrow for 1 round. It can suppress the light by using this action again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "baleful-glow"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 4,
+                "speed": 1,
+                "type": "torch"
+              },
+              "bright": 20,
+              "color": "#9b7337",
+              "dim": 40,
+              "shadows": 0.2
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "baleful-glow",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Clawing Fear",
+      "category": "offensive",
+      "text": "The scarecrow's strikes deal an additional 1d6 mental damage to Frightened creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.Frightened",
+            "option": "target:condition:frightened",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mundane Appearance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until it acts, the scarecrow resembles an ordinary scarecrow. It has an automatic result of 32 on Deception checks and DCs to pass as an ordinary scarecrow."
+    }
+  ],
+  "text": "A ramshackle collection of materials in a human shape, the scarecrow construct is indistinguishable from a normal scarecrow until it slowly creaks to life. As it animates, its carved pumpkin or sackcloth face bursts into eldritch flame, sending fear creeping into the air around it. Each scarecrow is handcrafted and unique in its appearance, though most are 5 to 6 feet tall and constructed of a combination of wood, cloth, rope, straw, sawdust, discarded husks and cobs, and similar materials, all dressed in ragged pastoral garments. This rudimentary construction makes a scarecrow somewhat fragile, prone to snapping limbs in the crush of battle. Yet its structure is adaptable, allowing it to reshape another piece of itself into a clawed limb or grip a severed portion of itself to swat at its foes.\n\nWhen a scarecrow is created, it must be anointed with a drop of its creator's blood into each of its eyes. This blood soaks into the material and siphons a tiny sliver of the creator's soul away—not enough to harm the creator, but more than enough to imbue the scarecrow with an instinctive intellect that allows it to follow commands as eagerly as a well-trained (if ill-tempered) guard dog. When a scarecrow is destroyed, the blood leaks back out from its eyes, but the portion of the creator's soul never returns."
+}

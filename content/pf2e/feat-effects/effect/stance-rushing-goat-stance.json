@@ -1,0 +1,67 @@
+{
+  "kind": "effect",
+  "slug": "stance-rushing-goat-stance",
+  "system": "pf2e",
+  "name": "Stance: Rushing Goat Stance",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Rushing Goat Stance\n\nThe only Strikes you can make are ramming horn attacks. These strikes deal 1d8 bludgeoning damage, are in the brawling group, and have the forceful, nonlethal, shove, and unarmed traits.\n\nWhen you make a ramming horn attack and your previous action was to Climb, Stride, or Leap, you gain a circumstance bonus to damage equal to the number of weapon damage dice.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/mammals/goat-horned-blue.webp",
+        "key": "Strike",
+        "label": "PF2E.SpecificRule.Stance.Attack.RammingHorn",
+        "replaceAll": true,
+        "slug": "ramming-horn",
+        "traits": [
+          "forceful",
+          "nonlethal",
+          "shove",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "label": "PF2E.GenericLabel.PreviousAction.ClimbLeapStride",
+        "option": "rushing-goat-stance-damage",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "rushing-goat-stance-damage"
+        ],
+        "selector": "ramming-horn-damage",
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice"
+      }
+    }
+  ]
+}

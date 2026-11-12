@@ -1,0 +1,333 @@
+{
+  "kind": "creature",
+  "slug": "kadamel",
+  "system": "pf2e",
+  "name": "Kadamel",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "archon",
+    "celestial",
+    "holy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 40,
+    "hp": 300,
+    "perception": 34,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 26,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 7,
+      "dex": 5,
+      "int": 4,
+      "str": 9,
+      "wis": 9
+    },
+    "skills": {
+      "athletics": 32,
+      "diplomacy": 30,
+      "intimidation": 32,
+      "religion": 34
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 38,
+      "attack": 30,
+      "spells": [
+        {
+          "name": "Interplanar Teleport",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Planar Seal",
+          "rank": 8,
+          "ref": "spells:spell/planar-seal"
+        },
+        {
+          "name": "Blessed Boundary",
+          "rank": 7,
+          "ref": "spells:spell/blessed-boundary"
+        },
+        {
+          "name": "Truesight (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Planar Tether",
+          "rank": 7,
+          "ref": "spells:spell/planar-tether"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Veil of Privacy (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/veil-of-privacy"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Stone Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "strike",
+      "name": "Stone Axe",
+      "attack": 32,
+      "traits": [
+        "holy",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stone Axe",
+      "attack": 32,
+      "traits": [
+        "brutal",
+        "holy",
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stone Shield",
+      "category": "interaction",
+      "text": "The kadamel can create a stone shield for defense, which grants a +2 circumstance bonus to AC and has Hardness 15, HP 120, and BT 60."
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Protection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages the archon's ally and both are within 15 feet of the archon\n\n---\nEffect The ally gains resistance 20 to all damage against the triggering damage, and the archon can make a Strike against the enemy.\n\nEffect: Archon's Protection",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.archonsProtection",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Patience of Stone",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "10 feet. Any enemy that ends its turn in the aura must succeed at a DC 36 Fortitude save save or be Slowed 1 for 1 minute. If the creature succeeds, it's temporarily immune for 24 hours.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Calcifying Cloud",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "incapacitation"
+      ],
+      "text": "Requirements The kadamel hit with a stone axe Strike during its most recent action\n\n---\nEffect The kadamel's axe explodes into calcifying powder. The creature the axe hit and each non-archon creature in a 5-foot emanation must succeed at a DC 38 Fortitude save save or become Slowed 1 for 1 minute. If the creature was already slowed by one of the kadamel's abilities, a failed save causes it to be Petrified permanently."
+    },
+    {
+      "kind": "ability",
+      "name": "Guardian Glyph",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The kadamel alters the inscriptions on their body to store an 8th-rank spell, choosing from Divine Decree, Divine Immolation, Divine Wrath, or Planar Seal. While storing the spell, the kadamel chooses an area they're guarding, typically a room containing a planar portal. When an intruder enters the area, the spell is cast automatically and expended. If the spell is targeted, it targets the triggering creature, and if it has an area, the area is centered on the triggering creature. Noticing the glyph requires a successful DC 38 Perception check check. The glyph has an unlimited duration and ends if the kadamel uses this ability again or Dismisses the glyph.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Re-Arm",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The kadamel forms a new stone axe or stone shield in a free hand"
+    },
+    {
+      "kind": "ability",
+      "name": "Statue",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time they act, the kadamel appears to be a statue. They have an automatic result of 50 on Deception checks and DCs to pass as a statue. While remaining motionless in this way, the kadamel has fast healing 20.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "statue",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "statue"
+            ],
+            "value": 20
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Fiends spread corruption to places across the planes—every place they can reach. Kadamels guard the most crucial pathways and holy sanctums. They hold a patient vigil, never distracted from their task. Most crucially, they watch over planar portals, barring passage to all but the most powerful fends. When encountered, these archons speak and react little. They rarely even move or react, though they readily accept any assistance in defeating fendish invaders. Even this, they accept with only an ominous nod."
+}

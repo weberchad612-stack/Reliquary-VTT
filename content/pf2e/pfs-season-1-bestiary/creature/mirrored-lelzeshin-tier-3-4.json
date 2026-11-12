@@ -1,0 +1,136 @@
+{
+  "kind": "creature",
+  "slug": "mirrored-lelzeshin-tier-3-4",
+  "system": "pf2e",
+  "name": "Mirrored Lelzeshin (Tier 3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-16: The Perennial Crown Part 1, Opal of Bhopan",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "unique",
+  "traits": [
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 20,
+    "perception": 5,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 11,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": -4,
+      "str": 1,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": 6,
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 30
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Clothing (Fine)",
+      "ref": "equipment:item/clothing-fine",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Mirror Lelzeshin is targeted by a melee or ranged attack by an attacker he can see.\n\n---\n\nEffect Mirror Lelzeshin gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Mirror Lelzeshin deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

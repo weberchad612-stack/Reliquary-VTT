@@ -1,0 +1,202 @@
+{
+  "kind": "creature",
+  "slug": "skeleton-rival-corpsekiller",
+  "system": "pf2e",
+  "name": "Skeleton Rival Corpsekiller",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid",
+    "skeleton",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 330,
+    "perception": 28,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 28,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 4,
+      "int": 3,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 28,
+      "athletics": 32,
+      "deception": 26,
+      "diplomacy": 26,
+      "intimidation": 26,
+      "religion": 28,
+      "society": 26,
+      "stealth": 28
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 10
+        },
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "speed": "(20 feet with armor)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Glaive",
+      "ref": "equipment:item/glaive",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Glaive",
+      "attack": 32,
+      "traits": [
+        "deadly-d8",
+        "forceful",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "corpsekiller"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Circling Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The corpsekiller circles around their target then attacks, throwing their foe off balance and puncturing its defenses. The corpsekiller Steps or Strides, then attempts a glaive Strike. On a hit or critical hit, the Strike ignores 10 of their target's resistances. Regardless of the result of the Strike, the target is Off-Guard for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Corpsekiller",
+      "category": "offensive",
+      "text": "A corpsekiller's Strikes affect incorporeal creatures as though etched with a Ghost Touch property rune and deal an additional 2d8 slashing damage to undead creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "slashing",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flamboyant Reposition",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "visual"
+      ],
+      "text": "With a flourish, a celebrant shrouds themself in a puff of smoke, glitter, or colorful ribbons. If the celebrant is adjacent to an enemy, they attempt to Feint that adjacent enemy. The celebrant Steps or Strides; they're Concealed during this movement."
+    }
+  ]
+}

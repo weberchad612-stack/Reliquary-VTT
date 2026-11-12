@@ -1,0 +1,40 @@
+{
+  "kind": "feat",
+  "slug": "vasodilation",
+  "system": "pf2e",
+  "name": "Vasodilation",
+  "source": {
+    "title": "Pathfinder #213: Thirst for Blood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "category": "skill",
+  "prerequisites": [
+    "trained in Medicine"
+  ],
+  "text": "Using the power of your own blood, you encourage increased blood flow to nourish damaged tissue or stifle the flow to clot wounds or prevent the spread of poison and disease. You no longer require a healer's toolkit to Administer First Aid, Treat Disease, Treat Poison, or Treat Wounds, though you take 1 untyped damage each time you take one of these actions without the proper tools from the expenditure of your blood. You can't reduce or prevent this damage.\n\nYou gain a +1 item bonus when performing these actions using your blood, which increases to +2 if you're a master in Medicine and +3 if you're legendary.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "action:administer-first-aid",
+              "action:treat-disease",
+              "action:treat-poison",
+              "action:treat-wounds"
+            ]
+          }
+        ],
+        "selector": "medicine",
+        "type": "item",
+        "value": "ternary(gte(@actor.system.skills.medicine.rank,4),3,ternary(gte(@actor.system.skills.medicine.rank,3),2,1))"
+      }
+    }
+  ]
+}

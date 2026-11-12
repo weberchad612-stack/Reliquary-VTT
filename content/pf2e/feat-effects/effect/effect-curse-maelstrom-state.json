@@ -1,0 +1,79 @@
+{
+  "kind": "effect",
+  "slug": "effect-curse-maelstrom-state",
+  "system": "pf2e",
+  "name": "Effect: Curse Maelstrom State",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1
+  },
+  "text": "Granted by Curse Maelstrom Dedication\n\nAll creatures other than you within a 10-foot emanation take a -1 status penalty to all saving throws and skill checks. You gain the Expel Maelstrom action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          {
+            "not": "feat:unnerving-expansion"
+          }
+        ],
+        "property": "badge-max",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "includesSelf": false,
+            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Curse Maelstrom State"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "radius": "5+(5*@item.badge.value)"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "saving-throw",
+        "skill-check"
+      ],
+      "type": "status",
+      "value": -1,
+      "when": [
+        {
+          "not": "self:signature:{item|origin.signature}"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Expel Maelstrom"
+      }
+    }
+  ]
+}

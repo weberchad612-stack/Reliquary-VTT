@@ -1,0 +1,267 @@
+{
+  "kind": "creature",
+  "slug": "balisse",
+  "system": "pf2e",
+  "name": "Balisse",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "angel",
+    "celestial",
+    "holy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 145,
+    "perception": 18,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 12,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 5,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 14,
+      "diplomacy": 17,
+      "religion": 18
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "(+20 to detect lies and illusions)",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Divine Wrath",
+          "rank": 4,
+          "ref": "spells:spell/divine-wrath"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 4,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "Cleanse Affliction",
+          "rank": 4,
+          "ref": "spells:spell/cleanse-affliction"
+        },
+        {
+          "name": "Clear Mind (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/clear-mind"
+        },
+        {
+          "name": "Invisibility (At Will) (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Heal",
+          "rank": 4,
+          "ref": "spells:spell/heal"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 20,
+      "traits": [
+        "fire",
+        "forceful",
+        "holy",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Bonus on Perception to Detect lies and illusions",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:illusion",
+                "action:lie"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "At-Will Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Confessor's Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "mental"
+      ],
+      "text": "20 feet.\n\nCreatures in the balisse's aura are subject to Ring of Truth (DC 23 Will save). Additionally, if these creatures choose to honestly express their own conflicted feelings, the aura makes it easier for them to put words to those feelings.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "slug": "confessors-aura",
+            "traits": [
+              "divine",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brand of the Impenitent",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The balisse marks a creature within their confessor's aura as irredeemable. They can do so only after a failed attempt to convince the creature to repent. The touched creature takes a –1 status penalty to AC and saves, reduces all its resistances by 2, and gains weakness 2 to holy. The duration depends on the target's DC 26 Will save save.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The duration is 1 round.\n\nFailure The duration is 1 day.\n\nCritical Failure The duration is unlimited.\n\n---\n\nEffect: Brand of the Impenitent",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Guiding Angel",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine"
+      ],
+      "text": "Requirements The balisse is Invisible\n\n---\n\nEffect The balisse spiritually attaches themself to an adjacent mortal who doesn't have the unholy trait. They merge with the mortal's body and are unable to use any of their spells and abilities other than to interact with the mortal. They can Dismiss the effect to leave the mortal. While merged, the balisse can either communicate using a bodiless voice only the mortal can hear or can take a form of their choice that only the mortal can see, such as a small angel on the mortal's shoulder."
+    },
+    {
+      "kind": "spell",
+      "name": "Atone",
+      "rank": 4,
+      "ref": "spells:spell/atone"
+    },
+    {
+      "kind": "spell",
+      "name": "Geas",
+      "rank": 3,
+      "ref": "spells:spell/geas"
+    },
+    {
+      "kind": "spell",
+      "name": "Angelic Messenger",
+      "rank": 1,
+      "ref": "spells:spell/angelic-messenger"
+    }
+  ],
+  "text": "Balisses, or confessor angels, seek to assist mortals ensnared by moral dilemmas or crises of faith. They prefer to guide people to their own decisions rather than demand obedience to a higher cause, as intrinsic belief is even more powerful than unquestioning obedience. While most balisses are fundamentally honest, they use their guiding angel ability to seem less intimidating and decrease the chance the mortal will simply acquiesce to the opinion of an obviously divine being.\n\nWhile balisses can spring from any soul with suitable patience and strong counsel, they often form from souls of those who performed evil acts but were redeemed. These souls recognize the struggle and shame of those in similar situations, and can offer advice from the heart rather than from rote sympathy. Many serve the goddess Sarenrae, but they can serve other good deities and empyreal lords as well.\n\n---\n\nThe celestial hosts of angels are messengers and warriors, divided into choirs based on their abilities and purviews. Angels were one of the first creations of the gods, and many still assist their righteous creators throughout the cosmos. Most angels in modern times are not direct creations of the divine, however, instead consisting of ascended mortal souls drawn from the celestial planes.\n\nThe majority of unaffiliated angels live in Nirvana, the plane of virtue and enlightenment. Angels who are affiliated with deities dwell in those deities' domains or other areas where that god holds influence. Regardless of residence or service, angels remain benevolent messengers possessed with magical auras to aid their allies."
+}

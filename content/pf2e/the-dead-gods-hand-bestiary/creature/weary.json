@@ -1,0 +1,197 @@
+{
+  "kind": "creature",
+  "slug": "weary",
+  "system": "pf2e",
+  "name": "Weary",
+  "source": {
+    "title": "The Dead God's Hand",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "rare",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 9,
+    "perception": 5,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 4,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 0,
+      "int": -2,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 4
+    },
+    "speeds": {
+      "land": 15
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "perception": "darkvision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 5,
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "exhausting-torpor"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Corpse",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time they act, the weary appears to be an unanimated corpse. They have an automatic result of 22 on Deception checks and DCs to pass as a corpse.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "corpse",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "deception-dc",
+            "deception"
+          ],
+          "type": "untyped",
+          "value": 22,
+          "slug": "corpse-bonus",
+          "when": [
+            "corpse"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SubstituteRoll",
+            "predicate": [
+              "corpse"
+            ],
+            "required": true,
+            "selectors": [
+              "deception-dc",
+              "deception"
+            ],
+            "slug": "corpse-bonus",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Empty Yawn",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Frequency once per hour\n\n---\nEffect The weary's jaws stretch open to an unnatural extent, giving cry to a horrific, chilling wail of exhaustion that cuts into the minds of nearby living creatures. Instilled in their thoughts is the sensation of the anguish of being dead, yet conscious of the body's slow decay. Living creatures within a 20-foot emanation take 1d6 mental damage with a DC 16 Will save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is Frightened 1.\n\nCritical Failure The creature takes double damage and is Frightened 2.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Exhausting Torpor",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "When a living creature is bitten by a weary, the undead infects the living flesh with the exhaustion of the grave. The creature bitten must attempt a DC 16 Fortitude save save or become Enfeebled 1 for 1 round (Enfeebled 2 for 1 round on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Overwhelming Numbers",
+      "category": "offensive",
+      "text": "A weary gains a +2 circumstance bonus on melee attack rolls against a target who has been struck earlier in that round by a different weary.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "overwhelming-numbers",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "melee-attack-roll",
+          "type": "circumstance",
+          "value": 2
+        }
+      ]
+    }
+  ],
+  "text": "While the method of creating the weary is a well-kept secret of hryngar worshippers of Droskar, there's nothing preventing other unholy spellcasters from transforming those who have worked themselves into an early grave into these pitiful, unsettling monsters. The weary don't understand that they've died, only that they're overwhelmed with a deep, aching exhaustion that fills them with a wretched hatred. Content to lie in a slowly rotting heap until they sense the approach of living creatures, when the weary lurch into activity it is with cries of pain and hopelessness. These undead creatures appear as rotting corpses who creep and crawl about on all fours, bodies too worn out to properly hold themselves fully upright.\n\nUnlike zombies, which the weary are sometimes mistaken for, these undead retain their minds and memories of the final several agonizing weeks that led up to their deaths. They can rarely remember farther back than these final weeks and almost never remember their own names. While they're capable of communication, they typically have nothing more to say then to moan and agonize over their pain, and to beg those they attack to end their suffering even as they do their best to chew and gnaw at the living meat that vexes them so."
+}

@@ -1,0 +1,332 @@
+{
+  "kind": "creature",
+  "slug": "werewolf",
+  "system": "pf2e",
+  "name": "Werewolf",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 63,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 9,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 2,
+      "int": -1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 9,
+      "survival": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Wolf Empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 11,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 9,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wolf Empathy",
+      "category": "interaction",
+      "text": "The werewolf can communicate with canine creatures.\n\n---\n\nThe werecreature can ask questions of, receive answers from, and use the Diplomacy skill with animals of its general kind."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "- Human\n\n- Melee fist +11 Damage 1d4+8\n\n- Animal\n\n- Speed 40 feet\n\n- Melee jaws with Knockdown\n\n---\n\nThe werecreature changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape.\n\nIn humanoid shape, the werecreature uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw.\n\nIn animal shape, its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 15,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werewolf",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 17 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The werewolf's Strikes deal 1d6 extra damage to creatures within reach of at least two of the werewolf's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown (Animal Shape)",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The curse of the werewolf—known as lycanthropy to many—instills in its carriers the hungry bloodlust and predatory instincts of the wolf. Werewolves tend to dwell on the fringes of society or in small settlements where, in their humanoid forms, they work as laborers, hunters, farmers, or trappers. At night, however, these same villagers transform into violent killers and sadistic stalkers who prey on their neighbors. Werewolves are the quintessential werecreature, and the first that comes to mind when most people speak of such beings.\n\nAlthough most werewolves hide their curse by adopting solitary lifestyles, some retain the pack mentality of true wolves. A small group of such werewolves typically forms a family-like pack, with the eldest or most powerful werewolf serving as the leader. New pack mates are hand-chosen and inculcated into the family as its influence grows.\n\n---\n\nWerecreatures are humanoids doomed to transform into animals and animalhumanoid hybrids under the light of the full moon. These shapechanging creatures are the result of an ancient primal curse that they can, in turn, transmit through their own bites. Their ability to lurk unseen in the wilds as well as among people, combined with the contagiousness of their condition, makes werecreatures a perennial cause of panicked suspicion."
+}

@@ -1,0 +1,196 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragon-breath-scale",
+  "system": "pf2e",
+  "name": "Effect: Dragon Breath Scale",
+  "source": {
+    "title": "unknown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Dragon Breath Scale\n\nYou change breathe fire or chilling spray's to the damage type and trait of the corresponding dragon's breath.\n\nAdamantine bludgeoning or fire\n\nConspirator mental or poison\n\nDiabolic fire or spirit\n\nEmpyreal spirit\n\nFortune force\n\nHorned fire or poison\n\nMirage force or mental\n\nOmen mental",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:adamantine",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:adamantine",
+                  "parent:origin:item:tag:diabolic",
+                  "parent:origin:item:tag:horned",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitForce",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:fortune",
+                  "parent:origin:item:tag:mirage",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "force"
+          },
+          {
+            "label": "PF2E.TraitMental",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:conspirator",
+                  "parent:origin:item:tag:mirage",
+                  "parent:origin:item:tag:omen",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "mental"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:conspirator",
+                  "parent:origin:item:tag:horned",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitSpirit",
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:tag:diabolic",
+                  "parent:origin:item:tag:empyreal",
+                  {
+                    "not": "parent:origin:item:slug:dragon-breath-scale"
+                  }
+                ]
+              }
+            ],
+            "value": "spirit"
+          }
+        ],
+        "flag": "damageType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType",
+        "rollOption": "dragon-breath-scale-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:breathe-fire",
+          {
+            "not": "dragon-breath-scale:fire"
+          }
+        ],
+        "property": "traits",
+        "value": "fire"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:chilling-spray",
+          {
+            "not": "dragon-breath-scale:cold"
+          }
+        ],
+        "property": "traits",
+        "value": "cold"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:breathe-fire",
+              "item:slug:chilling-spray"
+            ]
+          },
+          {
+            "not": "dragon-breath-scale-damage:bludgeoning"
+          }
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.damageType}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:breathe-fire",
+              "item:slug:chilling-spray"
+            ]
+          }
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage"
+        ],
+        "slug": "base",
+        "value": "{item|flags.system.rulesSelections.damageType}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-bind-heroic-spirit",
+  "system": "pf2e",
+  "name": "Spell Effect: Bind Heroic Spirit",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Bind Heroic Spirit\n\nYou gain a status bonus to attack rolls and saving throws. Additionally, whenever you critically hit a creature with a Strike, you can create a thrall in a space adjacent to the target of the Strike.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "attack-roll",
+          "saving-throw"
+        ],
+        "type": "status",
+        "value": "ternary(gte(@item.level,6),2,1)"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.SpellEffectBindHeroicSpirit.CriticalHitNote",
+      "outcome": [
+        "criticalSuccess"
+      ]
+    }
+  ]
+}

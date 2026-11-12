@@ -1,0 +1,96 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-sacred-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Sacred Form",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sacred Form\n\nYou gain the following statistics and abilities.\n- AC = 20 + your level. Ignore your armor's check penalty and Speed reduction.\n\n- 10 temporary Hit Points.\n\n- Speed 40 feet.\n\n- Resistance 3 against physical damage.\n\n- Darkvision.\n\n- A special attack with a sacred armament, which is the only attack you can use. Your attack modifier with the sacred armament is +21, and your damage bonus is +8. The damage dice for Strikes with the weapon are 3d6 bludgeoning damage plus 1d6 spirit damage.\n\n- Athletics modifier of +23, unless your own is higher.\n\n---\nHeightened (8th) You instead gain AC = 21 + your level, 15 temporary Hit Points, resistance 4 against physical damage, attack modifier +28, damage bonus +15, and Athletics +29. If you're Medium or smaller, your battle form is Large, and your attacks also have 10-foot reach.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 8,
+            "value": {
+              "armorClass": {
+                "modifier": "21 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 29
+                }
+              },
+              "strikes": {
+                "sacred-armament": {
+                  "damage": {
+                    "modifier": 15
+                  },
+                  "modifier": 28,
+                  "traits": [
+                    "reach"
+                  ]
+                }
+              },
+              "tempHP": 15
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "20 + @actor.level"
+          },
+          "resistances": [
+            {
+              "type": "physical",
+              "value": "ternary(gte(@item.level, 8), 4, 3)"
+            }
+          ],
+          "size": "med",
+          "skills": {
+            "athletics": {
+              "modifier": 23
+            }
+          },
+          "speeds": {
+            "land": 40
+          },
+          "strikes": {
+            "sacred-armament": {
+              "damage": {
+                "dice": 3,
+                "die": "d6",
+                "modifier": 8
+              },
+              "modifier": 21
+            }
+          },
+          "tempHP": 10
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|id}-damage"
+      }
+    }
+  ]
+}

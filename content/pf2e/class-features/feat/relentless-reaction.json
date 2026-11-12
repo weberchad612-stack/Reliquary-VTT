@@ -1,0 +1,147 @@
+{
+  "kind": "feat",
+  "slug": "relentless-reaction",
+  "system": "pf2e",
+  "name": "Relentless Reaction",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "champion"
+  ],
+  "category": "classfeature",
+  "text": "Your champion's reaction improves, typically to punish the attacker with spiritual backlash. It gains the relentless reaction benefit listed in your cause below your champion's reaction.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:flash-of-grandeur"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.Grandeur"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:destructive-vengeance"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.Iniquity"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageCategory": "persistent",
+        "damageType": "spirit",
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          "retributive-strike"
+        ],
+        "selector": "strike-damage",
+        "value": "@actor.abilities.cha.mod"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:liberating-step"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              {
+                "nor": [
+                  "self:trait:holy",
+                  "self:trait:unholy"
+                ]
+              }
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.Liberation"
+          },
+          {
+            "predicate": [
+              "self:trait:holy"
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.LiberationHoly"
+          },
+          {
+            "predicate": [
+              "self:trait:unholy"
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.LiberationUnholy"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:glimpse-of-redemption",
+              "item:slug:iron-command"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              {
+                "nor": [
+                  "self:trait:holy",
+                  "self:trait:unholy"
+                ]
+              }
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.ObedienceRedemption"
+          },
+          {
+            "predicate": [
+              "self:trait:holy"
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.ObedienceRedemptionHoly"
+          },
+          {
+            "predicate": [
+              "self:trait:unholy"
+            ],
+            "text": "PF2E.SpecificRule.Champion.RelentlessReaction.ObedienceUnholy"
+          }
+        ]
+      }
+    }
+  ]
+}

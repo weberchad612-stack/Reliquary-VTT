@@ -1,0 +1,256 @@
+{
+  "kind": "creature",
+  "slug": "anguish-siktempora",
+  "system": "pf2e",
+  "name": "Anguish Siktempora",
+  "source": {
+    "title": "Pathfinder #204: Stage Fright",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "siktempora",
+    "time"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 180,
+    "perception": 26,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 22,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 5,
+      "int": 5,
+      "str": 8,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": 27,
+      "deception": 24,
+      "intimidation": 24,
+      "dimension-of-time-lore": 26
+    },
+    "speeds": {
+      "land": 10,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "emotion",
+        "poison"
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 40 (deactivated by mental, orichalcum, or spirit)",
+      "languages": "(can't speak any language), telepathy 300 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Flicker",
+          "rank": 7,
+          "ref": "spells:spell/flicker"
+        },
+        {
+          "name": "Fly (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/fly"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 27,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "sonic"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 300 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Sense",
+      "category": "interaction",
+      "text": "A siktempora can always roll Dimension of Time Lore for initiative. When it does, it gains a +2 circumstance bonus to the roll.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "dimension-of-time-lore"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 40 (Deactivated by Mental, Orichalcum, or Spirit)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "mental",
+              "orichalcum",
+              "spirit"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 40
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Foster Fear",
+      "category": "defensive",
+      "text": "Creatures with the Frightened condition are always Off-Guard to the anguish siktempora.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Uncanny Pounce",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Trigger The anguish siktempora rolls Dimension of Time Lore for initiative\n\n---\nEffect The siktempora Strides once and makes a jaws Strike, in either order.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}",
+          "when": [
+            "check:statistic:base:dimension-of-time-lore"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rend",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Claw"
+    },
+    {
+      "kind": "ability",
+      "name": "Scream of Despair",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental",
+        "occult",
+        "sonic"
+      ],
+      "text": "The anguish siktempora emits a terrible scream in a 30-foot emanation. Creatures in the area must attempt a DC 33 Will save save. The anguish siktempora can't use Scream of Despair for 1d4 rounds.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 2d6 mental damage, 2d6 sonic damage, and is Frightened 1.\n\nFailure The creature takes 6d6 mental damage, 6d6 sonic damage, and is Frightened 2.\n\nCritical Failure As failure, but Frightened 3 and the creature gains weakness to mental 15 (this weakness applies to this Scream of Despair).\n\nEffect: Scream of Despair"
+    },
+    {
+      "kind": "ability",
+      "name": "Wracking Despair",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental",
+        "occult"
+      ],
+      "text": "Frequency once per round\n\n---\nEffect The anguish siktempora projects their crippling despair into the mind of a Frightened creature they can see within range of their telepathy. The frightened creature takes 6d6 mental damage (DC 30 basic Will save save).",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "kind": "creature",
+  "slug": "well-fed-potted-violet-etheroot",
+  "system": "pf2e",
+  "name": "Well-Fed Potted Violet Etheroot",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-17: Trapping the Hag's Claw",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "ethereal",
+    "evil",
+    "plant"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 28,
+    "hp": 120,
+    "perception": 20,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 6,
+      "int": 3,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "arcana": 18,
+      "occultism": 18
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "motion-sense",
+        "range": 120,
+        "acuity": "precise"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ]
+    },
+    "notes": {
+      "languages": "can't speak any language; telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 25,
+      "attack": 17,
+      "spells": [
+        {
+          "name": "See Invisibility (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/see-the-unseen"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stalked Bite",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Emotion Sense",
+      "category": "interaction",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "The potted violet etheroot can sense the emotions of creatures within 120 feet as an imprecise sense. Emotion sense is a precise sense against creatures under an emotion effect. A creature under the effects of Calm or the serenity effect of the etheroot's Incite Emotion ability can't be noticed via emotion sense."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Soulfired Pot",
+      "category": "defensive",
+      "text": "The potted violet etheroot is rooted in a soulfired pot, which was glazed within a hellish kiln and which, like normal objects, has Hardness and grants the etheroot resistance to fire. This Hardness reduces any damage the etheroot takes by an amount equal to the Hardness. Once the potted violet etheroot is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its soulfired pot breaks, it loses its resistance to fire, and its AC is reduced to 23. Breaking the pot also increases the etheroot's speed to 25 feet.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SoulfiredPot.CriticalHit",
+            "option": "broken-construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "broken-construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "nor": [
+                  "broken-construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 7
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              {
+                "nor": [
+                  "broken-construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "type": "fire",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "broken-construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "land-speed",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "False Vision",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "illusion",
+        "mental",
+        "occult"
+      ],
+      "text": "The potted violet etheroot can trigger a false vision as the hallucination spell (DC 26 Will save) in the mind of a target within 800 feet to hear and see an object, creature, or force of the etheroot's choice, which can draw upon the target's own understanding. For example, the etheroot would not have to be familiar with the target's father to create a hallucination of the target's father that looked and sounded like him. The false vision can be sustained up to 1 hour."
+    },
+    {
+      "kind": "ability",
+      "name": "Incite Emotion",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental",
+        "occult"
+      ],
+      "text": "Requirements The etheroot's last action was a success with a Strike using its stalked bite.\n\n---\n\nEffect Wounds caused by the potted violet etheroot's stalked bite can create an intense emotional response. The creature damaged by the etheroot's stalked bite is subjected to an effect of the etheroot's choice from the following (DC 25 Will save save; duration 1 minute unless otherwise stated):\n\n- Despair: Target must attempt a Will save as if subjected to the Wave of Despair spell.\n\n- Fear: Target must attempt a Will save as if targeted by the Fear spell.\n\n- Hope: Target is affected as if subjected to the Courageous Anthem cantrip and must attempt a Will save to determine duration.\n\nCritical Success The target is affected for 4 rounds.\n\nSuccess The target is affected for 3 rounds.\n\nFailure The target is affected for 1 round.\n\nCritical Failure The target is unaffected.\n\n- Serenity: Target must attempt a Will save as if subjected to the Calm spell."
+    },
+    {
+      "kind": "ability",
+      "name": "Tentacle Flurry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The potted violet etheroot makes two Strikes with two different tentacles, each limb targeting a different creature. This counts as two attacks toward the etheroot's multiple attack penalty for further actions, but the penalty doesn't increase until after both attacks are made."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

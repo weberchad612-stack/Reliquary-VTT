@@ -1,0 +1,75 @@
+{
+  "kind": "effect",
+  "slug": "effect-peace-in-dreams-tea",
+  "system": "pf2e",
+  "name": "Effect: Peace in Dreams Tea",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Peace in Dreams Tea\n\nYou gain a +1 item bonus to all saving throws against mental effects. If consumed during a tea ceremony, the item bonus increases to +2 as long as you're asleep.\n\nNote: Adjust duration if consumed during a tea ceremony.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Actions.OneAction",
+            "value": "one-action"
+          },
+          {
+            "label": "PF2E.SpecificRule.TeaCeremony.Label",
+            "value": "tea-ceremony"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "peace-in-dreams-tea"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "peace-in-dreams-tea-bonus",
+      "when": [
+        "item:trait:mental"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Asleep.Label",
+        "option": "asleep",
+        "predicate": [
+          "peace-in-dreams-tea:tea-ceremony"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "asleep",
+          "peace-in-dreams-tea:tea-ceremony"
+        ],
+        "selector": "saving-throw",
+        "slug": "peace-in-dreams-tea-bonus",
+        "value": 2
+      }
+    }
+  ]
+}

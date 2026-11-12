@@ -1,0 +1,47 @@
+{
+  "kind": "feat",
+  "slug": "essence-overflow",
+  "system": "pf2e",
+  "name": "Essence Overflow",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype",
+    "concentrate"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Draconic Acolyte Dedication"
+  ],
+  "text": "Requirements You are Channeling Draconic Essence.\n\n---\nUncontainable power explodes from your spectral dragon. Your Channel Draconic Essence ends, and all creatures (except you) in a 10-foot emanation from your spectral dragon take 5+floor((@actor.level - 4/2))d6 damage with a basic Reflex save save against the higher of your class DC or spell DC. The damage's type matches the breath of your draconic benefactor. You then can't use Essence Overflow again for 1d4 rounds.\n\nAt 8th level and every 2 levels thereafter, the damage increases by 1d6.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "{actor|flags.system.draconicBenefactor.tradition}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "property": "damage-type",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "{actor|flags.system.draconicBenefactor.breathDamage}"
+      }
+    }
+  ]
+}

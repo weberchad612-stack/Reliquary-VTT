@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "sabora-sharkosa",
+  "system": "pf2e",
+  "name": "Sabora Sharkosa",
+  "source": {
+    "title": "Pathfinder #179: Cradle of Quartz",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "aiuvarin",
+    "elf",
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 16,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 17,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 17,
+      "athletics": 17,
+      "deception": 15,
+      "diplomacy": 15,
+      "society": 11,
+      "stealth": 17,
+      "thievery": 17,
+      "alkenstar-lore": 11
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "kelish",
+      "osiriani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Knuckle Duster",
+      "ref": "equipment:item/knuckle-duster",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dueling Pistol",
+      "ref": "equipment:item/dueling-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Meteor Shot",
+      "ref": "equipment:item/meteor-shot",
+      "type": "ammo"
+    },
+    {
+      "kind": "strike",
+      "name": "Knuckle Duster",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "free-hand",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "concussive-fist"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dueling Pistol",
+      "attack": 16,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quickest Draw",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements Sharkosa is aware of at least one of her enemies and not Off-Guard\n\nTrigger Sharkosa rolls for initiative\n\n---\n\nEffect Sharkosa makes two melee Strikes, or draws her pistol and makes a ranged Strike, against an enemy she is aware of."
+    },
+    {
+      "kind": "ability",
+      "name": "Concussive Fist",
+      "category": "offensive",
+      "traits": [
+        "incapacitation"
+      ],
+      "text": "A living creature hit by Sharkosa's knuckle duster must attempt a DC 23 Fortitude save save.\n\n---\n\nCritical Success The creature is immune to this ability for the next 24 hours.\n\nSuccess The creature is unaffected.\n\nFailure The creature is Confused for 1 round.\n\nCritical Failure The creature is confused for 1 round and falls Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Golden Bullets",
+      "category": "offensive",
+      "text": "Sharkosa's supernatural connection to gold allows her to alter the trajectory of her gold-cased bullets in flight. As long as her target is within 120 feet, Sharkosa gains a +1 circumstance bonus to ranged Strikes against targets with lesser cover and a +2 circumstance bonus to ranged Strikes against targets with standard or greater cover.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lte": [
+                  "target:distance",
+                  120
+                ]
+              },
+              {
+                "or": [
+                  "target:cover-bonus:2",
+                  "target:cover-bonus:4"
+                ]
+              }
+            ],
+            "selector": "dueling-pistol-attack",
+            "slug": "golden-bullets",
+            "type": "circumstance",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lte": [
+                  "target:distance",
+                  120
+                ]
+              },
+              "target:cover-bonus:1"
+            ],
+            "selector": "dueling-pistol-attack",
+            "slug": "golden-bullets-lesser",
+            "type": "circumstance",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "One-Two Punch",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Sharkosa makes three melee Strikes with her knuckle duster. Each Strike counts against her multiple attack penalty as usual."
+    },
+    {
+      "kind": "ability",
+      "name": "Reload Trick",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements No enemies are within 60 feet of Sharkosa and her dueling pistol is loaded\n\nFrequency once per minute\n\n---\n\nEffect Sharkosa makes two dueling pistol Strikes, reloading after each shot.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Sharkosa deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female half-elf martial artist gang leader"
+}

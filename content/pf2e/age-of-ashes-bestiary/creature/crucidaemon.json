@@ -1,0 +1,229 @@
+{
+  "kind": "creature",
+  "slug": "crucidaemon",
+  "system": "pf2e",
+  "name": "Crucidaemon",
+  "source": {
+    "title": "Pathfinder #149: Against the Scarlet Triad",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "daemon",
+    "evil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 38,
+    "hp": 225,
+    "perception": 26,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 30,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 7,
+      "dex": 7,
+      "int": 3,
+      "str": 4,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 30,
+      "arcana": 26,
+      "crafting": 30,
+      "deception": 26,
+      "intimidation": 28,
+      "stealth": 30,
+      "thievery": 26
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "draconic"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine"
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "detect alignment (good only)",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 32,
+      "attack": 28,
+      "spells": [
+        {
+          "name": "Air Walk (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/air-walk"
+        },
+        {
+          "name": "Glyph of Warding",
+          "rank": 7,
+          "ref": "spells:spell/rune-trap",
+          "uses": 3
+        },
+        {
+          "name": "Paralyze",
+          "rank": 7,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "Death Knell",
+          "rank": 2,
+          "ref": "spells:spell/death-knell"
+        },
+        {
+          "name": "Invisibility (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Detect Alignment (Constant) (Good Only)",
+          "rank": 1,
+          "text": "Your eyes glow as you sense aligned auras. Choose chaotic, evil, good, or lawful. You detect auras of that alignment. You receive no information beyond presence or absence. You can choose not to detect creatures or effects you're aware have that alignment.\n\nOnly creatures of 6th level or higher-unless divine spellcasters, undead, or beings from the Outer Sphere-have alignment auras.\n\n---\n\nHeightened (2nd) You learn each aura's location and strength."
+        },
+        {
+          "name": "Fear",
+          "rank": 4,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Phantom Pain (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/phantom-pain"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Chained Dagger",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-10",
+        "unholy",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "4d4+14",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trap Dodger",
+      "category": "defensive",
+      "text": "Crucidaemons are all but impossible to fool with traps. Whenever a crucidaemon rolls a saving throw against a trap hazard, its degree of success is one better than it rolled.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "origin:trait:trap"
+            ],
+            "selector": "saving-throw"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Daemonic Trap Making",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the crucidaemon casts its innate Rune Trap spell, it can store any arcane or divine spell of an appropriate level in the glyph, even if it can't otherwise cast the spell."
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Daggers",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The crucidaemon makes two chained dagger Strikes against a single target. These attacks count toward the crucidaemon's multiple attack penalty and its multiple attack penalty doesn't increase until after both attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Manifest Dagger",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The crucidaemon summons a new chained dagger to replace a destroyed one. A crucidaemon's daggers can't be disarmed, and they become non-magical when severed from the daemon or upon the daemon's death."
+    }
+  ],
+  "text": "Of all the ways to die, crucidaemons represent perhaps one of the least desirable: death by torture. The fiend's shapely body, which appears to be sculpted from iron or mithril, belies a sinister wrath and love of inflicting pain. Crucidaemons particularly enjoy inflicting pain with their curved, serrated daggers, which are attached to their bodies via a chain that pierces each wrist.\n\nA crucidaemon's existence is dedicated to subjecting its prey to an eternity of pain and terror. Unlike other daemons, many of which are eager to feed on mortal souls as soon as they can, the crucidaemon takes much greater pleasure in prolonging the agony of its victims. Oftentimes, a crucidaemon will inflict such torment and pain upon its prey that when the end finally comes, the victim tearfully thanks the daemon for the mercy of oblivion. An encounter with a crucidaemon that does not end with its death is far from over-crucidaemons have unequaled patience for those who dare oppose them."
+}

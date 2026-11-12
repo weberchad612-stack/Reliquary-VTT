@@ -1,0 +1,39 @@
+{
+  "kind": "feat",
+  "slug": "keen-follower",
+  "system": "pf2e",
+  "name": "Keen Follower",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "general"
+  ],
+  "category": "general",
+  "text": "Your keen observation of your allies has made you better at following their lead. When using the Follow the Expert activity in exploration mode, you gain a +3 circumstance bonus if the ally you are following is an expert and a +4 circumstance bonus if your ally is a master.\n\nYou can share your observations with others to help further coordinate the group. If the ally you are following has Quiet Allies or another skill feat that allows the group to roll a single skill check for an exploration activity and use the lowest modifier, they can instead use your modifier, even if it's not the lowest.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "self:effect:follow-the-expert",
+          {
+            "or": [
+              "follow-the-expert:proficiency:rank:2",
+              "follow-the-expert:proficiency:rank:3"
+            ]
+          }
+        ],
+        "selector": "skill-check",
+        "slug": "follow-the-expert-circumstance",
+        "value": "@actor.flags.system.followTheExpertProficiency+1"
+      }
+    }
+  ]
+}

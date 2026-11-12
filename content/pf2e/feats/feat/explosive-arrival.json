@@ -1,0 +1,108 @@
+{
+  "kind": "feat",
+  "slug": "explosive-arrival",
+  "system": "pf2e",
+  "name": "Explosive Arrival",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "concentrate",
+    "manipulate",
+    "spellshape",
+    "wizard"
+  ],
+  "category": "class",
+  "actions": "free",
+  "text": "Your summoned creature appears in a detonation of arcane runes. If your next action is to Cast a Spell with the summon trait, all creatures in a 10-foot emanation around the creature you summoned take 1d4 fire damage per spell rank. If the creature summoned has the acid, cold, electricity, sonic, or spirit trait, you can deal damage of that type instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:summon",
+          "spellshape:explosive-arrival"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.ExplosiveArrival"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "explosive-arrival"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Wizard.ExplosiveArrival.Label",
+        "option": "arrival-damage",
+        "placement": "spellcasting",
+        "predicate": [
+          "spellshape:explosive-arrival"
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          },
+          {
+            "label": "PF2E.TraitSpirit",
+            "value": "spirit"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.spellshape.explosiveArrivalDamage",
+        "value": "{item|flags.system.rulesSelections.arrivalDamage}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "kind": "creature",
+  "slug": "kargstaad",
+  "system": "pf2e",
+  "name": "Kargstaad",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "cold",
+    "evil",
+    "giant",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 43,
+    "hp": 360,
+    "perception": 33,
+    "saves": {
+      "fortitude": 35,
+      "reflex": 31,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 8,
+      "dex": 6,
+      "int": 4,
+      "str": 10,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 39,
+      "crafting": 33,
+      "intimidation": 37,
+      "stealth": {
+        "value": 33,
+        "special": [
+          {
+            "value": 37,
+            "label": "in snow",
+            "when": [
+              "terrain:snow"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey",
+      "jotun"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "fast healing 20",
+      "saves": "juggernaut",
+      "speed": "ice stride"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Rock",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Sack",
+      "ref": "equipment:item/sack",
+      "type": "backpack"
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 37,
+      "traits": [
+        "agile",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+18",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 35,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d10 + 18",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "rock"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 20",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "type": "fast-healing",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Juggernaut",
+      "category": "defensive",
+      "text": "When Kargstaad rolls a success on a Fortitude save, he gets a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "fortitude",
+          "text": "PF2E.SpecificRule.SaveSuccessToCriticalSuccess.Fortitude",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Chill Breath",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "primal"
+      ],
+      "text": "The frost giant breathes out a 15-foot cone of freezing moisture that quickly condenses into ice, dealing 9d6 cold damage. Each creature in the cone must attempt a DC 41 basic Reflex save save.\n\nA creature that fails its save is also Immobilized and takes 2d6 cold damage at the end of each of its turns until it gets free (escape dc=41).\n\nThe giant can't use Chill Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Hatchet Onslaught",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements Each of Kargstaad's four hands wields a hatchet.\n\n---\n\nEffect Kargstaad Strides up to half his speed, then makes four hatchet Strikes, applying his multiple attack penalty as normal."
+    },
+    {
+      "kind": "ability",
+      "name": "Ice Stride",
+      "category": "offensive",
+      "text": "A frost giant isn't impeded by difficult terrain caused by snow or ice, nor does it need to attempt Acrobatics checks to keep from falling on slippery ice."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Kargstaad isn't Fatigued or raging.\n\n---\nEffect Kargstaad gains 25 temporary hit points, deals an extra 12 points of damage with thrown rocks, and deals an extra 6 points of damage with hatchets. He takes a -1 penalty to AC and can't use actions with the concentrate trait (except Seek) unless they also have the rage trait.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "rock-damage",
+          "type": "untyped",
+          "value": 12,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "hatchet-damage",
+          "type": "untyped",
+          "value": 6,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Wide Swing",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The frost giant makes a single greataxe Strike and compares the attack roll result to the ACs of up to two foes within its reach. This counts as two attacks for the frost giant's multiple attack penalty."
+    }
+  ],
+  "text": "Frost giants are remorseless marauders who pillage and plunder from those who dare to live near them in desolate, frigid lands. Their clans range from extremely territorial hunters who claim an expanse of tundra and defend it at all costs to nomadic hordes that roam icy slopes in search of settlements to conquer. Frost giant clans are ruled by those who exhibit the greatest ferocity and prowess in battle-massive brutes who proclaim themselves jarl and demand absolute obedience from their followers. If at any time a frost giant wishes to be a jarl, all they must do is issue a challenge to the current jarl and face off in mortal combat, after which the reigning champion continues leading the clan or the victorious challenger assumes control.\n\nFrost giants live in frostbitten realms, and their appearance is reflective of a people weathered and hardened by relentless snowstorms and freezing temperatures. They often wear metal armor adorned with the furs, skin, teeth, and tusks of slain beasts and heft weapons as long as dining tables. Their flesh ranges from pale blue to shale gray, and their hair is typically a dingy white or dirty yellow color.\n\nA typical frost giant stands about 15 feet tall and weighs approximately 2,800 pounds.\n\n---\n\nGiants are massive humanoid creatures who live in remote regions throughout the world. They are divided into a number of subtypes.",
+  "blurb": "Variant frost giant"
+}

@@ -1,0 +1,128 @@
+{
+  "kind": "weapon",
+  "slug": "four-ways-dogslicer",
+  "system": "pf2e",
+  "name": "Four-Ways Dogslicer",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "agile",
+    "backstabber",
+    "cold",
+    "electricity",
+    "finesse",
+    "fire",
+    "goblin",
+    "magical"
+  ],
+  "text": "This +2 striking dogslicer is obviously the work of a brilliant but scrappy artisan who valued versatility over safety. Four toothy gems line the blade's cutting edge, three of which glow-one with fiery red light, one with a chill blue, and one that gives off sparks-while the last is a glistening black. Each of these gems embodies a weapon property rune, but only one rune can be active at a time.\n\n---\nActivate-Gem Twist 1 (manipulate)\n\nEffect You twist the gem along the blade corresponding with the desired weapon rune: red for flaming, blue for frost, or yellow for shock. You take 1d6 untyped damage of the type the chosen rune deals. You can instead twist the black gem to disable the active property rune, taking no damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "gem-twist",
+        "suboptions": [
+          {
+            "label": "PF2E.WeaponPropertyRune.flaming.Name",
+            "value": "flaming"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.frost.Name",
+            "value": "frost"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.shock.Name",
+            "value": "shock"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|id}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "gem-twist"
+        ],
+        "property": "property-runes",
+        "value": "{item|flags.system.rulesSelections.gemTwist}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "gem-twist:flaming"
+        ],
+        "property": "damage-type",
+        "requiresEquipped": false,
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "fire"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "gem-twist:frost"
+        ],
+        "property": "damage-type",
+        "requiresEquipped": false,
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "cold"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "gem-twist:shock"
+        ],
+        "property": "damage-type",
+        "requiresEquipped": false,
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "electricity"
+      }
+    }
+  ],
+  "category": "martial",
+  "group": "sword",
+  "damage": {
+    "die": "d6",
+    "type": "slashing"
+  },
+  "hands": "held-in-one-hand",
+  "baseItem": "dogslicer",
+  "bulk": 0.1,
+  "price": {
+    "gp": 1700
+  },
+  "runes": {
+    "potency": 2,
+    "striking": 1
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "topiary-monster",
+  "system": "pf2e",
+  "name": "Topiary Monster",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-12: Mischief in the Maze",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "plant"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 10,
+      "intimidation": 10,
+      "stealth": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "in forests",
+            "when": [
+              "terrain:forest"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 3
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 6
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Branch",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Functional Form",
+      "category": "offensive",
+      "text": "Depending on the creature it resembles, the topiary monster gains additional abilities.\n\nMantis The branch Strike is agile and has reach 10 feet. On the first round of combat, creatures that haven't acted are Off-Guard to the mantis topiary monster.\n\nOwlbear The branch Strike is agile and has the Grab action.\n\nUnicorn The branch Strike is deadly 1d6 and has the Knockdown action.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "functional-form",
+            "selection": "mantis",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Mantis",
+                "value": "mantis"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Owlbear",
+                "value": "owlbear"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Unicorn",
+                "value": "unicorn"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "functional-form:mantis"
+            ],
+            "property": "traits",
+            "value": "agile"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "functional-form:mantis"
+            ],
+            "property": "traits",
+            "value": "reach-10"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              "functional-form:mantis"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "functional-form:unicorn"
+            ],
+            "property": "traits",
+            "value": "deadly-d6"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Display",
+      "category": "offensive",
+      "text": "When using Intimidation to Demoralize a target, a topiary monster doesn't take a penalty for not speaking the same language as the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab (Owlbear Form Only)",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown (Unicorn Form Only)",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

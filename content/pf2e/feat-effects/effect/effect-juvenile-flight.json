@@ -1,0 +1,45 @@
+{
+  "kind": "effect",
+  "slug": "effect-juvenile-flight",
+  "system": "pf2e",
+  "name": "Effect: Juvenile Flight",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "You gain a fly Speed equal to your land Speed while your wings are unfurled.\n\nIf you have Fledgling Flight, you gain a +10-foot status bonus to your fly Speed with Juvenile Flight. As normal, since your fly Speed is derived from your land Speed, this status bonus isn't cumulative with a status bonus to your land Speed, if you have one.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          {
+            "not": "feat:fully-flighted"
+          }
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "fly-speed",
+      "type": "status",
+      "value": 10,
+      "when": [
+        "feat:fledgling-flight",
+        {
+          "not": "feat:fully-flighted"
+        }
+      ]
+    }
+  ]
+}

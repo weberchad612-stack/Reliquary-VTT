@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "shadowbound-mare",
+  "system": "pf2e",
+  "name": "Shadowbound Mare",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "animal",
+    "shadow"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 3,
+      "int": -4,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 12,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 40
+    },
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "ghost-touch"
+        }
+      ]
+    },
+    "notes": {
+      "perception": "darkvision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Buck",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Reflex save"
+    },
+    {
+      "kind": "ability",
+      "name": "Gallop",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The shadowbound mare Strides twice. It has a +10-foot circumstance bonus to its Speed during these Strides.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "gallop",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "gallop"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Vulnerability",
+      "category": "offensive",
+      "text": "Attacks against the shadowbound creature are treated as magical if made by a creature that's in magical light or with an object that's in magical light (such as from the light spell)."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Form",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "shadow"
+      ],
+      "text": "A shadowbound creature can assume a shadowy form. In this state, the creature gains the incorporeal trait. It has resistance 10 to all damage (except force, ghost touch, spirit, or vitality; double resistance vs. non-magical), is immune to precision damage, and can't use any actions with the attack or manipulate trait. It has a fly Speed of 15 feet and can slip through tiny cracks. The shadowbound creature can Dismiss this effect to become solid again, but if it does so in an area of bright light, it's Stunned 1 for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shadow-form",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "fly-speed",
+          "type": "untyped",
+          "value": 15,
+          "when": [
+            "shadow-form"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              "shadow-form"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "spirit",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              "shadow-form"
+            ],
+            "type": "all-damage",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "shadow-form"
+            ],
+            "type": "precision"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Touch",
+      "category": "offensive",
+      "text": "The creature's Strikes affect incorporeal creatures with the effects of a ghost touch property rune.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Prized by those who hunt elusive and incorporeal prey, these mares have a reputation for steadfastness."
+}

@@ -1,0 +1,259 @@
+{
+  "kind": "creature",
+  "slug": "capritellix",
+  "system": "pf2e",
+  "name": "Capritellix",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "rare",
+  "traits": [
+    "elemental",
+    "metal"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 39,
+    "hp": 290,
+    "perception": 30,
+    "saves": {
+      "fortitude": 31,
+      "reflex": 29,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 9,
+      "con": 8,
+      "dex": 8,
+      "int": 7,
+      "str": 6,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 31,
+      "athletics": 29,
+      "deception": 32,
+      "diplomacy": 32,
+      "intimidation": 32,
+      "performance": 32,
+      "society": 30,
+      "plane-of-metal-lore": 30
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "talican"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "plus one language for each of their mouths; telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Metal Hand",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d12",
+          "type": "electricity"
+        }
+      ],
+      "effects": [
+        "plentiful-metals",
+        "push"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Eye Beam",
+      "attack": 33,
+      "traits": [
+        "electricity",
+        "magical"
+      ],
+      "maxRange": 120,
+      "damage": [
+        {
+          "dice": "4d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shift Mood",
+      "actions": 1,
+      "category": "defensive",
+      "text": "The capritellix rotates the segments of their face, changing their personality and demeanor. Until they Shift their Mood again, the capritellix gains a +4 status bonus to a certain skill and to their Will DC against that skill, as well as a specific occult innate spell they can cast at will (9th rank, DC 38).\n\nAngry Intimidation, Dominate\n\nGregarious Performance, Uncontrollable Dance\n\nSerene Diplomacy, Suggestion\n\nSly Deception, Warp Mind",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shift-mood",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.Capritellix.ShiftMood.Angry",
+                "value": "intimidation"
+              },
+              {
+                "label": "PF2E.NPCAbility.Capritellix.ShiftMood.Gregarious",
+                "value": "performance"
+              },
+              {
+                "label": "PF2E.NPCAbility.Capritellix.ShiftMood.Serene",
+                "value": "diplomacy"
+              },
+              {
+                "label": "PF2E.NPCAbility.Capritellix.ShiftMood.Sly",
+                "value": "deception"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "{item|flags.system.rulesSelections.shiftMood}",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "shift-mood"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dual Beams",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The capritellix makes two eye beam Strikes against different creatures. Their multiple attack penalty doesn't increase until after both Strikes."
+    },
+    {
+      "kind": "ability",
+      "name": "Plentiful Metals",
+      "category": "offensive",
+      "text": "Each of the capritellix's levitating hands is made of a different precious metal. Each time a capritellix makes a metal hand Strike, they choose whether the hand they use is adamantine, cold iron, dawnsilver, orichalcum, silver, or any other solid precious metal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "plentiful-metals",
+            "suboptions": [
+              {
+                "label": "PF2E.PreciousMaterialAdamantine",
+                "value": "adamantine"
+              },
+              {
+                "label": "PF2E.PreciousMaterialColdIron",
+                "value": "cold-iron"
+              },
+              {
+                "label": "PF2E.PreciousMaterialDawnsilver",
+                "value": "dawnsilver"
+              },
+              {
+                "label": "PF2E.PreciousMaterialOrichalcum",
+                "value": "orichalcum"
+              },
+              {
+                "label": "PF2E.PreciousMaterialSilver",
+                "value": "silver"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:metal-hand"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "plentiful-metals"
+            ],
+            "property": "materials",
+            "value": "{item|flags.system.rulesSelections.plentifulMetals}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Whirling Hands",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger A creature starts its turn in the capritellix's melee reach\n\n---\n\nEffect The capritellix makes a metal hand Strike against the creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Push 20 feet",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The Plane of Metal can seem unpredictable to the point of cruelty, and capritellixes embody this perfectly. With a head formed of discs that each depict a portion of their face, a capritellix reshapes their personality with a quick whir. Despite their different faces, each capritellix has a unified identity, with one memory and one name. Each mood that cycles through the pieces of their face is a massively amplified facet of their personality, rather than a completely different individual. The differences are subtle to most observers, but a capritellix can display numerous mood combinations—typically 64 for one with four faces per disc or 125 for one with five faces per disc. No matter how much they change their face, however, capritellixes can't suppress their haughty ego or shake the ceaseless despair they feel. The conflicting priorities of each mood within a capritellix make it difficult for any of these creatures to make long-term plans or form solid relationships. What one face builds up, another undermines, cursed all the while with full knowledge of the former intentions they will never fulfill and the well-laid plans they will abandon.\n\nRecycled Remains\n\nWhen horribly damaged or weary, capritellixes travel to a communal necropolis, much like a fabled elephant graveyard. Thousands of metallic hands reach up from the landscape, clawing at the sky, and severed discs that used to make up capritellixes pile up in endless heaps. Other elementals sometimes salvage these disparate parts and assemble them into a new capritellix—a unique individual with a brand-new identity."
+}

@@ -1,0 +1,328 @@
+{
+  "kind": "creature",
+  "slug": "dynamo",
+  "system": "pf2e",
+  "name": "Dynamo",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 145,
+    "perception": 16,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": 3,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 17,
+      "athletics": 18,
+      "crafting": 17,
+      "medicine": 16,
+      "thievery": 17,
+      "engineering-lore": 17
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dragon Mouth Pistol",
+      "ref": "equipment:item/dragon-mouth-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield (Modular Prostheses Only)",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Plating (Functions as Half Plate)",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Artisan's Toolkit (Blacksmithing)",
+      "ref": "equipment:item/artisans-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Repair Toolkit",
+      "ref": "equipment:item/repair-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dragon Mouth Pistol)",
+      "ref": "equipment:item/rounds-dragon-mouth-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Modular Prosthesis",
+      "attack": 20,
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dragon Mouth Pistol",
+      "attack": 18,
+      "traits": [
+        "concussive",
+        "reload-1",
+        "scatter-5"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Extend Arms",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The dynamo extends their collapsible steel arms, giving them both a reach of 20 feet with all melee attacks. However, the dynamo becomes Enfeebled 1 and can't use the Interact action. The dynamo can Dismiss this ability.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extend-arms",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "extend-arms",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "reach-20"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "extend-arms"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Extend Legs",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The dynamo rises into the air on 10-foot-tall telescoping steel legs. While their legs are extended, the dynamo gains a +10-foot status bonus to land Speed and ignores any cover granted by barriers less than 10 feet tall. However, the dynamo becomes Clumsy 1 and can't use the Climb, Leap, Swim, or Tumble Through actions. The dynamo can Dismiss this ability.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extend-legs",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "status",
+          "value": 10,
+          "when": [
+            "extend-legs"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "extend-legs"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Modular Prostheses",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The dynamo configures one or both of their mechanical prosthetic hands into a specific configuration. Each configuration deals a specific damage type and has its own weapon traits: fist (bludgeoning; free-hand), gaff hook (piercing; grapple), impact driver (bludgeoning; shove), or spinning blade (slashing; trip). The dynamo can alternatively transform a hand into a steel shield with Hardness 8, HP 72, and BT 36. A broken prosthesis can't be reconfigured until repaired.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "modular-prostheses",
+            "selection": "fist",
+            "suboptions": [
+              {
+                "label": "PF2E.BattleForm.Attack.Fist",
+                "value": "fist"
+              },
+              {
+                "label": "PF2E.NPCAbility.ModularProstheses.GaffHook",
+                "value": "gaff-hook"
+              },
+              {
+                "label": "PF2E.NPCAbility.ModularProstheses.ImpactDriver",
+                "value": "impact-driver"
+              },
+              {
+                "label": "PF2E.NPCAbility.ModularProstheses.SpinningBlade",
+                "value": "spinning-blade"
+              },
+              {
+                "label": "PF2E.Item.Shield.Base.steel-shield",
+                "value": "steel-shield"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "modular-prostheses:gaff-hook"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "modular-prosthesis-damage"
+            ],
+            "slug": "base",
+            "value": "piercing"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "modular-prostheses:spinning-blade"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "modular-prosthesis-damage"
+            ],
+            "slug": "base",
+            "value": "slashing"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "modular-prostheses:fist",
+              "item:slug:modular-prosthesis"
+            ],
+            "property": "traits",
+            "value": "free-hand"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "modular-prostheses:gaff-hook",
+              "item:slug:modular-prosthesis"
+            ],
+            "property": "traits",
+            "value": "grapple"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "modular-prostheses:impact-driver",
+              "item:slug:modular-prosthesis"
+            ],
+            "property": "traits",
+            "value": "shove"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "modular-prostheses:spinning-blade",
+              "item:slug:modular-prosthesis"
+            ],
+            "property": "traits",
+            "value": "trip"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The intricate clockwork prostheses known as sterling dynamos have become increasingly common in recent years, particularly in havens of technological progress like Dongun Hold and the city of Absalom, but a few specialized engineers have elevated their dedication to research and development of such devices to an entirely new level. These individuals seek to achieve bodily perfection through augmentation, replacing their own limbs with advanced and sometimes untested prototypes that grant them a wide variety of abilities.\n\n---\nAlthough relatively uncommon across much of Golarion, the frequently eccentric but undeniably brilliant minds who create elaborate devices of clockwork, gunpowder, and steam often loom much larger in the public eye than their numbers would suggest."
+}

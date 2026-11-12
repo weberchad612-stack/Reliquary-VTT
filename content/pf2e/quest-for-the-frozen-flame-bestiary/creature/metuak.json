@@ -1,0 +1,282 @@
+{
+  "kind": "creature",
+  "slug": "metuak",
+  "system": "pf2e",
+  "name": "Metuak",
+  "source": {
+    "title": "Pathfinder #177: Burning Tundra",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "fiend",
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 240,
+    "perception": 20,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 23,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 7,
+      "dex": 6,
+      "int": 1,
+      "str": 8,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 27,
+      "deception": 24,
+      "intimidation": 26,
+      "nature": 22,
+      "stealth": 25,
+      "survival": 24
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "hallit"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "fear-effects",
+        "poison",
+        "precision"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        },
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 5,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(dual soul; 120 each for Metuak and Xeleria)",
+      "saves": "+1 to all saves vs. magic",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 34,
+      "attack": 26,
+      "spells": [
+        {
+          "name": "Shadow Blast",
+          "rank": 5,
+          "ref": "spells:spell/shadow-blast"
+        },
+        {
+          "name": "Shadow Siphon",
+          "rank": 5,
+          "ref": "spells:spell/shadow-siphon"
+        },
+        {
+          "name": "Darkness",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "cold"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "evil",
+        "magical",
+        "sweep",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "category": "defensive",
+      "text": "[reaction]"
+    },
+    {
+      "kind": "ability",
+      "name": "Dual Deny Advantage",
+      "category": "defensive",
+      "text": "Due to his dual nature with Xeleria, Metuak is never Off-Guard.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "off-guard"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Axe Master",
+      "category": "offensive",
+      "text": "Metuak has access to the critical specialization effect of axe weapons. Due to his hatchet's grievous rune, he can damage a third creature with the same restrictions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:group:axe"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:hatchet"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "grievous"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dual Soul",
+      "category": "offensive",
+      "text": "A demon named Xeleria is bound to Metuak's soul. Though the two entities share one body and are a single creature for the purpose of both targeted and area effects, Metuak and Xeleria each have 120 Hit Points. Damage to each is tracked separately. Xeleria's HP is reduced by force, good, and vitality damage, and any damage from a cold iron weapon, a weapon with a ghost touch rune, and any damage originating from the Primordial Flame. All other damage reduces Metuak's HP.\n\nMetuak and Xeleria must both be reduced to 0 HP for Metuak to die and Xeleria to be destroyed. If, at the beginning of Metuak's turn, either Metuak or Xeleria has been reduced to 0 HP but the other hasn't, Metuak and Xeleria each regain 15 healing HP."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Blend",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "illusion"
+      ],
+      "text": "Metuak Strides up to twice his Speed. If he ends his movement in an area of dim light, he is Hidden as long as he remains in dim light."
+    },
+    {
+      "kind": "ability",
+      "name": "Soul Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Metuak makes a single hatchet or claw Strike and compares the result to the AC of up to four foes, each of whom must be within his reach. He rolls damage once and applies it to each creature he hits. A Soul Swipe counts as two attacks for his multiple attack penalty. Metuak's hatchet applies its sweep trait against all four targets."
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Howl",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory"
+      ],
+      "text": "Metuak unleashes a terrifying howl, attempting to demoralize options=area-effect each creature within 30 feet. These creatures are then immune to Terrifying Howl for 1 minute."
+    }
+  ],
+  "blurb": "Male demon-possessed human hero"
+}

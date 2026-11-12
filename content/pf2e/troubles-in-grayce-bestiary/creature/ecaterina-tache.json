@@ -1,0 +1,155 @@
+{
+  "kind": "creature",
+  "slug": "ecaterina-tache",
+  "system": "pf2e",
+  "name": "Ecaterina Tache",
+  "source": {
+    "title": "Pathfinder Adventures: Troubles in Grayce",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "unique",
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 40,
+    "perception": 12,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 10,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 3,
+      "int": 4,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 9,
+      "crafting": 12,
+      "diplomacy": 12,
+      "intimidation": 13,
+      "society": 12,
+      "engineering-lore": 13,
+      "mining-lore": 11
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Destroyed Explorer's Clothing",
+      "ref": "equipment:item/explorers-clothing",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hazard Finder",
+      "category": "interaction",
+      "text": "Ecaterina gains a +1 circumstance bonus to Perception checks to find traps or environmental hazards (but not to finding haunts), to AC against attacks made by traps, and to saves against traps.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "action:seek",
+            {
+              "or": [
+                "target:trait:trap",
+                "target:trait:environmental"
+              ]
+            },
+            {
+              "not": "target:trait:haunt"
+            }
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "saving-throw",
+            "ac"
+          ],
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "origin:trait:trap"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Perception +15 to Seek or Search",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            {
+              "or": [
+                "action:seek",
+                "action:search"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Last Second Warning",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "linguistic"
+      ],
+      "text": "Trigger A creature Ecaterina can see triggers a hazard\n\n---\nEffect Ecaterina notices the danger a split-second before it activates and calls out a warning to the creature that triggered it. If that creature can hear and understand her warning, it gains a +1 circumstance bonus to its AC against attacks made by the hazard, and to saves against the triggering hazard."
+    }
+  ],
+  "blurb": "Female elf inspector"
+}

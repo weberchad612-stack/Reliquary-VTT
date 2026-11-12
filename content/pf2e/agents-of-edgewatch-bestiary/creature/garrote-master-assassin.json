@@ -1,0 +1,255 @@
+{
+  "kind": "creature",
+  "slug": "garrote-master-assassin",
+  "system": "pf2e",
+  "name": "Garrote Master Assassin",
+  "source": {
+    "title": "Pathfinder #161: Belly of the Black Whale",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 38,
+    "hp": 300,
+    "perception": 30,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 31,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 6,
+      "int": 1,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 32,
+      "athletics": 29,
+      "deception": 26,
+      "stealth": 32,
+      "thievery": 30
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+2 Striking Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Striking Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Resilient Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Garrote Bolts",
+      "type": "equipment",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 31,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sidestep",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The attack roll for a Strike targeting the assassin fails or critically fails\n\n---\n\nEffect The assassin deftly steps out of the way of the attack. If there's another creature adjacent to the assassin and within reach of the triggering attack, the assassin redirects the attack to that adjacent creature. The attacker then rerolls the Strike's attack roll against the new target."
+    },
+    {
+      "kind": "ability",
+      "name": "Point Blank",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "The master assassin makes a crossbow Strike against an adjacent enemy; unlike most ranged Strikes, this Strike doesn't provoke reactions. If successful, the attack deals an additional 4d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "point-blank",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "point-blank"
+            ],
+            "selector": "crossbow-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running Reload",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The master assassin Strides, Steps, or Sneaks, then Interacts to reload her crossbow."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The master assassin deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Study Target",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The master assassin observes a single target she can see, allowing her to use her Vorpal Garrote during the next round."
+    },
+    {
+      "kind": "ability",
+      "name": "Vorpal Garrote",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "death",
+        "incapacitation"
+      ],
+      "text": "Requirements The master assassin used Study Target during the previous round and must have a garrote bolt\n\n---\n\nEffect The master assassin makes a crossbow Strike against the target she previously studied. If she rolls a success on her attack roll, she gets a critical success instead. The target must attempt a DC 36 Fortitude save save.\n\nSuccess No additional effect.\n\nFailure The target takes an additional 3d12 precision damage.\n\nCritical Failure The target is decapitated and instantly dies unless it doesn't require a head to live.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "vorpal-garrote",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "vorpal-garrote"
+            ],
+            "selector": "crossbow-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

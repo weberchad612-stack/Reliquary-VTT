@@ -1,0 +1,74 @@
+{
+  "kind": "feat",
+  "slug": "lethargy-poisoner",
+  "system": "pf2e",
+  "name": "Lethargy Poisoner",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Crossbow Infiltrator Dedication",
+    "trained in Crafting"
+  ],
+  "text": "You've learned more than the use of hand crossbows. During your daily preparations, you can prepare a dose of Lethargy Poison from ordinary materials in a wilderness or urban area. If you're an expert in Crafting, you can instead craft a dose of Stupor Poison. You can prepare two doses (of either poison) if you're a master in Crafting and three doses if you're legendary in Crafting. The save DC for this poison is equal to your class DC. Only you can use these poisons, and they expire the next time you make your daily preparations. The GM might decide that the area you're in is too barren to provide the materials you need for this feat.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "craftableItems": [
+          "item:slug:lethargy-poison"
+        ],
+        "isDailyPrep": true,
+        "key": "CraftingAbility",
+        "maxSlots": "ternary(gte(@actor.system.skills.crafting.rank,3),3,1)",
+        "priority": 60,
+        "slug": "lethargy-poisoner"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "craftableItems": [
+          "item:slug:stupor-poison"
+        ],
+        "key": "CraftingAbility",
+        "predicate": [
+          {
+            "gte": [
+              "skill:crafting:rank",
+              3
+            ]
+          }
+        ],
+        "priority": 60,
+        "slug": "lethargy-poisoner"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "item:trait:infused",
+          {
+            "or": [
+              "item:slug:lethargy-poison",
+              "item:slug:stupor-poison"
+            ]
+          }
+        ],
+        "selector": "inline-dc",
+        "value": "@actor.system.attributes.classDC.totalModifier"
+      }
+    }
+  ]
+}

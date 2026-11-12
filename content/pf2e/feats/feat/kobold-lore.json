@@ -1,0 +1,58 @@
+{
+  "kind": "feat",
+  "slug": "kobold-lore",
+  "system": "pf2e",
+  "name": "Kobold Lore",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kobold"
+  ],
+  "category": "ancestry",
+  "text": "You attentively learned key kobold survival strategies from your elders. You gain the trained proficiency rank in Stealth and Thievery. If you would automatically become trained in one of those skills (from your background or class, for example), you instead become trained in a skill of your choice.\n\nYou also gain the Additional Lore general feat for Kobold Lore.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.stealth.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.thievery.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Additional Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.kobold-lore",
+        "value": {
+          "attribute": "int",
+          "label": "{item|name}",
+          "rank": "match(when(gte(@actor.level, 15), 4), when(gte(@actor.level, 7), 3),when(gte(@actor.level, 3), 2),1)"
+        }
+      }
+    }
+  ]
+}

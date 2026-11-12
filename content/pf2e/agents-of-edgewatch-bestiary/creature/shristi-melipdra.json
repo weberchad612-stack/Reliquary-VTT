@@ -1,0 +1,214 @@
+{
+  "kind": "creature",
+  "slug": "shristi-melipdra",
+  "system": "pf2e",
+  "name": "Shristi Melipdra",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "good",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 100,
+    "perception": 18,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 17,
+      "society": 13,
+      "stealth": 16
+    },
+    "speeds": {
+      "land": 35
+    },
+    "languages": [
+      "common",
+      "goblin",
+      "hallit",
+      "vudrani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Foreign Guard Uniform",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Handcuffs (Average)",
+      "ref": "equipment:item/handcuffs-average",
+      "type": "equipment",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Victor's Medallion from the Challenge of Sky and Heaven",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Skyward Slash",
+      "attack": 17,
+      "traits": [
+        "nonlethal",
+        "unarmed",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Shristi makes two unarmed Strikes. If both hit the same creature, combine their damage for the purposes of resistances and weaknesses. He applies his multiple attack penalty to the Strikes normally.\n\nAs it has the flourish trait, Shristi can use Flurry of Blows only once per turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Heaven's Thunder",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "sonic"
+      ],
+      "text": "Frequency twice per day\n\n---\n\nEffect With a loud shout, Shristi unleashes his ki as a crackling shroud of thunder and lightning that engulfs his body. Until the end of his next turn, Shristi's unarmed Strikes and Strikes with weapons that have the monk trait deal an additional 3 electricity damage and 3 sonic damage.",
+      "frequency": {
+        "max": 2,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "heavens-thunder",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 3,
+          "slug": "heavens-thunder-electricity",
+          "when": [
+            "heavens-thunder",
+            {
+              "or": [
+                "item:category:unarmed",
+                "item:trait:monk"
+              ]
+            }
+          ],
+          "damageType": "electricity"
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 3,
+          "slug": "heavens-thunder-sonic",
+          "when": [
+            "heavens-thunder",
+            {
+              "or": [
+                "item:category:unarmed",
+                "item:trait:monk"
+              ]
+            }
+          ],
+          "damageType": "sonic"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sky and Heaven Stance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "Shristi enters a combat stance perfected by past champions of the Challenge of Sky and Heaven. While in this stance, the only Strikes Shristi can make are skyward slash unarmed attacks. These deal 1d10 slashing damage; are in the brawling group; and have the nonlethal, unarmed, and versatile P traits.\n\nWhile in Sky and Heaven Stance, Shristi gains resistance 2 to electricity and sonic damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sky-and-heaven-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "sky-and-heaven-stance"
+            ],
+            "type": [
+              "electricity",
+              "sonic"
+            ],
+            "value": 2
+          }
+        }
+      ]
+    }
+  ]
+}

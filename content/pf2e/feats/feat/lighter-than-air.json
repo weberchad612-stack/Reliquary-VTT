@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "lighter-than-air",
+  "system": "pf2e",
+  "name": "Lighter than Air",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "divine",
+    "oracle"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Water Walker"
+  ],
+  "text": "Your mysterious steps become even lighter, transcending the mortal world altogether. When you have the Cursebound condition, you gain the effects of Fly. If you are cursebound 3 or greater, you gain a +10-foot status bonus to your fly Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          {
+            "gte": [
+              "self:condition:cursebound",
+              1
+            ]
+          }
+        ],
+        "selector": "fly",
+        "value": "max(20,@actor.system.movement.speeds.land.value)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "gte": [
+              "self:condition:cursebound",
+              3
+            ]
+          }
+        ],
+        "selector": "fly-speed",
+        "type": "status",
+        "value": 10
+      }
+    }
+  ]
+}

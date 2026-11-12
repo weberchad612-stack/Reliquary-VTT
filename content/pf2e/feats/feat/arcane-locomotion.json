@@ -1,0 +1,78 @@
+{
+  "kind": "feat",
+  "slug": "arcane-locomotion",
+  "system": "pf2e",
+  "name": "Arcane Locomotion",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "text": "You've modified your body to allow you to augment your movement. You gain either a climb Speed of 20 feet or a swim Speed of 20 feet, your choice.\n\nEnhancement Your body allows for even further forms of movement. You can either select the option from this feat you haven't chosen yet (climb Speed or swim Speed), or you can increase your land Speed by 5 feet and increase the Speed you chose from this feat increase to be equal to your adjusted land Speed.",
+  "rules": [
+    {
+      "key": "speed",
+      "type": "climb",
+      "value": 20
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Type.Climb",
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Swim",
+            "value": "swim"
+          }
+        ],
+        "flag": "speed",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Automaton.ArcaneLocomotion.Prompt",
+        "rollOption": "locomotion"
+      }
+    },
+    {
+      "key": "speed",
+      "type": "swim",
+      "value": 20
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.ArcaneLocomotion",
+          "value": "arcane-locomotion"
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "untyped",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "enhancement:arcane-locomotion:increase"
+        ],
+        "selector": "{item|flags.system.rulesSelections.speed}",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    }
+  ]
+}

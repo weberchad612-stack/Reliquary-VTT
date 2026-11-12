@@ -1,0 +1,80 @@
+{
+  "kind": "heritage",
+  "slug": "irongut-goblin",
+  "system": "pf2e",
+  "name": "Irongut Goblin",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Goblin",
+    "ref": "ancestries:ancestry/goblin"
+  },
+  "text": "You can subsist on food that most folks would consider spoiled. You can keep yourself fed with poor meals in a settlement as long as garbage is readily available, without using the Subsist downtime activity. You can eat and drink things when you are Sickened.\n\nYou gain a +2 circumstance bonus to saving throws against afflictions, against gaining the sickened condition, and to remove the sickened condition. When you roll a success on a Fortitude save affected by this bonus, you get a critical success instead. All these benefits apply only when the affliction or condition resulted from something you ingested.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "irongut-save-bonus",
+      "when": [
+        "item:trait:ingested",
+        {
+          "or": [
+            "inflicts:sickened",
+            "item:type:affliction"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:trait:ingested",
+          {
+            "or": [
+              "inflicts:sickened",
+              "item:type:affliction"
+            ]
+          }
+        ],
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "consumable",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "self:condition:sickened",
+          {
+            "or": [
+              "item:tag:alchemical-food",
+              "item:trait:elixir",
+              "item:trait:ingested",
+              "item:trait:potion"
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Conditions.Sickened.AllowEatOrDrink"
+          }
+        ]
+      }
+    }
+  ]
+}

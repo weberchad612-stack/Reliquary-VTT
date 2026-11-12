@@ -1,0 +1,213 @@
+{
+  "kind": "creature",
+  "slug": "lacridaemon",
+  "system": "pf2e",
+  "name": "Lacridaemon",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "daemon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "deception": 9,
+      "stealth": 9,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "daemonic"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold",
+        "death-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 17,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Invisibility",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Vanishing Tracks",
+          "rank": 1,
+          "ref": "spells:spell/vanishing-tracks"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "cold"
+        }
+      ],
+      "effects": [
+        "lacridaemon-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Steal Bearings",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 30 feet Strides\n\n---\nEffect The lacridaemon attempts to redirect the triggering creature so it eventually becomes as lost as the lacridaemon. The triggering creature attempts a DC 17 Will save save. Regardless of the result, the creature becomes temporarily immune to all attempts to Steal Bearings for 1 minute.\n\nSuccess The creature is unaffected.\n\nFailure The creature treats all squares as difficult terrain for its Stride.\n\nCritical Failure As failure, except that the lacridaemon determines where the target moves during the Stride, though it can't move it into hazardous terrain or a place it can't stand."
+    },
+    {
+      "kind": "ability",
+      "name": "Weeping Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "60 feet. The sounds of crying constantly surround a lacridaemon. A creature that first enters the area must attempt a DC 17 Will save save as the sounds cause major disorientation. On a failure, the creature takes a –2 status penalty to Survival checks to Sense Direction (–4 on a critical failure) for 1 day. After attempting the save, the creature is temporarily immune to the lacridaemon's weeping aura for 1 day. The penalties from multiple weeping auras can increase up to a cumulative total of –10.\n\nEffect: Weeping Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lacridaemon Venom",
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "unholy"
+      ],
+      "text": "Saving Throw DC 20 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage (1 round)\n\nStage 2 1d6 poison damage and Stupefied 1 (1 round)\n\nStage 3 1d8 poison damage, Confused, and stupefied 1 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Venomous Spray",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The lacridaemon's begins to weep, spraying its venom-filled tears at all creatures within 30 feet. The creatures are immediately exposed to lacridaemon venom. Other lacridaemons are immune to this venom."
+    }
+  ],
+  "text": "Souls who die from neglect or exposure due to becoming lost, trapped in small spaces, or otherwise being far from help can transform into lacridaemons. These weaker daemons are full of despair and typically lash out against anyone they see, believing them to have intentionally abandoned the lacridaemon to their fate. Many lacridaemons are born from the souls of wicked mortals who push others away and thus suffer lonely deaths. Exiled, corrupt nobles and violent criminals left to rot in solitary prisons are common among their ranks.\n\nLacridaemons tend to resemble humanoids with smooth, gray skin, a strange tail, and vicious claws. They each have patches of frost across their flesh, representing their ultimately cold and lonely ends. These patches appear on every lacridaemon even if their deaths weren't due to exposure to cold, as is the case for souls who perished alone from thirst in the desert.\n\nEven in their fiendish state, lacridaemons can't help but consider themselves alone. It's not uncommon to find groups of lacridaemons where each daemon acts independently, as if the others weren't there. They tend to sit alone in dark corners reminiscent of the places of they died, sobbing loudly, but once they become aware of the presence of non-fiends, they are quick to attack, believing these creatures to be the same ones who abandoned them in life. A lacridaemon's supernatural abilities allow the fiend to subject others to a fate similar to the their own death, making it difficult to escape danger and find help."
+}

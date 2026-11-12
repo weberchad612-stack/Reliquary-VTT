@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "genevye",
+  "system": "pf2e",
+  "name": "Genevye",
+  "source": {
+    "title": "Pathfinder Adventures: Troubles in Grayce",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 70,
+    "perception": 12,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 10,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 2,
+      "int": -5,
+      "str": 2,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 10,
+      "deception": 11,
+      "religion": 14,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Prepared Spells",
+      "tradition": "divine",
+      "type": "prepared",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Harm",
+          "rank": 1,
+          "ref": "spells:spell/harm"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Cleric Domain Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Weapon Surge",
+          "rank": 1,
+          "ref": "spells:spell/weapon-surge"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Defiled Religious Symbol of Iomedae",
+      "ref": "equipment:item/religious-symbol-silver",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 8,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Final Blasphemy",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "When the herexen is destroyed, it explodes in a wave of void energy with the effects of a 3-action Harm spell (DC 22 Fortitude save).\n\nThe herexen is destroyed, so it doesn't gain any Hit Points from this use of harm, and it doesn't need to have any harm spells remaining to use this ability"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heretic's Smite",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "unholy"
+      ],
+      "text": "While wielding a longsword, Genevye's Strikes deal an additional 1d6 spirit damage to creatures with the holy trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Herexen.HereticSmite",
+            "option": "heretics-smite",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "heretics-smite",
+              "target:trait:holy"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:longsword"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "heretics-smite",
+              "target:trait:holy"
+            ],
+            "property": "traits",
+            "value": "unholy"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant herexen"
+}

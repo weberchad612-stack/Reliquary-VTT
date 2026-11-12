@@ -1,0 +1,79 @@
+{
+  "kind": "effect",
+  "slug": "effect-enjoy-the-show",
+  "system": "pf2e",
+  "name": "Effect: Enjoy the Show",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Enjoy the Show\n\nYou take a circumstance penalty to attack rolls against creatures other than you, or a +1 circumstance bonus to attack rolls targeting you.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": -2
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": -1
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": 1
+          }
+        ],
+        "flag": "modifier",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "enjoy-the-show"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  {
+                    "lte": [
+                      "enjoy-the-show",
+                      -1
+                    ]
+                  },
+                  {
+                    "not": "target:signature:{item|origin.signature}"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "enjoy-the-show:1",
+                  "target:signature:{item|origin.signature}"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "attack-roll",
+        "slug": "enjoy-the-show-penalty",
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.modifier"
+      }
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "kind": "feat",
+  "slug": "elemental-wrath",
+  "system": "pf2e",
+  "name": "Elemental Wrath",
+  "source": {
+    "title": "Pathfinder Lost Omens Character Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "elf"
+  ],
+  "category": "ancestry",
+  "text": "You are so attuned to the land that you can call forth a bolt of energy from your surroundings. When you gain this feat, select acid, cold, electricity, or fire. You can call to the land to cast the Acid Splash cantrip as an innate primal spell at will, except the spell has only verbal components and deals the type of damage you chose instead of acid damage; the spell gains the trait appropriate to its damage instead of the acid trait. A cantrip is heightened to a spell rank equal to half your level rounded up.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          }
+        ],
+        "flag": "element",
+        "key": "ChoiceSet",
+        "rollOption": "elemental-wrath"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:elf"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate"
+        ],
+        "property": "traits",
+        "value": "manipulate"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage",
+          "inline-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.element}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate",
+          {
+            "not": "elemental-wrath:acid"
+          }
+        ],
+        "property": "traits",
+        "value": "acid"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:acid-splash",
+          "spellcasting:innate",
+          {
+            "not": "elemental-wrath:acid"
+          }
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.element}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "kind": "feat",
+  "slug": "pirate-combat-training",
+  "system": "pf2e",
+  "name": "Pirate Combat Training",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Pirate Dedication"
+  ],
+  "text": "You're particularly skilled at wielding the weapons used traditionally by pirates. You gain either the Combat Climber or Underwater Marauder skill feat, even if you do not meet its prerequisites. You have familiarity with the following weapons: Hatchet, Rapier, Scimitar, and Whip—for the purposes of proficiency, you treat any of these weapons as simple weapons. Your GM may add additional martial weapons to this list as appropriate for your world or region.\n\nAt 5th level, whenever you get a critical hit with one of these weapons, you get its critical specialization effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:base:hatchet",
+              "item:base:rapier",
+              "item:base:scimitar",
+              "item:base:whip"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.PirateWeapons",
+        "sameAs": "simple",
+        "slug": "pirate-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          },
+          {
+            "or": [
+              "item:base:hatchet",
+              "item:base:rapier",
+              "item:base:scimitar",
+              "item:base:whip"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "value": "Compendium.pf2e.feats-srd.Item.Combat Climber"
+          },
+          {
+            "value": "Compendium.pf2e.feats-srd.Item.Underwater Marauder"
+          }
+        ],
+        "flag": "feat",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Feat"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.feat}"
+      }
+    }
+  ]
+}

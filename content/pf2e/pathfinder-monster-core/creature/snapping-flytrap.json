@@ -1,0 +1,184 @@
+{
+  "kind": "creature",
+  "slug": "snapping-flytrap",
+  "system": "pf2e",
+  "name": "Snapping Flytrap",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "mindless",
+    "plant"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 18,
+    "hp": 50,
+    "perception": 7,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 8,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 5,
+      "dex": 3,
+      "int": -5,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "stealth": {
+        "value": 10,
+        "special": [
+          {
+            "value": 13,
+            "label": "in undergrowth",
+            "when": [
+              "terrain:undergrowth"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Leaf",
+      "attack": 11,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Capture",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature hits or touches the flytrap.\n\n---\n\nEffect The flytrap makes a leaf Strike against the triggering creature. If it hits, the creature is Grabbed in that leaf."
+    },
+    {
+      "kind": "ability",
+      "name": "Focused Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The flytrap attacks a single target with both its two leaves. The flytrap makes one leaf Strike. On a success, the flytrap deals the damage from one leaf Strike plus an additional 1d8 piercing damage for every leaf beyond the first. On a failure, the flytrap deals the damage from one leaf Strike, but it can't use Improved Grab. It deals no damage on a critical failure. This counts toward the flytrap's multiple attack penalty as a number of attacks equal to the number of leaves the flytrap has.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "focused-assault",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "focused-assault"
+            ],
+            "selector": "leaf-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hungry Flurry",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The flytrap makes two leaf Strikes at a -2 penalty, each against a different target. These attacks count toward the flytrap's multiple attack penalty, but the multiple attack penalty doesn't increase until after it makes all its attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "hungry-flurry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "leaf-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "hungry-flurry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 1d8+1 bludgeoning,1d6 acid, Rupture 5\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Snapping flytraps typically have two sets of tooth-edged leaves, each measuring 3 feet wide, at the end of 10-foot-long stalks.\n\n---\n\nFlytraps eagerly feed on humanoids, monstrous insects, and larger prey."
+}

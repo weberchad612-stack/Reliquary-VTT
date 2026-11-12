@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "accuser-agent",
+  "system": "pf2e",
+  "name": "Accuser Agent",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 115,
+    "perception": 19,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 19,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 4,
+      "int": 3,
+      "str": 0,
+      "wis": 4
+    },
+    "skills": {
+      "deception": 20,
+      "diplomacy": 18,
+      "intimidation": 18,
+      "society": 18,
+      "stealth": 17,
+      "thievery": 19,
+      "legal-lore": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+21 to Sense Motive)",
+      "languages": "up to 3 additional languages"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sword Cane",
+      "ref": "equipment:item/sword-cane",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scholarly Journal",
+      "ref": "equipment:item/scholarly-journal",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Writing Set",
+      "ref": "equipment:item/writing-set",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "deadly-d6",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "deadly-d6",
+        "finesse",
+        "magical",
+        "thrown-20",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sword Cane",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "concealable",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Insightful",
+      "category": "interaction",
+      "text": "When the accuser agent succeeds at a Perception check, they critically succeed instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "to-critical-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "perception"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Objection!",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "linguistic"
+      ],
+      "text": "Trigger A creature within 30 feet takes an action with the linguistic trait\n\n---\nEffect The triggering creature must succeed a DC 28 Will save saving throw or their action is disrupted."
+    },
+    {
+      "kind": "ability",
+      "name": "Debilitating Sneak Attack",
+      "category": "offensive",
+      "text": "The accuser agent's Strikes deal an extra 3d6 precision damage to Off-Guard creatures. A target who takes this additional precision damage also either becomes Enfeebled 1 or takes a –10-foot status penalty to its Speeds until the end of the agent's next turn.\n\nEffect: Debilitating Sneak Attack",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "target:condition:off-guard"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Accuser agents might be high court advocates, official spymasters, or innocuous adjutants delivering important messages to magistrates, generals, officers, or mercenaries. They have ample latitude in matters of government security, though they sometimes have little oversight. When their findings demand an official response, accuser agents present cases before national tribunals or in royal courts.\n\n---\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. Some carry out these duties fairly, but others are harsh and cruel, imposing severe punishments on anyone unable to pay for clemency."
+}

@@ -1,0 +1,208 @@
+{
+  "kind": "creature",
+  "slug": "bloom-of-lamashtu",
+  "system": "pf2e",
+  "name": "Bloom of Lamashtu",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "fiend",
+    "plant",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 210,
+    "perception": 21,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 16,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 2,
+      "int": 0,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 21,
+      "stealth": {
+        "value": 18,
+        "special": [
+          {
+            "value": 22,
+            "label": "in wooded or underground areas",
+            "when": [
+              {
+                "or": [
+                  "terrain:forest",
+                  "terrain:underground"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 5
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "curse"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 30 (deactivated by fire or holy)",
+      "languages": "(cannot speak any language)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Thorny Vine",
+      "attack": 23,
+      "traits": [
+        "reach-15",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Thorn",
+      "attack": 19,
+      "traits": [
+        "unholy"
+      ],
+      "maxRange": 50,
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Precise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 30 (Deactivated by Fire or Holy)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "fire",
+              "holy"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Burst",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The bloom takes slashing damage.\n\nEffect The bloom of Lamashtu sprays a gout of acid against an adjacent creature, inflicting 9d6 acid damage (DC 26 basic Reflex save). The bloom can't use Defensive Burst for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Bloom Curse",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "A living creature is exposed to the bloom curse if it eats any portion of a bloom of Lamashtu, fails a save against the bloom's seed pod, or is critically hit by the bloom's thorny vine Strike. Unlike the bloom curse contracted from secondary sources, there is no onset time for this version of the curse, and the creature spawned by the victim's death may be much more powerful and is always chaotic evil.\n\n---\n\nSaving Throw DC 29 Fortitude save\n\nStage 1 no ill effects (1 day)\n\nStage 2 Enfeebled 1 (1 day)\n\nStage 3 enfeebled 1 and 2d6 poison damage (8 hours)\n\nStage 4 Unconscious and 4d6 poison damage (10 minutes)\n\nStage 5 death;\n\nSpecial A creature that dies from the bloom curse explodes in a blast of First World foliage and releases a monster into the world. This creature is a chaotic evil low-intelligence beast or dragon (chosen by the GM) of the same level as the dead creature.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "thorny-vine-attack",
+          "text": "On a critical hit the creature is exposed to Bloom Curse",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spew Seed Pod",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "primal"
+      ],
+      "text": "The bloom of Lamashtu's central stalk disgorges a pulsing seed pod from its flower, spitting it at a range of up to 60 feet and creating a 20-foot burst when the seed pod explodes into a spray of supernatural acidic poison. All creatures in this area must attempt a DC 29 Reflex save save. The bloom of Lamashtu can't Spew Seed Pod for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 3d6 acid damage and 3d6 poison damage.\n\nFailure The creature takes 5d6 acid damage and 5d6 poison damage and is exposed to the bloom curse.\n\nCritical Failure As failure, but 10d6 acid damage and 10d6 poison damage, plus knocked Prone by the force of the blast."
+    }
+  ],
+  "text": "A thick, green stalk with spiraling rows of thorns stands at the center of this enormous flowering plant. Each flower has a growing seed pod at its center, surrounded by vibrant petals in a wide variety of colors. Crafted after consecutive seasons of experimentation, prayer, and ritual, the bloom of Lamashtu is the triumph of the cultist Darivan and his Cult of the Bloom. The fiendish plant aids their effort to infect the humanoid population of the Stolen Lands and replace them with monstrous predators. While the Bloom of Lamashtu is intelligent and is capable of understanding Abyssal, it has very little interest in anything other than spreading its curse.\n\nCultivated to spread misery and violence, the bloom is quietly malevolent, growing its seeds as rapidly as it can. It is 12 feet tall and weighs 600 pounds."
+}

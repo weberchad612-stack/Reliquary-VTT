@@ -1,0 +1,253 @@
+{
+  "kind": "creature",
+  "slug": "nightwood-guardian",
+  "system": "pf2e",
+  "name": "Nightwood Guardian",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "giant",
+    "troll",
+    "wood"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 26,
+    "hp": 200,
+    "perception": 17,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 16,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 3,
+      "int": 0,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 23,
+      "intimidation": 21,
+      "nightwood-lore": 15
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "fey",
+      "jotun",
+      "muan"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "axe-vulnerability",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "flesh of wood"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Elemental Wooden Shield",
+      "ref": "equipment:item/wooden-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 21,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 21,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fire-fueled Rage",
+      "category": "defensive",
+      "text": "When a nightwood guardian takes fire damage, they become enraged. The guardian gains 15 temporary Hit Points, deals 2 additional damage with melee Strikes, and has a –1 penalty to AC. They can't Raise their Shield or use actions with the concentrate trait except for Seek. This effect ends when the nightwood guardian no longer observes any fire for 1 round or when they fall Unconscious, whichever comes first.\n\n---\n\nEffect: Rage",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flesh of Wood",
+      "category": "defensive",
+      "traits": [
+        "primal",
+        "wood"
+      ],
+      "text": "Wounds inflicted on a nightwood guardian turn their flesh to wood. When the guardian is reduced to 40 HP or fewer, their body becomes solid wood. They are stunned, have resistance 10 to all damage, and have regeneration 40 (deactivated by fire). This ends once the guardian has 100 HP or more, though they can choose to stay in this form indefinitely.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "fire"
+            ],
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "lte": [
+                      "hp-remaining",
+                      40
+                    ]
+                  },
+                  "flesh-of-wood"
+                ]
+              }
+            ],
+            "type": "regeneration",
+            "value": 40
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "lte": [
+                      "hp-remaining",
+                      40
+                    ]
+                  },
+                  "flesh-of-wood"
+                ]
+              }
+            ],
+            "type": "all-damage",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "flesh-of-wood",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Eyes",
+      "category": "defensive",
+      "text": "When a nightwood guardian has their shield raised, they protect their eyes, losing the Blinded and Dazzled conditions from light blindness and other light effects."
+    },
+    {
+      "kind": "ability",
+      "name": "Nightwood Roar",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "darkness",
+        "primal"
+      ],
+      "text": "Frequency once per hour;\n\n---\n\nEffect The guardian roars, snuffing out lights in a 30-foot cone. Ordinary flames and lights are extinguished, and the guardian attempts to counteract any magical light with a +21 counteract modifier and a counteract rank of 5.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    }
+  ],
+  "text": "The nightwoods are parts of the Plane of Wood permanently bathed in darkness due to an absence of fluorescent plants. Here, the flora and fauna require darkness, not light, to thrive. Troll-like creatures known as nightwood guardians patrol these woods to ensure they remain in perpetual shadow. Considering themselves righteous gardens, they care little for the excuses of anyone else—intruders or residents. The guardians absolutely loathe the light, though it doesn't harm them as it does some varieties of creatures. Though wary of both light and any interloping lifeforms in their natural habitat, a nightwood guardian's fear turns easily to wrath, making the guardian a force of fury who seeks to drive out intruders."
+}

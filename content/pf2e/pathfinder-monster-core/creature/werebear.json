@@ -1,0 +1,403 @@
+{
+  "kind": "creature",
+  "slug": "werebear",
+  "system": "pf2e",
+  "name": "Werebear",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 23,
+    "hp": 75,
+    "perception": 11,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 10,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 12,
+      "medicine": 9,
+      "nature": 11,
+      "stealth": 11,
+      "survival": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Bear Empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 8
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 13,
+      "traits": [
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bear Empathy",
+      "category": "interaction",
+      "text": "The werebear can communicate with ursine creatures.\n\n---\n\nThe werecreature can ask questions of, receive answers from, and use the Diplomacy skill with animals of its general kind."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "- Human\n\n- Size Medium\n\n- Melee fist +13 Damage 1d4+7\n\n- Grizzly Bear\n\n- Speed 35 feet\n\n---\n\nThe werecreature changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape.\n\nIn humanoid shape, the werecreature uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw.\n\nIn animal shape, its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 10,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 1,
+                "die": "d10",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "reach-10",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "claw-damage",
+          "when": [
+            {
+              "or": [
+                "change-shape:animal",
+                "change-shape:hybrid"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d12",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "reach-10",
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werebear",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 18 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The werebear designates a single creature they can see and hear, or one they're Tracking, as their prey. The werebear gains a +2 circumstance bonus to Perception checks when they Seek their prey and to Survival checks when they Track their prey. The first time the werebear hits the designated prey in a round, they deal an additional 1d8 precision damage. These effects last until the werebear uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "precision-edge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "precision-edge",
+              "hunted-prey"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "The werebear gains a +2 circumstance bonus to damage rolls against creatures it has Grabbed.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "target:condition:grabbed"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    }
+  ],
+  "text": "Unwavering conviction fills a werebear during their transformations. This can drive them zealously into noble causes, but it can also make them ruthless, violent, and single-minded. Alliances can fall from a werebear's mind as their bestial temper overcomes them and their goal overwhelms all. As a result, werebears are loners, rarely even living together as families longer than necessary. As long as there is nothing around to threaten it or the natural area it protects (typically a forest), a werebear in its animal form is generally content to forage and sleep away the night.\n\n---\n\nWerecreatures are humanoids doomed to transform into animals and animalhumanoid hybrids under the light of the full moon. These shapechanging creatures are the result of an ancient primal curse that they can, in turn, transmit through their own bites. Their ability to lurk unseen in the wilds as well as among people, combined with the contagiousness of their condition, makes werecreatures a perennial cause of panicked suspicion."
+}

@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "metal-wisp",
+  "system": "pf2e",
+  "name": "Metal Wisp",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "traits": [
+    "elemental",
+    "metal"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 15,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 3,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 6,
+      "mining-lore": 4,
+      "plane-of-metal-lore": 4
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "talican"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "electricity",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "electricity",
+          "value": 2
+        }
+      ]
+    },
+    "notes": {
+      "perception": "rust vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tendril",
+      "attack": 6,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "1d4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rust Vision",
+      "category": "interaction",
+      "text": "A metal wisp ignores the concealed condition from rust clouds."
+    },
+    {
+      "kind": "ability",
+      "name": "Accord Essence",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "plant"
+      ],
+      "text": "Trigger An ally within 30 feet that benefited from the wisp's resonance in the last hour is targeted by an attack\n\n---\n\nEffect The wisp detonates itself in a small elemental explosion. Allies within 30 feet that have benefited from the wisp's resonance in the last hour gain temporary Hit Points equal to half the wisp's current Hit Points. These temporary Hit Points last 1 hour.\n\nA wisp that uses this reaction is permanently destroyed, and it can be restored only by a Wish ritual or similarly powerful effect. If an ability would prevent the wisp's destruction (for instance, if the wisp is summoned and would merely be dismissed), Accord Essence has no effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Resonance",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "metal"
+      ],
+      "text": "30 feet. All wisps vibrate at a frequency attuned to their element, resonating with and empowering all creatures and effects sharing that trait. Creatures in the area gain a +1 status bonus to attack and damage rolls made with metal weapons or effects with the metal trait; a creature with the elemental and metal traits gains this bonus to all attack and damage rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Resonance"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "resonance",
+            "traits": [
+              "metal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rust Cloud",
+      "category": "defensive",
+      "text": "A metal wisp is constantly surrounded by a cloud of rust flakes that cause it to be Concealed from creatures more than 5 feet away from it."
+    },
+    {
+      "kind": "ability",
+      "name": "In Concert",
+      "category": "offensive",
+      "text": "When a metal wisp rolls a critical failure on a check to Aid, they get a failure instead, and when they roll a success, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "all",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalFailure",
+            "success"
+          ],
+          "when": [
+            "action:aid"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better",
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:aid"
+            ],
+            "selector": "all"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A metal wisp is a roiling sphere of rust particles and sharp metal fragments, all furiously orbiting a liquid metal core that resembles the skull of a mortal creature—usually a humanoid, but animal and even more fantastical skulls are not uncommon. They don't form attachments as easily as wisps from other elemental planes, which tend to view metal wisps as too morose, although they retain a certain curiosity since their return from the planar severance."
+}

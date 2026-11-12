@@ -1,0 +1,74 @@
+{
+  "kind": "effect",
+  "slug": "effect-invoke-movement",
+  "system": "pf2e",
+  "name": "Effect: Invoke Movement",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Invoke Movement\n\nYou gain a burrow, climb, fly or swim speed equal to your Speed (or half your Speed if you selected burrow).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Type.Burrow",
+            "value": "burrow"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Climb",
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Fly",
+            "value": "fly"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Swim",
+            "value": "swim"
+          }
+        ],
+        "flag": "speed",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.MovementType",
+        "rollOption": "invoke-movement"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          {
+            "not": "invoke-movement:burrow"
+          },
+          "self:effect:enter-spirit-trance"
+        ],
+        "selector": "{item|flags.system.rulesSelections.speed}",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "invoke-movement:burrow",
+          "self:effect:enter-spirit-trance"
+        ],
+        "selector": "burrow",
+        "value": "floor(@actor.system.movement.speeds.land.value / 2)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "kind": "creature",
+  "slug": "zintaya-calbieste",
+  "system": "pf2e",
+  "name": "Zintaya Calbieste",
+  "source": {
+    "title": "Pathfinder Adventure: Night of the Gray Death",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "rare",
+  "traits": [
+    "aberration",
+    "elf",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 255,
+    "perception": 26,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 27,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 0,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 26,
+      "deception": 25,
+      "intimidation": 25,
+      "society": 22,
+      "stealth": {
+        "value": 27,
+        "special": [
+          {
+            "value": 29,
+            "label": "to hide",
+            "when": [
+              "action:hide"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Executioner's Hood",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Shadow Essence",
+      "ref": "equipment:item/nethershade",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 29,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Anonymity",
+      "category": "defensive",
+      "text": "The Gray Gardener assassin has a +2 circumstance bonus to Deception checks and saving throws to conceal their identity and a +2 circumstance bonus to their Deception DC against effects that ferret out information about the Gray Gardener's identity."
+    },
+    {
+      "kind": "ability",
+      "name": "Gardener's Resolve",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The Gray Gardener assassin rolls a failure (but not a critical failure) on a Will save against an effect with the mental or fear trait\n\nRequirements The Gray Gardener assassin's features are obscured by a mask or hood\n\n---\n\nEffect The Gray Gardener assassin takes 3d8 mental damage, and the saving throw is a success.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "will",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "failure"
+          ],
+          "when": [
+            {
+              "or": [
+                "fear",
+                "mental"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Instant Opening",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The Gray Gardener assassin distracts a creature within 30 feet, using a few choice words or gestures. The creature is Off-Guard against the assassin's attacks until the end of the assassin's next turn. Depending on the distraction, this action gains either the auditory or the visual trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Mark for Death",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The Gray Gardener assassin designates a single creature they can see and hear as their mark. This effect lasts until the mark dies or the assassin uses Mark for Death again. The assassin gains a +2 circumstance bonus to Perception checks to Seek the mark and on Deception checks to Feint against the mark. The assassin's melee and ranged Strikes gain the deadly d8 weapon traits when attacking the mark.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mark-for-death",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "mark-for-death"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:feint",
+            "mark-for-death"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "mark-for-death"
+            ],
+            "property": "traits",
+            "value": "deadly-d8"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Weapon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The Gray Gardener assassin is wielding a piercing or slashing weapon and has a free hand\n\n---\nEffect The assassin applies a poison to the weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The Gray Gardener assassin Interacts to draw a weapon and then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The Gray Gardener assassin deals an additional 6d6 precision damage precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 6,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the Gray Gardener assassin.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

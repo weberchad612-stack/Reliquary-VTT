@@ -1,0 +1,202 @@
+{
+  "kind": "creature",
+  "slug": "imperfect-automaton",
+  "system": "pf2e",
+  "name": "Imperfect Automaton",
+  "source": {
+    "title": "Pathfinder Lost Omens Monsters of Myth",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "rare",
+  "traits": [
+    "automaton",
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 85,
+    "perception": 12,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 11,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 3,
+      "int": 3,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "arcana": 11,
+      "athletics": 13,
+      "crafting": 13,
+      "intimidation": 12,
+      "society": 11,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "osiriani"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "one language depending on its mortal life; telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Energy Beam",
+      "attack": 17,
+      "traits": [
+        "cold",
+        "magical"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d10+3",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 30 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unsubstantiated Consciousness",
+      "category": "interaction",
+      "text": "When an imperfect automaton succeeds at a Will save, it gets a critical success instead. When it fails at a Will save, it gets a critical failure instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "will",
+            "type": "save"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "failure": "one-degree-worse"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "will",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Empty Wail",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "mental"
+      ],
+      "text": "The imperfect automaton utters a mournful cry in a 30-foot cone. The cry deals 4d6 mental damage to all creatures in the area (DC 22 Will save save). The imperfect automaton can't use its Empty Wail again for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is Stupefied 1 for 1d4+1 rounds.\n\nCritical Failure The creature takes double damage and is stupefied 1 for 1d4+1 rounds and Stunned 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Impassioned Strikes",
+      "category": "offensive",
+      "text": "While the imperfect automaton is affected by an emotion effect, its fist Strikes deal 1d6 additional mental damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Automaton is affected by an effect with the emotion trait",
+            "option": "impassioned-strikes",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "impassioned-strikes"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mortal Reflection",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion"
+      ],
+      "text": "Requirements The imperfect automaton has a creature Grabbed or Restrained\n\n---\n\nEffect The imperfect automaton draws upon the target's emotions to recall a semblance of mortal feeling, gaining a +5-foot status bonus to its Speed for 1 minute. If the grabbed or restrained creature has an ongoing emotion or mental effect with a counteract rank of 4 or lower, the imperfect automaton can gain a copy of that effect that lasts for 1 minute.\n\nEffect: Mortal Reflection"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

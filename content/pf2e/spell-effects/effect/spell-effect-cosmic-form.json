@@ -1,0 +1,202 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-cosmic-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Cosmic Form",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Cosmic Form\n\nYou transform into a Large battle form. You have hands in this battle form and can use manipulate actions. You gain the following statistics and abilities regardless of the form that you choose:\n- AC = 21 + your level. Ignore your armor check's penalty and Speed reduction.\n\n- 20 temporary Hit Points.\n\n- Darkvision.\n\n- One or more attacks specific to the battle form you use, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +25, and your damage bonus is +10. The melee attacks are Strength based (for the purpose of the enfeebled condition, for example), and the ranged attacks are Dexterity based. If your unarmed attack modifier is higher, you can use it instead.\n\n- Athletics modifier of +25, unless your own is higher.\n\nYou also gain specific abilities based on the stellar body:\n- Moon Speed 30 feet, fly 50 feet\n- Melee 1 fist (agile, reach 10 feet, unarmed), Damage 2d4 bludgeoning plus 1d6 fire\n\n- Ranged 1 moonbeam (range 90 feet), Damage 2d4 fire; this form's fire damage is silver for resistances, weaknesses, and the like\n\n- On a critical hit with either Strike, the target is Stupefied 2 for 1 round.\n\n- Sun Speed 30 feet, fly 50 feet\n- Melee 1 fist (agile, reach 10 feet, unarmed), Damage 2d6 fire plus 1d6 persistent fire\n\n- Ranged 1 sunbeam (range 90 feet), Damage 1d6 fire plus 1d6 persistent fire\n\n- On a critical hit with either Strike, the target is Dazzled for 1 round.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.CosmicForm.Moon",
+            "value": "moon"
+          },
+          {
+            "label": "PF2E.BattleForm.CosmicForm.Sun",
+            "value": "sun"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "cosmic-form"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "21 + @actor.level"
+          },
+          "size": "lg",
+          "skills": {
+            "athletics": {
+              "modifier": 25
+            }
+          },
+          "speeds": {
+            "fly": 50,
+            "land": 30
+          },
+          "strikes": {
+            "moon-fist": {
+              "ability": "str",
+              "baseType": "fist",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 10
+              },
+              "img": "icons/skills/melee/unarmed-punch-fist.webp",
+              "label": "PF2E.Weapon.Base.fist",
+              "modifier": 25,
+              "predicate": [
+                "cosmic-form:moon"
+              ],
+              "traits": [
+                "unarmed",
+                "agile",
+                "reach-10"
+              ]
+            },
+            "moonbeam": {
+              "ability": "dex",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "fire",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 10
+              },
+              "img": "icons/magic/light/beam-rays-yellow-blue.webp",
+              "modifier": 25,
+              "predicate": [
+                "cosmic-form:moon"
+              ],
+              "range": {
+                "max": 90
+              }
+            },
+            "sun-fist": {
+              "ability": "str",
+              "baseType": "fist",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "fire",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 10
+              },
+              "img": "icons/skills/melee/unarmed-punch-fist.webp",
+              "label": "PF2E.Weapon.Base.fist",
+              "modifier": 25,
+              "predicate": [
+                "cosmic-form:sun"
+              ],
+              "traits": [
+                "unarmed",
+                "agile",
+                "reach-10"
+              ]
+            },
+            "sunbeam": {
+              "ability": "dex",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "fire",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 10
+              },
+              "img": "icons/magic/light/beam-rays-orange.webp",
+              "modifier": 25,
+              "predicate": [
+                "cosmic-form:sun"
+              ],
+              "range": {
+                "max": 90
+              }
+            }
+          },
+          "tempHP": 20
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "moon-fist-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "cosmic-form:moon"
+        ],
+        "property": "materials",
+        "value": "silver"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "cosmic-form:sun"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.BattleForm.CosmicForm.MoonNote",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "cosmic-form:moon"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.BattleForm.CosmicForm.SunNote",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "cosmic-form:sun"
+      ]
+    }
+  ]
+}

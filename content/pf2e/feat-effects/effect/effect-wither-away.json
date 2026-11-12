@@ -1,0 +1,155 @@
+{
+  "kind": "effect",
+  "slug": "effect-wither-away",
+  "system": "pf2e",
+  "name": "Effect: Wither Away",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Wither Away\n\nYou take the following penalties depending on the result\n- Arms You become enfeebled 1.\n- Head You become stupefied 1.\n- Legs You take a –10-foot status penalty to your Speeds.\n- Torso You gain weakness 10 to slashing damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "wither-away"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Arms",
+            "value": "arms"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Head",
+            "value": "head"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Legs",
+            "value": "legs"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Torso",
+            "value": "torso"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "wither-away-body-part"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Arms",
+            "predicate": [
+              {
+                "not": "wither-away-body-part:arms"
+              }
+            ],
+            "value": "arms"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Head",
+            "predicate": [
+              {
+                "not": "wither-away-body-part:head"
+              }
+            ],
+            "value": "head"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Legs",
+            "predicate": [
+              {
+                "not": "wither-away-body-part:legs"
+              }
+            ],
+            "value": "legs"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Torso",
+            "predicate": [
+              {
+                "not": "wither-away-body-part:torso"
+              }
+            ],
+            "value": "torso"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "wither-away:critical-failure"
+        ],
+        "rollOption": "wither-away-body-part"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "wither-away-body-part:arms"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "wither-away-body-part:head"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": -10,
+      "when": [
+        "wither-away-body-part:legs"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "wither-away-body-part:torso"
+        ],
+        "type": "slashing",
+        "value": 10
+      }
+    }
+  ]
+}

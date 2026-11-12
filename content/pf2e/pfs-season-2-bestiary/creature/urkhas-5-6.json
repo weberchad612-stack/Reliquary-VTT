@@ -1,0 +1,191 @@
+{
+  "kind": "creature",
+  "slug": "urkhas-5-6",
+  "system": "pf2e",
+  "name": "Urkhas (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-23: An Agent's Obligation",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "rare",
+  "traits": [
+    "aberration",
+    "air",
+    "evil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 24,
+    "hp": 40,
+    "perception": 14,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 14,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 0,
+      "dex": 6,
+      "int": 2,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 16,
+      "deception": 11,
+      "intimidation": 11,
+      "stealth": 14
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 6
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Shock",
+      "attack": 15,
+      "traits": [
+        "electricity",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "electricity"
+        },
+        {
+          "dice": "1d4",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glow",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "light"
+      ],
+      "text": "20 feet. Urkhas is itself naturally invisible, but glows with a violet light, casting bright light in the aura and making it visible.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              {
+                "not": "go-dark"
+              }
+            ],
+            "value": {
+              "alpha": 0.2,
+              "animation": {
+                "intensity": 1,
+                "speed": 3,
+                "type": "pulse"
+              },
+              "bright": 20,
+              "color": "#6a00ff",
+              "dim": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Magic Immunity",
+      "category": "defensive",
+      "text": "Urkhas is immune to all spells except Faerie Fire, Revealing Light, Force Barrage, Quandary, and spells with the good trait.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "magic",
+          "except": "PF2E.IWR.Custom.WispVulnerabilities"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Feed on Fear",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Requirements An enemy is being affected by a fear effect or Dying within 15 feet of the will-o'-wisp.\n\n---\nEffect Urkhas feeds on the creature's terror. It regains 1d6 healing Hit Points, and if it has Gone Dark, its glow reignites.\n\nUrkhas can take this action only once per round.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Go Dark",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Urkhas extinguishes its glow, becoming Invisible. It can end this effect with another use of this action. If it uses its shock attack while invisible, the arc of electricity lets any observer determine its location, making the Urkhas only Hidden to all observers until it moves.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "go-dark",
+            "selection": "Compendium.pf2e.conditionitems.Item.Invisible",
+            "suboptions": [
+              {
+                "label": "PF2E.ConditionTypeInvisible",
+                "value": "Compendium.pf2e.conditionitems.Item.Invisible"
+              },
+              {
+                "label": "PF2E.ConditionTypeHidden",
+                "value": "Compendium.pf2e.conditionitems.Item.Hidden"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "go-dark"
+            ],
+            "uuid": "{item|flags.system.rulesSelections.goDark}"
+          }
+        }
+      ]
+    }
+  ]
+}

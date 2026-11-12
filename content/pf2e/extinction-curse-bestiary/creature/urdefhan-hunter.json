@@ -1,0 +1,269 @@
+{
+  "kind": "creature",
+  "slug": "urdefhan-hunter",
+  "system": "pf2e",
+  "name": "Urdefhan Hunter",
+  "source": {
+    "title": "Pathfinder #155: Lord of the Black Sands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "evil",
+    "humanoid",
+    "urdefhan"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 190,
+    "perception": 26,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 6,
+      "int": 2,
+      "str": 4,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 24,
+      "nature": 23,
+      "religion": 21,
+      "stealth": 26,
+      "survival": {
+        "value": 25,
+        "special": [
+          {
+            "value": 27,
+            "label": "to Track",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "daemonic",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "fear-effects",
+        "death-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 12
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 23,
+      "spells": [
+        {
+          "name": "Death Knell",
+          "rank": 4,
+          "ref": "spells:spell/death-knell"
+        },
+        {
+          "name": "Feather Fall (At Will) (Self Only)",
+          "rank": 3,
+          "ref": "spells:spell/gentle-landing"
+        },
+        {
+          "name": "Ray of Enfeeblement",
+          "rank": 3,
+          "ref": "spells:spell/enfeeble"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rhoka Sword",
+      "ref": "equipment:item/rhoka-sword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 50
+    },
+    {
+      "kind": "strike",
+      "name": "Rhoka Sword",
+      "attack": 24,
+      "traits": [
+        "fatal-d10",
+        "magical",
+        "two-hand-d12"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "wicked-bite"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 26,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Necrotic Decay",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "When an urdefhan dies, its invisible flesh quickly rots away and sublimates into a foul-smelling gas that fills a 5-foot emanation around the body.\n\nThis gas deals 12d6 void damage to creatures in this area as their flesh curdles and rots as well (DC 32 basic Fortitude save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deadly Aim",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The urdefhan hunter makes a ranged Strike at a –2 penalty. The urdefhan deals 4 additional damage with this Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "deadly-aim",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ranged-strike-damage",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "deadly-aim"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ranged-strike-attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "deadly-aim"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Double Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The urdefhan hunter is wielding a ranged weapon with reload 0\n\n---\n\nEffect The urdefhan hunter makes two Strikes with the required weapon at a single target. These Strikes both count toward the urdefhan's multiple attack penalty, but the penalty doesn't increase until both attacks are resolved."
+    },
+    {
+      "kind": "ability",
+      "name": "Mounted Bow Expert",
+      "category": "offensive",
+      "text": "Urdefhan hunters can make composite longbow Strikes while mounted."
+    },
+    {
+      "kind": "ability",
+      "name": "Wicked Bite",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The urdefhan damaged a creature with a jaws Strike on its last action\n\n---\n\nEffect The urdefhan maintains contact, turning the creature's flesh translucent around the site of the injury. The urdefhan chooses one of two options, each of which requires a DC 32 Fortitude save save. If the jaws Strike was a critical hit, the creature suffers both effects, using the same save result for both.\n\n- Drain Blood The urdefhan drinks some of the creature's blood. On a failed save, the creature is Drained 1 and the urdefhan regains 5 healing HP (or, on a critical failure, it's Drained 2 and the urdefhan regains 10 healing HP).\n\n- Drain Vitality (necromancy) The urdefhan draws out some of the creature's vital essence. The creature becomes Enfeebled 1 for 1 hour on a failed save (or Enfeebled 2 for 1 hour on a critical failure)."
+    }
+  ],
+  "text": "Urdefhan hunters serve as their cults' trappers, hunters, and poachers. Many urdefhan hunters use skavelings to traverse the massive caverns of the Darklands and scout for prey.\n\n---\n\nUrdefhans believe themselves to be spawn of the First Horseman of the Apocalypse, who planted them on the Material Plane to serve as harbingers of the end times. These warmongering humanoids live in groups called cults in the Darklands vaults of Orv."
+}

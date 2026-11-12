@@ -1,0 +1,167 @@
+{
+  "kind": "creature",
+  "slug": "crocodile",
+  "system": "pf2e",
+  "name": "Crocodile",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 17,
+    "hp": 30,
+    "perception": 7,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 7,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -4,
+      "con": 3,
+      "dex": 1,
+      "int": -5,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "stealth": {
+        "value": 7,
+        "special": [
+          {
+            "value": 11,
+            "label": "in water",
+            "when": [
+              "terrain:water"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 10,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 10,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "interaction",
+      "text": "The crocodile can hold its breath for about 2 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "35 feet",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Death Roll",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Requirements The crocodile must have a creature Grabbed\n\n---\n\nEffect The crocodile tucks its legs and rolls rapidly, twisting its victim. It makes a jaws Strike with a +2 circumstance bonus to the attack roll against the grabbed creature. If it hits, it also knocks the creature Prone. If it fails, it releases the creature.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "death-roll",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "death-roll",
+            "target:condition:grabbed"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Crocodiles can be found basking on riverbanks, lurking in swamps, or floating in lakes. They are usually indistinguishable from logs when viewed from afar—at least until they attack. Alligators have similar statistics, but because they often live in more temperate climates, they endure cold temperatures better. Unlike alligators, crocodiles can tolerate salt water. Both are formidable predators that are likely to devour careless adventurers who fail to watch where they step.\n\n---\n\nPowerful and primeval in appearance, crocodiles are dangerous natural predators that dwell in marshes, riverbeds, swamps, and other wetlands."
+}

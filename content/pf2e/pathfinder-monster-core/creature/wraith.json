@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "wraith",
+  "system": "pf2e",
+  "name": "Wraith",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "incorporeal",
+    "undead",
+    "unholy",
+    "wraith"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 80,
+    "perception": 14,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 14,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": -5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "diplomacy": 13,
+      "intimidation": 15,
+      "stealth": 16
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious",
+        "bleed"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Wraith Touch",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "divine",
+        "finesse",
+        "void"
+      ],
+      "damage": [
+        {
+          "dice": "3d8",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Sunlight Powerlessness",
+      "category": "defensive",
+      "text": "While in sunlight, a wraith is Blinded and Slowed 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grip of Fear",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "nonlethal"
+      ],
+      "text": "The wraith reaches into an adjacent creature's chest, gripping their heart. The target takes 6d6 mental damage with a DC 24 basic Will save save. On a critical failure, the creature is also Paralyzed until the start of the wraith's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Robes of Welcome",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "Frequency once per round\n\n---\n\nEffect The wraith wraps its robes around an adjacent living creature, exposing it to void's embrace. If any creature is cursed by the wraith's void's embrace, the wraith can't impose void's embrace on another creature.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Void's Embrace",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "death",
+        "divine",
+        "void"
+      ],
+      "text": "If the victim succeeds at a saving throw against this curse while in sunlight, the curse ends. While you have this curse, you bypass the resistance of the wraith that cursed you.\n\nSaving Throw DC 24 Will save\n\n---\nStage 1 the victim is Dazzled in any light (1 hour)\n\nStage 2 the victim gains lifesense 30 feet but is Blinded in any light (1 hour)\n\nStage 3 as stage 2, but the creature also has Void Healing (1 hour)\n\nStage 4 the victim becomes Unconscious and can't awaken (1 day)\n\nStage 5 the creature dies and becomes a wraith, its body crumbling to ash",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "voids-embrace",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "spirit",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "voids-embrace"
+              }
+            ],
+            "type": "all-damage",
+            "value": 5
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Wraiths are malevolent undead who drain life and shun light. Their shadowy forms are covered by insubstantial robes that they wear like a badge of office and marked with peering eyes that reflect their judgment of the living. A wraith can be created by foul magic or direct exposure to the Void, but more often they are the result of death on a tragic scale. When a tragedy is too great for even reality to witness, a temporary manifestation of the Void can leave behind countless wraiths in a horde of darkness. A wraith's existence is one of emptiness and need, with a desire to call others to the same emptiness exemplified by the Void.\n\nWraiths can haunt any location where they can safely interact with the living, looking for those worthy to become new wraiths and disposing of the rest, though their vulnerability to sunlight confines them to the shadowy places of the world—places where they can blend in seamlessly with their dark surroundings before silently engulfing their prey. Wraiths' opinions on who is worthy vary, but they typically choose those closest to the Void already, whether from a metaphysical connection or exposure to countless deaths. A new wraith created this way carries these aspects, with the rest of their personality warped or scoured away by exposure to the Void.\n\nWraiths gather with others of their kind in places where death and mayhem are commonplace—countrysides ravaged by war, metropolitan underworlds run by criminal overlords, or sites of fiendish rituals. In these places, the living do well to keep to the light. Wraiths are smart enough to take advantage of their incorporeality in combat, so they keep to tortuous caverns or structures with hallways, and avoid open areas."
+}

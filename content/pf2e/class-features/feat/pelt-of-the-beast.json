@@ -1,0 +1,251 @@
+{
+  "kind": "feat",
+  "slug": "pelt-of-the-beast",
+  "system": "pf2e",
+  "name": "Pelt of the Beast",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ikon"
+  ],
+  "category": "classfeature",
+  "text": "Usage worn cloak or belt\n\n---\nThis animal hide, whether worn about the shoulders or waist, is all you need to survive even the harshest elements. When you make your daily preparations, choose cold, electricity, fire, poison, or sonic damage. The pelt attunes to that damage type.\n\nImmanence You gain resistance equal to half your level to the damage type the pelt is attuned to. You also treat environmental cold and heat effects as one step less severe.\n\nTranscendence—Survive the Wilds 1 (aura, manipulate, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.DivineSpark.Label",
+        "mergeable": true,
+        "option": "divine-spark",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "pelt-of-the-beast"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.exemplar.peltOfTheBeastDamage",
+        "priority": 51,
+        "value": "{item|flags.system.rulesSelections.peltOfTheBeastDamage}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.exemplar.ikons",
+        "value": {
+          "label": "PF2E.SpecificRule.Exemplar.Ikon.PeltOfTheBeast.Label",
+          "predicate": [
+            "parent:tag:worn-ikon-feat"
+          ],
+          "value": "pelt-of-the-beast"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Survive the Wilds"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Grant",
+            "value": "granted"
+          },
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Existing",
+            "value": "existing"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Prompt",
+        "rollOption": "pelt-of-the-beast-origin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon"
+          },
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon:pelt-of-the-beast"
+          }
+        ],
+        "key": "GrantItem",
+        "predicate": [
+          "pelt-of-the-beast-origin:granted"
+        ],
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Pelt of the Beast"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "equipment"
+          ]
+        },
+        "flag": "existingIkon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "pelt-of-the-beast-origin:existing"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "physical-ikon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "pelt-of-the-beast-origin:existing"
+        ],
+        "property": "other-tags",
+        "value": "physical-ikon:pelt-of-the-beast"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "equipment",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:pelt-of-the-beast",
+          "pelt-of-the-beast-origin:existing",
+          {
+            "not": "item:slug:pelt-of-the-beast"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.Wy6vSjm588txUFFv inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.Ikon.PeltOfTheBeast.RollOptionLabel",
+        "option": "pelt-of-the-beast-damage",
+        "suboptions": [
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "divine-spark:pelt-of-the-beast"
+        ],
+        "type": "{item|flags.system.rulesSelections.peltOfTheBeastDamage}",
+        "value": "floor(@actor.level/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:transcendence",
+          {
+            "or": [
+              "item:granter:tag:chosen-ikon:pelt-of-the-beast",
+              "item:slug:survive-the-wilds"
+            ]
+          },
+          {
+            "not": "divine-spark:pelt-of-the-beast"
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Exemplar.DivineSpark.SparkTranscendence.Reminder"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "divine"
+      }
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "kind": "feat",
+  "slug": "worldsphere-gravity",
+  "system": "pf2e",
+  "name": "Worldsphere Gravity",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "uncommon",
+  "traits": [
+    "spellshape",
+    "wizard"
+  ],
+  "category": "class",
+  "actions": 1,
+  "frequency": {
+    "max": 1,
+    "per": "PT1H"
+  },
+  "text": "Frequency once per hour\n\n---\nThough creating demiplanes usually requires lengthy rituals, you know how to establish minor planar effects in imitation of Syndara's masterpieces. If your next action is to Cast a Spell of at least 5th rank from your spell slots that affects an area, you can apply one of the following planar effects to a 20-foot burst centered within the spell's area. The effect persists for 1 minute.\n\nGravitational Morass The pull of gravity is amplified here, creating greater difficult terrain. Flying creatures that pass through the area must succeed at a Reflex save against your spell DC or fall to the ground, taking bludgeoning damage equal to half the distance fallen.\n\nFlowing Time Erratic timestreams aid you within this space. A creature that starts its turn in the burst is affected by Haste on that turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "worldsphere-gravity"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Spellshape.CodexofDestructionAndRenewal.Prompt",
+        "option": "worldsphere-type",
+        "placement": "spellcasting",
+        "predicate": [
+          "spellshape:worldsphere-gravity"
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Spellshape.WorldsphereGravity.GravitationalMorass.RollOptionLabel",
+            "value": "gravitational-morass"
+          },
+          {
+            "label": "PF2E.SpecificRule.Spellshape.WorldsphereGravity.FlowingTime.RollOptionLabel",
+            "value": "flowing-time"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "area-effect",
+          "spellshape:worldsphere-gravity",
+          "worldsphere-type:gravitational-morass",
+          {
+            "gte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "item:trait:cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.WorldsphereGravity.GravitationalMorass.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "area-effect",
+          "spellshape:worldsphere-gravity",
+          "worldsphere-type:flowing-time",
+          {
+            "gte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "item:trait:cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.WorldsphereGravity.FlowingTime.Note"
+          }
+        ]
+      }
+    }
+  ]
+}

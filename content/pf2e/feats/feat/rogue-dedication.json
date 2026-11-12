@@ -1,0 +1,88 @@
+{
+  "kind": "feat",
+  "slug": "rogue-dedication",
+  "system": "pf2e",
+  "name": "Rogue Dedication",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication",
+    "multiclass"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Dexterity +2"
+  ],
+  "text": "You gain a skill feat and the rogue's Surprise Attack class feature. You become trained in light armor. In addition, you become trained in Stealth or Thievery plus one skill of your choice; if you are already trained in both Stealth and Thievery, you become trained in an additional skill of your choice. You become trained in rogue class DC.\n\nRogue",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Stealth",
+            "value": "system.skills.stealth.rank"
+          },
+          {
+            "label": "PF2E.Skill.Thievery",
+            "value": "system.skills.thievery.rank"
+          }
+        ],
+        "flag": "rogueDedication",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Rogue.TrainSkill.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "{item|flags.system.rulesSelections.rogueDedication}",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.classfeatures.Item.Surprise Attack"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:trait:skill",
+            {
+              "lte": [
+                "item:level",
+                "self:level"
+              ]
+            }
+          ],
+          "itemType": "feat"
+        },
+        "flag": "skillFeat",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.SkillFeat"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.skillFeat}"
+      }
+    }
+  ]
+}

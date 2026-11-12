@@ -1,0 +1,61 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-claws-of-the-otter",
+  "system": "pf2e",
+  "name": "Spell Effect: Claws of the Otter",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Claws of the Otter\n\nYou gain a +1 status bonus to Athletics checks to Swim and you gain a claws unarmed attack. They're an agile, finesse, unarmed attack that deals slashing damage and additional cold damage.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "action:swim"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Claw",
+        "slug": "claws-of-the-otter",
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "cold",
+        "diceNumber": "ternary(gte(@item.level,8),3,ternary(gte(@item.level,5),2,1))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "claws-of-the-otter-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "kind": "creature",
+  "slug": "master-sergeant-morgroar-5-6",
+  "system": "pf2e",
+  "name": "Master Sergeant Morgroar (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-12: Snakes in the Grass",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "goblin",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 105,
+    "perception": 14,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 15,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 5,
+      "dex": 4,
+      "int": 0,
+      "str": 6,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 15,
+      "intimidation": 15,
+      "stealth": 15
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 19,
+      "traits": [
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 18,
+      "traits": [
+        "brutal",
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Formation",
+      "category": "defensive",
+      "text": "When Morgroar is adjacent to at least two other allies, he gains a +1 circumstance bonus to AC and saving throws. This bonus increases to +2 to Reflex saves against area effects.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Adjacent to two allies",
+            "option": "formation",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "formation-aoe",
+          "when": [
+            "area-effect"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "General's Cry",
+      "category": "offensive",
+      "text": "When a hobgoblin general rolls initiative, as long as they can perceive at least one foe, they can yell a mighty battle cry. The hobgoblin general attempts an Intimidate check to demoralize a single foe within 60 feet as a free action. If successful, any ally with the goblin trait can, as its first action on its first turn of the combat, Stride up to double its speed as a single action.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Polearm Critical Specialization",
+      "category": "offensive",
+      "text": "On a critical hit, the target of the critical hit is moved 5 feet in a direction of Morgroar's choice.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:group:polearm"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

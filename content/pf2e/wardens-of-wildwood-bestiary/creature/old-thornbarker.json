@@ -1,0 +1,251 @@
+{
+  "kind": "creature",
+  "slug": "old-thornbarker",
+  "system": "pf2e",
+  "name": "Old Thornbarker",
+  "source": {
+    "title": "Pathfinder #203: Shepherd of Decay",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "unique",
+  "traits": [
+    "good",
+    "plant",
+    "wood"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 33,
+    "hp": 230,
+    "perception": 25,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 18,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 5,
+      "dex": 0,
+      "int": 4,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 23,
+      "deception": 22,
+      "intimidation": 22,
+      "nature": 25,
+      "stealth": {
+        "value": 19,
+        "special": [
+          {
+            "value": 23,
+            "label": "in forests",
+            "when": [
+              "terrain:forest"
+            ]
+          }
+        ]
+      },
+      "cradle-of-knot-lore": 28
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "arboreal",
+      "common",
+      "fey",
+      "muan"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "axe-vulnerability",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "perception": "all-around vision",
+      "languages": "speak with plants"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 32,
+      "attack": 24,
+      "spells": [
+        {
+          "name": "Tangling Creepers",
+          "rank": 6,
+          "ref": "spells:spell/tangling-creepers"
+        },
+        {
+          "name": "Earthbind (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/earthbind"
+        },
+        {
+          "name": "Speak with Plants (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Entangling Flora",
+          "rank": 2,
+          "ref": "spells:spell/entangling-flora"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Branch",
+      "attack": 25,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Scamp",
+      "attack": 22,
+      "traits": [
+        "splash",
+        "thrown-60"
+      ],
+      "damage": [
+        {
+          "dice": "4d6+10",
+          "type": "piercing"
+        },
+        {
+          "dice": "4",
+          "type": "piercing",
+          "category": "persistent"
+        },
+        {
+          "dice": "4",
+          "type": "poison",
+          "category": "splash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "phase": "afterDerived",
+            "predicate": [
+              "sycophantic-scamps"
+            ],
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Abeyance Rift",
+      "category": "defensive",
+      "text": "If Old Thornbarker dies unexpectedly before passing on their knowledge in a succession ritual, the amassed lore within their roots and boughs explodes out in a shock wave that deals 8d10 mental damage to creatures within 30 feet (DC 32 basic Will save save) before dissipating; those who fail also fall Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Sycophantic Scamps",
+      "category": "defensive",
+      "text": "Dozens of Wood Scamps clamber on, nest in, and flit around Old Thornbarker, feeding him their observations and gossip. The arboreal can grab a nearby scamp as if drawing a weapon, using it as a thrown weapon. The unlucky scamp impacts with a clatter of spines and toxic pollen, after which the dazed elemental scampers away to regain its senses.\n\nIf Old Thornbarker takes 40 or more damage from an area effect, the scamps scatter and seek cover for 1d6 rounds, during which time Old Thornbarker can't make scamp Strikes and loses all-around vision.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sycophantic-scamps",
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Memory Maelstrom",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "incapacitation",
+        "mental",
+        "nonlethal",
+        "primal"
+      ],
+      "text": "Old Thornbreaker tries to overwhelm foes with a surge of information it has absorbed over its long life. This surge deals 5d6 mental damage to each enemy within 40 feet, who must attempt a DC 32 Will save save.\n\n---\nCritical Success The creature maintains its composure, takes no damage, and is temporarily immune to Memory Maelstrom for 1 minute.\n\nSuccess The creature is Stunned 1 and takes half damage.\n\nFailure The creature takes full damage and is Stunned 3.\n\nCritical Failure The creature takes double damage, is Confused for 2d4 rounds, and is stunned 3."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Knockdown",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Arboreal archives are solitary beings typically found in the remote wilderness. These ancient monoliths hold the memories of their vast territories, keeping mental records of the passing seasons of the world around them. Their knowledge of humanoid affairs varies, as they find quickly shifting political situations difficult to comprehend, but through fungal networks, reports from arboreal wardens, and other woodland chatter, arboreal archives learn of each storm, drought, or logging threat encountered throughout their long years. They primarily observe and record rather than interfere, but they willingly offer wisdom to those who respectfully seek them out. Arboreal regents call upon archives for advice in times of strife, conferring on the best course of action to protect their realms.\n\nIt is rare for there to be more than one arboreal archive in a given region. When an archive senses they're nearing the end of their lengthy lifespan, a grove of regents gathers to nominate the wisest among them to become the next archive. After four seasons' deliberation, all arboreals in the area congregate to witness the succession ritual, during which the elder arboreal archive transfers their collected wisdom to the elected replacement before retiring.\n\n---\n\nArboreals are tree-like ancient guardians of forests, nurturing new growth and maintaining a balanced ecosystem as if the vast wilderness were their garden. Arboreals are thoughtful and deliberate - until something threatens their realms and invites their wrath.",
+  "blurb": "Male variant arboreal archive"
+}

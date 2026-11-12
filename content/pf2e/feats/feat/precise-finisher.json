@@ -1,0 +1,76 @@
+{
+  "kind": "feat",
+  "slug": "precise-finisher",
+  "system": "pf2e",
+  "name": "Precise Finisher",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Confident Finisher"
+  ],
+  "text": "Even when your foe avoids your Confident Finisher, you can still hit a vital spot. On a failure with Confident Finisher, you apply your full precise strike damage instead of half.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "outcome": [
+          "failure"
+        ],
+        "predicate": [
+          {
+            "or": [
+              "finisher:confident",
+              "eternal-confidence"
+            ]
+          },
+          {
+            "or": [
+              "item:melee",
+              {
+                "and": [
+                  "feat:flying-blade",
+                  "item:thrown",
+                  {
+                    "or": [
+                      "target:range-increment:1",
+                      {
+                        "and": [
+                          "finisher:twirling-throw",
+                          {
+                            "lte": [
+                              "target:range-increment",
+                              3
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse"
+            ]
+          }
+        ],
+        "selector": "strike-attack-roll",
+        "text": "PF2E.SpecificRule.Swashbuckler.Finisher.PreciseNote",
+        "title": "{item|name}"
+      }
+    }
+  ]
+}

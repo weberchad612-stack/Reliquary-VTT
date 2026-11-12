@@ -1,0 +1,119 @@
+{
+  "kind": "heritage",
+  "slug": "elytron-surki",
+  "system": "pf2e",
+  "name": "Elytron Surki",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Surki",
+    "ref": "ancestries:ancestry/surki"
+  },
+  "text": "The top layer of your carapace is especially mobile, and you can unfurl it to catch the air gracefully as you fall. You take no damage from falling, regardless of the distance you fall.\n\n- Evolution Your shoulder nodes have evolved into a pair of spines that you can energize to project a pair of glowing wings. You can cast Fly as an innate spell once per day, targeting yourself; while your wings are energized, you shed bright light in a 20-foot radius and dim light for the next 20 feet.\n\n- Evolution Your shoulder nodes have evolved into a fan of thin membranes that resonate when magic is coursed through them. You gain the Stridulating Song action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.GlowingWings",
+          "predicate": [
+            {
+              "not": "evolution:glowing-wings"
+            }
+          ],
+          "value": "glowing-wings"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.ResonatingMembranes",
+          "predicate": [
+            {
+              "not": "evolution:resonating-membranes"
+            }
+          ],
+          "value": "resonating-membranes"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "self:effect:fly",
+          "evolution:glowing-wings"
+        ],
+        "value": {
+          "alpha": 0.15,
+          "animation": {
+            "intensity": 2,
+            "speed": 1,
+            "type": "flame"
+          },
+          "bright": 20,
+          "color": "#4ee9fd",
+          "coloration": 101,
+          "dim": 40,
+          "luminosity": 0.1,
+          "saturation": -0.2
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:fly",
+          "spellcasting:innate",
+          "evolution:glowing-wings"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:fly",
+          "spellcasting:innate",
+          "evolution:glowing-wings"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:surki"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "evolution:resonating-membranes"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Stridulating Song"
+      }
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "kind": "feat",
+  "slug": "quickened-casting",
+  "system": "pf2e",
+  "name": "Quickened Casting",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "bard",
+    "concentrate",
+    "necromancer",
+    "oracle",
+    "sorcerer",
+    "spellshape",
+    "witch",
+    "wizard"
+  ],
+  "category": "class",
+  "actions": "free",
+  "frequency": {
+    "max": 1,
+    "per": "day"
+  },
+  "text": "Frequency once per day\n\n---\n\nBard If your next action is to cast a bard cantrip or a bard spell that is at least 2 ranks lower than the highest-rank bard spell slot you have, reduce the number of actions to cast it by 1 (minimum 1 action).\n\nWitch You accelerate your spellcasting. If your next action is to cast a witch cantrip or a witch spell that is at least 2 ranks lower than the highest-rank witch spell slot you have, reduce the number of actions to cast it by 1 (minimum 1 action).\n\nWizard Straining your mind, you collapse as much of your spell's formulas as you can, resulting in a shorter but much more complex incantation. If your next action is to cast a wizard cantrip or a wizard spell that is at least 2 ranks lower than the highest-rank wizard spell slot you have, reduce the number of actions to cast it by 1 (minimum 1 action).\n\nOthers If your next action is to cast a class cantrip or a class spell that is at least 2 levels lower than the highest-level class spell slot you have, reduce the number of actions to cast it by 1 (minimum 1 action).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:quickened-casting",
+          {
+            "or": [
+              "item:cast:actions:1",
+              "item:cast:actions:2",
+              "item:cast:actions:3"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.QuickenedCasting"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "quickened-casting"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

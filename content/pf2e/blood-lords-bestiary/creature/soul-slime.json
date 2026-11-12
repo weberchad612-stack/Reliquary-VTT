@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "soul-slime",
+  "system": "pf2e",
+  "name": "Soul Slime",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "mindless",
+    "ooze"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 29,
+    "hp": 420,
+    "perception": 27,
+    "saves": {
+      "fortitude": 33,
+      "reflex": 24,
+      "will": 27
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": -3,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 35
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "critical-hits",
+        "void",
+        "piercing",
+        "vitality",
+        "precision",
+        "slashing",
+        "unconscious",
+        "visual"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Pseudopod",
+      "attack": 35,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "siphon-soul"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Ooze Globule",
+      "attack": 28,
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d10+15",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "siphon-soul"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Disgorge Soul",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The soul slime takes physical damage\n\n---\n\nEffect The impact causes the soul slime to release a burst of semi-digested soul fragments. The soul slime becomes Concealed until the beginning of its next turn. The soul slime can't use this concealment to Hide or Sneak."
+    },
+    {
+      "kind": "ability",
+      "name": "Disturbing Wail",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "mental"
+      ],
+      "text": "Requirements The soul slime is using Soul Facsimile to adopt a creature's form\n\n---\n\nEffect The soul slime releases an incoherent wail composed of countless overlapping noises made by the creatures whose souls it has siphoned. This disturbing cacophony deals 6d10 mental damage and 6d10 sonic damage to each creature in a 30-foot-radius burst centered on the soul slime (DC 37 basic Will save). On a failed save, a creature is additionally Stunned 2. The soul slime can't use Disturbing Wail again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Engulf",
+      "actions": 2,
+      "category": "offensive",
+      "text": "DC 40 Reflex save, 5d10 bludgeoning damage, escape dc=40, Rupture 20\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Siphon Soul",
+      "category": "offensive",
+      "text": "A soul slime's touch siphons away portions of a creature's soul. Its Strikes affect incorporeal creatures with the effects of a Ghost Touch property rune and deal 3d6 void damage to living creatures and 3d6 vitality damage to undead and other creatures with void healing.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "target:mode:undead",
+                  "target:negative-healing"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Soul Facsimile",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The soul slime assumes the shape and features of any Large, Medium, or Small creature whose soul the soul slime has siphoned for up to 1 minute. This doesn't change the soul slime's statistics, only its outward appearance. While transformed in this way, the soul slime can revert to its natural shape as a single action, and the soul slime automatically reverts to its natural shape when it takes physical damage."
+    }
+  ],
+  "text": "Soul slimes are swirling, blue-gray masses of protoplasm that feed on the quintessence contained within souls. Typically, soul slimes acquire this quintessence by consuming the living, the undead, or souls imprisoned in other objects, although soul slimes can also feed on the quintessence of the Outer Planes and their occupants. Soul slimes digest these siphoned souls over decades. As long as a portion of a soul remains undigested, a soul slime can adopt the shape and use the vocalizations of that soul—a tactic soul slimes routinely adopt to get close to their prey while hunting. As soul slimes lack the intelligence to truly impersonate or mimic the souls they digest, they are obvious facsimiles and are entirely incapable of speech."
+}

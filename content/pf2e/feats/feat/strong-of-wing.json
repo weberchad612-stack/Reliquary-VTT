@@ -1,0 +1,52 @@
+{
+  "kind": "feat",
+  "slug": "strong-of-wing",
+  "system": "pf2e",
+  "name": "Strong of Wing",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "awakened-animal"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "Take Flight"
+  ],
+  "text": "You can fly with a greater distance. The fly Speed you gain from Take Flight increases to 25 feet.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:take-flight"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "{item|description}"
+          }
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "fly-speed",
+      "type": "untyped",
+      "value": 10,
+      "when": [
+        "take-flight",
+        {
+          "not": "feat:full-flight"
+        }
+      ]
+    }
+  ]
+}

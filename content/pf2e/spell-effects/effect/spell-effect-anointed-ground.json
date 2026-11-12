@@ -1,0 +1,78 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-anointed-ground",
+  "system": "pf2e",
+  "name": "Spell Effect: Anointed Ground",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Anointed Ground\n\nChoose aberrations, celestials, dragons, fiends, monitors, or undead. You gain a +1 status bonus to AC, attack rolls, damage rolls, and saving throws against the chosen creatures.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAberration",
+            "value": "aberration"
+          },
+          {
+            "label": "PF2E.TraitCelestial",
+            "value": "celestial"
+          },
+          {
+            "label": "PF2E.TraitDragon",
+            "value": "dragon"
+          },
+          {
+            "label": "PF2E.TraitFiend",
+            "value": "fiend"
+          },
+          {
+            "label": "PF2E.TraitMonitor",
+            "value": "monitor"
+          },
+          {
+            "label": "PF2E.TraitUndead",
+            "value": "undead"
+          }
+        ],
+        "flag": "creatureType",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "status",
+      "value": 1,
+      "when": [
+        "target:trait:{item|flags.system.rulesSelections.creatureType}"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 1,
+      "when": [
+        "origin:trait:{item|flags.system.rulesSelections.creatureType}"
+      ]
+    }
+  ]
+}

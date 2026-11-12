@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "trap-finder",
+  "system": "pf2e",
+  "name": "Trap Finder",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "investigator",
+    "rogue"
+  ],
+  "category": "class",
+  "text": "You have an intuitive sense that alerts you to the dangers and presence of traps. You gain a +1 circumstance bonus to Perception checks to find traps, to AC against attacks made by traps, and to saves against traps. Even if you aren't Searching, you get a check to find traps that normally require you to be Searching. You still need to meet any other requirements to find the trap. You can disable traps that require a proficiency rank of master in Thievery. If you have master proficiency in Thievery, you can disable traps that require a proficiency rank of legendary instead, and your circumstance bonuses against traps increase to +2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "perception",
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TrapFinder.SearchLabel",
+        "option": "trap-finder",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TrapFinder.DefendingLabel",
+        "option": "origin:trait:trap",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "origin:trait:trap"
+        ],
+        "selector": [
+          "saving-throw",
+          "ac"
+        ],
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.thievery.rank,3),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "trap-finder"
+        ],
+        "selector": "perception",
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.thievery.rank,3),2,1)"
+      }
+    }
+  ]
+}

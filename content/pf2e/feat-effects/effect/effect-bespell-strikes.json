@@ -1,0 +1,139 @@
+{
+  "kind": "effect",
+  "slug": "effect-bespell-strikes",
+  "system": "pf2e",
+  "name": "Effect: Bespell Strikes",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Bespell Strikes\n\nThe weapon or unarmed attack deals an extra 1d6 force damage and gains the arcane trait if it didn't have it already. If the spell dealt a different type of damage, the Strike deals this type of damage instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "attacks": true
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "actorFlag": true,
+        "adjustName": false,
+        "choices": "damageTypes",
+        "flag": "bespellStrikesDamage",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{item|flags.system.rulesSelections.bespellStrikesDamage}",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+        "slug": "bespell-strikes"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "class:wizard",
+              "feat:wizard-dedication",
+              "feature:bloodline:tradition:arcane"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "arcane"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "class:oracle",
+              "feat:oracle-dedication",
+              "feature:bloodline:tradition:divine"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "divine"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "feature:bloodline:tradition:occult"
+        ],
+        "property": "traits",
+        "value": "occult"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "feature:bloodline:tradition:primal"
+        ],
+        "property": "traits",
+        "value": "primal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "property": "other-tags",
+        "value": "bespell-strikes"
+      }
+    }
+  ]
+}

@@ -1,0 +1,308 @@
+{
+  "kind": "creature",
+  "slug": "raptor-guard-wight",
+  "system": "pf2e",
+  "name": "Raptor Guard Wight",
+  "source": {
+    "title": "Pathfinder #155: Lord of the Black Sands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 240,
+    "perception": 22,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 23,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 5,
+      "int": 0,
+      "str": 8,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": 27,
+      "intimidation": 27,
+      "stealth": 24,
+      "survival": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "draconic",
+      "necril",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Demon Mask (Greater)",
+      "ref": "equipment:item/demon-mask-greater",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 27,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "drain-life",
+        "terror-master"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life",
+        "terror-master"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 26,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "drain-life",
+        "terror-master"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 24,
+      "traits": [
+        "magical"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "hungry-spear",
+        "terror-master"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Death Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. A creature that enters the area must attempt a DC 32 Fortitude save save. On a failure, the creature is Sickened 2 and Doomed 1 for as long as it is sickened; on a critical failure, the creature is instead Doomed 2 for as long as it is sickened. While within the aura, the creature takes a -2 circumstance penalty to saves to recover from the sickened condition. A creature that succeeds at its save is temporarily immune to any creature's death stench for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "death-stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the Raptor Guard wight damages a living creature with a melee Strike, the wight gains 13 temporary Hit Points and the target creature must succeed at a DC 32 Fortitude save save or become Drained 1. Further damage dealt by the wight increases the drained condition by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 13
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hungry Spear",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The Raptor Guard wight's ranged spear Strikes apply drain life, but the wight doesn't gain any temporary Hit Points if the attack hits.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "ranged-strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Terror Master",
+      "category": "offensive",
+      "text": "As long as the Raptor Guard wears its dinosaur-skull helm, its Strikes deal an additional 1d10 void damage, or an additional 2d10 void damage to Frightened creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "strike-damage",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.RaptorGuardWight.TerrorMaster",
+            "option": "terror-master",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 2,
+            "dieSize": "d10",
+            "key": "DamageDice",
+            "predicate": [
+              "terror-master",
+              "target:condition:frightened"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d10",
+            "key": "DamageDice",
+            "predicate": [
+              "terror-master",
+              {
+                "not": "target:condition:frightened"
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wight Spawn",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A living humanoid slain by a Raptor Guard wight's melee Strike rises as a Wight after 1d4 rounds. This wight spawn is under the command of the Raptor Guard that killed it. It doesn't have the drain life or wight spawn abilities and is Clumsy 2. If the creator of the wight spawn dies, the wight spawn becomes a full-fledged, autonomous wight; it regains its free will, gains the drain life and wight spawn abilities, and is no longer clumsy."
+    }
+  ],
+  "blurb": "Variant wight"
+}

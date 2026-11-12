@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "mithral-golem",
+  "system": "pf2e",
+  "name": "Mithral Golem",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "golem",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 40,
+    "hp": 220,
+    "perception": 26,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 30,
+      "will": 24
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": 6,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 30,
+      "athletics": 33
+    },
+    "speeds": {
+      "land": 50,
+      "climb": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 15,
+          "except": "adamantine"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 31,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12 + 12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spike",
+      "attack": 31,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "reach-30"
+      ],
+      "damage": [
+        {
+          "dice": "3d10 + 12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When the mithral golem rolls a success on a Reflex save, it gets a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Golem Antimagic",
+      "category": "defensive",
+      "text": "Harmed by cold and water (8d10 untyped, 2d10 untyped from areas or persistent damage); healed by transmutation (area 2d10 healing HP); slowed by electricity\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Steps",
+      "category": "defensive",
+      "text": "A mithral golem is permanently Quickened, and it can use the extra action only to Step or Stride.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "condition",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:granter:id:{item|id}"
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "{item|description}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Slow",
+      "category": "defensive",
+      "text": "A mithral golem is not healed by a Slow spell, and such spells affect them normally. A Haste spell reverses the effects of a slow spell immediately."
+    },
+    {
+      "kind": "ability",
+      "name": "Liquefy",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The mithral golem becomes fully liquid and amorphous. It gains immunity to precision damage, but it takes double damage from cold and water magic (see golem antimagic). The only actions it can use while Liquefied are move actions, Spike Storm, and spike Strikes. It can resume its normal form by taking this action again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "liquefy",
+            "priority": 50,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "liquefy"
+            ],
+            "type": "precision"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spike Storm",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The mithral golem makes a spike Strike against each target within its reach. These attacks count toward the mithral golem's multiple attack penalty, but its multiple attack penalty doesn't increase until after all the attacks."
+    }
+  ],
+  "text": "Mithral golems are gorgeously crafted, silvery humanoids made from colossal amounts of the purest dawnsilver. While massive in construction, they possess amazing speed and grace through literal fluidity. Unpredictable and flexible, they can melt into liquid form and reform into a solid shape in mere seconds, allowing them to shape their limbs into sharp spikes or heavy fists as needed.\n\n---\n\nPowerful constructs that blend magic and raw material, golems make ideal guardians and bodyguards, with forms and functions as varied as the needs of those who employ them. As their crafters experiment with more exotic components and create new formulas, golems with surprising abilities emerge."
+}

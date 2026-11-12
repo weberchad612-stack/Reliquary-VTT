@@ -1,0 +1,48 @@
+{
+  "kind": "effect",
+  "slug": "stance-point-blank-stance",
+  "system": "pf2e",
+  "name": "Stance: Point Blank Stance",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Point Blank Stance\n\nWhen using a ranged weapon that doesn't have the volley trait, you gain a +2 circumstance bonus to damage rolls on attacks against targets within the weapon's first range increment.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "attack-roll",
+        "key": "RollOption",
+        "option": "self:ignore-volley-penalty"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "target:range-increment:1",
+          {
+            "nor": [
+              "item:trait:volley-20",
+              "item:trait:volley-30",
+              "item:trait:volley-50"
+            ]
+          }
+        ],
+        "selector": "ranged-strike-damage",
+        "type": "circumstance",
+        "value": 2
+      }
+    }
+  ]
+}

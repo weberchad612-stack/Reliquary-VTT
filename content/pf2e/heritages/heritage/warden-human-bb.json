@@ -1,0 +1,75 @@
+{
+  "kind": "heritage",
+  "slug": "warden-human-bb",
+  "system": "pf2e",
+  "name": "Warden Human (BB)",
+  "source": {
+    "title": "Pathfinder Beginner Box",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Human",
+    "ref": "ancestries:ancestry/human"
+  },
+  "text": "You and your family members are survivors, and you've learned how to take care of yourself. Pick one of the following benefits.\n\n- Add 4 to your maximum Hit Points.\n\n- You become an expert in Fortitude saving throws.\n\n- You become trained in medium armor.\n\nNote: This heritage is from the Beginner Box and features non-standard heritage features",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.WardenHuman.HitPoints",
+            "value": "hp"
+          },
+          {
+            "label": "PF2E.SpecificRule.WardenHuman.Fortitude",
+            "value": "fortitude"
+          },
+          {
+            "label": "PF2E.SpecificRule.WardenHuman.MediumArmor",
+            "value": "armor"
+          }
+        ],
+        "flag": "wardenHumanBB",
+        "key": "ChoiceSet",
+        "label": "PF2E.UI.RuleElements.ChoiceSet.Prompt",
+        "rollOption": "heritage:warden-human"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "hp",
+      "type": "untyped",
+      "value": 4,
+      "when": [
+        "heritage:warden-human:hp"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.medium.rank",
+        "predicate": [
+          "heritage:warden-human:armor"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.saves.fortitude.rank",
+        "predicate": [
+          "heritage:warden-human:fortitude"
+        ],
+        "value": 2
+      }
+    }
+  ]
+}

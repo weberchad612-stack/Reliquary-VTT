@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "ghost-hunter",
+  "system": "pf2e",
+  "name": "Ghost Hunter",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "duskwalker"
+  ],
+  "category": "ancestry",
+  "text": "Your connection to the Boneyard ensures that your blows strike true against spectral beings. Your weapon and unarmed Strikes against incorporeal creatures become magical. If they are already magical, they instead gain the effects of a ghost touch property rune.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.Incorporeal",
+        "option": "target:trait:incorporeal",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:magical"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "target:trait:incorporeal"
+        ],
+        "property": "property-runes",
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "not": "item:magical"
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "target:trait:incorporeal"
+        ],
+        "property": "weapon-traits",
+        "value": "magical"
+      }
+    }
+  ]
+}

@@ -1,0 +1,354 @@
+{
+  "kind": "creature",
+  "slug": "sharkskin",
+  "system": "pf2e",
+  "name": "Sharkskin",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-00: Salt of the Ocean",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "nephilim"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 100,
+    "perception": 13,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 0,
+      "int": 1,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 18,
+      "deception": 15,
+      "diplomacy": 15,
+      "intimidation": 18,
+      "stealth": 15,
+      "thievery": 15,
+      "sailing-lore": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "languages": "Special Communication Types"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Triangular Teeth",
+      "ref": "equipment:item/triangular-teeth",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Dragon Turtle Scale",
+      "ref": "equipment:item/dragon-turtle-scale",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Potion of Emergency Escape",
+      "ref": "equipment:item/potion-of-emergency-escape",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 16,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fearsome Scimitar",
+      "attack": 16,
+      "traits": [
+        "emotion",
+        "fear",
+        "forceful",
+        "magical",
+        "mental",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Underwater Scimitar",
+      "attack": 16,
+      "traits": [
+        "forceful",
+        "magical",
+        "sweep",
+        "water"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 12,
+      "traits": [
+        "magical",
+        "water"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pirate Training",
+      "category": "interaction",
+      "text": "Sharkskin ignores the usual penalties for using a bludgeoning or slashing melee weapon in water. In addition, xe can hold xir breath for 175 rounds before suffocating."
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Sharkskin isn't off-guard to creatures of 7th level or lower that are hidden, undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Triangular Teeth",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "Frequency once per day\n\nTrigger Sharkskin would be hit by an attack against xir AC\n\n---\nEffect Xe gains a +1 circumstance bonus to xir AC against the attack, or a +2 circumstance bonus if the attack is in water or has the amphibious, aquatic, or water trait. Whether the attack hits or misses, xe gains a +2 status bonus to damage with the next Strike xe makes against the attacker before the end of xir next turn.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "triangular-teeth",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "In Water",
+            "option": "terrain:water",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "triangular-teeth"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "triangular-teeth",
+            {
+              "or": [
+                "terrain:water",
+                {
+                  "or": [
+                    "origin:trait:amphibious",
+                    "origin:trait:aquatic",
+                    "origin:trait:water"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The creature's Strikes deal an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are off-guard to Sharkskin.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Feint",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Sharkskin makes one Strike with xir +1 striking fearsome scimitar and then one with xir +1 striking underwater scimitar. If xe hits with the first attack, xir target is Off-Guard against the second attack."
+    },
+    {
+      "kind": "ability",
+      "name": "You're Next",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger Sharkskin reduces an enemy to 0 hit points\n\n---\nEffect Sharkskin attempts an Intimidation check to demoralize options=youre-next a single creature xe can see with a +2 circumstance bonus.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:demoralize",
+            "youre-next"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Pangender human nephilim pirate"
+}

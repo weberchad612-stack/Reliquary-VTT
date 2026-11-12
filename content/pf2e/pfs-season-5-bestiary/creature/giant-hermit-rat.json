@@ -1,0 +1,174 @@
+{
+  "kind": "creature",
+  "slug": "giant-hermit-rat",
+  "system": "pf2e",
+  "name": "Giant Hermit Rat",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-04: Necessary Introductions",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "animal"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 20,
+    "perception": 7,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 11,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 3,
+      "dex": 4,
+      "int": -4,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "stealth": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "while inside its jar",
+            "when": [
+              "terrain:jar"
+            ]
+          }
+        ]
+      },
+      "survival": 9
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "notes": {
+      "ac": "kimchi jar shell"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kimchi Jar",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "brine-burn"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flee",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The hermit rat's jar is destroyed\n\n---\n\nEffect The hermit rat Strides up to its Speed without triggering reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Kimchi Jar Shell",
+      "category": "defensive",
+      "text": "The hermit rat's kimchi jar shell has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once hermit rat is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its kimchi jar shell breaks and its Armor Class is reduced to 14",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Shell.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "label": "PF2E.NPCAbility.Shell.BrokenShell",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -3
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "nor": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brine Burn",
+      "category": "offensive",
+      "text": "A creature that takes damage from the hermit rat's jaw attack must attempt a DC 15 Fortitude save Save. On a failure, the wound burns from spicy kimchi brine and they take an additional 1d4 acid damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Ram",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The hermit rat rolls in its vessel up to its full movement, ramming into a target in its path and dealing 1d6+3 bludgeoning damage (DC 17 basic Reflex save save)."
+    }
+  ]
+}

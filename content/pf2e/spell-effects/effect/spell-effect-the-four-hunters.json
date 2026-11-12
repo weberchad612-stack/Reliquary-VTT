@@ -1,0 +1,117 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-the-four-hunters",
+  "system": "pf2e",
+  "name": "Spell Effect: The Four Hunters",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by The Four Hunters\n- East You gain 5 temporary Hit Points and a +1 status bonus to Athletics.\n- North You gain a +1 status bonus to Survival.\n- South You become concealed and gain a +1 status bonus to Stealth.\n- West You gain a +10-foot status bonus to their land Speed and a +1 status bonus to Acrobatics.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectTheFourHunters.East",
+            "value": "east"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectTheFourHunters.North",
+            "value": "north"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectTheFourHunters.South",
+            "value": "south"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectTheFourHunters.West",
+            "value": "west"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "the-four-hunters"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "the-four-hunters:east"
+        ],
+        "value": 5
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "status",
+      "value": 1,
+      "slug": "the-four-hunters-athletics",
+      "when": [
+        "the-four-hunters:east"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "status",
+      "value": 1,
+      "slug": "the-four-hunters-survival",
+      "when": [
+        "the-four-hunters:north"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "the-four-hunters:south"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Concealed"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "status",
+      "value": 1,
+      "slug": "the-four-hunters-stealth",
+      "when": [
+        "the-four-hunters:south"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "acrobatics",
+      "type": "status",
+      "value": 1,
+      "slug": "the-four-hunters-acrobatics",
+      "when": [
+        "the-four-hunters:west"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "status",
+      "value": 10,
+      "slug": "the-four-hunters-speed",
+      "when": [
+        "the-four-hunters:west"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "esobok",
+  "system": "pf2e",
+  "name": "Esobok",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "monitor",
+    "psychopomp"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 55,
+    "perception": 12,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 8,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 3,
+      "int": -3,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 8,
+      "intimidation": 9,
+      "religion": 4,
+      "stealth": 8,
+      "survival": 10
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease"
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 5
+        },
+        {
+          "type": "void",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 0,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Invisibility (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+3",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab",
+        "spirit-touch"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "spirit-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The esobok Strides and then makes a Strike. If it began this action Hidden, it remains hidden until after the Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Shepherd's Touch",
+      "category": "offensive",
+      "text": "An esobok's Strikes affect incorporeal creatures with the effects of a Ghost Touch property rune and deal 1d6 void damage to living creatures and 1d6 vitality damage to undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wrench Spirit",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "divine",
+        "incapacitation"
+      ],
+      "text": "Requirements A creature is Grabbed or Restrained by the esobok's jaws\n\n---\nEffect The esobok releases the target from the Grab but wrenches its spirit free as it does so. The creature must attempt a DC 20 Will save save. Creatures without souls (such as most constructs) and creatures whose bodies and souls are one (such as most celestials, fiends, and monitors) who roll a failure or critical failure on the save get a success instead.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The target is Stunned 1.\n\nFailure The esobok wrenches the target's soul from its body into its jaws. Mindless undead creatures of level 2 or lower are destroyed, other undead creatures are stunned for 1 round, and all other creatures are Paralyzed. At the end of each of its turns, a creature paralyzed by this effect can attempt a new save to end the effect. The paralysis ends automatically if the esobok attempts a jaws Strike or speaks."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Esoboks are brute hunters and pugnacious sentinels who serve as the guard dogs of the Boneyard. These squat, powerful quadrupeds have a frill of dark feathers around their distinctive heads which resemble a crocodile skull. Esoboks rarely bother with those who are truly dead, allowing the dead of the Boneyard to go about their business while remaining watchful for danger. Though cunning when sniffing out threats to the Boneyard or to their psychopomp handlers, they're among the least intelligent of the psychopomps and rarely speak except to utter growling threats. The wise listen when an esobok makes a threat, as it won't do so twice.\n\n---\nMany psychopomps are intimately involved with the Boneyard's massive bureaucracy. Few pursue mercy, justice, or personal gain; their duties to Pharasma and her Boneyard are supreme. Nevertheless, individual psychopomps interpret their duties in different ways, which might put them in conflict with mortals or even with each other."
+}

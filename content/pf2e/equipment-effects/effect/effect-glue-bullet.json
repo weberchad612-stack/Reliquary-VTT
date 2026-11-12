@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-glue-bullet",
+  "system": "pf2e",
+  "name": "Effect: Glue Bullet",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 2,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Glue Bullet\n\nYou take a –10-foot circumstance penalty to your Speeds. On a critical hit, you are also immobilized.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.criticalSuccess",
+            "value": "critical-success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.success",
+            "value": "success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "glue-bullet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "circumstance",
+      "value": -10
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "glue-bullet:critical-success"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    }
+  ]
+}

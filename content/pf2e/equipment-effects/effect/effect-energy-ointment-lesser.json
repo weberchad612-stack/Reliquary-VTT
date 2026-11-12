@@ -1,0 +1,65 @@
+{
+  "kind": "effect",
+  "slug": "effect-energy-ointment-lesser",
+  "system": "pf2e",
+  "name": "Effect: Energy Ointment (Lesser)",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Energy Ointment (Lesser)\n\nYou gain resistance 5 to the attuned energy type (acid, cold, electricity, or fire) and reduce the DC for the flat check to end persistent damage of the attuned energy type by 2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          }
+        ],
+        "flag": "energyType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.energyType}",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "subtract",
+        "predicate": [
+          "item:damage:type:{item|flags.system.rulesSelections.energyType}"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 2
+      }
+    }
+  ]
+}

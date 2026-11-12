@@ -1,0 +1,172 @@
+{
+  "kind": "creature",
+  "slug": "prisoner",
+  "system": "pf2e",
+  "name": "Prisoner",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 17,
+    "perception": 6,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 6,
+      "intimidation": 3,
+      "stealth": 7,
+      "thievery": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shiv",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Shiv",
+      "attack": 7,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The prisoner does an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the prisoner.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "You're Next",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger The prisoner reduces a creature to 0 hit points.\n\n---\nEffect The prisoner attempts an Intimidation check with a +2 circumstance bonus to demoralize options=youre-next a single creature it can see and that can see them.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:demoralize",
+            "youre-next"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Most who end up in a jail, dungeon, or prison are just biding their time until their imprisonment ends, trying to find ways to make it through interminable days of boredom and deprivation. Some, however, may use their time on the inside to strengthen their criminal connections. Using force and intimidation to gain status among other prisoners, they create makeshift weapons to take down their enemies and give them an edge if escape becomes possible. Even for prisoners who don't become involved in the world of prison politics, learning to stand up for themselves and projecting an air of toughness can become essential for survival in a place where people have little left to lose.\n\n---\n\nUnfortunately, every society has people living on its fringes. While good communities work to grant aid and respite to their downtrodden, sometimes-due to economic downturn, famine, or war-the ranks of the less fortunate exceed the community's capacity to support them. In heartless neutral and evil societies, poverty is seen as an inevitability that can never be truly eradicated, or even worse, as a tool to be manipulated for political gain."
+}

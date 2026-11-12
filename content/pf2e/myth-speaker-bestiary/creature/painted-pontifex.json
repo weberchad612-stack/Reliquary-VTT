@@ -1,0 +1,213 @@
+{
+  "kind": "creature",
+  "slug": "painted-pontifex",
+  "system": "pf2e",
+  "name": "Painted Pontifex",
+  "source": {
+    "title": "Pathfinder #218: Titanbane",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 138,
+    "perception": 18,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 3,
+      "int": -5,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "acid",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Sling",
+      "ref": "equipment:item/sling",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Staff",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling Bullets",
+      "ref": "equipment:item/sling-bullets",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Staff",
+      "attack": 21,
+      "traits": [
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+12",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "sticky-paint"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sling",
+      "attack": 18,
+      "traits": [
+        "propulsive",
+        "reload-1"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "sticky-paint"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 13)",
+      "category": "defensive",
+      "text": "Like normal objects, a painted pontifex has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once a painted pontifex is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 24.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "all",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Paint Bomb",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The painted pontifex Reloads and Strikes with its sling. The Strike deals 4d6 bludgeoning splash damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "paint-bomb",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "splash",
+            "damageType": "bludgeoning",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "paint-bomb"
+            ],
+            "selector": "sling-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sticky Paint",
+      "category": "offensive",
+      "text": "A painted pontifex's Strikes splatter paint on the target. On a critical hit, this paint swiftly dries, and the target becomes Clumsy 1 for 10 minutes. As an Interact action, the target or an adjacent creature can remove enough paint to end the condition."
+    }
+  ],
+  "text": "This portrait of a priest parrots mindless devotions, attacking anything that interrupts its worship.\n\n---\nThis mindless construct takes the form of a two-dimensional portrait given life or an illustration painted in three dimensions with magical pigments.\nPainted Treasure\nA painted creature's gear is part of the creature and is also made of magical paint. Such gear can't be disarmed. If the painted creature drops any gear, the item melts into a glob of paint a moment later—after dealing damage, for thrown and projectile weapons. Painted gear (including ammunition) is restored to a painted creature automatically 24 hours after it's lost. At the GM's discretion, a talented PC artist might rescue a painted item by immediately and successfully Repairing it, using a hard DC of the painted creature's level. This might allow PCs to recover a unique (even magical) item that existed only in the original artist's imagination.\nPainted Behavior\nPainted creatures typically adopt the behaviors of whatever they resemble. This results in creatures like a painted sheep bleating worriedly and grazing, even though any grasses consumed sit inertly inside its improvised belly before eventually seeping though its body and plopping on the ground.\n\nIntelligent creatures animated in this way sometimes develop a limited vocabulary. However, the construct remains mindless, their utterances follow only the most simplistic logic, and their words fall short of anything that could be considered conversation. With careful instruction, such constructs can perform mundane chores."
+}

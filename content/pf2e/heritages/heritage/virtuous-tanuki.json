@@ -1,0 +1,53 @@
+{
+  "kind": "heritage",
+  "slug": "virtuous-tanuki",
+  "system": "pf2e",
+  "name": "Virtuous Tanuki",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "tanuki"
+  ],
+  "ancestry": {
+    "name": "Tanuki",
+    "ref": "ancestries:ancestry/tanuki"
+  },
+  "text": "Many tanuki carry a gourd of alcohol to remind themselves to act with virtue, and by these standards, you're quite virtuous indeed. You gain poison resistance equal to half your level (minimum 1). You can eat and drink things when you're Sickened. You can't become incapacitated by conventional alcohol if you don't wish to be.",
+  "rules": [
+    {
+      "key": "resistance",
+      "type": "poison",
+      "value": "max(1,floor(@level/2))"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "consumable",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "self:condition:sickened",
+          {
+            "or": [
+              "item:tag:alchemical-food",
+              "item:trait:elixir",
+              "item:trait:ingested",
+              "item:trait:potion"
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Conditions.Sickened.AllowEatOrDrink"
+          }
+        ]
+      }
+    }
+  ]
+}

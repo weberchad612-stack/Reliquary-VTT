@@ -1,0 +1,275 @@
+{
+  "kind": "creature",
+  "slug": "cinder-dragon-young",
+  "system": "pf2e",
+  "name": "Cinder Dragon (Young)",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "dragon",
+    "fire",
+    "primal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 29,
+    "hp": 210,
+    "perception": 20,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 17,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 1,
+      "int": 1,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 22,
+      "diplomacy": 19,
+      "intimidation": 21,
+      "nature": 18,
+      "stealth": 17
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 120
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "pyric"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "perception": "smoke vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 23,
+      "traits": [
+        "fire",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "fire",
+          "category": "persistent"
+        },
+        {
+          "dice": "2d12+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+14",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wing",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smoke Vision",
+      "category": "interaction",
+      "text": "Smoke doesn't impair a cinder dragon's vision; they ignore the Concealed condition from smoke."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Boiling Blood",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "Trigger The dragon is critically hit with a melee attack\n\n---\nEffect The dragon's superheated blood spills onto the attacker. The target takes 6d6 fire damage (DC 29 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 27 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Jaws only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one wing Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Pyre Breath whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pyre Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal"
+      ],
+      "text": "The dragon breathes a blast of flame that deals 9d6 fire damage in a 40-foot cone (DC 29 basic Reflex save save). Creatures that critically fail their save catch fire, taking 2d6 persistent,fire damage. The area then fills with black smoke for 1 minute. This has the effects of mist, except it fills the cone's area. The dragon can't use Pyre Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Stoke the Flames",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal"
+      ],
+      "text": "The dragon intensifies nearby fires. Every foe within 60 feet that is taking persistent fire damage takes 3d6 fire damage."
+    }
+  ],
+  "text": "Among the largest and fiercest dragons, cinder dragons are typically volatile, demanding respect—even deference—from lesser creatures. Cinder dragons' appearance evokes their flame, often in scales with mixed patterns of red, orange, and yellow. Many cinder dragons dwell in active volcanoes and similarly fiery locales. Cinder dragons prefer treasures that can withstand the heat of their bodies and lairs, with gemstones, gold, and silver common among their hoards."
+}

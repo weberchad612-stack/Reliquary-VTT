@@ -1,0 +1,198 @@
+{
+  "kind": "effect",
+  "slug": "effect-prepare-elemental-medicine",
+  "system": "pf2e",
+  "name": "Effect: Prepare Elemental Medicine",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Prepare Elemental Medicine\n\nYou gain a circumstance bonus to saves against an affliction, or a –1 circumstance penalty on a critical failure.\n\nIf you have Energy Fortification and use Occultism to Prepare Elemental Medicine, the recipient gains resistance and weakness to vitality damage and void damage based on the element you chose.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 2
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 1
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": -1
+          }
+        ],
+        "flag": "value",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Crafting",
+            "value": "crafting"
+          },
+          {
+            "label": "PF2E.SpecificLore.Herbalism",
+            "value": "herbalism-lore"
+          },
+          {
+            "label": "PF2E.Skill.Medicine",
+            "value": "medicine"
+          },
+          {
+            "label": "PF2E.Skill.Occultism",
+            "predicate": [
+              "parent:origin:item:tag:energy-fortification"
+            ],
+            "value": "occultism"
+          }
+        ],
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              "parent:origin:item:tag:energy-fortification",
+              "feat:intensified-element-stance"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Skill",
+        "rollOption": "prepare-elemental-medicine:skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitEarth",
+            "value": {
+              "element": "earth",
+              "resistance": "void",
+              "weakness": "vitality"
+            }
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": {
+              "damageType": "fire",
+              "element": "fire",
+              "resistance": "vitality",
+              "weakness": "void"
+            }
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": {
+              "element": "metal",
+              "resistance": "vitality",
+              "weakness": "void"
+            }
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": {
+              "element": "water",
+              "resistance": "void",
+              "weakness": "vitality"
+            }
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": {
+              "element": "wood",
+              "resistance": "void",
+              "weakness": "vitality"
+            }
+          }
+        ],
+        "flag": "prepareElementalMedicine",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "prepare-elemental-medicine",
+          {
+            "or": [
+              "item:trait:curse",
+              "item:trait:disease",
+              "item:trait:poison"
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "prepare-elemental-medicine:skill:occultism"
+        ],
+        "type": "{item|flags.system.rulesSelections.prepareElementalMedicine.resistance}",
+        "value": "ternary(gte(@item.origin.skills.occultism.rank,4),8,ternary(gte(@item.origin.skills.occultism.rank,3),4,2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "prepare-elemental-medicine:skill:occultism"
+        ],
+        "type": "{item|flags.system.rulesSelections.prepareElementalMedicine.weakness}",
+        "value": "ternary(gte(@item.origin.skills.occultism.rank,4),8,ternary(gte(@item.origin.skills.occultism.rank,3),4,2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "prepare-elemental-medicine:{item|flags.system.rulesSelections.prepareElementalMedicine.element}",
+        "predicate": [
+          "feat:intensified-element-stance"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.prepareElementalMedicine.skillRank",
+        "predicate": [
+          "feat:intensified-element-stance"
+        ],
+        "value": "@item.origin.skills.{item|flags.system.rulesSelections.skill}.rank"
+      }
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "kind": "creature",
+  "slug": "meladaemon",
+  "system": "pf2e",
+  "name": "Meladaemon",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "daemon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 225,
+    "perception": 21,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 20,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 5,
+      "int": 3,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 21,
+      "deception": 23,
+      "intimidation": 23,
+      "religion": 20,
+      "stealth": 23,
+      "survival": 19
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "daemonic"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 31,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Fear",
+          "rank": 5,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Force Barrage (At will)",
+          "rank": 5,
+          "ref": "spells:spell/force-barrage"
+        },
+        {
+          "name": "Phantom Pain",
+          "rank": 6,
+          "ref": "spells:spell/phantom-pain"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+16",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "daemonic-famine"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+16",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab",
+        "withering-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consumptive Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "20 feet. A meladaemon emanates an aura of intense hunger. Each round a creature begins its turn in the aura, it must attempt a DC 27 Fortitude save save. On a failure, the creature takes 1d6 void damage (2d6 void damage on a critical failure) and becomes Fatigued. This fatigue ends as soon as the creature eats any food.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "slug": "consumptive-aura",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Withering Opportunity",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The meladaemon is attacked by an adjacent creature and the attack misses\n\n---\n\nEffect The meladaemon swipes at the triggering creature, which must immediately attempt a save against the meladaemon's withering touch."
+    },
+    {
+      "kind": "ability",
+      "name": "Daemonic Famine",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 29 Fortitude save\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 Enfeebled 1 (1 day)\n\nStage 3 Enfeebled 2 (1 day)\n\nStage 4 as stage 3\n\nStage 5 Enfeebled 3 (1 week)\n\nStage 6 dead"
+    },
+    {
+      "kind": "ability",
+      "name": "Withering Touch",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the meladaemon hits with a claw Strike or a creature begins its turn Grabbed by the meladaemon, the creature must attempt a DC 30 Fortitude save save. On a failure, the creature takes 1d6 void damage and becomes Fatigued. This fatigue ends when the creature drinks."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "spell",
+      "name": "Blight",
+      "rank": 4,
+      "ref": "spells:spell/blight"
+    }
+  ],
+  "text": "Meladaemons personify death by starvation and thirst, and revel in spreading the same despair that brought about their mortal demise. When they aren't blighting fields, massacring livestock, or tainting water supplies, they experiment on prisoners to study how long creatures can go without sustenance and the deleterious effects that result from such deprivation. Fiercely loyal to Trelmarixian, Horseman of Famine, they serve no other beings. They work alongside other daemons if Trelmarixian wills it, but are notoriously traitorous."
+}

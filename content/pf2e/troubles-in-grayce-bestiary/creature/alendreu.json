@@ -1,0 +1,290 @@
+{
+  "kind": "creature",
+  "slug": "alendreu",
+  "system": "pf2e",
+  "name": "Alendreu",
+  "source": {
+    "title": "Pathfinder Adventures: Troubles in Grayce",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 62,
+    "perception": 9,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 9,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 1,
+      "int": 2,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 12,
+      "intimidation": 11,
+      "religion": 9,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 5
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit",
+      "necril",
+      "orcish"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Orc Necksplitter",
+      "ref": "equipment:item/orc-necksplitter",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Orc Necksplitter",
+      "ref": "equipment:item/orc-necksplitter",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Doubling Rings",
+      "ref": "equipment:item/doubling-rings",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Orc Necksplitter",
+      "attack": 13,
+      "traits": [
+        "forceful",
+        "magical",
+        "orc",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "10 feet, DC 18 Fortitude save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Chopping Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Alendreu is wielding an orc necksplitter in each hand\n\n---\nEffect Alendreu lashes out with both axes. He attempts two Strikes, one with each necksplitter, each using his current multiple attack penalty. Both Strikes must have the same target, and the second strike takes a –2 penalty.\n\nIf both hit, combine their damage and apply resistances and weaknesses only once, and the target becomes Off-Guard from the fury of the blow until the start of their next turn. This counts as two attacks when calculating Alendreu's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Alendreu.ChoppingFrenzy.ToggleLabel",
+            "option": "chopping-frenzy-penalty",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "orc-necksplitter-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "chopping-frenzy-penalty"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The ghoul is adjacent to the corpse of a creature that died within the last hour.\n\n---\nEffect The ghoul devours a chunk of the corpse and regains 1+(max(0,floor(@actor.level/2)))d6 healing Hit Points.\n\nIt can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Whispers",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "linguistic",
+        "occult"
+      ],
+      "text": "Requirements A Grabbed, Paralyzed, Restrained, or Unconscious creature is within the ghoul's reach\n\n---\nEffect The ghoul whispers dark thoughts and vile cravings into the creature's ears. The creature must save against the forbidden cravings curse.\n\nForbidden Cravings (curse) A creature can still eat and drink while sickened by this curse\n\nSaving Throw DC 21 Will save, using the high spell DC for the ghoul's level\n\nStage 1 carrier with no ill effects (1 day)\n\nStage 2 2d6 void damage and the target is Sickened 1 until it consumes raw meat (1 day)\n\nStage 3 as stage 2\n\nStage 4 as stage 2 unless the target has consumed raw meat in the past 24 hours, then it takes 4d6 void damage and is Sickened 2 until it consumes raw meat;\n\nStage 5 if the creature has eaten raw meat in the past 24 hours, it dies and rises as a ghoul, if not, it returns to stage 4"
+    },
+    {
+      "kind": "ability",
+      "name": "Grave Knowledge",
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Frequency once per hour\n\n---\nEffect The ghoul calls upon knowledge it retains from one creature it has consumed in the past 7 days. The ghoul attempts a skill check using a skill in which the consumed creature was trained (if it's unclear whether the creature was trained, the GM decides). The ghoul is treated as trained and uses the high skill modifier for the ghoul's level (1d20+12). This takes the same amount of actions or time as usual for the check.\n\nThe ghoul can instead automatically learn something specific known by a creature it consumed in the last 7 days, like the location of a hidden treasure or the name of a loved one. The ghoul can do this only once for a given creature, no matter how much of its flesh the ghoul consumed.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The ghoul jumps up to half its Speed. This movement doesn't trigger reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemId": "{item|id}",
+            "key": "ItemAlteration",
+            "mode": "override",
+            "property": "name",
+            "value": "PF2E.NPCAbility.Ghoul.SwiftLeap.Name"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "blurb": "Male orc ghoul primarch"
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-frenzied-revelry",
+  "system": "pf2e",
+  "name": "Spell Effect: Frenzied Revelry",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Frenzied Revelry\n\nYou gain a +1 status bonus to saving throws against mental effects while in the area. Whenever someone benefiting from this bonus critically succeeds at a saving throw against an enemy's mental effect, its revelry increases, granting it a +1 status bonus to attack rolls and damage rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "item:trait:mental"
+        ],
+        "selector": "will",
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "saving-throw",
+      "text": "PF2E.SpecificRule.FrenziedRevelry.Note",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "item:trait:mental",
+        "origin:enemy"
+      ]
+    }
+  ]
+}

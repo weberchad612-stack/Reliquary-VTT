@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "esobok-ghoul",
+  "system": "pf2e",
+  "name": "Esobok Ghoul",
+  "source": {
+    "title": "Pathfinder Adventure: Malevolence",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 90,
+    "perception": 14,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 13,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 4,
+      "int": -3,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 12,
+      "intimidation": 11,
+      "religion": 6,
+      "stealth": 13,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Innate Divine Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 22,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Invisibility (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "corrupted-touch",
+        "ghoul-fever",
+        "paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "corrupted-touch",
+        "paralysis"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The esobok ghoul is adjacent to the corpse of a creature that died within the last hour.\n\n---\n\nEffect The ghoul devours a chunk of the corpse and regains 3d6 healing Hit Points.\n\nIt can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Corrupted Touch",
+      "category": "offensive",
+      "text": "An esobok ghoul's Strikes deal 1d6 void damage to living creatures. A creature critically hit by an esobok ghoul's Strike must attempt a DC 18 Fortitude save save or become Drained 1 (Drained 2 on a critical failure) as rot spreads throughout their flesh.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 22 Fortitude save\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d6 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 2d6 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a ghoul the next midnight."
+    },
+    {
+      "kind": "ability",
+      "name": "Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Any living, non-elf creature hit by a ghoul's attack must succeed at a DC 22 Fortitude save save or become Paralyzed.\n\nIt can attempt a new save at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save."
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The esobok ghoul Strides and then makes a claw Strike. If it began this action hidden, it remains hidden until after the Strike."
+    }
+  ]
+}

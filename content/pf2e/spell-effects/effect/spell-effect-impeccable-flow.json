@@ -1,0 +1,71 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-impeccable-flow",
+  "system": "pf2e",
+  "name": "Spell Effect: Impeccable Flow",
+  "source": {
+    "title": "Pathfinder #169: Kindled Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Impeccable Flow\n\nYou gain a +1 status bonus to Perception checks, saving throws, and skill checks. If you critically fail any check while under the effects of this spell, you instead have a -1 status penalty to all checks for the remaining duration.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.ImpeccableFlow.RollOptionLabel",
+        "option": "impeccable-flow:critically-failed",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "impeccable-flow:critically-failed"
+          }
+        ],
+        "selector": [
+          "perception",
+          "saving-throw",
+          "skill-check"
+        ],
+        "slug": "impeccable-flow-bonus",
+        "type": "status",
+        "value": "ceil((@item.level - 1) / 3 )"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "check",
+      "type": "status",
+      "value": -1,
+      "when": [
+        "impeccable-flow:critically-failed"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "check",
+      "text": "PF2E.SpecificRule.ImpeccableFlow.Note",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        {
+          "not": "impeccable-flow:critically-failed"
+        }
+      ]
+    }
+  ]
+}

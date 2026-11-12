@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shields-of-the-spirit-security",
+  "system": "pf2e",
+  "name": "Spell Effect: Shields of the Spirit (Security)",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Security\n\nYou gain a +1 status bonus to AC.\n\n---\nGranted by Greater Security\n\nIf the champion's shield is raised, you gain the same bonus to AC their shield grants.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "status",
+      "value": 1,
+      "slug": "shields-of-the-spirit-status"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Champion.GreaterSecurity.RollOptionLabel",
+        "option": "greater-security",
+        "predicate": [
+          "parent:origin:item:tag:greater-security"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "greater-security"
+        ],
+        "selector": "ac",
+        "slug": "shields-of-the-spirit-shield",
+        "type": "circumstance",
+        "value": "@item.origin.system.attributes.shield.ac"
+      }
+    }
+  ]
+}

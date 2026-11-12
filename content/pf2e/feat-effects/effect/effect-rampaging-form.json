@@ -1,0 +1,226 @@
+{
+  "kind": "effect",
+  "slug": "effect-rampaging-form",
+  "system": "pf2e",
+  "name": "Effect: Rampaging Form",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Rampaging Form\n\nYou Change Shape into a form of living ice for 1 minute or until you shift back. Your battle form is Huge and has the following statistics:\n- AC = 18 + your level. Ignore your armor's check penalty and Speed reduction.\n\n- 20 temporary Hit Points.\n\n- Low-light vision and imprecise scent 30 feet.\n\n- A Speed of 30, a Fly speed of 40, and you don't need to breathe\n\n- Melee a jaws, Damage 2d8 piercing + 1d4 fire damage.\n\n- Your unarmed attacks deal 1d4 additional fire damage, and your fire spells deal one additional die of fire damage (of the same damage die the spell uses).\n\n- You can cast Ignition as an innate spell; the casting is reduced from 2 actions to 1.\n\n- Any creature that touches you or damages you with an unarmed attack or non-reach melee weapon takes 3d6 fire damage.\n\n- Athletics modifier of +20, unless your own modifier is higher.\n\nFrozen Winds Kitsune:\n- Melee a jaws, Damage 2d8 piercing + 1d4 cold damage.\n\n- Your unarmed attacks deal 1d4 additional cold damage, and your cold spells deal one additional die of cold damage (of the same damage die the spell uses).\n\n- You can cast Ray of Frost as an innate spell; the casting is reduced from 2 actions to 1.\n\n- Any creature that touches you or damages you with an unarmed attack or non-reach melee weapon takes 3d6 cold damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "18 + @actor.level"
+          },
+          "immunities": [
+            {
+              "type": "fire"
+            }
+          ],
+          "resistances": [
+            {
+              "type": "precision",
+              "value": 10
+            }
+          ],
+          "senses": {
+            "scent": {
+              "acuity": "imprecise",
+              "range": 30
+            }
+          },
+          "size": "huge",
+          "skills": {
+            "athletics": {
+              "modifier": 20
+            }
+          },
+          "speeds": {
+            "fly": 40,
+            "land": 40
+          },
+          "strikes": {
+            "jaws": {
+              "ability": "str",
+              "baseType": "jaws",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 4,
+                "die": "d8",
+                "modifier": 7
+              },
+              "modifier": 18,
+              "traits": [
+                "unarmed",
+                "reach-15"
+              ]
+            }
+          },
+          "tempHP": 20,
+          "traits": [
+            "animal"
+          ],
+          "weaknesses": [
+            {
+              "type": [
+                "cold",
+                "water"
+              ],
+              "value": 5
+            }
+          ]
+        },
+        "predicate": [
+          {
+            "not": "self:heritage:frozen-wind-kitsune"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "unarmed",
+          {
+            "not": "self:heritage:frozen-wind-kitsune"
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "18 + @actor.level"
+          },
+          "immunities": [
+            {
+              "type": "cold"
+            }
+          ],
+          "resistances": [
+            {
+              "type": "precision",
+              "value": 10
+            }
+          ],
+          "senses": {
+            "scent": {
+              "acuity": "imprecise",
+              "range": 30
+            }
+          },
+          "size": "huge",
+          "skills": {
+            "athletics": {
+              "modifier": 20
+            }
+          },
+          "speeds": {
+            "fly": 40,
+            "land": 40
+          },
+          "strikes": {
+            "jaws": {
+              "ability": "str",
+              "baseType": "jaws",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 4,
+                "die": "d8",
+                "modifier": 7
+              },
+              "modifier": 18,
+              "traits": [
+                "unarmed",
+                "reach-15"
+              ]
+            }
+          },
+          "tempHP": 20,
+          "traits": [
+            "animal"
+          ],
+          "weaknesses": [
+            {
+              "type": [
+                "fire",
+                "water"
+              ],
+              "value": 5
+            }
+          ]
+        },
+        "predicate": [
+          "self:heritage:frozen-wind-kitsune"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "cold",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "unarmed",
+          "self:heritage:frozen-wind-kitsune"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "fire",
+          {
+            "not": "self:heritage:frozen-wind-kitsune"
+          }
+        ],
+        "selector": "spell-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "cold",
+          "self:heritage:frozen-wind-kitsune"
+        ],
+        "selector": "spell-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-nymph",
+  "system": "pf2e",
+  "name": "Bloodline: Nymph",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "sorcerer"
+  ],
+  "category": "classfeature",
+  "text": "One of your ancestors was inspired by a nymph, or perhaps was a nymph themself, and now the beauty of nature lives in you.\n\nSpell List primal\n\nBloodline Skills Diplomacy, Nature\n\nGranted Spells cantrip: Tangle Vine; 1st: Charm; 2nd: Calm; 3rd: Animal Vision; 4th: Vital Beacon; 5th: Wave of Despair; 6th: Repulsion; 7th: Unfettered Pack; 8th: Moment of Renewal; 9th: Overwhelming Presence\n\nBloodline Spells initial: Nymph's Token; advanced: Blinding Beauty; greater: Establish Ward\n\nBlood Magic Nymph grace accentuates your movements and distracts your foes, either granting you a +1 status bonus to Diplomacy checks for 1 round or imposing a -1 status penalty on one target's Will saves for 1 round.\n\nEffect: Nymph Blood Magic",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.diplomacy.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.nature.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:sorcerer"
+                ]
+              },
+              {
+                "and": [
+                  "item:spell-slot",
+                  "spellcasting:category:spontaneous",
+                  "spellcasting:tradition:primal",
+                  {
+                    "or": [
+                      "item:slug:charm",
+                      "item:slug:calm",
+                      "item:slug:animal-vision",
+                      "item:slug:vital-beacon",
+                      "item:slug:wave-of-despair",
+                      "item:slug:repulsion",
+                      "item:slug:unfettered-pack",
+                      "item:slug:moment-of-renewal",
+                      "item:slug:overwhelming-presence"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mergeable": true,
+        "option": "blood-magic",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Nymph",
+            "predicate": [
+              "class:sorcerer"
+            ],
+            "value": "nymph"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.SecondBloodMagic",
+        "mergeable": true,
+        "option": "second-blood-magic",
+        "placement": "spellcasting",
+        "predicate": [
+          {
+            "or": [
+              "feat:blood-ascendancy",
+              "feat:blood-sovereignty"
+            ]
+          }
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Nymph",
+            "value": "nymph"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:tag:blood-magic-spell",
+          {
+            "or": [
+              "blood-magic:nymph",
+              {
+                "and": [
+                  "second-blood-magic:nymph",
+                  "feat:blood-sovereignty"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Nymph",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Nymph"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Nymph Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:slug:blood-rising",
+          {
+            "or": [
+              "blood-magic:nymph",
+              {
+                "and": [
+                  "second-blood-magic:nymph",
+                  "feat:blood-ascendancy"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Nymph",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Nymph"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Nymph Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:tradition:primal",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ]
+      }
+    }
+  ]
+}

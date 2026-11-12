@@ -1,0 +1,388 @@
+{
+  "kind": "creature",
+  "slug": "treerazer",
+  "system": "pf2e",
+  "name": "Treerazer",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 25,
+  "rarity": "unique",
+  "traits": [
+    "amphibious",
+    "demon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 54,
+    "hp": 550,
+    "perception": 46,
+    "saves": {
+      "fortitude": 42,
+      "reflex": 40,
+      "will": 43
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 11,
+      "dex": 9,
+      "int": 7,
+      "str": 12,
+      "wis": 8
+    },
+    "skills": {
+      "acrobatics": 40,
+      "arcana": 38,
+      "athletics": 45,
+      "intimidation": 46,
+      "nature": 49,
+      "occultism": 38,
+      "religion": 45,
+      "stealth": 40
+    },
+    "speeds": {
+      "land": 60,
+      "fly": 60,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "elven",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "mental",
+        "poison"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 20
+        },
+        {
+          "type": "cold",
+          "value": 15
+        },
+        {
+          "type": "fire",
+          "value": 15
+        },
+        {
+          "type": "physical",
+          "value": 20,
+          "except": "cold-iron"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "Regeneration 50 (deactivated by holy)",
+      "saves": "+2 status to all saves vs. magic",
+      "speed": "unfettered movement",
+      "languages": "Telepathy 300 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 49,
+      "attack": 43,
+      "spells": [
+        {
+          "name": "Freeze Time",
+          "rank": 10,
+          "ref": "spells:spell/freeze-time"
+        },
+        {
+          "name": "Desiccate",
+          "rank": 10,
+          "ref": "spells:spell/desiccate"
+        },
+        {
+          "name": "Tangling Creepers (At Will)",
+          "rank": 6,
+          "ref": "spells:spell/tangling-creepers"
+        },
+        {
+          "name": "Truesight (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Unfettered Movement (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Earthbind (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/earthbind"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 10,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Dispel Magic (At Will)",
+          "rank": 9,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "Telekinetic Maneuver (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/telekinetic-maneuver"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Blackaxe",
+      "ref": "equipment:item/blackaxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Blackaxe",
+      "attack": 47,
+      "traits": [
+        "acid",
+        "magical",
+        "reach-15",
+        "sweep",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "5d12+18",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 45,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "5d10+20",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 50 (Deactivated by Holy)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy"
+            ],
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "not": "self:effect:spore-feedback"
+              }
+            ],
+            "type": "regeneration",
+            "value": 50
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "self:treerazer"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Corruption",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "plant",
+        "primal"
+      ],
+      "text": "120 feet.\n\nPlants near Treerazer twist, deform, and transform into thorny or fungoid parodies of their natural shapes. A living creature in this area must succeed at a DC 47 Fortitude save save each round or become partially transformed into plantlike matter. Those who fail this saving throw are treated as if they were plants for the purposes of any effect that particularly harms or inconveniences plant creatures more than other creatures, but do not gain any benefits of being plant creatures.\n\nThis effect lasts as long as the creature remains within the area of corruption and for 1 minute thereafter.\n\nEffect: Aura of Corruption",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 120,
+            "slug": "aura-of-corruption",
+            "traits": [
+              "plant",
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Blackaxe - Owner's Authority",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "scrying"
+      ],
+      "text": "Requirements Treerazer isn't wielding Blackaxe.\n\n---\n\nEffect Treerazer sense the world around Blackaxe as though you were in its location and can use any of your innate spells through the link as if it were the source of the spell. If another creature is wielding Blackaxe, it must succeed at a DC 50 Will save save or be Slowed 2 until it relinquishes the weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Blackaxe - Owner's Reclamation",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "teleportation"
+      ],
+      "text": "Requirements Treerazer isn't wielding Blackaxe.\n\n---\n\nEffect Blackaxe appears in Treerazer's hands, teleporting instantly from its prior location."
+    },
+    {
+      "kind": "ability",
+      "name": "Blackaxe - Rejuvenating Deforestation",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "death",
+        "healing",
+        "vitality"
+      ],
+      "text": "Frequency once per minute.\n\n---\n\nEffect Make a Strike against a living tree with Blackaxe. If it hits, the tree withers to ash and you heal 250 Hit Points and gain the benefit of a 6th-rank Sound Body spell.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Defoliation",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "plant",
+        "primal"
+      ],
+      "text": "Treerazer exudes a pulse of sickly green light in a 30-foot-radius emanation. All plants in the area (including creatures under the effect of his aura of corruption) blacken and wither.\n\nNon-creature plants immediately wither and die. Plant and fungus creatures take 20d8 void damage with a DC 49 basic Fortitude save save. A creature that fails its save is Doomed 1 for 1 minute and Sickened 3.\n\nTreerazer can choose to exclude any number of plants or fungi in the area from this effect, and generally does so to preserve twisted and corrupted plants or fungi, or plant and fungus creatures that are allied to his cause.\n\nTreerazer can't use Defoliation for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Dispelling Strike",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Frequency once per round\n\nTrigger Treerazer hits a creature, object, or spell effect with a weapon Strike or subjects one to Defoliation;\n\n---\n\nEffect Treerazer casts his innate Dispel Magic, targeting the creature he hit with his Strike or one spell affecting that creature.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Staggering Strike",
+      "category": "offensive",
+      "text": "When Treerazer scores a critical hit with a melee attack, the target is Stunned 2.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "melee-attack-roll",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "spell",
+      "name": "Planar Servitor",
+      "rank": 5,
+      "ref": "spells:spell/planar-servitor"
+    },
+    {
+      "kind": "spell",
+      "name": "Demonic Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ],
+  "text": "Treerazer, the self-styled Lord of the Blasted Tarn, is a powerful demon on the cusp of ascending to the true power of one of the rulers of the Abyss itself-a demon lord. For now, even as a nascent demon lord, Treerazer is a dangerous foe.\n\nTreerazer rarely leaves his swampy realm of Tanglebriar-a large thicket of tainted foliage and rotting detritus just south of Kyonin's Fierani Forest-but can be encountered anywhere within that toxic mire, often accompanied by a small legion of demons, corrupted fey, and other deadly allies. Certain occult rituals have the power to call him forth from Tanglebriar, granting him the opportunity to directly work his evils beyond the realm to which he has been exiled. Some believe that no eldritch force contains Treerazer and that, were he willing, he could travel Golarion with impunity, spreading the twisted blessings of his touch and the corruption of his presence, yet the Lord of the Blasted Tarn is as cunning and canny as he is deadly, and prefers to work his evils on the world from the safety of his nightmare realm."
+}

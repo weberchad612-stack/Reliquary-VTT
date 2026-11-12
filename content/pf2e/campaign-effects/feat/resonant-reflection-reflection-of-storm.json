@@ -1,0 +1,86 @@
+{
+  "kind": "feat",
+  "slug": "resonant-reflection-reflection-of-storm",
+  "system": "pf2e",
+  "name": "Resonant Reflection: Reflection of Storm",
+  "source": {
+    "title": "Pathfinder #155: Lord of the Black Sands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "air",
+    "electricity",
+    "magical"
+  ],
+  "category": "deityboon",
+  "text": "Your body is inured to the devastation inflicted by natural forces. You gain resistance to electricity damage equal to your level. You don't treat wind as difficult terrain or greater difficult terrain while flying, and you can't be moved by wind unless you choose to be. You gain a +1 status bonus to saves against primal magic. In addition, you can absorb this reinvigorating energy into your body to gain the following effect.\n\n---\n\nActivate 2 envision\n\nFrequency once per day\n\n---\n\nEffect You cast Moment of Renewal (self only) as an 8th-rank divine innate spell and regain 1 Focus Point.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "item:trait:primal"
+      ]
+    },
+    {
+      "key": "resistance",
+      "type": "electricity",
+      "value": "@level"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:activate-resonant-reflection",
+          "resonant:reflection-of-storm"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.ResonantReflection.ReflectionOfStorm.Description",
+            "title": "PF2E.SpecificRule.ResonantReflection.ReflectionOfStorm.Title"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.ResonantReflection.Label",
+        "mergeable": true,
+        "option": "resonant",
+        "placement": "actions",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "reflection-of-storm"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "resonant-reflection"
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Activate Resonant Reflection"
+      }
+    }
+  ]
+}

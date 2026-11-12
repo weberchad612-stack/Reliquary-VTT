@@ -1,0 +1,166 @@
+{
+  "kind": "creature",
+  "slug": "bone-gladiator",
+  "system": "pf2e",
+  "name": "Bone Gladiator",
+  "source": {
+    "title": "Pathfinder Abomination Vaults Hardcover Compilation",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "mindless",
+    "skeleton",
+    "undead",
+    "unholy"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 24,
+    "hp": 105,
+    "perception": 16,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 13,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 20,
+      "intimidation": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 5
+        },
+        {
+          "type": "electricity",
+          "value": 5
+        },
+        {
+          "type": "fire",
+          "value": 5
+        },
+        {
+          "type": "piercing",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Loose Bones",
+      "category": "defensive",
+      "text": "A critical hit jostles the skeleton's loose bones, making it Clumsy 1. Additional critical hits increase this value, up to clumsy 4.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Broad Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The skeleton makes two Strikes with its claw against two adjacent foes, both of whom are within its reach. The multiple attack penalty doesn't increase until after both attacks are resolved."
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The skeleton Strides and makes a claw Strike with a +4 circumstance bonus to damage. If the Strike hits, it attempts to demoralize the target.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "terrifying-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "claw-damage",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "terrifying-charge"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "claw-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "terrifying-charge"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant skeletal hulk"
+}

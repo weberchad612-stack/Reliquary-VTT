@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "unburdened-iron",
+  "system": "pf2e",
+  "name": "Unburdened Iron",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dwarf"
+  ],
+  "category": "ancestry",
+  "text": "You've learned techniques first devised by your ancestors during their ancient wars, allowing you to comfortably wear massive suits of armor. Ignore the reduction to your Speed from any armor you wear.\n\nIn addition, any time you're taking a penalty to your Speed for some other reason (such as from the Encumbered condition or from a spell), deduct 5 feet from the penalty. For example, the encumbered condition normally gives a –10-foot penalty to Speed, but this feat would reduce it to a –5-foot penalty. If your Speed is taking multiple penalties, pick only one penalty to reduce.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "selectors": [
+          "land-speed"
+        ],
+        "slug": "armor-speed-penalty",
+        "suppress": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "maxApplications": 1,
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "penalty:slug:armor-speed-penalty"
+          },
+          {
+            "lte": [
+              "penalty:value",
+              -5
+            ]
+          }
+        ],
+        "selectors": [
+          "land-speed"
+        ],
+        "value": 5
+      }
+    }
+  ]
+}

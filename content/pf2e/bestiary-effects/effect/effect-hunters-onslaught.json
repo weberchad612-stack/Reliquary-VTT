@@ -1,0 +1,111 @@
+{
+  "kind": "effect",
+  "slug": "effect-hunters-onslaught",
+  "system": "pf2e",
+  "name": "Effect: Hunter's Onslaught",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "You become fascinated by the marked creature and you gain 10 temporary Hit Points that last as long as the onslaught does. You gain a +8 status bonus to damage rolls against the marked enemy, and allies in a 30-foot aura around the hunter gain half that bonus.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "slug": "hunters-onslaught"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "target:mark:hunters-onslaught",
+        "predicate": [
+          {
+            "not": "self:signature:{item|origin.signature}"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Hunter's Onslaught"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "radius": 30,
+        "traits": [
+          "emotion",
+          "mental"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "huntersOnslaught",
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Fascinated"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "damage",
+      "type": "status",
+      "value": 8,
+      "slug": "hunters-onslaught",
+      "when": [
+        "target:mark:hunters-onslaught"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          {
+            "not": "self:signature:{item|origin.signature}"
+          }
+        ],
+        "selector": "damage",
+        "slug": "hunters-onslaught",
+        "value": "0.5"
+      }
+    }
+  ]
+}

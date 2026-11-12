@@ -1,0 +1,94 @@
+{
+  "kind": "feat",
+  "slug": "claws-of-the-dragon",
+  "system": "pf2e",
+  "name": "Claws of the Dragon",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Dragon Disciple Dedication"
+  ],
+  "text": "Your fingernails grow into razor-sharp claws, and scales speckle your fingers, hands, and wrists. Your claws are agile, finesse unarmed attacks that deal 1d6 slashing damage and are in the brawling weapon group.\n\nIf you're a Draconic sorcerer, when you cast Dragon Claws, increase the spell's slashing damage die from d4 to d6 and increase the resistance to 10 at 1st level, 15 at 5th level, and 20 at 9th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/claws/claw-straight-orange.webp",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "predicate": [
+          {
+            "nand": [
+              "self:effect:dragon-claws",
+              {
+                "or": [
+                  "feature:bloodline-draconic",
+                  "feature:bloodline-wyrmblessed"
+                ]
+              }
+            ]
+          }
+        ],
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "upgrade": true
+        },
+        "predicate": [
+          "self:effect:dragon-claws",
+          {
+            "or": [
+              "feature:bloodline-draconic",
+              "feature:bloodline-wyrmblessed"
+            ]
+          }
+        ],
+        "selector": "dragon-claw-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:dragon-claws",
+          {
+            "or": [
+              "feature:bloodline-draconic",
+              "feature:bloodline-wyrmblessed"
+            ]
+          }
+        ],
+        "type": "{actor|flags.system.dragonBloodline.damageType}",
+        "value": "ternary(gte(@actor.level, 17), 20, ternary(gte(@actor.level, 9), 15, 10))"
+      }
+    }
+  ]
+}

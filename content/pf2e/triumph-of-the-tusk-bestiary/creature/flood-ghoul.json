@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "flood-ghoul",
+  "system": "pf2e",
+  "name": "Flood Ghoul",
+  "source": {
+    "title": "Pathfinder #207: The Resurrection Flood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 8,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 9,
+      "stealth": 8,
+      "survival": 6
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious",
+        "bleed"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 10,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "10 feet. DC 15 Fortitude save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "45 feet",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The flood ghoul is adjacent to the corpse of a creature that died within the last hour\n\n---\nEffect The flood ghoul devours a chunk of the corpse and regains 2d6 healing Hit Points. It can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Death Echo",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Requirements The flood ghoul has damaged a creature with a melee attack\n\n---\nEffect The flood ghoul unleashes a wave of memories of its death by drowning. The targeted creature must succeed at a DC 15 Will save save or become Paralyzed for 1 round as they relive the flood ghoul's dying moments. A creature who successfully saves becomes temporarily immune for 1 hour."
+    },
+    {
+      "kind": "ability",
+      "name": "Forbidden Cravings",
+      "category": "offensive",
+      "traits": [
+        "curse"
+      ],
+      "text": "A creature can still eat and drink while sickened by this curse\n\nSaving Throw DC 18 Will save\n\nStage 1 carrier with no ill effects (1 day)\n\nStage 2 2d6 void damage and the target is Sickened 1 until it consumes raw meat (1 day)\n\nStage 3 as stage 2\n\nStage 4 as stage 2 unless the target has consumed raw meat in the past 24 hours; then it takes 4d6 void damage and is Sickened 2 until it consumes raw meat\n\nStage 5 If the creature has eaten raw meat in the past 24 hours, it dies and rises as a ghoul; if not, it returns to stage 4."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Whispers",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "linguistic",
+        "occult"
+      ],
+      "text": "Requirements A Grabbed, Paralyzed, Restrained, or Unconscious creature is within the ghoul's reach\n\n---\nEffect The ghoul whispers dark thoughts and vile cravings into the creature's ears. The creature must attempt a save against the forbidden cravings curse."
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The ghoul jumps up to half its Speed. This movement doesn't trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Ghouls stalkers are ravenous undead who haunt graveyards and eat corpses.\n\n---\n\nFew creatures are more ubiquitous to sinister locations such as lonely graveyards and ruined crypts than the flesh-eating undead known as ghouls.",
+  "blurb": "Variant ghoul"
+}

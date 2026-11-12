@@ -1,0 +1,298 @@
+{
+  "kind": "creature",
+  "slug": "zashathal-head-taker",
+  "system": "pf2e",
+  "name": "Zashathal Head-Taker",
+  "source": {
+    "title": "Pathfinder #154: Siege of the Dinosaurs",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "humanoid",
+    "xulgath"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 250,
+    "perception": 27,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 23,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 1,
+      "int": 0,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 29,
+      "intimidation": {
+        "value": 25,
+        "special": [
+          {
+            "value": 27,
+            "label": "to Demoralize",
+            "when": [
+              "action:demoralize"
+            ]
+          }
+        ]
+      },
+      "religion": 25,
+      "stealth": 22,
+      "survival": 25
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "fanatical juggernaut",
+      "perception": "coward sense (imprecise) 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Ankylostar",
+      "ref": "equipment:item/ankylostar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Stoneraiser Javelin",
+      "ref": "equipment:item/stoneraiser-javelin",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Zevgavizeb (Silver)",
+      "ref": "equipment:item/religious-symbol-silver",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Ankylostar",
+      "attack": 30,
+      "traits": [
+        "backswing",
+        "magical",
+        "shove",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 28,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stoneraiser Javelin",
+      "attack": 25,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coward Sense (Imprecise) 60 feet",
+      "category": "interaction",
+      "text": "Zashathal's disgust for cowardice is so powerful that he can detect the presence of frightened creatures, even if he can't see them."
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Fanatical Juggernaut",
+      "category": "defensive",
+      "text": "When Zashathal rolls a success on a Fortitude save, it is a critical success instead. Zashathal halves damage he takes from failing a Fortitude save.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude",
+            "type": "save"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "fortitude",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "failure",
+            "success"
+          ]
+        },
+        {
+          "key": "resistance",
+          "type": "custom",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. A creature that enters the area must attempt a DC 34 Fortitude save save. On a failure, the creature is Sickened 2, and on a critical failure, the creature is also Slowed 1 for as long as it is sickened. While within the aura, the creature takes a -2 circumstance penalty to saves to recover from the sickened condition. A creature that succeeds at its save is temporarily immune to all xulgaths' stenches for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "powerful-stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Strike",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Trigger Zashathal hits a creature with a melee Strike\n\n---\n\nEffect Zashathal makes an Intimidate check to demoralize the target creature. If the target creature was reduced to 0 Hit Points by the triggering Strike, Zashathal can instead Demoralize all opponents within 30 feet by comparing the result of his Intimidation check to each creature's Will DC. Zashathal doesn't take a penalty to these Intimidation checks for not speaking a target's language."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "Requirements Zashathal isn't Fatigued or raging\n\n---\nEffect Zashathal gains 20 temporary Hit Points that last until the rage ends. While raging, he deals 12 additional damage with melee attacks and takes a -1 penalty to AC. Zashathal can't use concentrate actions except Seek and rage actions. The rage lasts for 1 minute, until there are no enemies Zashathal can perceive, or until Zashathal falls Unconscious. Once the rage ends, Zashathal can't again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 12,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Renewed Vigor",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "rage"
+      ],
+      "text": "Zashathal gains 12 temporary Hit Points.\n\nEffect: Renewed Vigor"
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Zashathal Strides twice and makes a melee Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Whirlwind Strike",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Zashathal makes a melee Strike against all creatures within his reach. Each attack counts toward his multiple attack penalty, but his multiple attack penalty doesn't increase until he's made all his attacks."
+    }
+  ],
+  "blurb": "Male xulgath zealous hardscale"
+}

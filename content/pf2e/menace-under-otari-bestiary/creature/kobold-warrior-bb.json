@@ -1,0 +1,164 @@
+{
+  "kind": "creature",
+  "slug": "kobold-warrior-bb",
+  "system": "pf2e",
+  "name": "Kobold Warrior (BB)",
+  "source": {
+    "title": "Pathfinder Beginner Box",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "humanoid",
+    "kobold"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 7,
+    "perception": 3,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 7,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 0,
+      "dex": 3,
+      "int": 0,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 5,
+      "crafting": {
+        "value": 2,
+        "special": [
+          {
+            "value": 4,
+            "label": "traps",
+            "when": [
+              "trap"
+            ]
+          }
+        ]
+      },
+      "stealth": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 3,
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 5,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scamper",
+      "actions": 1,
+      "category": "offensive",
+      "text": "If the kobold is adjacent to at least one enemy, the kobold Strides up to 30 feet and gains a +2 circumstance bonus to AC against reactions triggered by this movement. The kobold must end this movement in a space that's not adjacent to any enemy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "scamper",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "scamper"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "scamper"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The kobold warrior deals an extra 1d4 damage to creatures that have the Off-Guard condition.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A typical kobold trains with simple weaponry. Kobolds are capable of landing sneaky strikes against unsuspecting foes, but they're just as quick to scamper off to safety if their group wouldn't outnumber their enemies by at least two to one.\n\nKobolds believe in pragmatism, and a defeated kobold would rather surrender than face death. One might even abandon their kobold kin and concede to serve the victor if the alternative is an untimely demise."
+}

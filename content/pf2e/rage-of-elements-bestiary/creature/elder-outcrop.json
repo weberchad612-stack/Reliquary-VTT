@@ -1,0 +1,254 @@
+{
+  "kind": "creature",
+  "slug": "elder-outcrop",
+  "system": "pf2e",
+  "name": "Elder Outcrop",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "earth",
+    "elemental"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 33,
+    "hp": 295,
+    "perception": 26,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 19,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 8,
+      "dex": -2,
+      "int": 1,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 29,
+      "diplomacy": 25,
+      "nature": 26,
+      "survival": 26
+    },
+    "speeds": {
+      "land": 30,
+      "burrow": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 120,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "petran"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "speed": "earth glide"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Column",
+      "attack": 27,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 27,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "call-of-earth"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense 120 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Dust Eternal",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "earth"
+      ],
+      "text": "30 feet. Dust swirls about the outcrop, rendering everything within its aura (including the outcrop) Concealed. In addition, the dust at the outcrop's base creates difficult terrain on the ground within the aura. The outcrop can activate or deactivate this aura using a single action, which has the concentrate trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "dust-eternal",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Dust Eternal"
+              }
+            ],
+            "key": "Aura",
+            "predicate": [
+              "dust-eternal"
+            ],
+            "radius": 30,
+            "slug": "dust-eternal",
+            "traits": [
+              "earth"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unstoppable",
+      "category": "defensive",
+      "text": "The elder outcrop's slowed condition can't exceed Slowed 1, and it ignores penalties to its Speeds and the Immobilized condition.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "effect",
+            "key": "ItemAlteration",
+            "mode": "downgrade",
+            "predicate": [
+              "item:slug:slowed"
+            ],
+            "property": "badge-max",
+            "value": 1
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "predicate": [
+              {
+                "or": [
+                  "penalty:type:ability",
+                  "penalty:type:circumstance",
+                  "penalty:type:item",
+                  "penalty:type:potency",
+                  "penalty:type:proficiency",
+                  "penalty:type:status",
+                  "penalty:type:untyped"
+                ]
+              }
+            ],
+            "selector": "all-speeds",
+            "suppress": true
+          }
+        },
+        {
+          "key": "immunity",
+          "type": "immobilized"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Call of Earth",
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "A flying creature hit by the elder outcrop's rock ranged strike is affected by a 7th-rank Earthbind spell (DC 33 Fortitude save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Earth Glide",
+      "category": "offensive",
+      "text": "The elder outcrop can Burrow through any earthen matter, including rock. When it does so, the elder outcrop moves at its full burrow Speed, leaving no tunnels or signs of its passing."
+    },
+    {
+      "kind": "ability",
+      "name": "Natural Formation",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the elder outcrop appears to be a natural terrain feature. It has an automatic result of 47 on Deception checks and DCs to pass as a natural outcropping of rock. The outcrop's dust eternal aura is deactivated while Natural Formation is being used."
+    },
+    {
+      "kind": "ability",
+      "name": "Stone Grip",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "earth",
+        "incapacitation",
+        "primal"
+      ],
+      "text": "Great fingers of stone arise to grasp up to two Medium or smaller creatures on the ground in the outcrop's aura. Each target must succeed at a DC 33 Reflex save save or be Grabbed by the stone hand (or Restrained on a critical failure; escape dc=33). A creature grabbed or restrained by a stone hand at the end of its turn becomes Slowed 1 or increases its existing slowed condition by 1. When a creature is unable to act due to the slowed condition from this effect, the creature is permanently Petrified."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "An outcrop of dense stone that spends ages eroding can gain sapience and slowly awaken with the wisdom of nature. Such elemental beings are slow to action and difficult to anger, spurred only by immediate threats.\n\n---\n\nThe vast ranks of earth elementals have been slow to respond to the return of the elemental lords and the Planes of Metal and Wood. These events have not broken the mountains, nor have they blown away the sands.\n\nEarthy Emotions\n\nEarth elementals talk even less than most elementals. They're ponderous, weighing decisions so slowly they can crush the energy from a discussion. Their foremost concern is whether a situation can be endured. Though a rare or resplendent treasure might entice an earth elemental, it's difficult to spur any sense of urgency in them without the presence of an immediate threat.\n\nWisdom Of Stone\n\nElder outcrops learn a lesson for every grain of rock eroded away, every squall and freeze that has shaped their craggy bodies. As wizened advisors and tutors, they have the respect and affection of other elementals, as well as from natural creatures. Druids of the stone order revere the wisdom of elder outcrops, always happy to receive their wide perspective, literal and philosophical."
+}

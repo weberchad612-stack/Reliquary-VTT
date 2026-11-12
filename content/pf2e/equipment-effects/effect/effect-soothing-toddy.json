@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-soothing-toddy",
+  "system": "pf2e",
+  "name": "Effect: Soothing Toddy",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Soothing Toddy\n\nYou gain a +1 item bonus to saving throws against emotion effects and against effects with a trait determined by the liquor mixed into the tea when it's created. Amaretto for Auditory, Limoncello for Olfactory, or Whiskey for Visual.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Equipment.SoothingToddy.AmarettoLabel",
+            "value": "auditory"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.SoothingToddy.LimoncelloLabel",
+            "value": "olfactory"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.SoothingToddy.WhiskeyLabel",
+            "value": "visual"
+          }
+        ],
+        "flag": "soothing",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "item:trait:emotion",
+            "item:trait:{item|flags.system.rulesSelections.soothing}"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "kind": "creature",
+  "slug": "xulgath-herd-tender",
+  "system": "pf2e",
+  "name": "Xulgath Herd-Tender",
+  "source": {
+    "title": "Pathfinder #154: Siege of the Dinosaurs",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "xulgath"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 135,
+    "perception": 17,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 16,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": -1,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 18,
+      "intimidation": 16,
+      "nature": 17,
+      "stealth": 16,
+      "survival": 17,
+      "dinosaur-lore": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "draconic",
+      "sakvroth"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Alchemist's Fire (Moderate)",
+      "ref": "equipment:item/alchemists-fire-moderate",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Whip",
+      "ref": "equipment:item/whip",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Whip",
+      "attack": 19,
+      "traits": [
+        "disarm",
+        "finesse",
+        "nonlethal",
+        "reach-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 20,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Alchemist's Fire (Moderate)",
+      "attack": 20,
+      "traits": [
+        "bomb",
+        "splash"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d8",
+          "type": "fire"
+        },
+        {
+          "dice": "2",
+          "type": "fire",
+          "category": "persistent"
+        },
+        {
+          "dice": "2",
+          "type": "fire",
+          "category": "splash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mounted Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Prerequisite The herd-tender is mounted\n\nTrigger The herd-tender is targeted with a melee or ranged attack by an attacker they can see\n\n---\n\nEffect The herd-tender gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "mounted-defense",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "mounted-defense"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. A creature that enters the area must attempt a DC 26 Fortitude save save. On a failure, the creature is Sickened 2, and on a critical failure, the creature is also Slowed 1 for as long as it is sickened. While within the aura, the creature takes a -2 circumstance penalty to saves to recover from the sickened condition. A creature that succeeds at its save is temporarily immune to all xulgaths' stenches for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "powerful-stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Feral Directive",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The xulgath attempts to Command an Animal on their mount, but instead of demanding a specific action such as Stride or Strike, the xulgath gives a general directive, such as to return to camp or to attack a small group the mount can see. The mount and the xulgath each retain 3 actions on their turns, but the mount doesn't change its general tactics until the xulgath uses Feral Directive or Command an Animal again."
+    },
+    {
+      "kind": "ability",
+      "name": "Mounted Superiority",
+      "category": "offensive",
+      "text": "A mounted xulgath's Strikes deal an additional 1d8 damage to creatures that aren't mounted.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mounted-superiority",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "mounted-superiority"
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    }
+  ]
+}

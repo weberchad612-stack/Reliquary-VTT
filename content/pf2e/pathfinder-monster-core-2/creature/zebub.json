@@ -1,0 +1,228 @@
+{
+  "kind": "creature",
+  "slug": "zebub",
+  "system": "pf2e",
+  "name": "Zebub",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "devil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 12,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 10,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 10,
+      "arcana": 7,
+      "deception": 8,
+      "religion": 9,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 15,
+      "fly": 50
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "silver"
+        },
+        {
+          "type": "poison",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 17,
+      "attack": 7,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Invisibility (at will, self only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Summon Animal (swarm creatures only)",
+          "rank": 2,
+          "ref": "spells:spell/summon-animal"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Mandibles",
+      "attack": 12,
+      "traits": [
+        "finesse",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "cocytan-filth"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cocytan Filth",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "virulent"
+      ],
+      "text": "Saving Throw DC 18 Fortitude save\n\nOnset 1d4 days\n\n---\n\nStage 1 Enfeebled 1 (1 day)\n\nStage 2 Enfeebled 2 (1 day)\n\nStage 3 Enfeebled 3 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Diabolic Eye",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The zebub records everything they see, and though they don't remember all observations, they can pass them along to another creature.\n\nThe zebub replays 10 minutes of witnessed events to a touched willing creature, which receives the memories in a flash of information. By remaining in contact, the zebub can spend additional 3-action activities to replay more information.\n\nAfter relaying their visions to another, the zebub can't ever recall those events again."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The zebub's Strikes deal an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "spell",
+      "name": "Diabolic Pact",
+      "rank": 1,
+      "ref": "spells:spell/diabolic-pact"
+    }
+  ],
+  "text": "Zebubs serve as Hell's messengers and spies. Their ability to share what they've seen with other creatures makes them especially useful—not only to other devils but also to mortal conjurers. Some infernal lords unleash them in enormous, horrid swarms upon unsuspecting lands to debase flesh and land alike while collecting secrets the infernal host might later put to use. Zebubs use any opportunity to manipulate weak-willed or easily tempted mortals into serving the zebubs' whims.\n\nWhile arrogant and deceitful, zebubs lack the cunning and confidence of most devils, and thus their schemes often focus on satisfying self-serving or self-destructive ambitions. Zebubs form from the souls of childish and craven mortals, reshaped by the archdevil Baalzebul in the frozen, filthy wastes of Hell's seventh layer, Cocytus."
+}

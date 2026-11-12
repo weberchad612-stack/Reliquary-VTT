@@ -1,0 +1,275 @@
+{
+  "kind": "creature",
+  "slug": "khisisi-7-8",
+  "system": "pf2e",
+  "name": "Khisisi (7-8)",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-14: The Tomb Between Worlds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "lawful",
+    "mummy",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 165,
+    "perception": 20,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 15,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 4,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 5
+    },
+    "skills": {
+      "deception": 18,
+      "intimidation": 20,
+      "occultism": 15,
+      "religion": 20,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "necril",
+      "sphinx"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "saves": "+1 status to all saves vs. vitality",
+      "languages": "ancient osiriani"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longspear",
+      "ref": "equipment:item/longspear",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "insidious-mummy-rot"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Longspear",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "insidious-mummy-rot"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Vitality",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "vitality"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "The mummy pharaoh can use Attack of Opportunity when a creature within its reach uses a concentrate action, in addition to its normal trigger. It can disrupt triggering concentrate actions, and it disrupts actions on any hit, not just a critical hit.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Great Despair",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "30 feet. Living creatures are Frightened 1 while in a mummy pharaoh's despair aura. They can't naturally recover from this fear while in the area but recover instantly once they leave the area. When a creature first enters the area, it must succeed at a DC 25 Will save save (after taking the penalty from being frightened) or be Paralyzed for 1 round. The creature is then temporarily immune for 24 hours.\n\nEffect: Despair",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:mode:living"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Despair"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "great-despair",
+            "traits": [
+              "divine",
+              "emotion",
+              "fear",
+              "incapacitation",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When a mummy pharaoh is destroyed, necromantic energies rebuild its body in its tomb over 1d10 days. If the re-forming body is destroyed during that time, the process starts anew. A slain mummy pharaoh can be destroyed for good with a Consecrate ritual."
+    },
+    {
+      "kind": "ability",
+      "name": "Undead Mastery",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "100 feet. Commanded or allied undead in the aura that have a lower level than the mummy pharaoh gain a +1 circumstance bonus to attack rolls, damage rolls, AC, saves, and skill checks.\n\nEffect: Undead Mastery",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:mode:undead",
+                  {
+                    "lt": [
+                      "target:level",
+                      "self:level"
+                    ]
+                  }
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Undead Mastery"
+              }
+            ],
+            "key": "Aura",
+            "radius": 100,
+            "slug": "undead-mastery",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Channel Rot",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The mummy pharaoh can deliver insidious mummy rot through melee weapons it wields."
+    },
+    {
+      "kind": "ability",
+      "name": "Insidious Mummy Rot",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "disease",
+        "divine"
+      ],
+      "text": "This disease and any damage from it can't be healed until this curse is removed. A creature killed by insidious mummy rot turns to sand and can't be resurrected except by a 7th-rank Resurrect ritual or similar magic.\n\nSaving Throw DC 26 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 minute)\n\nStage 2 8d6 void damage and Stupefied 2 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Sandstorm Wrath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "fire"
+      ],
+      "text": "The mummy pharaoh exhales a 60-foot cone of superheated sand that deals 5d6 fire damage and 5d6 slashing damage (DC 28 basic Reflex save save).\n\nThe mummy pharaoh can't use Sandstorm Wrath again for 1d4 rounds."
+    }
+  ],
+  "text": "While mummy guardians are undead crafted from the corpses of sacrificed-usually unwilling victims-and retain only fragments of their memories, a mummy pharaoh is the result of a deliberate embrace of undeath by a sadistic and cruel ruler. The transformation from life to undeath is no less awful and painful, but as the transition is an intentional bid to escape death by a powerful personality who fully embraces the blasphemous repercussions of the choice, the mummy pharaoh retains its memories and personality intact. Although in most cases a mummy pharaoh is formed from a particularly depraved ruler instructing their priests to perform complex rituals that grant the ruler eternal unlife, a ruler who was filled with incredible anger in life might spontaneously arise from death as a mummy pharaoh without undergoing this ritual. Depending on the nature of the ruler, a mummy pharaoh might have spellcasting or other class features instead of its Attack of Opportunity and disruptive abilities-the exact nature of the abilities the ruler had in life can significantly change or strengthen the mummy pharaoh presented here (which represents the least powerful variety of this deadly undead foe).\n\n---\n\nWhile many cultures practice mummification of the dead for benign reasons, undead mummies are created through foul rituals, typically to provide eternally vigilant guardians.",
+  "blurb": "Mummy Pharoah"
+}

@@ -1,0 +1,381 @@
+{
+  "kind": "creature",
+  "slug": "ausken-dast",
+  "system": "pf2e",
+  "name": "Ausken Dast",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "ethereal",
+    "incorporeal",
+    "phantom",
+    "spirit"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 2,
+      "str": -5,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": -5,
+      "diplomacy": 13,
+      "intimidation": 13,
+      "society": 11
+    },
+    "speeds": {
+      "land": 0
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ]
+    },
+    "notes": {
+      "saves": "–1 status penalty to all saves vs. death effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Phantom Longsword",
+      "attack": 15,
+      "traits": [
+        "finesse",
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Phantom Shortbow",
+      "attack": 15,
+      "traits": [
+        "deadly-d10",
+        "magical"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bound to Bastardhall",
+      "category": "interaction",
+      "text": "Unlike the typical phantom, Ausken exists fully in the Ethereal Plane and cannot shift back and forth between this plane and the Universe."
+    },
+    {
+      "kind": "ability",
+      "name": "–1 Status Penalty to All Saves vs. Death",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "item:trait:death"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bound Even in Death",
+      "category": "defensive",
+      "text": "As phantom, but if Ausken is reduced to 0 Hit Points by any means, his soul does not return to the River of Souls. Instead, his soul is drawn into the soul vortex in the vault under Bastardhall (area I)."
+    },
+    {
+      "kind": "ability",
+      "name": "Physical Manifestation",
+      "category": "defensive",
+      "text": "Upon reaching rank 1, Ausken manifests a semi-physical body. He loses the incorporeal trait, his immunities and resistances, and his fly Speed, and gains a land Speed of 25 feet. He has a Strength modifier of +5, an Athletics modifier of +12, an AC of 22, 78 HP, and can use Sheriff's Blessing. His other statistics do not change.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.BastardhallPhantom.SupportRank.Label",
+            "option": "support-rank",
+            "selection": "1",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.Numbers.One",
+                "value": "1"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Two",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Three",
+                "value": "3"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "remove": [
+              "incorporeal"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "remove",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "type": [
+              "bleed",
+              "disease",
+              "paralyzed",
+              "poison",
+              "precision"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "spirit"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "support-rank"
+              }
+            ],
+            "type": [
+              "all-damage"
+            ],
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "BaseSpeed",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "selector": "land-speed",
+            "value": 25
+          }
+        },
+        {
+          "key": "speed",
+          "type": "fly-speed",
+          "value": 25
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.abilities.str.mod",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "selector": "athletics",
+            "slug": "base",
+            "value": 12
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "selector": "ac",
+            "slug": "base",
+            "value": 12
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "gte": [
+                  "support-rank",
+                  1
+                ]
+              }
+            ],
+            "selector": [
+              "hp"
+            ],
+            "value": 18
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "label": "PF2E.NPCAbility.BastardhallPhantom.SupportRank.Label",
+            "mode": "add",
+            "predicate": [
+              "item:slug:sheriffs-blessing",
+              {
+                "not": "support-rank"
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.BastardhallPhantom.SupportRank.RequirementAddendum.RankOne"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Phantom Touch",
+      "category": "offensive",
+      "traits": [
+        "spirit"
+      ],
+      "text": "Each time they make a Strike, a phantom can choose to deal spirit damage instead of the normal physical damage type.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "phantom-touch",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "phantom-touch"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "strike-damage"
+            ],
+            "slug": "base",
+            "value": "spirit"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sheriff's Blessing",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements Ausken has a physical body\n\nFrequency once per day\n\n---\nEffect Ausken touches a willing character and infuses their mind and spirit with bravery. Until the next sunset, the touched character gains a +1 status bonus to all saving throws against fear effects, and any time the character gains the frightened condition, reduce its value by 1. Ausken is always willing and eager to give his blessing to a PC when asked.\n\nRank 2 The blessed character now treats any success on a saving throw against a fear effect as a critical success instead.\n\nRank 3 Ausken can touch two willing characters to give both of them his blessing, and the effects of the blessing now last for 24 hours.\n\nEffect: Sheriff's Blessing",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    }
+  ],
+  "blurb": "Variant male phantom"
+}

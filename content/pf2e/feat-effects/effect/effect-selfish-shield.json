@@ -1,0 +1,44 @@
+{
+  "kind": "effect",
+  "slug": "effect-selfish-shield",
+  "system": "pf2e",
+  "name": "Effect: Selfish Shield",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Selfish Shield\n\nYou gain resistance against the triggering damage equal to 2 + half your level, regardless of damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "not": "feature:divine-smite"
+          }
+        ],
+        "type": "all-damage",
+        "value": "floor(@actor.level/2)+2"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "feature:relentless-reaction"
+        ],
+        "type": "all-damage",
+        "value": "floor(@actor.level/2)+max(2,@actor.system.abilities.cha.mod)"
+      }
+    }
+  ]
+}

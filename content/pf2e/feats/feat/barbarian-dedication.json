@@ -1,0 +1,84 @@
+{
+  "kind": "feat",
+  "slug": "barbarian-dedication",
+  "system": "pf2e",
+  "name": "Barbarian Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication",
+    "multiclass"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Strength +2",
+    "Constitution +2"
+  ],
+  "text": "You become trained in Athletics; if you were already trained in Athletics, you instead become trained in a skill of your choice. You become trained in barbarian class DC.\n\nYou can use the Rage action. While raging, you take a –1 penalty to AC.\n\nChoose an instinct as you would if you were a barbarian. You have that instinct for all purposes, but you don't gain any of the other abilities it grants. If that instinct has anathema, you're bound by them.\n\nBarbarian",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.barbarian.archetypeFeatCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:barbarian-instinct",
+            {
+              "not": "item:tag:class-archetype"
+            }
+          ]
+        },
+        "flag": "instinct",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Barbarian.Instinct.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.instinct}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.classfeatures.Item.Rage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "untyped",
+      "value": -1,
+      "when": [
+        "self:effect:rage"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.athletics.rank",
+        "value": 1
+      }
+    }
+  ]
+}

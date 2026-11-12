@@ -1,0 +1,210 @@
+{
+  "kind": "creature",
+  "slug": "redcap",
+  "system": "pf2e",
+  "name": "Redcap",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 12,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 15,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 15,
+      "deception": 11,
+      "intimidation": 13,
+      "nature": 10,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "fast healing 10"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Iron Boots",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Red Cap",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Iron Boot",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 15,
+      "traits": [
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Red Cap",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A redcap's woolen hat is dyed with the blood of their victims. If the redcap loses their cap, they no longer benefit from fast healing and take a –4 status penalty to their damage rolls. They can create a new cap in 10 minutes, but that cap doesn't grant them powers until the redcap has turned it red with Blood Soak. A cap has no benefit for creatures other than the redcap who made it.\n\nEffect: Lost Red Cap"
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 10",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "not": "self:effect:lost-red-cap"
+              }
+            ],
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Divine Revulsion",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "If a redcap sees a creature brandish a religious symbol of a deity (which requires an Interact action by that creature) or cast a divine spell while wearing a religious symbol, the redcap must attempt a DC 19 Will save save. They then become temporarily immune to all brandished religious symbols for 10 minutes.\n\n---\n\nCritical Success The redcap is unaffected.\n\nSuccess The redcap is Frightened 2.\n\nFailure The redcap gains the Fleeing condition for 1 round and is Frightened 4.",
+      "rules": [
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Soak",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The redcap dips their cap in the blood of a slain foe. The foe must have died in the last minute, and the redcap must have helped kill it. The redcap gains a +4 status bonus to damage rolls for 1 minute.\n\nEffect: Blood Soak"
+    },
+    {
+      "kind": "ability",
+      "name": "Deadly Cleave",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The redcap reduces a creature to 0 Hit Points with a halberd Strike\n\n---\nEffect The redcap makes another halberd Strike against a different creature, using the same multiple attack penalty as the halberd Strike that triggered this reaction. This counts toward their multiple attack penalty as normal."
+    },
+    {
+      "kind": "ability",
+      "name": "Stomp",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The redcap Strides up to half its Speed and makes a boot Strike at any point during that movement. If the boot Strike hits a Prone creature, it deals an extra 2d6 bleed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "stomp",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "stomp",
+              "target:condition:prone"
+            ],
+            "selector": "boot-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Redcaps are sadistic and capricious fey who thrill in bloodletting and murder. While they are most famous for appearing as wizened, bearded men, redcaps of other genders are no less fearsome or cruel. However, redcaps are ultimately craven bullies, cowed by anything more powerful than themselves, a trait that leads them to fear and despise the symbols of deities.\n\nMany fairy tales explain how the redcaps draw power from dipping the hats for which they are named in fresh blood. Just as iconic to these cruel little fey are their iron-clad boots, and the clanging sound of their metal soles clanking on stone floors is both discordant and disconcerting—especially to those who recognize the sound for what it is. Redcaps typically stand only 3 feet tall, with hunched frames, pointed ears, crooked teeth, and long, white, tangled hair.\n\nThough unlikely to share true affection, redcaps find camaraderie in murder. Small troupes of redcaps travel together, sharing bloody kills and reminiscing on their brutal exploits. They loathe the company of most other creatures, with the notable exception of the feline fey called elananxes."
+}

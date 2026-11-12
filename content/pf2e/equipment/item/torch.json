@@ -1,0 +1,116 @@
+{
+  "kind": "equipment",
+  "slug": "torch",
+  "system": "pf2e",
+  "name": "Torch",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "text": "A torch sheds bright light in a 20-foot radius (and dim light to the next 20 feet) for 1 hour. It can be used as an improvised weapon that deals 1d4 bludgeoning damage plus 1 fire damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "lit-torch"
+        ],
+        "value": {
+          "alpha": 0.3,
+          "animation": {
+            "intensity": 1,
+            "speed": 2,
+            "type": "flame"
+          },
+          "attenuation": 0.4,
+          "bright": 20,
+          "color": "#ffae3d",
+          "coloration": 101,
+          "dim": 40,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "simple",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "key": "Strike",
+        "otherTags": [
+          "improvised"
+        ],
+        "predicate": [
+          {
+            "not": "lit-torch"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "simple",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "img": "icons/sundries/lights/torch-brown-lit.webp",
+        "key": "Strike",
+        "otherTags": [
+          "improvised"
+        ],
+        "predicate": [
+          "lit-torch"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|_id}-damage",
+      "type": "untyped",
+      "value": 1,
+      "when": [
+        "lit-torch"
+      ],
+      "damageType": "fire"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.LitTorch",
+        "option": "lit-torch",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenEffectIcon",
+        "predicate": [
+          "lit-torch"
+        ],
+        "value": "icons/sundries/lights/torch-brown-lit.webp"
+      }
+    }
+  ],
+  "usage": "held-in-one-hand",
+  "bulk": 0.1,
+  "price": {
+    "cp": 1
+  }
+}

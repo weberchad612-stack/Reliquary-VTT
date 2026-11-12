@@ -1,0 +1,209 @@
+{
+  "kind": "creature",
+  "slug": "shino-hakusa-level-14",
+  "system": "pf2e",
+  "name": "Shino Hakusa (Level 14)",
+  "source": {
+    "title": "Pathfinder #166: Despair on Danger Island",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 250,
+    "perception": 22,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 28,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 6,
+      "int": 1,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 28,
+      "athletics": 27,
+      "deception": 24,
+      "medicine": 26,
+      "occultism": 21,
+      "stealth": 26,
+      "thievery": 26
+    },
+    "speeds": {
+      "land": 35
+    },
+    "languages": [
+      "goblin",
+      "taldane",
+      "tien",
+      "ysoki"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Greater Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "magical",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Hakusa is targeted with a melee or ranged attack by an attacker she can see.\n\n---\n\nEffect Hakusa gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disorienting Tumble",
+      "category": "offensive",
+      "text": "Hakusa leaps around and over her opponents, disorienting them, to gain the upper hand in combat. When she successfully Tumbles Through a creature's space, that creature becomes Off-Guard until the end of Hakusa's turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Fists",
+      "category": "offensive",
+      "text": "Hakusa's fist Strikes are treated as cold iron and silver and don't take penalties when making lethal attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fist"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "cold-iron"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fist"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "silver"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pressure Point Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Hakusa targets a foe's pressure points to debilitate them. Hakusa makes a fist Strike. On a hit, the target takes damage as normal and must attempt a DC 35 Fortitude save save. Regardless of the result of the save, the target is temporarily immune to Pressure Point Attack for 1 minute.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target's muscles become temporarily weaker. For 1 round, the target is Enfeebled 2 and must succeed at a DC 5 Flat check check when attempting to use actions with the manipulate trait or the action is lost.\n\nFailure As success, but the duration is 1 minute.\n\nCritical Failure As success, but the duration is 1 minute, the flat check is DC 11 Flat check, and the target also takes –10-foot status penalty to their Speed for the duration."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Hakusa's Strikes deal an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female Tian-Shu assassin"
+}

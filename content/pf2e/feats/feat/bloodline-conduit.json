@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-conduit",
+  "system": "pf2e",
+  "name": "Bloodline Conduit",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "traits": [
+    "sorcerer",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "frequency": {
+    "max": 1,
+    "per": "PT1M"
+  },
+  "text": "Frequency once per minute\n\n---\nYour inborn magical nature lets you redirect ambient energies to fuel your spells. If your next action is to Cast a Spell of 5th rank or lower that has no duration, you don't expend the spell's slot when you cast it.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:bloodline-conduit",
+          "item:type:spell",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.BloodlineConduit"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "bloodline-conduit"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

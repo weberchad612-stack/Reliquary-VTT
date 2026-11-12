@@ -1,0 +1,242 @@
+{
+  "kind": "creature",
+  "slug": "sun-warrior-brigade",
+  "system": "pf2e",
+  "name": "Sun Warrior Brigade",
+  "source": {
+    "title": "Pathfinder #172: Secrets of the Temple-City",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "humanoid",
+    "lawful",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 33,
+    "hp": 216,
+    "perception": 22,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 18,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 2,
+      "int": 2,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 23,
+      "intimidation": 22,
+      "religion": 23
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "mzunu"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 15
+        },
+        {
+          "type": "splash-damage",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "hp": "16 squares (144 = 12 squares, 72 = 8 squares)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Spontaneous Spells",
+      "tradition": "divine",
+      "type": "spontaneous",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Blade Barrier",
+          "rank": 6,
+          "ref": "spells:spell/blade-barrier"
+        },
+        {
+          "name": "Vampiric Exsanguination",
+          "rank": 6,
+          "ref": "spells:spell/vampiric-exsanguination"
+        },
+        {
+          "name": "Flame Strike",
+          "rank": 5,
+          "ref": "spells:spell/flame-strike"
+        },
+        {
+          "name": "Wall of Fire",
+          "rank": 6,
+          "ref": "spells:spell/wall-of-fire"
+        },
+        {
+          "name": "Fireball",
+          "rank": 5,
+          "ref": "spells:spell/fireball"
+        },
+        {
+          "name": "Burning Hands",
+          "rank": 5,
+          "ref": "spells:spell/breathe-fire"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Form Up",
+      "actions": 1,
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Frenetic Assault",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The members of the brigade wildly swing their weapons-primarily spears-in a frenzied attack at each enemy adjacent to the troop (DC 29 basic Reflex save save). The damage depends on the number of actions.\n\n1 1d12+1 piercing damage\n\n2 2d12+11 piercing damage\n\n3 3d12+11 piercing damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "offensive",
+      "text": "Whenever the troop Strides, they first Form Up as a free action to condense into a 20-foot-by-20-foot area (minus any missing squares), then move up to their Speed. This works just like a Gargantuan creature moving; for instance, if any square of the troop enters difficult terrain, the extra movement cost applies to the whole troop."
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Spellcasting",
+      "category": "offensive",
+      "text": "When the sun warrior brigade Casts a Spell, its constituent members combine their efforts into casting a more powerful version of the spell than any one member could achieve alone. When Casting a Spell that has an area of a burst, cone, or line and doesn't have a duration, increase the area of that spell. Add 5 feet to the radius of a burst that normally has a radius of at least 10 feet (a burst with a smaller radius is not affected). Add 5 feet to the length of a cone or line that is normally 15 feet long or smaller, and add 10 feet to the length of a larger cone or line.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:area:type:burst",
+              "item:duration:0",
+              {
+                "gte": [
+                  "item:area:size",
+                  10
+                ]
+              }
+            ],
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "lte": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 110,
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "gt": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 100,
+            "property": "area-size",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Walkena's Radiance",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "fire",
+        "light"
+      ],
+      "text": "The brigade calls upon Walkena to burn and blind their foes. The sun warriors present their religious symbols and create a white-hot flash of light in a 45-foot cone. Creatures in the cone take 10d8 fire damage (DC 29 basic Fortitude save save). Creatures that fail their save become Dazzled for 1 round. Creatures that critically fail become Blinded for 1 round instead. When the troop is reduced to 2 or fewer segments, this area decreases to a 20-foot cone."
+    }
+  ]
+}

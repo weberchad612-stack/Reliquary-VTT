@@ -1,0 +1,92 @@
+{
+  "kind": "feat",
+  "slug": "reinforced-chassis",
+  "system": "pf2e",
+  "name": "Reinforced Chassis",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "text": "Your body is designed to be particularly resilient. Your chassis is made from reinforced armor plating that grants a +3 item bonus to AC with a Dexterity cap of +1. If you are at least 5th level, the item bonus increases to +4 and at 10th level it increases to +5. You can never wear other armor or remove your chassis; however, you still don't become Fatigued from sleeping. You can etch armor runes onto your chassis. Your chassis is medium armor in the plate group for abilities and for etching runes.\n\nEnhancement Your chassis becomes difficult to overcome. You gain the Chassis Deflection reaction.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "reinforcedChassis",
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Reinforced Chassis"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.itemGrants.reinforcedChassis.id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          }
+        ],
+        "property": "ac-bonus",
+        "value": "ternary(gte(@actor.level,10),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.lesser",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.ReinforcedChassis",
+          "predicate": [
+            {
+              "not": "enhancement:reinforced-chassis"
+            }
+          ],
+          "value": "reinforced-chassis"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.ReinforcedChassis",
+          "predicate": [
+            {
+              "not": "enhancement:reinforced-chassis"
+            }
+          ],
+          "value": "reinforced-chassis"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "enhancement:reinforced-chassis"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Chassis Deflection"
+      }
+    }
+  ]
+}

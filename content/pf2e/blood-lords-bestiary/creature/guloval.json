@@ -1,0 +1,237 @@
+{
+  "kind": "creature",
+  "slug": "guloval",
+  "system": "pf2e",
+  "name": "Guloval",
+  "source": {
+    "title": "Pathfinder #183: Field of Maidens",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "agathion",
+    "celestial",
+    "good",
+    "holy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 32,
+    "hp": 250,
+    "perception": 23,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 21,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 4,
+      "int": 4,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 25,
+      "intimidation": 21,
+      "nature": 23,
+      "survival": 23,
+      "nirvana-lore": 22
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status bonus to all saves vs. magic",
+      "languages": "speak with animals"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 32,
+      "attack": 24,
+      "spells": [
+        {
+          "name": "Righteous Might",
+          "rank": 6,
+          "ref": "spells:spell/sacred-form"
+        },
+        {
+          "name": "Blink Charge",
+          "rank": 5,
+          "ref": "spells:spell/blink-charge"
+        },
+        {
+          "name": "Breath of Life",
+          "rank": 5,
+          "ref": "spells:spell/breath-of-life"
+        },
+        {
+          "name": "Divine Wrath",
+          "rank": 6,
+          "ref": "spells:spell/divine-wrath"
+        },
+        {
+          "name": "Remove Curse",
+          "rank": 4,
+          "text": "Your touch grants a reprieve to a cursed creature. You attempt to counteract one curse afflicting the target. If the curse comes from a cursed item or other external source, a success indicates that the target creature can rid itself of the cursed item, but it doesn't remove the curse from the item."
+        },
+        {
+          "name": "Circle of Protection",
+          "rank": 4,
+          "ref": "spells:spell/circle-of-protection"
+        },
+        {
+          "name": "Remove Disease",
+          "rank": 3,
+          "text": "Healing magic purges disease from a creature's body. You attempt to counteract one disease afflicting the target."
+        },
+        {
+          "name": "Remove Fear",
+          "rank": 6,
+          "ref": "spells:spell/clear-mind"
+        },
+        {
+          "name": "Shield Other",
+          "rank": 2,
+          "ref": "spells:spell/share-life"
+        },
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/speak-with-animals"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 25,
+      "traits": [
+        "holy",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "holy",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d4+13",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Interposition",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A ward within the guloval's reach would take damage from a Strike, and the guloval is within the attacker's reach\n\n---\n\nEffect The guloval blocks the attack with their own body, taking the triggering attack's damage. The ward takes no damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Righteous Wound",
+      "category": "offensive",
+      "text": "When a guloval critically hits an evil creature with any melee Strike, the evil creature becomes Frightened 1. If that evil creature has damaged one of the guloval's wards within the last round, it's instead Frightened 2.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "target:trait:evil"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Ward",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The guloval enhances the magical link with their ward, granting that creature a +1 status bonus to its Armor Class and saving throws until the start of the guloval's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Wolverine's Protection",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The guloval selects a single willing ally within 30 feet as their ward; that ally can't already be the ward of another guloval. Once an ally becomes a ward, a magical link forms between the guloval and the ward, and as long as they are on the same plane and both are alive, the guloval knows the ward's direction from them, distance from them, and any conditions affecting them. A guloval can maintain this link with up to 4 wards-if they select a fifth, one of the previous wards (chosen by the guloval) loses the link and is no longer a ward."
+    }
+  ],
+  "text": "Agathions are born from petitioners who achieved enlightenment in life or after death and received Nirvana's blessing. A guloval is small in stature but fierce, appearing as an anthropomorphic wolverine with gray and black fur, a white strip down the snout, and fearsome digging claws that can be easily used as weapons.\n\nA guloval's core value is aggressive protection, and as such, they are one of the most militant of the normally peaceful agathions. A guloval attacks with a frightening ferocity to protect others, and they particularly seek out roles as guardians of children or the elderly. Despite this compulsion to protect those who may not be able to defend themselves, gulovals are also known for grumpy temperaments and impatience with social niceties. Most prefer to live as hermits when they're not assisting someone in need."
+}

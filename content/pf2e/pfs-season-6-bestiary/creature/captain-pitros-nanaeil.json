@@ -1,0 +1,221 @@
+{
+  "kind": "creature",
+  "slug": "captain-pitros-nanaeil",
+  "system": "pf2e",
+  "name": "Captain Pitros Nanaeil",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-03: Godsrain in a Godless Land",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "aiuvarin",
+    "elf",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 140,
+    "perception": 18,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 2,
+      "int": 1,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 15,
+      "diplomacy": 14,
+      "intimidation": 17,
+      "society": 14,
+      "stealth": 13,
+      "survival": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "notes": {
+      "saves": "+2 on all saves against divine magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Bloodletting Kukri",
+      "ref": "equipment:item/bloodletting-kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Bloodletting Kukri",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 17,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 on All Saves Against Divine Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:divine"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Command",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet. As captain of the Pure Legion, Nanaeil bolsters the lower-level legionnaires under his command, granting them a +1 status bonus to their attack rolls and +2 status bonus to their will saves.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "predicate": [
+                  "target:tag:pure-legion"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Command"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dual-Weapon Warrior",
+      "category": "defensive",
+      "text": "Pitros Nanaeil is highly trained in the art of wielding two weapons at once, preferring to wield the +1 striking scimitar in his main hand and the bloodletting kukri in his off-hand."
+    },
+    {
+      "kind": "ability",
+      "name": "May No Mortal Be Beholden",
+      "category": "defensive",
+      "text": "When Captain Nanaeil rolls a success on a save against an effect or spell from the divine tradition, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:divine"
+            ],
+            "selector": "saving-throw"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Retributive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Riposte",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within your reach critically fails to Strike you.\n\n---\nA clever parry with one weapon leaves your opponent open to an attack with the other weapon. Make a melee Strike or Disarm action against the triggering opponent."
+    },
+    {
+      "kind": "ability",
+      "name": "Double Slice",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Nanaeil lashes out at his foe with both weapons. He makes two Strikes, one with each melee weapon, each using his current multiple attack penalty. Both Strikes must have the same target. If both attacks hit, combine their damage, then add any other applicable effects from both weapons. Precision damage is added only once. Combine the damage from both Strikes and apply resistances and weaknesses only once. This counts as two attacks when calculating his multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Smite Divine",
+      "category": "offensive",
+      "text": "The Pure Legion's scimitars have been enchanted specifically to take down divine spellcasters. Melee Strikes against clerics, champions, and other creatures capable of casting divine spells do an additional 2d6 mental damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:caster:tradition:divine"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

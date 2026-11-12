@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "effect-temper-armament",
+  "system": "pf2e",
+  "name": "Effect: Temper Armament",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 3,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Tempering armor or a shield increases its Hardness by 1. Tempering a weapon grants the weapon a +1 circumstance bonus to damage rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "armor",
+            "shield",
+            "weapon"
+          ]
+        },
+        "flag": "temperArmament",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Item"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.temperArmament}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:type:armor",
+              "item:type:shield"
+            ]
+          }
+        ],
+        "property": "hardness",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.temperArmament}-damage",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "item:type:weapon",
+        {
+          "or": [
+            "item:trait:attached-to-shield",
+            {
+              "not": "item:group:shield"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

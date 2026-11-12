@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-uplifting-overture",
+  "system": "pf2e",
+  "name": "Spell Effect: Uplifting Overture",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Uplifting Overture\n\nWhen you later use the Aid reaction, you can roll Performance instead of the normal skill check, and if you roll a failure, you get a success instead. If you are legendary in Performance, you automatically critically succeed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "uplifting-overture:origin:signature:{item|origin.signature}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "lte": [
+              "skill:performance:rank",
+              3
+            ]
+          }
+        ],
+        "selector": "performance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "all": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "gte": [
+              "skill:performance:rank",
+              4
+            ]
+          }
+        ],
+        "selector": "performance"
+      }
+    }
+  ]
+}

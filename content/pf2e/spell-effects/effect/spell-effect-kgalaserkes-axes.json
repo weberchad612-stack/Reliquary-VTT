@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-kgalaserkes-axes",
+  "system": "pf2e",
+  "name": "Spell Effect: Kgalaserke's Axes",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Kgalaserke's Axes\n\nYou gain a +1 status bonus to attack rolls or a +2 circumstance bonus to damage against a creature that damaged you.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Actions.OneAction",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.Actions.TwoActions",
+            "value": 2
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Actions.Prompt",
+        "rollOption": "kgalaserkes-axes"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": 1,
+      "slug": "kgalaserkes-axes-attack",
+      "when": [
+        "kgalaserkes-axes:1"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellEffectKgalaserkesAxes.ToggleLabel",
+        "option": "kgalaserkes-axes:damaged-by-target",
+        "predicate": [
+          "kgalaserkes-axes:2"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "damage",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "kgalaserkes-axes-damage",
+      "when": [
+        "kgalaserkes-axes:damaged-by-target"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "kind": "effect",
+  "slug": "effect-clockwork-goggles",
+  "system": "pf2e",
+  "name": "Effect: Clockwork Goggles",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Clockwork Goggles, Clockwork Goggles (Greater), Clockwork Goggles (Major)\n\nYou gain low-light vision, darkvision (greater or major), and see the unseen (major).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clockwork-goggles",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clockwork Goggles"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clockwork-goggles-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clockwork Goggles (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clockwork-goggles-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clockwork Goggles (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "clockwork-goggles"
+      }
+    },
+    {
+      "key": "sense",
+      "type": "low-light-vision"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          {
+            "or": [
+              "clockwork-goggles:clockwork-goggles-greater",
+              "clockwork-goggles:clockwork-goggles-major"
+            ]
+          }
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "clockwork-goggles:clockwork-goggles-major"
+        ],
+        "uuid": "Compendium.pf2e.spell-effects.Item.Spell Effect: See the Unseen"
+      }
+    }
+  ]
+}

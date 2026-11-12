@@ -1,0 +1,58 @@
+{
+  "kind": "feat",
+  "slug": "ceremony-of-suns-gift",
+  "system": "pf2e",
+  "name": "Ceremony of Sun's Gift",
+  "source": {
+    "title": "Pathfinder Lost Omens The Mwangi Expanse",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "conrasu"
+  ],
+  "category": "ancestry",
+  "text": "Your connection to the sun has become an unbreakable bond. You don't become temporarily immune to the effects of your Sunlight Healing, and instead of rolling to recover Hit Points, you gain the maximum number of HP possible (for example, 64 HP instead of 8d8).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "item:slug:sunlight-healing"
+        ],
+        "priority": 150,
+        "property": "dice-number",
+        "selectors": [
+          "inline-healing"
+        ],
+        "value": 0
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "inline-healing",
+      "type": "untyped",
+      "value": "ceil(@level/2)*8",
+      "when": [
+        "item:slug:sunlight-healing",
+        {
+          "not": "feat:ceremony-of-sunlight"
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "inline-healing",
+      "type": "untyped",
+      "value": "@level*8",
+      "slug": "ceremony-of-suns-gift-ceremony-of-sunlight",
+      "when": [
+        "item:slug:sunlight-healing",
+        "feat:ceremony-of-sunlight"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-swear-oath",
+  "system": "pf2e",
+  "name": "Spell Effect: Swear Oath",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Swear Oath\n\nYou gain a +1 status bonus to the readied attack roll or skill check.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "check",
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SwearOath.RollOptionLabel",
+        "option": "swear-oath",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "swear-oath"
+        ],
+        "removeAfterRoll": "if-enabled",
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ],
+        "type": "status",
+        "value": "ternary(gte(@item.level,9),3,ternary(gte(@item.level,5),2,1))"
+      }
+    }
+  ]
+}

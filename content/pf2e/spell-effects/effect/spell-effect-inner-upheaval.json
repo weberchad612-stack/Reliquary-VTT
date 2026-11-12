@@ -1,0 +1,225 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-inner-upheaval",
+  "system": "pf2e",
+  "name": "Spell Effect: Inner Upheaval",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Inner Upheaval\n\nYou gain a +1 status bonus to your attack rolls with the Strikes, and the Strikes deal 1d6 extra damage of the chosen type.\n\n---\nHeightened (+4) The extra damage increases by 1d6.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "predicate": [
+              "entwined-energy-ki:acid"
+            ],
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "predicate": [
+              "feat:elemental-fist"
+            ],
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              {
+                "or": [
+                  "feat:elemental-fist",
+                  "entwined-energy-ki:cold"
+                ]
+              }
+            ],
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              {
+                "or": [
+                  "feat:elemental-fist",
+                  "entwined-energy-ki:electricity"
+                ]
+              }
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "or": [
+                  "feat:elemental-fist",
+                  "entwined-energy-ki:fire"
+                ]
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitForce",
+            "value": "force"
+          },
+          {
+            "label": "PF2E.TraitSlashing",
+            "predicate": [
+              "feat:elemental-fist"
+            ],
+            "value": "slashing"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "predicate": [
+              "entwined-energy-ki:sonic"
+            ],
+            "value": "sonic"
+          },
+          {
+            "label": "PF2E.TraitSpirit",
+            "value": "spirit"
+          },
+          {
+            "label": "PF2E.TraitVitality",
+            "value": "vitality"
+          },
+          {
+            "label": "PF2E.TraitVoid",
+            "value": "void"
+          }
+        ],
+        "flag": "damage",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType",
+        "rollOption": "inner-upheaval"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitEarth",
+            "value": "earth"
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": "wood"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "inner-upheaval:bludgeoning"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Element",
+        "rollOption": "inner-upheaval:bludgeoning"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": 1
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{item|flags.system.rulesSelections.damage}",
+        "diceNumber": "ceil(@item.level/4)",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:electricity",
+          "feat:elemental-fist"
+        ],
+        "property": "weapon-traits",
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:bludgeoning:earth"
+        ],
+        "property": "weapon-traits",
+        "value": "earth"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:fire",
+          "feat:elemental-fist"
+        ],
+        "property": "weapon-traits",
+        "value": "fire"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:slashing"
+        ],
+        "property": "weapon-traits",
+        "value": "metal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:cold",
+          "feat:elemental-fist"
+        ],
+        "property": "weapon-traits",
+        "value": "water"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "inner-upheaval:bludgeoning:wood"
+        ],
+        "property": "weapon-traits",
+        "value": "wood"
+      }
+    }
+  ]
+}

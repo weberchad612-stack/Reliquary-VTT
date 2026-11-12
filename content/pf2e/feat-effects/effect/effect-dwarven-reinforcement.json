@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "effect-dwarven-reinforcement",
+  "system": "pf2e",
+  "name": "Effect: Dwarven Reinforcement",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 24,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dwarven Reinforcement\n\nAn item of your choice gains a bonus to Hardness.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "armor",
+            "shield",
+            "weapon"
+          ]
+        },
+        "flag": "item",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Item"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.pf2e.rulesSelections.item}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "hardness",
+        "value": "ternary(gte(@item.origin.skills.crafting.rank,4),3,ternary(gte(@item.origin.skills.crafting.rank,3),2,1))"
+      }
+    }
+  ]
+}

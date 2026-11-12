@@ -1,0 +1,234 @@
+{
+  "kind": "creature",
+  "slug": "engerra",
+  "system": "pf2e",
+  "name": "Engerra",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "agathion",
+    "celestial",
+    "holy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 27,
+    "hp": 152,
+    "perception": 20,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 18,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 3,
+      "dex": 4,
+      "int": 6,
+      "str": 3,
+      "wis": 4
+    },
+    "skills": {
+      "arcana": 16,
+      "diplomacy": 16,
+      "performance": 18,
+      "religion": 17,
+      "society": 20
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Invoke Spirits",
+          "rank": 5,
+          "ref": "spells:spell/invoke-spirits"
+        },
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Crisis of Faith",
+          "rank": 3,
+          "ref": "spells:spell/crisis-of-faith"
+        },
+        {
+          "name": "Holy Light",
+          "rank": 3,
+          "ref": "spells:spell/holy-light"
+        },
+        {
+          "name": "Enfeeble",
+          "rank": 1,
+          "ref": "spells:spell/enfeeble"
+        },
+        {
+          "name": "Infuse Vitality",
+          "rank": 1,
+          "ref": "spells:spell/infuse-vitality"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        },
+        {
+          "name": "Stabilize",
+          "rank": 1,
+          "ref": "spells:spell/stabilize"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Swarming Bite",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Firefly's Remembrance",
+      "category": "interaction",
+      "text": "Engerras embody the ethos of honoring the dead. When the engerra Recalls Knowledge about a creature whose final words it has heard spoken aloud, it uses the outcome one degree of success better than the result of its roll.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "fireflys-remembrance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "fireflys-remembrance",
+              "action:recall-knowledge"
+            ],
+            "selector": "skill-check"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status Bonus to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disperse",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The engerra Strides or Flies. This movement doesn't trigger reactions. During the movement, the engerra can move through occupied spaces and tiny cracks, and it ignores difficult terrain and greater difficult terrain. It then coalesces back into its normal form."
+    },
+    {
+      "kind": "ability",
+      "name": "Dying Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The engerra draws the air from around breathing creatures in a 40-foot emanation, giving them the feeling of drawing their last breath. Enemies in the area must attempt a DC 26 Will save save. If at least one creature fails the save, the engerra can gift the stolen breath to a willing creature within 40 feet, granting that creature 2d6 temporary Hit Points that last for 1 minute.\n\n---\nSuccess The creature is unaffected.\n\nFailure The creature takes 2d6+7 mental damage and is Frightened 1.\n\nCritical Failure The creature takes 3d6+10 mental damage, is Frightened 2, and becomes Fatigued for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Final Words of Doom",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "The engerra whispers words of doom to an enemy within 40 feet. The creature must attempt a DC 26 Will save save.\n\n---\nCritical Success As success, and the creature is temporarily immune for 1 minute.\n\nSuccess The creature is unaffected.\n\nFailure The creature takes 3d8+13 mental damage and is Doomed 1 for 1 minute.\n\nCritical Failure The creature takes 4d8+18 mental damage and is Doomed 2 for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Final Words of Wisdom",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "The engerra finds words to bolster a creature's spirits. The engerra spends 10 minutes speaking with a willing creature. If that creature has the Fatigued condition, it's no longer fatigued. The creature can't benefit from any engerra's Final Words of Wisdom again for 1 year."
+    }
+  ],
+  "text": "Born of those who sacrificed their lives for something greater than themselves, engerras resemble swarms of glowing fireflies and are sometimes mistaken for will-o'-wisps or simple tricks of the light. They are most often encountered in the tombs of legendary heroes but might linger anywhere such a hero has drawn their final breath.\n\nEngerras believe that tales of worthy sacrifice hold great power. They gather the memories of those who died in service of a noble cause and then share those memories with mortals who might be inspired or cheered by them. An engerra's trademark glow is a sign of both sorrow and hope, for it simultaneously associates the death of a great hero with the determination to honor that hero's legacy."
+}

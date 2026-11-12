@@ -1,0 +1,144 @@
+{
+  "kind": "feat",
+  "slug": "chaotic-spell",
+  "system": "pf2e",
+  "name": "Chaotic Spell",
+  "source": {
+    "title": "Pathfinder Wake the Dead #3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "bard",
+    "manipulate",
+    "oracle",
+    "sorcerer",
+    "spellshape",
+    "witch",
+    "wizard"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "This is the secret of chaotic magic - your foe can hardly predict and counter your moves if you yourself have no idea what will happen. If the next action you use is to Cast a Spell that deals acid, cold, electricity, fire, or sonic damage, roll a d6. The spell's damage type changes to the type below associated with the result of the roll, and each creature who is damaged by the spell takes the listed additional effect.\n\n1 (Acid): Sickened 1\n\n2 (Cold): –10 ft. penalty to all Speeds until the end of your next turn\n\n3 (Electricity): Off-Guard until the end of your next turn\n\n4 (Fire): Persistent fire damage equal to the spell's rank\n\n5 (Force): No added effect\n\n6 (Sonic): Deafened for 2 rounds",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "chaotic-spell"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "chaotic-spell",
+        "placement": "spellcasting",
+        "predicate": [
+          "spellshape:chaotic-spell"
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitForce",
+            "value": "force"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:chaotic-spell",
+          {
+            "not": "chaotic-spell:force"
+          },
+          {
+            "or": [
+              "item:damage:type:acid",
+              "item:damage:type:cold",
+              "item:damage:type:electricity",
+              "item:damage:type:fire",
+              "item:damage:type:force",
+              "item:damage:type:sonic"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.ChaoticSpell.{item|flags.system.rulesSelections.chaoticSpell}"
+          },
+          {
+            "predicate": [
+              "chaotic-spell:cold"
+            ],
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Chaotic Spell]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "spellshape:chaotic-spell",
+          {
+            "or": [
+              "item:damage:type:acid",
+              "item:damage:type:cold",
+              "item:damage:type:electricity",
+              "item:damage:type:fire",
+              "item:damage:type:force",
+              "item:damage:type:sonic"
+            ]
+          }
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.chaoticSpell}"
+      }
+    }
+  ]
+}

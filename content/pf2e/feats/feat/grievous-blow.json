@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "grievous-blow",
+  "system": "pf2e",
+  "name": "Grievous Blow",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype",
+    "flourish"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Martial Artist Dedication"
+  ],
+  "text": "You know how to deliver focused, powerful blows that bypass your enemies' resistances. Make an unarmed melee Strike. If this Strike hits, it deals two additional weapon damage dice and ignores an amount of resistance to physical damage (or to a specific physical damage type) equal to your level. This Strike counts as two attacks when calculating your multiple attack penalty.\n\nIf you are at least 18th level, increase the additional damage to three weapon damage dice.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "unarmed-damage",
+        "key": "RollOption",
+        "option": "grievous-blow",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "ternary(gte(@actor.level,18),3,2)",
+        "key": "DamageDice",
+        "predicate": [
+          "grievous-blow",
+          "item:melee"
+        ],
+        "selector": "unarmed-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "unarmed-damage",
+      "text": "PF2E.SpecificRule.MartialArtist.GrievousBlow.Note",
+      "when": [
+        "item:melee",
+        "grievous-blow"
+      ]
+    }
+  ]
+}

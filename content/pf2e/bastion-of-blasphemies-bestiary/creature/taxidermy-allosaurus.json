@@ -1,0 +1,196 @@
+{
+  "kind": "creature",
+  "slug": "taxidermy-allosaurus",
+  "system": "pf2e",
+  "name": "Taxidermy Allosaurus",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "rare",
+  "traits": [
+    "construct"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 30,
+    "hp": 195,
+    "perception": 20,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 22,
+      "will": 18
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 5,
+      "dex": 5,
+      "int": -4,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 22,
+      "stealth": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "slashing"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "toothsome-fear"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scarecrow's Leer",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental",
+        "occult",
+        "visual"
+      ],
+      "text": "40 feet.\n\nThe scarecrow's eyes flicker with an unnerving glow. A creature can't reduce its Frightened condition below 1 as long as it is in the aura's emanation. When a creature enters or starts its turn in the aura, it must attempt a DC 27 Will save save. Living creatures made of flesh take a -2 circumstance penalty to this save.\n\n---\nCritical Success The creature is unaffected and is then temporarily immune for 24 hours.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2 and is Fascinated by the scarecrow until the end of its next turn.\n\nCritical Failure As failure, but Frightened 3.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 40,
+            "slug": "scarecrows-leer",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental",
+              "occult",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Baleful Glow",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "light",
+        "mental",
+        "occult"
+      ],
+      "text": "The scarecrow's head bursts into ghostly, heatless flame that sheds bright light in a 20-foot emanation (and dim light to the next 20 feet). If the scarecrow uses this ability on the first round of combat, any creature that has not acted yet is startled and becomes Off-Guard against the scarecrow for 1 round. It can suppress the light by using this action again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "baleful-glow"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 4,
+                "speed": 1,
+                "type": "torch"
+              },
+              "bright": 20,
+              "color": "#9b7337",
+              "dim": 40,
+              "shadows": 0.2
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "baleful-glow",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mundane Appearance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until it acts, the taxidermy allosaurus resembles an ordinary (if well-crafted) taxidermy creature. It has an automatic result of 43 on Deception checks and DCs to pass as an ordinary taxidermy display."
+    },
+    {
+      "kind": "ability",
+      "name": "Thrashing Tail",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The taxidermy allosaurus smashes furniture and displays in the area with its tail, spreading the resulting rubble around. A 5-foot by 15-foot area of your choice that has at least one square adjacent to the creature becomes difficult terrain. If this area includes the stone tub, the acid splashes out and the difficult terrain becomes hazardous terrain as well that deals 1d6 acid damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Toothsome Fear",
+      "category": "offensive",
+      "text": "The taxidermy allosaurus's strikes deal an additional 2d6 mental damage to frightened creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant scarecrow"
+}

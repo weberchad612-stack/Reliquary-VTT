@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-lasting-debilitating-strike-critical-hit",
+  "system": "pf2e",
+  "name": "Effect: Lasting Debilitating Strike (Critical Hit)",
+  "source": {
+    "title": "Pathfinder #167: Ready? Fight!",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "value": 7,
+    "unit": "days",
+    "expiry": "turn-end"
+  },
+  "text": "You either take a –10-foot status penalty to your Speeds or you become enfeebled 1.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Rogue.Debilitation.SpeedPenalty.Label",
+            "value": "speed-penalty"
+          },
+          {
+            "label": "PF2E.SpecificRule.Rogue.Debilitation.Enfeebled.Label",
+            "value": "enfeebled"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "lasting-debilitating-strike"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": -10,
+      "when": [
+        "lasting-debilitating-strike:speed-penalty"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "lasting-debilitating-strike:enfeebled"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    }
+  ]
+}

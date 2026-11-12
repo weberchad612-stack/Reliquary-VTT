@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "golem",
+  "system": "pf2e",
+  "name": "Golem",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "construct",
+    "earth",
+    "holy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 170,
+    "perception": 16,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 12,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 2,
+      "int": 1,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 20,
+      "religion": 18
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid"
+      ]
+    },
+    "notes": {
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Divine Wrath",
+          "rank": 4,
+          "ref": "spells:spell/divine-wrath",
+          "uses": 2
+        },
+        {
+          "name": "Holy Light (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/holy-light"
+        },
+        {
+          "name": "Calm",
+          "rank": 3,
+          "ref": "spells:spell/calm",
+          "uses": 2
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 4,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Heal",
+          "rank": 2,
+          "ref": "spells:spell/heal",
+          "uses": 4
+        },
+        {
+          "name": "Stabilize",
+          "rank": 1,
+          "ref": "spells:spell/stabilize"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "consecrated-fists"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "At-Will Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Day of Rest",
+      "category": "defensive",
+      "text": "A golem needs 1 day of rest per week or it becomes uncontrollable. An uncontrollable golem is unable to cast spells, and it takes a –2 circumstance penalty to checks made using Wisdom, including Will saves. While uncontrollable, the golem loses its immunity to sleep. The golem is uncontrollable until it takes a day of rest.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "rested",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "add",
+            "predicate": [
+              "rested"
+            ],
+            "type": "sleep"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "wis-based",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            {
+              "not": "rested"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Faithful",
+      "category": "defensive",
+      "text": "A golem faithfully serves its creator as long as it's not in an uncontrollable state (see above). While the golem is faithful, it follows the commands of its creator, even to its own detriment. While the golem remains faithful to its creator, the golem can't be Confused or Controlled by any creature other than its creator.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "faithful",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "add",
+            "predicate": [
+              "faithful"
+            ],
+            "type": "confused"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "add",
+            "predicate": [
+              "faithful"
+            ],
+            "type": "controlled"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hefty Helper",
+      "category": "defensive",
+      "text": "The golem can carry 13 Bulk before becoming Encumbered and can carry a maximum Bulk of 18.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "inventory.bulk.encumberedAfterAddend",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "inventory.bulk.maxAddend",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consecrated Fists",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "After the golem casts a holy spell, their Strikes deal an additional 1d8 spirit damage and gain the divine and holy traits. These benefits last until the end of the golem's next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "consecrated-fists",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "consecrated-fists"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "consecrated-fists"
+            ],
+            "property": "traits",
+            "value": "divine"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "consecrated-fists"
+            ],
+            "property": "traits",
+            "value": "holy"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rampage",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The golem is uncontrollable\n\n---\nEffect The golem makes a melee Strike against every creature in its reach, whether that creature is an ally or not. The attacks count toward its multiple attack penalty normally, but the penalty does not increase until after all the Strikes are complete."
+    }
+  ],
+  "text": "Long ago, the priests of ancient religions mastered a technique to bring them closer to their god: the animation of clay into a living being. These clay beings, called golems, are animated by placing a piece of paper with the name of the priest's god within the golem's mouth (or, in some cases, by carving a holy word on the golem's forehead). Though they are intelligent as a result of their divine blessing, golems generally don't act unless commanded to, and they rarely have the capacity for speech, a gift the gods bestowed on their creations alone. Instead, they use their intelligence to facilitate their maker's communion with their god in divine rites unknown outside of a religion's most faithful.\n\nIn some oppressed communities, golems serve as protectors against outside violence, fighting as a last resort but aiming to defuse situations first. Other times, the golem operates as a guardian to a temple or helper to a holy person. In rare cases, golems have been known to go on rampages when they aren't allowed a day of rest every week. These rampages can be extremely destructive to the communities the golems otherwise protect, so makers must endeavor to take good care of their creations.\n\nGolem legends are diverse and widespread across the Inner Sea region and beyond. Some tell of even stranger powers bestowed on the golem, such as the ability to summon the spirits of the dead. Golems with such abilities are undoubtedly created by the most holy of priests, attuned to their god beyond what most mortals could hope to accomplish."
+}

@@ -1,0 +1,322 @@
+{
+  "kind": "creature",
+  "slug": "barded-manticore",
+  "system": "pf2e",
+  "name": "Barded Manticore",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "beast"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 42,
+    "hp": 440,
+    "perception": 33,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 30,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 5,
+      "int": 1,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 31,
+      "athletics": 35,
+      "crafting": 29,
+      "deception": 32,
+      "intimidation": 32,
+      "nature": 31
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 45
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "mwangi"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 15
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 40,
+      "attack": 35,
+      "spells": [
+        {
+          "name": "Wrathful Storm",
+          "rank": 9,
+          "ref": "spells:spell/wrathful-storm"
+        },
+        {
+          "name": "Chain Lightning",
+          "rank": 8,
+          "ref": "spells:spell/chain-lightning"
+        },
+        {
+          "name": "Field of Razors",
+          "rank": 6,
+          "ref": "spells:spell/field-of-razors"
+        },
+        {
+          "name": "Tangling Creepers",
+          "rank": 6,
+          "ref": "spells:spell/tangling-creepers"
+        },
+        {
+          "name": "Impaling Spike (At-Will)",
+          "rank": 5,
+          "ref": "spells:spell/impaling-spike"
+        },
+        {
+          "name": "Lightning Bolt (At-Will)",
+          "rank": 5,
+          "ref": "spells:spell/lightning-bolt"
+        },
+        {
+          "name": "One with Stone (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/one-with-stone"
+        },
+        {
+          "name": "Detect Metal",
+          "rank": 1,
+          "ref": "spells:spell/detect-metal"
+        },
+        {
+          "name": "Needle Darts",
+          "rank": 1,
+          "ref": "spells:spell/needle-darts"
+        },
+        {
+          "name": "Tangle Vine",
+          "rank": 1,
+          "ref": "spells:spell/tangle-vine"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 33,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spike",
+      "attack": 31,
+      "traits": [
+        "magical"
+      ],
+      "range": 40,
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "At-Will Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Reflection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An opponent casts a spell that targets the manticore and requires a saving throw\n\n---\n\nEffect The manticore gains a +4 circumstance bonus to the saving throw. If they critically succeed at the save, they can choose a creature within 30 feet that was not originally targeted by the spell. That creature becomes a new target of the spell, who must attempt its own save against the same DC.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "saving-throw",
+            "key": "RollOption",
+            "option": "spell-reflection",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "item:type:spell",
+            "spell-reflection"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Arrange Scales",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The barded manticore flexes the muscles under their scales to temporarily gain better protection. The manticore gains a +2 circumstance bonus to AC and resistance 15 to their choice of bludgeoning, piercing, or slashing damage. These benefits last until the beginning of the manticore's next turn or they use Arrange Scales again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "arrange-scales",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitBludgeoning",
+                "value": "bludgeoning"
+              },
+              {
+                "label": "PF2E.TraitPiercing",
+                "value": "piercing"
+              },
+              {
+                "label": "PF2E.TraitSlashing",
+                "value": "slashing"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "arrange-scales"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "arrange-scales"
+            ],
+            "type": "{item|flags.system.rulesSelections.arrangeScales}",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Metallic Coating",
+      "category": "offensive",
+      "text": "A barded manticore's unarmed attacks (including spikes) count as adamantine, cold iron, dawnsilver, and silver.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "cold-iron"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "silver"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "dawnsilver"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "adamantine"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Paired Spikes",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The barded manticore flings two spikes from their tail, targeting up to two creatures within 20 feet of each other. They make a separate ranged Strike against each creature, which counts as a single Strike for the barded manticore's multiple attack penalty, and the penalty doesn't increase until they've made both Strikes. If the manticore targeted only one creature and hits, that creature takes normal damage for a single spike, but also gains weakness 15 to electricity damage until the spikes are removed with an Interact action.\n\nEffect: Paired Spikes"
+    }
+  ],
+  "text": "Barded manticores are treacherous and dangerous beasts, and the only known member of the manticore species with the innate ability to cast spells. Luckily, these creatures are incredibly rare, mostly found near battlefields and other sources of worked metal, though stories tell of a particularly clever barded manticore attempting to make herself a home deep under the Magaambya.\n\nUnlike the other members of the species, a barded manticore has a face that resembles a human's and a torso coated in scales of varying metals, the exact composition depending on their diet. Thanks to these materials, most barded manticores are able to fend off just about any being attempting to encroach upon their territories, especially fiends and other creatures with weaknesses to specific metals. Barded manticores sift through metals obtained from their victims, whether that be local villagers coerced into giving them tribute or unlucky travelers, and seek the rarest, most valuable types to make part of their next meals.\n\nThis also includes armor and weapons inscribed with runes that grant a barded manticore the ability to cast spells, though these spells vary depending on the region the beast inhabits and what type of runes they consume. In rare areas where magic is suppressed, a barded manticore will be unable to grow their runed scales, rendering them less powerful than others of their kind. Pointing this out to such a barded manticore often ends in one's untimely demise at the manticore's claws and spines, no less sharp for the lack of enchantments."
+}

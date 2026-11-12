@@ -1,0 +1,162 @@
+{
+  "kind": "creature",
+  "slug": "cyclops-bully",
+  "system": "pf2e",
+  "name": "Cyclops Bully",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "giant",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 28,
+    "hp": 155,
+    "perception": 17,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 15,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 0,
+      "int": -1,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 19,
+      "intimidation": 18,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "cyclops",
+      "jotun"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greatclub",
+      "ref": "equipment:item/greatclub",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greatclub",
+      "attack": 21,
+      "traits": [
+        "backswing",
+        "reach-10",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brutal Recovery",
+      "actions": "free",
+      "category": "defensive",
+      "traits": [
+        "fortune",
+        "occult"
+      ],
+      "text": "Frequency once per day\n\nTrigger The cyclops bully fails (but does not critically fail) an attack roll or an Intimidation check\n\n---\n\nEffect The cyclops bully forces its will on an array of possible futures. It gets a success on the roll instead of a failure.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Terrorizing Swing",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The cyclops bully attempts to Demoralize a foe within its melee reach, then makes a melee Strike against that foe.\n\nIf the creature is Frightened and takes damage, it takes an additional 2d10 damage and is knocked Prone.\n\nThis counts as two attacks toward the cyclops's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d10",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened",
+              "terrorizing-swing"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "terrorizing-swing",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "note",
+          "selector": "melee-strike-damage",
+          "text": "PF2E.NPCAbility.CyclopsBully.TerrorizingSwing",
+          "when": [
+            "target:condition:frightened",
+            "terrorizing-swing"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Cyclops bruisers"
+}

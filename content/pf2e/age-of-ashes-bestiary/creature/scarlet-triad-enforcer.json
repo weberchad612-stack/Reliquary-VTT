@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "scarlet-triad-enforcer",
+  "system": "pf2e",
+  "name": "Scarlet Triad Enforcer",
+  "source": {
+    "title": "Pathfinder #149: Against the Scarlet Triad",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 275,
+    "perception": 25,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 26,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 6,
+      "dex": 6,
+      "int": 3,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 30,
+      "intimidation": 28,
+      "stealth": 27,
+      "thievery": 25,
+      "underworld-lore": 26
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "osiriani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Sap",
+      "ref": "equipment:item/sap",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Good)",
+      "ref": "equipment:item/manacles-good",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Moderate)",
+      "ref": "equipment:item/healing-potion-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 32,
+      "traits": [
+        "forceful",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+15",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sap",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "magical",
+        "nonlethal"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+15",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 31,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stunning Retort",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy critically fails a Strike against the enforcer\n\n---\nEffect The enforcer Strikes with their sap against that enemy if they're within reach; otherwise, the enforcer attempts an Intimidation check to demoralize that enemy."
+    },
+    {
+      "kind": "ability",
+      "name": "Dual Abuse",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The enforcer uses the pain of one attack as an opening to deal a devastating second blow. The enforcer makes two attacks against the same target: a scimitar Strike and sap Strike (in any order) or two composite shortbow Strikes. If both attacks hit, the second attack deals an additional 3d6 damage, and the enforcer gives the target one of the following conditions until the end of the enforcer's next turn: Dazzled, Enfeebled 2, Off-Guard, or Slowed 1.\n\nThis counts as two attacks when calculating the enforcer's multiple attack penalty, but the penalty doesn't increase until after both attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "dual-abuse",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "dual-abuse"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Efficient Capture",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "manipulate"
+      ],
+      "text": "Requirements The enforcer has manacles in hand and is adjacent to a creature\n\n---\n\nEffect The enforcer attempts to bind the creature's wrists or ankles with the manacles. If the enforcer succeeds at an attack roll with a +30 modifier against the target's AC, they apply the manacles.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "slug": "efficient-capture",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "efficient-capture-attack-roll",
+          "type": "untyped",
+          "value": 30
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "ripnugget",
+  "system": "pf2e",
+  "name": "Ripnugget",
+  "source": {
+    "title": "Pathfinder #200: Seven Dooms for Sandpoint",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 23,
+    "hp": 110,
+    "perception": 12,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 2,
+      "int": 2,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 14,
+      "intimidation": 14,
+      "medicine": 12,
+      "nature": 12,
+      "stealth": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "chthonian",
+      "common",
+      "goblin",
+      "varisian"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "fire",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing, rejuvenation"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dogslicer",
+      "ref": "equipment:item/dogslicer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dogslicer",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "backstabber",
+        "finesse",
+        "goblin",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When a graveknight is destroyed, its armor rebuilds its body over the course of 1d10 days-or more quickly if the armor is worn by a living host. If the body is destroyed before then, the process restarts.\n\nA graveknight can only be permanently destroyed by obliterating its armor (such as with Disintegrate), transporting it to the Forge of Creation, or throwing it into the heart of a volcano."
+    },
+    {
+      "kind": "ability",
+      "name": "Sacrilegious Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "30 feet. When a creature in the aura uses a vitality spell or ability, the graveknight automatically attempts to counteract it, with a counteract modifier of +13.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "sacrilegious-aura",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devastating Blast",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "fire"
+      ],
+      "text": "The graveknight unleashes a 30-foot cone of energy. Creatures in the area take 4d12 fire damage (DC 24 basic Reflex save save).\n\nThe graveknight can use this ability once every 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Dogslicer Cruelty",
+      "category": "offensive",
+      "text": "On a critical hit with a dogslicer, Ripnugget yanks bits of flesh from his victim as he rips the blade free. The target becomes Sickened 1 from the pain, and is Off-Guard as long as they remain sickened.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Graveknight's Curse",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "curse"
+      ],
+      "text": "This curse affects anyone who wears a graveknight's armor for at least 1 hour.\n\nSaving Throw DC 24 Will save save\n\n---\n\nOnset 1 hour\n\nStage 1 Doomed 1 and cannot remove the armor (1 day)\n\nStage 2 Doomed 2, the creature's Speed is reduced by 10, and cannot remove the armor (1 day)\n\nStage 3 dies and transforms into the armor's graveknight.\n\nEffect: Graveknight's Curse"
+    },
+    {
+      "kind": "ability",
+      "name": "Phantom Mount",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "summon"
+      ],
+      "text": "Ripnugget's mount is a giant gecko (HP 37; AC 19, Fort +11, Ref +8, Will +7) named Stickfoot.\n\n---\n\nThe graveknight summons a supernatural mount as per Marvelous Mount, heightened to a level equal to half the graveknight's level.\n\nUnlike phantom steed, the steed's AC and saving throw bonuses are all 4 lower than the graveknight's, and the steed has one-third the graveknight's Hit Points (rounded down).\n\nIf the steed is destroyed, the graveknight must wait 1 hour before using this ability again."
+    },
+    {
+      "kind": "ability",
+      "name": "Weapon Master",
+      "category": "offensive",
+      "text": "The graveknight has access to the critical specialization effects of any weapons it wields.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Graveknights are undead warriors granted unlife by a cursed suit of armor.",
+  "blurb": "Male goblin graveknight"
+}

@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "aezar",
+  "system": "pf2e",
+  "name": "Aezar",
+  "source": {
+    "title": "Pathfinder Adventures: Troubles in Grayce",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "giant",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 18,
+    "hp": 75,
+    "perception": 6,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 7,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 4,
+      "dex": -1,
+      "int": -2,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 12,
+      "intimidation": 8,
+      "survival": 6
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 14,
+      "traits": [
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "gluttons-feast",
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Gummy Hands",
+      "category": "defensive",
+      "text": "Candies' residue gives Aezar an especially strong grip on her greataxe, which grants her a +2 circumstance bonus to her Reflex DC against attempts to Disarm her.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex-dc",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tooth Decay",
+      "category": "defensive",
+      "text": "Frequent candy consumption has worsened Aezar's already poor dental health. If she takes 10 or more bludgeoning damage from a single attack or effect, she must attempt a DC 25 Fortitude save save.\n\n---\nSuccess Aezar yells in pain but is otherwise unaffected.\n\nFailure Several of Aezar's teeth break. She takes a –2 penalty to damage with her jaws Strike as well as to Athletics checks made as part of her Grab and Swallow Whole abilities. These penalties last until Aezar is restored to her Hit Point maximum.\n\nCritical Failure As failure, but so many of Aezar's teeth break that the penalty increases to –3 and she takes 1d6-2 persistent,bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tooth-decay",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "tooth-decay"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "tooth-decay",
+            {
+              "or": [
+                "action:swallow-whole",
+                "action:grapple"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "note",
+          "selector": [
+            "damage-received"
+          ],
+          "text": "{item|description}",
+          "when": [
+            "item:damage:type:bludgeoning"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glutton's Feast",
+      "category": "offensive",
+      "text": "If Aezar damages a living creature with her jaws Strike, she gains 1d6 temporary Hit Points for 1 minute\n\nEffect: Glutton's Feast (Aezar)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.gluttonsFeast",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glutton's Rush",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Aezar Strides twice and makes a jaws Strike. If she damages a living creature with this Strike, the temporary Hit Points she receives from glutton's feast is increased to 2d6.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "gluttons-rush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.gluttonsFeast",
+            "predicate": [
+              "gluttons-rush"
+            ],
+            "priority": 51,
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sticky Axe",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger Aezar succeeds at a greataxe Strike against a creature\n\n---\nEffect Aezar's axe has a lingering residue from striking various sweets, and the sticky blade clings to her most recent victim, giving Aezar momentary leverage. Aezar can attempt to reposition or trip the target using the greataxe's reach, even though she doesn't have a free hand.\n\nAlternatively, she can forgo either maneuver to drag the target toward her gaping mouth, granting her jaws unarmed Strike the agile trait for attacks made against the target until the end of her turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Small, 2d4+4 bludgeoning, Rupture 18\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "blurb": "Variant elite ogre glutton"
+}

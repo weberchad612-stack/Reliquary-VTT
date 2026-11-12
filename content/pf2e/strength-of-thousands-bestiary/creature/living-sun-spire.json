@@ -1,0 +1,229 @@
+{
+  "kind": "creature",
+  "slug": "living-sun-spire",
+  "system": "pf2e",
+  "name": "Living Sun-Spire",
+  "source": {
+    "title": "Pathfinder #172: Secrets of the Temple-City",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 36,
+    "hp": 200,
+    "perception": 21,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 19,
+      "will": 17
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 8,
+      "dex": 2,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 30
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Arm",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sunfire Beam",
+      "attack": 28,
+      "traits": [
+        "fire",
+        "magical"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "3d8+11",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 14)",
+      "category": "defensive",
+      "text": "Like normal objects, the Living Sun-Spire has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness.\n\nOnce the statue is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 32.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Steal the Sun",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Trigger A creature within 30 feet of the sun-spire begins to Cast a Spell that has the fire or light trait\n\n---\n\nEffect The sun-spire attempts to redirect the energy from the triggering effect into its sunlight stores. The sun-spire attempts to counteract the triggering spell with a +22 counteract bonus. If it successfully counteracts the spell, the sun-spire's sunlight stores are empowered. While empowered, the sun-spire deals an additional 2d8 fire damage with all of its attacks and abilities. The sun-spire remains empowered until the end of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Empowered by Steal the Sun",
+            "option": "steal-the-sun",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "Empowered by Steal the Sun",
+            "predicate": [
+              "steal-the-sun"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Beam of the Seven Suns",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "fire"
+      ],
+      "text": "The sun-spire collects solar energy and uses the energy to create a deadly beam of fire. It fires the beam in a 120-foot line, dealing 11d8 fire damage to all creatures in the line (DC 33 basic Reflex save save). The concentrated beam ignites everything in its path, including the air, creating a wall of burning flame along the line that continues to burn until the end of the sun-spire's next turn. This wall has the effects of a 5th-rank Wall of Fire spell, dealing 5d6 fire damage to any creature that crosses the wall or occupies the wall's area at the start of its turn. The sun-spire can't use the Beam of the Seven Suns again for 1d4 rounds, although rounds it's not in sunlight don't count toward this number."
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Large or smaller, arm, DC 33 basic Reflex save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-guidance",
+  "system": "pf2e",
+  "name": "Spell Effect: Guidance",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Guidance\n\nYou gain a +1 status bonus to one attack roll, Perception check, saving throw, or skill check you attempt. You choose which roll to use the bonus on before rolling.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "perception",
+        "saving-throw",
+        "skill-check"
+      ],
+      "type": "status",
+      "value": 1,
+      "when": [
+        "guidance"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "parent:origin:item:tag:amped",
+          {
+            "gte": [
+              "parent:origin:item:level",
+              6
+            ]
+          }
+        ],
+        "selector": "attack",
+        "slug": "guidance",
+        "value": 2
+      }
+    }
+  ]
+}

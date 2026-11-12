@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "know-it-all",
+  "system": "pf2e",
+  "name": "Know-It-All",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "bard",
+    "thaumaturge"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "enigma muse"
+  ],
+  "text": "Bard When you succeed at a check to Recall Knowledge, you gain additional information or context. When you critically succeed at a check to Recall Knowledge, you get additional information or context or can ask an additional follow-up question (the GM chooses which).\n\nThaumaturge Having heard and scrutinized every rumor or story in the book, you know for a fact that if you've heard something at all, you've probably heard about it at great length. When you succeed or critically succeed at a check to Recall Knowledge, you can ask an additional follow-up question. At the GM's discretion, you might gain even more additional context than normal.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": "skill-check",
+      "text": "{item|system.description.value}",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        "action:recall-knowledge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "or": [
+              "class:bard",
+              "class:thaumaturge",
+              "feat:bard-dedication",
+              "feat:thaumaturge-dedication"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "class:bard",
+                  "feat:bard-dedication"
+                ]
+              }
+            ],
+            "text": "PF2E.SpecificRule.Feat.KnowItAll.Bard"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "class:thaumaturge",
+                  "feat:thaumaturge-dedication"
+                ]
+              }
+            ],
+            "text": "PF2E.SpecificRule.Feat.KnowItAll.Thaumaturge"
+          }
+        ]
+      }
+    }
+  ]
+}

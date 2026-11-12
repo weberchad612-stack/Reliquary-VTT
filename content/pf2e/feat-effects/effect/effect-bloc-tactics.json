@@ -1,0 +1,63 @@
+{
+  "kind": "effect",
+  "slug": "effect-bloc-tactics",
+  "system": "pf2e",
+  "name": "Effect: Bloc Tactics",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Bloc Tactics\n\nYou gain a +4 status bonus to Deception checks to prevent others from seeing through your disguise, and you can add your level even if untrained. Additionally, you also gain a +3 status bonus to saving throws against smoke, fumes, and inhaled substances.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "check",
+        "key": "RollOption",
+        "option": "bloc-tactics",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "deception",
+      "type": "status",
+      "value": 4,
+      "slug": "bloc-tactics-status",
+      "when": [
+        "bloc-tactics"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "deception",
+      "type": "proficiency",
+      "value": "@level",
+      "slug": "bloc-tactics-proficiency",
+      "when": [
+        "bloc-tactics",
+        "proficiency:untrained"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 3,
+      "when": [
+        {
+          "or": [
+            "bloc-tactics",
+            "item:trait:inhaled"
+          ]
+        }
+      ]
+    }
+  ]
+}

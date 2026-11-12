@@ -1,0 +1,48 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-warshard-shot",
+  "system": "pf2e",
+  "name": "Spell Effect: Warshard Shot",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Warshard Shot\n\nYou take persistent spirit damage. As long as you are taking this persistent spirit damage, you take a –1 status penalty to your AC.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "persistent-damage",
+            "value": {
+              "damageType": "spirit",
+              "formula": "max(5,@item.level)"
+            }
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Persistent Damage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "status",
+      "value": -1,
+      "when": [
+        "self:condition:persistent-damage:spirit"
+      ]
+    }
+  ]
+}

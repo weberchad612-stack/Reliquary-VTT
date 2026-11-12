@@ -1,0 +1,164 @@
+{
+  "kind": "creature",
+  "slug": "fossil-golem",
+  "system": "pf2e",
+  "name": "Fossil Golem",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "golem",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 33,
+    "hp": 195,
+    "perception": 20,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 20,
+      "will": 18
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": 2,
+      "int": -5,
+      "str": 7,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 26,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10 + 13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "fossilization"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Golem Antimagic",
+      "category": "defensive",
+      "text": "Harmed by cold and water (5d10 untyped, 2d8 untyped from areas or persistent damage); healed by acid (area 2d8 healing HP); slowed by earth\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Stone to Flesh",
+      "category": "defensive",
+      "text": "A Stone to Flesh spell negates the golem's golem antimagic and its resistance to physical damage for 1 round. A Petrify spell reverses this effect immediately.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "vulnerable-to-stone-to-flesh",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine",
+              "bludgeoning"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "vulnerable-to-stone-to-flesh"
+              }
+            ],
+            "type": "physical",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fossilization",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "incapacitation"
+      ],
+      "text": "The first time each round a creature takes damage from the fossil golem's jaws, the target must attempt a DC 32 Fortitude save save.\n\nIf it fails and has not already been slowed by this ability, it becomes Slowed 1 for 1 minute. If the creature was already slowed by this ability, a failed save causes it to be Petrified permanently."
+    },
+    {
+      "kind": "ability",
+      "name": "Reassemble",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The fossil golem reorganizes its bones, increasing its reach to 25 feet and reducing its Speed to 15 feet. It can revert to its original form by taking this action again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "reassemble",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": -10,
+          "when": [
+            "reassemble"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "reassemble"
+            ],
+            "property": "traits",
+            "value": "reach-25"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Fossil golems are typically made from the fossilized bones of dinosaurs and other ancient megafauna, though some crafters stretch the definition and instead use magically petrified bones of dragons or even giants. Not bound to any specific model, fossil golems are crafted to be as terrifying as possible instead of models of anatomic accuracy. As such, most fossil golems are nightmarish saurian amalgams whose massive arms end with the complete skulls of apex predators like tyrannosauruses, their bite enhanced to petrify flesh.\n\nThe enchantments that animate fossil golems grant them a form of modular flexibility, letting them trade mobility for extended reach through the rapid rearrangement of their limbs. This also lets them appear like a jumbled mass of bones at rest, making them likely to be mistaken for decor rather than guardians.\n\n---\n\nPowerful constructs that blend magic and raw material, golems make ideal guardians and bodyguards, with forms and functions as varied as the needs of those who employ them. As their crafters experiment with more exotic components and create new formulas, golems with surprising abilities emerge."
+}

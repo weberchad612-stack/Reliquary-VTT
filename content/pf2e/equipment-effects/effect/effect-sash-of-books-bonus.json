@@ -1,0 +1,112 @@
+{
+  "kind": "effect",
+  "slug": "effect-sash-of-books-bonus",
+  "system": "pf2e",
+  "name": "Effect: Sash of Books (Bonus)",
+  "source": {
+    "title": "Pathfinder #192: Worst of All Possible Worlds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sash of Books\n\nYou gain a +1 circumstance bonus to attack rolls against the marked creature and to your AC and saving throws against attacks and effects from the marked creature. This bonus increases to +2 if you critically succeeded your check to Recall Knowledge.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "sash-of-books"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:2",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:3",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "sash-of-books"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "attack-roll",
+        "saving-throw"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "slug": "sash-of-books",
+      "when": [
+        {
+          "or": [
+            "origin:mark:sash-of-books",
+            "target:mark:sash-of-books"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "sash-of-books:critical-success"
+        ],
+        "selectors": [
+          "ac",
+          "attack-roll",
+          "saving-throw"
+        ],
+        "slug": "sash-of-books",
+        "value": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "elegecide-doom-demon",
+  "system": "pf2e",
+  "name": "Elegecide (Doom Demon)",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-00: Salt of the Ocean",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "amphibious",
+    "demon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 8,
+    "perception": 8,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 5,
+      "will": 2
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 1,
+      "int": -1,
+      "str": 2,
+      "wis": -1
+    },
+    "skills": {
+      "deception": 5,
+      "diplomacy": 4,
+      "intimidation": 5
+    },
+    "speeds": {
+      "land": 15,
+      "swim": 25
+    },
+    "languages": [
+      "chthonian"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 1
+        },
+        {
+          "type": "holy",
+          "value": 1
+        }
+      ]
+    },
+    "notes": {
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Figment",
+          "rank": 1,
+          "ref": "spells:spell/figment"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Sigil",
+          "rank": 1,
+          "ref": "spells:spell/sigil"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 6,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy (100 feet)",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ],
+      "text": "A monster with telepathy can communicate mentally with any creatures within the listed radius, as long as they share a language. This doesn't give any special access to their thoughts, and communicates no more information than normal speech would."
+    },
+    {
+      "kind": "ability",
+      "name": "Hope Vulnerability",
+      "category": "interaction",
+      "text": "The elegecide is fueled by the certainty of doom, which leaves it weakened by any hope. The first time each round that a creature critically fails at an attack or skill check against the elegecide, it experiences a burst of hope that leaves it Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "affects": "origin",
+            "key": "EphemeralEffect",
+            "predicate": [
+              {
+                "or": [
+                  "action:trip",
+                  "action:shove",
+                  "action:demoralize"
+                ]
+              }
+            ],
+            "selectors": [
+              "attack-roll",
+              "skill-check"
+            ],
+            "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Hope Vulnerability"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Doom Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "fear"
+      ],
+      "text": "30 feet\n\nThe elegecide constantly emits telepathic warnings about future dangers and harm. When a non-demon creature ends its turn in the aura, it must attempt a DC 16 Will save save. If it fails, it becomes Frightened 1 (Frightened 2 on a critical failure).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "divine",
+              "fear"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dorsal Lash",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "mental"
+      ],
+      "text": "The elegecide lashes out with its trailing dorsal fins, looping them around a target within 15 feet. It sends a burst of telepathic information about all the possible ways the target can be injured in the next minute. The target takes 1d4 mental damage and must attempt a DC 16 Reflex save save.\n\n---\nCritical Success The target is unaffected.\n\nSuccess The target takes half damage.\n\nFailure The target takes full damage and is Grabbed by the elegecide.\n\nCritical Failure The target takes double damage and is Restrained by the elegecide."
+    },
+    {
+      "kind": "spell",
+      "name": "Demonic Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ]
+}

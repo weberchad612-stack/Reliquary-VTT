@@ -1,0 +1,207 @@
+{
+  "kind": "effect",
+  "slug": "stance-arcane-cascade",
+  "system": "pf2e",
+  "name": "Stance: Arcane Cascade",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Arcane Cascade\n\nYour melee Strikes gain the arcane trait and deal 1 extra force damage, and you gain resistance 1 to damage from spells. If you have the Weapon Specialization class feature, the damage and resistance increase to 2, and if you have Greater Weapon Specialization, they increase to 3.\n\nIf you Cast a Spell and then enter Arcane Cascade on the same turn, you can change the damage from the stance to any one damage type that spell could deal instead of force.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "actorFlag": true,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Magus.ArcaneCascade.WeaponDamage",
+            "value": "weapon-damage"
+          },
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitPiercing",
+            "value": "piercing"
+          },
+          {
+            "label": "PF2E.TraitSlashing",
+            "value": "slashing"
+          },
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitForce",
+            "value": "force"
+          },
+          {
+            "label": "PF2E.TraitMental",
+            "value": "mental"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          },
+          {
+            "label": "PF2E.TraitSpirit",
+            "value": "spirit"
+          },
+          {
+            "label": "PF2E.TraitVitality",
+            "value": "vitality"
+          },
+          {
+            "label": "PF2E.TraitVoid",
+            "value": "void"
+          }
+        ],
+        "flag": "stanceArcaneCascade",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType",
+        "rollOption": "arcane-cascade-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:melee"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "traits",
+        "value": "arcane"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "slug": "arcane-cascade-extra-damage"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "not": "arcane-cascade-damage:weapon-damage"
+          }
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "melee-strike-damage"
+        ],
+        "slug": "arcane-cascade-extra-damage",
+        "value": "{item|flags.system.rulesSelections.stanceArcaneCascade}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:weapon-specialization"
+        ],
+        "selector": "melee-strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:greater-weapon-specialization"
+        ],
+        "selector": "melee-strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.arcaneCascade.damageType",
+        "value": "{item|flags.system.rulesSelections.stanceArcaneCascade}"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "spells",
+      "value": 1
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "feature:weapon-specialization"
+        ],
+        "type": "spells",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "feature:greater-weapon-specialization"
+        ],
+        "type": "spells",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "events": {
+          "onCreate": true,
+          "onTurnStart": true
+        },
+        "key": "TempHP",
+        "predicate": [
+          "feature:inexorable-iron",
+          "self:weapon:melee",
+          "self:weapon:hands-held:2"
+        ],
+        "value": "max(floor(@actor.level / 2), 1)"
+      }
+    }
+  ]
+}

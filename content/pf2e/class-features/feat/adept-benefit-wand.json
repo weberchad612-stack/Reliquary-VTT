@@ -1,0 +1,128 @@
+{
+  "kind": "feat",
+  "slug": "adept-benefit-wand",
+  "system": "pf2e",
+  "name": "Adept Benefit (Wand)",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "You gain versatility and additional benefits when you fire your wand. The range of Fling Magic increases to 120 feet. Choose a second damage type from the list; whenever you Fling Magic, you can select between either of the two damage types you have chosen. Fling Magic has an additional effect if the target fails its save and takes damage, depending on the type.\n- Cold: The target becomes chilled, taking a –10-foot status penalty to its Speeds for 1 round. Effect: Fling Magic (Adept Cold)\n- Electricity: The target is shocked, becoming Off-Guard until the end of your next turn.\n- Fire: The target catches flame, taking 1d10 persistent,fire (or 2d10 persistent,fire on a critical failure). If you have the wand paragon benefit, this increases to 2d10 persistent,fire (or 4d10 persistent,fire on a critical failure).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.thaumaturge.paragonChoices",
+        "priority": 20,
+        "value": {
+          "label": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Label",
+          "value": "Compendium.pf2e.classfeatures.Item.Paragon Benefit (Wand)"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              {
+                "not": "wand-initiate-damage-type:cold"
+              }
+            ],
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              {
+                "not": "wand-initiate-damage-type:electricity"
+              }
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "not": "wand-initiate-damage-type:fire"
+              }
+            ],
+            "value": "fire"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType",
+        "rollOption": "wand-adept-damage-type"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Thaumaturge.Implement.Adept.Label",
+        "mode": "add",
+        "predicate": [
+          "item:slug:fling-magic"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              {
+                "not": "feature:paragon-benefit-wand"
+              }
+            ],
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Adept.RangeIncrease"
+          },
+          {
+            "predicate": [
+              "wand-damage-type:cold"
+            ],
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Adept.Cold"
+          },
+          {
+            "predicate": [
+              "wand-damage-type:cold"
+            ],
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Fling Magic (Adept Cold)]"
+          },
+          {
+            "predicate": [
+              "wand-damage-type:electricity"
+            ],
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Adept.Electricity"
+          },
+          {
+            "predicate": [
+              "wand-damage-type:fire",
+              {
+                "not": "feature:paragon-benefit-wand"
+              }
+            ],
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Adept.Fire"
+          },
+          {
+            "predicate": [
+              "wand-damage-type:fire",
+              "feature:paragon-benefit-wand"
+            ],
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Wand.Adept.FireParagon"
+          }
+        ]
+      }
+    }
+  ]
+}

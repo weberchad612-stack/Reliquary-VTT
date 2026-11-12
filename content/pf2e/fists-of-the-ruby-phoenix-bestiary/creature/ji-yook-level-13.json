@@ -1,0 +1,257 @@
+{
+  "kind": "creature",
+  "slug": "ji-yook-level-13",
+  "system": "pf2e",
+  "name": "Ji-yook (Level 13)",
+  "source": {
+    "title": "Pathfinder #167: Ready? Fight!",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "good",
+    "humanoid",
+    "kitsune"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 190,
+    "perception": 26,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 5,
+      "int": 4,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 26,
+      "deception": 25,
+      "stealth": 24,
+      "thievery": 24
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "kitsune",
+      "nagaji",
+      "taldane",
+      "tengu",
+      "tien"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Innate Divine Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Illusory Scene",
+          "rank": 5,
+          "ref": "spells:spell/illusory-scene"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Sanctuary",
+          "rank": 1,
+          "ref": "spells:spell/sanctuary"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dart",
+      "ref": "equipment:item/dart",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Greater Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Explorer's Clothing",
+      "ref": "equipment:item/explorers-clothing",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Smokestick (Greater)",
+      "ref": "equipment:item/smoke-ball-greater",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d4+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dart",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "magical",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foxfire",
+      "attack": 24,
+      "range": 20,
+      "damage": [
+        {
+          "dice": "3d4",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "Ji-yook transforms into her human form. Using Change Shape counts as creating a disguise for the Impersonate use of Deception. Ji-yook can remain in her human form indefinitely, and she can shift back to her true kitsune form by using this action again.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Foxfire Blast",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "flourish",
+        "magical"
+      ],
+      "text": "Ji-yook makes a fist Strike. On a hit, the target takes an additional 3d4 electricity damage and is pushed back 10 feet. On a critical hit, the target is pushed back and then knocked Prone",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "electricity",
+            "diceNumber": 3,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "foxfire-blast"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "foxfire-blast",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "foxfire-blast"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pinning Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Ji-yook expertly aims and flings a dart to peg an opponent to a nearby wall or floor. Ji-yook makes a dart Strike. If the attack hits, it deals no damage and instead pins the target to an adjacent surface. The target is Immobilized and must spend an Interact action to attempt a DC 10 Athletics check check to pull the dart free; it can't move from its space until it succeeds. If Ji-yook's dart Strike was a critical hit, the target must succeed at two separate Athletics checks to pull the dart free. The target is Off-Guard while it remains immobilized in this way."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Ji-yook Strikes deal an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female kitsune ninja"
+}

@@ -1,0 +1,209 @@
+{
+  "kind": "creature",
+  "slug": "akila-stormheel",
+  "system": "pf2e",
+  "name": "Akila Stormheel",
+  "source": {
+    "title": "Pathfinder #167: Ready? Fight!",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "halfling",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 34,
+    "hp": 230,
+    "perception": 24,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 26,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 5,
+      "int": 2,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 26,
+      "athletics": 25,
+      "nature": 24,
+      "stealth": 26
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "halfling",
+      "mwangi",
+      "taldane"
+    ],
+    "notes": {
+      "saves": "+2 to Grab an Edge"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Katar",
+      "ref": "equipment:item/katar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Katar",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "deadly-d6",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 28,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "propulsive",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "3d8+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Agile Faller",
+      "category": "defensive",
+      "text": "Akila takes half damage from falls.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:grab-an-edge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Akila's mask melds into her face and she takes on the form of a leopard, or she returns to her halfling form. As a leopard, the only Strikes she can make are a jaws Strike (which deals 3d6+10 piercing damage plus Grab) and an agile claws Strike (which deals 3d4+10 slashing damage).\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Akila Strides, then Strikes. If she was Hidden at the start of this action, she remains hidden until after the Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Leap",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Akila Leaps either up to 50 feet horizontally and 10 feet vertically or up to 25 feet vertically and up to 10 feet horizontally. She can make a Strike at any point during the Leap. If she hits, she deals an extra 8 bludgeoning damage from the impact.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 8,
+          "when": [
+            "powerful-leap"
+          ],
+          "damageType": "bludgeoning"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "powerful-leap",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Akila deals an extra 1d6 precision damage to Off-Guard targets.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female halfling Emerald Boughs attendant"
+}

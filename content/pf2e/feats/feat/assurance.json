@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "assurance",
+  "system": "pf2e",
+  "name": "Assurance",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "fortune",
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in at least one skill"
+  ],
+  "maxTakable": "unlimited",
+  "text": "Even in the worst circumstances, you can perform basic tasks. Choose a skill you're trained in. You can forgo rolling a skill check for that skill to instead receive a result of 10 + your proficiency bonus (do not apply any other bonuses, penalties, or modifiers).\n\n---\n\nSpecial You can select this feat multiple times. Each time, choose a different skill and gain the benefits for that skill.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            {
+              "gte": [
+                "skill:{choice|value}:rank",
+                1
+              ]
+            }
+          ]
+        },
+        "flag": "assurance",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "SubstituteRoll",
+        "label": "PF2E.SpecificRule.SubstituteRoll.Assurance",
+        "selector": "{item|flags.system.rulesSelections.assurance}",
+        "slug": "assurance",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "predicate": [
+          "substitute:assurance",
+          {
+            "not": "bonus:type:proficiency"
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.assurance}",
+        "suppress": true
+      }
+    }
+  ]
+}

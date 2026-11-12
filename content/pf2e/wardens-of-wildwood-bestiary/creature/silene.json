@@ -1,0 +1,349 @@
+{
+  "kind": "creature",
+  "slug": "silene",
+  "system": "pf2e",
+  "name": "Silene",
+  "source": {
+    "title": "Pathfinder #201: Pactbreaker",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "spirit",
+    "undead"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 26,
+    "hp": 100,
+    "perception": 18,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 16,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 6,
+      "int": 3,
+      "str": -5,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 16,
+      "intimidation": 16,
+      "nature": 18,
+      "stealth": 18,
+      "woodland-lore-applies-only-to-the-woodland-the-waldgeist-is-bonded-to-lore": 21
+    },
+    "speeds": {
+      "land": 0
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "arboreal",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "speak with plants"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Tree Stride",
+          "rank": 5,
+          "ref": "spells:spell/natures-pathway"
+        },
+        {
+          "name": "Speak with Plants (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 3,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Entangle (At-Will)",
+          "rank": 2,
+          "ref": "spells:spell/entangling-flora"
+        },
+        {
+          "name": "Tanglefoot",
+          "rank": 1,
+          "ref": "spells:spell/tangle-vine"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Lignifying Hand",
+      "attack": 18,
+      "traits": [
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "void"
+        }
+      ],
+      "effects": [
+        "lignify"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Forest Guardian",
+      "category": "defensive",
+      "text": "A waldgeist is compelled to investigate the sound of wood or trees being damaged, such as by being burned or chopped down. A waldgeist that hears such a sound must succeed at a DC 26 Will save save or spend all their actions moving toward the sound until they identify the cause. This can't be used to compel a waldgeist to leave their bonded woodland. A waldgeist that succeeds at their saving throw is temporarily immune for 10 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Woodland Dependent",
+      "category": "defensive",
+      "text": "A waldgeist is mystically bonded to a single forest, jungle, orchard, grove, or other similar large, wooded area and must remain within it. If the waldgeist moves outside their bonded woodland, they're immediately destroyed."
+    },
+    {
+      "kind": "ability",
+      "name": "Lignify",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "primal"
+      ],
+      "text": "The touch of a waldgeist transforms flesh into wood. A living creature damaged by the waldgeist's lignifying hand Strike must succeed at a DC 24 Fortitude save save or become Slowed 1 (or Slowed 2 on a critical failure). Further failed saves against lignify increases the slowed condition. Once a creature's actions are reduced to 0 by lignify, that creature becomes Petrified, except they're transformed into wood instead of stone."
+    },
+    {
+      "kind": "ability",
+      "name": "Lumberjack's Bane",
+      "category": "offensive",
+      "text": "Silene's Strikes deal an additional 1d6 void damage to humans, an additional 1d6 void damage to creatures wielding axes, or an additional 1d8 void damage to humans wielding axes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Silene.LumberjacksBane",
+            "option": "target:wielding-axe",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "xor": [
+                  "target:wielding-axe",
+                  "target:trait:human"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:wielding-axe",
+              "target:trait:human"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Possess Tree",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Frequency once per 10 minutes\n\n---\n\nEffect The waldgeist touches a tree to merge with it, possessing it for up to 1 minute. They can end this possession early as a free action at the start of their turn. While the waldgeist possesses a tree, they lose the incorporeal trait, fly Speed, all resistances, their non-constant spells, and their lignifying hand Strike. Additionally, their size increases to Huge, they gain resistance 5 to bludgeoning and piercing damage, weakness 10 to fire, Speed 20 feet, and the following branch Strike.\n\nMelee 1 branch (reach 15 feet) +20, Damage 2d12+9 bludgeoning.\n\nWhile a waldgeist possesses a tree, any damage that would be dealt to the waldgeist is instead dealt to the tree. The tree has 60 Hit Points. When the tree is reduced to 0 Hit Points, the waldgeist is immediately ejected, and the tree is destroyed.",
+      "frequency": {
+        "max": 1,
+        "per": "PT10M"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "possess-tree",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "possess-tree"
+              }
+            ]
+          }
+        },
+        {
+          "key": "speed",
+          "type": "fly",
+          "value": 30
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "possess-tree"
+              }
+            ],
+            "type": "all-damage",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "possess-tree"
+            ],
+            "value": "huge"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "possess-tree"
+            ],
+            "type": [
+              "bludgeoning",
+              "piercing"
+            ],
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "possess-tree"
+            ],
+            "type": "fire",
+            "value": 10
+          }
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 20
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 20,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 9
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Branch",
+            "predicate": [
+              "possess-tree"
+            ],
+            "replaceAll": true,
+            "slug": "branch",
+            "traits": [
+              "reach-15"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Waldgeists act as avatars of nature that seek vengeance for environmental abuse, such as pollution and deforestation. These undead spirits of destroyed trees form at the site of their destruction or in a nearby woodland, if the original location was entirely razed. They become guardians of the forest, possessing power over the plants within its boundaries. Waldgeists show no mercy to anyone caught damaging their bonded woodland, attacking loggers, fey, travelers, and invasive species with equal prejudice.\n\n---\n\nWhen disaster befalls the natural world, a different kind of undead may rise, entirely unlike risen humanoids. Most plants, fish, insects, and other animals don't possess a psychology complex enough to experience the emotional catharsis required to return as undead without intervention from an outside force. Mass extinction can serve as that outside force.\n\nHumanoids clear-cutting an entire forest or a seaside community wiping out a species critical to their ecosystem can spawn a verdorite. The collective spiritual energy and emotional distress of a dying biome powers these undead, formed as conglomerates or representatives.",
+  "blurb": "Variant waldgeist"
+}

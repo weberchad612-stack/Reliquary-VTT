@@ -1,0 +1,272 @@
+{
+  "kind": "creature",
+  "slug": "yobnobby",
+  "system": "pf2e",
+  "name": "Yobnobby",
+  "source": {
+    "title": "Pathfinder #214: The Broken Palace",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "unique",
+  "traits": [
+    "fey",
+    "gremlin"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 19,
+    "hp": 44,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 4,
+      "int": 4,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 9,
+      "crafting": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "traps",
+            "when": [
+              "action:craft:trap"
+            ]
+          }
+        ]
+      },
+      "deception": 10,
+      "nature": 5,
+      "occultism": 9,
+      "stealth": 9,
+      "thievery": 9
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "azlanti",
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 4
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 4
+        },
+        {
+          "type": "electricity",
+          "value": 4
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Tekko-Kagi",
+      "ref": "equipment:item/tekko-kagi",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Yobnobby's Armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Tekko-Kagi",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "disarm",
+        "finesse",
+        "free-hand",
+        "monk",
+        "parry",
+        "reach-0"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Expert Overdrive",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Frequency once per round\n\n---\nEffect Yobnobby attempts a DC 18 Crafting check check.\n\n---\nCritical Success Yobnobby's Strikes deal an additional 5 damage for 1 minute. After this effect ends, Yobnobby can't use Expert Overdrive for 1 minute.\n\nSuccess As critical success, but only an additional 3 damage.\n\nFailure Nothing happens.\n\nCritical Failure Yobnobby's gizmos catch on fire! She takes 3 fire damage and can't use Expert Overdrive again for 1 minute.\n\nEffect: Yobnobby Overdrive",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Explode",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "manipulate",
+        "unstable"
+      ],
+      "text": "Yobnobby causes her armor to belch fire in a 5-foot emanation. Creatures in this area (other than Yobnobby) take 3d6 fire damage (DC 19 basic Reflex save save), after which Yobnobby must attempt a DC 17 Flat check.\n\nSuccess Yobnobby's armor is unharmed by the explosion.\n\nFailure Yobnobby's armor emits a loud grinding sound and belches plumes of rancid-smelling smoke. She can't use Explode again until she takes 10 minutes to repair her armor.\n\nCritical Failure As failure, but Yobnobby also takes 3 fire damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Extend Claws",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Yobnobby causes her tekko-kagis to extend on armatures from her hands, granting her reach 10 feet with the weapons until the end of her turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extend-claws",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "extend-claws"
+            ],
+            "property": "traits",
+            "value": "reach-10"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "extend-claws"
+            ],
+            "property": "traits",
+            "value": "reach-0"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Yobnobby deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tinker",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "A group of six jinkins can work together for an hour to imbue an item with a curse at a range of 60 feet. While this process is lengthy, it's also unobtrusive and can be performed while Hiding. Jinkins prefer to use this ability on magic items. The curse makes the item unreliable (DC 5 Flat check check or waste any action to Interact with or Activate the item), adds a bizarre requirement to use the item, or imparts some other curse of a similar caliber."
+    },
+    {
+      "kind": "ability",
+      "name": "Yobnobby's Armor",
+      "category": "offensive",
+      "text": "Yobnobby's armor grants resistance 4 to acid and electricity damage. This resistance increases to 6 when she successfully activates Expert Overdrive.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "self:effect:yobnobbys-overdrive"
+            ],
+            "type": [
+              "acid",
+              "electricity"
+            ],
+            "value": 6
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Jinkins are sadistic tinkers who steal and sabotage items and take great pride in their power to curse precious objects. They hold grudges and create convoluted plans for revenge when they feel slighted, such as when a creature dares to remove one of their curses. Rarely content to wreak simple mayhem, jinkins also take immense pleasure in torture and murder, though they prefer to lead victims into traps designed to capture or incapacitate rather than just kill them outright. Deep pits are a preferred method, since victims who survive their fall face a slow death from starvation and thirst while jinkins gather at the edge of pits to tease and torment them.\n\n---\n\nGremlins are cruel fey tricksters and saboteurs who have fully acclimated to life in the Universe, finding distinct niches for their inventive destructiveness. Nearly all gremlins delight in ruining or breaking things, whether it's something physical like a device or vehicle or something intangible such as an alliance or relationship. A gremlin's greatest joy is watching the collapse of complex creations, preferably after the slightest, carefully targeted nudge from the gremlin. Gremlins tend to denigrate, bully, or even slaughter their lesser kin, particularly mitflits, whom stronger gremlins derisively call \"baggies.\"",
+  "blurb": "Variant female jinkin inventor"
+}

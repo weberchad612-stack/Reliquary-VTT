@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "lucky-courser",
+  "system": "pf2e",
+  "name": "Lucky Courser",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "catfolk",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 140,
+    "perception": 18,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 18,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 14,
+      "deception": 14,
+      "nature": 16,
+      "stealth": 18,
+      "survival": 16,
+      "lore-about-a-magical-creature-type-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "amurrun",
+      "common",
+      "fey"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Arbalest",
+      "ref": "equipment:item/arbalest",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Whip",
+      "ref": "equipment:item/whip",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Cold Iron Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "gear",
+      "name": "Dawnsilver Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Whip",
+      "attack": 20,
+      "traits": [
+        "disarm",
+        "finesse",
+        "nonlethal",
+        "reach",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Arbalest",
+      "attack": 20,
+      "traits": [
+        "backstabber",
+        "magical",
+        "reload-1"
+      ],
+      "range": 110,
+      "damage": [
+        {
+          "dice": "2d10+6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "cold-iron-bolts",
+        "dawnsilver-bolts"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scent (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Warning Ears",
+      "actions": "free",
+      "category": "interaction",
+      "traits": [
+        "visual"
+      ],
+      "text": "Trigger The lucky courser rolls initiative using Perception or Survival\n\n---\nEffect Their expressive ears twitch in alarm, granting allies within 10 feet a +2 circumstance bonus to initiative rolls.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|description}",
+          "when": [
+            {
+              "or": [
+                "check:statistic:base:perception",
+                "check:statistic:base:survival"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guide to Fortune",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "fortune"
+      ],
+      "text": "Frequency once per hour\n\nTrigger The lucky courser or an ally within 10 feet fails a Reflex save, Acrobatics check, or Athletics check\n\n---\nEffect The triggering creature rerolls the save or check and uses the better result.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      },
+      "rules": [
+        {
+          "key": "note",
+          "selector": [
+            "reflex",
+            "acrobatics",
+            "athletics"
+          ],
+          "text": "{item|description}",
+          "outcome": [
+            "failure"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Elusive Hunter",
+      "category": "offensive",
+      "text": "The lucky courser can hide and sneak in any natural terrain and in lesser cover from allies."
+    },
+    {
+      "kind": "ability",
+      "name": "Feline Skirmish",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The lucky courser can Interact to reload their arbalest, Step, and Strike, taking the actions in any order. The Step ignores difficult terrain.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Head Shot",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The lucky courser Creates a Diversion and then Strikes. The target is Dazzled until the end of the lucky courser's next turn on a successful Strike (or Blinded on a critical hit)."
+    }
+  ],
+  "text": "Masterful catfolk hunters travel the far corners of the world, stalking terrible the monsters who dwell there in hopes of someday putting an end to their predations. They eagerly cooperate with other adventurers to defeat demons, aberrations, and malevolent beasts and fey.\n\n---\nCatfolk can be found traveling almost anywhere, and they are quick to settle down for a chat when they encounter fellow travelers. Some trade stories, act as guides, or operate at the fringes of polite society."
+}

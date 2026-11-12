@@ -1,0 +1,229 @@
+{
+  "kind": "creature",
+  "slug": "cratonys",
+  "system": "pf2e",
+  "name": "Cratonys",
+  "source": {
+    "title": "Pathfinder #164: Hands of the Devil",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "evil",
+    "fiend",
+    "lawful",
+    "unholy",
+    "velstrac"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 90,
+    "perception": 13,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 14,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 15,
+      "crafting": 10,
+      "intimidation": 15,
+      "religion": 11,
+      "torture-lore": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        },
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 10 (deactivated by holy or silver)",
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "painsight"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Chain",
+      "attack": 17,
+      "traits": [
+        "disarm",
+        "evil",
+        "magical",
+        "reach-10",
+        "trip",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed"
+        }
+      ],
+      "effects": [
+        "impaling-chain",
+        "rusty-chains"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Painsight",
+      "category": "interaction",
+      "traits": [
+        "divine"
+      ],
+      "text": "A velstrac automatically knows whether a creature it sees has any of the Doomed, Dying, and Wounded conditions, as well as the value of those conditions"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 10 (Deactivated by Holy or Silver)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy",
+              "silver"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Unnerving Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "30 feet. When a creature ends its turn in the aura, it sees the face of a departed loved one in place of the evangelist's face. The creature must succeed at a DC 21 Will save save or become Frightened 2 (Frightened 3 on a critical failure).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "unnerving-gaze",
+            "traits": [
+              "divine",
+              "fear",
+              "mental",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Animate Chains",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Chains in the evangelist's vicinity sprout barbs and writhe menacingly. The evangelist can make chain Strikes against any creature that is adjacent to an unattended chain within 20 feet, in addition to those within the reach of the evangelist's chain Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "The evangelist stares at a creature they can see within 30 feet. The target must immediately attempt a DC 21 Will save save against unnerving gaze. In addition, if the creature was already Frightened, on a failed save, the evangelist is Concealed from the creature for as long as the creature remains frightened.\n\nAfter attempting this save, the creature is then temporarily immune until the start of the evangelist's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Impaling Chain",
+      "category": "offensive",
+      "text": "When the evangelist critically hits with a chain Strike, the target is impaled and anchored in place, becoming Grabbed by the chain. The creature is unable to recover from persistent bleed damage until it gets free (escape dc=25).\n\nEffect: Impaling Chain"
+    },
+    {
+      "kind": "ability",
+      "name": "Rusty Chains",
+      "category": "offensive",
+      "text": "When Cratonys damages a creature with her chains, including persistent bleed damage from being impaled by a chain, the creature must succeed at a DC 21 Fortitude save saving throw or contract a severe form of tetanus called velstrac tetanus.\n\n---\nVelstracs sometimes intentionally infect their chains with dangerous diseases, such as this aggressive form of tetanus. Tetanus can produce stiffness, muscle spasms strong enough to break bones, and ultimately death.\n\nSaving Throw DC 21 Fortitude save\n\n---\n\nOnset 1d4 days\n\nStage 1 Clumsy 1 (1 week)\n\nStage 2 Clumsy 2 and can't speak (1 day)\n\nStage 3 Paralyzed (1 day)\n\nStage 4 death"
+    }
+  ],
+  "text": "Evangelists, the velstracs' unofficial ambassadors, roam the farthest reaches of the planes to spread the word of their kind's abhorrent belief in perfection through pain. They are therefore the most frequently encountered velstracs on the Material Plane, leading covens of hedonistic mortal flesh-sculptors or serving as wardens of horrific dungeons. In regions ruled by infernal powers, evangelists may serve as lieutenants or advisors, whispering secret paths to power in exchange for mortal's souls or choice mortal flesh. Evangelists are the same size as humans, although with the heavy chains that always drape their forms, they often weigh 350 pounds or more.\n\n---\n\nThe search for ultimate sensation through self-mutilation is the horrifying preoccupation of the shadow-dwelling fiends known as velstracs. They transcend their stoic detachment only when inflicting pain and terror upon their victims, practicing new forms of torture, or when turning their agonizing practices back on themselves. Velstracs consider themselves enlightened beings, transcending such limitations as morality or mortal taboos, but their victims know them as emotionless tormentors who inflict sadistic suffering. These fiends claim to seek perfection in thought, form, and action, although they don't recognize any refinement that doesn't require the painful excision of the flesh or spirit.\n\nVelstracs manifest from the souls of the most extreme masochistic or sadistic mortals who are judged and sent on to the Shadow Plane. They take on forms that suit their vile predilections, ranging from the low-ranking augurs to the maestros of suffering and mutilation called eremites. The process of transformation warps the soul step by step, with other velstracs conveying their new members through untold chambers of pain among the dark reaches of the Shadow Plane.",
+  "blurb": "Female evangelist velstrac"
+}

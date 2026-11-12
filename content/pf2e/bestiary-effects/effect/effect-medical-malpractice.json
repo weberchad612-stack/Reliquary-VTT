@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "effect-medical-malpractice",
+  "system": "pf2e",
+  "name": "Effect: Medical Malpractice",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "The surgeon's melee Strikes deal extra precision damage against the marked creature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "medical-malpractice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 2
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 1
+          }
+        ],
+        "flag": "medicalMalpractice",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "@item.flags.system.rulesSelections.medicalMalpractice",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "target:mark:medical-malpractice"
+        ],
+        "selector": "melee-strike-damage"
+      }
+    }
+  ]
+}

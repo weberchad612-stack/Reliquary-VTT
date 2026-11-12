@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "adrenaline-rush",
+  "system": "pf2e",
+  "name": "Adrenaline Rush",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "barbarian",
+    "rage"
+  ],
+  "category": "class",
+  "text": "In the heat of battle, you are capable of amazing feats of strength.\n\nWhile you are Raging, increase your encumbered and maximum Bulk limits by 2; you also gain a +1 status bonus to Athletics checks to lift heavy objects, Escape, and Force Open.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "self:effect:rage",
+        {
+          "or": [
+            "action:escape",
+            "action:force-open",
+            "action:lift-heavy-object"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "inventory.bulk.encumberedAfterAddend",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "inventory.bulk.maxAddend",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "value": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "kind": "creature",
+  "slug": "spriggan-warlord",
+  "system": "pf2e",
+  "name": "Spriggan Warlord",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "gnome",
+    "humanoid",
+    "spriggan"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 14,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 4,
+      "int": 1,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 17,
+      "intimidation": 17,
+      "society": 12,
+      "stealth": 17,
+      "survival": 14,
+      "thievery": 15
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 25,
+      "attack": 15,
+      "spells": [
+        {
+          "name": "Fly",
+          "rank": 4,
+          "ref": "spells:spell/fly"
+        },
+        {
+          "name": "Shatter",
+          "rank": 4,
+          "ref": "spells:spell/shatter"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 3,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Blur",
+          "rank": 2,
+          "ref": "spells:spell/blur"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Morningstar",
+      "ref": "equipment:item/morningstar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Morningstar",
+      "attack": 18,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 18,
+      "traits": [
+        "magical",
+        "reload-0"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Enraged Growth",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "Trigger The spriggan warlord takes damage\n\n---\nEffect The spriggan warlord grows to size Large, along with their equipment (which returns to natural size if removed). The spriggan warlord's reach increases by 5 feet. They regain 15 healing Hit Points and gain a +2 status bonus to melee attack and damage rolls.\n\nThis effect continues until the end of the spriggan warlord's next turn, but on any turn in which the spriggan warlord deals damage to another creature and is not Fatigued, the effect extends until the end of the following turn.\n\nWhen Enraged Growth ends, the spriggan warlord is fatigued for 1 hour.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "enraged-growth",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "enraged-growth"
+            ],
+            "value": "large"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "enraged-growth",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "reach"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "melee-strike-attack-roll",
+            "melee-strike-damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "enraged-growth"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bully's Bludgeon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "nonlethal"
+      ],
+      "text": "The spriggan warlord makes a morningstar Strike with a +2 circumstance bonus to its attack roll. This attack is nonlethal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bullys-bludgeon",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "morningstar-attack",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "bullys-bludgeon"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "bullys-bludgeon",
+              "item:slug:morningstar"
+            ],
+            "property": "traits",
+            "value": "nonlethal"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The spriggan warlord's Strikes deal an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Warlord's Training",
+      "category": "offensive",
+      "text": "A spriggan warlord has access to the critical specialization effects for crossbows and morningstars, and the reload of any crossbow they wield is reduced by 1 (to a minimum of 0).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              {
+                "or": [
+                  "item:base:crossbow",
+                  "item:base:morningstar"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "text": "While the leaders of larger spriggan enclaves tend to be uniquely trained warriors with highly specialized skills, spriggan warlords are fond of the traditional spriggan weaponry of morningstar and crossbow, valuing this traditional fighting style for its simplicity and for using both weapons to their full potential. Spriggan warlords often serve as sub-commanders in large groups, filling roles in spriggan society akin to captains of the guard or bodyguards to spriggan royalty. In smaller groups or remote outposts, a single spriggan warlord is typically in charge of a band of spriggan bullies."
+}

@@ -1,0 +1,196 @@
+{
+  "kind": "creature",
+  "slug": "tok-loyalist-3-4",
+  "system": "pf2e",
+  "name": "Tok Loyalist (3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-07: Sewer Dragon Crisis",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "evil",
+    "humanoid",
+    "kobold",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 18,
+    "hp": 18,
+    "perception": 5,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 7,
+      "crafting": {
+        "value": 3,
+        "special": [
+          {
+            "value": 4,
+            "label": "traps",
+            "when": [
+              "action:craft:trap"
+            ]
+          }
+        ]
+      },
+      "nature": 6,
+      "stealth": 7,
+      "survival": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Snare Kit",
+      "ref": "equipment:item/artisans-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 9,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hurried Retreat",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The loyalist is adjacent to at least one enemy\n\n---\n\nEffect The loyalist Strides up to its Speed plus 5 feet and gains a +2 circumstance bonus to AC against reactions triggered by this movement. It must end this movement in a space that's not adjacent to any enemy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hurried-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "hurried-retreat"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hurried-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The loyalist deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "kind": "effect",
+  "slug": "effect-sanguine-fang-armor",
+  "system": "pf2e",
+  "name": "Effect: Sanguine Fang - Armor",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Sanguine Fang, Sanguine Fang (Greater), Sanguine Fang (Major)\n\nYou gain resistance to persistent bleed damage and an item bonus on saving throws against effects with the void trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sanguine-fang",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sanguine Fang"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sanguine-fang-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sanguine Fang (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:sanguine-fang-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Sanguine Fang (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "sanguine-fang"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "sanguine-fang:sanguine-fang"
+        ],
+        "type": "bleed",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "sanguine-fang:sanguine-fang-greater"
+        ],
+        "type": "bleed",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "sanguine-fang:sanguine-fang-major"
+        ],
+        "type": "bleed",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "sanguine-fang-bonus",
+      "when": [
+        "item:trait:void"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "sanguine-fang:sanguine-fang-major"
+        ],
+        "selector": "saving-throw",
+        "slug": "sanguine-fang-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

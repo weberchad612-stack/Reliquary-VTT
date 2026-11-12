@@ -1,0 +1,151 @@
+{
+  "kind": "creature",
+  "slug": "terror-shrike",
+  "system": "pf2e",
+  "name": "Terror Shrike",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 12,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": -4,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 12
+    },
+    "speeds": {
+      "land": 60
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 12,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "tearing-clutch"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 12,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sprint",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per minute\n\n---\nEffect The terror shrike Strides three times in a straight line",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Stunning Screech",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The terror shrike unleashes a haunting screech that causes prey to freeze in fear. Each non–terror bird creature in a 30-foot emanation must attempt a DC 19 Will save save. Regardless of the result, creatures are then temporarily immune for 1 minute.\n\n---\nSuccess The creature is unaffected.\n\nFailure The creature is Stunned 1.\n\nCritical Failure The creature is Stunned 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The terror shrike Strides twice. If it ends its movement within melee reach of one creature, it can make a melee Strike against that creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Tearing Clutch",
+      "category": "offensive",
+      "text": "The terror shrike's powerful beak can tear through flesh. On a successful beak Strike, the target takes 1 persistent bleed damage. This bleed damage increases to 1d8 on a critical hit.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "beak-damage",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            {
+              "not": "check:outcome:critical-success"
+            }
+          ],
+          "damageType": "bleed"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "selector": "beak-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

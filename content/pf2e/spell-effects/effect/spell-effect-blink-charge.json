@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-blink-charge",
+  "system": "pf2e",
+  "name": "Spell Effect: Blink Charge",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Blink Charge\n\nYour Strike deals extra force damage, depending on the result of your Strike.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:equipped"
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "force",
+        "diceNumber": "ceil((@item.level - 2)/2)",
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.blinkCharge",
+        "value": "@item.level"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "{item|flags.system.rulesSelections.weapon}-attack",
+      "text": "PF2E.SpecificRule.BlinkCharge.Note.Failure",
+      "outcome": [
+        "failure"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "{item|flags.system.rulesSelections.weapon}-attack",
+      "text": "PF2E.SpecificRule.BlinkCharge.Note.CriticalFailure",
+      "outcome": [
+        "criticalFailure"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "kind": "effect",
+  "slug": "effect-silvertongue-mutagen-moderate",
+  "system": "pf2e",
+  "name": "Effect: Silvertongue Mutagen (Moderate)",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Silvertongue Mutagen (Moderate)\n\nBenefit You gain a +2 item bonus to Deception, Diplomacy, Intimidation and Performance checks. Your critical failures with any of these skills become failures instead.\n\nDrawback You take a -2 item penalty to Arcana, Crafting, Lore, Occultism, and Society checks. Choose one skill in which you are trained; for the duration, you become untrained in that skill. All your failures to Recall Knowledge become critical failures.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "deception",
+        "diplomacy",
+        "intimidation",
+        "performance"
+      ],
+      "type": "item",
+      "value": 2
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "arcana",
+        "crafting",
+        "lore-skill-check",
+        "occultism",
+        "society"
+      ],
+      "type": "item",
+      "value": -2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "deception",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "diplomacy",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "intimidation",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "performance",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "failure": "one-degree-worse"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:recall-knowledge"
+        ],
+        "selector": "skill-check",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            {
+              "gte": [
+                "skill:{choice|value}:rank",
+                1
+              ]
+            }
+          ]
+        },
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "priority": 1,
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.{item|flags.system.rulesSelections.skill}.rank",
+        "predicate": [
+          {
+            "not": "field-vials"
+          }
+        ],
+        "value": 0
+      }
+    }
+  ]
+}

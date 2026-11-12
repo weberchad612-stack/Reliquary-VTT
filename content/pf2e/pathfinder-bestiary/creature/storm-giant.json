@@ -1,0 +1,263 @@
+{
+  "kind": "creature",
+  "slug": "storm-giant",
+  "system": "pf2e",
+  "name": "Storm Giant",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "amphibious",
+    "chaotic",
+    "giant",
+    "good",
+    "humanoid"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 34,
+    "hp": 235,
+    "perception": 24,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 21,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 1,
+      "int": 3,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 27,
+      "crafting": 24,
+      "intimidation": 24,
+      "performance": 22
+    },
+    "speeds": {
+      "land": 35,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "jotun",
+      "sussuran"
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Chain Lightning",
+          "rank": 6,
+          "ref": "spells:spell/chain-lightning",
+          "uses": 3
+        },
+        {
+          "name": "Control Weather (At Will)",
+          "rank": 5,
+          "ref": "spells:spell/control-weather"
+        },
+        {
+          "name": "Freedom of Movement (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Levitate (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/levitate"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Greatsword",
+      "ref": "equipment:item/greatsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sack for Holding Rocks",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rock",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Greatsword",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-15",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+16",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+16",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 37,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d10+16",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "rock"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lightning Blade",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "primal"
+      ],
+      "text": "The storm giant raises one hand to the sky, channeling a bolt of lightning into the blade held in the other. The giant makes a greatsword Strike with a -2 circumstance penalty against each creature within its reach.\n\nIt makes only one attack roll and compares the result against each creature's AC. This Strike deals an additional 3d12 electricity damage and counts as two attacks for the giant's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "lightning-blade",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "greatsword-attack",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "lightning-blade"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "electricity",
+            "diceNumber": 3,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "lightning-blade"
+            ],
+            "selector": "greatsword-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Wide Swing",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The storm giant makes a single greatsword Strike and compares the attack roll result to the ACs of up to two foes within its reach. This counts as two attacks for the giant's multiple attack penalty."
+    }
+  ],
+  "text": "Storm giants are looming but benevolent stewards of sea and sky, often serving as the natural guardians of tropical islands, coastlines, or rocky archipelagos. Storm giants tend to rapidly shift in mood and behavior, one moment engaging in peaceful negotiation, the next unleashing unbridled ferocity against their foes. In this way, they embody both the fury of a raging tempest and the calm of a hurricane's eye. This can make them valuable allies who race to the aid of those in need, but their allies remain must be alert and mindful of their mood, as the giants can be quick to anger or aggressive when caution is most appropriate.\n\nMost storm giants have complexions akin to the crystal blue of the ocean or the warm violet of a sky touched by the setting sun. Their hair tends to be dark purple, blue, or black, and their eyes often have a silvery sheen. A typical storm giant stands 21 feet tall, weighs 12,000 pounds, and lives to be about 600 years old.\n\n---\n\nGiants are massive humanoid creatures who live in remote regions throughout the world. They are divided into a number of subtypes."
+}

@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "effect-oath-of-the-defender",
+  "system": "pf2e",
+  "name": "Effect: Oath of the Defender",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Oath of the Defender\n\nYou gain resistance to damage dealt by creatures with the chosen trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "origin:trait:{item|origin.flags.system.oathOfTheDefender}"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.DamageFromSwornCreatures",
+        "predicate": [
+          {
+            "not": "self:effect:champions-resistance"
+          }
+        ],
+        "type": "custom",
+        "value": "2 + floor((@item.origin.level - 2)/5)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "origin:trait:{item|origin.flags.system.oathOfTheDefender}"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.DamageFromSwornCreatures",
+        "predicate": [
+          "self:effect:champions-resistance"
+        ],
+        "type": "custom",
+        "value": "7 + @item.origin.level"
+      }
+    }
+  ]
+}

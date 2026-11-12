@@ -1,0 +1,282 @@
+{
+  "kind": "creature",
+  "slug": "ambush-copse",
+  "system": "pf2e",
+  "name": "Ambush Copse",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "elemental",
+    "plant",
+    "wood"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 33,
+    "hp": 300,
+    "perception": 20,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 22,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 6,
+      "dex": 4,
+      "int": 0,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 27,
+      "intimidation": 20,
+      "stealth": {
+        "value": 23,
+        "special": [
+          {
+            "value": 25,
+            "label": "in forest",
+            "when": [
+              "terrain:forest"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 15
+        },
+        {
+          "type": "axe-vulnerability",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Muan cant speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Log",
+      "attack": 27,
+      "traits": [
+        "backswing",
+        "forceful",
+        "reach-20",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "pounding-smash"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Caber",
+      "attack": 25,
+      "traits": [
+        "thrown-40"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk",
+      "category": "defensive",
+      "text": "An ambush copse that sees fire or axes has a chance of going berserk. At the start of its turn, if it is aware of an axe or a fre the size of a lit torch or larger, the ambush copse must succeed at a DC 5 Flat check or go berserk. A berserk ambush copse can't use concentrate actions and wildly attacks the nearest living creature, or the nearest object if no creatures are nearby."
+    },
+    {
+      "kind": "ability",
+      "name": "Blinding Branches",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 20 feet of the ambush copse leaves a square during a move action it's using\n\nRequirements The triggering creature is in forest terrain\n\n---\nEffect The ambush copse's elemental energy animates nearby tree branches to swat at the creature's face. The triggering creature must succeed at a DC 30 Reflex save save or become Blinded for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Felling Ambush",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature moves within 10 feet of the ambush copse\n\nRequirements The ambush copse is disguised as trees or logs\n\n---\nEffect The ambush copse makes a log Strike against the triggering creature. If the attack hits, the creature must attempt a DC 30 Reflex save save or be knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Feign Copse",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the ambush copse appears to be a harmless patch of trees or logs. It has an automatic result of 43 (45 in forests) on Deception checks and DCs to pass as trees or logs.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "feign-copse",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "feign-copse"
+              }
+            ],
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.AmbushCopse.RollOptionLabel",
+            "option": "in-forest",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "deception-dc",
+            "deception"
+          ],
+          "type": "untyped",
+          "value": 33,
+          "slug": "feign-copse-bonus",
+          "when": [
+            "feign-copse"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SubstituteRoll",
+            "predicate": [
+              "feign-copse"
+            ],
+            "required": true,
+            "selector": "deception-check",
+            "slug": "feign-copse-bonus",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "feign-copse",
+              "in-forest"
+            ],
+            "selectors": [
+              "deception-dc",
+              "deception"
+            ],
+            "slug": "feign-copse-bonus",
+            "value": 35
+          }
+        },
+        {
+          "key": "note",
+          "selector": "deception",
+          "text": "{item|description}",
+          "when": [
+            "feign-copse"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pounding Smash",
+      "category": "offensive",
+      "text": "Regardless of whether the Strike hits or misses, the ambush copse's melee Strikes create a 5-foot-square of difficult terrain in the target's space."
+    },
+    {
+      "kind": "ability",
+      "name": "Pulverizing Barrage",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The ambush copse makes three log Strikes, each at a –2 penalty, all targeting the same creature. The ambush copse's multiple attack penalty doesn't increase until after it has made all three attacks. The ambush copse gains the Clumsy 2 condition until the beginning of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "pulverizing-barrage",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "log-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "pulverizing-barrage"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": [
+            "log-attack"
+          ],
+          "text": "{item|description}",
+          "when": [
+            "pulverizing-barrage"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sunder Objects",
+      "category": "offensive",
+      "text": "When an ambush copse damages an item or structure, it deals an additional 15 untyped damage to that item or structure."
+    }
+  ],
+  "text": "Sawed and axe-hewn timber grind together as an ambush copse moves, smashing through the forest. Cuts and burns mar the bark of this gigantic, angry mass of whirling, deadly logs.\n\nThe forest never forgets. It remembers the hatchets, the rasping saws, and the smoke of crackling wood fres. It remembers the carts taking ancient trees away to cut, shape, and burn. Fey meddling or errant elemental magic draw such memories out alongside the rage and sorrow of the forest to form an ambush copse.\n\nAn ambush copse exacts its ire on villages along the woodcutter's path or waits for intruders to step into its forest domain. While an ambush copse might be mistaken for a wounded arboreal, it can cease movement to appear as an overgrown pile of logs or a partially collapsed hovel. There, it waits for retribution."
+}

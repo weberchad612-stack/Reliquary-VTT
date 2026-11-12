@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-show-off",
+  "system": "pf2e",
+  "name": "Effect: Show Off",
+  "source": {
+    "title": "Pathfinder Lost Omens Firebrands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Show-Off\n\nYou gain temporary Hit Points equal to your level (double your level on a critical success).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "show-off"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "show-off:success"
+        ],
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "show-off:critical-success"
+        ],
+        "value": "2*@actor.level"
+      }
+    }
+  ]
+}

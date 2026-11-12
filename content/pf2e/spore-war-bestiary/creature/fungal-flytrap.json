@@ -1,0 +1,180 @@
+{
+  "kind": "creature",
+  "slug": "fungal-flytrap",
+  "system": "pf2e",
+  "name": "Fungal Flytrap",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "rare",
+  "traits": [
+    "fungus",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 29,
+    "hp": 185,
+    "perception": 17,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 5,
+      "dex": 5,
+      "int": -5,
+      "str": 7,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 23,
+      "stealth": {
+        "value": 21,
+        "special": [
+          {
+            "value": 24,
+            "label": "in undergrowth",
+            "when": [
+              "terrain:undergrowth"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Leaf",
+      "attack": 23,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "greater-infestation"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Capture",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature hits or touches the flytrap.\n\n---\n\nEffect The flytrap makes a leaf Strike against the triggering creature. If it hits, the creature is Grabbed in that leaf."
+    },
+    {
+      "kind": "ability",
+      "name": "Focused Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The flytrap attacks a single target with all four of its leaves. The flytrap makes one leaf Strike. On a success, the flytrap deals the damage from one leaf Strike plus an additional 1d8 damage for every leaf beyond the first. On a failure, the flytrap deals the damage from one leaf Strike. It deals no damage on a critical failure. This counts toward the flytrap's multiple attack penalty as a number of attacks equal to the number of leaves the flytrap has.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "focused-assault",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 3,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "focused-assault"
+            ],
+            "selector": "leaf-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Infestation",
+      "category": "offensive",
+      "traits": [
+        "fungus",
+        "poison"
+      ],
+      "text": "Saving Throw DC 29 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 2d8 poison damage (1 round)\n\nStage 2 3d8 persistent,poison damage and can hear root rotter thoughts within 30 feet as an imprecise sense (2 rounds)\n\nStage 3 as stage 2, but 4d8 persistent,poison damage and arise as a root rotter upon death (2 rounds).\n\nThis replaces the Grab and Swallow Whole abilities possessed by giant flytraps."
+    },
+    {
+      "kind": "ability",
+      "name": "Hungry Flurry",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The flytrap makes four leaf Strikes at a -2 penalty, each against a different target. These attacks count toward the flytrap's multiple attack penalty, but the multiple attack penalty doesn't increase until after it makes all its attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "hungry-flurry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "leaf-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "hungry-flurry"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Because they blend in so well with surrounding foliage, giant flytraps can use the element of surprise to make quick strikes against unsuspecting adventurers and forest travelers.\n\n---\n\nFlytraps eagerly feed on humanoids, monstrous insects, and larger prey.",
+  "blurb": "Variant giant flytrap"
+}

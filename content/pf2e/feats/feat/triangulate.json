@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "triangulate",
+  "system": "pf2e",
+  "name": "Triangulate",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype",
+    "auditory",
+    "visual"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Sniping Duo Dedication"
+  ],
+  "text": "Your spotter's quick signals help you make even difficult shots seem simple. As long as both you and your spotter can see the target of your attacks, you don't take a penalty for attacking within your second range increment with a crossbow or firearm. The penalty you take for firing into further range increments is –3 for the third range increment, with an additional –2 penalty for each additional increment beyond the third (–5 for the fourth range increment, –7 for the fifth, and –9 for the sixth).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.ToggleProperty.Triangulate",
+        "option": "triangulate",
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          "triangulate"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "triangulate"
+        ],
+        "selectors": [
+          "ranged-attack-roll"
+        ],
+        "slug": "range-penalty",
+        "value": 1
+      }
+    }
+  ]
+}

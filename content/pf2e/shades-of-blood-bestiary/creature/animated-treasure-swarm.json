@@ -1,0 +1,158 @@
+{
+  "kind": "creature",
+  "slug": "animated-treasure-swarm",
+  "system": "pf2e",
+  "name": "Animated Treasure Swarm",
+  "source": {
+    "title": "Pathfinder #215: To Blot Out the Sun",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless",
+    "swarm"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 85,
+    "perception": 11,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 15,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 4,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "precision"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(21 when broken), construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Construct Armor",
+      "category": "defensive",
+      "text": "Like normal objects, an animated treasure swarm has Hardness. This Hardness reduces any damage the swarm takes by an amount equal to its Hardness. Once an animated treasure swarm is reduced to fewer than half its Hit Points, or immediately upon becoming damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its AC to 21.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blade Storm",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "Each enemy in the animated treasure swarm's space takes 6d6 piercing or 6d6 slashing damage (DC 25 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "One with the Hoard",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The animated treasure swarm is adjacent to Viseldron's hoard\n\n---\nEffect The animated treasure swarm enters Viseldron's hoard, then emerges from the hoard at any other point in, or adjacent to, the hoard's area."
+    },
+    {
+      "kind": "ability",
+      "name": "Trash the Place",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "The animated treasure swarm hurls its most fragile components in a destructive barrage, dealing 4d6 bludgeoning damage to all creatures in a 20-foot burst within 100 feet (DC 25 basic Reflex save save)."
+    }
+  ]
+}

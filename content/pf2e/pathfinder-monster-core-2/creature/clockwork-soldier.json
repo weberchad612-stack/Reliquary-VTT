@@ -1,0 +1,192 @@
+{
+  "kind": "creature",
+  "slug": "clockwork-soldier",
+  "system": "pf2e",
+  "name": "Clockwork Soldier",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "clockwork",
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 80,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 14,
+      "will": 12
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 2,
+      "int": -5,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "to Disarm or Grapple",
+            "when": [
+              {
+                "or": [
+                  "action:disarm",
+                  "action:grapple"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 5
+        },
+        {
+          "type": "orichalcum",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine, orichalcum"
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 vs. Disarm"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 17,
+      "traits": [
+        "magical",
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 vs. Disarm",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex-dc",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wind-Up",
+      "category": "interaction",
+      "text": "24 hours, disable-device dc=22, standby\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "perception",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ClockworkWindUp",
+            "option": "wind-up",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "wind-up"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Activate Defenses",
+      "actions": 1,
+      "category": "offensive",
+      "text": "One of the soldier's external plates extends on a mechanical actuator to defend the soldier or an adjacent creature of the soldier's choice. The creature gains a +2 circumstance bonus to AC until the start of the soldier's next turn or until it is no longer adjacent to the soldier, whichever comes first. The soldier can have no more than one plate extended at a time.\n\nEffect: Activate Defenses"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "These diligent machines guard their assigned posts tirelessly. A typical clockwork soldier stands 6 feet tall and consists of 500 pounds of metal and magic.\n\n---\nIntricate, complex machines, clockworks are built with care by highly skilled engineers. Though their creation involves some amount of magic, they're primarily mechanical, packed with precision-tuned gears and springs working in concert.\n\nThe sturdy mainspring within a clockwork must be wound to provide the energy needed to power the device. Some larger clockworks contain a series of springs for different limbs that each need to be wound. A clockwork's crafter creates a unique metal key while building the clockwork; winding the clockwork usually involves inserting the key into the machine's back and turning clockwise. Larger clockworks require greater strength to turn the key and typically have larger keys to allow for more torque—some even accommodate a team of winders rather than an individual. Programming a clockwork requires both the key and the knowledge to set the program correctly, information usually reserved for the clockwork's creator or owner."
+}

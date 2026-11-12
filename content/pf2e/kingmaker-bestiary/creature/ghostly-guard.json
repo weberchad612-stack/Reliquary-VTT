@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "ghostly-guard",
+  "system": "pf2e",
+  "name": "Ghostly Guard",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "evil",
+    "ghost",
+    "incorporeal",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 210,
+    "perception": 29,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 27,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 0,
+      "dex": 4,
+      "int": 4,
+      "str": -5,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 29,
+      "intimidation": 29,
+      "nature": 27,
+      "stealth": 31
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "elven",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing, rejuvenation"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Ghostly Rapier",
+      "attack": 27,
+      "traits": [
+        "deadly-d8",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "void"
+        },
+        {
+          "dice": "2d6",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shame",
+      "category": "interaction",
+      "text": "A ghostly guard suffers from shame when it attacks a target that appears to be an elf or a worshipper of Calistria. Forgive Foe can be attempted against a ghostly guard with a DC 39 Diplomacy check check or DC 39 Society check check. If a ghostly guard is affected by a critical success from Forgive Foe, it sighs in relief as it fades away, its soul released into the afterlife."
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "interaction",
+      "text": "A typical ghost can stray only a short distance from where it was killed or the place it haunts. A typical limit is 120 feet. Some ghosts are instead bound to a room, building, item, or creature that was special to it rather than a location."
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Slaying or forgiving Nyrissa allows the ghostly guards to move on to their long-delayed afterlives, as does achieving a critical success with Forgive Foe.\n\n---\n\nWhen a ghost is destroyed, it re-forms after 2d4 days within the location it's bound to, fully healed. A ghost can be permanently destroyed only if someone determines the reason for its existence and sets right whatever prevents the spirit from resting."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ectoplasmic Maneuver",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "The ghostly guard lashes out with a whipping strand of solid ectoplasm against a target within 15 feet, in an attempt to Disarm, Shove, or Trip the foe. It uses its ghostly rapier Strike rather than an Athletics check to determine the results of this attempt."
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Moan",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The ghost laments its fate, forcing each living creature within 30 feet to attempt a DC 36 Will save save. On a failure, a creature becomes Frightened 2 (or Frightened 3 on a critical failure). On a success, a creature is temporarily immune to this ghost's frightful moan for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A ghostly guard deals 3d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Elf ghost"
+}

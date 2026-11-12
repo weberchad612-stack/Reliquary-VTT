@@ -1,0 +1,283 @@
+{
+  "kind": "creature",
+  "slug": "brass-dragon-adult",
+  "system": "pf2e",
+  "name": "Brass Dragon (Adult)",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "chaotic",
+    "dragon",
+    "fire",
+    "good"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 215,
+    "perception": 21,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 20,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 3,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 23,
+      "deception": 20,
+      "diplomacy": 20,
+      "society": 19
+    },
+    "speeds": {
+      "land": 50,
+      "burrow": 30,
+      "fly": 120
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "fey",
+      "gnomish",
+      "halfling",
+      "sussuran"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire",
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "speak with animals"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 30,
+      "attack": 22,
+      "spells": [
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/speak-with-animals"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "fire",
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+12",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wing",
+      "attack": 22,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 28 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wing Deflection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The dragon is targeted with an attack\n\n---\n\nEffect The dragon raises its wing, gaining a +2 circumstance bonus to AC against the triggering attack. If the dragon is flying, it descends 10 feet after the attack is complete.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "wing-deflection",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "wing-deflection"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "fire"
+      ],
+      "text": "The brass dragon breathes fire in a 80-foot line that deals 12d6 fire damage (DC 32 basic Reflex save save).\n\nThe dragon can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Desert Wind",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "air",
+        "arcane",
+        "concentrate"
+      ],
+      "text": "Frequency three times per day\n\n---\n\nEffect The dragon calls upon the desert wind. This has the same effect as Gust of Wind (DC 30 Fortitude save) but in a 60-foot cone.\n\nA creature that fails its save is also Blinded until the end of its next turn (or for 1 minute on a critical failure).",
+      "frequency": {
+        "max": 3,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one jaws Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "When the dragon scores a critical hit with a strike, it recharges Breath Weapon.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Brass dragons are whimsical tricksters who delight in humor and play. They particularly enjoy conversations with humans and other civilized humanoids, delighting in the naive customs of these diminutive races without showing them haughtiness or scorn. While they may seem merely curious, brass dragons engage in this sort of conversation with the goal of keeping up to date on regional politics so they can anticipate future conflicts. Along the way, they create extensive information networks that begin with their own allies but stretch across all levels of humanoid society-networks which the brass dragon then uses to subtly assist settlements near their lair. Unlike the schemes and manipulations of blue dragons, brass dragons use their informant networks to establish justice and equality.\n\nThese carefree dragons value independence and feel that all creatures deserve to live as they please, provided they don't harm others. They are emotional creatures and tend to have short attention spans, sometimes falling victim to depression in their twilight years. To combat this, some brass dragons keep pets and houseplants that they can care for.\n\nThough they may seem childlike in their curiosity concerning mortal affairs, a brass dragon's prowess in battle is no laughing matter. A brass dragon whose territory or allies are threatened is a terrifying foe indeed, quick to shed their innocent guise and unleash their terrifying might upon evildoers.\n\nMost brass dragons live in desert climates, and while they keep their lairs hidden, they often build near humanoid settlements.\n\n---\n\nParagons of virtue, nobility, and grace, metallic dragons are benevolent entities revered as mythic beings akin to gods in both their power and majesty. Few have ever seen a metallic dragon firsthand, but tales of their intervention in mortals' lives-and of their passing-always spread far and wide. Named for the way their scales resemble the shining metals humanoids use in commerce, warfare, and industry, these immense beings are diverse in their interests and abilities, and they don't seem to mind being associated with such mundane materials. After all, to compare a gold dragon to a gold coin is like comparing an ocean to a glass of water-though they may seem similar at first glance, the raw power, breadth, and grandeur of one simply overwhelms the other. In addition to metallic dragons and their chromatic counterparts, other types of dragons roam the world and the rest of the multiverse. In the legendary lands of Tian Xia on the other side of the globe are the imperial dragons, serpentine beings who protect the cosmic balance and defend their ancient homeland. Outside the Material Plane, primal dragons such as the domineering brine dragon and reclusive cloud dragon shape the nature and goings-on of the Elemental Planes. Countless other types of dragons are sure to exist, including dragons on far-flung planes of existence and, it is rumored, primeval dragons who soar between the stars."
+}

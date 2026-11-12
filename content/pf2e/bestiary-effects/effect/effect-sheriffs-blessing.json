@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "effect-sheriffs-blessing",
+  "system": "pf2e",
+  "name": "Effect: Sheriff's Blessing",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "You gain a +1 status bonus to all saving throws against fear effects. At rank 2, you treat any success on a saving throw against a fear effect as a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Numbers.One",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.Numbers.Two",
+            "value": 2
+          },
+          {
+            "label": "PF2E.SpecificRule.Numbers.Three",
+            "value": 3
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.NPCAbility.BastardhallPhantom.SupportRank.Prompt",
+        "rollOption": "sheriffs-blessing"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "item:trait:fear"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:trait:fear",
+          {
+            "gte": [
+              "sheriffs-blessing",
+              2
+            ]
+          }
+        ],
+        "selector": "saving-throw"
+      }
+    }
+  ]
+}

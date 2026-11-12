@@ -1,0 +1,76 @@
+{
+  "kind": "feat",
+  "slug": "numb",
+  "system": "pf2e",
+  "name": "Numb",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Zombie Dedication"
+  ],
+  "text": "As your body continues to rot and putrefy, your senses deaden and your undead powers grow. You gain the Advanced Undead Benefits as well as a +1 circumstance bonus on saving throws against emotion and pain effects. While your body is Deteriorated, your numbness amplifies in two ways: the circumstance bonus from this feat increases to +2, and if you roll a success on a saving throw against an emotion or pain effect, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "numb",
+      "when": [
+        {
+          "or": [
+            "emotion",
+            "pain"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "self:effect:deteriorated"
+        ],
+        "selector": "saving-throw",
+        "slug": "numb",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "self:effect:deteriorated",
+          {
+            "or": [
+              "emotion",
+              "pain"
+            ]
+          }
+        ],
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.ancestryfeatures.Item.Advanced Undead Benefits"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "kind": "effect",
+  "slug": "effect-saoc-astrology",
+  "system": "pf2e",
+  "name": "Effect: Saoc Astrology",
+  "source": {
+    "title": "Pathfinder Lost Omens Character Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "badge": {
+    "type": "formula",
+    "value": "1d8"
+  },
+  "text": "Granted by Saoc Astrology\n\nYou gain a circumstance bonus or penalty to skill checks.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "feat:heir-of-the-saoc"
+          }
+        ],
+        "removeAfterRoll": true,
+        "selector": "skill-check",
+        "type": "circumstance",
+        "value": "ternary(gte(@item.badge.value,6),2,ternary(gte(@item.badge.value,3),1,ternary(eq(@item.badge.value,2),0,-1)))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          "feat:heir-of-the-saoc"
+        ],
+        "removeAfterRoll": true,
+        "selector": "skill-check",
+        "slug": "heir-of-the-saoc-bonus",
+        "type": "circumstance",
+        "value": "ternary(gte(@item.badge.value,3),ceil(@item.badge.value/2),-1)"
+      }
+    }
+  ]
+}

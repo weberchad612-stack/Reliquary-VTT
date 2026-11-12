@@ -1,0 +1,206 @@
+{
+  "kind": "creature",
+  "slug": "smoldering-leopard",
+  "system": "pf2e",
+  "name": "Smoldering Leopard",
+  "source": {
+    "title": "Pathfinder #151: The Show Must Go On",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "animal",
+    "evil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 11,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 2,
+      "dex": 4,
+      "int": -4,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 10,
+      "stealth": {
+        "value": 11,
+        "special": [
+          {
+            "value": 14,
+            "label": "in dim light or darker",
+            "when": [
+              {
+                "or": [
+                  "lighting:dim-light",
+                  "lighting:darkness"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 3
+        }
+      ],
+      "resistances": [
+        {
+          "type": "electricity",
+          "value": 5
+        },
+        {
+          "type": "poison",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "finesse",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+3",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d4",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d4",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Smoke",
+      "category": "defensive",
+      "text": "10 feet. Every creature within the aura is Concealed; smoldering leopards can see through this concealment.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Smoke"
+              }
+            ],
+            "key": "Aura",
+            "radius": 10,
+            "slug": "aura-of-smoke"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The smoldering leopard Strides and makes a Strike at the end of that movement. If the leopard began this action Hidden, it remains hidden until after making this ability's Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Scorching Maul",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The smoldering leopard makes two claw Strikes against a creature it has Grabbed. A creature hit by both claw Strikes also takes 1d4 persistent,fire damage. Both attacks count toward its multiple attack penalty, but the penalty increases only after both attacks are made."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The smoldering leopard deals an extra 1d4 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

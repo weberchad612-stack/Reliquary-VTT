@@ -1,0 +1,137 @@
+{
+  "kind": "effect",
+  "slug": "stance-assume-earths-mantle",
+  "system": "pf2e",
+  "name": "Stance: Assume Earth's Mantle",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Assume Earth's Mantle\n- You become Large if you were smaller. This increases your reach by 5 feet (or by 10 feet if you started out Tiny).\n- You gain a climb Speed equal to your land Speed, but you can use it only to climb surfaces of earthen matter.\n- You gain a +1 circumstance bonus to your Fortitude saves and a +2 circumstance bonus to your Fortitude or Reflex DCs against attempts to Shove you, Trip you, or knock you Prone.\n- If your Strength is below +4, this armor raises your Strength to +4. If your Strength is +4 or higher, this armor grants you a +1 item bonus to your Strength.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.ActorSizeTiny",
+            "predicate": [
+              "self:size:tiny"
+            ],
+            "value": "tiny"
+          },
+          {
+            "label": "PF2E.ActorSizeSmall",
+            "predicate": [
+              {
+                "or": [
+                  "self:size:medium",
+                  "self:size:small"
+                ]
+              }
+            ],
+            "value": "medium-or-small"
+          },
+          {
+            "label": "PF2E.ActorSizeLarge",
+            "predicate": [
+              {
+                "gte": [
+                  "self:size",
+                  3
+                ]
+              }
+            ],
+            "value": "large-or-larger"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "assume-earths-mantle-initial-size"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "assume-earths-mantle-initial-size:tiny"
+        ],
+        "reach": {
+          "add": 10
+        },
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "assume-earths-mantle-initial-size:medium-or-small"
+        ],
+        "reach": {
+          "add": 5
+        },
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "selector": "climb",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "fortitude",
+      "type": "circumstance",
+      "value": 1
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "fortitude-dc",
+        "reflex-dc"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "action:shove",
+            "action:trip",
+            "inflicts:prone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.abilities.str.mod",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.abilities.str.mod",
+        "value": 4
+      }
+    }
+  ]
+}

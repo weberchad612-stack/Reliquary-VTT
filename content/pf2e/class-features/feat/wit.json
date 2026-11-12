@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "wit",
+  "system": "pf2e",
+  "name": "Wit",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "classfeature",
+  "text": "You are friendly, clever, and full of humor, always knowing just what to say. Your witticisms leave foes unprepared for the skill and speed of your attacks. You are trained in Diplomacy and gain the Bon Mot skill feat. When you use Bon Mot, the action gains the bravado trait",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.diplomacy.rank",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "uuid": "Compendium.pf2e.feats-srd.Item.Bon Mot"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.ExemplaryFinisher.Wit",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher",
+        "feature:exemplary-finisher"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:bon-mot"
+        ],
+        "property": "traits",
+        "value": "bravado"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "item:trait:bravado",
+        "predicate": [
+          "action:bon-mot"
+        ]
+      }
+    }
+  ]
+}

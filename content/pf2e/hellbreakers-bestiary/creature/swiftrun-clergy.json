@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "swiftrun-clergy",
+  "system": "pf2e",
+  "name": "Swiftrun Clergy",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "holy",
+    "human",
+    "humanoid",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 24,
+    "hp": 96,
+    "perception": 16,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 2,
+      "int": 1,
+      "str": 2,
+      "wis": 4
+    },
+    "skills": {
+      "diplomacy": 12,
+      "medicine": 14,
+      "religion": 13,
+      "society": 11,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 5
+        },
+        {
+          "type": "splash-damage",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Prepared Spells",
+      "tradition": "divine",
+      "type": "prepared",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Holy Light",
+          "rank": 3,
+          "ref": "spells:spell/holy-light"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 3,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Cleanse Affliction",
+          "rank": 2,
+          "ref": "spells:spell/cleanse-affliction"
+        },
+        {
+          "name": "Clear Mind",
+          "rank": 2,
+          "ref": "spells:spell/clear-mind"
+        },
+        {
+          "name": "Heal",
+          "rank": 1,
+          "ref": "spells:spell/heal"
+        },
+        {
+          "name": "Infuse Vitality",
+          "rank": 1,
+          "ref": "spells:spell/infuse-vitality"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        },
+        {
+          "name": "Protection",
+          "rank": 1,
+          "ref": "spells:spell/protection"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Sure Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike"
+        },
+        {
+          "name": "Vitality Lash",
+          "rank": 1,
+          "ref": "spells:spell/vitality-lash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Longbow Volley",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Swiftrun clergy draw their longbows, then launch a ranged attack in the form of a volley. This volley is a 10-foot burst within 60 feet that deals 3d6 piercing damage with a DC 21 basic Reflex save save. When the regiment is reduced to 2 segments, this area decreases to a 5-foot burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Daggers",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect Swiftrun's clergy swiftly strike with their daggers against each enemy in a 5-foot emanation, with a DC 21 basic Reflex save save. The damage dealt depends on the number of actions.\n\n1 1d4+1 piercing damage\n\n2 2d4+7 piercing damage\n\n3 2d4+10 piercing damage"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Spellcasting",
+      "category": "offensive",
+      "text": "When the Swiftrun clergy Casts a Spell, their constituent members combine their efforts into casting a more powerful version of the spell than any one member could achieve alone. When Casting a Spell that has an area of a burst, cone, or line and doesn't have a duration, increase the area of that spell. Add 5 feet to the radius of a burst that normally has a radius of at least 10 feet (a burst with a smaller radius is not affected). Add 5 feet to the length of a cone or line that is normally 15 feet long or smaller, and add 10 feet to the length of a larger cone or line.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:area:type:burst",
+              "item:duration:0",
+              {
+                "gte": [
+                  "item:area:size",
+                  10
+                ]
+              }
+            ],
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "lte": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 110,
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "gt": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 100,
+            "property": "area-size",
+            "value": 10
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Swiftrun is a small settlement dedicated to Erastil, barely large enough to be considered a village. Its priests are devoted to community and peace, nature and nurture. And yet, sometimes the time comes when one must take up arms to protect their community, when words and gentleness aren't enough.\n\nThe Erastilian clergy is known more for their farming techniques than their magic, but their rural ways shouldn't fool anyone into thinking they can't defend themselves. Each priest is equipped with the divine power of Old Deadeye as well as sharpshooting skills conducive to Erastil's favored weapon, the longbow. These priests are prepared to defend their homes with their skills when they must, though they are never eager to shed blood and would rather spend their days tending their crops and community."
+}

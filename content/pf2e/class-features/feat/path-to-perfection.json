@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "path-to-perfection",
+  "system": "pf2e",
+  "name": "Path to Perfection",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "monk"
+  ],
+  "category": "classfeature",
+  "text": "You have progressed along your own path to enlightenment. Choose your Fortitude, Reflex, or Will saving throw. Your proficiency rank for the chosen saving throw increases to master. When you roll a success on the chosen saving throw, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SavesFortitude",
+            "value": "fortitude"
+          },
+          {
+            "label": "PF2E.SavesReflex",
+            "value": "reflex"
+          },
+          {
+            "label": "PF2E.SavesWill",
+            "value": "will"
+          }
+        ],
+        "flag": "pathToPerfection",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.PathToPerfection"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.saves.{item|flags.system.rulesSelections.pathToPerfection}.rank",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "{item|flags.system.rulesSelections.pathToPerfection}",
+        "type": "save"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:path-to-perfection:{item|flags.system.rulesSelections.pathToPerfection}"
+      }
+    }
+  ]
+}

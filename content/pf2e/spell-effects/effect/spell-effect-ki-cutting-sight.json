@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-ki-cutting-sight",
+  "system": "pf2e",
+  "name": "Spell Effect: Ki Cutting Sight",
+  "source": {
+    "title": "Pathfinder Wake the Dead #2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Ki Cutting Sight\n\nThe next time you deal damage to the target with a Strike or ki spell, you deal additional slashing damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "ki-cutting-sight",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "slashing",
+        "diceNumber": "@item.level + 1",
+        "dieSize": "d10",
+        "key": "DamageDice",
+        "predicate": [
+          "ki-cutting-sight",
+          {
+            "or": [
+              "action:strike",
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:monk"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "damage"
+      }
+    }
+  ]
+}

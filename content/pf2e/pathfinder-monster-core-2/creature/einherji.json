@@ -1,0 +1,268 @@
+{
+  "kind": "creature",
+  "slug": "einherji",
+  "system": "pf2e",
+  "name": "Einherji",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "aesir",
+    "monitor"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 175,
+    "perception": 17,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 18,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 6,
+      "dex": 4,
+      "int": 0,
+      "str": 7,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 25,
+      "crafting": 16,
+      "intimidation": 21
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit",
+      "jotun"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+4 to will saves vs. fear"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Champion Devotion Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Spectral Advance",
+          "rank": 5,
+          "ref": "spells:spell/spectral-advance"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Wooden Shield",
+      "ref": "equipment:item/wooden-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 23,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+4 to Will Saves vs. Fear",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "fear"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Raise a Shield",
+      "actions": 1,
+      "category": "defensive",
+      "text": "Requirements You are wielding a shield.\n\n---\n\nYou position your shield to protect yourself. When you have Raised a Shield, you gain its listed circumstance bonus to AC. Your shield remains raised until the start of your next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within your reach uses a manipulate action or a move action, makes a ranged attack, or leaves a square during a move action it's using.\n\n---\n\nYou lash out at a foe that leaves an opening. Make a melee Strike against the triggering creature. If your attack is a critical hit and the trigger was a manipulate action, you disrupt that action. This Strike doesn't count toward your multiple attack penalty, and your multiple attack penalty doesn't apply to this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Challenge Foe",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The einherji challenges one creature they can see to single combat, attempting to Demoralize that target.\n\nThis target remains the einherji's foe until it's defeated, it flees, or the encounter ends. The einherji gains a circumstance bonus to damage equal to their number of weapon damage dice against their designated foe but takes an equivalent circumstance penalty to damage against any other creature.\n\nIf the einherji is defeated by their challenged foe, the shame causes them to lose use of their champion devotion spells for 1 week or until they challenge the same foe again and emerge victorious, whichever comes first.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "challenge-foe-bonus",
+          "when": [
+            "target:mark:challenge-foe"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "circumstance",
+          "value": -2,
+          "slug": "challenge-foe-penalty",
+          "when": [
+            "self:effect:challenge-foe",
+            {
+              "not": "target:mark:challenge-foe"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Instant Repair",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The einherji Repairs their shield. They can't use this ability if the shield is completely destroyed."
+    },
+    {
+      "kind": "ability",
+      "name": "Jotun Slayer",
+      "category": "offensive",
+      "text": "The einherji has a +4 circumstance bonus to damage rolls made against giants and creatures that are at least two sizes larger than the einherji.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "jotun-slayer",
+            "priority": 50,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            {
+              "or": [
+                "jotun-slayer",
+                "target:trait:giant"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Einherjar are mighty warriors chosen by valkyries from the ranks of those slain in terrible and legendary battles. Forged from the souls of the greatest warriors, the implacable einherjar serve as the foot soldiers of pantheons, skilled in handto-hand combat and slaying giants.\n\nEinherjar often come from warrior cultures, including Ulfen vikings (like the einherji represented in this entry), particularly fierce pirates from the Shackles, and even Osirian conquerors. They can be chosen from wherever war and might hold sway; many deities who hold the call of battle and the pursuit of physical power more sacred than concepts of good and evil might count einherjar warriors and valkyrie choosers of the slain among their chosen servitors. For example, Gorum, Besmara, and Sekhmet have all elevated fallen worshippers as einherjar. Einherjar dedicated to different deities often wield weapons or possess varying cosmetic appearances based on their deity's preferred weapon and their place of death; however, they're universally stalwart, implacable, and efficiently deadly. Einherjar with two-handed weapons or who arise from other backgrounds often have different abilities in place of Jotun Slayer and Instant Repair."
+}

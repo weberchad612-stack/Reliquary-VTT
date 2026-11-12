@@ -1,0 +1,262 @@
+{
+  "kind": "creature",
+  "slug": "clockwork-sentry",
+  "system": "pf2e",
+  "name": "Clockwork Sentry",
+  "source": {
+    "title": "Pathfinder #215: To Blot Out the Sun",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "clockwork",
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 26,
+    "hp": 115,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 13,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 3,
+      "int": -5,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": {
+        "value": 18,
+        "special": [
+          {
+            "value": 20,
+            "label": "to Grapple, Shove, or Trip",
+            "when": [
+              {
+                "or": [
+                  "action:grapple",
+                  "action:shove",
+                  "action:trip"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "orichalcum",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine, orichalcum"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 23,
+      "attack": 15,
+      "spells": [
+        {
+          "name": "Wall of Stone",
+          "rank": 5,
+          "ref": "spells:spell/wall-of-stone"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 3,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "Slow",
+          "rank": 3,
+          "ref": "spells:spell/slow"
+        },
+        {
+          "name": "See the Unseen (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/see-the-unseen"
+        },
+        {
+          "name": "Grease",
+          "rank": 1,
+          "ref": "spells:spell/grease"
+        },
+        {
+          "name": "Sleep",
+          "rank": 4,
+          "ref": "spells:spell/sleep"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Average)",
+      "ref": "equipment:item/manacles-average",
+      "type": "equipment",
+      "quantity": 6
+    },
+    {
+      "kind": "strike",
+      "name": "Pneumatic Swing",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Pulse Blast",
+      "attack": 17,
+      "range": 100,
+      "damage": [
+        {
+          "dice": "3d6",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wind-Up",
+      "category": "interaction",
+      "text": "24 hours, disable-device dc=26, standby\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "perception",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ClockworkWindUp",
+            "option": "wind-up",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "wind-up"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Seize",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within a clockwork sentry's reach uses a manipulate action or a move action, makes a ranged attack, or leaves a space during a move action it's using\n\n---\nEffect The clockwork sentry makes an Athletics check to Grapple the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Arrest",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger The clockwork sentry has a creature Restrained\n\n---\nEffect The clockwork sentry Interacts to place manacles on the restrained creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Tackle",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The clockwork sentry Strides up to twice its Speed in a straight line. If it ends this movement in reach of a creature, it makes a fist Strike against that creature. On a hit or critical hit, the target takes an additional 1d6 bludgeoning damage and is knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Clockworks are intricate, complex machines built by talented engineers and infused with magical energy. At the height of the Azlanti Empire, magitech clockworks were commonplace, from music boxes, toys, and vehicles, to bodyguards, soldiers, spies, and even nannies.\n\nClockwork sentries are four-armed constructs created to serve as guardians, programmed either to prevent access to a specific location or to keep targets from escaping a secured site. This makes them the perfect clockwork for serving in prisons, dungeons, vaults, and similar locations.\nWinding Clockworks\nA clockwork must be wound to remain operational. Each clockwork has the wind-up ability, with the specifics listed in its stat block. There are winding station locations in the adventure where a clockwork can return to be wound rather than having to rely upon another creature. The full rules for winding clockworks can be found in Pathfinder Bestiary 3 on page 48.\nClockwork Hot Spots\nToday, the nations of Alkenstar and New Thassilon, the church of Brigh, and the famed Clockwork Cathedral of Absalom are the primary sources for clockwork creation. Haunted clockworks from the Clicking Caverns often invade the nations of Nagajor and Xa Hoi."
+}

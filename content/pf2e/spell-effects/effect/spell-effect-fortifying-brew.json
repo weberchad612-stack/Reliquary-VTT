@@ -1,0 +1,75 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-fortifying-brew",
+  "system": "pf2e",
+  "name": "Spell Effect: Fortifying Brew",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 12,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Fortifying Brew\n\nYou gain temporary Hit Points. On a critical success, you also gain a +2 status bonus to saves against diseases and poisons.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          }
+        ],
+        "flag": "heroesFeast",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "fortifying-brew"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "fortifying-brew:critical-success"
+        ],
+        "value": "@item.level*4"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "fortifying-brew:success"
+        ],
+        "value": "@item.level*2"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "fortifying-brew:critical-success",
+        {
+          "or": [
+            "item:trait:disease",
+            "item:trait:poison"
+          ]
+        }
+      ]
+    }
+  ]
+}

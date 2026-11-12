@@ -1,0 +1,113 @@
+{
+  "kind": "condition",
+  "slug": "restrained",
+  "system": "pf2e",
+  "name": "Restrained",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "valued": false,
+  "note": "Reference text: the ruleset defines how conditions work (rulesets/pf2e/rules.js).",
+  "text": "You're tied up and can barely move, or a creature has you pinned. You have the Off-Guard and Immobilized conditions, and you can't use any attack or manipulate actions except to attempt to Escape or Force Open your bonds. Restrained overrides Grabbed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.canFlank",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:manipulate"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.restrained.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:manipulate"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.restrained.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:manipulate"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.restrained.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          {
+            "nor": [
+              "action:escape",
+              "action:force-open"
+            ]
+          }
+        ],
+        "selector": [
+          "attack",
+          "skill-check"
+        ],
+        "text": "PF2E.condition.restrained.note",
+        "title": "{item|name}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "armag-twice-born",
+  "system": "pf2e",
+  "name": "Armag Twice-Born",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 300,
+    "perception": 24,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 23,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 27,
+      "intimidation": 26,
+      "survival": 24
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "hallit"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Ovinrbaane",
+      "ref": "equipment:item/ovinrbaane",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Ovinrbaane",
+      "attack": 28,
+      "traits": [
+        "artifact",
+        "cursed",
+        "intelligent",
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shoulder Spikes",
+      "attack": 27,
+      "damage": [
+        {
+          "dice": "3d6+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "No Time To Die",
+      "category": "defensive",
+      "text": "As long as Armag wields Ovinrbaane and is raging, the combination of the sword's magic and Armag's furious conviction that he is the true Armag protects him from death. His eyes and the sword's blade weep with blood and glow with red light at this time. As long as these conditions persist, he never increases beyond Dying 3 and is not rendered Unconscious. Instead, Armag becomes Confused and continues to fight. If Ovinrbaane is taken from him (such as via a successful Disarm), or if his rage ends while he is dying, he immediately dies regardless of his dying condition value. If he's healed to at least 1 Hit Point, the confusion effect immediately ends.",
+      "rules": [
+        {
+          "key": "resistance",
+          "type": "custom",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Second Wind",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Armag is Fatigued and scores a critical hit with a melee strike or reduces a creature to 0 Hit Points with a melee Strike\n\nEffect Armag draws upon inner reserves of furious energy. He is no longer fatigued."
+    },
+    {
+      "kind": "ability",
+      "name": "Armag's Rage",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements Armag is not Fatigued or raging.\n\n---\nEffect Armag flies into a rage that lasts 1 minute. While raging, he gains a +6 status bonus to damage rolls and suffers a -1 status penalty to AC. During his rage, Armag gains an additional reaction at the start of his turn, but he can only use this additional reaction for Attacks of Opportunity. After the rage ends, Armag is fatigued.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "phase": "beforeDerived",
+            "priority": 70,
+            "value": 0
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "status",
+          "value": 6,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Awesome Blow",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Armag's last action was a successful Strike.\n\nEffect The weight of Armag's previous swing drives his foe back. He attempts an Athletics check check against the target's Fortitude DC.\n\n---\n\nCritical Success Armag gains the critical success effects of a Shove, then the critical success effect of a Trip against the target.\n\nSuccess Armag gains the success effect of a Shove, then the success effect of a Trip against the target.\n\nFailure Armag pushes the foe back 5 feet."
+    },
+    {
+      "kind": "ability",
+      "name": "Greatsword Critical Specialization",
+      "category": "offensive",
+      "text": "On a critical hit from a greatsword Strike, the target is made off-balance and becomes Off-Guard until the start of Armag's next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:base:greatsword"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shoulder Slam",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Armag Strides forward and hunkers down to attempt a shoulder spike Strike against a target at the end of that movement. If he critically hits a creature with this Strike, that creature is knocked Prone."
+    }
+  ],
+  "text": "Armag was not born with that name, but today, he fully believes he is the legendary ancient leader reborn to lead the Tiger Lords back to an age of glory. He has long forgotten his birth name, as well as much of his childhood, as his brief but overwhelming recent experiences forced these memories out of his mind to make room for bloodlust, an addiction to violence, and obsession with mayhem. Only his worship of Gorum remains today, yet even this has been corrupted-tainted by the fell influence of the Sisters of the Bloodshot Eye. Little remains in Armag's mind today save for a desire to conquer, to wield the mighty greatsword Ovinrbaane in battle, and to revel in the glory of war. While he claims to be the reborn ancient hero, his \"memories\" of this previous life are largely hallucinations and fantasies implanted by the influence of his weapon.\n\nArmag himself appears as a muscular human with unruly brown hair, a full beard, and an expression that seems incapable of any other visage than anger, wrath, or fury.",
+  "blurb": "Male human warlord"
+}

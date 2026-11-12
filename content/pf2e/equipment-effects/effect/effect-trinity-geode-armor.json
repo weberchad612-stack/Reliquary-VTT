@@ -1,0 +1,135 @@
+{
+  "kind": "effect",
+  "slug": "effect-trinity-geode-armor",
+  "system": "pf2e",
+  "name": "Effect: Trinity Geode - Armor",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Trinity Geode, Trinity Geode (Greater), Trinity Geode (Major)\n\nYou gain resistance to physical damage (except adamantine), or double the resistance for a non-cantrip spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:trinity-geode",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Trinity Geode"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:trinity-geode-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Trinity Geode (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:trinity-geode-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Trinity Geode (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "trinity-geode"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode"
+            ],
+            "value": 1
+          },
+          {
+            "label": "PF2E.TraitCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode-greater"
+            ],
+            "value": 3
+          },
+          {
+            "label": "PF2E.TraitCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode-major"
+            ],
+            "value": 5
+          },
+          {
+            "label": "PF2E.SpecificRule.Label.NonCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode"
+            ],
+            "value": 2
+          },
+          {
+            "label": "PF2E.SpecificRule.Label.NonCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode-greater"
+            ],
+            "value": 6
+          },
+          {
+            "label": "PF2E.SpecificRule.Label.NonCantrip",
+            "predicate": [
+              "trinity-geode:trinity-geode-major"
+            ],
+            "value": 10
+          }
+        ],
+        "flag": "spellCategory",
+        "key": "ChoiceSet",
+        "label": "PF2E.SpecificRule.TrinityGeodeLabel",
+        "prompt": "PF2E.SpecificRule.Prompt.CantripOrNonCantrip"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "exceptions": [
+          "adamantine"
+        ],
+        "key": "Resistance",
+        "type": "physical",
+        "value": "{item|flags.system.rulesSelections.spellCategory}"
+      }
+    }
+  ]
+}

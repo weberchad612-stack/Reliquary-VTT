@@ -1,0 +1,56 @@
+{
+  "kind": "action",
+  "slug": "hunt-prey",
+  "system": "pf2e",
+  "name": "Hunt Prey",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "concentrate",
+    "ranger"
+  ],
+  "actions": 1,
+  "category": "offensive",
+  "selfEffect": {
+    "name": "Effect: Hunt Prey",
+    "ref": "feat-effects:effect/effect-hunt-prey"
+  },
+  "text": "You designate a single creature as your prey and focus your attacks against that creature. You must be able to see or hear the prey, or you must be tracking the prey during exploration.\n\nYou gain a +2 circumstance bonus to Perception checks when you Seek your prey and a +2 circumstance bonus to Survival checks when you Track your prey. You also ignore the penalty for making ranged attacks within your second range increment against the prey you're hunting.\n\nYou can have only one creature designated as your prey at a time. If you use Hunt Prey against a creature when you already have a creature designated, the prior creature loses the designation and the new prey gains the designation. Your designation lasts until your next daily preparations.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:seek",
+        "target:mark:hunted-prey"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:track",
+        "target:mark:hunted-prey"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          "target:mark:hunted-prey"
+        ]
+      }
+    }
+  ]
+}

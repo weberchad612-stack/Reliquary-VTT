@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "wingripper-wyvern-rider",
+  "system": "pf2e",
+  "name": "Wingripper Wyvern Rider",
+  "source": {
+    "title": "Pathfinder #209: Destroyer's Doom",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 130,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 21,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 6,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 19,
+      "intimidation": 15,
+      "nature": {
+        "value": 16,
+        "special": [
+          {
+            "value": 20,
+            "label": "to Command their wyvern",
+            "when": [
+              "action:command-an-animal",
+              "target:wingripper-wyvern"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 20,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 22,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Wyvern Bond",
+      "category": "defensive",
+      "text": "A wyvern rider automatically succeeds at checks to Command an Animal for a wyvern they're mounted on. While mounted, the wyvern acts on their turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Strike",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The wyvern rider attempts a weapon Strike against a target, shouting threats and curses. If it hits, the target must succeed at a DC 28 Will save save or be Frightened 2 (Frightened 4 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Weapon Adept",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The wyvern rider can Swap between their falchion and composite shortbow, then Strike with the weapon they switched to."
+    },
+    {
+      "kind": "ability",
+      "name": "Wyvern's Swoop",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Requirements The wyvern rider is mounting their wyvern\n\n---\nEffect The wyvern rider Commands their mount to Stride twice. At any point during this movement, they can Strike one enemy within reach or within the first range increment of their ranged weapon, with a +1 circumstance bonus to their attack roll. If they begin this movement at a higher point than their target, they deal an additional die of damage with this Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "wyverns-swoop",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "wyverns-swoop"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.WyvernRider.WyvernsSwoop.HigherElevation",
+            "option": "swooping-down",
+            "predicate": [
+              "wyverns-swoop"
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "key": "DamageDice",
+            "predicate": [
+              "wyverns-swoop",
+              "swooping-down"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

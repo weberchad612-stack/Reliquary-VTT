@@ -1,0 +1,88 @@
+{
+  "kind": "equipment",
+  "slug": "faith-tattoo-major",
+  "system": "pf2e",
+  "name": "Faith Tattoo (Major)",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "divine",
+    "invested",
+    "tattoo"
+  ],
+  "text": "Prerequisites worshipper of a deity\n\n---\nYou have marked your body to show your devotion to a deity. This tattoo could be the deity's religious symbol, another image that evokes that deity, or another mark you gained through your devotion. The tattoo serves as a silver religious symbol of the deity. Provided you keep the tattoo uncovered, you need not wield it to gain that benefit.\n\nWhen you get the tattoo and aren't sanctified, you can choose to sanctify yourself to your deity.\n\nIf you cease meeting the prerequisites, the tattoo fades, and you lose its benefits until you perform an Atone ritual and meet the prerequisites thereafter.\n\nActivate Cast a Spell\n\nFrequency once per day\n\n---\nEffect The tattoo casts a 5th-rank Harm, Heal, or the 5th-rank spell from your deity's cleric spells. You can choose harm or heal only in accord with the deity's divine font. If the deity allows either spell, choose one the tattoo can cast when you receive the tattoo. The DC for any of these spells is 30.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitHoly",
+            "predicate": [
+              {
+                "or": [
+                  "deity:primary:sanctification:can:holy",
+                  "deity:primary:sanctification:must:holy"
+                ]
+              }
+            ],
+            "value": "holy"
+          },
+          {
+            "label": "PF2E.TraitUnholy",
+            "predicate": [
+              {
+                "or": [
+                  "deity:primary:sanctification:can:unholy",
+                  "deity:primary:sanctification:must:unholy"
+                ]
+              }
+            ],
+            "value": "unholy"
+          },
+          {
+            "label": "PF2E.GenericLabel.NoSanctification",
+            "value": "none"
+          }
+        ],
+        "flag": "sanctification",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "nor": [
+              "sanctification:holy",
+              "sanctification:unholy"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Sanctification",
+        "rollOption": "faith-tattoo"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "{item|flags.system.rulesSelections.sanctification}"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          {
+            "not": "faith-tattoo:none"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": "tattooed-on-the-body",
+  "bulk": 0,
+  "price": {
+    "gp": 1700
+  }
+}

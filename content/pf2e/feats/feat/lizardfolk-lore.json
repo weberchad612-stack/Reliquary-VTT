@@ -1,0 +1,82 @@
+{
+  "kind": "feat",
+  "slug": "lizardfolk-lore",
+  "system": "pf2e",
+  "name": "Lizardfolk Lore",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "lizardfolk"
+  ],
+  "category": "ancestry",
+  "text": "You listened carefully to the tales passed down among your community. You gain the trained proficiency rank in Survival and either Nature or Occultism. If you would automatically become trained in one of those skills (from your background or class, for example), you instead become trained in a skill of your choice.\n\nYou also gain the Additional Lore general feat for either Astrology Lore or Lizardfolk Lore.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.nature.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.survival.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Additional Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificLore.Astrology",
+            "value": {
+              "label": "PF2E.SpecificLore.Astrology",
+              "lore": "astrology-lore"
+            }
+          },
+          {
+            "label": "PF2E.SpecificLore.Lizardfolk",
+            "value": {
+              "label": "PF2E.SpecificLore.Lizardfolk",
+              "lore": "lizardfolk-lore"
+            }
+          }
+        ],
+        "flag": "lizardfolkLore",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.{item|flags.system.rulesSelections.lizardfolkLore.lore}",
+        "value": {
+          "attribute": "int",
+          "label": "{item|flags.system.rulesSelections.lizardfolkLore.label}",
+          "rank": "match(when(gte(@actor.level, 15), 4), when(gte(@actor.level, 7), 3),when(gte(@actor.level, 3), 2),1)"
+        }
+      }
+    }
+  ]
+}

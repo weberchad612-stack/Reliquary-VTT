@@ -1,0 +1,152 @@
+{
+  "kind": "creature",
+  "slug": "animated-kite",
+  "system": "pf2e",
+  "name": "Animated Kite",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia World Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 15,
+    "hp": 10,
+    "perception": 6,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 0,
+      "dex": 3,
+      "int": -5,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "13 when broken; construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Frame",
+      "attack": 7,
+      "traits": [
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 1)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated kite has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated kite is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 13.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attach Line",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The animated kite gives its line to an adjacent ally with a free hand. The kite remains attached until the creature releases it or the kite flies more than 60 feet away. A creature between them can also sever the line with a successful Strike against AC 13 that deals any amount of slashing damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Sawing Line",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The animated kite has its line attached to an ally\n\n---\n\nEffect Each creature along the line between the kite and its ally takes 1d6 slashing damage (DC 16 basic Reflex save save)."
+    }
+  ],
+  "text": "An animated kite is perfect for spying, allowing observation from a great distance, although many are treated more like pets. The kite itself is a simple handcraft, easily created and destroyed, made of enchanted paper stretched over a fine bamboo frame. More advanced kites can be decorated with a variety of runes that allow the enchanter to see or hear from a distance."
+}

@@ -1,0 +1,69 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shadow-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Shadow Form",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Shadow Form\n\nYou gain immunity to precision damage, resistance to void and to non-magical physical damage, and weakness to any damage with the light trait. You can Squeeze at full speed through any space with at least one dimension a foot wide. Your shadow spells deal additional damage equal to the spell's rank (of the same damage type as the spell).",
+  "rules": [
+    {
+      "key": "immunity",
+      "type": "precision"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "void",
+        "value": "ternary(gte(@item.level,9),15,10)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "damage:category:physical",
+          {
+            "not": "item:magical"
+          }
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.NonMagicalPhysical",
+        "type": "custom",
+        "value": "ternary(gte(@item.level,9),15,10)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "type": "light",
+        "value": "ternary(gte(@item.level,9),10,5)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "item:trait:shadow"
+        ],
+        "selector": [
+          "spell-damage"
+        ],
+        "value": "@item.level"
+      }
+    }
+  ]
+}

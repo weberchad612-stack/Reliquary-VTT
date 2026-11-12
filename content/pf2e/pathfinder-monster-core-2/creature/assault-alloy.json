@@ -1,0 +1,244 @@
+{
+  "kind": "creature",
+  "slug": "assault-alloy",
+  "system": "pf2e",
+  "name": "Assault Alloy",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "elemental",
+    "metal"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 31,
+    "hp": 240,
+    "perception": 26,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 7,
+      "int": 8,
+      "str": 4,
+      "wis": 6
+    },
+    "skills": {
+      "arcana": 27,
+      "athletics": 23,
+      "crafting": {
+        "value": 23,
+        "special": [
+          {
+            "value": 27,
+            "label": "with metal objects",
+            "when": [
+              "metal-objects"
+            ]
+          }
+        ]
+      },
+      "stealth": {
+        "value": 22,
+        "special": [
+          {
+            "value": 26,
+            "label": "in metallic environments",
+            "when": [
+              "in-metallic-environment"
+            ]
+          }
+        ]
+      },
+      "thievery": 24,
+      "metal-lore": 29,
+      "plane-of-metal-lore": 29
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "talican"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "electricity",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Wall of Metal",
+          "rank": 6,
+          "ref": "spells:spell/wall-of-metal"
+        },
+        {
+          "name": "Impaling Spike",
+          "rank": 5,
+          "ref": "spells:spell/impaling-spike"
+        },
+        {
+          "name": "Rust Cloud",
+          "rank": 4,
+          "ref": "spells:spell/rust-cloud"
+        },
+        {
+          "name": "Detect Metal",
+          "rank": 1,
+          "ref": "spells:spell/detect-metal"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Metal Needle",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "arcane",
+        "magical"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "3d8+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "idle-transmutation"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Instinctive Alloy",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The assault alloy is hit by an attack with a metal weapon or metal spell or effect\n\n---\nEffect The physical damage from the triggering weapon, spell, or effect instead restores the assault alloy's Hit Points as they seamlessly incorporate some of the metal used into their body. If already at full Hit Points, the assault alloy gains temporary Hit Points that last for 1 round instead. If a metal weapon triggers this, the weapon's die size decreases by one step to a minimum die size of d4 for 1 minute, and that weapon can't trigger Instinctive Alloy again during this time."
+    },
+    {
+      "kind": "ability",
+      "name": "Metal Manipulation",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "metal"
+      ],
+      "text": "30 feet. An assault alloy has control over all unattended metal within the emanation and can use any of this metal as the origin point for their metal needle ranged Strikes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "metal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Idle Transmutation",
+      "category": "offensive",
+      "text": "An assault alloy has full alchemical control over the properties of their metal. Each time they make a metal needle Strike or Cast a Spell with the metal trait, they choose whether the metal they use is adamantine, cold iron, dawnsilver, or any other solid precious metal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "idle-transmutation",
+            "selection": "adamantine",
+            "suboptions": [
+              {
+                "label": "PF2E.PreciousMaterialAdamantine",
+                "value": "adamantine"
+              },
+              {
+                "label": "PF2E.PreciousMaterialColdIron",
+                "value": "cold-iron"
+              },
+              {
+                "label": "PF2E.PreciousMaterialDawnsilver",
+                "value": "dawnsilver"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:metal-needle"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "{item|flags.system.rulesSelections.idleTransmutation}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Metal Blink",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "Requirements The assault alloy is adjacent to metal of at least 1 bulk\n\n---\nEffect An assault alloy can liquefy the metals of their body and travel up to their Speed through spaces with contiguous metal, even if it's not uniformly connected (as in a scrap heap or a pile of treasure). This movement doesn't trigger reactions."
+    }
+  ]
+}

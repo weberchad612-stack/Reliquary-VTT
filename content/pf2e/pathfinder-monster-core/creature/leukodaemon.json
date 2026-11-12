@@ -1,0 +1,282 @@
+{
+  "kind": "creature",
+  "slug": "leukodaemon",
+  "system": "pf2e",
+  "name": "Leukodaemon",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "daemon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 28,
+    "hp": 155,
+    "perception": 20,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 21,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 5,
+      "int": 3,
+      "str": 6,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 18,
+      "intimidation": 18,
+      "medicine": 20,
+      "religion": 20,
+      "stealth": 18,
+      "survival": 16
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "daemonic"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "plaguesense (imprecise) 60 feet",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 4,
+          "ref": "spells:spell/dispel-magic",
+          "uses": 2
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 50
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 21,
+      "traits": [
+        "disease",
+        "magical",
+        "reach-10",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "daemonic-pestilence"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "disease",
+        "magical",
+        "reach-10",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "daemonic-pestilence"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 21,
+      "traits": [
+        "deadly-d10",
+        "disease",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "unholy",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "daemonic-pestilence"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Plaguesense (Imprecise) 60 feet",
+      "category": "interaction",
+      "text": "A leukodaemon senses any creature with a disease, and they know the type and current stage of all diseases carried by any creature within range."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infectious Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "disease"
+      ],
+      "text": "30 feet.\n\nLeukodaemons radiate infection. All creatures within 30 feet of a leukodaemon take a –2 status penalty to saves against disease. If a creature within range contracts or progresses a disease, all adjacent creatures are exposed to the same disease, at the same DC.\n\nEffect: Infectious Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:creature"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Infectious Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "infectious-aura",
+            "traits": [
+              "disease"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Daemonic Pestilence",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "The leukodaemon can telepathically communicate with the afflicted creature at any distance on the same plane\n\nSaving Throw DC 28 Fortitude save\n\n---\n\nStage 1 carrier (1 day)\n\nStage 2 Drained 1 (1 day)\n\nStage 3 Drained 2 (1 day)\n\nStage 4 drained 2 (1 day)\n\nStage 5 Drained 3 (1 week)\n\nStage 6 dead"
+    },
+    {
+      "kind": "ability",
+      "name": "Plague Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "unholy"
+      ],
+      "text": "The leukodaemon exhales a cloud of corpse-bloated, biting black flies in a 20-foot cone. Creatures within the cone take 4d8 piercing damage (DC 28 basic Reflex save save). A creature that fails the save becomes Sickened 1 (or Sickened 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Quicken Pestilence",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "manipulate"
+      ],
+      "text": "The leukodaemon coaxes a disease into full bloom. They choose a target in their aura of pestilence that's currently affected by a disease. That creature must attempt a Fortitude save against the disease as if the interval for the disease's current stage had passed."
+    }
+  ],
+  "text": "These skull-headed, vulture-winged daemons are harbingers of pestilence and servants of their patron Apocalypse Rider, Apollyon. Manifestations of evil souls who perished from disease in life, leukodaemons work tirelessly alongside one another to spread disease across all the worlds of the multiverse.\n\n---\n\nDenizens of the bleak and terrible plane of Abaddon, daemons are shaped by and devoted to the destruction of life in all its forms. They seek the death of every mortal being by the most painful and horrible means possible, in service to the Apocalypse Riders. Each kind of daemon represents a different way to die, and their powers are nearly always aimed at spreading that particular form of death. Through the use of these powers, they seek to drag all existence down into a pit of hopelessness and despair, and to commit all souls to oblivion.\n\nWhile mortals who summon daemons usually seek to use the creatures' destructive and corrupting powers for their own ends, daemons always look for ways to spread fear, doubt, and despair wherever they go. Often, daemons disguise their plots as the workings of other fiends, knowing that such confusion compounds mortals' fear and keeps those mortals from bringing the most effective weapons. As a result, learned mortals sometimes refer to daemons as \"riders\" after their leaders or \"soul mongers\" after their largest industry.\n\nWhile many fiends seek to tempt mortals into lives of nihilistic evil to increase their own numbers and power on their native planes, daemons are further driven by a supernatural hunger for mortal souls and use a variety of methods—not least of which is the cacodaemons' soul gems—to entrap them. On Abaddon and in other forbidding places across the multiverse, souls are simultaneously a delicacy, a trade good, and a source of magical power, and the daemons are among the greatest gluttons, merchants, and abusers of this spiritual \"resource.\""
+}

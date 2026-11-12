@@ -1,0 +1,128 @@
+{
+  "kind": "effect",
+  "slug": "effect-bolster-life",
+  "system": "pf2e",
+  "name": "Effect: Bolster Life",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 8,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Soulheart, Soulheart (Greater), Soulheart (Major)\n\nYou gain temporary Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.GenericLabel.Time.Daytime",
+            "value": 2
+          },
+          {
+            "label": "PF2E.GenericLabel.Time.Nighttime",
+            "value": 1
+          }
+        ],
+        "flag": "soulheartTemp",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:soulheart",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Soulheart"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:soulheart-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Soulheart (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:soulheart-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Soulheart (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "soulheart"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "soulheart:soulheart"
+        ],
+        "value": "3*@item.flags.pf2e.rulesSelections.soulheartTemp"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "soulheart:soulheart-greater"
+        ],
+        "value": "6*@item.flags.pf2e.rulesSelections.soulheartTemp"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "soulheart:soulheart-major"
+        ],
+        "value": "9*@item.flags.pf2e.rulesSelections.soulheartTemp"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "soulheart:soulheart-pure"
+        ],
+        "value": "9*@item.flags.pf2e.rulesSelections.soulheartTemp"
+      }
+    }
+  ]
+}

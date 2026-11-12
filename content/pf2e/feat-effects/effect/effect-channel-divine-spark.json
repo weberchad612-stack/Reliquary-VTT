@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-channel-divine-spark",
+  "system": "pf2e",
+  "name": "Effect: Channel Divine Spark",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Channel Divine Spark\n\nYou gain temporary Hit Points equal to your level, resistance to physical damage equal to half your level, and the quickened condition.\n\nEach time that you damage a creature with a melee Strike, you can attempt to Shove or Trip that creature as a free action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "physical",
+      "value": "floor(@level / 2)"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "melee-strike-damage",
+      "text": "PF2E.SpecificRule.AscendedCelestial.ChannelDivineSpark.Note"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.ascendedCelestial.aura",
+        "predicate": [
+          "ascended-celestial-nimbus"
+        ],
+        "value": 60
+      }
+    }
+  ]
+}

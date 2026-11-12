@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "warren-navigator",
+  "system": "pf2e",
+  "name": "Warren Navigator",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ratfolk"
+  ],
+  "category": "ancestry",
+  "text": "You gain the trained proficiency rank in Survival. If you would automatically become trained in Survival (from your background or class, for example), you become trained in another skill of your choice. When you Sense Direction or attempt a roll against a Quandary spell, you get a result one degree of success better than you rolled. You don't take a penalty to Sense Direction when you lack a compass.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.survival.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "all": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "action:sense-direction",
+              "item:slug:quandary"
+            ]
+          }
+        ],
+        "selector": "all"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "compass-in-possession"
+      }
+    }
+  ]
+}

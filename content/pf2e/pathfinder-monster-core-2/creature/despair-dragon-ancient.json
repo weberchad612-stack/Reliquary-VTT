@@ -1,0 +1,304 @@
+{
+  "kind": "creature",
+  "slug": "despair-dragon-ancient",
+  "system": "pf2e",
+  "name": "Despair Dragon (Ancient)",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "uncommon",
+  "traits": [
+    "dragon",
+    "occult"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 41,
+    "hp": 325,
+    "perception": 31,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 30,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 4,
+      "dex": 5,
+      "int": 5,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 31,
+      "athletics": 33,
+      "deception": 32,
+      "diplomacy": 32,
+      "intimidation": 35,
+      "occultism": 29,
+      "society": 29,
+      "stealth": 33
+    },
+    "speeds": {
+      "land": 60,
+      "fly": 180
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects",
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "perception": "fearsense (precise) 60 feet",
+      "languages": "Telepathy 90 feet, Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 40,
+      "attack": 32,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Wave of Despair",
+          "rank": 7,
+          "ref": "spells:spell/wave-of-despair"
+        },
+        {
+          "name": "Fear (At Will)",
+          "rank": 7,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 33,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+20",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claws",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+20",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 31,
+      "traits": [
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+18",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 90 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fearsense",
+      "category": "interaction",
+      "traits": [
+        "emotion",
+        "mental",
+        "occult"
+      ],
+      "text": "The dragon senses all creatures with the frightened condition at the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Occult",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:occult"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Fear",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Trigger A creature within 60 feet loses the Frightened condition\n\n---\nEffect The dragon feasts upon the fear that leaves the triggering creature's body, gaining 7d8 temporary Hit Points that last for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.consumeFear",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "60 feet. DC 40 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unbidden Thoughts",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "occult"
+      ],
+      "text": "Trigger The dragon is critically hit with a weapon or unarmed attack\n\n---\nEffect The attacker's mind fills with visions of their worst fears that overwhelm their senses, and they must choose one of the following results: either the triggering attack becomes a normal success, or the critical hit is unaffected but the triggering creature becomes Frightened 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Shrieking Breath whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Look Behind You",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "occult",
+        "teleportation"
+      ],
+      "text": "Trigger The dragon successfully Hides from a creature within 90 feet\n\n---\nEffect The dragon teleports to a space directly behind the target creature. The dragon immediately becomes detected unless their chosen position has cover or another means to remain Hidden."
+    },
+    {
+      "kind": "ability",
+      "name": "Shrieking Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult",
+        "sonic"
+      ],
+      "text": "The dragon lets out a cacophonous sound made of every scream the dragon has drawn from a terrified enemy, dealing 17d6 sonic damage in a 50-foot cone (DC 40 basic Will save save). Creatures who fail their Will save must spend the first action of their next turn doing nothing but screaming. The dragon can't use Shrieking Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Tongue Decoy",
+      "category": "offensive",
+      "traits": [
+        "manipulate",
+        "occult"
+      ],
+      "text": "The despair dragon inflates several bladders at the end of its tongue to create the basic form of a creature. This process takes 1 minute to complete, during which the dragon is Off-Guard. If the dragon stops or is interrupted in this process, the bladders deflate, and the dragon must start over. Once the process is complete, the dragon can maintain the inflated bladders indefinitely, and can Dismiss to deflate the bladders and retract its tongue instantly.\n\nThe inflated tongue takes the basic form of an animal or humanoid and can be inflated to be either Small or Medium. The form resembles the general silhouette of a creature, though closer inspection and success at a DC 30 Perception check check can determine the true nature of the tongue. While inflated, the dragon can send its voice through the decoy, though keeping its tongue inflated makes it difficult to speak, causing the dragon to take a –4 circumstance penalty to any checks related to speaking, such as Deception checks to Lie.\n\nThe dragon's tongue can extend up to 90 feet from the dragon's body and it can fully extend its tongue as part of the process to inflate the bladders. The dragon can move the inflated part of its tongue up to 15 feet at a time with an action, which has the concentrate, manipulate, and move traits. While extended, the inflated end of the tongue occupies space as a creature of the appropriate size, but the rest of the tongue doesn't impede or block movement in any way. The dragon's scent functions through cilia at the end of the tongue, but otherwise the dragon has no means of knowing what's near its tongue.\n\nAttacking the tongue is the same as attacking the dragon, except that the tongue is always Off-Guard. If the tongue takes any damage, it immediately deflates and remains out. The dragon remains off-guard as long as its tongue is out, but the dragon can retract its tongue with two consecutive Interact actions. If the tongue takes damage, the dragon can't use its tongue decoy again for 1 day."
+    }
+  ],
+  "text": "Fear is one of the most powerful emotions, and despair dragons are masters of channeling those feelings of terror and hopelessness for their own benefit. As with other occult dragons, despair dragons are driven by an innate compulsion, in their case, the desire to strike terror in others. Despair dragons tend to settle near settlements, so they have a source of fear to draw from. The most common items in despair dragon hoards are scrolls, tomes, and relics that serve as research material. Through these, despair dragons learn of local folklore, urban legends, and more to better haunt their targets."
+}

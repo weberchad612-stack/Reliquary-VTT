@@ -1,0 +1,413 @@
+{
+  "kind": "creature",
+  "slug": "werecrocodile",
+  "system": "pf2e",
+  "name": "Werecrocodile",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "beast",
+    "evil",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 16,
+    "hp": 55,
+    "perception": 7,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 5,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 8,
+      "intimidation": 7,
+      "stealth": {
+        "value": 5,
+        "special": [
+          {
+            "value": 8,
+            "label": "in Water",
+            "when": [
+              "terrain:water"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "crocodile empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Crocodile Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A werecrocodile can communicate with alligators, caimans, and crocodiles."
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "interaction",
+      "text": "A werecrocodile can hold their breath for about 2 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "30 feet\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "- Human\n\n- Melee fist +10/+6/+2 (agile, nonlethal), Damage 1d4+2 bludgeoning damage\n\n- Crocodile\n\n- Melee jaws+10/+5/+0, Damage 2d6+4 piercing damage\n\n---\n\nThe werecreature changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape.\n\nIn humanoid shape, the werecreature uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw.\n\nIn animal shape, its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 2
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d10",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "nor": [
+                  "change-shape:humanoid",
+                  "change-shape:animal"
+                ]
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Tail",
+            "predicate": [
+              {
+                "nor": [
+                  "change-shape:humanoid",
+                  "change-shape:animal"
+                ]
+              }
+            ],
+            "slug": "tail",
+            "traits": [
+              "agile",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "nor": [
+                  "change-shape:humanoid",
+                  "change-shape:hybrid"
+                ]
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "speed",
+          "type": "swim",
+          "value": 25
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            {
+              "not": "change-shape:animal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werecrocodile",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 15 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into a werecrocodile until dawn. The creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-attack",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws Strike (or a similar Strike) by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Twisting Thrash",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The werecrocodile has a creature Grabbed\n\n---\n\nEffect The werecrocodile makes a Jaws Strike with a +2 circumstance bonus to the attack roll against the grabbed creature. If this Strike hits, it also knocks the target Prone. If it fails, the werecrocodile releases the target.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "twisting-thrash",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "twisting-thrash"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "jaws-attack",
+          "text": "PF2E.AttackEffects.KnockProne",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "twisting-thrash"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage"
+        }
+      ]
+    }
+  ],
+  "text": "The curse of the werecrocodile instills powerful hunger, urges violent displays of dominance, and amplifies greed.\n\n---\n\nWerecreatures are humanoids who transform into animals and animal-humanoid hybrids under the light of the full moon. The fate of these shapechanging creatures derives from an ancient primal curse that they can, in turn, transmit through their own bites. The stat blocks in this section reflect werecreatures in their hybrid forms."
+}

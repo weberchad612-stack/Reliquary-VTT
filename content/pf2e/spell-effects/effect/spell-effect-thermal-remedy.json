@@ -1,0 +1,168 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-thermal-remedy",
+  "system": "pf2e",
+  "name": "Spell Effect: Thermal Remedy",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Thermal Remedy\n\nChoose one of the benefits listed below. Any creature that consumes the targeted drink or food gains that benefit.\n\n- Gain temporary Hit Points.\n\n- Gain resistance to fire.\n\n- Gain a circumstance bonus to saves against disease.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.TempHP",
+            "value": "temp-hp"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.FireResistance",
+            "value": "fire-resistance"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.BonusVsDisease",
+            "value": "bonus-vs-disease"
+          }
+        ],
+        "flag": "spellEffectThermalRemedy",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "lt": [
+              "{item|level}",
+              7
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.SpellEffectThermalRemedy.Prompt",
+        "rollOption": "thermal-remedy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.TempHP",
+            "predicate": [
+              {
+                "not": "thermal-remedy:temp-hp"
+              }
+            ],
+            "value": "temp-hp"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.FireResistance",
+            "predicate": [
+              {
+                "not": "thermal-remedy:fire-resistance"
+              }
+            ],
+            "value": "fire-resistance"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectThermalRemedy.BonusVsDisease",
+            "predicate": [
+              {
+                "not": "thermal-remedy:bonus-vs-disease"
+              }
+            ],
+            "value": "bonus-vs-disease"
+          }
+        ],
+        "flag": "spellEffectThermalRemedyTwo",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "gte": [
+              "{item|level}",
+              4
+            ]
+          },
+          {
+            "lt": [
+              "{item|level}",
+              7
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.SpellEffectThermalRemedy.PromptTwo",
+        "rollOption": "thermal-remedy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          {
+            "or": [
+              "thermal-remedy:temp-hp",
+              {
+                "gte": [
+                  "{item|level}",
+                  7
+                ]
+              }
+            ]
+          }
+        ],
+        "value": "ternary(gte(@item.level,7),15,ternary(gte(@item.level,4),10,5))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "thermal-remedy:fire-resistance",
+              {
+                "gte": [
+                  "{item|level}",
+                  7
+                ]
+              }
+            ]
+          }
+        ],
+        "type": "fire",
+        "value": "ternary(gte(@item.level,7),5,ternary(gte(@item.level,4),3,2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "disease",
+          {
+            "or": [
+              "thermal-remedy:bonus-vs-disease",
+              {
+                "gte": [
+                  "{item|level}",
+                  7
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "type": "circumstance",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    }
+  ]
+}

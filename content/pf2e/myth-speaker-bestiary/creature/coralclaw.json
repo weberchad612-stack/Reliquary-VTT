@@ -1,0 +1,201 @@
+{
+  "kind": "creature",
+  "slug": "coralclaw",
+  "system": "pf2e",
+  "name": "Coralclaw",
+  "source": {
+    "title": "Pathfinder #216: The Acropolis Pyre",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "animal",
+    "aquatic"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 2,
+      "dex": 3,
+      "int": -4,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "stealth": {
+        "value": 7,
+        "special": [
+          {
+            "value": 9,
+            "label": "in coral reefs",
+            "when": [
+              "terrain:coral"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Crusher Claw",
+      "attack": 11,
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Piercer Claw",
+      "attack": 11,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coral Camouflage",
+      "category": "defensive",
+      "text": "In reefs and rocky marine environments, a coralclaw can Hide and Sneak without cover or being Concealed."
+    },
+    {
+      "kind": "ability",
+      "name": "Shuffler",
+      "category": "defensive",
+      "text": "A coralclaw struggles to pivot quickly, leaving its hind limbs and tail vulnerable. When the coralclaw is Off-Guard, it gains weakness 2 to physical damage except against effects for which the coralclaw has standard cover or greater cover.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "self:condition:off-guard",
+              {
+                "not": "self:effect:cover"
+              }
+            ],
+            "type": "physical",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ambushing Snap",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The coralclaw is hiding in corals and a creature that hasn't detected it is within 25 feet\n\n---\nEffect The coralclaw moves up to its swim Speed + 10 feet toward the triggering creature. When the creature is within reach, the coralclaw makes a melee Strike against it. The creature is Off-Guard to this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1d10 bludgeoning, DC 18 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Crushing Drag",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "move"
+      ],
+      "text": "Requirements The coralclaw is grabbing or restraining a creature\n\n---\nEffect The coralclaw Constricts the creature, extends the Grabbed or Restrained condition until the end of the coralclaw's next turn, and attempts an Athletics check to Reposition the creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Dislodged Armor",
+      "category": "offensive",
+      "text": "Once the coralclaw is reduced to half its Hit Points, its AC decreases by 2, it gains a +5 circumstance bonus to its Speeds, and it loses coral camouflage. A coralclaw can repair its coral armor with 4 hours of work.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lte": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lte": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "all-speeds",
+            "type": "circumstance",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

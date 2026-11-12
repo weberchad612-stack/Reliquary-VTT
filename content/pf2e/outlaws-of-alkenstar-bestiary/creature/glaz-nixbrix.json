@@ -1,0 +1,229 @@
+{
+  "kind": "creature",
+  "slug": "glaz-nixbrix",
+  "system": "pf2e",
+  "name": "Glaz Nixbrix",
+  "source": {
+    "title": "Pathfinder #178: Punks in a Powder Keg",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "goblin",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 24,
+    "hp": 60,
+    "perception": 9,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 14,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 6,
+      "int": 3,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": {
+        "value": 11,
+        "special": [
+          {
+            "value": 15,
+            "label": "to Climb",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "crafting": 9,
+      "intimidation": 10,
+      "underworld-lore": 9
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine, orichalcum"
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(20 when custom armor is broken)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "War Blood Mutagen (Moderate)",
+      "ref": "equipment:item/war-blood-mutagen-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Buzz-Saw Knuckles",
+      "attack": 14,
+      "traits": [
+        "finesse",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Really Big Gun",
+      "attack": 12,
+      "traits": [
+        "deadly-d12",
+        "free-hand",
+        "volley-30"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "2d12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "really-big-gun"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Custom Armor",
+      "category": "defensive",
+      "text": "Nixbrix's custom armor, which only he knows how to operate, grants him physical resistance. Once Nixbrix is reduced to fewer than half his Hit Points, or immediately upon being damaged by a critical hit, his custom armor breaks, causing the following effects: his Armor Class is reduced to 20, he loses his physical resistance, he can't use his really big gun, and his buzz-saw knuckles no longer cause persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "broken-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.CustomArmor.CriticalHit",
+            "option": "broken-armor",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Leap Away",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "move"
+      ],
+      "text": "Trigger Nixbrix is targeted with a ranged attack\n\nNixbrix Leaps up to 10 feet vertically and 30 feet horizontally, and he gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "leap-away",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "leap-away"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Buzz-Saw Knuckles",
+      "category": "offensive",
+      "text": "Nixbrix has custom-built knuckle-dusters called buzz-saw knuckles. Only he knows how to operate them."
+    },
+    {
+      "kind": "ability",
+      "name": "Escape Route",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Nixbrix flees the scene. He moves four times, each time using one of the following actions: Climb, Leap, Stand, Step, or Stride."
+    },
+    {
+      "kind": "ability",
+      "name": "Knuckle Knock",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Nixbrix Strides, Climbs, or Leaps once, then Strikes with his buzz-saw knuckles. As long as this Strike is a success, he unleashes a devastating black powder explosion afterward that deals 1d6 fire damage to both him and the target of the Strike. He then Strides or Leaps once more, propelled by the blast."
+    },
+    {
+      "kind": "ability",
+      "name": "Really Big Gun",
+      "category": "offensive",
+      "text": "Nixbrix has a custom-built, extra-large firearm mounted to the shoulder of his custom armor. Only he knows how to fire the contraption, which is inscrutable in the hands of anyone else. Whenever Nixbrix fires his Really Big Gun, the armor automatically reloads the weapon, but it doesn't finish reloading until the end of his next turn. He can only fire it, at most, every other round. He can take 6 shots with this weapon before all the ammunition is spent."
+    }
+  ],
+  "blurb": "Male monkey goblin gang leader"
+}

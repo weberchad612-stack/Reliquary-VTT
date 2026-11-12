@@ -1,0 +1,65 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-crushing-ground",
+  "system": "pf2e",
+  "name": "Spell Effect: Crushing Ground",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Crushing Ground\n\nYou are off-guard. On a failed save, you also take a –10-foot circumstance penalty to Speed. On a critical failure, you are immobilized instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "crushing-ground"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "circumstance",
+      "value": -10,
+      "when": [
+        "crushing-ground:failure"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "crushing-ground:critical-failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    }
+  ]
+}

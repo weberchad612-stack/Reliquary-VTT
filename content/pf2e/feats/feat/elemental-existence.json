@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "elemental-existence",
+  "system": "pf2e",
+  "name": "Elemental Existence",
+  "source": {
+    "title": "Pathfinder #195: Heavy is the Crown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Stonebound Dedication"
+  ],
+  "text": "Your body becomes infused with elemental earth. You gain the Adopted Ancestry feat and gain a 1st level oread ancestry feat as a bonus feat, ignoring the limitations of the lineage trait. When you gain new ancestry feats, you can select oread feats in addition to feats allowed by your ancestry and heritage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "preselectCoices": {
+          "ancestry": "oread"
+        },
+        "uuid": "Compendium.pf2e.feats-srd.Item.Adopted Ancestry"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "lte": [
+                "item:level",
+                1
+              ]
+            },
+            "item:trait:oread"
+          ],
+          "itemType": "feat"
+        },
+        "flag": "elementalExistence",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.LevelOneAncestryFeat"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.elementalExistence}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.stoneboundArchetype.featCount",
+        "value": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-fire-shield",
+  "system": "pf2e",
+  "name": "Spell Effect: Fire Shield",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Fire Shield\n\nYou gain resistance to cold damage. You can Raise a Shield with the fire shield as a normal shield to gain a +1 circumstance bonus to AC.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.fireShield.resistance",
+        "value": "cold"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{actor|flags.system.fireShield.resistance}",
+        "value": "5 + 5*floor((@item.level -4)/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ],
+        "value": {
+          "ac": 1,
+          "broken": false,
+          "brokenThreshold": 0,
+          "destroyed": false,
+          "hardness": 10,
+          "hp": {
+            "max": 40,
+            "value": 40
+          },
+          "icon": "icons/magic/fire/barrier-shield-explosion-yellow.webp",
+          "itemId": "{item|_id}",
+          "name": "PF2E.ShieldLabel",
+          "raised": true
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield.max",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ],
+        "value": "match(when(eq(@item.level, 10), 70), when(gte(@item.level, 8), 60), when(gte(@item.level, 6), 50), 40)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield.value",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ],
+        "value": "match(when(eq(@item.level, 10), 70), when(gte(@item.level, 8), 60), when(gte(@item.level, 6), 50), 40)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.FireShield.DefendingAgainstWaterLabel",
+        "option": "fire-shield-against-water",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "multiply",
+        "path": "system.attributes.shield.hardness",
+        "predicate": [
+          "fire-shield-against-water"
+        ],
+        "priority": 60,
+        "value": 0.5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:shield:equipped",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

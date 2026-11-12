@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "effect-graceless-domain",
+  "system": "pf2e",
+  "name": "Effect: Graceless Domain",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Failure The first time each round you roll an Athletics, Acrobatics, or Performance skill check, you must roll twice and take the worse result.\n\nCritical Failure Every time you roll an Athletics, Acrobatics, or Performance skill check, you must roll twice and take the worse result.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "graceless-domain"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "graceless-domain-failure-first",
+        "predicate": [
+          "graceless-domain:failure"
+        ],
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "lower",
+        "key": "RollTwice",
+        "predicate": [
+          {
+            "or": [
+              "graceless-domain:critical-failure",
+              {
+                "and": [
+                  "graceless-domain:failure",
+                  "graceless-domain-failure-first"
+                ]
+              }
+            ]
+          }
+        ],
+        "removeAfterRoll": false,
+        "selector": [
+          "athletics",
+          "acrobatics",
+          "performance"
+        ]
+      }
+    }
+  ]
+}

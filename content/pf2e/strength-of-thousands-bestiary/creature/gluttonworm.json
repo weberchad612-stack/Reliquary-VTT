@@ -1,0 +1,214 @@
+{
+  "kind": "creature",
+  "slug": "gluttonworm",
+  "system": "pf2e",
+  "name": "Gluttonworm",
+  "source": {
+    "title": "Pathfinder #173: Doorway to the Red Star",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "uncommon",
+  "traits": [
+    "beast"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 41,
+    "hp": 445,
+    "perception": 32,
+    "saves": {
+      "fortitude": 35,
+      "reflex": 29,
+      "will": 32
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 6,
+      "dex": 4,
+      "int": -4,
+      "str": 10,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 37
+    },
+    "speeds": {
+      "land": 30,
+      "burrow": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "notes": {
+      "hp": "sand armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 37,
+      "traits": [
+        "deadly-3d10",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+18",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Body",
+      "attack": 33,
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense 100 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Dune Dispersal",
+      "category": "defensive",
+      "traits": [
+        "aura"
+      ],
+      "text": "15 feet. Ground in the aura is greater difficult terrain.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "slug": "dune-dispersal"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Inexorable",
+      "category": "defensive",
+      "text": "The gluttonworm recovers from the Paralyzed, Slowed, and Stunned conditions at the end of its turn.\n\nIt's also immune to penalties to its Speeds and the Immobilized condition, and it ignores difficult terrain and greater difficult terrain.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "immobilized"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sand Armor",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "A gluttonworm in contact with a significant body of sand, such as a desert or beach, gains fast healing 10.\n\nIf the gluttonworm is subject to persistent bleed, the flowing blood quickly congeals with the sand covering its body, instantly ending the bleed duration and giving the gluttonworm a +2 circumstance bonus to AC until the end of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SkillVariant.Sand",
+            "option": "terrain:sand",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "terrain:sand"
+            ],
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "congealed-blood",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "congealed-blood"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Swallow",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The gluttonworm Grabs a creature, or a creature fails a Reflex save against a Gulping Charge\n\n---\n\nEffect The gluttonworm uses Swallow Whole."
+    },
+    {
+      "kind": "ability",
+      "name": "Gulping Charge",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The gluttonworm Strides up to double its Speed and can move through the spaces of Large or smaller creatures, gulping each creature whose space the worm enters and attempting a body Strike against each of them.\n\nThe gluttonworm can use this Strike on each creature only once in a single use of Gulping Charge. Creatures can attempt a DC 41 basic Reflex save save against this damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Spew Sandstorm",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "air",
+        "earth",
+        "primal"
+      ],
+      "text": "The gluttonworm exhales swirling sand in a 60-foot cone. Creatures in the area must attempt a DC 41 Reflex save save.\n\nIt can't Spew Sandstorm again for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 4d6 slashing damage and 4d6 bludgeoning damage from the scouring sand.\n\nFailure The creature takes 8d6 slashing damage and 8d6 bludgeoning damage from the sand, and is Dazzled until the end of its next turn.\n\nCritical Failure The creature takes 12d6 slashing damage and 12d6 bludgeoning damage and is Blinded for 1 hour."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Huge, 3d10+17 bludgeoning and 2d6 slashing, Rupture 36\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Akiton's gluttonworms share many features of Golarion's cave worms, yet these immense predators are their own distinct species. Gluttonworms \"swim\" through the vast deserts of Akiton, moving almost like whales through the ocean as they forage for their next meals."
+}

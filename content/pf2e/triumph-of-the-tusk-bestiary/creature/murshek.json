@@ -1,0 +1,183 @@
+{
+  "kind": "creature",
+  "slug": "murshek",
+  "system": "pf2e",
+  "name": "Murshek",
+  "source": {
+    "title": "Pathfinder #207: The Resurrection Flood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 105,
+    "perception": 17,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 17,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 5,
+      "int": 2,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 13,
+      "intimidation": 15,
+      "nature": 15
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 15,
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 16,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Murshek makes a melee Strike. If she hits and deals damage, the target is Frightened 1, or Frightened 2 on a critical hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Toxic Teamwork",
+      "category": "offensive",
+      "text": "Murshek's attacks exacerbate any venom in her target's system. Against a creature affected by wyvern venom, her Strikes deal additional poison damage equal to twice the current stage of the wyvern venom affecting the target.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "toxic-teamwork",
+            "selection": "1",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.Numbers.One",
+                "value": "1"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Two",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Three",
+                "value": "3"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "toxic-teamwork"
+          ],
+          "damageType": "poison"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "toxic-teamwork"
+            ],
+            "selector": "strike-damage",
+            "slug": "toxic-teamwork",
+            "value": "2*@item.flags.system.rulesSelections.toxicTeamwork"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wingrider Trust",
+      "category": "offensive",
+      "text": "Murshek and Xithnik operate as a team and verbally coordinate their actions. Xithnik has 3 actions, and Murshek does not need to spend any actions to command him."
+    }
+  ]
+}

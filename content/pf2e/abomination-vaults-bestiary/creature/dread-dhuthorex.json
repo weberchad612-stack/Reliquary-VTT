@@ -1,0 +1,271 @@
+{
+  "kind": "creature",
+  "slug": "dread-dhuthorex",
+  "system": "pf2e",
+  "name": "Dread Dhuthorex",
+  "source": {
+    "title": "Pathfinder #165: Eyes of Empty Death",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "amphibious",
+    "chaotic"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 195,
+    "perception": 22,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 18,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 3,
+      "int": -1,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 23,
+      "occultism": 16,
+      "stealth": 20,
+      "survival": 21
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid"
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Mariner's Curse",
+          "rank": 5,
+          "ref": "spells:spell/mariners-curse"
+        },
+        {
+          "name": "Hypnotic Pattern",
+          "rank": 3,
+          "ref": "spells:spell/hypnotize"
+        },
+        {
+          "name": "Mind Reading",
+          "rank": 3,
+          "ref": "spells:spell/mind-reading"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "deadly-d12",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Snout",
+      "attack": 24,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "60 feet. DC 27 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "50 feet\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Overpowering Jaws",
+      "category": "offensive",
+      "text": "A dread dhuthorex deals 8 piercing damage to its target if its jaws Strike is a failure (but not a critical failure).",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "failure"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 3d6+8 bludgeoning plus 2d6 acid damage, Rupture 23\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "More intelligent than their lesser kin, dread dhuthorexes possess eerie, enchanting powers.\n\n---\n\nStrange things swim in sunless seas, but few as fierce as the shark-like dhuthorexes. These beasts chase prey fearlessly and tenaciously."
+}

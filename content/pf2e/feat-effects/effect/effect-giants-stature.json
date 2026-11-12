@@ -1,0 +1,129 @@
+{
+  "kind": "effect",
+  "slug": "effect-giants-stature",
+  "system": "pf2e",
+  "name": "Effect: Giant's Stature",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Giant's Stature\n\nYou become Large, increasing your reach by 5 feet and gaining the Clumsy 1 condition until you stop raging",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.ActorSizeLarge",
+            "value": "large"
+          },
+          {
+            "label": "PF2E.ActorSizeHuge",
+            "predicate": [
+              "feat:titans-stature"
+            ],
+            "value": "huge"
+          }
+        ],
+        "flag": "size",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.CreatureSize",
+        "rollOption": "giants-stature"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.reach.value",
+        "predicate": [
+          "giants-stature:large"
+        ],
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.reach.manipulate",
+        "predicate": [
+          "giants-stature:large"
+        ],
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "giants-stature:large"
+        ],
+        "reach": {
+          "upgrade": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "giants-stature:huge"
+        ],
+        "reach": {
+          "upgrade": 15
+        },
+        "resizeEquipment": true,
+        "value": "huge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.reach.value",
+        "predicate": [
+          "giants-stature:huge"
+        ],
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.reach.manipulate",
+        "predicate": [
+          "giants-stature:huge"
+        ],
+        "value": 10
+      }
+    }
+  ]
+}

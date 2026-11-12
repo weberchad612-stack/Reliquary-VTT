@@ -1,0 +1,241 @@
+{
+  "kind": "creature",
+  "slug": "hateful-hermit",
+  "system": "pf2e",
+  "name": "Hateful Hermit",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 80,
+    "perception": 11,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 13,
+      "nature": 12,
+      "survival": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. mental effects",
+      "speed": "trackless step"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Blowgun",
+      "ref": "equipment:item/blowgun",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sickle",
+      "ref": "equipment:item/sickle",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Whip",
+      "ref": "equipment:item/whip",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Graveroot",
+      "ref": "equipment:item/graveroot",
+      "type": "consumable",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Blowgun Darts",
+      "ref": "equipment:item/blowgun-darts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Whip",
+      "attack": 14,
+      "traits": [
+        "disarm",
+        "finesse",
+        "magical",
+        "nonlethal",
+        "reach-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sickle",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Blowgun",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "reload-1"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "graveroot"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Hatred",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "The hateful hermit unleashes a vexing stream of profanities and threats at a single foe he can see within 30 feet. The hermit gains a +1 circumstance bonus on all attack rolls made against that target until he chooses a different target to Focus Hatred on. The target must attempt a DC 22 Will save save, with the below effects. The hateful hermit cannot Focus Hatred again for 1d4 rounds.\n\n---\n\nCritical Success The target is unaffected and is temporarily immune to Focus Hatred for 24 hours.\n\nSuccess The target is distracted by the hatred and is Off-Guard against the hermit's next attack.\n\nFailure The hermit's words unnerve the target and distract them; the target is off-guard until the end of the hateful hermit's next turn.\n\nCritical Failure As failure, but the target is off-guard for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack",
+            "key": "RollOption",
+            "label": "Target of Focus Hatred",
+            "option": "focus-hatred",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "focus-hatred"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The hateful hermit deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trackless Step",
+      "category": "offensive",
+      "text": "The hateful hermit always gains the benefits of Cover Tracks in natural surroundings, even when moving at full speed."
+    }
+  ],
+  "blurb": "Male human misanthrope"
+}

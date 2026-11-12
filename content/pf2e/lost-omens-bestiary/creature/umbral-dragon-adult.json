@@ -1,0 +1,282 @@
+{
+  "kind": "creature",
+  "slug": "umbral-dragon-adult",
+  "system": "pf2e",
+  "name": "Umbral Dragon (Adult)",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "uncommon",
+  "traits": [
+    "dragon",
+    "occult",
+    "shadow"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 36,
+    "hp": 275,
+    "perception": 26,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 24,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 5,
+      "int": 4,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 26,
+      "athletics": 30,
+      "deception": 26,
+      "intimidation": 29,
+      "stealth": 30,
+      "netherworld-lore": 26
+    },
+    "speeds": {
+      "land": 50,
+      "fly": 180
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "draconic",
+      "jotun",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep",
+        "void"
+      ]
+    },
+    "notes": {
+      "saves": "+2 to all saves vs. shadow",
+      "perception": "voidsense (precise) 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 33,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Umbral Journey",
+          "rank": 7,
+          "ref": "spells:spell/umbral-journey"
+        },
+        {
+          "name": "Darkness (At Will)",
+          "rank": 7,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Read Aura",
+          "rank": 1,
+          "ref": "spells:spell/read-aura"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "reach-15",
+        "void"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+16",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+16",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+16",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hide in Shadows",
+      "category": "interaction",
+      "text": "The dragon can hide in dim light even if they don't have cover."
+    },
+    {
+      "kind": "ability",
+      "name": "Voidsense",
+      "category": "interaction",
+      "text": "The dragon can taste animating void energy, allowing them to sense creatures with void healing as a precise sense. It can also sense incorporeal creatures with void healing, like shadows, when they are inside solid objects."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to All Saves vs. Shadow",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:shadow"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pin Shadow",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "shadow"
+      ],
+      "text": "Trigger A creature within reach of the dragon's claw uses a move action or leaves a square during a move action it's using\n\nRequirements The triggering creature is in bright light or dim light and has a shadow\n\n---\nEffect The dragon makes a claw Strike against the triggering creature. On a hit, the trigger creature also has its shadow pinned in place, restricting its movement. The creature treats the area of the dragon's aura as difficult terrain until it uses an Interact action to unpin its shadow. If the area was already difficult terrain, the creature treats it as greater difficult terrain."
+    },
+    {
+      "kind": "ability",
+      "name": "Umbral Pall",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "occult",
+        "shadow"
+      ],
+      "text": "120 feet. Shadows surround the dragon. The radius of all light from light sources and the areas of light spells in the aura are halved.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 120,
+            "traits": [
+              "occult",
+              "shadow"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devour Undead",
+      "category": "offensive",
+      "text": "The dragon's jaws Strikes have the benefit of a Ghost Touch property rune and deal an additional 5d6 force damage to undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:jaws"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "force",
+            "diceNumber": 5,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges its Tenebrous Breath whenever it scores a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tenebrous Breath",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The umbral dragon exhales in one of two ways. They can't use Tenebrous Breath again for 1d4 rounds.\n- Darkness (occult, void) The dragon breathes a blast of darkness that deals 16d6 void damage in a 40-foot cone (DC 36 basic Reflex save save). Undead creatures take force damage instead of void damage.\n- Shadows (occult, shadow) The dragon breathes a blast of shadows in a 40-foot cone. Each creature within the cone must attempt a DC 36 Fortitude save save.\n\nCritical Success The creature is unaffected.\n\nSuccess The creature is Enfeebled 2 for 1 round.\n\nFailure The creature is enfeebled 2 for 1 minute.\n\nCritical Failure The creature is enfeebled 2 for 1 minute and Blinded for 1 round."
+    }
+  ],
+  "text": "Stories across Golarion warn children about the monsters that dwell in the shadows, but no story captures the reality of the umbral dragon. Natives of the Netherworld, these occult dragons are at home in the darkness, using it to their advantage both in and out of battle. Umbral dragons rarely worry about fighting fairly, emerging from hiding to strike unwary foes and using their magical breath without compunction. Similarly, in social situations, they often remain in the shadows, operating through other creatures. Even in direct conversation, they frequently obscure their true intent, preferring to avoid ever being pinned down with a solid answer.\n\nWhile umbral dragons are rarely altruistic, their preferred diet creates a strange dichotomy that attracts other creatures to them as a potential source of safety, especially in the Netherworld. While much of the multiverse sees undead as a dire threat, for umbral dragons, undead are a tasty snack. Umbral dragons find the flavor of necrotic flesh irresistible and the void energy of incorporeal undead a potent spice, making them one of the few creatures in existence known to hunt the unliving as a source of food."
+}

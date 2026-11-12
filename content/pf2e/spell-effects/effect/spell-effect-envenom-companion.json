@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-envenom-companion",
+  "system": "pf2e",
+  "name": "Spell Effect: Envenom Companion",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Envenom Companion\n\nThe first time each round you hit a creature with an unarmed Strike that deals piercing or slashing damage, that Strike deals an additional 1d8 poison damage. A creature that is damaged by this poison must attempt a Fortitude save. On a failure, it's also clumsy 1 for 1 round.\n\n---\nHeightened (+3) The poison damage increases by 1d8 and the clumsy value imposed on a failed save increases by 1.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "diceNumber": "match(when(btwn(@item.level, 3, 5), 1), when(btwn(@item.level, 6, 8), 2), when(gte(@item.level, 9), 3))",
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "first-hit",
+          "unarmed"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "unarmed-damage",
+      "text": "PF2E.SpecificRule.EnvenomCompanion.DamageNote",
+      "when": [
+        "first-hit"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.EnvenomCompanion.RollOptionLabel",
+        "option": "first-hit",
+        "toggleable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "kind": "creature",
+  "slug": "archer-regiment",
+  "system": "pf2e",
+  "name": "Archer Regiment",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "human",
+    "humanoid",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 32,
+    "hp": 210,
+    "perception": 22,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 25,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 7,
+      "int": 1,
+      "str": 4,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 25,
+      "stealth": 22,
+      "survival": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments); Thresholds 140 (3 segments), 70 (2 segments)",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 210;Thresholds 140 (3 segments), 70 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Dagger Defense",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\n---\nThe archer regiment draws daggers to attack close-range enemies. Each enemy in a 5-foot emanation must attempt a DC 29 basic Reflex save save. The damage depends on the number of actions. The archer regiment gains a +1 circumstance bonus to AC until the beginning of their next turn.\n\n1 2d4+2 piercing damage\n\n2 4d4+12 piercing damage\n\n3 4d4+15 piercing damage"
+    },
+    {
+      "kind": "ability",
+      "name": "Drilled in Formations",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The archer regiment uses Change Formation. An archer regiment unit typically knows the loose and marching column formations.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "change-formation",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeFormation.Loose.Label",
+                "value": "loose"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeFormation.MarchingColumn.Label",
+                "value": "marching-column"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "change-formation:loose",
+              {
+                "or": [
+                  "item:slug:rain-of-arrows",
+                  "item:slug:dagger-defense"
+                ]
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.ChangeFormation.Loose.Drawback"
+              }
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "mode": "remove",
+            "predicate": [
+              "change-formation:loose"
+            ],
+            "type": [
+              "area-damage",
+              "splash-damage"
+            ],
+            "value": 0
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "all-speeds",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "change-formation:marching-column"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "change-formation:marching-column"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "change-formation:marching-column"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rain of Arrows",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The archer regiment fires their longbows in a coordinated volley. This volley is either a 15-foot burst within 200 feet that deals 4d8 piercing damage or a 10-foot burst within 100 feet that deals 6d8 piercing damage. Either effect has a DC 29 basic Reflex save save. When the archer regiment is reduced to 2 segments, both areas are reduced by 5 feet."
+    }
+  ],
+  "text": "Archer regiments are capable of filling the sky with arrows at great distances, making them vital to any war leader who wishes to weaken the enemy before they get close to allied units or encampments."
+}

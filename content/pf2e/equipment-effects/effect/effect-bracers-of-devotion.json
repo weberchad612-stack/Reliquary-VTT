@@ -1,0 +1,145 @@
+{
+  "kind": "effect",
+  "slug": "effect-bracers-of-devotion",
+  "system": "pf2e",
+  "name": "Effect: Bracers of Devotion",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Bracers of Devotion\n\nYou gain a benefit depending on your blessing of the devoted\n- Blessed Armamament You gain a +2 item bonus against attempts to Disarm you of your blessed armament.\n- Blessed Shield While raised, the shield grants you resistance 10 to unholy if you're holy, resistance 10 to holy if you're unholy, or resistance 5 to holy and unholy if you're neither.\n- Blessed Swiftness Your bonus to Speed increases to +10 feet.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "predicate": [
+              "feature:blessed-armament"
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Blessed Armament"
+          },
+          {
+            "predicate": [
+              "feature:blessed-shield"
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Blessed Shield"
+          },
+          {
+            "predicate": [
+              "feature:blessed-swiftness"
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Blessed Swiftness"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "bracers-of-devotion"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Equipment.BracersOfDevotion.BlessedArmamentToggle",
+        "option": "bracers-of-devotion-disarm-bonus",
+        "predicate": [
+          "bracers-of-devotion:blessed-armament"
+        ],
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:shield:raised"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Equipment.BracersOfDevotion.BlessedShieldToggle",
+        "option": "bracers-of-devotion-resistance",
+        "phase": "beforeDerived",
+        "predicate": [
+          "bracers-of-devotion:blessed-shield"
+        ],
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "reflex-dc",
+      "type": "item",
+      "value": 2,
+      "when": [
+        "action:disarm",
+        "bracers-of-devotion-disarm-bonus"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "bracers-of-devotion-resistance",
+          "self:trait:unholy"
+        ],
+        "type": "holy",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "bracers-of-devotion-resistance",
+          "self:trait:holy"
+        ],
+        "type": "unholy",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "bracers-of-devotion-resistance",
+          {
+            "nor": [
+              "self:trait:holy",
+              "self:trait:unholy"
+            ]
+          }
+        ],
+        "type": "unholy",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "bracers-of-devotion:blessed-swiftness"
+        ],
+        "selector": "speed",
+        "slug": "blessed-swiftness",
+        "value": 10
+      }
+    }
+  ]
+}

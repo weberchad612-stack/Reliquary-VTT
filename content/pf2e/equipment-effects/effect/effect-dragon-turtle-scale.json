@@ -1,0 +1,80 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragon-turtle-scale",
+  "system": "pf2e",
+  "name": "Effect: Dragon Turtle Scale",
+  "source": {
+    "title": "Pathfinder GM Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dragon Turtle Scale, Dragon Turtle Scale (Greater)\n\nYou gain a swim Speed equal to half your land Speed or equal to your land Speed (greater).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dragon-turtle-scale",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dragon Turtle Scale"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dragon-turtle-scale-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dragon Turtle Scale (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "dragon-turtle-scale"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "dragon-turtle-scale:dragon-turtle-scale"
+        ],
+        "selector": "swim",
+        "value": "floor(@actor.system.movement.speeds.land.value*0.5)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "dragon-turtle-scale:dragon-turtle-scale-greater"
+        ],
+        "selector": "swim",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    }
+  ]
+}

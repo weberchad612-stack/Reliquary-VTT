@@ -1,0 +1,266 @@
+{
+  "kind": "creature",
+  "slug": "blooming-guardian",
+  "system": "pf2e",
+  "name": "Blooming Guardian",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "beast"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 36,
+    "hp": 360,
+    "perception": 29,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 23,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 5,
+      "dex": 3,
+      "int": 1,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 30,
+      "intimidation": 21,
+      "nature": 29,
+      "survival": 27
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 40,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "void",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "languages": "speak with animals, speak with plants"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 33,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Animal Vision",
+          "rank": 3,
+          "ref": "spells:spell/animal-vision"
+        },
+        {
+          "name": "Speak with Plants (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/speak-with-animals"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Antlers",
+      "attack": 28,
+      "damage": [
+        {
+          "dice": "4d12+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hooves",
+      "attack": 26,
+      "damage": [
+        {
+          "dice": "4d10+5",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Petal Form",
+      "category": "interaction",
+      "text": "The blooming guardian can dissipate momentarily into a swirling cloud of petals and pollen to pass over brambles and slip through cracks. When Striding in woodland terrain, the blooming guardian ignores difficult terrain and can pass through obstacles so long as there is a small passageway."
+    },
+    {
+      "kind": "ability",
+      "name": "Buck",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "DC 36 Reflex save"
+    },
+    {
+      "kind": "ability",
+      "name": "Budding Siphon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "primal",
+        "stance",
+        "void"
+      ],
+      "text": "20 feet. A blooming guardian is in a constant state of decomposition; to keep this entropy at bay, the flowers that cover their antlers continually siphon life from the surrounding area. All living creatures that enter or start their turn in the emanation take 6d4 void damage (DC 36 basic Fortitude save save). At the start of their turn in any round that the blooming guardian deals damage with siphoning buds, they gain 10 temporary Hit Points, plus 2 temporary Hit Points for each creature damaged beyond the first since the blooming guardian's last turn, to a maximum of 20 temporary Hit Points.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "traits": [
+              "primal",
+              "void",
+              "stance"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Full Bloom",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "primal",
+        "stance"
+      ],
+      "text": "The flowers on the blooming guardian's antlers bloom, unveiling their brilliance as they eat away at their host. While in this stance, the blooming guardian's Strikes deal an additional 2d4 poison damage plus 5 persistent poison damage; on a hit, a target must succeed at a DC 36 Fortitude save save or become Enfeebled 2. The blooming guardian takes 5 persistent,poison damage as long as it's in Full Bloom.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "full-bloom",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 2,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "full-bloom"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "full-bloom"
+          ],
+          "damageType": "poison"
+        },
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "full-bloom"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Goring Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The blooming guardian Strides twice and makes an antlers Strike after either Stride. If the Strike hits, the blooming guardian deals an extra 2d12 bludgeoning damage, and the target takes a –2 circumstance penalty to its next Fortitude save against blossom siphon.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "goring-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 2,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "goring-charge"
+            ],
+            "selector": "antlers-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wail of the Forest",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal",
+        "void"
+      ],
+      "text": "Requirements The blooming guardian is in Full Bloom\n\n---\n\nEffect The blooming guardian confronts their mortality, causing their flowers to burst and spray their pollen. All creatures in a 40-foot cone take 10d10 void damage with a DC 36 Fortitude save save. The blooming guardian then exits Full Bloom and can't enter it again for 1d4 rounds.\n\n---\n\nCritical Success No effect.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and becomes Drained 1. Creatures that are Enfeebled lose that condition and increase the drained condition by the same value.\n\nCritical Failure As failure, but double damage."
+    }
+  ],
+  "text": "The pestilent blossoms adorning the antlers of a blooming guardian are most beautiful in moonlight, when they achieve full bloom and reveal their celestial glow. When blooming guardians near the end of their life cycle, they walk one final patrol of their forest as their ancient body decomposes into the understory."
+}

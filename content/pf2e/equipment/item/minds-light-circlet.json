@@ -1,0 +1,106 @@
+{
+  "kind": "equipment",
+  "slug": "minds-light-circlet",
+  "system": "pf2e",
+  "name": "Mind's Light Circlet",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "focused",
+    "invested",
+    "magical"
+  ],
+  "text": "Gemstones of many colors adorn the silver of a mind's light circlet. When you're charged with mental power, the jewels scintillate with light, with different gems resonating based on your emotions. If you have at least 1 Focus Point, the gems cast dim light in a 10-foot radius. When you amp a spell, the light increases to bright light in a 20-foot radius (and dim light to the next 20 feet) until the start of your next turn.\n\nYou gain a +2 item bonus to Occultism checks. You also gain the following amp, which you can apply to any of your psi cantrips that have a target or area, much like an amp gained from a feat.\n\nAmp You transfer some of the magical luminescence from the mind's light circlet to one of the creatures. Choose a creature targeted by the spell or in its area. Until the start of your next turn, that creature sheds bright light in a 20-foot radius (and dim light to the next 20 feet) and can't be Concealed. If the creature is Invisible, it's concealed while alight, rather than being undetected.\n\nEffect: Mind's Light Circlet\n\n---\nActivate F (concentrate)\n\nFrequency once per day\n\nEffect You gain 1 Focus Point, which you can use only to use a psychic amp. If not used by the end of your turn, this Focus Point is lost.\n\n---\nCraft Requirements You are a psychic.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "occultism",
+      "type": "item",
+      "value": 2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Equipment.MindsLightCirclet.LightToggle",
+        "option": "minds-light-circlet-light",
+        "placement": "spellcasting",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "minds-light-circlet-light"
+        ],
+        "value": {
+          "alpha": 0.1,
+          "animation": {
+            "type": "rainbowswirl"
+          },
+          "bright": 0,
+          "coloration": 101,
+          "dim": 10
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "amp-spell"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Psychic.Amp.AlternateAmp",
+        "mergeable": true,
+        "option": "alternate-amp",
+        "placement": "spellcasting",
+        "priority": 51,
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "minds-light-circlet"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:psi-cantrip",
+          "alternate-amp:minds-light-circlet"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Psychic.Amp.MindsLightCirclet",
+            "title": "PF2E.TraitAmp"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.equipment-effects.Item.Effect: Mind's Light Circlet]"
+          }
+        ]
+      }
+    }
+  ],
+  "usage": "wornheadwear",
+  "bulk": 0,
+  "price": {
+    "gp": 1200
+  }
+}

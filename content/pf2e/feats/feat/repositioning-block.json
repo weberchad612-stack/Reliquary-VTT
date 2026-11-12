@@ -1,0 +1,44 @@
+{
+  "kind": "feat",
+  "slug": "repositioning-block",
+  "system": "pf2e",
+  "name": "Repositioning Block",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "guardian"
+  ],
+  "category": "class",
+  "actions": "free",
+  "prerequisites": [
+    "Shield Block"
+  ],
+  "text": "Trigger You used Shield Block to prevent damage from an adjacent creature's attack.\n\n---\nAs you absorb a blow from an enemy, you can use their attack's momentum against them. Attempt to Reposition the creature whose attack you used Shield Block against. You don't need to have a hand free to do so. You gain a +1 item bonus to the Athletics check if your shield is at least 4th level, a +2 item bonus if your shield is at least 10th level, and a +3 item bonus if your shield is at least 16th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "repositioning-block",
+          "action:reposition",
+          "self:shield:equipped",
+          {
+            "gte": [
+              "{actor|heldShield.system.level.value}",
+              4
+            ]
+          }
+        ],
+        "selector": "athletics",
+        "type": "item",
+        "value": "max(1,((@actor.heldShield.system.level.value + 2)/ 6))"
+      }
+    }
+  ]
+}

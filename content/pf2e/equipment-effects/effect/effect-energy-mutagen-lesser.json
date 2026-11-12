@@ -1,0 +1,117 @@
+{
+  "kind": "effect",
+  "slug": "effect-energy-mutagen-lesser",
+  "system": "pf2e",
+  "name": "Effect: Energy Mutagen (Lesser)",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Energy Mutagen (Lesser)\n\nBenefit You gain resistance 5 to the attuned energy type. Whenever you score a hit with a melee weapon, add 1 damage of the attuned energy type.\n\nDrawback You gain weakness 5 to the other three energy types.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          }
+        ],
+        "flag": "energy",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType",
+        "rollOption": "energy-mutagen"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "energy-mutagen:acid"
+          }
+        ],
+        "type": "acid",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "energy-mutagen:cold"
+          }
+        ],
+        "type": "cold",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "energy-mutagen:electricity"
+          }
+        ],
+        "type": "electricity",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "energy-mutagen:fire"
+          }
+        ],
+        "type": "fire",
+        "value": 5
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "when": [
+        {
+          "not": "item:trait:unarmed"
+        }
+      ],
+      "damageType": "{item|flags.system.rulesSelections.energy}"
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.energy}",
+      "value": 5
+    }
+  ]
+}

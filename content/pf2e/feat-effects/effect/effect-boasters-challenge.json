@@ -1,0 +1,61 @@
+{
+  "kind": "effect",
+  "slug": "effect-boasters-challenge",
+  "system": "pf2e",
+  "name": "Effect: Boaster's Challenge",
+  "source": {
+    "title": "Pathfinder Lost Omens Character Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Boaster's Challenge\n\nYou gain a status bonus to damage rolls with your weapon or unarmed Strikes against the challenged foe.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "boasters-challenge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Skill.Deception",
+            "value": "deception"
+          },
+          {
+            "label": "PF2E.Skill.Diplomacy",
+            "value": "diplomacy"
+          },
+          {
+            "label": "PF2E.Skill.Intimidation",
+            "value": "intimidation"
+          }
+        ],
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "target:mark:boasters-challenge"
+        ],
+        "selector": "strike-damage",
+        "type": "status",
+        "value": "ternary(gte(@actor.skills.{item|flags.system.rulesSelections.skill}.rank,4),6,ternary(gte(@actor.skills.{item|flags.system.rulesSelections.skill}.rank,3),4,2))"
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "kind": "feat",
+  "slug": "fearsome-brute",
+  "system": "pf2e",
+  "name": "Fearsome Brute",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "fighter"
+  ],
+  "category": "class",
+  "text": "Fear makes your foes weak and more vulnerable to your attacks. You gain a circumstance bonus to damage rolls for Strikes against Frightened creatures. The bonus is equal to double the target's frightened value.\n\nIf you're a master in Intimidation, increase the bonus to triple the target's frightened value.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "target:condition:frightened"
+        ],
+        "selector": "strike-damage",
+        "slug": "fearsome-brute",
+        "type": "circumstance",
+        "value": "2 * @target.conditions.frightened.badge.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          {
+            "gte": [
+              "skill:intimidation:rank",
+              3
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "fearsome-brute",
+        "value": 1.5
+      }
+    }
+  ]
+}

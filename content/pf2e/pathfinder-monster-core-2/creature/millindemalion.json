@@ -1,0 +1,179 @@
+{
+  "kind": "creature",
+  "slug": "millindemalion",
+  "system": "pf2e",
+  "name": "Millindemalion",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 33,
+    "hp": 275,
+    "perception": 23,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 27,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 8,
+      "int": 7,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "crafting": 28,
+      "occultism": 24,
+      "society": 24,
+      "stealth": 27,
+      "millinery-lore": 30
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Striking Shears",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Felt Shears",
+      "attack": 27,
+      "traits": [
+        "deadly-d8",
+        "finesse",
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+14",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "mental"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "The millindemalion can use Hat Toss against the triggering creature instead of making a Strike, making a melee attack roll with a +27 modifier to do so.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Unsettling Mind",
+      "category": "defensive",
+      "text": "Attempting to touch the frenetic mind of a millindemalion is a dangerous task. When the millindemalion succeeds at a saving throw against a mental effect, the creature originating that effect takes 4d6 mental damage.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "saving-throw",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hat Toss",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate",
+        "mental",
+        "primal"
+      ],
+      "text": "The millindemalion quickly crafts a mind-altering hat in combat and tosses it onto a target with a flick of their wrist. The millindemalion chooses one of the effects below and makes a ranged attack roll with a +27 modifier and a range increment of 20 feet.\n\nOn a hit, the target must succeed at a DC 33 Will save saving throw or experience the listed effect for 1d4+1 rounds. If the millindemalion critically succeeds at the ranged Strike, the target takes a -4 circumstance penalty on the save.\n\nA target can only wear one millindemalion hat at a time; a new hat replaces any previous hat. The hat can't be removed before the condition ends, but when the condition ends (or on a successful save), the hat falls to pieces.\n- Befuddling Bowler The hat clouds the target's mind; the target becomes Stupefied 2.\n- Bewitching Beret The target is infatuated with their new hat and its creator, becoming Fascinated by the millindemalion and the beret.\n- Dazzling Deerstalker The target can barely see with the hat falling down over its eyes and gains the Dazzled condition.\n- Fettering Fedora The target feels a heavy weight pressing down on them from the hat and takes a -10-foot circumstance penalty to their Speeds.\n- Tiring Tricorne The target grows sleepy and becomes Slowed 1.\nEffect: Fettering Fedora",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "label": "Hat Toss",
+            "slug": "millindemalion-hat-toss",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "millindemalion-hat-toss",
+          "type": "untyped",
+          "value": 27
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A millindemalion deals an extra 4d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Millindemalion are cruel fey tricksters capable of causing mayhem with their magical, mind-altering hats. Many folk tales from around the world speak of industrious fey who help struggling crafters-cobblers, milliners, tailors, and so on-during the night, creating quality wares in secret for no payment greater than a crumb of bread or a saucer of cream. These stories hold a grain of truth, as gracious fey do occasionally journey from the First World to aid a humble artisan on a whim, for bribes of food, or sometimes even as part of a concerted effort to spread beauty throughout the world. However, when an artisan becomes too reliant on this help, their friendly fey helper might become warped and twisted with resentment and neglect. Eventually, they could transform into a cruel prankster who delights in punishing mortals who dare task a fey with such mundane work. The millindemalion is the result of a kindly, hat-making fey undergoing such a transformation. Some scholars believe this erratic behavior is caused by the preponderance of quicksilver used in most millinery."
+}

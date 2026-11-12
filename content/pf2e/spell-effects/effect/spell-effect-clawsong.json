@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-clawsong",
+  "system": "pf2e",
+  "name": "Spell Effect: Clawsong",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Clawsong\n\nYour claw attack gains the versatile (piercing) trait, and deals 1d6 slashing damage. If your claw attack already deals 1d6 slashing damage, it deals 1d8 instead.\n\nIf its claw attack already had the versatile (piercing) trait, it gains the deadly 1d8 trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "lte": [
+              "item:damage:die:faces",
+              6
+            ]
+          }
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "claw-damage"
+        ],
+        "slug": "base"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:base:claw",
+          "item:trait:versatile-p"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "priority": 109,
+        "property": "weapon-traits",
+        "value": "deadly-d8"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:base:claw"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "priority": 110,
+        "property": "weapon-traits",
+        "value": "versatile-p"
+      }
+    }
+  ]
+}

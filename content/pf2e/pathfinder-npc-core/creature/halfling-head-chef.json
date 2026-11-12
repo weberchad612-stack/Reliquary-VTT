@@ -1,0 +1,239 @@
+{
+  "kind": "creature",
+  "slug": "halfling-head-chef",
+  "system": "pf2e",
+  "name": "Halfling Head Chef",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "halfling",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 36,
+    "perception": 7,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 7,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": 2,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "intimidation": 7,
+      "society": 6,
+      "baking-lore": 15,
+      "cooking-lore": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "halfling"
+    ],
+    "notes": {
+      "perception": "+15 to smell and taste); keen eyes"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Filcher's Fork",
+      "ref": "equipment:item/filchers-fork",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Frying Pan",
+      "ref": "equipment:item/frying-pan",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chef's Hat",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Herbs and Spices",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Filcher's Fork",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "backstabber",
+        "deadly-d6"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Filcher's Fork",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "backstabber",
+        "deadly-d6",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hot Frying Pan",
+      "attack": 9,
+      "traits": [
+        "fatal-d8"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d4",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+15 to Smell and Taste",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 8,
+          "when": [
+            "to-smell-and-taste"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Culinary Specialist",
+      "category": "interaction",
+      "text": "For encounters involving cooking and taste, the head chef is a 7th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Keen Eyes",
+      "category": "interaction",
+      "text": "The halfling gains a +2 circumstance bonus when using the Seek action to find Hidden or Undetected creatures within 30 feet of them. Whenever the halfling targets a creature that is Concealed or hidden from them, reduce the DC of the flat check to DC 3 Flat check for a concealed target or DC 9 Flat check for a hidden one.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "action:seek",
+              {
+                "lte": [
+                  "target:distance",
+                  30
+                ]
+              },
+              {
+                "or": [
+                  "target:condition:hidden",
+                  "target:condition:undetected"
+                ]
+              }
+            ],
+            "selector": "perception",
+            "type": "circumstance",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dash of Spice",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The head chef is targeted with a melee attack by an adjacent attacker they can see\n\n---\nEffect The head chef uses Spice Mix against the attacker."
+    },
+    {
+      "kind": "ability",
+      "name": "Angry Rant",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Frequency once per round\n\n---\nEffect The chef shouts a flurry of insults and criticisms at either an ally or enemy within 30 feet with the following effects:\n\nAlly The chef's assistant is shaken by the barrage of criticism but is determined to work faster and harder. The target becomes Quickened for 1 round but is also Frightened 1. They can use the extra action to Interact, Step, or Stride, or as part of an action or activity to prepare, cook, or serve food.\n\nEnemy The target must succeed a DC 18 Will save save or take 1d6 mental damage and become frightened 1 (or 2d6 mental damage and Frightened 2 on a critical failure).",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Spice Mix",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The head chef throws a mixture of irritating spices into an adjacent creature's eyes, causing the creature to be Dazzled until it Interacts to clear its vision."
+    }
+  ],
+  "text": "Renowned for their culinary expertise, halfling head chefs navigate the complex world of high cuisine with flavorful creations and fiery tempers.\n\n---\nHalflings thrive on simple pleasures—having a pint at the pub or warming their feet by the hearth."
+}

@@ -1,0 +1,211 @@
+{
+  "kind": "creature",
+  "slug": "bloody-blade-mercenary",
+  "system": "pf2e",
+  "name": "Bloody Blade Mercenary",
+  "source": {
+    "title": "Pathfinder #145: Hellknight Hill",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dromaar",
+    "evil",
+    "human",
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 19,
+    "perception": 6,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 9,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": 7,
+      "intimidation": 2,
+      "nature": 4,
+      "stealth": 6,
+      "survival": 4,
+      "thievery": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "gear",
+      "name": "Silver Pieces",
+      "ref": "equipment:item/silver-pieces",
+      "type": "treasure",
+      "quantity": 15
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 9,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 8,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The bloody blade mercenary designates a single creature as their prey and focuses their attacks against that creature. The mercenary must be able to see or hear the prey, or must be tracking the prey during exploration.\n\nThe mercenary gains a +2 circumstance bonus to Perception checks to Seeks their prey and a +2 circumstance bonus to Survival checks when they Tracks their prey. The mercenary also ignores the penalty for making ranged attacks within their second range increment against the prey they are hunting.\n\nThe mercenary can have only one creature designated as their prey at a time. If they use Hunt Prey against a creature when they already have a creature designated, the prior creature loses the designation and the new prey gains the designation. This designation lasts until their next daily preparations.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunted Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirement The bloody blade mercenary is wielding a ranged weapon with reload 0\n\n---\n\nThe bloody blade mercenary takes two quick shots against the one they hunt. They make two Strikes against their prey with the required weapon. If both hit the same creature, combine their damage for the purpose of resistances and weaknesses. Apply the mercenary's multiple attack penalty to each Strike normally.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Precision",
+      "category": "offensive",
+      "text": "The first time the mercenary hits their hunted prey in a round, they deal 1d8 additional precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitSwitch",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Human (half-orc) ranger 1"
+}

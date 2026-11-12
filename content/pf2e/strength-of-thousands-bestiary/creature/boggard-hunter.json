@@ -1,0 +1,192 @@
+{
+  "kind": "creature",
+  "slug": "boggard-hunter",
+  "system": "pf2e",
+  "name": "Boggard Hunter",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "amphibious",
+    "boggard",
+    "chaotic",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 140,
+    "perception": 14,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 2,
+      "int": -1,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 16,
+      "intimidation": 12,
+      "stealth": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "in water",
+            "when": [
+              "terrain:water"
+            ]
+          }
+        ]
+      },
+      "survival": 14
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "boggard"
+    ],
+    "notes": {
+      "speed": "swamp stride"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greatclub",
+      "ref": "equipment:item/greatclub",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greatclub",
+      "attack": 18,
+      "traits": [
+        "backswing",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tongue",
+      "attack": 18,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "tongue-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 15,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A boggard hunter deals an additional 2d6 precision damage precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swamp Stride",
+      "category": "offensive",
+      "text": "A boggard hunter ignores difficult terrain caused by swamp terrain features."
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Croak",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The boggard unleashes a terrifying croak. Any non-boggard within 30 feet becomes Frightened 1 unless they succeed at a DC 25 Will save save; those who critically succeed are temporarily immune for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Tongue Grab",
+      "category": "offensive",
+      "text": "If a boggard hunter hits a creature with her tongue, that creature becomes Grabbed. Unlike with a normal grab, the creature isn't Immobilized, but it can't move beyond the reach of the boggard hunter's tongue.\n\nA creature can sever the tongue by hitting AC 22 and dealing at least 7 slashing damage. Though this doesn't deal any damage to the boggard, it prevents it from using their tongue Strike until they regrows their tongue, which takes a week."
+    }
+  ]
+}

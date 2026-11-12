@@ -1,0 +1,323 @@
+{
+  "kind": "creature",
+  "slug": "succubus",
+  "system": "pf2e",
+  "name": "Succubus",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "demon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 100,
+    "perception": 15,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 14,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 4,
+      "dex": 3,
+      "int": 4,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 14,
+      "deception": 18,
+      "diplomacy": 20,
+      "intimidation": 16,
+      "religion": 13,
+      "society": 15,
+      "stealth": 14
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        },
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "three additional mortal languages, Telepathy 100 feet, Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Dominate",
+          "rank": 6,
+          "ref": "spells:spell/dominate"
+        },
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Suggestion (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/suggestion"
+        },
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Mind Reading (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/mind-reading"
+        },
+        {
+          "name": "Charm (At Will)",
+          "rank": 1,
+          "ref": "spells:spell/charm"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rejection Vulnerability",
+      "category": "defensive",
+      "text": "As succubi are beings of pure lust, creatures that reject their lust can metaphysically harm them. When a succubus fails a Diplomacy check to Embrace or Request, or when a creature succeeds at its save against a succubus's mental spell or ability, the succubus takes 2d6 mental damage.\n\nFor 1 hour after causing mental damage to a succubus in this way, a creature can deal 2d6 mental damage to the succubus with a successful Demoralize action incorporating its rejection."
+    },
+    {
+      "kind": "ability",
+      "name": "Seductive Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "10 feet.\n\nAny creature in the aura that could be sexually attracted to a succubus takes a –2 circumstance penalty to checks and DCs to oppose the succubus's mental spells, Deception, and Diplomacy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "seductive-presence",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The succubus can take on the appearance of any Small or Medium humanoid. This doesn't change their Speed or their attack and damage modifiers with their Strikes, but it might change the damage type their Strikes deal (typically to bludgeoning).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "succubus",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Demon.Succubus",
+                "value": "succubus"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Small",
+                "value": "humanoid-small"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Medium",
+                "value": "humanoid-medium"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "bludgeoning"
+            },
+            "predicate": [
+              {
+                "or": [
+                  "change-shape:humanoid-small",
+                  "change-shape:humanoid-medium"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid-small"
+            ],
+            "value": "small"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Embrace",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "The succubus attempts to grapple skill=diplomacy a creature using their Diplomacy bonus instead of Athletics. If the creature is willing, the succubus automatically succeeds."
+    },
+    {
+      "kind": "ability",
+      "name": "Passionate Kiss",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "mental",
+        "unholy",
+        "void"
+      ],
+      "text": "Frequency once per round\n\n---\n\nEffect The succubus engages a creature they have Grabbed or Restrained in an embrace or other act of passion to drain its vital essence.\n\nThe kiss makes the creature Drained 1 or increases its drained value by 1, to a maximum of 4. The creature takes 3d6 void damage and the succubus regains Hit Points equal to the damage dealt. The target must succeed at a DC 26 Will save save or be affected by a Suggestion to submit to more actions of passion rather than trying to Escape.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Profane Gift",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "mental"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The succubus gives a willing humanoid a profane gift. That creature gains a +1 status bonus to attack rolls, skill checks, and saving throws. As long as the gift persists, the succubus can communicate telepathically with the target at any distance, see through the creature's senses, and target the creature with suggestion through the telepathic link. In addition, the creature uses an outcome one degree of success worse than it rolls on saving throws against the succubus's Suggestion spells.\n\nA humanoid can't have more than one profane gift at a time, and a succubus can't grant more than one profane gift at a time. Removing the gift requires an atone ritual. The succubus can remove the gift as a free action to give the recipient a curse, making them Stupefied 3 with an unlimited duration.\n\nA summoned succubus can't grant a profane gift.\n\nEffect: Profane Gift",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "spell",
+      "name": "Demonic Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ],
+  "text": "Succubi are manifestations of the sin of destructive lust, and they are the most attractive of all demons—as befits their role in seducing mortals to fall to sin. The concept of gender is fluid to a succubus, as they can adopt countless humanoid forms of any gender to aid in their goals. Most succubi have a feminine true form (incubi, which usually have a masculine true form, are a different kind of demon), but regardless of gender, a lust demon is supernaturally beautiful or handsome, but with curving horns, bat wings, sharp claws, and a sinuous tail.\n\nWhen disguised as a mortal humanoid in the Universe, a succubus whispers into the ears of mortals, urging them to pursue their darkest and most destructive desires and pushing them into depravity, using magic only if persuasion fails. While mortals often fixate on succubi's application of sexual lust, these demons are can easily exploit lust for power, knowledge, fame, or any other desire as easily as more carnal appetites. Their ability to infiltrate societies makes them excellent spies, assassins, and political saboteurs as well. Ultimately, the succubus enjoys all means of upending mortal culture.\n\n---\n\nWhen a sinful mortal soul is judged and sent on to the Outer Rifts, it can become a deadly fiend—a demon. Demons are living incarnations of sin—be they classic sins like wrath or gluttony, or more \"specialized\" depravities like an obsession with torture or the act of treason or treachery. Once formed, a demon's driving goals are twofold—the amassing of personal power, and the corruption of mortal souls to cause them to become tainted by sin. In this way demons ensure a never-ending supply of new demons to bolster their ever-growing ranks in the Outer Rifts.\n\nDemons are selfish and self-absorbed creatures, and most firmly believe that mortals only play at being more virtuous than fiends. They enjoy tempting mortals into damnation to both indulge their egos and swell their armies. Like many other fiends, one of the great rewards of this manipulation is fulfilling their hunger for souls. In their eyes, the primary use for these souls is to spawn new demons, who can serve as soldiers, slaves, pawns, or even currency for their more powerful masters."
+}

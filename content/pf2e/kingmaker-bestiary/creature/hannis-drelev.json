@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "hannis-drelev",
+  "system": "pf2e",
+  "name": "Hannis Drelev",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 220,
+    "perception": 17,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 25,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 5,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 23,
+      "deception": 24,
+      "intimidation": 24,
+      "society": 19,
+      "stealth": 22,
+      "thievery": 20,
+      "brevoy-lore": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "skald"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Key Ring",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Moderate)",
+      "ref": "equipment:item/healing-potion-moderate",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 23,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Slice",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirement Baron Drelev hasn't attempted a Strike during this turn.\n\n---\nEffect Baron Drelev assumes a defensive position with his weapons out, then attempts a melee Strike. He takes a -2 status penalty on all Strikes (including this one) and gains a +2 status bonus to his AC until the start of his next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Dramatic Disarm",
+      "category": "offensive",
+      "text": "If Baron Drelev scores a critical success on an Athletics check to disarm an opponent, he can choose to have the disarmed item fly 1d4 × 5 feet in a random direction rather than have it fall to the ground in the opponent's space. If this causes the item to land in a space occupied by a creature with at least one free hand, that creature can attempt a DC 20 Reflex save save to catch the item (otherwise it falls to the ground in that space).",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "athletics",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Harrying Swordfighter",
+      "category": "offensive",
+      "text": "Baron Drelev adds the disarm weapon trait to any sword he wields.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:group:sword"
+            ],
+            "property": "traits",
+            "value": "disarm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Skirmish Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per turn\n\nEffect Baron Drelev Steps and then Strikes or Strikes and then Steps.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Baron Drelev deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Hannis Drelev spent his youth in Brevoy frustrated at the lack of opportunity for advancement. When he heard Lady Jamandi was looking for volunteers to aid her in exploring and taming the Stolen Lands, he saw an opportunity to bolster his fame. In the months since, Hannis has come to regret his decision, and now that he has been forced to surrender to Irovetti and Armag, his attitude has shifted from frustration to outright cruelty.\n\nDrelev comes across as a sullen, greedy, conceited man, never satisfied with his lot in life, but always disdainful of anyone who has less than him. Though skilled at politics, the baron fancies himself a skilled swordsman as well. He loves dueling and often spars against his own guardsmen and senior officers. He likes to show off, taunting and belittling those he overpowers, but reacts angrily to situations where others get the best of him.\n\nA patient opponent who prides himself on his ability to skillfully outmaneuver his foes, Baron Drelev begins nearly every turn with Defensive Slice. He favors disarming foes, and attempts to do so once per round when facing an armed foe, mocking them wickedly if he's successful and cursing them violently if not.",
+  "blurb": "Male human baron"
+}

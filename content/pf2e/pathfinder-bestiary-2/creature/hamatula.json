@@ -1,0 +1,297 @@
+{
+  "kind": "creature",
+  "slug": "hamatula",
+  "system": "pf2e",
+  "name": "Hamatula",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "devil",
+    "evil",
+    "fiend",
+    "lawful",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 31,
+    "hp": 165,
+    "perception": 24,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 20,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 6,
+      "int": 1,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 23,
+      "arcana": 18,
+      "intimidation": 21,
+      "religion": 20,
+      "stealth": 23,
+      "survival": 22
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "silver"
+        },
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 27,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Dimension Door",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Glyph of Warding (At will)",
+          "rank": 5,
+          "ref": "spells:spell/rune-trap"
+        },
+        {
+          "name": "Dimension Door (At will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 3,
+          "ref": "spells:spell/paralyze",
+          "uses": 2
+        },
+        {
+          "name": "Harm",
+          "rank": 3,
+          "ref": "spells:spell/harm"
+        },
+        {
+          "name": "Produce Flame",
+          "rank": 1,
+          "text": "A small ball of flame appears in the palm of your hand, and you lash out with it either in melee or at range. Make a spell attack roll against your target's AC. This is normally a ranged attack, but you can also make a melee attack against a creature in your unarmed reach.\n\nOn a success, you deal 2d4 fire damage. On a critical success, the target takes double damage and @item.leveld4 persistent,fire damage.\n\n---\n\nHeightened (+1) Increase the damage by 1d4 and the persistent damage on a critical hit by 1d4."
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Barb",
+      "attack": 24,
+      "traits": [
+        "evil",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "bloodletting"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hurled Barb",
+      "attack": 23,
+      "traits": [
+        "evil",
+        "magical",
+        "unholy"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "bloodletting"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Barb only. A hamatula gains an extra reaction at the start of each of its turns that it can use only to make an Attack of Opportunity. It can't use more than one Attack of Opportunity triggered by the same action. In addition to the normal trigger, a hamatula can make an Attack of Opportunity against a creature that touches it or an adjacent creature that attempts a melee Strike against it.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "On a critical hit, the hamatula's barbs deal 3d6 bleed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "item:slug:barb",
+                  "item:slug:hurled-barb"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Strike",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger The hamatula hits a creature with a barb Strike\n\n---\n\nEffect The creature struck must succeed at a DC 27 Will save save or become Frightened 2 (or Frightened 3 on a critical failure). Regardless of the result of its saving throw, the creature is then temporarily immune to Frightful Strike for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Impaling Barb",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The hamatula makes a barb Strike, then Strides up to half its Speed without triggering reactions. If the Strike hits, the hamatula impales the target with one of its barbs and snaps the barb free as it moves away from the target. This deals an additional 2d8 piercing damage to the target and pins it to an adjacent surface, rendering it Immobilized (escape dc=29).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "impaling-barb",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "piercing",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "impaling-barb"
+            ],
+            "selector": "barb-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Warden of Erebus",
+      "category": "offensive",
+      "text": "A hamatula's Rune Trap innate spell can contain any common spell from the Core Rulebook that meets the criteria in glyph of warding; the hamatula doesn't need to provide the spell."
+    },
+    {
+      "kind": "spell",
+      "name": "Infernal Pact",
+      "rank": 1,
+      "ref": "spells:spell/diabolic-pact"
+    }
+  ],
+  "text": "Hamatulas are forged in Erebus to protect infernal vaults from those foolish enough to try to rob the archdevil Mammon. In case the vicious spines protruding from their bodies and ability to teleport weren't deadly enough, they are also clever wielders of warding glyphs. They are effective conjured guardians, though they resent being pulled away from their duties in Hell. Unlike most fiends, hamatulas are formed from several souls that lack any features distinctive enough to merit another role."
+}

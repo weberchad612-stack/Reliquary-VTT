@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "veteran-ulfen-soldier",
+  "system": "pf2e",
+  "name": "Veteran Ulfen Soldier",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-03: Linnorm's Legacy",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 9,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 13,
+      "intimidation": 10,
+      "society": 7,
+      "survival": 11,
+      "sailing-lore": 9,
+      "warfare-lore": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "skald"
+    ],
+    "notes": {
+      "ac": "24 with shield raised"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Wooden Shield",
+      "ref": "equipment:item/wooden-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6 + 10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 15,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8 + 10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 13,
+      "traits": [
+        "thrown"
+      ],
+      "damage": [
+        {
+          "dice": "1d6 + 10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 13,
+      "traits": [
+        "deadly-d10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6 + 6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When an Ulfen soldier rolls a success on a Will save against a fear effect, they get a critical success instead. In addition, any time they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "fear"
+            ],
+            "selector": "will",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shielded Stride",
+      "category": "defensive",
+      "text": "When the Ulfen soldier has their shield raised, they can Stride to move half their Speed without triggering reactions that are triggered by their movement (such as Attacks of Opportunity)."
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Strike",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The Ulfen soldier makes a melee Strike. If they hit and deal damage, the target is Frightened 1, or Frightened 2 on a critical hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Overwhelm",
+      "category": "offensive",
+      "text": "Ulfen soldiers are trained to work well as a unit. The Ulfen soldier's Strikes deal an extra 1d8 damage to creatures within reach of at least two of the Ulfen soldier's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "overwhelm",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "overwhelm"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

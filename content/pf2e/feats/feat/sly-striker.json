@@ -1,0 +1,39 @@
+{
+  "kind": "feat",
+  "slug": "sly-striker",
+  "system": "pf2e",
+  "name": "Sly Striker",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "rogue"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "sneak attack"
+  ],
+  "text": "Your attacks deal more damage, even against creatures that aren't Off-Guard. When you succeed or critically succeed at a Strike against a creature that isn't off-guard, you also deal 1d6 precision damage. This applies only if you're using a weapon or unarmed attack you could deal sneak attack damage with.\n\nAt 14th level, if you would normally deal 3d6 or more sneak attack damage to off-guard creatures, you deal 2d6 precision damage to creatures that aren't off-guard.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "ternary(gte(@actor.level,14),ternary(gte(@actor.flags.system.sneakAttackDamage.number,3),2,1),1)",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "item:tag:sneak-attack",
+          {
+            "not": "target:condition:off-guard"
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

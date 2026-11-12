@@ -1,0 +1,167 @@
+{
+  "kind": "heritage",
+  "slug": "breaker-surki",
+  "system": "pf2e",
+  "name": "Breaker Surki",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Surki",
+    "ref": "ancestries:ancestry/surki"
+  },
+  "text": "Your claws are especially hard and can break through earth and predators alike. You gain a claw unarmed attack that deals 1d4 slashing damage. Your claws are in the brawling group and have the agile, finesse, unarmed, and versatile B traits.\n\n- Evolution Your wrist nodes project magic into a durable digging wedge. You can spend an Interact action to increase your claw unarmed attack's damage to 1d6; grant it the magical, razing, and versatile force traits; and remove the agile trait. You can spend another action to deactivate the wedge and return your claw to its normal statistics.\n\n- Evolution Your ankle nodes can emit grounding claw spikes of magic to hold you in place. If any effect would force you to move 10 feet or more, you can choose to move only half the distance. The extra traction from your claw spikes allows you to Climb with one hand occupied (or with both hands occupied if you have the Combat Climber feat). You gain the Trench Digging reaction.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.DiggingWedge",
+          "predicate": [
+            {
+              "not": "evolution:digging-wedge"
+            }
+          ],
+          "value": "digging-wedge"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.GroundingClawSpikes",
+          "predicate": [
+            {
+              "not": "evolution:claw-spikes"
+            }
+          ],
+          "value": "claw-spikes"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Claw",
+        "slug": "claw",
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed",
+          "versatile-b"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Surki.BreakerSurki.DiggingWedgeLabel",
+        "option": "digging-wedge-active",
+        "predicate": [
+          "evolution:digging-wedge"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:claw",
+          "digging-wedge-active"
+        ],
+        "property": "traits",
+        "value": "magical"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:claw",
+          "digging-wedge-active"
+        ],
+        "property": "traits",
+        "value": "razing"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:claw",
+          "digging-wedge-active"
+        ],
+        "property": "traits",
+        "value": "versatile-force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:claw",
+          "digging-wedge-active"
+        ],
+        "property": "traits",
+        "value": "agile"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "evolution:claw-spikes"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Trench Digging"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "upgrade": true
+        },
+        "predicate": [
+          "digging-wedge-active"
+        ],
+        "selector": "claw-damage"
+      }
+    }
+  ]
+}

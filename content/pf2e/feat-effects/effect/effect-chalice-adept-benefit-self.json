@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-chalice-adept-benefit-self",
+  "system": "pf2e",
+  "name": "Effect: Chalice Adept Benefit (Self)",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Chalice\n\nYour temporary Hit Points granted by Drink from the Chalice increase to 2 + your Charisma modifier + your level, and its healing increases to 5 Hit Points for each level you have.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "drink-from-the-chalice-inline-healing",
+      "type": "untyped",
+      "value": "2*@level"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:drink-from-the-chalice"
+        ],
+        "property": "other-tags",
+        "value": "chalice-adept-benefit"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Thaumaturge.Implement.Adept.Label",
+        "mode": "add",
+        "predicate": [
+          "item:slug:drink-from-the-chalice"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Thaumaturge.Implement.Chalice.Adept.DescriptionAlteration"
+          }
+        ]
+      }
+    }
+  ]
+}

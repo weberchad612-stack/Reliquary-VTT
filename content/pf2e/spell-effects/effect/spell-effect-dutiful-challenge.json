@@ -1,0 +1,46 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-dutiful-challenge",
+  "system": "pf2e",
+  "name": "Spell Effect: Dutiful Challenge",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dutiful Challenge\n\nYou take a -1 status penalty to attack rolls, damage rolls, and skill checks against creatures other than the marked creature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "dutiful-challenge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "target:mark:dutiful-challenge"
+          }
+        ],
+        "selector": [
+          "attack-roll",
+          "damage",
+          "skill-check"
+        ],
+        "type": "status",
+        "value": "-floor((@item.level - 1)/3)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "effect",
+  "slug": "effect-troop-harrowing",
+  "system": "pf2e",
+  "name": "Effect: Troop Harrowing",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "You take a status penalty to your saving throw or AC against a spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "troop-harrowing"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": -1,
+      "slug": "troop-harrowing-penalty"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "troop-harrowing:critical-success"
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw"
+        ],
+        "slug": "troop-harrowing-penalty",
+        "value": -2
+      }
+    }
+  ]
+}

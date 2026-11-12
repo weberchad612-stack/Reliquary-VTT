@@ -1,0 +1,143 @@
+{
+  "kind": "creature",
+  "slug": "reinforced-animated-guardian",
+  "system": "pf2e",
+  "name": "Reinforced Animated Guardian",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-19: Enter the Pallid Peak",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 30,
+    "perception": 6,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 3,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": -3,
+      "int": -5,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(13 when broken); guardian construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 11,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gauntlet",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "free-hand",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guardian Construct Armor (Hardness 5)",
+      "category": "defensive",
+      "text": "Like normal objects, the animated guardian has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness.\n\nOnce the animated guardian is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 13. It also loses its hardness.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ]
+}

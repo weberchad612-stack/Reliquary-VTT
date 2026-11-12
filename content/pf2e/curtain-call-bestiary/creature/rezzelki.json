@@ -1,0 +1,210 @@
+{
+  "kind": "creature",
+  "slug": "rezzelki",
+  "system": "pf2e",
+  "name": "Rezzelki",
+  "source": {
+    "title": "Pathfinder #204: Stage Fright",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "beast"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 175,
+    "perception": 21,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 17,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 3,
+      "int": -3,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 22
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "osiriani"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "perception": "glutton scent (imprecise) 60 feet",
+      "languages": "Can't Speak"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Fly (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/fly"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 22,
+      "traits": [
+        "forceful",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tongue",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "acid"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glutton Scent",
+      "category": "interaction",
+      "text": "A rezzelki's scent ability becomes a precise sense against its favored meal."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Favored Meal",
+      "category": "defensive",
+      "text": "All rezzelkis have a favorite type of creature to feast upon. Against a favored meal in combat, a rezzelki gains a +1 circumstance bonus to all Strikes and Athletics checks.\n\nIf an encounter doesn't specify what a rezzelki's favorite foodstuff is, roll 1d6:\n\n1—human\n\n2—dwarf\n\n3—elf\n\n4—kholo\n\n5—desert giant\n\n6—mummy",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "favored-meal",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitHuman",
+                "value": "human"
+              },
+              {
+                "label": "PF2E.TraitDwarf",
+                "value": "dwarf"
+              },
+              {
+                "label": "PF2E.TraitElf",
+                "value": "elf"
+              },
+              {
+                "label": "PF2E.TraitKholo",
+                "value": "kholo"
+              },
+              {
+                "label": "PF2E.TraitGiant",
+                "value": "giant"
+              },
+              {
+                "label": "PF2E.TraitMummy",
+                "value": "mummy"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "strike-attack-roll",
+            "athletics"
+          ],
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "target:trait:{item|flags.system.rulesSelections.favoredMeal}"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Taste",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Trigger A creature within reach of the rezzelki's tongue uses a manipulate or a move action, makes a ranged attack, or leaves a square during a move action it's using\n\n---\nEffect The rezzelki makes a tongue Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Fracturing Smash",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "The rezzelki Strikes a target with a particularly powerful blow from its tail, with enough force to potentially pulverize bone. This Strike treats any object it hits as if it had half as much Hardness as usual, unless the object's hardness is greater than the rezzelki's level. If the Fracturing Smash hits, it deals two extra dice of weapon damage. A creature with a skeleton that takes damage must succeed at a DC 26 Fortitude save save or become Clumsy 1 (Clumsy 2 on a critical failure) by the Fracturing Smash as its bones are partially broken."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Rezzelkis are curious-looking beasts native to the deserts of Osirion. Three feet tall at the shoulder and five feet long, rezzelkis are squat, mammalian quadrupeds with tawny red fur, with crystal-studded flat tails, and prehensile anteater-like snouts. Their long, pink tongues are covered with hundreds of tiny, razor-sharp bristles that allow them to rasp through flesh with unnerving ease, even before accounting for the effect of their acidic saliva.\n\nRezzelkis are ferociously territorial and quick to attack anyone or anything they regard as intruding upon their territory. Yet they're also prone to strange gastronomic obsessions, and if someone can deduce a particular rezzelki's favorite food, it's possible to become the creature's ally by simply providing it regular access to its preferred meals. A specific rezzelki's favorite food is always a specific type of creature—some even prefer to dine exclusively on the dry bodies of undead like mummies—but most have a taste for a singular humanoid ancestry. Presented with a potential meal, the rezzelki moves quickly to smash its feast with its wide tail. Then it feeds upon the pulverized remains of the destroyed creature, slurping up battered flesh and powdered bones with a noisy gusto that has earned them a strange nickname in certain circles: \"deathlicker.\"\nRezzelki Hunger\nWhile a rezzelki can subsist on any sort of pulverized creature's remains, they vastly prefer a specific type of creature and can sniff these potential meals out with alarming accuracy. If an encounter doesn't specify what a rezzelki's favorite foodstuff is, roll 1d6: 1—human, 2—dwarf, 3—elf, 4—kholo, 5—desert giant, 6—mummy. Rezzelkis found in regions other than Osirion certainly develop appetites for other types of creatures, of course!"
+}

@@ -1,0 +1,129 @@
+{
+  "kind": "effect",
+  "slug": "effect-remaining-air",
+  "system": "pf2e",
+  "name": "Effect: Remaining Air",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 600,
+    "max": 600
+  },
+  "text": "See Drowning and Suffocating\n\nYou can hold your breath for a number of rounds equal to 5 + your Constitution modifier. Reduce your remaining air by 1 round at the end of each of your turns, or by 2 if you attacked or cast any spells that turn.\n\nYou also lose 1 round worth of air each time you are critically hit or critically fail a save against a damaging effect. If you speak (including Casting a Spell) you lose all remaining air.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.remainingAir.rounds",
+        "value": "5 + floor(@actor.abilities.con.mod)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "badge-max",
+        "value": "@actor.flags.system.remainingAir.rounds"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "attack",
+      "text": "PF2E.SpecificRule.RemainingAir.AttackOrSpells"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.RemainingAir.Label",
+        "mode": "add",
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.RemainingAir.AttackOrSpells"
+          },
+          {
+            "predicate": [
+              {
+                "not": "item:trait:subtle"
+              }
+            ],
+            "text": "PF2E.SpecificRule.RemainingAir.Speak"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.RemainingAir.Label",
+        "mode": "add",
+        "predicate": [
+          "item:trait:auditory"
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.RemainingAir.Speak"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.RemainingAir.Label",
+        "mode": "add",
+        "predicate": [
+          "item:trait:auditory"
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.RemainingAir.Speak"
+          }
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "saving-throw",
+      "text": "PF2E.SpecificRule.RemainingAir.LoseOneRound",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        "damaging-effect"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.RemainingAir.LoseOneRound",
+      "outcome": [
+        "criticalSuccess"
+      ]
+    }
+  ]
+}

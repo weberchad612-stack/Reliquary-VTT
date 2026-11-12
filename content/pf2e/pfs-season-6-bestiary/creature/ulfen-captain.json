@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "ulfen-captain",
+  "system": "pf2e",
+  "name": "Ulfen Captain",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-08: Upon Wheels and Rime",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 36,
+    "perception": 11,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 8,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "intimidation": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "skald"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 11,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 9,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Face Me!",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 30 feet deals damage to Matriarch Szvetneera\n\n---\nEffect The Ulfen bodyguard lets out a threating bellow at whoever injured their ward. They then attempt a check to Demoralize against the triggering creature, gaining a +2 circumstance bonus to the check.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "face-me",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "face-me",
+            "action:demoralize"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Back Away!",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Ulfen bodyguard attacks the target, pushing them back and away from their charge. The bodyguard makes a Strike against the creature, then attempts to Shove their target. Depending on the outcome of their Strike, there may be additional effects.\n\n---\nCritical Success The Ulfen bodyguard gains a +2 circumstance bonus to their attempt to Shove.\n\nSuccess The Ulfen bodyguard gains a +1 circumstance bonus to their attempt to Shove.\n\nFailure There is no effect.\n\nCritical Failure The Ulfen bodyguard is Off-Guard until the start of their next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "back-away",
+            "selection": "2",
+            "suboptions": [
+              {
+                "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.Check.Result.Degree.Check.success",
+                "value": "1"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "back-away",
+            "action:shove"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "back-away:critical-success"
+            ],
+            "selector": "athletics",
+            "slug": "back-away",
+            "value": 2
+          }
+        }
+      ]
+    }
+  ]
+}

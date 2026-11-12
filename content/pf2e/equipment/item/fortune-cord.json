@@ -1,0 +1,73 @@
+{
+  "kind": "equipment",
+  "slug": "fortune-cord",
+  "system": "pf2e",
+  "name": "Fortune Cord",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "uncommon",
+  "traits": [
+    "magical"
+  ],
+  "text": "In many parts of Tian Xia, it's tradition to mint coins with holes in the centers for the purpose of being able to thread a cord through them and tie them off for security and ease of transaction. This immaculately braided red cord is made in this tradition and can hold up to 100 coins at any given time. As long as you carry a fortune cord, you gain a +2 item bonus to skill checks to Earn Income.\n\nIf you load up to 100 coins onto a fortune cord as part of your daily preparations, you can Activate the magic item in two different ways until the next time you make your daily preparations, provided all the loaded coins are of the same type.\n\n---\nActivate—Merchant's Bludgeon 1 (concentrate)\n\nFrequency once per day\n\nRequirements You have at least 50 coins loaded onto the fortune cord\n\nEffect You transform the fortune cord into a +2 striking nunchaku for 1 minute. The type of coin loaded onto the cord determines the additional weapon property rune that manifests on this +2 striking nunchaku, as follows.\n- Copper: Corrosive\n\n- Silver: Shock\n\n- Gold: Flaming\n\n- Platinum: Frost\n\nEffect: Merchant's Bludgeon\n\n---\nActivate—Fling Coins 2 (concentrate, manipulate)\n\nEffect You whip the fortune cord, causing 10 coins loaded onto it to detach and fire at a creature within 100 feet that you can see. That creature takes 4d6 untyped damage (DC 28 basic Reflex save save); the damage type depends on the type of coins you've loaded. Copper coins deal acid damage, silver coins deal electricity damage, gold coins deal fire damage, and platinum coins deal cold damage.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "item",
+      "value": 2,
+      "when": [
+        "action:earn-income"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "fortune-cord-damage",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectPreciousMetals.Copper",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectPreciousMetals.Gold",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectPreciousMetals.Platinum",
+            "value": "cold"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "property": "damage-type",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.fortuneCordDamage}"
+      }
+    }
+  ],
+  "usage": "held-in-one-hand",
+  "bulk": 0.1,
+  "price": {
+    "gp": 1300
+  }
+}

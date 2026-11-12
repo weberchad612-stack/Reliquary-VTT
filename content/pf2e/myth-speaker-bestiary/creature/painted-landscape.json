@@ -1,0 +1,174 @@
+{
+  "kind": "creature",
+  "slug": "painted-landscape",
+  "system": "pf2e",
+  "name": "Painted Landscape",
+  "source": {
+    "title": "Pathfinder #218: Titanbane",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 30,
+    "hp": 155,
+    "perception": 19,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 18,
+      "will": 20
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 5,
+      "int": -5,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 21,
+      "stealth": 22
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "acid",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Branch",
+      "attack": 24,
+      "traits": [
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "sticky-paint"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 15)",
+      "category": "defensive",
+      "text": "Like normal objects, a painted landscape has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once a painted landscape is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 26.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "all",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Engulf",
+      "actions": 2,
+      "category": "offensive",
+      "text": "DC 29 Reflex save, 6d6 bludgeoning damage, escape dc=29, Rupture 20\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Mural",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the animated landscape appears to be a mural on a flat surface that's at least 10 by 20 feet in area. It has an automatic result of 42 on Deception checks and DCs to pass as a mural."
+    },
+    {
+      "kind": "ability",
+      "name": "Painted Replica",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Requirements A creature died while engulfed by the painted landscape\n\n---\nEffect The painted landscape absorbs the creature, causing the creature's likeness to appear in the mural. Any gear carried by the dead creature remains left behind (but still appears as part of the painting). The painted landscape regains 2d6+20 healing HP when it absorbs a creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Sticky Paint",
+      "category": "offensive",
+      "text": "A painted landscape's Strikes splatter paint on the target. On a critical hit, this paint swiftly dries, and the target becomes Clumsy 1 for 10 minutes. As an Interact action, the target or an adjacent creature can remove enough paint to end the condition."
+    }
+  ],
+  "text": "Resembling a large mural, a painted landscape attacks by animating the very landscape it depicts: trees, castles, or even snow-capped mountains.\n\n---\nThis mindless construct takes the form of a two-dimensional portrait given life or an illustration painted in three dimensions with magical pigments.\nPainted Treasure\nA painted creature's gear is part of the creature and is also made of magical paint. Such gear can't be disarmed. If the painted creature drops any gear, the item melts into a glob of paint a moment later—after dealing damage, for thrown and projectile weapons. Painted gear (including ammunition) is restored to a painted creature automatically 24 hours after it's lost. At the GM's discretion, a talented PC artist might rescue a painted item by immediately and successfully Repairing it, using a hard DC of the painted creature's level. This might allow PCs to recover a unique (even magical) item that existed only in the original artist's imagination.\nPainted Behavior\nPainted creatures typically adopt the behaviors of whatever they resemble. This results in creatures like a painted sheep bleating worriedly and grazing, even though any grasses consumed sit inertly inside its improvised belly before eventually seeping though its body and plopping on the ground.\n\nIntelligent creatures animated in this way sometimes develop a limited vocabulary. However, the construct remains mindless, their utterances follow only the most simplistic logic, and their words fall short of anything that could be considered conversation. With careful instruction, such constructs can perform mundane chores."
+}

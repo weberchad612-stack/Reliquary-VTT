@@ -1,0 +1,298 @@
+{
+  "kind": "creature",
+  "slug": "hansin",
+  "system": "pf2e",
+  "name": "Hansin",
+  "source": {
+    "title": "Pathfinder #179: Cradle of Quartz",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 104,
+    "perception": 14,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 17,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 4,
+      "int": 2,
+      "str": 4,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 13,
+      "deception": 15,
+      "intimidation": 17,
+      "society": 11,
+      "stealth": 13,
+      "thievery": 15,
+      "underworld-lore": 15
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Tanglefoot Bag (Moderate)",
+      "ref": "equipment:item/glue-bomb-moderate",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Flintlock Pistol",
+      "ref": "equipment:item/flintlock-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Minor)",
+      "ref": "equipment:item/healing-potion-minor",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Flintlock Pistol)",
+      "ref": "equipment:item/rounds-flintlock-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flintlock Pistol",
+      "attack": 19,
+      "traits": [
+        "concussive",
+        "fatal-d8",
+        "magical",
+        "reload-1"
+      ],
+      "range": 40,
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The gang leader isn't Off-Guard to creatures of 7th level or lower that are Hidden, Undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When the gang leader rolls a success on a Reflex save, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The gang leader is targeted with an attack by an attacker they can see\n\n---\n\nEffect The gang leader gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "defensive",
+      "text": "On the first round of combat, if the gang leader rolls Deception or Stealth for initiative, creatures who haven't acted are Off-Guard to the gang leader.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brutal Rally",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Trigger The gang leader rolls a critical hit against a creature\n\n---\n\nEffect All allies that can see the gang leader gain a +1 circumstance bonus to attack rolls until the start of the gang leader's next turn.\n\nEffect: Brutal Rally"
+    },
+    {
+      "kind": "ability",
+      "name": "Gang Up",
+      "category": "offensive",
+      "text": "Any enemy is Off-Guard against the gang leader's melee attacks due to flanking as long as the enemy is within melee reach of both the gang leader and one of the gang leader's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.attributes.flanking.canGangUp",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The gang leader Interacts to draw a weapon, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The gang leader deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Cutthroats, killers, thieves, and toughs prey upon the vulnerable of society. Directing their activities and keeping them in line are the duties of the gang leader.\n\n---\n\nVillains pursue selfish and cruel goals, trampling over anyone foolish or purehearted enough to stand in their way.",
+  "blurb": "Male human gang leader"
+}

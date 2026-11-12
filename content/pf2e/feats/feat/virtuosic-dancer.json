@@ -1,0 +1,49 @@
+{
+  "kind": "feat",
+  "slug": "virtuosic-dancer",
+  "system": "pf2e",
+  "name": "Virtuosic Dancer",
+  "source": {
+    "title": "Pathfinder #204: Stage Fright",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Acrobat Dedication"
+  ],
+  "text": "You're so fond of using your Acrobatic feats on the stage that you've begun adding your own flair to these dances on the big stage. When you Perform, if you do a performance that is either related to dance, acting or opera, you gain a +1 circumstance bonus to the roll. If you're legendary in Acrobatics, this increases to a +2 circumstance bonus. You gain the Dancing Dodge reaction.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Dancing Dodge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "action:perform:dance",
+              "action:perform:opera",
+              "action:perform:act"
+            ]
+          }
+        ],
+        "selector": "performance",
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.acrobatics.rank,4),2,1)"
+      }
+    }
+  ]
+}

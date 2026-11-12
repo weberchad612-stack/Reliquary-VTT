@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "draining-strike",
+  "system": "pf2e",
+  "name": "Draining Strike",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "healing",
+    "necromancer",
+    "occult",
+    "spirit"
+  ],
+  "category": "class",
+  "actions": 1,
+  "frequency": {
+    "max": 1,
+    "per": "turn"
+  },
+  "text": "Frequency once per turn\n\n---\nYou draw the life out of your target using both your weapon and your thralls as a conduit. Make a Strike. This counts as two attacks when calculating your multiple attack penalty. On a success, you can destroy a thrall that is within 10 feet of you or your target to have your Strike deal an additional 1d6 spirit damage. You regain Hit Points equal to the spirit damage dealt.\n\nAt 10th and 18th level, you can destroy up to one additional thrall as part of this action to deal an additional 1d6 damage for each additional thrall destroyed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "draining-strike",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Numbers.One",
+            "value": "1"
+          },
+          {
+            "label": "PF2E.SpecificRule.Numbers.Two",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  10
+                ]
+              }
+            ],
+            "value": "2"
+          },
+          {
+            "label": "PF2E.SpecificRule.Numbers.Three",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  18
+                ]
+              }
+            ],
+            "value": "3"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": "@item.flags.system.rulesSelections.drainingStrike",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "draining-strike"
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

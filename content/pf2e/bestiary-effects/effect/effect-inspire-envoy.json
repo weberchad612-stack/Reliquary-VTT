@@ -1,0 +1,106 @@
+{
+  "kind": "effect",
+  "slug": "effect-inspire-envoy",
+  "system": "pf2e",
+  "name": "Effect: Inspire Envoy",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "You gain a status bonus to attack rolls, AC, or all of the following: Perception, Will saves, and Charisma-based skill checks.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyDragonAdult",
+            "value": 1
+          },
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyDragonAncient",
+            "value": 2
+          },
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyArchdragon",
+            "value": 3
+          }
+        ],
+        "flag": "bonusValue",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyDragonChoice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyEffectAttack",
+            "value": "atk"
+          },
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyEffectAC",
+            "value": "ac"
+          },
+          {
+            "label": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyEffectPercWillCha",
+            "value": "perc-will-cha"
+          }
+        ],
+        "flag": "statistic",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.NPCAbility.SovereignDragon.InspireEnvoyEffectChoice",
+        "rollOption": "inspire-envoy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "inspire-envoy:atk"
+        ],
+        "selector": "attack",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bonusValue"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "inspire-envoy:ac"
+        ],
+        "selector": "ac",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bonusValue"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "inspire-envoy:perc-will-cha"
+        ],
+        "selector": [
+          "cha-based",
+          "perception",
+          "will"
+        ],
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bonusValue"
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "kind": "effect",
+  "slug": "effect-energized-cartridge",
+  "system": "pf2e",
+  "name": "Effect: Energized Cartridge",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Energized Cartridge\n\nThe ammunition fired from the affixed weapon transforms into your choice of acid, cold, electricity, or fire, dealing damage of the appropriate energy type instead of its usual damage as well as 1d6 persistent damage of the same type on a critical hit.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "or": [
+                "item:group:firearm",
+                "item:group:crossbow"
+              ]
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          }
+        ],
+        "flag": "energy",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "damageType": "{item|flags.system.rulesSelections.energy}"
+        },
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "critical": true,
+        "damageType": "{item|flags.system.rulesSelections.energy}",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    }
+  ]
+}

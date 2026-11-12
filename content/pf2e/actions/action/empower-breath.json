@@ -1,0 +1,76 @@
+{
+  "kind": "action",
+  "slug": "empower-breath",
+  "system": "pf2e",
+  "name": "Empower Breath",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "concentrate",
+    "eidolon"
+  ],
+  "actions": "free",
+  "category": "interaction",
+  "frequency": {
+    "max": 1,
+    "per": "PT1M"
+  },
+  "text": "Frequency once per minute\n\n---\nEffect Your eidolon gathers the power of the mightiest archdragons to make their magical breath even more spectacular. If your eidolon's next action is to use Dragon Breath, both the number of damage dice and area of Dragon Breath are doubled.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "empower-breath",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "predicate": [
+          "empower-breath",
+          "item:slug:dragon-breath-eidolon"
+        ],
+        "priority": 160,
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              "dragon-breath-shape:cone"
+            ],
+            "text": "PF2E.SpecificRule.Summoner.Eidolon.Dragon.DragonBreath.Description.Cone.Double"
+          },
+          {
+            "predicate": [
+              "dragon-breath-shape:line"
+            ],
+            "text": "PF2E.SpecificRule.Summoner.Eidolon.Dragon.DragonBreath.Description.Line.Double"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "predicate": [
+          "empower-breath"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "dragon-breath-eidolon-inline-damage"
+        ],
+        "slug": "base",
+        "value": "ceil(@actor.level / 2)"
+      }
+    }
+  ]
+}

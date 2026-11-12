@@ -1,0 +1,185 @@
+{
+  "kind": "creature",
+  "slug": "loblobi",
+  "system": "pf2e",
+  "name": "Loblobi",
+  "source": {
+    "title": "Pathfinder #175: Broken Tusk Moon",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 25,
+    "perception": 6,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "crafting": 5,
+      "deception": 8,
+      "performance": 6,
+      "stealth": 7,
+      "thievery": 7
+    },
+    "speeds": {
+      "land": 20,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "thalassic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Faerie Fire",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Water Walk (At Will) (Loblobi Can Dismiss the Spell)",
+          "rank": 2,
+          "ref": "spells:spell/water-walk"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        },
+        {
+          "name": "Grease",
+          "rank": 1,
+          "ref": "spells:spell/grease"
+        },
+        {
+          "name": "Hydraulic Push",
+          "rank": 1,
+          "ref": "spells:spell/hydraulic-push"
+        },
+        {
+          "name": "Prestidigitation (Only to Move, Clean, or Soil Small Amounts of Water)",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unflappable Self-Importance",
+      "category": "defensive",
+      "text": "When a loblobi rolls a success on a Will save against an emotion effect or an effect that would make it controlled, it gets a critical success instead. When it rolls a critical failure against such an effect, it gets a failure instead.\n\nHowever, a loblobi is vulnerable to flattery. It takes a -4 circumstance penalty to its Will and Perception DCs against any fulsome Deception and Diplomacy checks to Lie, Make an Impression, or Request.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better",
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "item:trait:emotion",
+                  "inflicts:controlled"
+                ]
+              }
+            ],
+            "selector": "will"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Loblobi.UnflappableSelfImportance.Flattery",
+            "option": "unflappable-self-importance-flattery",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception-dc",
+            "will-dc"
+          ],
+          "type": "circumstance",
+          "value": -4,
+          "when": [
+            "unflappable-self-importance-flattery",
+            {
+              "or": [
+                "action:lie",
+                "action:make-an-impression",
+                "action:request"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Arrogant Preen",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "mental",
+        "primal"
+      ],
+      "text": "The loblobi tidies its feathered crest to look supernaturally regal. Each non-fey creature within 30 feet must attempt a DC 17 Will save save, then is temporarily immune to Arrogant Preen for 1 hour.\n\n---\nCritical Success The target is unaffected.\n\nSuccess The target is distracted by the preening and can't take reactions until the start of its next turn.\n\nFailure The target is Fascinated by the loblobi and can't take reactions for 1 minute.\n\nCritical Failure As failure. Additionally, while the creature is fascinated, any hostile actions from the loblobi don't break the fascination, but instead allow the target to attempt a new Will save to end the effect at the start of its next turn."
+    }
+  ],
+  "text": "In the First World, rivers don't always flow as expected; sometimes they run backward, upward, or just disappear into mist and reappear somewhere else entirely. Fey native to such rivers are often just as capricious. This quality is particularly true of loblobis, cunning carnivores who resemble small, chubby humans with the heads and wings of crested herons.\n\nThese malicious tricksters love playing any pranks that result in other creatures being embarrassed, hurt, or even drowned. Their most common \"antic\" is to cast Water Walk on a hopeful river-crosser, only to dismiss the spell when their victim has traversed halfway across. Conversely, most loblobis are terrible sports when they're the butt of a joke. It's common wisdom that few creatures can hold a grudge like a loblobi.\n\nExceptionally vain, loblobis flutter and dance constantly to show off their plumage. Failing to comment on a preening loblobi's appearance is a sure method to invite eternal enmity, but flattery might buy enough time to sneak away from the evil fey."
+}

@@ -1,0 +1,216 @@
+{
+  "kind": "feat",
+  "slug": "horn-of-plenty",
+  "system": "pf2e",
+  "name": "Horn of Plenty",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "extradimensional",
+    "ikon"
+  ],
+  "category": "classfeature",
+  "text": "Usage a wallet, bag, or similar container of 1 Bulk you can wear on your body\n\n---\nWhether a bag, gourd, wallet, cornucopia, or similar food receptacle, this ikon recalls the harvest and hearth. The receptacle can store up to 1 Bulk of potions and elixirs, but no other items. The receptacle can't be opened except by the ikon's immanence and transcendence abilities. Each day during your daily preparations, the ikon produces one temporary Elixir of Life. You can choose to have it make a different elixir or potion you know the formula for. The level of any elixir or potion created by the horn must be your level or lower. The number of elixirs the horn creates increases to two at 8th level and three at 16th level, and you can choose each item individually. These temporary items vanish the next time you make your daily preparations, and any remaining effects of the temporary items end. A temporary elixir or potion has no value.\n\nImmanence The horn of plenty shimmers, allowing access to the stored consumables inside. You can Interact to draw a consumable and drink it in a single action while your divine spark rests within the horn. Other creatures can't access the contents unless you allow them to.\n\nTranscendence—Feed the Masses 1 (transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.DivineSpark.Label",
+        "mergeable": true,
+        "option": "divine-spark",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "horn-of-plenty"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.exemplar.ikons",
+        "value": {
+          "label": "PF2E.SpecificRule.Exemplar.Ikon.HornOfPlenty.Label",
+          "predicate": [
+            "parent:tag:worn-ikon-feat"
+          ],
+          "value": "horn-of-plenty"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Feed the Masses"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Grant",
+            "value": "granted"
+          },
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Existing",
+            "value": "existing"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Prompt",
+        "rollOption": "horn-of-plenty-origin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon"
+          },
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon:horn-of-plenty"
+          }
+        ],
+        "key": "GrantItem",
+        "predicate": [
+          "horn-of-plenty-origin:granted"
+        ],
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Horn of Plenty"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "backpack"
+          ]
+        },
+        "flag": "existingIkon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "horn-of-plenty-origin:existing"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "physical-ikon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "horn-of-plenty-origin:existing"
+        ],
+        "property": "other-tags",
+        "value": "physical-ikon:horn-of-plenty"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "backpack",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:horn-of-plenty",
+          "horn-of-plenty-origin:existing",
+          {
+            "not": "item:slug:horn-of-plenty"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.gjZXHLjezR0mkMnc inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:transcendence",
+          {
+            "or": [
+              "item:granter:tag:chosen-ikon:horn-of-plenty",
+              "item:slug:feed-the-masses"
+            ]
+          },
+          {
+            "not": "divine-spark:horn-of-plenty"
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Exemplar.DivineSpark.SparkTranscendence.Reminder"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "divine"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "craftableItems": [
+          {
+            "or": [
+              "item:trait:elixir",
+              "item:trait:potion"
+            ]
+          }
+        ],
+        "isDailyPrep": true,
+        "key": "CraftingAbility",
+        "maxSlots": "ternary(gte(@actor.level,16),3,ternary(gte(@actor.level,8),2,1))",
+        "slug": "horn-of-plenty"
+      }
+    }
+  ]
+}

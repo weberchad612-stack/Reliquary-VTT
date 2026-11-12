@@ -1,0 +1,102 @@
+{
+  "kind": "feat",
+  "slug": "agile-hand",
+  "system": "pf2e",
+  "name": "Agile Hand",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Spell Trickster Dedication",
+    "ability to cast mage hand"
+  ],
+  "text": "When you cast Telekinetic Hand, you can modify its target to be a Thieves' Toolkit. When you Cast the Spell in this way, the tools move up to 20 feet towards a device or lock. After you Sustain the spell on future turns, you can use the tools to attempt Thievery checks to Disable a Device or Pick a Lock within the spell's range, but you take a -2 penalty to your Thievery check. If you critically fail, the spell ends and you can't use this modification again for 24 hours.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellTrickster.Label",
+        "mergeable": true,
+        "option": "spell-trickster",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "agile-hand"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spell-trickster:agile-hand",
+          "item:slug:telekinetic-hand"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.SpellTrickster.AgileHand.Description"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellTrickster.AgileHand.PenaltyLabel",
+        "option": "agile-hand-penalty",
+        "predicate": [
+          "spell-trickster:agile-hand"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "thievery",
+      "type": "untyped",
+      "value": -2,
+      "when": [
+        "agile-hand-penalty",
+        {
+          "or": [
+            "action:disable-a-device",
+            "action:pick-a-lock"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "thievery",
+      "text": "PF2E.SpecificRule.SpellTrickster.AgileHand.CriticalFailureNote",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        "agile-hand-penalty",
+        {
+          "or": [
+            "action:disable-a-device",
+            "action:pick-a-lock"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-calcification-failure",
+  "system": "pf2e",
+  "name": "Spell Effect: Calcification (Failure)",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Calcification\n\nYou are slowed 1 (slowed 2 on a critical failure) and have weakness 10 to bludgeoning. If you are incorporeal you lose the incorporeal trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "calcification"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade"
+        },
+        "predicate": [
+          "calcification:failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade"
+        },
+        "predicate": [
+          "calcification:critical-failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+      }
+    },
+    {
+      "key": "weakness",
+      "type": "bludgeoning",
+      "value": 10
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActorTraits",
+        "remove": [
+          "incorporeal"
+        ]
+      }
+    }
+  ]
+}

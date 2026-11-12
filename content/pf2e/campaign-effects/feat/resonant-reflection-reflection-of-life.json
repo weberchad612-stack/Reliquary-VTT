@@ -1,0 +1,80 @@
+{
+  "kind": "feat",
+  "slug": "resonant-reflection-reflection-of-life",
+  "system": "pf2e",
+  "name": "Resonant Reflection: Reflection of Life",
+  "source": {
+    "title": "Pathfinder #151: The Show Must Go On",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "healing",
+    "magical"
+  ],
+  "category": "deityboon",
+  "text": "You regain double the normal number of Hit Points when resting (meaning you regain double your Constitution modifier multiplied by your level). The healing you gain from long-term rest is similarly doubled. In addition, you can focus this healing energy to accelerate your body's natural healing processes even further.\n\n---\n\nActivate 2 envision\n\nFrequency once per day\n\n---\n\nEffect You gain fast healing 3 for 1 minute. This amount of fast healing increases by 1 for every 2 levels you have beyond 5th level.\n\nEffect: Reflection of Life (Fast Healing)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.attributes.hp.recoveryMultiplier",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:activate-resonant-reflection",
+          "resonant:reflection-of-life"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.ResonantReflection.ReflectionOfLife.Description",
+            "title": "PF2E.SpecificRule.ResonantReflection.ReflectionOfLife.Title"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.ResonantReflection.Label",
+        "mergeable": true,
+        "option": "resonant",
+        "placement": "actions",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "reflection-of-life"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "resonant-reflection"
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Activate Resonant Reflection"
+      }
+    }
+  ]
+}

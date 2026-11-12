@@ -1,0 +1,191 @@
+{
+  "kind": "creature",
+  "slug": "kolbo",
+  "system": "pf2e",
+  "name": "Kolbo",
+  "source": {
+    "title": "Pathfinder #170: Spoken on the Song Wind",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "dwarf",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 115,
+    "perception": 12,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 14,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 2,
+      "int": 2,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 14,
+      "deception": 15,
+      "intimidation": 13,
+      "society": 12,
+      "thievery": 14
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "dwarven",
+      "jotun"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Heavy Crossbow",
+      "ref": "equipment:item/heavy-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Strongbox Key",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 17,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Heavy Crossbow",
+      "attack": 15,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "A Quick Word",
+      "category": "interaction",
+      "text": "If Kolbo is aware of his opponents and isn't prevented from speaking, he rolls Deception for initiative."
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Kolbo isn't Off-Guard to creatures of 6th level or lower that are Hidden, Undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 6
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Low Blow",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Requirements Kolbo successfully Feints an opponent\n\n---\n\nEffect The foe is knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Kolbo deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

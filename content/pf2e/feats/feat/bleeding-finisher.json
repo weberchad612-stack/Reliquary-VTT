@@ -1,0 +1,97 @@
+{
+  "kind": "feat",
+  "slug": "bleeding-finisher",
+  "system": "pf2e",
+  "name": "Bleeding Finisher",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "finisher",
+    "swashbuckler"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "Your blow inflicts profuse bleeding. Make a slashing or piercing Strike. If you hit, the target also takes persistent bleed damage equal to your precise strike finisher damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:effect:panache"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Swashbuckler.Finisher.Label",
+        "mergeable": true,
+        "option": "finisher",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Swashbuckler.Finisher.Bleeding",
+            "value": "bleeding"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "bleed",
+        "diceNumber": "@actor.flags.system.swashbuckler.preciseStrike",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "finisher:bleeding",
+          {
+            "or": [
+              "item:melee",
+              {
+                "and": [
+                  "feat:flying-blade",
+                  "item:thrown",
+                  {
+                    "or": [
+                      "target:range-increment:1",
+                      {
+                        "and": [
+                          "finisher:twirling-throw",
+                          {
+                            "lte": [
+                              "target:range-increment",
+                              3
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse"
+            ]
+          },
+          {
+            "or": [
+              "item:damage:type:piercing",
+              "item:damage:type:slashing"
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

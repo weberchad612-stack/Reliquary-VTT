@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "morph-risen",
+  "system": "pf2e",
+  "name": "Morph-Risen",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "lineage",
+    "reflection"
+  ],
+  "category": "ancestry",
+  "text": "You were once a shapeshifter or spellcaster using polymorph magic, but something went wrong, and you became trapped in the form of the creature you were imitating. This accident might have drained your power, or you might have retained some of your skills, but either way, your form resists further forced transformation. You gain a +1 circumstance bonus to saving throws against morph and polymorph effects, and if you roll a success on a saving throw against a hostile morph or polymorph effect, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "item:trait:morph",
+            "item:trait:polymorph"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "item:trait:polymorph",
+              "item:trait:morph"
+            ]
+          },
+          "origin:enemy"
+        ],
+        "selector": "saving-throw"
+      }
+    }
+  ]
+}

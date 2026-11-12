@@ -1,0 +1,236 @@
+{
+  "kind": "creature",
+  "slug": "sacristan",
+  "system": "pf2e",
+  "name": "Sacristan",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "fiend",
+    "unholy",
+    "velstrac"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 175,
+    "perception": 19,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 19,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 5,
+      "int": 0,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 22,
+      "intimidation": 18,
+      "stealth": 21,
+      "torture-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 10
+        },
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "painsight"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Chilling Darkness",
+          "rank": 5,
+          "ref": "spells:spell/chilling-darkness"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Barbed Chain",
+      "attack": 22,
+      "traits": [
+        "magical",
+        "reach-10",
+        "trip",
+        "unholy",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        },
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "2d8+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Painsight",
+      "category": "interaction",
+      "traits": [
+        "divine"
+      ],
+      "text": "A velstrac automatically knows whether a creature it sees has any of the Doomed, Dying, and Wounded conditions as well as the value of those conditions."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 10 (Deactivated by Holy or Silver)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy",
+              "silver"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Staggering Servitude",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "30 feet. When a creature ends its turn in the aura, it sees a vision of the sacristan groveling in pitiable servitude. The creature must succeed at a DC 27 Will save save or become Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "divine",
+              "fear",
+              "mental",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "fear",
+        "visual"
+      ],
+      "text": "The sacristan eerily stares at a creature they can see within 30 feet. The creature must immediately attempt a Will save against staggering servitude. In addition, if the creature was already stunned, on a failed save, its revulsion toward the sacristan's presence causes it to be Stupefied 2 for 1 minute. After attempting this save, the creature is then temporarily immune to Focus Gaze until the start of the sacristan's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Scream",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "concentrate",
+        "darkness",
+        "divine",
+        "mental",
+        "sonic"
+      ],
+      "text": "Frequency once per hour\n\n---\nEffect The sacristan opens their mouth to unloose the wailing howls and mind-twisting darkness of the Netherworld. This creates a 30-foot emanation of darkness and wailing sounds around the sacristan. Creatures with darkvision can't see through this darkness. The sacristan can Sustain Shadow Scream for up to 1 minute. Non-velstrac creatures in the area when the ability is used, as well as those who enter or start their turn in the area, must attempt a DC 28 Will save save.\n\n---\nCritical Success The creature is unaffected and is then temporarily immune for 24 hours.\n\nSuccess The creature is Deafened for 1 round.\n\nFailure The creature is Confused and deafened for 1 round.\n\nCritical Failure The creature takes 20 mental damage, and is confused and deafened for 1 round.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    }
+  ],
+  "text": "Sacristans are failures among the velstracs, creatures whose bodies and minds have been utterly broken by the velstracs' torments. These unfortunates are assembled from scrap metal, nerveless flesh, and bits of darkness into loyal agents who take ecstatic pleasure in serving other velstracs. Sacristans are empowered by a miniature gateway to the Netherworld deep in their mouths. By distending their jaws, they can howl with the shrieks and windstorms of that plane. Sacristans vary in appearance but are the size of average, if maimed, humans. Their features are redundant or absent, and barbed and rusted chains wrap around them.\n\n---\nThe shadow-dwelling fiends known as velstracs all share a horrifying preoccupation with the search for ultimate sensation through self-mutilation. Velstracs transcend their stoic detachment only when inflicting pain and terror upon their victims, practicing new forms of torture, or turning their agonizing practices back on themselves. They consider themselves enlightened beings, transcending such limitations as morality or mortal taboos, but their victims know them as emotionless tormentors who inflict sadistic suffering. These fiends claim to seek perfection in thought, form, and action, although they don't recognize any refinement that doesn't require the painful excision of the flesh or spirit.\n\nVelstracs manifest from the souls of the most extreme masochistic or sadistic mortals who are judged and sent on to the Netherworld. They take on forms that suit their vile predilections, ranging from the low-ranking augurs to the maestros of suffering and mutilation, the eremites. The process of transformation warps the soul step by step, with other velstracs conveying their new members through untold chambers of pain among the dark reaches of the Netherworld."
+}

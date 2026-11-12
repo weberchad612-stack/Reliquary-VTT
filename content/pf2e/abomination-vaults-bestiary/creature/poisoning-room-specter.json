@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "poisoning-room-specter",
+  "system": "pf2e",
+  "name": "Poisoning Room Specter",
+  "source": {
+    "title": "Pathfinder #165: Eyes of Empty Death",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "evil",
+    "incorporeal",
+    "lawful",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 95,
+    "perception": 15,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 6,
+      "int": 0,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 17,
+      "intimidation": 15,
+      "stealth": {
+        "value": 17,
+        "special": [
+          {
+            "value": 21,
+            "label": "in the shooting gallery",
+            "when": [
+              "terrain:shooting-gallery"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 5,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "telepathy 100 feet (with spectral thralls only)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Vile Touch",
+      "attack": 16,
+      "traits": [
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Vile Blowgun",
+      "attack": 18,
+      "range": 20,
+      "damage": [
+        {
+          "dice": "3d6",
+          "type": "void"
+        },
+        {
+          "dice": "3d6",
+          "type": "poison"
+        }
+      ],
+      "effects": [
+        "spectral-corruption"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy (with spectral thralls only)",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "30 feet. DC 22 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pain Starvation",
+      "category": "defensive",
+      "text": "A specter that goes for more than a month without dealing void damage to a living humanoid becomes desperate and almost feral. It changes alignment from lawful evil to chaotic evil, loses control of any corrupted thralls it might have, and becomes Quickened. It can use its additional action only to make vile touch Strikes against humanoid targets. At the end of any turn in which it deals any amount of void damage to a living humanoid, it reverts to lawful evil and is no longer quickened, but any thralls it lost control of remain free."
+    },
+    {
+      "kind": "ability",
+      "name": "Sunlight Powerlessness",
+      "category": "defensive",
+      "text": "A specter caught in sunlight is Clumsy 2 and Slowed 2 for as long as it remains in the sunlight."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spectral Corruption",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "The specter makes a vile touch Strike. If it damages a living creature, the specter gains 5 temporary Hit Points and the target creature must attempt a DC 24 Will save save to avoid becoming corrupted.\n\n---\n\nCritical Success The creature is unaffected and is temporarily immune to spectral corruption for 1 minute.\n\nSuccess The creature is Stupefied 2 for 1 hour.\n\nFailure The creature succumbs to the corruption and becomes a spectral thrall temporarily. The creature is Controlled by the specter, obeying the specter's telepathic or spoken orders, though a spectral thrall does not obey obviously self-destructive orders. This lasts until the end of the thrall's next turn, at which point it is no longer controlled but becomes Stupefied 2 for 1 hour.\n\nCritical Failure As failure, but the duration is unlimited. The thrall can attempt a new Will save at the end of each of its turns; on a success, it is no longer controlled by the specter but becomes Stupefied 2 for 1 hour."
+    }
+  ],
+  "text": "When an evil mortal creature dies, it sometimes returns to haunt the area of its death as a specter, a hateful remnant, always seeking to slay others-particularly humanoids-in an attempt to distribute its pain among as many souls as it can. A specter maintains a strange semblance of its prior identity, but with a corrupted sense of purpose. It cannot be reasoned with.\n\nA specter denied the opportunity to harm living humanoids grows increasingly agonized and irrational, akin to the mindset of a starving person forever denied a release from agony through death."
+}

@@ -1,0 +1,466 @@
+{
+  "kind": "effect",
+  "slug": "effect-curse-of-ancestral-meddling",
+  "system": "pf2e",
+  "name": "Effect: Curse of Ancestral Meddling",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "labels": [
+      "Minor",
+      "Moderate",
+      "Major",
+      "Extreme"
+    ]
+  },
+  "text": "Granted by Ancestors\n\nCurse of Ancestral Meddling\n\nThe ancestral spirits you commune with haunt you and meddle with your belongings and actions, either out of a well-intentioned (but ultimately detrimental) attempt to assist you, as punishment for your audacity in circumventing the traditional means of achieving divine power, for their own amusement, or a mixture of the above. Your hair, clothing, and belongings constantly shift and stir, seemingly of their own volition.\n\nMinor Curse\n\nOne of your ancestors becomes predominant in their meddling. The first time you gain this effect each day, roll 1d4 on the list below to determine which type of ancestor becomes predominant. This predominant ancestor guides you to use their preferred type of action. When you try to use one of the types of actions listed for the other ancestors, you must succeed at a DC 4 Flat check. On a failure, you spend the action but gain no effect (though you don't lose the spell if you were Casting a Spell). If your action would take 1 minute or longer, it's long enough that you can overcome the meddling, and you don't need to attempt a flat check.\n\nDuring combat or another tense, round-by-round encounter, other ancestors wrestle for control of your actions. When you roll initiative, and then at the end of each of your turns during the encounter, roll 1d4 and change your predominant ancestor appropriately. Once the encounter ends, you return to the influence of the ancestor you first rolled for the day.\n\nModerate Curse\n\nThe flat check DC to use other actions is 6, and you get the moderate curse benefit listed for your predominant ancestor in the list below.\n\nMajor Curse (11th)\n\nThe flat check DC is 8, and you get the major curse benefit listed for your predominant ancestor instead of the moderate curse benefit.\n\n---\n\nAncestral Influence\n\n- Martial Ancestor\n\n- Preferred action Strikes\n\n- Moderate curse benefit Your Strikes gain a +1 status bonus to attack rolls and a +2 status bonus to damage.\n\n- Major curse benefit Your Strikes gain a +1 status bonus to attack rolls and a +6 status bonus to damage\n\n- Skillful Ancestor\n\n- Preferred action Perception and Skill actions\n\n- Moderate curse benefit You gain a +1 status bonus to skill checks and Perception checks.\n\n- Major curse benefit You gain a +2 status bonus to skill checks and Perception checks.\n\n- Spellcasting Ancestor\n\n- Preferred action Cast a Spell\n\n- Moderate curse benefit Non-cantrip spells without a duration gain a status bonus to their damage and healing equal to the spell's rank.\n\n- Major curse benefit Non-cantrip spells without a duration gain a status bonus to their damage and healing equal to the spell's rank + 3.\n\n- You choose which ancestor guides your actions",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              "oracular-curse:stage:1",
+              {
+                "or": [
+                  "ancestral-influence:martial",
+                  "ancestral-influence:skillful"
+                ]
+              }
+            ],
+            "text": "PF2E.OracleCurses.Ancestor.MinorFailure"
+          },
+          {
+            "predicate": [
+              "oracular-curse:stage:2",
+              "class:oracle",
+              {
+                "or": [
+                  "ancestral-influence:martial",
+                  "ancestral-influence:skillful"
+                ]
+              }
+            ],
+            "text": "PF2E.OracleCurses.Ancestor.ModerateFailure"
+          },
+          {
+            "predicate": [
+              "oracular-curse:stage:3",
+              "class:oracle",
+              {
+                "or": [
+                  "ancestral-influence:martial",
+                  "ancestral-influence:skillful"
+                ]
+              }
+            ],
+            "text": "PF2E.OracleCurses.Ancestor.MajorFailure"
+          }
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.OracleCurses.Ancestor.MinorFailure",
+      "when": [
+        "parent:badge:value:1",
+        {
+          "or": [
+            "ancestral-influence:skillful",
+            "ancestral-influence:spellcasting"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "parent:badge:value:1",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "skill-check",
+        "text": "PF2E.OracleCurses.Ancestor.MinorFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "parent:badge:value:1",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "perception",
+        "text": "PF2E.OracleCurses.Ancestor.MinorFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.OracleCurses.Ancestor.ModerateFailure",
+      "when": [
+        "class:oracle",
+        "parent:badge:value:2",
+        {
+          "or": [
+            "ancestral-influence:skillful",
+            "ancestral-influence:spellcasting"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "class:oracle",
+          "parent:badge:value:2",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "skill-check",
+        "text": "PF2E.OracleCurses.Ancestor.ModerateFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "class:oracle",
+          "parent:badge:value:2",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "perception",
+        "text": "PF2E.OracleCurses.Ancestor.ModerateFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.OracleCurses.Ancestor.MajorFailure",
+      "when": [
+        "parent:badge:value:3",
+        {
+          "or": [
+            "ancestral-influence:skillful",
+            "ancestral-influence:spellcasting"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "parent:badge:value:3",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "skill-check",
+        "text": "PF2E.OracleCurses.Ancestor.MajorFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "parent:badge:value:3",
+          {
+            "or": [
+              "ancestral-influence:martial",
+              "ancestral-influence:spellcasting"
+            ]
+          },
+          {
+            "nor": [
+              "check:type:initiative",
+              "downtime",
+              "exploration"
+            ]
+          }
+        ],
+        "selector": "perception",
+        "text": "PF2E.OracleCurses.Ancestor.MajorFailure",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "class:oracle",
+          "item:duration:0",
+          {
+            "not": "item:trait:cantrip"
+          },
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          },
+          "ancestral-influence:spellcasting"
+        ],
+        "selector": "spell-damage",
+        "slug": "curse-spell-damage",
+        "type": "status",
+        "value": "@spell.rank"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "selector": "spell-damage",
+        "slug": "curse-spell-damage",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "class:oracle",
+          "ancestral-influence:martial",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          }
+        ],
+        "selector": "strike-attack-roll",
+        "slug": "curse-battle-attack",
+        "type": "status",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "class:oracle",
+          "ancestral-influence:martial",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "curse-martial-damage",
+        "type": "status",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "curse-martial-damage",
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "class:oracle",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          },
+          "ancestral-influence:skillful"
+        ],
+        "selector": [
+          "skill-check",
+          "perception"
+        ],
+        "slug": "curse-skill",
+        "type": "status",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "selectors": [
+          "skill-check",
+          "perception"
+        ],
+        "slug": "curse-skill",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Ancestral Influence"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:major-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:extreme-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "oracular-curse:stage:{item|badge.value}"
+      }
+    }
+  ]
+}

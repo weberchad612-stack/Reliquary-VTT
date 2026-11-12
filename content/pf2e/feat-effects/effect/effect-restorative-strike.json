@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-restorative-strike",
+  "system": "pf2e",
+  "name": "Effect: Restorative Strike",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Restorative Strike\n\nCast a 1-action Harm or Heal spell to heal yourself, expending the spell normally. It loses the manipulate trait when cast this way. Then make a melee Strike. If you make this Strike with your deity's favored weapon, you gain a +1 status bonus to the attack roll.\n\nIf the Strike hits, you can target a second willing creature to heal the same amount from the spell. This creature can be outside of the spell's range, provided it's adjacent to the enemy you hit.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:cast:actions:1",
+          {
+            "or": [
+              "item:slug:harm",
+              "item:slug:heal"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "manipulate"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-attack-roll",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "item:deity-favored"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.Cleric.RestorativeStrike.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ]
+    }
+  ]
+}

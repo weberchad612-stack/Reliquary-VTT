@@ -1,0 +1,232 @@
+{
+  "kind": "creature",
+  "slug": "smokesight-prowler-wight",
+  "system": "pf2e",
+  "name": "Smokesight Prowler Wight",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-15: In Glorious Battle",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "lawful",
+    "undead",
+    "unholy",
+    "wight"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 155,
+    "perception": 18,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 20,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 18,
+      "deception": {
+        "value": 18,
+        "special": [
+          {
+            "value": 20,
+            "label": "to feint",
+            "when": [
+              "action:feint"
+            ]
+          }
+        ]
+      },
+      "stealth": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smoke Vision",
+      "category": "interaction",
+      "text": "The prowler wight ignores the Concealed condition from smoke."
+    },
+    {
+      "kind": "ability",
+      "name": "Final Spite",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The prowler wight is reduced to 0 Hit Points\n\n---\n\nEffect The prowler wight makes a Strike before being destroyed. They don't gain any temporary HP from drain life on this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the hunter wight damages a living creature using an unarmed attack or their bound weapon, they gain 9 temporary Hit Points, and the creature must succeed at a DC 25 Fortitude save save or become Drained 1. Further damage dealt by the hunter wight's unarmed and bound weapon attacks increases the value of the drained condition by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 9
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Feign Death",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The prowler wight quenches the telltale red glow in their eye sockets, falls Prone, and lies completely still. Until the next time they act, the prowler wight appears to be an ordinary corpse. They have an automatic result of 38 on Deception checks and DCs to pass as an ordinary corpse."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The prowler wight deals an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spawn Prowler Wight",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A living humanoid killed by a prowler wight's weapon or claw Strike rises as a hunter wight spawn after 1d4 rounds. This spawn is under the command of the prowler wight that killed them. They don't have drain life or spawn prowler wight and are Clumsy 2 for as long as they're a prowler wight spawn. If the creator of the prowler wight spawn dies, the prowler wight spawn becomes a fully autonomous prowler wight; they regain their free will, gain drain life and spawn prowler wight, and are no longer clumsy"
+    }
+  ],
+  "text": "Often found lurking in the dark, prowler wights wield subterfuge as their greatest weapon. They frequently feign death in old sewers, graveyards, and mausoleums, waiting for hapless victims to pass by before striking.\n\n---\n\nWights are undead beings of spite who primarily stalk places related to death."
+}

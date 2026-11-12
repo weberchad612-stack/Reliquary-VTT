@@ -1,0 +1,224 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-aberrant",
+  "system": "pf2e",
+  "name": "Bloodline: Aberrant",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "sorcerer"
+  ],
+  "category": "classfeature",
+  "text": "Something ancient and unknowable speaks to you from beyond the stars or below the earth.\n\nTradition occult\n\nBloodline Skills Intimidation, Occultism\n\nSorcerous Gifts cantrip: Daze; 1st: Phantom Pain; 2nd: Stupefy; 3rd: Vampiric Feast; 4th: Confusion; 5th: Slither; 6th: Never Mind; 7th: Warp Mind; 8th: Uncontrollable Dance; 9th: Unfathomable Song\n\nBloodline Spells initial: Tentacular Limbs; advanced: Aberrant Whispers; greater: Unusual Anatomy\n\nBlood Magic—Eerie Veil An ominous pall spills from your mind. Either one target takes a –1 status penalty to Will saving throws for 1 round or you gain a +2 status bonus to Will saving throws for 1 round.\n\nEffect: Aberrant Blood Magic",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.occultism.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:sorcerer"
+                ]
+              },
+              {
+                "and": [
+                  "item:spell-slot",
+                  "spellcasting:category:spontaneous",
+                  "spellcasting:tradition:occult",
+                  {
+                    "or": [
+                      "item:slug:phantom-pain",
+                      "item:slug:stupefy",
+                      "item:slug:vampiric-feast",
+                      "item:slug:confusion",
+                      "item:slug:slither",
+                      "item:slug:never-mind",
+                      "item:slug:warp-mind",
+                      "item:slug:uncontrollable-dance",
+                      "item:slug:unfathomable-song"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mergeable": true,
+        "option": "blood-magic",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Aberrant",
+            "predicate": [
+              "class:sorcerer"
+            ],
+            "value": "aberrant"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.SecondBloodMagic",
+        "mergeable": true,
+        "option": "second-blood-magic",
+        "placement": "spellcasting",
+        "predicate": [
+          {
+            "or": [
+              "feat:blood-ascendancy",
+              "feat:blood-sovereignty"
+            ]
+          }
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Aberrant",
+            "value": "aberrant"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:tag:blood-magic-spell",
+          {
+            "or": [
+              "blood-magic:aberrant",
+              {
+                "and": [
+                  "second-blood-magic:aberrant",
+                  "feat:blood-sovereignty"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "divider": true,
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Aberrant",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Aberrant"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Aberrant Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:slug:blood-rising",
+          {
+            "or": [
+              "blood-magic:aberrant",
+              {
+                "and": [
+                  "second-blood-magic:aberrant",
+                  "feat:blood-ascendancy"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "divider": true,
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Aberrant",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Aberrant"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Aberrant Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:tradition:occult",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ]
+      }
+    }
+  ]
+}

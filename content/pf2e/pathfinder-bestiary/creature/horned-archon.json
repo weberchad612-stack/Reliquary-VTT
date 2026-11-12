@@ -1,0 +1,261 @@
+{
+  "kind": "creature",
+  "slug": "horned-archon",
+  "system": "pf2e",
+  "name": "Horned Archon",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archon",
+    "celestial",
+    "good",
+    "holy",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 65,
+    "perception": 11,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 10,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 12,
+      "nature": 11,
+      "religion": 9,
+      "stealth": 10,
+      "survival": {
+        "value": 11,
+        "special": [
+          {
+            "value": 15,
+            "label": "to Track",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "tongues"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Tongues (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Dimension Door",
+          "rank": 4,
+          "ref": "spells:spell/translocate",
+          "uses": 3
+        },
+        {
+          "name": "Animal Messenger",
+          "rank": 2,
+          "ref": "spells:spell/animal-messenger",
+          "uses": 3
+        },
+        {
+          "name": "Charm (Animals Only)",
+          "rank": 1,
+          "ref": "spells:spell/charm",
+          "uses": 3
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        },
+        {
+          "name": "True Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 11,
+      "traits": [
+        "holy",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+3",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 14,
+      "traits": [
+        "deadly-d10",
+        "holy",
+        "magical",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Menacing Guardian",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "30 feet. Enemies that start their turn in the area or enter it must attempt a DC 19 Will save save.\n\nOn a failure, they take a -1 status penalty to attack rolls, spell rolls, and damage rolls against any other target while in the aura for 24 hours or until they damage the archon, whichever comes first. On a critical failure, they can't use hostile actions against any other target while in the area for 24 hours or until they damage the archon, whichever comes first.\n\nRegardless of the result, a creature is then temporarily immune to further menacing guardian auras for 24 hours.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "menacing-guardian",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Retributive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Damage Reduction 6\n\nA horned archon can also make a Retributive Strike with its composite longbow\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Door",
+      "category": "offensive",
+      "text": "Once per day, if an archon sees another creature cast Translocate, it can cast an innate dimension door (heightened to 5th level) within 1 round to attempt to follow that creature to the maximum distance of the archon's dimension door.\n\nIf the archon's dimension door has enough distance, the archon appears the same distance and direction from the creature as before either used dimension door."
+    },
+    {
+      "kind": "ability",
+      "name": "Touch of Charity",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "healing",
+        "manipulate"
+      ],
+      "text": "A horned archon can touch another creature to take on that creature's wounds, transferring up to 30 of the horned archon's HP to the touched creature. The horned archon can't transfer more HP than it currently has."
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Horned archons are secretive and tireless sentinels and scouts, patrolling the Outer Sphere's untamed wilds for evil to eliminate and keeping small communities safe from demons, devils, and worse. They resemble muscular humans with the head, horns, and legs of a stag. When requested to do so by their patrons, especially Erastil, they journey to the Material Plane and patrol dangerous frontier areas, secretly performing acts of kindness such as leading hunters to food, helping lost children, and driving off evil creatures. Because they roam the wilds of Nirvana and Elysium, horned archons are among the best at understanding the perspectives of other celestials.\n\n---\n\nArchons are guardians of Heaven and enemies of chaos and evil. They openly fight back the spread of fiends but also quietly nurture the seeds of virtue within mortals, teaching the denizens of the Material Plane how to act with honor and integrity, enact just laws, and cast off sin and temptation.\n\nArchons live in the immense seven-tiered mountain of Heaven. They manifest in the Garden at the mountain's peak from mortal souls who answer a mysterious voice. There they swear to forever serve the cause of justice and transform into their new archon forms. Intensely orderly in their metamorphosis, new archons begin as lantern archons or other lesser forms, transforming into ever-greater archons as their virtue and achievements grow. Each archon represents a particular virtue, such as hope, charity, justice, or courage, and they gain strength in the presence of mortals who exemplify this virtue. Due to their extremely lawful nature, archons sometimes find themselves at odds with azatas."
+}

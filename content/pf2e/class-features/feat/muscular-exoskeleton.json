@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "muscular-exoskeleton",
+  "system": "pf2e",
+  "name": "Muscular Exoskeleton",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "Your armor supports your muscles with a carefully crafted exoskeleton. When you send your armor into overdrive, the exoskeleton supplements your feats of athletics as well. When under the effects of Overdrive, you gain a +1 circumstance bonus to Athletics checks; if you're a master in Crafting, this increases to a +2 circumstance bonus.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "muscular-exoskeleton",
+      "when": [
+        "armor:id:{actor|flags.system.innovationId}",
+        "armor-innovation:power-suit",
+        {
+          "or": [
+            "self:effect:overdrive-success",
+            "self:effect:overdrive-critical-success"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "skill:crafting:rank",
+              3
+            ]
+          }
+        ],
+        "selector": "athletics",
+        "slug": "muscular-exoskeleton",
+        "value": 2
+      }
+    }
+  ]
+}

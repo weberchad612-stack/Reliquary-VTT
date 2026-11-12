@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "web-walker",
+  "system": "pf2e",
+  "name": "Web Walker",
+  "source": {
+    "title": "Pathfinder Lost Omens The Mwangi Expanse",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "anadi"
+  ],
+  "category": "ancestry",
+  "text": "You have plenty of practice navigating webs. You gain a +2 circumstance bonus to saves and AC against the Web spell, natural webbing, and effects that entrap you in webbing, as well as a +1 circumstance bonus against other effects that snare and entangle you, like the Entangling Flora spell. Whenever you roll a success on a saving throw against an effect involving a web, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "web-walker",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Anadi.WebWalker.Others",
+            "value": "other-snaring"
+          },
+          {
+            "label": "PF2E.SpecificRule.Anadi.WebWalker.Webbing",
+            "value": "webbing"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "slug": "web-walker",
+      "when": [
+        "web-walker"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "web-walker:webbing"
+        ],
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "web-walker:webbing"
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw"
+        ],
+        "slug": "web-walker",
+        "value": 2
+      }
+    }
+  ]
+}

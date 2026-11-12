@@ -1,0 +1,134 @@
+{
+  "kind": "creature",
+  "slug": "animated-axe",
+  "system": "pf2e",
+  "name": "Animated Axe",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 23,
+    "hp": 65,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 13,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 2,
+      "dex": 4,
+      "int": -5,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 13
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "19 when broken"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 14,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor",
+      "category": "defensive",
+      "text": "Like normal objects, an animated hatchet has Hardness. This Hardness reduces any damage the hatchet takes by an amount equal to the Hardness. Once an animated hatchet is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, and its Armor Class is reduced to 19.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant animated object"
+}

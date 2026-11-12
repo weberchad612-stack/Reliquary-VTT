@@ -1,0 +1,147 @@
+{
+  "kind": "creature",
+  "slug": "lightweight-animated-armor",
+  "system": "pf2e",
+  "name": "Lightweight Animated Armor",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-02: The East Hill Haunting",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 25,
+    "perception": 6,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 6,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(16 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Glaive",
+      "attack": 11,
+      "traits": [
+        "deadly-d8",
+        "forceful",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gauntlet",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "free-hand",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 3)",
+      "category": "defensive",
+      "text": "Like normal objects, animated armor has Hardness. This Hardness reduces any damage the animated armor takes by an amount equal to the Hardness. Once an animated armor is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing its Hardness and reducing its Armor Class to 16.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Suits of animated armor see use both as guardians and as training partners in high-end martial academies able to afford the extravagance. They are most often found in wizard laboratories and ancient dungeons.\n\n---\n\nGranted a semblance of life through the use of rituals or other strange magic, animated objects take many forms and serve a variety of uses. A few examples of typical animated objects are listed below. Many of these creatures serve as guardians, surprising unsuspecting adventurers when they suddenly attack. Others serve as idle distractions for the exceptionally rich, simple servants created to handle odd jobs, and the like."
+}

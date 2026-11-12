@@ -1,0 +1,264 @@
+{
+  "kind": "creature",
+  "slug": "hunter",
+  "system": "pf2e",
+  "name": "Hunter",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 17,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "medicine": 15,
+      "nature": 17,
+      "stealth": 17,
+      "survival": 17,
+      "forest-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 60
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 18,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Expert Subsistence",
+      "category": "interaction",
+      "text": "While using Survival to subsist statistic=survival, if the hunter rolls any result worse than a success, they get a success. On a success, they can provide subsistence living for themselves and 16 additional creatures, and on a critical success, they can take care of twice as many creatures as on a success.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "to-success",
+              "failure": "to-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:subsist"
+            ],
+            "selector": "survival"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "survival",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "action:subsist"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Forest Walker",
+      "category": "interaction",
+      "text": "The hunter ignores the effects of difficult terrain in a forest environment."
+    },
+    {
+      "kind": "ability",
+      "name": "On the Hunt",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The hunter designates one creature they're observing or tracking as their prey.\n\nThe hunter gains a +2 circumstance bonus to Perception checks to seek the prey and to Survival checks to track the prey.\n\nThe first time the hunter hits the designated prey in a round, they deal an additional 1d8 precision damage. These effects last until the hunter uses On the Hunt again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "As is reflected in the many depictions of the elk-headed Erastil, god of the hunt, the hunter is very much a creature of the forest, known by the forest and familiar with every aspect of it. After all, the final determination of who is the hunter and who is prey often depends on who can make an ally of the terrain.\n\n---\nExplorers are often well-equipped and well-trained for any type of hazard and are eager to lead others into the wild."
+}

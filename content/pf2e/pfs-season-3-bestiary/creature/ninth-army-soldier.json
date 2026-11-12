@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "ninth-army-soldier",
+  "system": "pf2e",
+  "name": "Ninth Army Soldier",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-16: Escape from Oppara",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 15,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 13,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 11,
+      "deception": 12,
+      "diplomacy": 10,
+      "intimidation": 10,
+      "stealth": 13,
+      "survival": 13,
+      "warfare-lore": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Simple)",
+      "ref": "equipment:item/manacles-simple",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 14,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 15,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d10+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The Ninth Army soldier designates a single creature they can see and hear, or one they're Tracking, as their prey. The Ninth Army soldier gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. This effect lasts until the Ninth Army soldier uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Precision Edge",
+      "category": "offensive",
+      "text": "The first time the Ninth Army soldier hits their hunted prey in a round, they deal an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running Reload",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The Ninth Army soldier Strides, Steps, or Sneaks, and then Interacts to reload."
+    }
+  ],
+  "text": "Bounty hunters are constantly on the move, whether within city walls or the wilderness, trailing their fugitive quarries for capture... or disposal. Often relying on stealth or deception as much as martial skill, bounty hunters employ a vast array of talents to accomplish their goals, not to mention to collect the hefty payout that follows.\n\n---\n\nA broad category that includes those wielding arms, spells, or even guile and cunning, mercenaries hire themselves and their expertise to those with the gold to pay for it.",
+  "blurb": "Variant bounty hunter"
+}

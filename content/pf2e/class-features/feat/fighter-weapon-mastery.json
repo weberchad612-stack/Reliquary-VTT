@@ -1,0 +1,75 @@
+{
+  "kind": "feat",
+  "slug": "fighter-weapon-mastery",
+  "system": "pf2e",
+  "name": "Fighter Weapon Mastery",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "fighter"
+  ],
+  "category": "classfeature",
+  "text": "Hours spent training with your preferred weapons, learning and developing new combat techniques, have made you particularly effective with your weapons of choice. Choose one weapon group. Your proficiency rank increases to master with the simple weapons, martial weapons, and unarmed attacks in that group, and to expert with the advanced weapons in that group. You gain access to the critical specialization effects of all weapons and unarmed attacks for which you have master proficiency.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "weaponGroups",
+        "flag": "fighterWeaponMastery",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.WeaponGroup"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:group:{item|flags.system.rulesSelections.fighterWeaponMastery}",
+          {
+            "or": [
+              "item:category:unarmed",
+              "item:category:simple",
+              "item:category:martial"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.FighterWeaponMasteryLegend.SimpleMartial.{item|flags.system.rulesSelections.fighterWeaponMastery}",
+        "slug": "weapon-mastery-simple-martial",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:advanced",
+          "item:group:{item|flags.system.rulesSelections.fighterWeaponMastery}"
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.FighterWeaponMasteryLegend.Advanced.{item|flags.system.rulesSelections.fighterWeaponMastery}",
+        "slug": "weapon-mastery-advanced",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "gte": [
+              "item:proficiency:rank",
+              3
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

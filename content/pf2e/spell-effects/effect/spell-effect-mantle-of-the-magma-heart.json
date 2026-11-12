@@ -1,0 +1,235 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-mantle-of-the-magma-heart",
+  "system": "pf2e",
+  "name": "Spell Effect: Mantle of the Magma Heart",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Mantle of the Magma Heart\n\nPick two of the options below. As a single action, which has the concentrate trait, you can change one of your chosen abilities to a different option from the list.\n- Enlarging Eruption You grow to size Large. You're clumsy 1. Your reach increases by 5 feet (or by 10 feet if you started out Tiny), and you gain a +2 status bonus to melee damage. You can't choose this option if you're already Large or larger.\n- Fiery Grasp You gain a lava fist unarmed attack in the brawling weapon group. Your lava fists deal 1d8 bludgeoning damage as their base damage, plus an additional 2d6 fire damage and 1d6 persistent fire damage.\n- Heart of Fire any creature that touches you, or that hits you with a melee unarmed attack or non-reach melee weapon attack, takes 2d6 damage.\n- Warming Flames You gain resistance 5 to cold and fire.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.RollOptionLabel.First",
+        "option": "magma-heart-first",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.EnlargingEruption",
+            "value": "enlarging-eruption"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.FieryGrasp",
+            "value": "fiery-grasp"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.HeartOfFire",
+            "value": "heart-of-fire"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.WarmingFlames",
+            "value": "warming-flames"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.RollOptionLabel.Second",
+        "option": "magma-heart-second",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.EnlargingEruption",
+            "predicate": [
+              {
+                "not": "magma-heart-first:enlarging-eruption"
+              }
+            ],
+            "value": "enlarging-eruption"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.FieryGrasp",
+            "predicate": [
+              {
+                "not": "magma-heart-first:fiery-grasp"
+              }
+            ],
+            "value": "fiery-grasp"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.HeartOfFire",
+            "predicate": [
+              {
+                "not": "magma-heart-first:heart-of-fire"
+              }
+            ],
+            "value": "heart-of-fire"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.WarmingFlames",
+            "predicate": [
+              {
+                "not": "magma-heart-first:warming-flames"
+              }
+            ],
+            "value": "warming-flames"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:heart-of-fire",
+        "predicate": [
+          {
+            "or": [
+              "magma-heart-first:heart-of-fire",
+              "magma-heart-second:heart-of-fire"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "status",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "magma-heart-first:enlarging-eruption",
+            "magma-heart-second:enlarging-eruption"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          {
+            "or": [
+              "magma-heart-first:enlarging-eruption",
+              "magma-heart-second:enlarging-eruption"
+            ]
+          }
+        ],
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.LavaFist",
+        "predicate": [
+          {
+            "or": [
+              "magma-heart-first:fiery-grasp",
+              "magma-heart-second:fiery-grasp"
+            ]
+          }
+        ],
+        "traits": [
+          "unarmed",
+          "magical"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.FieryGrasp",
+        "selector": "{item|_id}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "label": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.Label.FieryGrasp",
+        "selector": "{item|_id}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "magma-heart-first:warming-flames",
+              "magma-heart-second:warming-flames"
+            ]
+          }
+        ],
+        "type": "cold",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "magma-heart-first:warming-flames",
+              "magma-heart-second:warming-flames"
+            ]
+          }
+        ],
+        "type": "fire",
+        "value": 5
+      }
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.SpellEffectMantle.MagmaHeart.DamageNote.HeartOfFire",
+      "when": [
+        "self:heart-of-fire",
+        "item:melee",
+        {
+          "not": "item:trait:reach"
+        }
+      ]
+    }
+  ]
+}

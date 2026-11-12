@@ -1,0 +1,206 @@
+{
+  "kind": "creature",
+  "slug": "carrion-angel",
+  "system": "pf2e",
+  "name": "Carrion Angel",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "rare",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 31,
+    "hp": 225,
+    "perception": 22,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 21,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 3,
+      "dex": 4,
+      "int": 3,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 21,
+      "athletics": 24,
+      "deception": 22,
+      "intimidation": 24,
+      "religion": 22,
+      "stealth": 22
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "saves": "+1 status to all saves vs. vitality"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 24,
+      "traits": [
+        "magical",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        },
+        {
+          "dice": "2d6+13",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "decaying-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Vitality",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:trait:vitality"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blasphemous Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "olfactory"
+      ],
+      "text": "30 feet. A creature entering or starting its turn in the aura must succeed at a DC 27 Fortitude save save or become Sickened 1 (plus Slowed 1 as long as it's sickened on a critical failure). A holy creature takes a –2 status penalty to this saving throw. A creature that succeeds at its save or recovers from being sickened is temporarily immune to blasphemous stench for 1 minute unless it is holy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Decaying Touch",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine",
+        "unholy",
+        "void"
+      ],
+      "text": "The first time each round that a living creature takes damage from a carrion angel's claw Strike, it must attempt a DC 30 Fortitude save save to avoid becoming Sickened 1 and Drained 1 on a failure (Sickened 2 and Drained 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Living Facade",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "illusion"
+      ],
+      "text": "The carrion angel hides their true appearance behind a potent illusion that makes them appear as they did in life. The carrion angel has an automatic result of 42 on Deception checks and DCs to pass as living. While Living Facade is in effect, the carrion angel loses void healing and can be healed as if they were alive. This illusion lasts until the start of the carrion angel's next turn, but the angel can Sustain it indefinitely—when the carrion angel chooses to stop Sustaining it, they cannot use Living Facade again for 24 hours. The carrion angel's blasphemous stench aura is suppressed for as long as they maintain their Living Facade.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "living-facade",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "predicate": [
+              "living-facade"
+            ],
+            "priority": 55,
+            "value": false
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Obscure and profane rites enable a blasphemer to transform a captured angel into an undead monstrosity known as a carrion angel. With their decaying flesh, foul stench of decay, and broken wings crawling with flies, none would mistake a carrion angel for anything but the atrocity they are—that is, unless the carrion angel chooses to cloak themself in a more pleasant, illusory deception. A carrion angel is not controlled by their creator, yet they generally regard their creator as an ally. Most outlast their creators, at which point they seek their own evil agendas in the world.\n\nSimilar undead atrocities created via sacrifices of other types of celestials exist, and have similar abilities to the carrion angel. Yet for whatever reason, carrion angels are the most well-known and commonly encountered of these rare horrors.\nBlasphemous Choices\nThe typical carrion angel presented here represents the least powerful of their kind, an undead abomination created through vile rites involving an angel's sacrifice to an evil deity. Yet sometimes, fallen angels seek undeath deliberately—not to avoid immortality, as do so many mortals, but simply to embrace an unwholesome and blasphemous new source of power. These carrion angels are often much more powerful than those who had no choice in their fate."
+}

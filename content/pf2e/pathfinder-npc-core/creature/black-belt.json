@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "black-belt",
+  "system": "pf2e",
+  "name": "Black Belt",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 220,
+    "perception": 25,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 23,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 25,
+      "stealth": 20,
+      "martial-arts-lore": 22
+    },
+    "speeds": {
+      "land": 40
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Monk Focus Spells",
+      "tradition": "occult",
+      "type": "focus",
+      "dc": 32,
+      "attack": 23,
+      "spells": [
+        {
+          "name": "Inner Upheaval",
+          "rank": 1,
+          "ref": "spells:spell/inner-upheaval"
+        },
+        {
+          "name": "Qi Rush",
+          "rank": 1,
+          "ref": "spells:spell/qi-rush"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bo Staff",
+      "ref": "equipment:item/bo-staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bands of Force",
+      "ref": "equipment:item/bands-of-force",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Bo Staff",
+      "attack": 25,
+      "traits": [
+        "magical",
+        "parry",
+        "reach",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "magical",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blocking Counterattack",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within the black belt's reach targets them with a melee attack\n\n---\nEffect The black belt blocks, gaining a +2 circumstance bonus to their AC against the triggering attack. If the attack misses, the black belt retaliates with a Strike. This Strike doesn't count toward the black belt's multiple attack penalty, and the multiple attack penalty doesn't apply to this Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "blocking-counterattack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "blocking-counterattack"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The black belt makes two fist Strikes. If both hit the same creature, combine their damage for the purpose of resistances and weaknesses.\n\nThe black belt can substitute any number of the attacks with bo staff Strikes or attempts to grapple, reposition, shove, or trip.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Fists",
+      "category": "offensive",
+      "text": "The black belt's fist Strikes don't take penalties when making lethal attacks, and fist Strikes are treated as cold iron and silver.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fist"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "cold-iron"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fist"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "silver"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rapid Barrage",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "incapacitation"
+      ],
+      "text": "The black belt pummels their fists in a fast onslaught. They make three fist Strikes against one target. If more than one Strike hits, combine damage for the purpose of resistances and weaknesses. Regardless of whether any Strikes hit, the target must succeed at a DC 32 Fortitude save save or be Clumsy 1 until the end of their next turn and Stunned 1 (Clumsy 2 and Stunned 2 on a critical failure)."
+    }
+  ],
+  "text": "Many martial arts schools use colored belts to differentiate skill levels. Above all is the black belt, an advanced practitioner who can counter any attack.\n\n---\nMartial artists strive to master the art of hand-to-hand fighting."
+}

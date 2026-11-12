@@ -1,0 +1,164 @@
+{
+  "kind": "creature",
+  "slug": "zombie-bear",
+  "system": "pf2e",
+  "name": "Zombie Bear",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "mindless",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 17,
+    "hp": 75,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 5,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 3,
+      "dex": 0,
+      "int": -5,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "slashing",
+          "value": 5
+        },
+        {
+          "type": "vitality",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d10+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d12+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "interaction",
+      "text": "A zombie bear is permanently Slowed 1 and can't use reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Murderous Mauler",
+      "category": "offensive",
+      "text": "The zombie bear gains a +2 circumstance bonus to damage rolls against creatures it has Grabbed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "murderous-mauler",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "murderous-mauler",
+            "target:condition:grabbed"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

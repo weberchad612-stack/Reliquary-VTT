@@ -1,0 +1,221 @@
+{
+  "kind": "feat",
+  "slug": "complex-simplicity",
+  "system": "pf2e",
+  "name": "Complex Simplicity",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "Increase your innovation's weapon damage die by one step (d4 to d6, d6 to d8, d8 to d10, d10 to d12). In addition, it gains two of the following traits of your choice: versatile B, versatile P, versatile S, or razing.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{actor|flags.system.trackedItems.weaponInnovation}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "damage-dice-faces"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitRazing",
+            "predicate": [
+              {
+                "not": "weapon-innovation:trait:razing"
+              }
+            ],
+            "value": "razing"
+          },
+          {
+            "label": "PF2E.TraitVersatileB",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:bludgeoning",
+                  "weapon-innovation:trait:versatile-b"
+                ]
+              }
+            ],
+            "value": "versatile-b"
+          },
+          {
+            "label": "PF2E.TraitVersatileP",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:piercing",
+                  "weapon-innovation:trait:versatile-p"
+                ]
+              }
+            ],
+            "value": "versatile-p"
+          },
+          {
+            "label": "PF2E.TraitVersatileS",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:slashing",
+                  "weapon-innovation:trait:versatile-s"
+                ]
+              }
+            ],
+            "value": "versatile-s"
+          }
+        ],
+        "flag": "complexSimplicityFirstTrait",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:bludgeoning",
+                  "weapon-innovation:trait:versatile-b"
+                ]
+              },
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:piercing",
+                  "weapon-innovation:trait:versatile-p"
+                ]
+              },
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:slashing",
+                  "weapon-innovation:trait:versatile-s"
+                ]
+              },
+              {
+                "not": "weapon-innovation:trait:razing"
+              }
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Trait",
+        "rollOption": "complex-simplicity-first-trait"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitRazing",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:trait:razing",
+                  "complex-simplicity-first-trait:razing"
+                ]
+              }
+            ],
+            "value": "razing"
+          },
+          {
+            "label": "PF2E.TraitVersatileB",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:bludgeoning",
+                  "weapon-innovation:trait:versatile-b",
+                  "complex-simplicity-first-trait:versatile-b"
+                ]
+              }
+            ],
+            "value": "versatile-b"
+          },
+          {
+            "label": "PF2E.TraitVersatileP",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:piercing",
+                  "weapon-innovation:trait:versatile-p",
+                  "complex-simplicity-first-trait:versatile-p"
+                ]
+              }
+            ],
+            "value": "versatile-p"
+          },
+          {
+            "label": "PF2E.TraitVersatileS",
+            "predicate": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:slashing",
+                  "weapon-innovation:trait:versatile-s",
+                  "complex-simplicity-first-trait:versatile-s"
+                ]
+              }
+            ],
+            "value": "versatile-s"
+          }
+        ],
+        "flag": "complexSimplicitySecondTrait",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:bludgeoning",
+                  "weapon-innovation:trait:versatile-b"
+                ]
+              },
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:piercing",
+                  "weapon-innovation:trait:versatile-p"
+                ]
+              },
+              {
+                "nor": [
+                  "weapon-innovation:damage:type:slashing",
+                  "weapon-innovation:trait:versatile-s"
+                ]
+              },
+              {
+                "not": "weapon-innovation:trait:razing"
+              }
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Trait",
+        "rollOption": "complex-simplicity-second-trait"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{actor|flags.system.trackedItems.weaponInnovation}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.complexSimplicityFirstTrait}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{actor|flags.system.trackedItems.weaponInnovation}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.complexSimplicitySecondTrait}"
+      }
+    }
+  ]
+}

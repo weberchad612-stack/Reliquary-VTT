@@ -1,0 +1,97 @@
+{
+  "kind": "effect",
+  "slug": "effect-transmuting-ingot",
+  "system": "pf2e",
+  "name": "Effect: Transmuting Ingot",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Transmuting Ingot (Cold Iron), Transmuting Ingot (Silver), Transmuting Ingot (Adamantine)\n\nYour selected weapon counts as adamantine, cold iron, and silver.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.PreciousMaterialAdamantine",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:transmuting-ingot-adamantine"
+                ]
+              }
+            ],
+            "value": "adamantine"
+          },
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:transmuting-ingot-cold-iron"
+                ]
+              }
+            ],
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:transmuting-ingot-silver"
+                ]
+              }
+            ],
+            "value": "silver"
+          }
+        ],
+        "flag": "material",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.weapon}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "material-type",
+        "value": "{item|flags.system.rulesSelections.material}"
+      }
+    }
+  ]
+}

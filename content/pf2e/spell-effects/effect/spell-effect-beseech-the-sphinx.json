@@ -1,0 +1,55 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-beseech-the-sphinx",
+  "system": "pf2e",
+  "name": "Spell Effect: Beseech the Sphinx",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Beseech the Sphinx\n\nYou gain a status bonus to one skill and one type of saving throw.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "skills"
+        },
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "saves"
+        },
+        "flag": "save",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.SavingThrow"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "{item|flags.system.rulesSelections.save}",
+          "{item|flags.system.rulesSelections.skill}"
+        ],
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    }
+  ]
+}

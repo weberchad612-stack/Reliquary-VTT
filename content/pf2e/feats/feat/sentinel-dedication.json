@@ -1,0 +1,91 @@
+{
+  "kind": "feat",
+  "slug": "sentinel-dedication",
+  "system": "pf2e",
+  "name": "Sentinel Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "text": "You have trained carefully to maximize the protective qualities of your armor. You become trained in light armor and medium armor. If you already were trained in light armor and medium armor, you gain training in heavy armor as well. Whenever you gain a class feature that grants you expert or greater proficiency in any type of armor (but not unarmored defense), you also gain that proficiency in the armor types granted to you by this feat. If you have a class feature that grants you expert proficiency in unarmored defense and you're 13th level or higher, you also become an expert in the armor types granted to you by this feat.\n\nSentinel",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.LightShort",
+            "predicate": [
+              {
+                "or": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "light-and-medium"
+          },
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.HeavyShort",
+            "predicate": [
+              {
+                "nor": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "heavy"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "sentinel-dedication"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.light.rank",
+        "predicate": [
+          "sentinel-dedication:light-and-medium"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.medium.rank",
+        "predicate": [
+          "sentinel-dedication:light-and-medium"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.heavy.rank",
+        "predicate": [
+          "sentinel-dedication:heavy"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "kind": "creature",
+  "slug": "bythos",
+  "system": "pf2e",
+  "name": "Bythos",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "uncommon",
+  "traits": [
+    "aeon",
+    "monitor"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 39,
+    "hp": 245,
+    "perception": 30,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 26,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 4,
+      "int": 7,
+      "str": 8,
+      "wis": 8
+    },
+    "skills": {
+      "arcana": 29,
+      "athletics": 32,
+      "deception": 25,
+      "intimidation": 25,
+      "nature": 30,
+      "occultism": 29,
+      "religion": 30,
+      "stealth": 26
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "spirit",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 15 (deactivated by spirit)",
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "envisioning"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 37,
+      "attack": 27,
+      "spells": [
+        {
+          "name": "Interplanar Teleport",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Planar Seal",
+          "rank": 7,
+          "ref": "spells:spell/planar-seal"
+        },
+        {
+          "name": "Teleport",
+          "rank": 8,
+          "ref": "spells:spell/teleport"
+        },
+        {
+          "name": "Planar Tether",
+          "rank": 7,
+          "ref": "spells:spell/planar-tether"
+        },
+        {
+          "name": "Planar Tether (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/planar-tether"
+        },
+        {
+          "name": "Haste",
+          "rank": 7,
+          "ref": "spells:spell/haste"
+        },
+        {
+          "name": "Slow",
+          "rank": 6,
+          "ref": "spells:spell/slow"
+        },
+        {
+          "name": "Augury (At Will)",
+          "rank": 8,
+          "ref": "spells:spell/augury"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 32,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+16",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d8",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Envisioning",
+      "category": "interaction",
+      "text": "When a bythos conveys information, it does so wordlessly through psychic projections. This acts as Telepathy with a range of 100 feet but is understandable to all creatures regardless of whether they have a language.\n\nThe meaning to non-aeons can be vague and is often mysterious. A bythos can use this ability to communicate flawlessly with any other aeon on the same plane."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 15 (Deactivated by Spirit)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "spirit"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Confusing Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "emotion",
+        "incapacitation",
+        "mental",
+        "visual"
+      ],
+      "text": "30 feet. A creature that ends its turn in the aura must attempt a DC 34 Will save save. If it fails, it's Confused for 1 round (or 1d4 rounds on a critical failure).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "confusing-gaze",
+            "traits": [
+              "divine",
+              "emotion",
+              "incapacitation",
+              "mental",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Reversion",
+      "actions": "free",
+      "category": "defensive",
+      "traits": [
+        "fortune"
+      ],
+      "text": "Trigger The bythos fails or critically fails a check\n\nFrequency once per day\n\n---\n\nEffect The bythos rerolls the triggering check and takes the better result.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Aging Strikes",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The bythos make two fist Strikes against a single target. If both Strikes hit, the target attempts a DC 37 Fortitude save save. Creatures that don't get weaker with age or don't age are immune (GM's discretion).\n\nIf a creature becomes clumsy 4, drained 4, and enfeebled 4 due to Aging Strikes, it dies of old age.\n\n---\n\nSuccess The creature is unaffected.\n\nFailure The creature becomes Clumsy 1, Drained 1, and Enfeebled 1, or increases each of these conditions by 1. This effect is cumulative with other aging strikes from bythoses, to a maximum of clumsy 4, drained 4, and enfeebled 4.\n\nCritical Failure As failure, but the creature becomes Clumsy 2, Drained 2, and Enfeebled 2, or increases these conditions by 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Focused Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The bythos focuses its gaze on a creature it can see within 30 feet. The target must attempt a save against the bythos's confusing gaze. A bythos can't use this ability against the same creature more than once per turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Flurry",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The bythos makes four fist Strikes. Its multiple attack penalty increases normally with each attack."
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Strike",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "incapacitation",
+        "teleportation"
+      ],
+      "text": "The bythos touches a creature or object to displace it from time. The target attempts a DC 37 Fortitude save save.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess Time flows around the target; the target is Slowed 1 for 1 round.\n\nFailure The target disappears from the present moment and reappears in the same location 1d4 rounds later as if no time had passed for it. If a creature or object occupies that space when the target returns, the target appears in the closest available space to its original location.\n\nCritical Failure As failure, but the target is Slowed 1 for an extra 1d4 rounds after it returns."
+    }
+  ],
+  "text": "The bythos is a guardian of space and time and ever seeks those who misuse planar and temporal magic. A bythos is a roughly humanoid creature with four arms and a body made of swirling clouds and mist. Despite their appearance, their body feels like dry stone. A bythos seeks out paradoxes caused by irresponsible planar or dimensional travelers and repairs breaches where the barriers between planes have become thin or damaged. If the mortals responsible remain in the area and cannot be convinced to cease their activities, the bythos has no qualms about removing them. Using their ability to manipulate time, a bythos might cause an opponent to quickly die of old age as time speeds up around them or cause a target to disappear from time and space."
+}

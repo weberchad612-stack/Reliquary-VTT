@@ -1,0 +1,74 @@
+{
+  "kind": "feat",
+  "slug": "dire-growth",
+  "system": "pf2e",
+  "name": "Dire Growth",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "archetype",
+    "primal"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Werecreature Dedication",
+    "your animal shape is not Small"
+  ],
+  "text": "You transform into a primal reflection of your animal shape. If you aren't already in your animal shape from Werecreature Dedication, you Change Shape into it. As long as you stay in animal shape, you have the effects of Enlarge.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "dire-growth",
+        "predicate": [
+          "change-shape:animal"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "change-shape:animal",
+          "dire-growth"
+        ],
+        "reach": {
+          "override": "10"
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "change-shape:animal",
+          "dire-growth"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "change-shape:animal",
+        "dire-growth"
+      ]
+    }
+  ]
+}

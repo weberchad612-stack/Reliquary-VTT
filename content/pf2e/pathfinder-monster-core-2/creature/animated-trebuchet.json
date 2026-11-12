@@ -1,0 +1,168 @@
+{
+  "kind": "creature",
+  "slug": "animated-trebuchet",
+  "system": "pf2e",
+  "name": "Animated Trebuchet",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 36,
+    "hp": 200,
+    "perception": 21,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 19,
+      "will": 17
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 8,
+      "dex": 2,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 24
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(32 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Arm",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 27,
+      "traits": [
+        "brutal",
+        "magical"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d10+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 14)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated trebuchet has Hardness. This Hardness reduces any damage the trebuchet takes by an amount equal to the Hardness. Once an animated trebuchet is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 32.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Launch",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The animated trebuchet has a creature Grabbed in its arm.\n\n---\nEffect The animated trebuchet attempts an Athletics check check against the grabbed creature's Fortitude DC.\n\nOn a success, it fires the creature up to 40 feet in height and up to 120 feet away. The creature takes 4d12 bludgeoning damage plus the appropriate falling damage. If the flung creature lands on another creature, the creature it lands on takes the same amount of bludgeoning damage (DC 33 basic Reflex save save).\n\nOn a successful Launch, the animated trebuchet must Interact to reposition its arm into the proper position before it can Launch again."
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Large or smaller, arm, DC 33 basic Reflex save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Large armies sometimes pay exorbitant fees to animate their siege weapons.\n\n---\n\nMany animated objects have useful functions but become dangerous when left uncontrolled."
+}

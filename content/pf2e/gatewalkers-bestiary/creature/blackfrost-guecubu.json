@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "blackfrost-guecubu",
+  "system": "pf2e",
+  "name": "Blackfrost Guecubu",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "cold",
+    "earth",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 110,
+    "perception": 15,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 16,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 4,
+      "int": 4,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 18,
+      "intimidation": 15,
+      "stealth": 16
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "bludgeoning"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "speed": "tundra glide"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Shape Stone (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/shape-stone"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "blackfrost-dead-blackfrost",
+        "wrathful-misfortune"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blackfrost",
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "curse",
+        "disease",
+        "occult"
+      ],
+      "text": "This affliction can't be reduced below stage 1, nor the damage from it healed, until successfully treated with Cleanse Affliction or a similar effect; the affliction can then be removed as a normal disease. A creature that dies from cold damage while cursed with blackfrost rises as a blackfrost dead after 24 hours. Blackfrost has a counteract rank of 10.\n\nSaving Throw DC 27 Fortitude save\n\nStage 1 4d6 cold (1 minute)\n\nStage 2 weakness to cold 5 and Drained 1 (1 day)\n\nStage 3 weakness to cold 10 and Drained 2 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Break Ground",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "earth"
+      ],
+      "text": "The guecubu stomps, and the ground breaks and ripples in a 30-foot emanation, erupting in razor-sharp, crisscrossing spikes of rock that deal 3d8 piercing damage to creatures in the area (DC 26 basic Reflex save save).\n\nThe area becomes difficult terrain and hazardous terrain, with each square dealing 3 piercing damage to a creature that moves through it. A guecubu is immune to these effects.\n\nGround under the effects of a Consecrate ritual or a Circle of Protection spell tuned against evil or chaos can't be affected by this ability."
+    },
+    {
+      "kind": "ability",
+      "name": "Shattering Death",
+      "category": "offensive",
+      "traits": [
+        "cold"
+      ],
+      "text": "When the blackfrost guecubu is destroyed, it shatters and fills the air around it with a cloud of razor-sharp shards of ice. Creatures in a 10-foot emanation take 8d8 cold (DC 26 basic Reflex save). Creatures that critically fail this save also take 1d6 bleed."
+    },
+    {
+      "kind": "ability",
+      "name": "Shove into Ice",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "earth"
+      ],
+      "text": "When the blackfrost guecubu successfully Shoves a creature into an ice or frozen earth barrier, the target must succeed at a DC 26 Reflex save save or become merged with the barrier, with the effects of One with Stone until the target Escapes.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "skill-check",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "action:shove"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tundra Glide",
+      "category": "offensive",
+      "text": "The blackfrost guecubu can Burrow through any frozen earth, ice, or snow, not including rock. When it does so, the blackfrost guecubu moves at its full burrow Speed, leaving no tunnels or signs of its passing."
+    },
+    {
+      "kind": "ability",
+      "name": "Wrathful Misfortune",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "curse"
+      ],
+      "text": "A creature damaged by a guecubu must succeed at a DC 26 Will save save or become cursed with consummate bad luck. The creature becomes Clumsy 2.\n\nEach time that creature rolls initiative, on their next roll they must roll twice and use the worse result; this is a misfortune effect."
+    }
+  ],
+  "text": "Sometimes an individual performs acts of horror so unspeakable that the earth they walk on becomes imprinted by their evil. With such villains, even slaying them and scattering their bones can't rid the world of their vile presence. Their souls rise again as guecubus, gruesome skeletons made of scorched bones, rotting flesh, and befouled earth. Guecubus roams the land seeking those they deem responsible for their death.\n\nA guecubu remembers what was done to them, and the memories of their supposed mistreatment fuel their quest for revenge. Guecubus are well-equipped to exact such vengeance. Along with monstrous power and the ability to move through earth, they retain all the cunning they had in life. These creatures are known to kill their enemies one by one, leaving no trace of their presence behind save pebbles and dust."
+}

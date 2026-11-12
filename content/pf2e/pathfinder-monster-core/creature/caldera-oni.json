@@ -1,0 +1,264 @@
+{
+  "kind": "creature",
+  "slug": "caldera-oni",
+  "system": "pf2e",
+  "name": "Caldera Oni",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "fire",
+    "giant",
+    "humanoid",
+    "oni"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 35,
+    "hp": 315,
+    "perception": 26,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 25,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 6,
+      "dex": 6,
+      "int": 0,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 23,
+      "athletics": 27,
+      "crafting": 25,
+      "deception": 27,
+      "intimidation": 27
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "spirit",
+          "value": 15
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 34,
+      "attack": 26,
+      "spells": [
+        {
+          "name": "Invisibility (At Will, Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Katana",
+      "ref": "equipment:item/katana",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Katana",
+      "attack": 30,
+      "traits": [
+        "deadly-d8",
+        "magical",
+        "two-hand-d10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Bean Panic",
+      "category": "defensive",
+      "text": "Oni are curiously afraid of beans, especially as the seasons begin to change. If a creature Interacts to throw a handful of beans at the oni, the oni becomes Frightened 2. While frightened this way, their weakness to spirit damage is increased by 5. The oni then becomes immune to bean panic for 24 hours.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bean-panic",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "bean-panic"
+            ],
+            "type": "spirit",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Stoke the Volcano",
+      "category": "defensive",
+      "text": "When the caldera oni is critically hit, the flames of anger grow within them. They recharge their choice of Ash Form or Dance of Burning War."
+    },
+    {
+      "kind": "ability",
+      "name": "Ash Form",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "Frequency once per minute\n\n---\n\nEffect The caldera oni transforms into a cloud of sparking volcanic ash and then Flies. This movement doesn't trigger reactions, and the caldera oni can move through small gaps and spaces occupied by other creatures.\n\nThe caldera oni then returns to its physical form, affected by a 4th-rank Enlarge spell with a duration of 1d4 rounds.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The caldera oni can take on the appearance of any Medium or Large humanoid creature. This doesn't change their Speed or their attack and damage bonuses with their Strikes but might change the damage type their Strikes deal (typically to bludgeoning).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "oni",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Oni",
+                "value": "oni"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Medium",
+                "value": "humanoid-medium"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Large",
+                "value": "humanoid-large"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid-medium"
+            ],
+            "value": "medium"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dance of Burning War",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Frequency once per minute\n\n---\n\nEffect The oni's heat becomes overwhelming, causing them to breathe out superheated ash and dance across the battlefield. The caldera oni Strides, then makes a melee Strike. If the Strike hits, the oni can Stride again and Strike again, repeating this until they have either missed with a Strike or made three Strikes total.\n\nThe oni then finishes the dance by calling down volcanic lightning through the cloud of ash. Each creature hit by a Strike during the dance takes 3d6 fire damage and 3d6 electricity damage with a DC 34 basic Reflex save save.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    }
+  ],
+  "text": "As hot-blooded as the lava that floods their homes, caldera oni have an incredible appetite for the thrill of war. While they engage in battle to conquer and control others, caldera oni also love the thrill of combat, fighting for the sheer joy of it. Presenting a caldera oni with a true challenge can potentially earn their mercy and an offer to serve at their side.\n\n---\nOni are large, brutal creatures originating in Tian Xia who resemble humanoids with brightly colored skin, tusks, and horns. Though commonly mistaken for fiends, the first oni were originally kami, tutelary nature spirits. These kami suffered a terrible trauma, losing their sacred wards to dramatic disasters or the callousness of others, and as a result transformed into the violent creatures they are today. While some believe that oni can be spiritually placated through proper ritual worship that transforms them back into kami, many of these would-be saviors fall to oni's notorious brute strength, flesh-rending teeth, and command of storms.\n\nOni possess the ability to disguise themselves as other humanoids. They are rarely creative in their disguises, often choosing a specific appearance similar to their oni form and sticking with it. This simplicity catches many by surprise, however, as people assume oni are limited to a single alternate form, which is by no means the case."
+}

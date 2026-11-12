@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "ofalth-zombie",
+  "system": "pf2e",
+  "name": "Ofalth Zombie",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "rare",
+  "traits": [
+    "aberration",
+    "evil",
+    "mindless",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 22,
+    "hp": 190,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 11,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 3,
+      "int": -5,
+      "str": 7,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 20
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 18,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "wretched-weeps"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fling Offal",
+      "attack": 17,
+      "range": 30,
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "wretched-weeps"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Corpse Wallow",
+      "category": "defensive",
+      "text": "The ofalth zombie gains fast healing 2 as long as it is in the Catacombs or another area with a high concentration of dead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "corpse-wallow"
+            ],
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "corpse-wallow",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rotting Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "disease"
+      ],
+      "text": "10 feet. The zombie emits an aura of rot and disease that causes wounds to fester and turn sour. Any living creature that starts its turn within 10 feet of the Ofalth Zombie and is not at full Hit Points takes 2d6 untyped damage as its wounds fester.\n\nCreatures that take a critical hit from the Ofalth Zombie also take this damage immediately.\n\n---\n\nNote: This ability lists a DC 24 in the source, but the glossary ability lacks a save to make.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "rotting-aura",
+            "traits": [
+              "disease"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "untyped",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "defensive",
+      "text": "The ofalth zombie is permanently Slowed 1 and can't use reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bury in Offal",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The ofalth zombie makes a fling offal Strike and compares the attack roll result to the AC of any foes within the area of a 15-foot cone emanating from the ofalth zombie. This counts as two attacks for the ofalth zombie's multiple attack penalty.\n\nThe ofalth zombie can't use Bury in Offal again until it moves at least 10 feet to a different space."
+    },
+    {
+      "kind": "ability",
+      "name": "Wretched Weeps",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 22 Fortitude save\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d8 bleed every hour and Enfeebled 1 (1 day)\n\nStage 3 2d8 bleed every hour and Enfeebled 2 (1 day)"
+    }
+  ]
+}

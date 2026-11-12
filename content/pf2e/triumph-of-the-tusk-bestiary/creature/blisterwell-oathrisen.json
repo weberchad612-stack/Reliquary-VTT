@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "blisterwell-oathrisen",
+  "system": "pf2e",
+  "name": "Blisterwell Oathrisen",
+  "source": {
+    "title": "Pathfinder #208: Hoof, Cinder, and Storm",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 110,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 1,
+      "int": 0,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 17,
+      "deception": 15,
+      "intimidation": 15,
+      "warfare-lore": 11
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril",
+      "orcish"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 18,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+9",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "free-hand",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Whisper",
+      "attack": 15,
+      "traits": [
+        "sonic"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "4d6",
+          "type": "sonic"
+        }
+      ],
+      "effects": [
+        "curse-of-whispers"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Armored Disguise",
+      "category": "defensive",
+      "text": "A Blisterwell oathrisen's undead nature is not obvious. While wearing armor, an oathrisen gains a +4 circumstance bonus to its Deception checks to Impersonate a living orc and does not require a disguise kit to do so. Creatures that don't notice the disguise are not subject to the oathrisen's Frightful Presence. An oathrisen can abandon its disguise as a free action with the manipulate trait when it attempts to Demoralize a creature.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "action:impersonate:orc"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drop the Mask",
+      "category": "defensive",
+      "text": "Once a Blisterwell oathrisen is reduced to less than half its Hit Points, portions of its armor break off. This reduces its AC by 2, increases its Speed by 5 feet, and gives it weakness 5 to vitality damage. This also immediately exposes nearby creatures to the oathrisen's frightful presence.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "land-speed",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "vitality",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "30 feet. DC 25 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of Whispers",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine"
+      ],
+      "text": "A creature muffled by this curse cannot speak above a whisper. The creature must succeed at a DC 25 Fortitude save save to use actions with the auditory trait\n\nSaving Throw DC 25 Will save\n\nStage 1 muffled for 1 minute (1 minute)\n\nStage 2 muffled for 1 minute (1 minute)\n\nStage 3 muffled for 1 day (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Wound Ripper",
+      "category": "offensive",
+      "text": "A Blisterwell oathrisen's Strikes against creatures with the Wounded condition or taking persistent bleed damage deal 1d6 additional precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "target:condition:wounded",
+                  "target:condition:persistent-damage:bleed"
+                ]
+              }
+            ],
+            "selector": "melee-strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Most undead are reanimated without consent, but those known as oathrisen arise willingly—at least at first. These loyal subordinates swear themselves to a cause or leader, vowing to assist even in death. Within days of their death, their oath reanimates them and restores most of their memories. In theory, an oathrisen's existence lasts no more than a year. In practice, the cause's leader might demand their service indefinitely. If denied their afterlife too long, some oathrisen turn on their former masters, afterward either becoming independent or destroying themselves.\n\nThe oathrisen presented here is a variant that frequents Blisterwell during the events of this Adventure Path. Other regions and traditions might create oathrisen with different abilities.\nKnight By Another Name\nAn oathrisen resembles a graveknight—both being heavily armored, corporeal, undead warriors. Yet a graveknight arises through its own unholy ambitions and is inextricably bound to its armor. By comparison, an oathrisen reanimates out of loyalty and is not intrinsically malicious. Some oathrisen even resent graveknights, taking special joy in destroying these unholy copycats."
+}

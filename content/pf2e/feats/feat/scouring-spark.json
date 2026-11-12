@@ -1,0 +1,139 @@
+{
+  "kind": "feat",
+  "slug": "scouring-spark",
+  "system": "pf2e",
+  "name": "Scouring Spark",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "mythic"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Ascended Celestial Dedication",
+    "Channel Divine Spark"
+  ],
+  "text": "When you unleash your divine spark, you become a being of living light that scours away the darkness. While Channeling your Divine Spark, you become immune to the Confused and Frightened conditions. Any creature that touches you or damages you with an unarmed melee attack or a non-reach melee weapon takes 3d6 fire damage, your unarmed attacks deal 1d6 additional fire damage, and your fire spells deal one additional die of fire damage (of the same damage die the spell uses). This damage is doubled against creatures with the aberration, fiend, or undead trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "self:effect:channel-divine-spark"
+        ],
+        "selector": "unarmed-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:fire"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "spell-damage"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "dice:slug:scouring-spark",
+          {
+            "or": [
+              "target:trait:aberration",
+              "target:trait:fiend",
+              "target:trait:undead"
+            ]
+          }
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "unarmed-damage"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "key": "note",
+      "selector": [
+        "unarmed-damage",
+        "spell-damage"
+      ],
+      "text": "PF2E.SpecificRule.AscendedCelestial.ScouringSpark.DoubleDamageNote",
+      "when": [
+        "self:effect:channel-divine-spark",
+        {
+          "or": [
+            {
+              "and": [
+                "action:strike",
+                {
+                  "or": [
+                    "target:trait:aberration",
+                    "target:trait:fiend",
+                    "target:trait:undead"
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                "item:type:spell",
+                "item:trait:fire"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.AscendedCelestial.ScouringSpark.DamageReceivedNote",
+      "when": [
+        "self:effect:channel-divine-spark",
+        {
+          "not": "item:trait:reach"
+        },
+        "item:melee"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.AscendedCelestial.ScouringSpark.DoubleDamageNote",
+      "when": [
+        "self:effect:channel-divine-spark",
+        {
+          "not": "item:trait:reach"
+        },
+        "item:melee",
+        {
+          "or": [
+            "origin:trait:aberration",
+            "origin:trait:fiend",
+            "origin:trait:undead"
+          ]
+        }
+      ]
+    }
+  ]
+}

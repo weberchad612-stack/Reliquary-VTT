@@ -1,0 +1,109 @@
+{
+  "kind": "feat",
+  "slug": "ruffian",
+  "system": "pf2e",
+  "name": "Ruffian",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "rogue"
+  ],
+  "category": "classfeature",
+  "text": "You prefer the direct approach: strong-arming or intimidation. You might be an enforcer for organized crime, a highway bandit, or a noble who bullies others with threats of your family's power.\n\nYou use whatever tools you have to get the job done. You can deal sneak attack damage with any weapon, not just the weapons listed in the sneak attack class feature. This benefit doesn't apply to a simple weapon with a damage die greater than d8 or a martial or advanced weapon with a damage die greater than d6. (Apply any abilities that alter the damage die size first.) Critical hits you make with these weapons gain the weapon's critical specialization benefit if the target is Off-Guard to you.\n\nYou're trained in Intimidation and medium armor. You can choose Strength as your key attribute. When you gain light armor expertise, you also gain expert proficiency in medium armor, and when you gain light armor mastery, you also gain master proficiency in medium armor.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "item:category:simple",
+                  {
+                    "lte": [
+                      "item:damage:die:faces",
+                      8
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "or": [
+                      "item:category:martial",
+                      "item:category:advanced"
+                    ]
+                  },
+                  {
+                    "lte": [
+                      "item:damage:die:faces",
+                      6
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "sneak-attack"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.medium.rank",
+        "predicate": [
+          "feature:light-armor-expertise"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.medium.rank",
+        "predicate": [
+          "feature:light-armor-mastery"
+        ],
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          "item:tag:sneak-attack",
+          "target:condition:off-guard",
+          {
+            "not": "item:category:unarmed"
+          }
+        ]
+      }
+    }
+  ]
+}

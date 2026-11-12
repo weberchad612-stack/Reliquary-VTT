@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "saggorak-poltergeist",
+  "system": "pf2e",
+  "name": "Saggorak Poltergeist",
+  "source": {
+    "title": "Pathfinder #148: Fires of the Haunted City",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "incorporeal",
+    "lawful",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 180,
+    "perception": 20,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 25,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 7,
+      "int": -1,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 25,
+      "intimidation": 24,
+      "stealth": 25
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "dwarven",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "rejuventation"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 33,
+      "attack": 27,
+      "spells": [
+        {
+          "name": "Telekinetic Haul (At Will)",
+          "rank": 6,
+          "ref": "spells:spell/telekinetic-haul"
+        },
+        {
+          "name": "Telekinetic Maneuver (At Will)",
+          "rank": 6,
+          "ref": "spells:spell/telekinetic-maneuver"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Telekinetic Object",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "occult"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "4d12",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "interaction",
+      "text": "The Saggorak poltergeist cannot travel more than 120 feet from area F2."
+    },
+    {
+      "kind": "ability",
+      "name": "Natural Invisibility",
+      "category": "defensive",
+      "text": "A poltergeist is naturally Invisible. It becomes visible only when it uses Frighten."
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When a ghost is destroyed, it re-forms after 2d4 days within the location it's bound to, fully healed. A ghost can be permanently destroyed only if someone determines the reason for its existence and sets right whatever prevents the spirit from resting."
+    },
+    {
+      "kind": "ability",
+      "name": "Telekinetic Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature approaches within 10 feet of the poltergeist.\n\n---\n\nEffect The poltergeist makes a telekinetic object Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Frighten",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "Requirement The poltergeist must be Invisible.\n\n---\n\nEffect The poltergeist becomes visible, appearing as a skeletal, ghostlike humanoid. Each creature within 30 feet must attempt a DC 33 Will save save, becoming Frightened 2 on a failure. On a critical failure, it's also Fleeing for as long as it's frightened. On a success, the creature is temporarily immune for 1 minute.\n\nAt the start of its next turn, the poltergeist becomes invisible again."
+    },
+    {
+      "kind": "ability",
+      "name": "Telekinetic Storm",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult"
+      ],
+      "text": "The poltergeist telekinetically throws numerous small and jagged chunks of stone rubble, either spreading them out among multiple foes or directing them at one target.\n\n- When this effect is spread out among multiple foes, the poltergeist makes a telekinetic object Strike at a -2 penalty against each creature within 30 feet. These count as one attack for the poltergeist's multiple attack penalty, and the penalty doesn't increase until after all the attacks.\n\n- When this effect has only one target, the poltergeist makes a telekinetic object Strike against the target, and the damage increases to 6d12. It deals 2d12 untyped damage on a failure, and no damage on a critical failure.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "telekinetic-storm",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.PoltergeistTelekineticStorm.MultipleTargets",
+                "value": "multi"
+              },
+              {
+                "label": "PF2E.NPCAbility.PoltergeistTelekineticStorm.SingleTarget",
+                "value": "single"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "telekinetic-object-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "telekinetic-storm:multi"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "telekinetic-storm:single"
+            ],
+            "selector": "telekinetic-object-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

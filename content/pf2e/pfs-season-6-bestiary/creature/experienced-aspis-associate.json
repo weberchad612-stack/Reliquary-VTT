@@ -1,0 +1,185 @@
+{
+  "kind": "creature",
+  "slug": "experienced-aspis-associate",
+  "system": "pf2e",
+  "name": "Experienced Aspis Associate",
+  "source": {
+    "title": "Pathfinder Society Quest #25: The Greengold Dilemma",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 9,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 3,
+      "int": 1,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 10,
+      "deception": 10,
+      "intimidation": 10,
+      "society": 9,
+      "guild-lore": 9
+    },
+    "speeds": {
+      "land": 25
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Simple injury poison",
+      "type": "consumable",
+      "quantity": 6
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 10,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Jack of All Actions",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Associate attempts an Acrobatics, Athletic, Deception, or Intimidation check that uses no more than one action against a creature then makes a strike against the same creature. If the skill action succeeded the strike is made with a +1 circumstance bonus to the attack roll and deals an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "jack-of-all-actions",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "jack-of-all-actions"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "jack-of-all-actions"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Weapon",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The aspis associate applies a contact poison or injury poison to one of their weapons; if they have a free hand, they can Interact to draw a poison as part of this action. They begin combat with a simple injury poison (as from the Poison Weapon rogue feat) already applied to their rapier and one dagger.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "simple-injury-poison",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "simple-injury-poison"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

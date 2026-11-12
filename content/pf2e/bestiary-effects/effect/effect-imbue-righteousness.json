@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "effect-imbue-righteousness",
+  "system": "pf2e",
+  "name": "Effect: Imbue Righteousness",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Your strikes with that weapon gain the holy trait and deal an additional 1d6 spirit damage to unholy creatures.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "Cold Iron Elven Branched Spear",
+            "value": "item:slug:elven-branched-spear"
+          },
+          {
+            "label": "Composite Shortbow",
+            "value": "item:slug:composite-shortbow"
+          },
+          {
+            "label": "Fist",
+            "value": "item:slug:fist"
+          }
+        ],
+        "flag": "demonbaneWeapons",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "{item|flags.system.rulesSelections.demonbaneWeapons}",
+          "target:trait:unholy"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "melee",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "{item|flags.system.rulesSelections.demonbaneWeapons}"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "kind": "effect",
+  "slug": "effect-brewers-regret",
+  "system": "pf2e",
+  "name": "Effect: Brewer's Regret",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Brewer's Regret, Brewer's Regret (Greater)\n\nYou gain an item bonus to saves against death and void effects.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:brewers-regret",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Brewer's Regret"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:brewers-regret-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Brewer's Regret (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "brewers-regret"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "brewers-regret-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:death",
+            "item:trait:void"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "brewers-regret:brewers-regret-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "brewers-regret-bonus",
+        "type": "item",
+        "value": 3
+      }
+    }
+  ]
+}

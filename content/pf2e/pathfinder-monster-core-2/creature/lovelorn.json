@@ -1,0 +1,263 @@
+{
+  "kind": "creature",
+  "slug": "lovelorn",
+  "system": "pf2e",
+  "name": "Lovelorn",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 5,
+      "int": -2,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "occultism": 8,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "mental",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "Can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Illusory Creature (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/illusory-creature"
+        },
+        {
+          "name": "Invisibility",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Fear",
+          "rank": 2,
+          "ref": "spells:spell/fear",
+          "uses": 3
+        },
+        {
+          "name": "Figment",
+          "rank": 1,
+          "ref": "spells:spell/figment"
+        },
+        {
+          "name": "Illusory Object (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/illusory-object"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 13,
+      "traits": [
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed"
+        }
+      ],
+      "effects": [
+        "cynics-curse"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gory Tendril",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Perception to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Gloom Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "illusion",
+        "mental",
+        "occult"
+      ],
+      "text": "60 feet. A lovelorn's presence instills unease and turns the air cold, dark, and stale. Creatures within the aura take a -1 circumstance penalty to saving throws made to resist emotion effects.\n\nIf the lovelorn makes a place home for a week or more, that location can become suffused with this magic even outside the lovelorn's aura, lasting until the lovelorn leaves or is destroyed.\n\nEffect: Gloom Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Gloom Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 60,
+            "slug": "gloom-aura",
+            "traits": [
+              "emotion",
+              "illusion",
+              "mental",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Skitter Away",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature ends its movement in a space adjacent to the lovelorn\n\n---\n\nEffect The lovelorn Strides or Climbs 10 feet away from the triggering creature. This movement does not trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cynic's Curse",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "emotion",
+        "mental",
+        "occult"
+      ],
+      "text": "A creature hit by a lovelorn's fangs Strike must attempt a DC 19 Will save save as it grows morose and listless. If the creature would be affected by a Calm spell, that spell attempts to counteract this curse instead of having its normal effect.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess For 1 minute, the target can't benefit from helpful emotion effects, but can still be affected by harmful emotion effects.\n\nFailure As success, plus the target is Fatigued for the same duration.\n\nCritical Failure As failure, but the curse's effects are permanent."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "spell",
+      "name": "Create Undead (doesn't require secondary casters)",
+      "rank": 2,
+      "ref": "spells:spell/create-undead"
+    }
+  ],
+  "text": "A particularly macabre form of undead, these spiderlike creatures resemble still-beating hearts with rib bones for legs and tendrils of gore dangling beneath. Their twisted forms hint at their ghastly origin, as these undead form from those who die tragic deaths in service to toxic love: star-crossed lovers who die rather than accept a life apart from one another, rejected suitors whose unrequited affections warp into malice, and other victims of tragic relationships both romantic and otherwise. Any of these might spawn a lovelorn in death, their anguish and fixation on their broken heart causing the organ to animate.\n\nA freshly spawned lovelorn often seeks out those it knew in life, stalking and tormenting them or, in some cases, those around them. In undeath, they gain an understanding of emotions and how to manipulate them, cultivating the misery, anger, and cruelty they thrive upon. Typically, these undead long to enact vengeance upon those they feel drove them to their tragic fates, although in rare cases they may instead act as dark guardians, fixating on a particular loved one and \"protecting\" them by visiting misery upon anyone who slights them."
+}

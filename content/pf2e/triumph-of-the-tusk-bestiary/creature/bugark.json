@@ -1,0 +1,234 @@
+{
+  "kind": "creature",
+  "slug": "bugark",
+  "system": "pf2e",
+  "name": "Bugark",
+  "source": {
+    "title": "Pathfinder #209: Destroyer's Doom",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "unique",
+  "traits": [
+    "cold",
+    "mummy",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 211,
+    "perception": 22,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 18,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 5,
+      "dex": 3,
+      "int": 3,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "deception": 22,
+      "intimidation": 23,
+      "occultism": 21,
+      "religion": 23,
+      "stealth": 20
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "necril",
+      "orcish"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "snow vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Maul",
+      "ref": "equipment:item/maul",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Splint Mail",
+      "ref": "equipment:item/splint-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Zagresh",
+      "ref": "equipment:item/religious-symbol-silver",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Maul",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+5",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snow Vision",
+      "category": "interaction",
+      "text": "Bugark ignores the Concealed condition from falling snow."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Bugark can use Reactive Strike when a creature within his reach uses a concentrate action, in addition to its normal trigger. He can disrupt triggering concentrate actions, and it disrupts actions on any hit, not just a critical hit.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frozen Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "concentrate",
+        "divine"
+      ],
+      "text": "Bugark exhales a 60-foot cone of razor-sharp ice that deals 6d6 cold damage and 5d6 slashing damage (DC 30 basic Reflex save save). Bugark can't use Frozen Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Bugark makes a melee Strike. If he hits and deals damage, the target is Frightened 1, or Frightened 2 on a critical hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Smite",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Bugark chooses one enemy he can see. Until the start of his next turn, his Strikes against that foe using his maul deal an extra 6 spirit damage with the unholy trait. If the chosen enemy attacks him before the start of his next turn, the duration extends to the end of that enemy's next turn. If the enemy continues to attack him, the duration continues to extend.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "smite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "maul-damage",
+          "type": "untyped",
+          "value": 6,
+          "when": [
+            "smite"
+          ],
+          "damageType": "spirit"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:maul"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "smite"
+            ],
+            "property": "traits",
+            "value": "unholy"
+          }
+        }
+      ]
+    }
+  ]
+}

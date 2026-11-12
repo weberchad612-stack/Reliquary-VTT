@@ -1,0 +1,331 @@
+{
+  "kind": "creature",
+  "slug": "verex-that-was",
+  "system": "pf2e",
+  "name": "Verex-That-Was",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 24,
+  "rarity": "unique",
+  "traits": [
+    "aberration",
+    "mythic"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 51,
+    "hp": 550,
+    "perception": 42,
+    "saves": {
+      "fortitude": 42,
+      "reflex": 38,
+      "will": 36
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 11,
+      "dex": 9,
+      "int": 7,
+      "str": 12,
+      "wis": 7
+    },
+    "skills": {
+      "athletics": 45,
+      "intimidation": 45
+    },
+    "speeds": {
+      "land": 50,
+      "burrow": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "orcish"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "death-effects",
+        "disease",
+        "mental",
+        "poison"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 25
+        },
+        {
+          "type": "fire",
+          "value": 25
+        },
+        {
+          "type": "physical",
+          "value": 20,
+          "except": "holy"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 30 (deactivated by sloughstone weapons)",
+      "saves": "mythic resilience (all saves)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 44,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "5d10+22",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "bloodboils"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 44,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+22",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "bloodboils",
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 44,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-20",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+22",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "bloodboils"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Teeth",
+      "attack": 42,
+      "traits": [
+        "magical",
+        "unholy"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "5d6+16",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration (Deactivated by Sloughstone Weapons)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Hit with a Sloughstone Weapon",
+            "option": "deactivate-regeneration",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "not": "deactivate-regeneration"
+              }
+            ],
+            "type": "regeneration",
+            "value": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "150 feet. DC 45 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 150,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Immunity",
+      "category": "defensive",
+      "text": "Verex-That-Was is immune to harmful spells cast by non-mythic creatures, Strikes made with non-mythic weapons, and unarmed Strikes from non-mythic characters."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Resilience",
+      "category": "defensive",
+      "text": "Verex-That-Was treats his saving throws with the associated save as one step better than they actually are (so a critical failure is a failure, a failure is a success, and a success is a critical success).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Undying Myth",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Cost all the creature's Mythic Points\n\nTrigger Verex-That-Was would die and has at least 1 Mythic Point\n\n---\nEffect Verex remains standing and conscious, and 50% of its maximum Hit Points."
+    },
+    {
+      "kind": "ability",
+      "name": "Battlefield Eruption",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "mythic",
+        "teleportation"
+      ],
+      "text": "Cost 1 Mythic Point\n\n---\nEffect Verex-That-Was burrows into the ground, reemerging anywhere on the same plane where either he or his worshippers have previously killed at least 10 sapient creatures in battle. A fountain of gore and shattered bone erupts from the ground when Verex arrives, dealing 16d10 piercing damage in a 30-foot emanation (DC 48 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodboils",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Wounds caused by direct contact with Verex-That-Was erupt into painful, blood-filled boils. A creature struck by Verex-That-Was's jaws or tail must succeed at a DC 45 Fortitude save or gain weakness 10 to physical damage for 1 day as the boils explode messily each time the creature sustains another wound. The bloodboils can be counteracted with a 3rd-rank (or higher) Cleanse Affliction spell, but the disease also ends if the victim receives magical healing that brings them to their Hit Point maximum."
+    },
+    {
+      "kind": "ability",
+      "name": "Leap into the Fray",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Verex-That-Was Leaps up to 20 feet horizontally and up to 10 feet vertically and then makes one claw Strike, one jaws Strike, and one tail Strike in any order. If Verex-That-Was spends 1 Mythic Point as part of this action, he doubles the distances he can Leap and each creature he lands adjacent to is Off-Guard until the end of his turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Power",
+      "category": "offensive",
+      "text": "The creature has a pool of 3 Mythic Points, and can spend those Mythic Points for any of the actions it has."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Huge, 4d10+10 bludgeoning, Rupture 50\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Symphony of Pain",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger A creature within Verex-That-Was's frightful presence damages Verex-That-Was\n\n---\nEffect Verex unleashes an echo of psychic pain throughout his vicinity, inflicting mental damage equal to half of the damage he sustained on all creatures, friend or foe, within 150 feet (DC 45 basic Fortitude save save)."
+    }
+  ],
+  "text": "A Bloody Spawn of Rovagug\nOnce an orc god, Verex-That-Was has been reshaped into a towering creature of mangled flesh and bone."
+}

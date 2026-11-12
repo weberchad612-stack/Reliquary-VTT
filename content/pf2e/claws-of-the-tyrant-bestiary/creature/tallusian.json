@@ -1,0 +1,280 @@
+{
+  "kind": "creature",
+  "slug": "tallusian",
+  "system": "pf2e",
+  "name": "Tallusian",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "azata",
+    "celestial",
+    "holy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 76,
+    "perception": 12,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 12,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 11,
+      "crafting": 13,
+      "nature": 13,
+      "stealth": {
+        "value": 11,
+        "special": [
+          {
+            "value": 14,
+            "label": "in ruins",
+            "when": [
+              "in-ruins"
+            ]
+          }
+        ]
+      },
+      "survival": 13,
+      "architecture-lore": 14
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "empyrean",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        },
+        {
+          "type": "unholy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 22,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Shape Stone",
+          "rank": 4,
+          "ref": "spells:spell/shape-stone"
+        },
+        {
+          "name": "Humanoid Form (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/humanoid-form"
+        },
+        {
+          "name": "Pummeling Rubble",
+          "rank": 1,
+          "ref": "spells:spell/pummeling-rubble"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Quill",
+      "attack": 14,
+      "traits": [
+        "agile"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Crumbling Ground",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "earth"
+      ],
+      "text": "The tallusian slaps their tail against the earth, creating a vibration at the precise frequency needed to shake the ground in a 10-foot burst within 30 feet. The area becomes difficult terrain for 24 hours. Any creature in the area must attempt a DC 22 Reflex save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is Off-Guard until the start of its next turn.\n\nFailure The creature falls Prone.\n\nCritical Failure As failure, plus the creature takes 1d6 bludgeoning damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Rubble",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the tallusian appears to be a normal pile of broken rubble. It has an automatic result of 31 (34 in ruins) on Deception check checks and DCs to pass as a pile of rubble.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "rubble",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "rubble"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Tallusian.Rubble.RollOptionLabel",
+            "option": "in-ruins",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "deception-dc",
+            "deception"
+          ],
+          "type": "untyped",
+          "value": 19,
+          "slug": "rubble-bonus",
+          "when": [
+            "rubble"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SubstituteRoll",
+            "predicate": [
+              "rubble"
+            ],
+            "required": true,
+            "selectors": [
+              "deception-dc",
+              "deception"
+            ],
+            "slug": "rubble-bonus",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "rubble",
+              "in-ruins"
+            ],
+            "selectors": [
+              "deception-dc",
+              "deception"
+            ],
+            "slug": "rubble-bonus",
+            "value": 22
+          }
+        },
+        {
+          "key": "note",
+          "selector": "deception",
+          "text": "{item|description}",
+          "when": [
+            "rubble"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tail Spin",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The tallusian spins in place, sweeping their tail to knock down their foes. Each adjacent foe takes 2d6+6 bludgeoning damage (DC 22 basic Reflex save save). Also on a failed save, the target is knocked Prone. Afterward, the tallusian becomes Clumsy 1 for 1 round."
+    }
+  ],
+  "text": "While many celestials are drawn to what is, tallusians care about what was. Compelled to protect the remnants of fallen civilizations, tallusians often work alongside dryads and other creatures of nature, helping restore the land around their ruins while fighting off evil influences seeking to claim the abandoned structures for themselves. Though few know more about the ancient civilizations they protect than the tallusians themselves, they rarely make distinctions between holy sites and those used for nefarious purposes. To a tallusian, any building, regardless of its history, can be repurposed into something new.\n\nPhysically, tallusians resemble oversized red pandas, except they have six legs, piercing blue eyes, and quills of sharpened stone growing along their backs and from their bushy tails. At rest, tallusians appear virtually indistinguishable from the buildings they protect, masquerading as heaps of rubble until they move. They also possess the ability to adopt a humanoid form, often that of an energetic child. Tallusians disguised as children have been known to lead adventurers to civilizations that have otherwise fallen off the map, in hopes the heroes will help protect the ruins until they can be restored."
+}

@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "curse-of-the-living-death",
+  "system": "pf2e",
+  "name": "Curse of the Living Death",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "curse",
+    "divine",
+    "oracle",
+    "vitality",
+    "void"
+  ],
+  "category": "classfeature",
+  "text": "Your body is slowly decaying even though you are alive, and using your powers furthers this unnatural living death. You carry a touch of the grave about you, manifesting as bloodless pallor, a faint smell of earth, or deathly cold skin.\n\nCursebound 1 You gain weakness 2 to vitality and void damage. You can be targeted by and are hurt by both vitality and void damage even if one or the other normally has no effect on you (such as being targeted and damaged by Heal even if you aren't undead). Any immunity or resistance you have to vitality or void is suppressed.\n\nCursebound 2 You take a –1 status penalty to Fortitude saves.\n\nCursebound 3 Your weakness to vitality and void damage is equal to 5 + your level.\n\nCursebound 4 Your status penalty to Fortitude saving throws increases to –2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "self:condition:cursebound"
+        ],
+        "type": [
+          "vitality",
+          "void"
+        ],
+        "value": "ternary(gte(@actor.conditions.cursebound.value,3),5+@actor.level,2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "gte": [
+              "self:condition:cursebound",
+              2
+            ]
+          }
+        ],
+        "selector": "fortitude",
+        "type": "status",
+        "value": "ternary(gte(@actor.conditions.cursebound.value,4),-2,-1)"
+      }
+    }
+  ]
+}

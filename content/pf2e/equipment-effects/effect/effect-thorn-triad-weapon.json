@@ -1,0 +1,126 @@
+{
+  "kind": "effect",
+  "slug": "effect-thorn-triad-weapon",
+  "system": "pf2e",
+  "name": "Effect: Thorn Triad - Weapon",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Thorn Triad, Thorn Triad (Greater), Thorn Triad (Major)\n\nYour Strikes with the weapon deal an additional persistent bleed damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thorn-triad",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thorn Triad"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thorn-triad-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thorn Triad (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thorn-triad-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thorn Triad (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "priority": 50,
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "thorn-triad"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectThornTriadWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "thorn-triad:thorn-triad"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectThornTriadWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "thorn-triad:thorn-triad-greater"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectThornTriadWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "diceNumber": 1,
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "thorn-triad:thorn-triad-major"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectThornTriadWeapon}-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "ugothol",
+  "system": "pf2e",
+  "name": "Ugothol",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "aberration"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 9,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 12,
+      "deception": 13,
+      "stealth": 13,
+      "thievery": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "alghollthu",
+      "common",
+      "thalassic"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. auditory and visual",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 19,
+      "attack": 11,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 14,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Auditory and Visual",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "auditory",
+                "visual"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Assume Form",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult",
+        "polymorph"
+      ],
+      "text": "The ugothol spends 10 minutes reshaping its appearance to take on the shape of any Small or Medium humanoid. It gains a +4 circumstance bonus to Deception checks to pass as that creature.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "assume-form"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "skill-check",
+            "key": "RollOption",
+            "option": "assume-form",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Nourishment",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The ugothol uses its three-pronged tongue to drink the blood of an adjacent Restrained or Unconscious creature. The creature gains Drained 1"
+    },
+    {
+      "kind": "ability",
+      "name": "Compression",
+      "category": "offensive",
+      "text": "When the ugothol successfully Squeezes, it moves through the tight space at full speed. Narrow confines are not difficult terrain for an ugothol."
+    },
+    {
+      "kind": "ability",
+      "name": "Revert Form",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The ugothol is in an assumed form\n\n---\n\nEffect The ugothol resumes its true form. Until the start of its next turn, it gains a +2 status bonus to attack rolls, damage rolls, saving throws, and skill checks.\n\nEffect: Revert Form"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The ugothol deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Among the subtler of the alghollthu creations were the ugothols—also known as faceless stalkers. These twisted beings used shapeshifting to infiltrate settlements and assassinate key targets. They sowed discord and replaced leaders, causing unwanted organizations to implode and bothersome people to lose face and eventually disappear.\n\n---\n\nIn bygone millennia, aquatic monsters known as alghollthus used their occult powers to conquer and rule vast swaths of the world. Alghollthus shaped their servitors and other creatures using mental manipulation and physically transformative magic. The rulers of the alghollthus, the so-called \"veiled masters,\" further shaped entire societies by assuming the forms of those they controlled.\n\nIn time, the alghollthus grew frustrated with upstart surface societies and meddling gods. They used incredible magical power to call forth a cataclysm, hoping to destroy the rebellious societies they'd manipulated. Yet they miscalculated the will to survive of those they treated as their pawns, and in time the world recovered, this time free of alghollthu influence.\n\nToday, the alghollthus have mostly remained within the deep aquatic realms where they still rule without question. Yet they have not abandoned their plots entirely, and the reemergence of servitors like faceless stalkers suggests that the alghollthus have turned their hateful eyes to the surface once again."
+}

@@ -1,0 +1,74 @@
+{
+  "kind": "feat",
+  "slug": "defy-chains",
+  "system": "pf2e",
+  "name": "Defy Chains",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "archetype",
+    "occult",
+    "sanctified"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Nidalese Horselord Dedication"
+  ],
+  "text": "Trigger A fiend within 15 feet of you damages you with a Strike.\n\n---\nYou turn to face a fiend that attacked you, looking them squarely in the eyes (if it has them) and showing no fear. You increase the amount of damage you take by ternary(gte(@actor.level,18,5,4))d6, and deal ternary(gte(@actor.level,18,5,4))d6 spirit damage to the triggering fiend. The damage you take and deal increases to 5d6 at 18th level.\n\nIn addition, if the fiend has an aura and you're in it, you can attempt an Intimidation check check to counteract the aura's effect, using half your level rounded up as the counteract rank. If you succeed, the effects of the aura are suppressed until the end of the triggering fiend's next turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "origin:trait:fiend",
+          {
+            "lte": [
+              "self:level",
+              14
+            ]
+          }
+        ],
+        "selector": [
+          "damage-received"
+        ],
+        "text": "PF2E.SpecificRule.NidaleseHorselord.DefyChains.DamageNote.Level14"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          "origin:trait:fiend",
+          {
+            "gte": [
+              "self:level",
+              18
+            ]
+          }
+        ],
+        "selector": [
+          "damage-received"
+        ],
+        "text": "PF2E.SpecificRule.NidaleseHorselord.DefyChains.DamageNote.Level18"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "key": "EphemeralEffect",
+        "selectors": [
+          "strike-damage"
+        ],
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Defy Chains"
+      }
+    }
+  ]
+}

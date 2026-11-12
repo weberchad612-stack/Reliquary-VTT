@@ -1,0 +1,219 @@
+{
+  "kind": "creature",
+  "slug": "carved-beast",
+  "system": "pf2e",
+  "name": "Carved Beast",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "elemental",
+    "plant",
+    "wood"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 92,
+    "perception": 16,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 9,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 15,
+      "nature": 15,
+      "stealth": {
+        "value": 16,
+        "special": [
+          {
+            "value": 19,
+            "label": "when posing as a mundane wooden statue",
+            "when": [
+              "posing-as-statue"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "axe-vulnerability",
+          "value": 5
+        },
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(24 while Dug In)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Statue",
+      "attack": 15,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Roots",
+      "attack": 17,
+      "traits": [
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Top-Heavy",
+      "category": "interaction",
+      "text": "While the carved beast is not Dug In, its unwieldy design leaves it vulnerable to falling over. The DC of any attempt to knock the carved beast Prone is reduced by 5, and the beast takes a –5 status penalty to any check or save it attempts to resist being knocked prone. Additionally, whenever the beast fails to Trip opponents with its roots Strike, it critically fails instead. If successfully Shoved by an opponent, the beast must succeed at a DC 20 Reflex save save or fall prone.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "saving-throw",
+          "text": "{item|system.description.value}",
+          "when": [
+            {
+              "not": "dig-in"
+            },
+            {
+              "or": [
+                "inflicts:prone",
+                "action:trip"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "athletics",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "failure"
+          ],
+          "when": [
+            {
+              "not": "dig-in"
+            },
+            "action:trip"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "failure": "one-degree-worse"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "not": "dig-in"
+              },
+              "action:trip"
+            ],
+            "selector": "athletics",
+            "type": "skill"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": -5,
+          "when": [
+            {
+              "not": "dig-in"
+            },
+            {
+              "or": [
+                "inflicts:prone",
+                "action:trip"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dig In",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The carved beast digs its roots into the ground for better protection and purchase. While Dug In, the carved beast can't Stride nor use its roots Strike; however, this also negates the effects of top-heavy, grants the beast a +2 status bonus to its AC and Fortitude saves, and increases the damage of its statue Strike by 1d8. The carved beast can spend an action on its turn to end the effect; alternatively, the effect ends when the carved beast is moved by force, such as via a successful Shove attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "dig-in",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "fortitude"
+          ],
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "dig-in"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "An untold number of stumps carved into roughly hewn animal shapes roam the Plane of Wood. The statue portion of these carved beasts is incapable of articulated movement, though the living wood at their base is fully animate. When left to their own devices, carved beasts prefer to roughly mimic the behaviors of the animals they resemble, like children playing with inarticulate toys."
+}

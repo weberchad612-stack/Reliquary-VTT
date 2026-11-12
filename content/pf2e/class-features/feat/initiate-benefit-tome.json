@@ -1,0 +1,242 @@
+{
+  "kind": "feat",
+  "slug": "initiate-benefit-tome",
+  "system": "pf2e",
+  "name": "Initiate Benefit (Tome)",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "While you hold your tome, lines of text appear on the open pages, revealing useful information. While you hold your tome, you gain a +1 circumstance bonus to all skill checks to Recall Knowledge.\n\nDuring your daily preparations, you can gain the trained proficiency rank in two skills of your choice until you prepare again. You retain the benefit as long as the tome is on your person, even if you aren't holding it. At 3rd level, you're an expert in one of the skills and trained in the other, and at 5th level, you're an expert in both skills. Since these proficiencies are temporary, you can't use them as a prerequisite for a skill increase or a permanent character option like a feat.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "tome-recall-knowledge",
+      "when": [
+        "action:recall-knowledge",
+        "implement:tome:equipped"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Thaumaturge.Implement.Tome.FirstSkillDropdown",
+        "option": "first-tome-skill",
+        "phase": "beforeDerived",
+        "suboptions": {
+          "config": "skills",
+          "predicate": [
+            {
+              "or": [
+                "skill:{choice|value}:rank:0",
+                {
+                  "and": [
+                    {
+                      "gte": [
+                        "self:level",
+                        3
+                      ]
+                    },
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    "feature:adept-benefit-tome",
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        2
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    "feature:paragon-benefit-tome",
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        3
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Thaumaturge.Implement.Tome.SecondSkillDropdown",
+        "option": "second-tome-skill",
+        "phase": "beforeDerived",
+        "suboptions": {
+          "config": "skills",
+          "predicate": [
+            {
+              "not": "first-tome-skill:{choice|value}"
+            },
+            {
+              "or": [
+                "skill:{choice|value}:rank:0",
+                {
+                  "and": [
+                    {
+                      "gte": [
+                        "self:level",
+                        5
+                      ]
+                    },
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    "feature:adept-benefit-tome",
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        2
+                      ]
+                    },
+                    {
+                      "gte": [
+                        "self:level",
+                        9
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    "feature:paragon-benefit-tome",
+                    {
+                      "lte": [
+                        "skill:{choice|value}:rank",
+                        3
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.firstTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "priority": 50,
+        "value": "ternary(gte(@actor.level,3),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.firstTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "predicate": [
+          "feature:adept-benefit-tome"
+        ],
+        "priority": 50,
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.firstTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "predicate": [
+          "feature:paragon-benefit-tome"
+        ],
+        "priority": 50,
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.secondTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "priority": 50,
+        "value": "ternary(gte(@actor.level,5),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.secondTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "predicate": [
+          "feature:adept-benefit-tome",
+          {
+            "gte": [
+              "self:level",
+              9
+            ]
+          }
+        ],
+        "priority": 50,
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.secondTomeSkill}.rank",
+        "phase": "beforeDerived",
+        "predicate": [
+          "feature:paragon-benefit-tome"
+        ],
+        "priority": 50,
+        "value": 4
+      }
+    }
+  ]
+}

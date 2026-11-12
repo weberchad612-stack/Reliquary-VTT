@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "hatred-siktempora",
+  "system": "pf2e",
+  "name": "Hatred Siktempora",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "siktempora",
+    "time"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 42,
+    "hp": 240,
+    "perception": 33,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 30,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 4,
+      "dex": 6,
+      "int": 4,
+      "str": 9,
+      "wis": 7
+    },
+    "skills": {
+      "athletics": 35,
+      "deception": 32,
+      "intimidation": 32,
+      "stealth": 32,
+      "dimension-of-time-lore": 32
+    },
+    "speeds": {
+      "land": 80
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "emotion",
+        "poison"
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 50 (deactivated by holy, mental, or orichalcum)",
+      "speed": "air walk",
+      "languages": "(can't speak any language), telepathy 500 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 40,
+      "attack": 32,
+      "spells": [
+        {
+          "name": "Air Walk (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/air-walk"
+        },
+        {
+          "name": "Blink",
+          "rank": 9,
+          "ref": "spells:spell/flicker"
+        },
+        {
+          "name": "Dimension Door (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Loathing Garotte",
+      "attack": 35,
+      "traits": [
+        "cold",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+17",
+          "type": "cold"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 500 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Sense",
+      "category": "interaction",
+      "text": "A siktempora can always roll Dimension of Time Lore for initiative. When it does, it gains a +2 circumstance bonus to the roll.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "dimension-of-time-lore"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 50 (Deactivated by Holy, Mental, Orichalcum)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy",
+              "mental",
+              "orichalcum"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 50
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Impending Dread",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental",
+        "occult"
+      ],
+      "text": "150 feet. Creatures within the hatred siktempora's aura don't reduce the value of their Frightened condition automatically at the end of their turns.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 150,
+            "slug": "impending-dread",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Punish Flight",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature attempts to Escape from the hatred siktempora\n\n---\n\nEffect The siktempora makes a loathing garotte Strike against the triggering creature. This Strike doesn't have Improved Grab."
+    },
+    {
+      "kind": "ability",
+      "name": "Uncanny Pounce",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Trigger The hatred siktempora rolls Dimension of Time Lore for initiative\n\n---\n\nEffect The hatred siktempora Strides once and makes a claw Strike, in either order.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}",
+          "when": [
+            "check:statistic:base:dimension-of-time-lore"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Contorted Clutch",
+      "category": "offensive",
+      "text": "The hatred siktempora can have up to two creatures Grabbed with their loathing garotte at once."
+    },
+    {
+      "kind": "ability",
+      "name": "Vindictive Crush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirements The hatred siktempora has a creature Grabbed\n\n---\nEffect The hatred siktempora tightens their garrote, dealing 5d10 bludgeoning damage to each creature they're Grabbing. Each creature grabbed by the siktempora must attempt a DC 40 Fortitude save save.\n\n---\nCritical Success The creature takes no damage.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and can't breathe or speak while it remains grabbed; it must hold its breath or begin suffocating.\n\nCritical Failure As failure, but double damage and the creature becomes Restrained and can't speak for 1 round after it's no longer grabbed.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Spawned by acts and legacies of cold-blooded spite, hatred siktemporas kill indiscriminately out of pure loathing, methodically hunting down and slaughtering anyone who catches their vile attention. Fortunately for mortals, they typically limit their predations to the Dimension of Time, where they hunt down creatures foreign to that realm-and some native to it.\n\nHatred siktemporas appear roughly humanoid, but their gaunt forms resemble bone and tendon more than flesh and skin. Adding to their unnerving appearance, their legs have an additional segment between their shin and thigh, and likewise for their eerily long arms. Their featureless faces bear only a singular scar, which takes a different form on every hatred siktempora. They clad themselves in immaculate finery chosen from the most vitriolic empires that ever existed, in the past and the future, and they form a magical garrote as a manifestation of their cold malice.\n\n---\n\nIn the Dimension of Time, intense emotions are more than just ethereal feelings. They accumulate over time, from things like the critical mass of emotion caused by a historic event or a settlement passing down a powerful sentiment for generations. These accretions eventually give birth to siktemporas. Each siktempora feels, with all their being, a singular intense emotion linked to the circumstances that spawned them. A rare few, however, are created when an emotionally invested creature attempts to travel to the Dimension of Time or interferes with the flow of time, which can create paradoxes or manipulate past events.\n\nSiktemporas usually isolate themselves on the Dimension of Time in mindscapes infused with the emotion that created them, but some travel to other planes. These wanderers long to indulge in more of their core emotion or to engender more of that feeling, thus perpetuating their own kind."
+}

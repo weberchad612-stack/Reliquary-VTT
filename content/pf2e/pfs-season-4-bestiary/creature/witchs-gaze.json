@@ -1,0 +1,137 @@
+{
+  "kind": "creature",
+  "slug": "witchs-gaze",
+  "system": "pf2e",
+  "name": "Witch's Gaze",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-12: Negotiations for the Star Gun",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 23,
+    "perception": 11,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 9,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "occultism": 7,
+      "thievery": 8,
+      "owl-coven-lore": 5
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common",
+      "mahwek"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6 + 3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 10,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d6 + 1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "When the witch's gaze deals piercing or slashing damage to an Off-Guard target, they also deal 1 persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "or": [
+                  "item:damage:type:slashing",
+                  "item:damage:type:piercing"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

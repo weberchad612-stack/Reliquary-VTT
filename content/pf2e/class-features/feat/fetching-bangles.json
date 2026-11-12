@@ -1,0 +1,212 @@
+{
+  "kind": "feat",
+  "slug": "fetching-bangles",
+  "system": "pf2e",
+  "name": "Fetching Bangles",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ikon"
+  ],
+  "category": "classfeature",
+  "text": "Usage worn bracers\n\n---\nThese lovely armbands sparkle and gleam, reflecting your own incredible magnetism.\n\nImmanence (aura, mental) Others find it hard to leave your captivating presence. An aura surrounds you in a 10-foot emanation. An enemy in the aura that attempts to move away from you must succeed at a Will save save against your class DC or its move action is disrupted.\n\nTranscendence—Embrace of Destiny 1 (mental, spirit, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.DivineSpark.Label",
+        "mergeable": true,
+        "option": "divine-spark",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "fetching-bangles"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.exemplar.ikons",
+        "value": {
+          "label": "PF2E.SpecificRule.Exemplar.Ikon.FetchingBangles.Label",
+          "predicate": [
+            "parent:tag:worn-ikon-feat"
+          ],
+          "value": "fetching-bangles"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Embrace of Destiny"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Grant",
+            "value": "granted"
+          },
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Existing",
+            "value": "existing"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Prompt",
+        "rollOption": "fetching-bangles-origin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon"
+          },
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "physical-ikon:fetching-bangles"
+          }
+        ],
+        "key": "GrantItem",
+        "predicate": [
+          "fetching-bangles-origin:granted"
+        ],
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Fetching Bangles"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "equipment"
+          ]
+        },
+        "flag": "existingIkon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "fetching-bangles-origin:existing"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "physical-ikon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "fetching-bangles-origin:existing"
+        ],
+        "property": "other-tags",
+        "value": "physical-ikon:fetching-bangles"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "equipment",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:fetching-bangles",
+          "fetching-bangles-origin:existing",
+          {
+            "not": "item:slug:fetching-bangles"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.xrJ4nGGgejUPf16q inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Aura",
+        "predicate": [
+          "divine-spark:fetching-bangles"
+        ],
+        "radius": 10,
+        "traits": [
+          "aura",
+          "mental"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:transcendence",
+          {
+            "or": [
+              "item:granter:tag:chosen-ikon:fetching-bangles",
+              "item:slug:embrace-of-destiny"
+            ]
+          },
+          {
+            "not": "divine-spark:fetching-bangles"
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Exemplar.DivineSpark.SparkTranscendence.Reminder"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.existingIkon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "divine"
+      }
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "kind": "creature",
+  "slug": "grace-the-rhino-owano",
+  "system": "pf2e",
+  "name": "Grace \"The Rhino\" Owano",
+  "source": {
+    "title": "Pathfinder #183: Field of Maidens",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 175,
+    "perception": 19,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 19,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 3,
+      "int": 0,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 21,
+      "deception": 18,
+      "intimidation": 20,
+      "stealth": 17,
+      "warfare-lore": 16
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common",
+      "drooni",
+      "empyrean"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Divine Wrath",
+          "rank": 5,
+          "ref": "spells:spell/divine-wrath"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Divine Focus Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Celestial Brand",
+          "rank": 5,
+          "ref": "spells:spell/celestial-brand"
+        },
+        {
+          "name": "Angelic Wings",
+          "rank": 3,
+          "ref": "spells:spell/angelic-wings"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Greatsword",
+      "ref": "equipment:item/greatsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Greatsword",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 26,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Devastator",
+      "category": "defensive",
+      "text": "Grace's Strikes ignore 10 points of a creature's resistance to physical damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Celestial Rage",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Grace isn't Fatigued or raging\n\n---\nEffect Grace unleashes her inner fury. She gains 20 temporary Hit Points that last until her Celestial Rage ends and she casts one divine innate spell or focus spell she knows. While raging, she gains weakness to unholy 10, gains a +10-foot status bonus to her Speed, and takes a -1 penalty to AC. She can't use actions with the concentrate trait unless they also have the rage trait. This Celestial Rage lasts for 1 minute, until there are no enemies Grace can perceive, or until she falls Unconscious, whichever comes first. When the Celestial Rage ends, Grace can't use Celestial Rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "upgrade",
+            "path": "flags.system.rageTempHP",
+            "phase": "beforeDerived",
+            "value": 20
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "self:effect:rage"
+            ],
+            "type": "unholy",
+            "value": 10
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "status",
+          "value": 10,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Great Cleave",
+      "actions": 1,
+      "category": "offensive",
+      "text": "When Grace's melee Strike reduces a creature to 0 Hit Points, she can make a melee Strike against another foe adjacent to that creature. If that Strike also reduces the creature to 0 Hit Points, she can continue making melee Strikes until she makes a Strike that doesn't reduce a creature to 0 Hit Points, or until there are no creatures adjacent to the most recent creature she attacked while cleaving, whichever comes first."
+    },
+    {
+      "kind": "ability",
+      "name": "Rhino Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Grace Strides twice; if she ends her movement within melee reach of at least one enemy, she can make a melee Strike against that enemy. Grace can Fly instead of Stride if she has a fly speed (such as with Angelic Wings)."
+    }
+  ],
+  "blurb": "Female human field commander"
+}

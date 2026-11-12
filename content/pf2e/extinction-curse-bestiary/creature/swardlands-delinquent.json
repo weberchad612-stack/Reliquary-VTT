@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "swardlands-delinquent",
+  "system": "pf2e",
+  "name": "Swardlands Delinquent",
+  "source": {
+    "title": "Pathfinder #153: Life's Long Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 65,
+    "perception": 8,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 14,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 9,
+      "deception": 8,
+      "intimidation": 8,
+      "stealth": {
+        "value": 12,
+        "special": [
+          {
+            "value": 14,
+            "label": "while in the Swardlands",
+            "when": [
+              "terrain:swardlands"
+            ]
+          }
+        ]
+      },
+      "thievery": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "A Brush and Pot of Red Paint",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Crowbar",
+      "ref": "equipment:item/crowbar",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 11,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The delinquent is targeted with a melee or ranged attack by an attacker she can see.\n\n---\n\nEffect The delinquent gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The delinquent draws a weapon with an Interact action, then Strikes with the weapon they just drew."
+    },
+    {
+      "kind": "ability",
+      "name": "Rattling Blow",
+      "category": "offensive",
+      "text": "Creatures the delinquent critically hits are Clumsy 1 and can't make reactions until the end of the delinquent's next turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "attack",
+          "text": "Creatures the delinquent critically hits are Clumsy 1 and can't make reactions until the end of the delinquent's next turn.",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The delinquent deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

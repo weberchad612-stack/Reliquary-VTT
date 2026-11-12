@@ -1,0 +1,66 @@
+{
+  "kind": "feat",
+  "slug": "persistent-boost",
+  "system": "pf2e",
+  "name": "Persistent Boost",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "traits": [
+    "inventor"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "offensive boost"
+  ],
+  "text": "Your innovation sets foes on fire, covers them in acid, leaves barbed thorns behind, or otherwise deals persistent damage to your foes that sticks around long after you deliver your boosted attack. When you or your construct innovation damage a foe with offensive boost, that foe also takes 1d8 persistent damage of the same damage type as the offensive boost damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:offensive-boost"
+        ],
+        "property": "other-tags",
+        "value": "persistent-boost"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "{actor|flags.system.inventor.offensiveBoost}",
+        "diceNumber": 1,
+        "dieSize": "d8",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "feature:weapon-innovation",
+                  "item:id:{actor|flags.system.innovationId}"
+                ]
+              },
+              {
+                "and": [
+                  "feature:armor-innovation",
+                  "unarmed"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

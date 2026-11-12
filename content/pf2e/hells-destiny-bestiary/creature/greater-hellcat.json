@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "greater-hellcat",
+  "system": "pf2e",
+  "name": "Greater Hellcat",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 39,
+    "hp": 290,
+    "perception": 16,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 30,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 6,
+      "int": 0,
+      "str": 9,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 32,
+      "athletics": 32,
+      "intimidation": 28,
+      "stealth": 32,
+      "survival": 28
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "diabolic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 15
+        },
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "silver"
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Can't speak any language, Fiendish telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 32,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+17",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 32,
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fiendish Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ],
+      "text": "This functions as telepathy, except that the greater hellcat can speak mentally to any creature, regardless of language. This doesn't grant the greater hellcat the ability to understand what the other creature is thinking, unless that creature also understands Diabolic.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Elusive Terror",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "mental"
+      ],
+      "text": "A greater hellcat can live within the fears of others and use their dread to hide from sight. The greater hellcat can hide in the presence of Frightened creatures. If successful, the greater hellcat becomes Hidden from frightened creatures as if it moved behind cover or into concealment, but must otherwise Hide normally from non-frightened creatures."
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Growl",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The greater hellcat is critically hit by any Strike\n\n---\nEffect The greater hellcat's Menacing Growl recharges. The creature that dealt the triggering Strike must succeed at a DC 37 Will save save or become Frightened 2 (Frightened 4 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Fearful Attack",
+      "category": "offensive",
+      "text": "The hellcat deals an additional 3d6 precision damage to Frightened creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.Frightened",
+            "option": "target:condition:frightened",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hell Pack Mindlink",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine"
+      ],
+      "text": "The greater hellcat telepathically links its senses to all other hellcats within 100 feet for 10 minutes. It loses this contact with any hellcat that moves out of a 100-foot radius. While linked to at least one ally, the greater hellcat can't be flanked and gains a +2 status bonus to Will saving throws.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "will",
+            "key": "RollOption",
+            "option": "hell-pack-mindlink",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "hell-pack-mindlink"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Menacing Growl",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The greater hellcat produces a low growl to disorient and frighten foes. The hellcat can cause this vocalization to originate from somewhere else within 30 feet. Non-fiends in a 15-foot burst must attempt a DC 37 Will save save. The hellcat can't issue another Menacing Growl for 1d4 rounds.\n\n---\nCritical Success The creature is unaffected and is temporarily immune for 24 hours.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2.\n\nCritical Failure The creature is Frightened 4."
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The greater hellcat Strides and makes a Strike at the end of that movement. If the greater hellcat began this action Hidden, it remains hidden until after the ability's Strike."
+    }
+  ],
+  "text": "Hellcats are devious predators native to the fiery pits of Hell. While the fiendish creatures resemble undead skeletal smilodons, bones smoking with heat and dripping with boiling blood, they're actually living hellspawn whose transparent flesh reveals their burning skeleton. A typical hellcat is 9 feet long and weighs 1,000 pounds.\n\nLeft to their own devices, hellcats spend their time hunting. As fiendish creatures, they don't need mortal sustenance but devour prey for the sheer pleasure of inflicting pain. They're also far more intelligent than most assume, and they resent being treated as unintelligent animals; those who treat a hellcat thusly might find themselves made into a trophy for its pack, as a hellcat will go to great lengths to coordinate elaborate revenge upon any who fail to show them proper respect.\n\nThough they can't speak, hellcats know Diabolic and can communicate by telepathy with any creature capable of speech. They rarely say much except to whisper threats and acknowledge the orders of their diabolic masters.\n\nHellcats are quick to retreat if clearly outmatched or up against foes they're unable to reach, but they never forget prey that escapes them.",
+  "blurb": "Variant hellcat"
+}

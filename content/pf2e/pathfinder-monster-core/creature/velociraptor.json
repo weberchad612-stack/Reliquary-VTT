@@ -1,0 +1,160 @@
+{
+  "kind": "creature",
+  "slug": "velociraptor",
+  "system": "pf2e",
+  "name": "Velociraptor",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "animal",
+    "dinosaur"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 7,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": -4,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": {
+        "value": 5,
+        "special": [
+          {
+            "value": 8,
+            "label": "jumping",
+            "when": [
+              {
+                "or": [
+                  "action:long-jump",
+                  "action:high-jump"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 8,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Leaping Charge",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The velociraptor Strides up to 10 feet, ignoring difficult terrain as it leaps over obstacles. It then makes a Strike with its talons, gaining a +1 circumstance bonus to its attack roll.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "talon-attack",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "leaping-charge"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "leaping-charge",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The velociraptor deals 1d4 extra damage to any creature that's within reach of at least two of the velociraptor's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A smaller cousin of the deinonychus, the velociraptor is a swift, cunning pack hunter. It has no fear of larger creatures, and a group of these dinosaurs won't hesitate to attack prey the size of a horse. They have manes of feathery plumage that extend down their backs and along the sides of their arms, legs, and tail, while their underbellies and flanks are scaly. These feathers allow them to blend into their natural terrain with ease, but when startled, a velociraptor can puff and frill this plumage to expose brighter colors normally covered by the longer feathers. A typical velociraptor is 1-1/2 feet tall, 7 feet long, and weighs 35 pounds.\n\n---\n\nRemnants from the world's primeval era, these enormous reptilian animals still exist in large numbers in remote wildernesses or underground in magical Darklands caverns. Lizardfolk, orcs, giants, and other humanoids who live near dinosaurs use the animals as mounts, guards, or hunting beasts. Occasionally, rich nobles will collect dinosaurs to display them in menageries, which almost inevitably leads to cast-offs being nursed back to health by druids and other champions of nature. When dinosaurs establish themselves in regions outside their normal habitats, it's often the result of a large collection being released."
+}

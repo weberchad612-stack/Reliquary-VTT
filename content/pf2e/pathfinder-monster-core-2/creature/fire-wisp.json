@@ -1,0 +1,175 @@
+{
+  "kind": "creature",
+  "slug": "fire-wisp",
+  "system": "pf2e",
+  "name": "Fire Wisp",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "traits": [
+    "elemental",
+    "fire"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 15,
+    "hp": 15,
+    "perception": 6,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 7,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": 0,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 5,
+      "stealth": 7,
+      "plane-of-fire-lore": 4
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "pyric"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep",
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 2
+        },
+        {
+          "type": "water",
+          "value": 2
+        }
+      ]
+    },
+    "notes": {
+      "perception": "smoke vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tendril",
+      "attack": 6,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "fire"
+        },
+        {
+          "dice": "1",
+          "type": "fire",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smoke Vision",
+      "category": "interaction",
+      "text": "The fire wisp ignores the Concealed condition from smoke."
+    },
+    {
+      "kind": "ability",
+      "name": "Accord Essence",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "Trigger An ally within 30 feet that benefited from the wisp's resonance in the last hour is targeted by an attack\n\n---\nEffect The wisp detonates themself in an elemental explosion. This grants temporary Hit Points equal to half the wisp's current Hit Points to allies within 30 feet who have benefited from the wisp's resonance in the last hour. These temporary Hit Points last 1 hour.\n\nA wisp that uses this reaction is permanently destroyed, and they can be restored by only a Wish ritual or similarly powerful effect. If an ability would prevent the wisp's destruction (for instance, if the wisp is summoned and would merely be dismissed), Accord Essence has no effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Resonance",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fire"
+      ],
+      "text": "30 feet. All wisps vibrate at a frequency attuned to their element, resonating with and empowering all creatures and effects sharing that trait.\n\nA creature in the area gains a +1 status bonus to attack and damage rolls for effects with the fire trait; a creature with the elemental and fire traits gains this bonus to all attack and damage rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Resonance"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "resonance",
+            "traits": [
+              "fire"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "In Concert",
+      "category": "offensive",
+      "text": "When a fire wisp rolls a critical failure on a check to Aid, they get a failure instead, and when they roll a success, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "all",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalFailure",
+            "success"
+          ],
+          "when": [
+            "action:aid"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better",
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:aid"
+            ],
+            "selector": "all"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Fire wisps are sizzling spheres of flame and ash, perpetually crackling and shimmering with heat. They're carefree, boisterous, and quick to action—sometimes recklessly so.\n\n---\nWisps are tiny elemental beings that emerged during the creation of the Elemental Planes. The first wisps roamed the Inner Sphere in shifting symphonies that traded members with their every meeting. These symphonies of free wisps created music out of their combined resonances, but when the wicked Elemental Lords realized the value of the wisps' resonance, they captured whole symphonies for use as servants.\n\nWisps attune to each other and to those they surround themselves with. This attunement makes them naturally supportive allies. Free wisps still roam the Inner Sphere and the Universe, but they're usually shy and hide themselves from strangers. However, they happily offer their service to those who show them kindness. They especially find themselves drawn to spellcasters who practice elemental magic; these wisps usually watch from afar but sometimes approach those who seem safe to become familiars or comrades.\n\nFree wisps who find one another become close almost immediately. They get especially excited when they find wisps of elements other than their own, showing none of the animosity sometimes exhibited between elementals of different planes. Instead, they join in an excited dance, emitting resonances that faintly echo the symphonies of ancient days."
+}

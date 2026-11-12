@@ -1,0 +1,346 @@
+{
+  "kind": "creature",
+  "slug": "quara-orshendiel",
+  "system": "pf2e",
+  "name": "Quara Orshendiel",
+  "source": {
+    "title": "Pathfinder #165: Eyes of Empty Death",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "drow",
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 190,
+    "perception": 21,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 22,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 5,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 20,
+      "deception": 22,
+      "diplomacy": 20,
+      "intimidation": 22,
+      "stealth": 20,
+      "survival": 19
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "daemonic",
+      "elven",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic, +2 status to all saves vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 28,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Darkness (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Faerie Fire (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Repeating Hand Crossbow",
+      "ref": "equipment:item/repeating-hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Shootist Bandolier",
+      "ref": "equipment:item/shootist-bandolier",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Key",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Stupor Poison",
+      "ref": "equipment:item/stupor-poison",
+      "type": "consumable",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Repeating Hand Crossbow Magazine",
+      "ref": "equipment:item/repeating-hand-crossbow-magazine",
+      "type": "ammo"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Repeating Hand Crossbow",
+      "attack": 24,
+      "traits": [
+        "reload-0",
+        "repeating"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status To All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Commanding Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet. Drow around Quara are heartened by her presence. Her drow allies in the aura gain a +1 status bonus to attack rolls and skill checks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:trait:drow"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Commanding Aura (Quara)"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "commanding-aura",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Quara isn't off-guard to hidden, undetected, or flanking creatures of 11th level or lower, or to creatures of 11th level or lower using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 11
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Quara rolls a success on a Reflex saving throw, she gets a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Shooter",
+      "category": "offensive",
+      "text": "Quara's ranged attacks don't trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Weapon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements Quara is holding a piercing or slashing weapon and has a free hand\n\n---\n\nEffect Quara applies poison to the weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Reloading Trick",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Quara is holding an unloaded repeating hand crossbow\n\n---\n\nEffect Quara Interacts to reload the repeating hand crossbow and Strikes with it."
+    },
+    {
+      "kind": "ability",
+      "name": "Shootist's Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect Quara Interacts to draw a loaded repeating hand crossbow and Strikes with it, or Strikes with a loaded repeating hand crossbow she's holding and then Interacts to stow it.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Skirmishing Dash",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Quara Strides or Steps, then Strikes. This Strike deals an additional 3d6 damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "skirmishing-dash-active"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "skirmishing-dash-active",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Quara will likely become an ally of the heroes, as she knows useful partners when she sees them. She's interested in avenging her father and sister, but she knows that whatever goal her father was pursuing with the Ochre Fulcrum Lens could prove critical in freeing Yldaris from Belcorra's control forever. She has learned that the ochre lens was only one of three lenses that Belcorra entrusted to allies in the region centuries ago, and she sets the heroes on the trail of recovering them and finding out more. The most important lead Quara provides to the heroes is that her father was headed toward an ancient vault at the edge of the lake, so the heroes can find out more at that location.\n\nThe heroes might see drow as enemies and assault Yldaris. In this case, Quara does her best to protect her people, relying on the shootist training that still lingers in her quick fingers. She likely won't trust the heroes with any information after such aggressions, but they might find some clues in her quarters.",
+  "blurb": "Female drow leader"
+}

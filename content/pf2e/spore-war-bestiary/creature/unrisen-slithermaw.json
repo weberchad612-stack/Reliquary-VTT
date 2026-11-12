@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "unrisen-slithermaw",
+  "system": "pf2e",
+  "name": "Unrisen Slithermaw",
+  "source": {
+    "title": "Pathfinder #211: The Secret of Deathstalk Tower",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "unique",
+  "traits": [
+    "fiend",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 41,
+    "hp": 350,
+    "perception": 32,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 27,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 5,
+      "int": -1,
+      "str": 9,
+      "wis": 8
+    },
+    "skills": {
+      "athletics": 35
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "unconscious",
+        "bleed"
+      ]
+    },
+    "notes": {
+      "hp": "meant to live, void healing",
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 34,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "poison"
+        },
+        {
+          "dice": "3d10+17",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Meant to Live",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Whenever an unrisen would take damage from vitality energy, it instead heals half that number of Hit Points.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|description}",
+          "when": [
+            "item:damage:type:vitality"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "The unrisen Slithermaw gains 12 extra reactions per round beyond its first, which it can only use to make Reactive Strikes. He can't use more than 1 reaction on the same triggering action, even if a creature leaves several squares on the same triggering action."
+    },
+    {
+      "kind": "ability",
+      "name": "Resurrection Vulnerability",
+      "category": "defensive",
+      "text": "A creature with a prepared or spontaneous spell that can restore the dead to life (such as Breath of Life or Raise Dead) can expend an appropriate spell slot as a 2-action activity to destroy an unrisen within 30 feet. The attempt fails if the unrisen succeeds at a Will save save against the creature's spell DC.",
+      "rules": [
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rise Again",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "If the unrisen Slithermaw is reduced to 0 Hit Points by means other than fire damage, disintegration, damage caused by a character wearing Slithermaw's Bane, or his resurrection vulnerability, he returns to unlife at the start of his next turn. He has 150 Hit Points and is Prone in the space in which he was destroyed. He can't be returned to unlife by this ability again for 1 hour."
+    },
+    {
+      "kind": "ability",
+      "name": "Slithermaw's Bane",
+      "category": "defensive",
+      "text": "If a PC wears Slithermaw's Bane, the unrisen Slithermaw focuses his attacks on that PC. A PC who wears Slithermaw's Bane is immune to all poison damage caused by the unrisen Slithermaw. Whenever such a PC scores a critical hit on the unrisen Slithermaw, the undead hydra becomes Frightened 2. The unrisen Slithermaw is not immune to poison inflicted by Slithermaw's Bane when Calistria's Sting is activated and in fact has weakness 15 to this poison damage.",
+      "rules": [
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 15
+        },
+        {
+          "key": "immunity",
+          "type": "custom"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Awful Approach",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The unrisen reshapes its grotesque form to move swiftly. It Strides twice. Any living creature that can see the unrisen during this movement must succeed at a DC 37 Fortitude save save or be Sickened 1 (Sickened 2 on a critical failure). This is a mental and visual effect. The unrisen can't use Awful Approach again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Death Grip",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "occult"
+      ],
+      "text": "Requirements The unrisen has a living creature Grabbed or Restrained\n\n---\nEffect The unrisen attempts to destroy its victim's life force to share the unrisen's fate. The creature must succeed at a DC 40 Fortitude save save or become Doomed 1. While the curse lasts, the creature regains only half as many HP from vitality healing effects; if it dies, any attempt to raise it from the dead causes it to return as an unrisen. The curse ends automatically if the creature's doomed value is reduced to 0."
+    },
+    {
+      "kind": "ability",
+      "name": "Poisonous Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "occult",
+        "poison"
+      ],
+      "text": "The unrisen Slithermaw breathes out a toxic cloud of foul vapor from its heads in all directions at once. Creatures within a 30-foot emanation take 15d8 poison damage (DC 40 basic Fortitude save save). The unrisen Slithermaw can't use Poisonous Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Storm of Jaws",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The unrisen Slithermaw makes up to 12 jaws Strikes, each against a different target. These attacks count toward his multiple attack penalty, but the multiple attack penalty doesn't increase until after he makes all of his attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "An unrisen is a mangled conglomeration of splintered bones, decaying organs, and rotting flesh, created when a ritual such as resurrect goes catastrophically wrong. Immense care must be taken, for if the ritual is a critical failure, an unrisen can be the result—as many a ritualist has learned to their horror.\n\nUnrisen are barely intelligent, aware only of the agony constantly inflicted by their flawed creation and their resentment for the living. They tend to attack the casters involved in the botched ritual first before lashing out at everyone else around them. Though an unrisen's twisted form is unrecognizable as the intended target of the resurrection, its wordless howls are often disturbingly similar to the deceased's voice. If an unrisen is destroyed before it can rise again, it's reduced to a handful of metallic blue-green salts referred to as essential salts.",
+  "blurb": "Variant unrisen"
+}

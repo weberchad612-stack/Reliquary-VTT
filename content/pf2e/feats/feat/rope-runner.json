@@ -1,0 +1,68 @@
+{
+  "kind": "feat",
+  "slug": "rope-runner",
+  "system": "pf2e",
+  "name": "Rope Runner",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Acrobatics",
+    "trained in Athletics",
+    "Pirate Dedication"
+  ],
+  "text": "You run and climb across ropes and rigging almost as easily as on the ground. You gain a climb Speed of 15 feet, but only when climbing ropes and similar objects. Whenever you succeed at an Athletics check to Climb or an Acrobatics check to Balance, you get a critical success instead. You aren't Off-Guard while Climbing or Balancing on a rope or similar object.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "rope-runner",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "speed",
+      "type": "climb",
+      "value": 15
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "rope-runner",
+          {
+            "or": [
+              {
+                "and": [
+                  "action:balance",
+                  "check:statistic:acrobatics"
+                ]
+              },
+              {
+                "and": [
+                  "action:climb",
+                  "check:statistic:athletics"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "skill-check"
+      }
+    }
+  ]
+}

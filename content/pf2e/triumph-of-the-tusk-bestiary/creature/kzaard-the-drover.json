@@ -1,0 +1,218 @@
+{
+  "kind": "creature",
+  "slug": "kzaard-the-drover",
+  "system": "pf2e",
+  "name": "K'zaard The Drover",
+  "source": {
+    "title": "Pathfinder #207: The Resurrection Flood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 95,
+    "perception": 17,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 3,
+      "dex": 6,
+      "int": 5,
+      "str": 3,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 11,
+      "deception": 16,
+      "diplomacy": 15,
+      "stealth": 14,
+      "thievery": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Orc Skewermaul",
+      "ref": "equipment:item/orc-skewermaul",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Ring of Keys",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Orc Skewermaul",
+      "attack": 16,
+      "traits": [
+        "brace",
+        "magical",
+        "two-hand-d10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Back Pedal",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger K'zaard is targeted by a Strike\n\n---\nEffect K'zaard moves unpredictably and suddenly as he tries to dodge. He gains a +1 circumstance bonus against the triggering attack. After the attack is resolved, K'zaard can Step.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "back-pedal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "back-pedal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Keep Talking",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "mental"
+      ],
+      "text": "K'zaard continues to speak quickly and convincingly. Creatures Frightened by K'zaard's Weaseling Words can't reduce the frightened condition caused by that effect at the end of their next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "K'zaard deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Weaseling Words",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "K'zaard weaves together a short speech that gives the listener pause. Enemies within 30 feet must attempt a DC 24 Will save save. While a creature is frightened by this ability, it's Off-Guard to K'zaard.\n\n---\nCritical Success No effect, and the creature is temporarily immune to Weaseling Words for 1 minute.\n\nSuccess The creature is unaffected.\n\nFailure The creature is uncertain and Frightened 1.\n\nCritical Failure The creature is riddled with self-doubt about its own actions. It is Frightened 2 and can't take hostile actions against K'zaard until the frightened condition ends."
+    }
+  ]
+}

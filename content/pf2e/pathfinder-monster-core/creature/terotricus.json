@@ -1,0 +1,257 @@
+{
+  "kind": "creature",
+  "slug": "terotricus",
+  "system": "pf2e",
+  "name": "Terotricus",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "rare",
+  "traits": [
+    "fungus",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 42,
+    "hp": 370,
+    "perception": 31,
+    "saves": {
+      "fortitude": 34,
+      "reflex": 28,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 9,
+      "dex": 5,
+      "int": -1,
+      "str": 10,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 37,
+      "deception": 32,
+      "intimidation": 35,
+      "nature": 31,
+      "survival": 31
+    },
+    "speeds": {
+      "land": 35,
+      "burrow": 25,
+      "climb": 25,
+      "swim": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 120,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "elven",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "controlled",
+        "disease",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 15
+        },
+        {
+          "type": "cold-iron",
+          "value": 15
+        },
+        {
+          "type": "holy",
+          "value": 15
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 25 (deactivated by cold)",
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 37,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+18",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "improved-grab",
+        "improved-push"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spores",
+      "attack": 37,
+      "traits": [
+        "brutal",
+        "magical",
+        "unholy"
+      ],
+      "range": 80,
+      "damage": [
+        {
+          "dice": "4d8+8",
+          "type": "poison"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "spore-blight",
+        "sticky-spores"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 120 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 25 (Deactivated by Cold)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spore Cloud",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "disease"
+      ],
+      "text": "30 feet.\n\nA creature entering the aura or starting its turn there is exposed to spore blight.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "spore-cloud",
+            "traits": [
+              "disease"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infest Environs",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Frequency once per day\n\nRequirements The terotricus is in a swamp or forested area\n\n---\nEffect The terotricus drains nutrients from nearby trees and undergrowth while simultaneously infesting them with fungal growth. All non-magical plant life (though not plant creatures) within a 60-foot emanation withers and sprouts foul mold and slimy mushrooms, removing any cover and concealment provided by trees and undergrowth. In addition, the terotricus regains 200 Hit Points (this is a healing vitality effect).",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Spore Blight",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Plants and fungi are immune.\n\nSaving Throw DC 40 Fortitude save\n\n---\n\nStage 1 Enfeebled 2 (1 day)\n\nStage 2 Enfeebled 4 and Slowed 1 (1 day)\n\nStage 3 Controlled by the terotricus (as Dominate; 5d8 days)\n\nStage 4 dead"
+    },
+    {
+      "kind": "ability",
+      "name": "Sticky Spores",
+      "category": "offensive",
+      "text": "A creature hit by a terotricus's spores takes a –10-foot status penalty to all its Speeds for 1 minute. If the Strike was a critical hit, the creature is also Immobilized until it Escapes.\n\nEffect: Sticky Spores"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Push 20 feet",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "The legendary terotricus is a massive slime mold that hails from the Outer Rifts. Its collective consciousness encapsulates entire regions, spreading as far as its ever-growing cloud of spores will take it. Once it has seeped into the Universe from the Rifts, a terotricus's agenda is to feed on all living creatures, infecting them with its spores, and its presence can spell doom for any in its way.\n\nTerotricuses move by rapidly expanding and contracting their slimy \"bodies,\" which are capable of burrowing through soil, gliding across water, and scrabbling up steep slopes. These behemoths of rot don't need to travel to see their plans come to fruition, though; their spores easily latch onto demons and other denizens of the Outer Rifts, who in turn bring this blight to the Universe when the fiends are summoned.\n\nWhen a terotricus infects a creature with its spores, web-like fungal growths start appearing on the victim's skin until they cover the entire body, at which point the victim's mind is also subdued and bent to the terotricus's will. The terotricus's favored victims include animals, elves, and fey, though it is happy to infect any creature it can catch. Cults of Treerazer occasionally attempt to make contact with a terotricus, but such acts almost always simply result in a new sect of spore-blighted servants."
+}

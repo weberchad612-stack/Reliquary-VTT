@@ -1,0 +1,160 @@
+{
+  "kind": "creature",
+  "slug": "zombie-flesh-golem-3-4",
+  "system": "pf2e",
+  "name": "'Zombie' Flesh Golem (3-4)",
+  "source": {
+    "title": "Pathfinder Society Quest #12: Putrid Seeds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "golem",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 28,
+    "perception": 4,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 6,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 1,
+      "dex": -2,
+      "int": -5,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 7,
+      "deception": {
+        "value": 0,
+        "special": [
+          {
+            "value": 9,
+            "label": "to impersonate a zombie",
+            "when": [
+              "action:impersonate-zombie"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "iwr": {
+      "immunities": [
+        "electricity",
+        "magic"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 2,
+          "except": "adamantine"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk",
+      "category": "defensive",
+      "text": "A severely damaged flesh golem has a chance of going berserk. If it has 8 or fewer HP at the start of its turn, the golem must succeed at a DC 5 Flat check check or go berserk. A berserk golem wildly attacks the nearest living creature, or the nearest object if no creatures are nearby."
+    },
+    {
+      "kind": "ability",
+      "name": "Electric Reflexes",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The golem takes electricity damage and a creature is adjacent to it\n\n---\n\nEffect The golem lashes out and tries to grab a nearby creature. The golem attempts an Athletics check to Grapple an adjacent creature. The creature also takes 1d4 electricity damage on a success, or 2d4 electricity damage on a critical success."
+    },
+    {
+      "kind": "ability",
+      "name": "Golem Antimagic",
+      "category": "defensive",
+      "text": "Harmed by fire (2d6 untyped, 1d4 untyped from areas and persistent damage); healed by electricity (area effects 1d4 healing HP); slowed by cold\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Flesh to Stone",
+      "category": "defensive",
+      "text": "Casting a Petrify spell on the golem affects it normally."
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk Slam",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The golem is berserk\n\n---\n\nEffect The flesh golem Strikes with its fist at a -1 circumstance penalty. If it hits, it deals 1d4 extra damage and knocks the target Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "berserk-slam",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "berserk-slam"
+            ],
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "fist-attack",
+          "type": "circumstance",
+          "value": -1,
+          "when": [
+            "berserk-slam"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "fist-attack",
+          "text": "PF2E.AttackEffects.KnockProne",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "berserk-slam"
+          ]
+        }
+      ]
+    }
+  ]
+}

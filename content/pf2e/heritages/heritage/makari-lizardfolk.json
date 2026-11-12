@@ -1,0 +1,86 @@
+{
+  "kind": "heritage",
+  "slug": "makari-lizardfolk",
+  "system": "pf2e",
+  "name": "Makari Lizardfolk",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "uncommon",
+  "traits": [
+    "lizardfolk"
+  ],
+  "ancestry": {
+    "name": "Lizardfolk",
+    "ref": "ancestries:ancestry/lizardfolk"
+  },
+  "text": "You have a trunk-like snout and a connection to the divine. The tradition of any spells or magical abilities you gain from a lizardfolk heritage or ancestry feat is divine instead of its normal tradition (usually primal).\n\nYou gain your choice of the Divine Lance or Forbidding Ward cantrips, which you can cast as a divine innate cantrip at will. A cantrip is heightened to a spell rank equal to half your level rounded up. When you cast this cantrip, it loses the manipulate trait, as you cast purely by roaring and flaring your trunk.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "or": [
+                "item:slug:forbidding-ward",
+                "item:slug:divine-lance"
+              ]
+            }
+          ],
+          "itemType": "spell",
+          "slugsAsValues": true
+        },
+        "flag": "cantrip",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Cantrip"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.cantrip}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.cantrip}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:lizardfolk"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.cantrip}",
+          "spellcasting:innate"
+        ],
+        "property": "traits",
+        "value": "manipulate"
+      }
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "kind": "creature",
+  "slug": "benthic-reaver",
+  "system": "pf2e",
+  "name": "Benthic Reaver",
+  "source": {
+    "title": "Pathfinder Lost Omens Impossible Lands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 21,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "cold",
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 46,
+    "hp": 500,
+    "perception": 41,
+    "saves": {
+      "fortitude": 38,
+      "reflex": 35,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 7,
+      "dex": 8,
+      "int": 6,
+      "str": 10,
+      "wis": 8
+    },
+    "skills": {
+      "arcana": 37,
+      "athletics": 43,
+      "nature": 37
+    },
+    "speeds": {
+      "land": 30,
+      "swim": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "cold",
+        "death-effects",
+        "disease",
+        "void",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine"
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 41,
+      "attack": 33,
+      "spells": [
+        {
+          "name": "True Seeing (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/truesight"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 39,
+      "traits": [
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "void"
+        },
+        {
+          "dice": "4d12+18",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fin",
+      "attack": 39,
+      "traits": [
+        "agile",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "void"
+        },
+        {
+          "dice": "4d8+18",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 39,
+      "traits": [
+        "reach-30"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+18",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "void"
+        }
+      ],
+      "effects": [
+        "improved-knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Eye Beam",
+      "attack": 37,
+      "maxRange": 150,
+      "damage": [
+        {
+          "dice": "4d12+8",
+          "type": "cold"
+        },
+        {
+          "dice": "4d6",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intense Chill",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "aura",
+        "cold"
+      ],
+      "text": "30 feet. 5d6 cold damage (DC 41 basic Reflex save). On a failure, the creature takes a –15-foot status penalty to its Speeds for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "intense-chill",
+            "traits": [
+              "arcane",
+              "cold"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tail Sweep",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature moves from beyond the reach of the benthic reaver's tail to within the reach of the benthic reaver's tail\n\n---\n\nEffect The benthic reaver makes a tail Strike against the triggering creature and can use Improved Knockdown if the attack hits, even if it isn't the benthic reaver's turn. If the benthic reaver knocks the target Prone, it disrupts the triggering move action."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Numbing Ice",
+      "category": "offensive",
+      "traits": [
+        "cold"
+      ],
+      "text": "A creature who takes damage from the benthic reaver's eye beam Strike must succeed at a DC 41 Fortitude save save or become Slowed 2 as cold stiffens its limbs. A flying creature who fails its save also descends safely to the ground below. This is forced movement."
+    },
+    {
+      "kind": "ability",
+      "name": "Song of the Lost",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The benthic reaver unleashes a cry of mourning. All creatures within 60 feet must attempt a DC 41 Will save save to resist. The benthic reaver can't use Song of the Lost for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2.\n\nCritical Failure As failure, but the creature is also Stunned 1 with sympathy."
+    },
+    {
+      "kind": "ability",
+      "name": "Tail Sweep",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The benthic reaver makes a tail Strike against each enemy within its reach. These attacks count toward the benthic reaver's multiple attack penalty, but the multiple attack penalty doesn't increase until after the benthic reaver makes all its attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Knockdown",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "The benthic reaver is a 50-foot-tall undead monstrosity, its ribs rising like giant archways and its spine splitting into three tails."
+}

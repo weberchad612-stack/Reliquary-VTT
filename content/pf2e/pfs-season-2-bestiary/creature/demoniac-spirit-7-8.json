@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "demoniac-spirit-7-8",
+  "system": "pf2e",
+  "name": "Demoniac Spirit (7-8)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-24: Breaking The Storm: Parting Clouds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "incorporeal",
+    "lawful",
+    "undead",
+    "unholy",
+    "wraith"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 28,
+    "hp": 130,
+    "perception": 19,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 19,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 3,
+      "dex": 6,
+      "int": 3,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 19,
+      "intimidation": 21,
+      "stealth": 19
+    },
+    "speeds": {
+      "land": 20,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "cyclops",
+      "jotun",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(26 if rune is disabled)",
+      "hp": "void healing",
+      "saves": "+1 to all saves vs. vitality"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Fireball",
+          "rank": 3,
+          "ref": "spells:spell/fireball"
+        },
+        {
+          "name": "Lightning Bolt",
+          "rank": 4,
+          "ref": "spells:spell/lightning-bolt"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 4,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "Telekinetic Maneuver",
+          "rank": 2,
+          "ref": "spells:spell/telekinetic-maneuver",
+          "uses": 2
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spectral Claw",
+      "attack": 21,
+      "traits": [
+        "finesse",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+7",
+          "type": "void"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Vitality",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "vitality"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Flash",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature makes a successful melee attack against the spirit or makes a successful Acrobatics check to Tumble Through the spirit's space\n\n---\n\nEffect The spirit emits a brief pulse of void energy that deals 5d6 void damage to the triggering creature (DC 26 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Abyssal Spite",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The spirit lashes out at a creature within 60 feet, dealing 2d10+7 mental damage (DC 28 basic Will save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the demoniac spirit damages a living creature with its spectral claw Strike, the spirit gains 10 temporary Hit Points and the target must succeed at a DC 28 Fortitude save save or become Drained 1. Further damage dealt by the spirit increases the drained condition value by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ritual Transformation",
+      "category": "offensive",
+      "text": "The spirit has been absorbing energy through the ritual so it can transform itself once Urxehl manifests. Once the total value of all of the drained conditions the spirit has inflicted with drain life reaches 3, it loses its incorporeal trait as its body becomes solid. The spirit loses all of its immunities and resistances, it gains 40 Temporary Hit Points, and its Strength bonus increases to +0.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Rune has been disabled",
+            "option": "rune-disabled",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "rune-disabled"
+          ]
+        }
+      ]
+    }
+  ]
+}

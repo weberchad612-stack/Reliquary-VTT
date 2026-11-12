@@ -1,0 +1,128 @@
+{
+  "kind": "effect",
+  "slug": "effect-flaming-star-weapon",
+  "system": "pf2e",
+  "name": "Effect: Flaming Star - Weapon",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Flaming Star, Flaming Star (Greater), Flaming Star (Major)\n\nYour Strikes with the weapon deal an additional die of fire damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:flaming-star",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Flaming Star"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:flaming-star-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Flaming Star (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:flaming-star-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Flaming Star (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "flaming-star"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectFlamingStarWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "flaming-star:flaming-star"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectFlamingStarWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "flaming-star:flaming-star-greater"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectFlamingStarWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d8",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "flaming-star:flaming-star-major"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectFlamingStarWeapon}-damage"
+      }
+    }
+  ]
+}

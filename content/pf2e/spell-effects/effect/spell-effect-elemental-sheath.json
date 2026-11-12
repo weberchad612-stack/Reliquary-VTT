@@ -1,0 +1,94 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-elemental-sheath",
+  "system": "pf2e",
+  "name": "Spell Effect: Elemental Sheath",
+  "source": {
+    "title": "Pathfinder Lost Omens Shining Kingdoms",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Elemental Sheath\n\nChoose air, earth, fire, metal, water, or wood; the spell gains that trait. You gain a +1 circumstance bonus to AC and resistance to two types of damage based on the element you choose.\n\nAir bludgeoning and electricity\n\nEarth bludgeoning and poison\n\nFire fire and slashing\n\nMetal acid and slashing\n\nWater cold and piercing\n\nWood piercing and void.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "value": {
+              "firstResistance": "bludgeoning",
+              "secondResistance": "electricity"
+            }
+          },
+          {
+            "label": "PF2E.TraitEarth",
+            "value": {
+              "firstResistance": "bludgeoning",
+              "secondResistance": "poison"
+            }
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": {
+              "firstResistance": "fire",
+              "secondResistance": "slashing"
+            }
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": {
+              "firstResistance": "acid",
+              "secondResistance": "slashing"
+            }
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": {
+              "firstResistance": "cold",
+              "secondResistance": "piercing"
+            }
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": {
+              "firstResistance": "piercing",
+              "secondResistance": "void"
+            }
+          }
+        ],
+        "flag": "element",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 1
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.element.firstResistance}",
+        "value": "5 * floor((@item.level - 2) / 2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.element.secondResistance}",
+        "value": "5 * floor((@item.level - 2) / 2)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "kind": "effect",
+  "slug": "effect-taunt",
+  "system": "pf2e",
+  "name": "Effect: Taunt",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Taunt\n\nYou take a –1 circumstance penalty to attack rolls and DCs that don't target the origin. If you take a hostile action that doesn't target the origin, you also become Off-Guard until the start of your next turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Guardian.Taunt.ToggleLabel",
+        "option": "taunt-dc-penalty",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "circumstance",
+      "value": -1,
+      "slug": "taunt-attack-roll",
+      "when": [
+        {
+          "not": "target:signature:{item|origin.signature}"
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "attack-roll",
+      "text": "PF2E.SpecificRule.Guardian.Taunt.Note",
+      "when": [
+        {
+          "not": "target:signature:{item|origin.signature}"
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "class",
+        "inline-dc",
+        "spell-dc"
+      ],
+      "type": "circumstance",
+      "value": -1,
+      "slug": "taunt-dc",
+      "when": [
+        "taunt-dc-penalty"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Guardian.Taunt.Label",
+        "mode": "add",
+        "predicate": [
+          "taunt-dc-penalty"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Guardian.Taunt.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Guardian.Taunt.Label",
+        "mode": "add",
+        "predicate": [
+          "taunt-dc-penalty"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Guardian.Taunt.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Guardian.Taunt.Label",
+        "mode": "add",
+        "predicate": [
+          "taunt-dc-penalty"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Guardian.Taunt.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "taunt-dc-penalty"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Guardian.Bodyguard.ToggleLabel",
+        "option": "bodyguard-taunt",
+        "predicate": [
+          "parent:origin:item:tag:bodyguard"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "bodyguard-taunt"
+        ],
+        "selectors": [
+          "class",
+          "inline-dc",
+          "spell-dc"
+        ],
+        "slug": "taunt-dc",
+        "value": -2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:item:tag:bodyguard",
+          "bodyguard-taunt"
+        ],
+        "property": "other-tags",
+        "value": "bodyguard-taunt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:item:tag:bodyguard",
+          "bodyguard-taunt"
+        ],
+        "property": "other-tags",
+        "value": "bodyguard-taunt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:item:tag:bodyguard",
+          "bodyguard-taunt"
+        ],
+        "property": "other-tags",
+        "value": "bodyguard-taunt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:effect:taunt:{item|origin.signature}"
+      }
+    }
+  ]
+}

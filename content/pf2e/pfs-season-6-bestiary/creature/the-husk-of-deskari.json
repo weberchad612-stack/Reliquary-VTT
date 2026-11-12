@@ -1,0 +1,242 @@
+{
+  "kind": "creature",
+  "slug": "the-husk-of-deskari",
+  "system": "pf2e",
+  "name": "The Husk of Deskari",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-19: What Walks Again",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "aberration",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 33,
+    "hp": 280,
+    "perception": 22,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 20,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 7,
+      "dex": 4,
+      "int": -5,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 25,
+      "intimidation": 25
+    },
+    "speeds": {
+      "land": 60,
+      "climb": 60,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "death-effects",
+        "disease",
+        "fear-effects",
+        "mental",
+        "paralyzed",
+        "poison",
+        "precision",
+        "swarm-mind",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 8
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "perception": "swarmsense 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Scythe",
+      "ref": "equipment:item/scythe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Scythe",
+      "attack": 26,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "reach-20",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Bite",
+      "attack": 26,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d6",
+          "type": "acid",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stinger",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+7",
+          "type": "piercing"
+        },
+        {
+          "dice": "4d6",
+          "type": "acid",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Locust Horde",
+      "category": "interaction",
+      "text": "Once the Husk of Deskari has been reduced to 160 hp the surviving locusts retreat inside the Husk rather than surrounding it. At this point the Disgorge Swarm aura ceases to function, the Husk loses its weakness to splash effects and area of effect attacks, and any creature still taking persistent damage from this effect automatically succeeds on their next flat check to remove it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              {
+                "gt": [
+                  "hp-remaining",
+                  160
+                ]
+              }
+            ],
+            "type": [
+              "area-damage",
+              "splash-damage"
+            ],
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cacophony",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "aura",
+        "mental"
+      ],
+      "text": "The droning buzz of locusts fills the air and mingles with the rasping, screeching sounds of the Husk's carapace plates grinding as it moves. Any creature that begins its turn or moves within 60 feet of the Husk of Deskari must attempt a DC 33 Fortitude save save or be Sickened 1. After attempting the save a creature is immune to the effects of cacophony for 1 minute. On a critical failure, a creature is only immune for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "traits": [
+              "auditory",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Stinger Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Disgorge Swarm",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Millions of fiendish locusts swarm out of the Husk of Deskari, surrounding it in a 30-foot emanation. The emanation moves with the Husk and remains until removed by Locust Horde. Any creature that enters or begins its turn in the emanation must attempt a DC 36 Reflex save save, with effects based on the results of the save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 2d8 piercing damage and is Clumsy 1 for 1 round.\n\nFailure The creature takes 4d8 piercing damage and is clumsy 1 for 1 minute.\n\nCritical Failure The creature takes 8d8 piercing damage and is Clumsy 2 for one minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Swarmsense",
+      "category": "offensive",
+      "text": "The Husk of Deskari can see through the eyes of each insect in the swarms infesting its body or those created by its breath weapon. This grants the Husk of Deskari All-Around Vision."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

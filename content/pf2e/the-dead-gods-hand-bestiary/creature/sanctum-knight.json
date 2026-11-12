@@ -1,0 +1,293 @@
+{
+  "kind": "creature",
+  "slug": "sanctum-knight",
+  "system": "pf2e",
+  "name": "Sanctum Knight",
+  "source": {
+    "title": "The Dead God's Hand",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 28,
+    "perception": 7,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 4,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 0,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "intimidation": 7,
+      "religion": 5
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "azlanti",
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "vitality",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Aeon Armor",
+      "ref": "equipment:item/aeon-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 10,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "muddle-mind"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Proof of Undeath",
+      "category": "defensive",
+      "text": "A sanctum knight believes themself to be a living immortal, but if offered proof that they are in fact undead, they must succeed at a DC 20 Will save save or become Frightened 1 (or Frightened 3 on a critical failure). On a critical success, they're temporarily immune to this fear for 24 hours. Once they recover from being frightened, their memories of the proof offered fade and they once again regard themselves as living immortals. Proof of undeath includes whenever they take vitality damage, whenever they restore HP as a result of void damage, or whenever a character within 30 feet presents evidence or an argument as a 2-action activity with the linguistic trait and succeeds at a DC 17 Deception check, DC 17 Diplomacy check, or DC 17 Intimidation check check."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aeon Blast",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The sanctum knight chooses one of the aeon stars, then fires it from its orbit to detonate into a 20-foot-radius blast at any point within 120 feet, dealing 2d6 untyped damage to creatures in the area (basic DC 18 Reflex save save). The damage type depends on the color of the aeon star.\n\nBlack Aeon Star void damage\n\nGold Aeon Star electricity damage\n\nGreen Aeon Star acid damage\n\nWhite Aeon Star spirit damage",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aeon-blast",
+            "predicate": [
+              {
+                "nor": [
+                  {
+                    "and": [
+                      "aeon-black-star",
+                      "aeon-gold-star",
+                      "aeon-green-star",
+                      "aeon-white-star"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Black.Label",
+                "predicate": [
+                  {
+                    "not": "aeon-black-star"
+                  }
+                ],
+                "value": "void"
+              },
+              {
+                "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Gold.Label",
+                "predicate": [
+                  {
+                    "not": "aeon-gold-star"
+                  }
+                ],
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Green.Label",
+                "predicate": [
+                  {
+                    "not": "aeon-green-star"
+                  }
+                ],
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.White.Label",
+                "predicate": [
+                  {
+                    "not": "aeon-white-star"
+                  }
+                ],
+                "value": "spirit"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "aeon-blast"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "{item|_id}-inline-damage"
+            ],
+            "value": "{item|flags.system.rulesSelections.aeonBlast}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aeon Stars",
+      "category": "offensive",
+      "text": "A sanctum knight has four tiny motes of light that constantly orbit their head. These four aeon stars are black, gold, green, and white, and each provides illumination equivalent to that of a lit candle. A sanctum knight can expend an aeon star to make an Aeon Blast (see above), but once a sanctum knight has used all of their aeon stars, they become Slowed 1. An expended aeon star returns to its orbit around the sanctum knight's head automatically after 1 hour has passed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Black.RollOptionLabel",
+            "option": "aeon-black-star",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Gold.RollOptionLabel",
+            "option": "aeon-gold-star",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.Green.RollOptionLabel",
+            "option": "aeon-green-star",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SanctumKnight.AeonStar.White.RollOptionLabel",
+            "option": "aeon-white-star",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alterations": [
+              {
+                "mode": "override",
+                "property": "badge-value",
+                "value": 1
+              }
+            ],
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "onDeleteActions": {
+              "grantee": "restrict"
+            },
+            "predicate": [
+              "aeon-black-star",
+              "aeon-gold-star",
+              "aeon-green-star",
+              "aeon-white-star"
+            ],
+            "reevaluateOnUpdate": true,
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Muddle Mind",
+      "category": "offensive",
+      "traits": [
+        "mental"
+      ],
+      "text": "The first time each round a creature takes damage from a throneglass weapon wielded by a sanctum knight, it must attempt a DC 18 Will save save to avoid becoming Stupefied 1 for 1 minute (or stupefied 1 for 24 hours on a critical failure). Regardless of the result of its save, the creature is temporarily immune to muddle mind for 1 round."
+    }
+  ],
+  "text": "The devoted Knights of the Aeon Star who chose to serve in the Sanctum of Aroden believed their tours of duty would last, at most, a few years, and that they would emerge from the sanctum with glory and prestige. In truth, when Aroden died, these knights slowly starved to death after becoming trapped within the Sanctum, only to rise from death when the malevolent forces from the Heart of Sarnax got into their bodies and drew back their souls to serve as sanctum knights. These rare undead are found only in the Sanctum of Aroden."
+}

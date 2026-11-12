@@ -1,0 +1,49 @@
+{
+  "kind": "action",
+  "slug": "resist-magic",
+  "system": "pf2e",
+  "name": "Resist Magic",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "actions": "reaction",
+  "category": "defensive",
+  "text": "Trigger You attempt a saving throw against a harmful magical effect but haven't rolled yet.\n\n---\nYour innate magic protects you. You gain a +1 circumstance bonus to the triggering saving throw. Additionally, if the triggering effect is arcane, if you roll a success, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "resist-magic",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "resist-magic",
+        "item:magical"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "resist-magic",
+          "item:trait:arcane"
+        ],
+        "selector": "saving-throw"
+      }
+    }
+  ]
+}

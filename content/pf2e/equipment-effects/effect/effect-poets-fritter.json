@@ -1,0 +1,154 @@
+{
+  "kind": "effect",
+  "slug": "effect-poets-fritter",
+  "system": "pf2e",
+  "name": "Effect: Poet's Fritter",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Poet's Fritter (Lesser), Poet's Fritter (Moderate), Poet's Fritter (Greater)\n\nYou gain an item bonus to Deception checks to Lie and to Performance checks made for vocal-based performances, and resistance against mental damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poets-fritter-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poet's Fritter (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poets-fritter-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poet's Fritter (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poets-fritter-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poet's Fritter (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "poets-fritter"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "deception",
+        "performance"
+      ],
+      "type": "item",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "action:lie",
+            "action:perform:singing",
+            "vocal-performance"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "poets-fritter:poets-fritter-moderate"
+        ],
+        "selectors": [
+          "deception",
+          "performance"
+        ],
+        "slug": "poets-fritter",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "poets-fritter:poets-fritter-greater"
+        ],
+        "selectors": [
+          "deception",
+          "performance"
+        ],
+        "slug": "poets-fritter",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "poets-fritter:poets-fritter-lesser"
+        ],
+        "type": "mental",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "poets-fritter:poets-fritter-moderate"
+        ],
+        "type": "mental",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "poets-fritter:poets-fritter-greater"
+        ],
+        "type": "mental",
+        "value": 15
+      }
+    }
+  ]
+}

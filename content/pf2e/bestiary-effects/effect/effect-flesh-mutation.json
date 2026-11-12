@@ -1,0 +1,130 @@
+{
+  "kind": "effect",
+  "slug": "effect-flesh-mutation",
+  "system": "pf2e",
+  "name": "Effect: Flesh Mutation",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "formula",
+    "value": "1d4",
+    "labels": [
+      "Spongy Flesh",
+      "Caustic Blood",
+      "Sprouting Eyes",
+      "Mutated Mind"
+    ]
+  },
+  "text": "You are affected by a mutation according to the result.\n\n1 Spongy Flesh You have weakness 5 to physical damage.\n\n2 Caustic Blood You take 2d4 persistent acid damage that can't be removed normally, but ends when the mutation does.\n\n3 Sprouting Eyes You are dazzled, but also immune to flanking.\n\n4 Mutated Mind You are confused. You can still recover as noted in the condition, but if you do you remain off-guard until the mutation ends.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "parent:badge:value:1"
+        ],
+        "type": "physical",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "persistent-damage",
+            "value": {
+              "damageType": "acid",
+              "formula": "2d4"
+            }
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "parent:badge:value:2"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Persistent Damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "parent:badge:value:3"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Dazzled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.flankable",
+        "predicate": [
+          "parent:badge:value:3"
+        ],
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "flesh-mutation",
+        "predicate": [
+          "parent:badge:value:4"
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.condition.confused.name",
+            "value": "confused"
+          },
+          {
+            "label": "PF2E.condition.off-guard.name",
+            "value": "off-guard"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "parent:badge:value:4",
+          "flesh-mutation:confused"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Confused"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "parent:badge:value:4",
+          "flesh-mutation:off-guard"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    }
+  ]
+}

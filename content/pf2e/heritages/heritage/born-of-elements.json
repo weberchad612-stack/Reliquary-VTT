@@ -1,0 +1,96 @@
+{
+  "kind": "heritage",
+  "slug": "born-of-elements",
+  "system": "pf2e",
+  "name": "Born of Elements",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "yaoguai"
+  ],
+  "ancestry": {
+    "name": "Yaoguai",
+    "ref": "ancestries:ancestry/yaoguai"
+  },
+  "text": "You were an aspect of nature—the rain, the wind, a ray of light—until the wild essences gave you a soul. Due to your natural connection, the tradition of any spells or magical abilities you gain from a yaoguai heritage or ancestry feat is primal instead of its normal tradition (usually occult).\n- Humanoid Form You remain attuned to the natural world. You gain a +1 circumstance bonus to Survival checks to Sense Direction, and you don't take a penalty if you don't have a compass.\n- Yaoguai Form The power of nature flows through you, ready to lash out. Choose Electric Arc, Frostbite, Ignition, Needle Darts, Timber, Scatter Scree, Slashing Gust, or Spout. You can cast this spell as an innate primal cantrip at will. A cantrip is heightened to a spell rank equal to half your level rounded up.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "or": [
+                "item:slug:electric-arc",
+                "item:slug:frostbite",
+                "item:slug:ignition",
+                "item:slug:needle-darts",
+                "item:slug:timber",
+                "item:slug:scatter-scree",
+                "item:slug:slashing-gust",
+                "item:slug:spout"
+              ]
+            }
+          ],
+          "itemType": "spell",
+          "slugsAsValues": true
+        },
+        "flag": "cantrip",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Cantrip",
+        "rollOption": "born-of-elements"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.cantrip}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.cantrip}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:yaoguai"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "action:sense-direction",
+        "change-shape:humanoid"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "compass-in-possession"
+      }
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "kind": "effect",
+  "slug": "effect-feast-on-fear",
+  "system": "pf2e",
+  "name": "Effect: Feast on Fear",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "If you are the origin, you gain a status bonus to your Speeds. Otherwise, you take a status penalty to your Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 5
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": 10
+          }
+        ],
+        "flag": "feastOnFear",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "self:signature:{item|origin.signature}"
+          }
+        ],
+        "selector": "land-speed",
+        "slug": "feast-on-fear-penalty",
+        "type": "status",
+        "value": "-@item.flags.system.rulesSelections.feastOnFear"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "selector": "all-speeds",
+        "slug": "feast-on-fear-bonus",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.feastOnFear"
+      }
+    }
+  ]
+}

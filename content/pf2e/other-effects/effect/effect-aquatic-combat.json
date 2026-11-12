@@ -1,0 +1,156 @@
+{
+  "kind": "effect",
+  "slug": "effect-aquatic-combat",
+  "system": "pf2e",
+  "name": "Effect: Aquatic Combat",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "See Aquatic Combat\n\nUse these rules for battles in water or underwater:\n- You're off-guard unless you have a swim Speed.\n- You gain resistance 5 to acid and fire.\n- You take a –2 circumstance penalty to your attack roll for bludgeoning or slashing attacks that pass through water.\n- Ranged attacks made by an underwater creature or against an underwater target have their range increments halved.\n- You can't cast fire spells or use actions with the fire trait underwater. As normal for how traits work, any part of the effect that's unrelated to fire still works. For example, an attack with a flaming battleaxe could still deal its physical damage, just not its fire damage.\nEffect: Remaining Air",
+  "rules": [
+    {
+      "key": "note",
+      "selector": "all",
+      "text": "PF2E.SpecificRule.AquaticCombat.FireNote",
+      "when": [
+        "item:trait:fire",
+        {
+          "not": "item:rune:property:underwater"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "item:damage:type:slashing",
+              "item:damage:type:bludgeoning"
+            ]
+          },
+          {
+            "nand": [
+              {
+                "or": [
+                  "self:trait:amphibious",
+                  "self:trait:aquatic"
+                ]
+              },
+              "self:type:npc"
+            ]
+          },
+          {
+            "not": "item:rune:property:underwater"
+          }
+        ],
+        "selector": "attack-roll",
+        "type": "circumstance",
+        "value": -2
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "acid",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:ranged",
+          {
+            "not": "item:rune:property:underwater"
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "multiply",
+        "property": "range-increment",
+        "value": 0.5
+      }
+    },
+    {
+      "key": "note",
+      "selector": "ranged-attack-roll",
+      "text": "PF2E.SpecificRule.AquaticCombat.RangedNote",
+      "when": [
+        {
+          "not": "item:rune:property:underwater"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "nor": [
+              "aquatic-combat:not-off-guard",
+              "speed:swim"
+            ]
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "or": [
+              "item:damage:persistent:fire",
+              "item:damage:fire"
+            ]
+          },
+          {
+            "not": "item:trait:impulse"
+          }
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "inline-damage",
+          "attack-damage",
+          "spell-damage"
+        ],
+        "value": 0
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "key": "AdjustModifier",
+        "predicate": [
+          {
+            "or": [
+              "item:damage:persistent:fire",
+              "item:damage:fire"
+            ]
+          },
+          {
+            "not": "item:trait:impulse"
+          }
+        ],
+        "selectors": [
+          "inline-damage",
+          "attack-damage",
+          "spell-damage"
+        ],
+        "suppress": true
+      }
+    }
+  ]
+}

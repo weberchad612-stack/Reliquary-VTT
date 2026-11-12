@@ -1,0 +1,248 @@
+{
+  "kind": "creature",
+  "slug": "erinys",
+  "system": "pf2e",
+  "name": "Erinys",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 135,
+    "perception": 16,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 4,
+      "int": 1,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 18,
+      "deception": 14,
+      "diplomacy": 14,
+      "intimidation": 16,
+      "religion": 18,
+      "stealth": 16,
+      "survival": 18
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "daemonic",
+      "diabolic"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 23,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Divine Wrath",
+          "rank": 4,
+          "ref": "spells:spell/divine-wrath"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Invisibility (Self Only, At Will)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Scourge of Snakes",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unholy",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Snake Fangs",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "magical",
+        "poison",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "poison"
+        },
+        {
+          "dice": "2d4+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flaming Gaze",
+      "attack": 18,
+      "traits": [
+        "fire",
+        "magical",
+        "unholy"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d10+4",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scourge of Snakes",
+      "category": "interaction",
+      "text": "If an erinys ever drops or is disarmed of their scourge of snakes, the scourge discorporates into a tangle of fiendish vipers that immediately returns to the erinys. The erinys can reform a discorporated scourge of snakes with an Interact action, but they can never have more than one scourge of snakes at a time."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Retributive Glare",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 60 feet damages the erinys\n\n---\nEffect With a glance, the erinys burns the one that dared hurt them. The erinys makes a flaming gaze Strike against the triggering creature, dealing an additional 1d8 persistent,fire damage on a critical hit. This attack doesn't trigger reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "retributive-glare",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "critical": true,
+            "damageType": "fire",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "retributive-glare"
+            ],
+            "selector": "flaming-gaze-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frenzy of Coils",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements The erinys is holding a scourge of snakes\n\n---\nEffect The erinys makes a scourge of snakes Strike against each enemy within reach. Each attack counts toward the erinys's multiple attack penalty, but the penalty doesn't increase until they've made all their attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Furious Fangs",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical",
+        "poison",
+        "unholy"
+      ],
+      "text": "Requirements The erinys's last action was a scourge of snakes Strike that dealt damage\n\n---\nEffect One of the snakes that makes up the erinys's scourge bites at the same target as the required Strike. The target takes 3d6 poison damage (DC 26 basic Fortitude save save). On a failure, the target also becomes Sickened 1 (Sickened 2 on a critical failure) as they're wracked with terrible pain."
+    }
+  ],
+  "text": "As mortals persevere against the predations and schemes of the denizens of the unholy planes—daemons, demons, devils, and the like—such fiends are driven to fury, and a desire for vengeance against mortals rises in their collective wills. Erinyes are those emotions made manifest. While not as ancient as some of their extraplanar counterparts, erinyes have existed for as long as mortals have fought back against fiends. An erinys's form mocks mortals' frailty: a humanoid shape with wings as black as pitch and eyes that glow with baleful fire. Fiendish vipers slither constantly across their skin and through their hair, and an erinys can form these snakes into a living whip or direct them to bite anyone who draws too near. Most erinyes wear deep black robes or armor.\n\nErinyes can be found wherever unholy fiends feel a strong desire for vengeance. Erinyes consider themselves mercenaries, working for whatever fiendish faction gives them the opportunity to vent their wrath on mortals. They can be found throughout the unholy planes and the Universe. Rarely, an erinys will make a deal with a mortal to perform acts of vengeance on that mortal's behalf, especially if those acts are particularly violent."
+}

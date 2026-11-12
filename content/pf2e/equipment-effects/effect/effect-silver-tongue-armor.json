@@ -1,0 +1,84 @@
+{
+  "kind": "effect",
+  "slug": "effect-silver-tongue-armor",
+  "system": "pf2e",
+  "name": "Effect: Silver Tongue - Armor",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Silver Tongue, Silver Tongue (Greater)\n\nYou gain an item bonus to saving throws against auditory and linguistic effects.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:silver-tongue",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Silver Tongue"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:silver-tongue-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Silver Tongue (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "silver-tongue"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "silver-tongue-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:auditory",
+            "item:trait:linguistic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "silver-tongue:silver-tongue-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "silver-tongue-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

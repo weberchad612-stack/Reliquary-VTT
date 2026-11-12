@@ -1,0 +1,333 @@
+{
+  "kind": "creature",
+  "slug": "khasprickle",
+  "system": "pf2e",
+  "name": "Khasprickle",
+  "source": {
+    "title": "Pathfinder #202: Severed at the Root",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 28,
+    "hp": 155,
+    "perception": 21,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 22,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 7,
+      "int": 4,
+      "str": 5,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 18,
+      "crafting": 17,
+      "deception": 17,
+      "intimidation": 17,
+      "medicine": 19,
+      "nature": 19,
+      "stealth": 20,
+      "survival": 19,
+      "thievery": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "fey",
+      "gnomish"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 12
+        }
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 6
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Mirage",
+          "rank": 4,
+          "ref": "spells:spell/mirage"
+        },
+        {
+          "name": "Unfettered Movement",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 3,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Invisibility (At Will) (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Gold Pieces",
+      "ref": "equipment:item/gold-pieces",
+      "type": "treasure",
+      "quantity": 50
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Quills",
+      "category": "defensive",
+      "text": "A creature that hits a pukwudgie with an unarmed Strike or a non-reach melee Strike takes 3d8 piercing damage (DC 28 basic Reflex save save). On a critical failure, the creature also takes 1d6 persistent,poison damage from the poisoned quills."
+    },
+    {
+      "kind": "ability",
+      "name": "Brush By",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Trigger Khasprickle leaves a square adjacent to an enemy\n\n---\n\nEffect Khasprickle roughly brushes up against the enemy with his quills as he passes by. Khasprickle makes a melee quill Strike. On a success, he additionally Shoves the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Khasprickle takes on the physical form of a giant porcupine. His size changes to Medium, he loses his weapon Strikes, and he gains a quill Strike (+21 for 2d8+8 piercing plus 1d8 persistent poison).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "pukwudgie",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Pukwudgie",
+                "value": "pukwudgie"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.PorcupineGiant",
+                "value": "porcupine-giant"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:porcupine-giant"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 21,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "predicate": [
+              "change-shape:porcupine-giant"
+            ],
+            "replaceAll": true,
+            "slug": "quill"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "predicate": [
+              "change-shape:porcupine-giant"
+            ],
+            "selector": "quill-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 21,
+            "category": "simple",
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 10
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "predicate": [
+              "change-shape:pukwudgie"
+            ],
+            "slug": "quill",
+            "traits": [
+              "agile",
+              "finesse",
+              "magical"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 21,
+            "category": "simple",
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 10
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "predicate": [
+              "change-shape:pukwudgie"
+            ],
+            "range": {
+              "increment": 30
+            },
+            "slug": "quill-ranged",
+            "traits": [
+              "agile",
+              "magical"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pincushion",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Khasprickle makes three quill Strikes in quick succession. These Strikes count toward his multiple attack penalty but don't apply the multiple attack penalty until all three Strikes are complete."
+    },
+    {
+      "kind": "ability",
+      "name": "Pukwudgie Poison",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 28 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d8 poison damage and Stupefied 1 (1 round)\n\nStage 2 1d8 poison damage and Stupefied 2 (1 round)\n\nStage 3 1d8 poison damage, Confused, and stupefied 2 (1 round)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quill Fighter",
+      "category": "offensive",
+      "text": "Khasprickle wields his quills like a deadly weapon. He deals an additional 3d6 precision damage with quill Strikes against Off-Guard targets. On a critical hit with a quill, Khasprickle pierces a pressure point or nerve cluster with pinpoint accuracy; the target becomes Clumsy 2 for 1d4 rounds (or increases the value of their clumsy condition by 1).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|description}"
+        }
+      ]
+    }
+  ],
+  "text": "Pukwudgies go by many names in many regions, but those who know of them agree that defying their mischievous nature provokes their wrath.\n\nIn ancient times, pukwudgies traveled to the Universe from the First World, perhaps in the wake of the gnome emigration. These proud fey are obsessed with displays of respect, and while they first attempted to befriend mortals, each attempt ended in tragedy as the pukwudgies perceived any potential slight as a grave insult. Mortals, fearing these reactions, began to view pukwudgies as dangerous nuisances. Pukwudgies, in turn, began to resent mortals and the gods that favored them.\n\nAt their best, pukwudgies play cruel jokes on mortals they encounter. At their worst, they've been known to kidnap and even kill those who don't treat them with proper respect. Violent fey like twigjacks and redcaps often gather under pukwudgie leadership, much to the pukwudgies' glee.\n\nPukwudgies make their villages in the oldest forests, concealed under Mirage spells. They travel freely between the Universe and the First World through tiny portals beneath hills, trees, or stones. No strangers to violence, pukwudgies rarely travel alone and often anoint their quills or weapons with a custom-brewed poison before entering hostile situations.\n\nStanding about 2 feet tall, a pukwudgie sports sharp quills growing from their head that extends down their back. Their skin tone varies by the region in which they live, ranging from pale gray to brown.",
+  "blurb": "Male pukwudgie"
+}

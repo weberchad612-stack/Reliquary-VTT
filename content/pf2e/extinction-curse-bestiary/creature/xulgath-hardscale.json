@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "xulgath-hardscale",
+  "system": "pf2e",
+  "name": "Xulgath Hardscale",
+  "source": {
+    "title": "Pathfinder #154: Siege of the Dinosaurs",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "xulgath"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 215,
+    "perception": 21,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 22,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 23,
+      "diplomacy": 19,
+      "intimidation": 21,
+      "nature": 19,
+      "stealth": 19,
+      "survival": 21
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "draconic",
+      "sakvroth"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sturdy Shield (Lesser)",
+      "ref": "equipment:item/sturdy-shield-lesser",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Moderate)",
+      "ref": "equipment:item/elixir-of-life-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Necklace of Bone and Gems",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 24,
+      "traits": [
+        "magical",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 23,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d4+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 21,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+23 when using Perception for Initiative",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "perception"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aggressive Block",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Trigger The hardscale uses the Shield Block reaction, and the opponent that triggered Shield Block is adjacent to the hardscale and is not more than one size larger than it\n\n---\n\nEffect The hardscale makes an Athletics check to shove options=aggressive-block the opponent. This shove doesn't increase the hardscale's multiple attack penalty. If they roll a critical failure, they get a failure instead. If they roll a success, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better",
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:shove",
+              "aggressive-block"
+            ],
+            "selector": "athletics"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Hardscale Shield Stance",
+      "category": "defensive",
+      "text": "A hardscale always has their shield raised as if they had used the Raise a Shield action, as long as they meet that action's requirements.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.shield.raised",
+            "predicate": [
+              "self:shield:equipped",
+              {
+                "nor": [
+                  "self:shield:broken",
+                  "self:shield:destroyed"
+                ]
+              }
+            ],
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. A creature that enters the area must attempt a DC 32 Fortitude save save. On a failure, the creature is Sickened 2, and on a critical failure, the creature is also Slowed 1 for as long as it is sickened. While within the aura, the creature takes a -2 circumstance penalty to saves to recover from the sickened condition. A creature that succeeds at its save is temporarily immune to all xulgaths' stenches for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "powerful-stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "At the beginning of each of their turns, the hardscale receives an additional reaction that they can use only for Shield Block.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Warden",
+      "category": "defensive",
+      "text": "If the hardscale has their shield raised, they can Shield Block when an attack is made against an adjacent ally. If they do, the shield prevents that ally from taking damage instead of the hardscale."
+    },
+    {
+      "kind": "ability",
+      "name": "Hammer Mastery",
+      "category": "offensive",
+      "text": "The hardscale deals an extra 1d8 damage with weapons with the shove trait, and weapons with the shove trait gain the deadly 2d8 trait when the hardscale uses them (both the extra weapon damage die and the deadly trait have already been included in the hardscale's warhammer Strike above).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "item:trait:shove"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:trait:shove"
+            ],
+            "property": "traits",
+            "value": "deadly-2d8"
+          }
+        }
+      ]
+    }
+  ]
+}

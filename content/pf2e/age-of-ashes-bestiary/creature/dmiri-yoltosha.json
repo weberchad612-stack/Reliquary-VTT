@@ -1,0 +1,311 @@
+{
+  "kind": "creature",
+  "slug": "dmiri-yoltosha",
+  "system": "pf2e",
+  "name": "Dmiri Yoltosha",
+  "source": {
+    "title": "Pathfinder #145: Hellknight Hill",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "goblin",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 52,
+    "perception": 14,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 12,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 9,
+      "deception": 5,
+      "nature": 7,
+      "stealth": 10,
+      "survival": 7,
+      "thievery": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Key",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 13,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 12,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry",
+      "category": "offensive",
+      "text": "Dmiri's multiple attack penalty against her hunted prey is -3 (-2 with an agile weapon) on her second attack and -6 (-4 with an agile weapon) on her third or subsequent attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "MultipleAttackPenalty",
+            "predicate": [
+              "agile",
+              "hunted-prey"
+            ],
+            "selector": "attack",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "MultipleAttackPenalty",
+            "predicate": [
+              "hunted-prey",
+              {
+                "not": "agile"
+              }
+            ],
+            "selector": "attack",
+            "value": -3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Dmiri designates a single creature as her prey and focuses her attacks against that creature. Dmiri must be able to see or hear the prey, or she must be tracking the prey during exploration.\n\nDmiri gains a +2 circumstance bonus to Perception checks when she Seeks her prey and a +2 circumstance bonus to Survival checks when she Tracks her prey. Dmiri also ignores the penalty for making ranged attacks within her second range increment against the prey she is hunting.\n\nDmiri can have only one creature designated as prey at a time. If she uses Hunt Prey against a creature when she already has a creature designated, the prior creature loses the designation and the new prey gains the designation. Dmiri's designation lasts until her next daily preparations.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Aim",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "ranger"
+      ],
+      "text": "When Dmiri focuses on aiming, her attack becomes particularly accurate. Make a ranged weapon Strike against her hunted prey. On this Strike, Dmiri gains a +2 circumstance bonus to the attack roll and ignores her prey's Concealed condition.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "hunters-aim",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hunters-aim",
+            "hunted-prey",
+            {
+              "not": "melee"
+            }
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "attack",
+          "text": "Ignore your prey's Concealed condition.",
+          "when": [
+            "hunters-aim",
+            "hunted-prey",
+            "target:condition:concealed",
+            {
+              "not": "melee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Dmiri is wielding two melee weapons, one in each hand\n\n---\n\nDmiri uses her two weapons to parry attacks. Dmiri gains a +1 circumstance bonus to AC until the start of her next turn, or a +2 circumstance bonus if either weapon has the parry trait. Dmiri loses this circumstance bonus if she no longer meet this ability's requirement.\n\nEffect: Twin Parry\n\nEffect: Twin Parry (Parry Trait)"
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Takedown",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirement Dmiri is wielding two melee weapons, each in a different hand\n\n---\n\nDmiri swiftly attacks her hunted prey with both weapons. Make two Strikes against Dmiri 's hunted prey, one with each of the required weapons. If both hit the same hunted prey, combine their damage for the purpose of its resistances and weaknesses. Apply Dmiri 's multiple attack penalty to each Strike normally.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "blurb": "Female hobgoblin ranger 4"
+}

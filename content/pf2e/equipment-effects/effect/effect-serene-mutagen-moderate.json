@@ -1,0 +1,84 @@
+{
+  "kind": "effect",
+  "slug": "effect-serene-mutagen-moderate",
+  "system": "pf2e",
+  "name": "Effect: Serene Mutagen (Moderate)",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Serene Mutagen (Moderate)\n\nYou gain a +2 bonus to Will saves and Perception, Medicine, Nature, Religion, and Survival checks. This bonus improves to +3 when you attempt Will saves against mental effects.\n\nYou take a -1 penalty to attack rolls and save DCs of offensive spells, and a -1 penalty per damage die to all weapon and unarmed attack damage.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "medicine",
+        "nature",
+        "perception",
+        "religion",
+        "survival",
+        "will"
+      ],
+      "type": "item",
+      "value": 2,
+      "slug": "serene-mutagen-bonus"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.Mutagens.SereneMutagen.PenaltyLabel",
+        "option": "serene-mutagen-dc-penalty",
+        "placement": "spellcasting",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "untyped",
+      "value": -1,
+      "slug": "serene-mutagen-attack-penalty"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "strike-damage",
+        "slug": "serene-mutagen-strike-damage-penalty",
+        "value": "-@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "spell-dc",
+      "type": "untyped",
+      "value": -1,
+      "slug": "serene-mutagen-spell-dc-penalty",
+      "when": [
+        "serene-mutagen-dc-penalty"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "item:trait:mental"
+        ],
+        "selector": "will",
+        "slug": "serene-mutagen-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

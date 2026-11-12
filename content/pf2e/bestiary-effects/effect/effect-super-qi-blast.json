@@ -1,0 +1,78 @@
+{
+  "kind": "effect",
+  "slug": "effect-super-qi-blast",
+  "system": "pf2e",
+  "name": "Effect: Super Qi Blast",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "For your next casting of the two-action version of qi blast, the size of the cone increases to 120 feet and the damage increases to 16d6. You also become one size category larger, dealing an additional +9 damage with your melee Strikes.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.NPCAbility.Grandmaster.SuperQiBlast.FirstCastQiBlast",
+        "option": "super-qi-blast",
+        "placement": "spellcasting",
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "item:slug:qi-blast",
+          "item:cast:actions:2",
+          "super-qi-blast"
+        ],
+        "property": "area-size",
+        "value": 120
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "item:slug:qi-blast",
+          "item:cast:actions:2",
+          "super-qi-blast"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "spell-damage"
+        ],
+        "value": 16
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "resizeEquipment": true,
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "untyped",
+      "value": 9
+    }
+  ]
+}

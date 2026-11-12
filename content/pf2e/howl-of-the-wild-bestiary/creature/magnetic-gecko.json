@@ -1,0 +1,171 @@
+{
+  "kind": "creature",
+  "slug": "magnetic-gecko",
+  "system": "pf2e",
+  "name": "Magnetic Gecko",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "animal"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 15,
+    "hp": 20,
+    "perception": 10,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 7,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": {
+        "value": 6,
+        "special": [
+          {
+            "value": 8,
+            "label": "to Climb",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ]
+    },
+    "notes": {
+      "perception": "greater electrolocation 20 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tongue",
+      "attack": 7,
+      "traits": [
+        "electricity",
+        "finesse",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d4",
+          "type": "electricity"
+        }
+      ],
+      "effects": [
+        "static-cling"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Electrolocation",
+      "category": "interaction",
+      "text": "A magnetic gecko can sense minute electrical charges in living creatures, which it can use as a precise sense at a range of 20 feet. This distance increases to 100 feet against any creature that has used an electricity effect within the last minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Uncanny Climber",
+      "category": "interaction",
+      "text": "A magnetic gecko's feet allow it to climb virtually any surface, no matter how slick or sheer. If a gecko attempts an Athletics check to Climb and critically fails, it gets a failure instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:climb"
+            ],
+            "selector": "athletics"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Launch Metal",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The gecko repulses the metal attached to its body in all directions, dealing 2d6 bludgeoning damage (DC 17 basic Reflex save save) to all creatures in a 10-foot emanation. The gecko can't use Launch Metal again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Repel",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The gecko manipulates its magnetic field to repel metal, humming audibly and gaining resistance 2 to damage from metal weapons and metal effects until the beginning of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "repel",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "repel"
+            ],
+            "type": "metal",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Static Cling",
+      "category": "offensive",
+      "text": "If the gecko hits Small or smaller creature with its tongue, and the target is made of metal or is wearing metallic armor, the gecko's tongue latches on to the creature. The creature must attempt a DC 17 Reflex save save or become Grabbed. While the gecko is Grabbing a creature in this way, it can attempt an Athletics check check against the target's Fortitude DC to pull the creature to a space adjacent to the gecko. A creature grabbed in this way can Escape normally."
+    }
+  ]
+}

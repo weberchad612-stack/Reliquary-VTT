@@ -1,0 +1,97 @@
+{
+  "kind": "feat",
+  "slug": "red-mantis-assassin-dedication",
+  "system": "pf2e",
+  "name": "Red Mantis Assassin Dedication",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "trained in sawtooth sabres",
+    "deity is Achaekek",
+    "member of the Red Mantis assassins"
+  ],
+  "text": "Access You are from Mediogalti Island.\n\n---\nYou have learned how to stalk your foes and slay them with a sawtooth saber. You become trained in Stealth and Assassin Lore; if you were already trained, you become an expert instead. Whenever your proficiency in any weapon increases to expert or beyond, you also gain that new proficiency with sawtooth sabers.\n\nYou become bound by Achaekek's anathema and can receive his sanctification.\n\nRed Mantis Assassin",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Stealth",
+            "predicate": [
+              "skill:stealth:rank:0"
+            ],
+            "value": 1
+          },
+          {
+            "label": "PF2E.Skill.Diplomacy",
+            "predicate": [
+              {
+                "gte": [
+                  "skill:stealth:rank",
+                  1
+                ]
+              }
+            ],
+            "value": 2
+          }
+        ],
+        "flag": "rank",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.stealth.rank",
+        "value": "@item.flags.system.rulesSelections.rank"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitUnholy",
+            "value": "unholy"
+          },
+          {
+            "label": "PF2E.NoneOption",
+            "value": "none"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Sanctification",
+        "rollOption": "sanctification"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "unholy"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          "sanctification:unholy"
+        ]
+      }
+    }
+  ]
+}

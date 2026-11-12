@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "braggart",
+  "system": "pf2e",
+  "name": "Braggart",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "classfeature",
+  "text": "You boast, taunt, and psychologically needle your foes. You are trained in Intimidation. When you Demoralize, the action gains the bravado trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.ExemplaryFinisher.Braggart",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher",
+        "feature:exemplary-finisher"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:demoralize"
+        ],
+        "property": "traits",
+        "value": "bravado"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "item:trait:bravado",
+        "predicate": [
+          "action:demoralize"
+        ]
+      }
+    }
+  ]
+}

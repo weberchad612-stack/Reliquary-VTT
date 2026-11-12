@@ -1,0 +1,243 @@
+{
+  "kind": "creature",
+  "slug": "corbayrant",
+  "system": "pf2e",
+  "name": "Corbayrant",
+  "source": {
+    "title": "Pathfinder Lost Omens Shining Kingdoms",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "beast",
+    "fey",
+    "plant"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 38,
+    "hp": 295,
+    "perception": 28,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 27,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 6,
+      "dex": 5,
+      "int": 4,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 33,
+      "nature": 29,
+      "stealth": {
+        "value": 27,
+        "special": [
+          {
+            "value": 31,
+            "label": "in forests",
+            "when": [
+              "terrain:forest"
+            ]
+          }
+        ]
+      },
+      "survival": 27
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 40
+    },
+    "languages": [
+      "common",
+      "fey",
+      "muan"
+    ],
+    "iwr": {
+      "immunities": [
+        "blinded",
+        "visual"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "perception": "blindsight (precise) 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 32,
+      "damage": [
+        {
+          "dice": "3d12+18",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stinger",
+      "attack": 32,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "corbayrant-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spine",
+      "attack": 32,
+      "traits": [
+        "propulsive"
+      ],
+      "range": 40,
+      "damage": [
+        {
+          "dice": "3d6+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "thorn-paralysis"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vitriolic Miasma",
+      "category": "interaction",
+      "traits": [
+        "aura"
+      ],
+      "text": "30 feet.\n\nNon-corbayrants take a –2 circumstance penalty to saves against poison effects and gain weakness 10 to poison damage while within the aura.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "vitriolic-miasma"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Vitriolic Miasma"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 20 (deactivated by cold)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within your reach uses a manipulate action or a move action, makes a ranged attack, or leaves a square during a move action it's using.\n\n---\n\nYou lash out at a foe that leaves an opening. Make a melee Strike against the triggering creature. If your attack is a critical hit and the trigger was a manipulate action, you disrupt that action. This Strike doesn't count toward your multiple attack penalty, and your multiple attack penalty doesn't apply to this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Thorny Hide",
+      "category": "defensive",
+      "text": "A corbayrant's body is covered in jagged spines. Adjacent creatures that hit them with a melee attack, as well as creatures that touch them or hit them with an unarmed attack, take 4d6 piercing damage and are exposed to thorn paralysis.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Corbayrant Venom",
+      "category": "offensive",
+      "text": "Saving Throw DC 37 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 8d6 poison damage (1 round)\n\nStage 2 9d6 poison damage (1 round)\n\nStage 3 9d6 poison damage and Drained 1 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Spine Volley",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The corbayrant makes four spine Strikes, each against a different target. These attacks all count toward the corbayrant's multiple attack penalty, but the penalty doesn't increase until after the corbayrant makes their attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 9d6 piercing plus thorn paralysis, Rupture 30\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Thorn Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "poison"
+      ],
+      "text": "The corbayrant's spines are covered in a paralyzing toxin that cause verdurous thorns to sprout from their victim's body. When a non-corbayrant creature is exposed, it attempts a DC 37 Fortitude save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature sprouts spines like those of the corbayrant. For 1 minute, the creature gains the corbayrant's thorny hide ability. Allies attempting to aid the victim with touch-range spells and abilities run the risk of becoming infected themselves. At the end of the duration, the spines fall off harmlessly.\n\nFailure As success, but the creature is also Paralyzed for 1 minute. It can attempt another Fortitude save at the end of each turn to end the paralysis, but not the spines.\n\nCritical Failure As failure, but the creature doesn't receive a save at the end of its turn to end the paralysis."
+    }
+  ],
+  "text": "Corbayrants are creations of the Green Mother, one of the fey called the Eldest. In the Age of Creation, she fashioned them from thorns and moss into deadly predators. When gnomes migrated to the mortal Universe, many corbayrants followed but found themselves poorly suited to life outside the First World.\n\nCorbayrants are historically solitary, territorial creatures. They're incapable of reproducing, and without the revivifying properties of the First World, their numbers are doomed to deplete. Recently, a number of corbayrants in the Verduran Forest have overcome their natures to band together. They've been known to take their prey alive, sacrificing their victims in vile experiments in an effort to find a way to propagate corbayrant numbers.\n\nCorbayrants look like massive clawless scorpions covered in bark and thorns. A rotting fog wafts from their bodies. In the rare instance when they deign to speak, they do so in a raspy whisper."
+}

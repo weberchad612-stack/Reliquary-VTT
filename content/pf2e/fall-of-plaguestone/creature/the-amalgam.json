@@ -1,0 +1,185 @@
+{
+  "kind": "creature",
+  "slug": "the-amalgam",
+  "system": "pf2e",
+  "name": "The Amalgam",
+  "source": {
+    "title": "Pathfinder Adventure: The Fall of Plaguestone",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "aberration",
+    "chaotic",
+    "evil"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 65,
+    "perception": 11,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 10,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": 2,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 15,
+      "intimidation": 10
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 10,
+      "swim": 10
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "goblin",
+      "orcish"
+    ],
+    "notes": {
+      "saves": "many minds"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "trip"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Many Minds",
+      "category": "defensive",
+      "text": "The Amalgam has many consciousnesses floating inside its mind, and they are not equally affected by mental magic. The Amalgam always treats its saving throws against mental effects as one degree better.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better",
+              "failure": "one-degree-better",
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "mental"
+            ],
+            "selector": "saving-throw",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Too Many Limbs",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The amalgam can make up to four Strikes, one with each of its listed melee attacks, but no more than two at any one target. It takes a -2 penalty to each attack, but the multiple attack penalty does not increase until all the attacks are made.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "too-many-limbs",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "too-many-limbs"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trip",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "skill"
+      ],
+      "text": "Requirements You have at least one hand free. Your target can't be more than one size larger than you\n\n---\n\nYou try to knock a creature to the ground. Attempt an Athletics check against the target's Reflex DC.\n\n---\n\nCritical Success The target falls and lands Prone and takes 1d6 bludgeoning damage.\n\nSuccess The target falls and lands prone.\n\nCritical Failure You lose your balance and fall and land prone."
+    }
+  ]
+}

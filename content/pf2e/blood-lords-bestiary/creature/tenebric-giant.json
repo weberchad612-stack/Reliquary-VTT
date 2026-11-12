@@ -1,0 +1,270 @@
+{
+  "kind": "creature",
+  "slug": "tenebric-giant",
+  "system": "pf2e",
+  "name": "Tenebric Giant",
+  "source": {
+    "title": "Pathfinder #185: A Taste of Ashes",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "shadow",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 39,
+    "hp": 360,
+    "perception": 31,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 27,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 9,
+      "dex": 4,
+      "int": 4,
+      "str": 9,
+      "wis": 7
+    },
+    "skills": {
+      "athletics": 33,
+      "intimidation": 30,
+      "religion": 30,
+      "stealth": {
+        "value": 29,
+        "special": [
+          {
+            "value": 33,
+            "label": "to Hide in Dim Light or Darkness",
+            "when": [
+              "action:hide",
+              {
+                "or": [
+                  "lighting:darkness",
+                  "lighting:dim-light"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 80,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "jotun",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "mental",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "telepathy (with its creator only) 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Scythe",
+      "ref": "equipment:item/scythe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Scythe",
+      "attack": 34,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "reach-15",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+17",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "cloying-shadows"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+17",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "cloying-shadows"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 32,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d6+17",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "cloying-shadows"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 80 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cloying Shadows",
+      "category": "offensive",
+      "traits": [
+        "occult",
+        "shadow"
+      ],
+      "text": "The tenebric giant's attacks leave behind a residue of energy from the Shadow Plane. A creature hit by the tenebric giant's melee Strike takes an additional 1d8 persistent void damage and must attempt a DC 36 Reflex save save.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature is Blinded until its next turn begins.\n\nFailure The creature is blinded for 1 minute.\n\nCritical Failure The creature is permanently blinded.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "item:melee",
+                  "item:slug:rock"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tenebric Stride",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "The tenebric giant can move quickly in shadowy conditions. The tenebric giant Strides twice and makes a scythe Strike at any point during this movement against a target that is in darkness or dim light. This movement doesn't provoke reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Necromancers reaching for the greatest heights of experimentation know that creating a new terror requires exacting, careful work at every stage of the process. In the case of the tenebric giant, this process begins with a tomb giant who dies after consuming a dose of several poisons combined with the shadow ash reagent. This creates the right circumstances for a necromancer to raise them as a tenebric giant. They're particularly obedient to the will of the necromancer who created them and are charged full of energy from the Shadow Plane, which grants them new powers and abilities."
+}

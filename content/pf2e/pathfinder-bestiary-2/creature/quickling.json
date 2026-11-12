@@ -1,0 +1,208 @@
+{
+  "kind": "creature",
+  "slug": "quickling",
+  "system": "pf2e",
+  "name": "Quickling",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 22,
+    "hp": 25,
+    "perception": 9,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 13,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 4,
+      "int": 3,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 13,
+      "crafting": 8,
+      "deception": 8,
+      "nature": 8,
+      "stealth": 11,
+      "survival": 6,
+      "thievery": 11
+    },
+    "speeds": {
+      "land": 100
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Shatter",
+          "rank": 2,
+          "ref": "spells:spell/shatter"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Ventriloquism",
+          "rank": 1,
+          "ref": "spells:spell/ventriloquism"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Lethargy Poison",
+      "ref": "equipment:item/lethargy-poison",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "lethargy-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Can't Catch Me",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The quickling is targeted by a Strike\n\n---\n\nEffect The quickling darts aside, gaining a +2 circumstance bonus to AC, then Strides up to half their Speed after the Strike resolves.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "cant-catch-me",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "cant-catch-me"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow Susceptibility",
+      "category": "defensive",
+      "text": "The quickling takes a -2 status penalty to saving throws against effects that cause the Slowed condition. If the quickling ever becomes slowed, they lose their supernatural speed, can't Fade from View, and become Sickened 1 for the duration of the slow. They also can't reduce this sickened condition for the duration of the slowed effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Fade from View",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The quickling used no attack, manipulate, or move actions in the previous round\n\n---\n\nEffect The quickling becomes Invisible until it uses an attack, manipulate, or move action.\n\nThe quickling can't use Fade from View again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The quickling's Strikes deal an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Supernatural Speed",
+      "category": "offensive",
+      "text": "The quickling's speed, combined with nearly instantaneous acceleration and deceleration, enables them to move in astonishing ways. As long as they have a firm surface to travel across, they can Stride their full movement vertically or horizontally. They can even run across unstable surfaces, such as water, in the same way, although dangerous surfaces (acid, lava, etc.) harm them as normal. They must end their movement on a horizontal surface capable of bearing their weight or else they fall."
+    }
+  ],
+  "text": "Few creatures can match a quickling's speed. These malicious fey creatures delight in striking with blinding speed and accuracy, racing in to stab and slash at foes before scampering away for cover with maddening- even frightening-swiftness. Stories of people simply doubling over, bleeding from what appear to be spontaneously opening wounds, are often eyewitness accounts of quickling attacks.\n\nQuicklings actively hate the \"slow-paced dullards\" they encounter every day, delighting in inflicting suffering and pain on creatures they deem too sluggish to matter. While they are related to kinder fey such as brownies and pixies, quicklings care only for their own merriment. They see their own cruel pranks as the height of humor and have full confidence that their speed and invisibility will keep them safe from harm. They occasionally form gangs of up to a dozen individuals, although the group usually devolves very quickly into mayhem, as they inevitably perform increasingly deadly pranks against each other."
+}

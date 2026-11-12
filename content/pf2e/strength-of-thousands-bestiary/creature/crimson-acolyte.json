@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "crimson-acolyte",
+  "system": "pf2e",
+  "name": "Crimson Acolyte",
+  "source": {
+    "title": "Pathfinder #173: Doorway to the Red Star",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 235,
+    "perception": 23,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 25,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 4,
+      "int": 3,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 24,
+      "arcana": 22,
+      "athletics": 24,
+      "stealth": 24
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "akitonian",
+      "aklo",
+      "common"
+    ],
+    "notes": {
+      "saves": "evasion"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dueling Pistol",
+      "ref": "equipment:item/dueling-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Thasteron Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Thousand Wounds",
+      "attack": 27,
+      "traits": [
+        "backstabber",
+        "forceful",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dueling Pistol",
+      "attack": 26,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ageless",
+      "category": "defensive",
+      "text": "The crimson acolyte doesn't age and doesn't need food or drink to survive."
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When the acolyte rolls a success on a Reflex save, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guarded Movement",
+      "category": "defensive",
+      "text": "The acolyte gains a +4 circumstance bonus to AC against reactions triggered by their movement.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "guarded-movement",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "guarded-movement"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Frequency once per turn\n\n---\n\nEffect The acolyte makes two unarmed Strikes, or one unarmed Strike and a dueling pistol Strike. If both hit the same creature, combine their damages for the purposes of resistances and weaknesses.\n\nThe acolyte's multiple attack penalty applies normally to these Strikes.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The acolyte deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Thousand Ants Stance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "The acolyte takes the stance of thousand ants, a style mimicking the distracting strikes of a swarm of tiny, vicious creatures. The acolyte can make thousand wounds unarmed attacks.\n\nThese deal 1d12 piercing damage; are in the brawling group; and have the backstabber, forceful, and unarmed traits. While in this stance, if the acolyte successfully Trips a target, the target is Off-Guard until the start of the target's next turn."
+    }
+  ],
+  "blurb": "Human devotee"
+}

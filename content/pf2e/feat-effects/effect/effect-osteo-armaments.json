@@ -1,0 +1,150 @@
+{
+  "kind": "effect",
+  "slug": "effect-osteo-armaments",
+  "system": "pf2e",
+  "name": "Effect: Osteo Armaments",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Osteo Armaments\n\nYou create a weapon of bone and sinew. The weapon falls apart and is destroyed after 1 hour, if you aren't holding it at the end of your turn, or if you use Osteo Armaments again.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "nor": [
+                "item:category:unarmed",
+                "item:magical",
+                "item:trait:consumable"
+              ]
+            }
+          ],
+          "itemType": "weapon"
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": "no"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": "yes"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              8
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Necromancer.OsteoArmaments.Prompt",
+        "rollOption": "osteo-armaments-decaying"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade",
+          "granter": "cascade"
+        },
+        "uuid": "{item|flags.system.rulesSelections.weapon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "item:granter:id:{item|id}"
+        ],
+        "property": "runes-potency",
+        "value": "ternary(gte(@actor.level,16),3,ternary(gte(@actor.level,10),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "item:granter:id:{item|id}"
+        ],
+        "property": "runes-striking",
+        "value": "ternary(gte(@actor.level,19),3,ternary(gte(@actor.level,12),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:granter:id:{item|id}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "osteo-armaments-decaying:yes",
+          {
+            "lt": [
+              "self:level",
+              15
+            ]
+          }
+        ],
+        "property": "property-runes",
+        "value": "decaying"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:granter:id:{item|id}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "osteo-armaments-decaying:yes",
+          {
+            "gte": [
+              "self:level",
+              15
+            ]
+          }
+        ],
+        "property": "property-runes",
+        "value": "greater-decaying"
+      }
+    }
+  ]
+}

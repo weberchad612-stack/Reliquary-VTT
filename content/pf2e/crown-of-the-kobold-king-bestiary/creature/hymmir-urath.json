@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "hymmir-urath",
+  "system": "pf2e",
+  "name": "Hymmir Urath",
+  "source": {
+    "title": "Pathfinder Adventure: Crown of the Kobold King",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 80,
+    "perception": 13,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 15,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 14,
+      "intimidation": 11,
+      "stealth": 11,
+      "survival": 13
+    },
+    "speeds": {
+      "land": 30,
+      "burrow": 5
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ghoul-ghoul-fever",
+        "ghoul-paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "ghoul-paralysis"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The ghoul is adjacent to the corpse of a creature that died within the last hour.\n\n---\n\nEffect The ghoul devours a chunk of the corpse and regains 3d6 healing Hit Points.\n\nIt can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 22 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d6 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 2d6 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a Ghoul the next midnight."
+    },
+    {
+      "kind": "ability",
+      "name": "Gnaw and Chew",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements Hymmir is in a hungry rage\n\n---\n\nEffect Hymmir attempts a jaws Strike. If he hits, he chews at his target and inflicts an additional 1d6 slashing damage. Hymmir regains 3d6 healing Hit Points.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "gnaw-and-chew",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "slashing",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "gnaw-and-chew"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hungry Rage",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "Trigger Hymmir damages a living creature with his jaws Strike\n\n---\nEffect The taste of flesh and blood throws Hymmir into a violent rage. He gains 9 temporary Hit Points, deals an additional 2 damage with melee Strikes, and takes a -1 penalty to AC for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "upgrade",
+            "path": "flags.system.rageTempHP",
+            "value": 9
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Any living, non-elf creature hit by a ghoul's attack must succeed at a DC 22 Fortitude save save or become Paralyzed. It can attempt a new save at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save."
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The ghoul jumps up to half its Speed. This movement doesn't trigger reactions."
+    }
+  ],
+  "blurb": "Male human barbarian ghoul"
+}

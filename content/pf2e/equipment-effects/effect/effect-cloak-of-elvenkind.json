@@ -1,0 +1,76 @@
+{
+  "kind": "effect",
+  "slug": "effect-cloak-of-elvenkind",
+  "system": "pf2e",
+  "name": "Effect: Cloak of Elvenkind",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Cloak of Elvenkind, Cloak of Elvenkind (Greater)\n\nYou gain an item bonus to Stealth checks.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:cloak-of-elvenkind",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Cloak of Elvenkind"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:cloak-of-elvenkind-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Cloak of Elvenkind (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "cloak-of-elvenkind"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "item",
+      "value": 1,
+      "slug": "cloak-of-elvenkind-bonus"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "cloak-of-elvenkind:cloak-of-elvenkind-greater"
+        ],
+        "selector": "stealth",
+        "slug": "cloak-of-elvenkind-bonus",
+        "type": "item",
+        "value": 2
+      }
+    }
+  ]
+}

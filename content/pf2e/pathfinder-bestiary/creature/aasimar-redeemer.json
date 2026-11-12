@@ -1,0 +1,224 @@
+{
+  "kind": "creature",
+  "slug": "aasimar-redeemer",
+  "system": "pf2e",
+  "name": "Aasimar Redeemer",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "good",
+    "human",
+    "humanoid",
+    "nephilim"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 73,
+    "perception": 11,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 8,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "diplomacy": 12,
+      "medicine": 9,
+      "religion": 11,
+      "society": 7
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "empyrean"
+    ],
+    "notes": {
+      "ac": "(25 with shield raised)",
+      "saves": "+1 status to all saves vs. disease (critical failures become failures against diseases)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Champion Devotion Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Lay on Hands",
+          "rank": 1,
+          "ref": "spells:spell/lay-on-hands"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 15,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 12,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Disease",
+      "category": "defensive",
+      "text": "Against diseases, critical failures become failures.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "disease"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "disease"
+            ],
+            "selector": "saving-throw",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Divine Grace",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The angelkin is targeted by a spell that allows a saving throw.\n\n---\n\nEffect The scion gains a +2 circumstance bonus to the saving throw.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "saving-throw",
+            "key": "RollOption",
+            "option": "divine-grace",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "divine-grace"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glimpse of Redemption",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages one of the angelkin's allies. Both the enemy and ally must be within 15 feet of the angelkin.\n\n---\n\nEffect The angelkin causes its foe to hesitate under the weight of its sins as visions of possible redemption play out in its mind's eye. The foe chooses one of two options:\n\n- The ally is completely unharmed by the triggering damage.\n\n- The ally gains resistance 7 to all damage against the triggering damage. After the damaging effect resolves, the enemy becomes Enfeebled 2 until the end of its next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    }
+  ],
+  "text": "Mortals whose ancestry has been influenced by celestials are known as aasimars, and angelkin, who have blood of angels coursing through their veins, are among the most common type of them. Many angelkin seek adventure as a means of doing good in the world.\n\n---\n\nMany immortals dwell upon the other planes of the Great Beyond. Some are benevolent and kindly, like angels. Others are cruel and destructive, like demons. And some fit roles outside of morality, like psychopomps. It's far from unheard of that mortals and immortals alike become entangled romantically, and the children of such engagements carry a supernatural element in their bloodlines for generations to follow. After the first generation, this otherworldly influence usually lies dormant, but now and then, the influence can manifest strongly in descendants many years later. These inheritors of extraplanar legacies are known collectively as planar scions."
+}

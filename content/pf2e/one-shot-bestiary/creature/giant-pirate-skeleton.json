@@ -1,0 +1,175 @@
+{
+  "kind": "creature",
+  "slug": "giant-pirate-skeleton",
+  "system": "pf2e",
+  "name": "Giant Pirate Skeleton",
+  "source": {
+    "title": "Pathfinder One-Shot #1: Sundered Waves",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "evil",
+    "mindless",
+    "skeleton",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 26,
+    "hp": 125,
+    "perception": 18,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 15,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 2,
+      "int": -5,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 5
+        },
+        {
+          "type": "electricity",
+          "value": 5
+        },
+        {
+          "type": "fire",
+          "value": 5
+        },
+        {
+          "type": "piercing",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Gaff Hook",
+      "attack": 20,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+10",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "impaling-hook"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Easily Distracted",
+      "category": "defensive",
+      "text": "The giant pirate skeleton's poor vision makes it easily distracted by creatures that flank it. Whenever it has the off-guard condition from being flanked, increase the penalty to its AC to -4.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": -4,
+          "when": [
+            "flanked"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Is flanked?",
+            "option": "flanked",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Focused Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The giant pirate skeleton makes two Strikes with its claw against one foe. The multiple attack penalty doesn't increase until after both attacks are resolved.\n\nThe giant pirate skeleton doesn't use this ability if there is more than one creature within its reach that it can see."
+    },
+    {
+      "kind": "ability",
+      "name": "Impaling Hook",
+      "category": "offensive",
+      "text": "A creature critically hit by the giant pirate skeleton's gaff hook is impaled upon it.\n\nThe creature is Grabbed by the giant pirate skeleton and whenever the giant pirate skeleton maintains the grab, the creature takes 1d10+10 piercing damage from the agonizing wound."
+    }
+  ]
+}

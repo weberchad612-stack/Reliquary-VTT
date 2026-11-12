@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "rearing-display",
+  "system": "pf2e",
+  "name": "Rearing Display",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype",
+    "flourish"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "Cavalier Dedication",
+    "expert in Intimidation"
+  ],
+  "text": "Requirements You are riding your mount.\n\n---\nYou've trained your mount to make an impressive attack and can leverage its presence to terrify your enemies. You Command an Animal to order your mount to rear up and make a melee Strike against a creature within its reach. On a successful hit, you can attempt an Intimidation check to Demoralize the target. You gain a +1 circumstance bonus to this Intimidation check (+2 if the Strike was a critical hit).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "rearing-display",
+        "suboptions": [
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.success",
+            "value": "sucess"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.criticalSuccess",
+            "value": "critical-success"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "intimidation",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "action:demoralize",
+        "rearing-display"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "action:demoralize",
+          "rearing-display:critical-success"
+        ],
+        "selector": "intimidation",
+        "value": 2
+      }
+    }
+  ]
+}

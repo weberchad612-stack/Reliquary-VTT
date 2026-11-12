@@ -1,0 +1,78 @@
+{
+  "kind": "feat",
+  "slug": "foxfire",
+  "system": "pf2e",
+  "name": "Foxfire",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kitsune"
+  ],
+  "category": "ancestry",
+  "text": "A crack of your tail sparks wisps of blue energy. Choose either electricity or fire when you gain this feat. You gain a foxfire ranged unarmed attack with a maximum range of 20 feet. The attack deals 1d4 damage of the chosen type (no ability modifier is added to the damage roll). Your foxfire attack is in the sling weapon group and has the magical trait. Like other unarmed attacks, you can improve this attack with Handwraps of Mighty Blows.\n\n---\n\nSpecial If you are a frozen wind kitsune, your foxfire deals cold damage instead of electricity or fire.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              {
+                "not": "self:heritage:frozen-wind-kitsune"
+              }
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "not": "self:heritage:frozen-wind-kitsune"
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              "self:heritage:frozen-wind-kitsune"
+            ],
+            "value": "cold"
+          }
+        ],
+        "flag": "damage",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.UI.RuleElements.ChoiceSet.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "{item|flags.system.rulesSelections.damage}",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "group": "sling",
+        "img": "icons/magic/water/tendrils-ice-growth.webp",
+        "key": "Strike",
+        "range": {
+          "max": 20
+        },
+        "traits": [
+          "unarmed",
+          "magical"
+        ]
+      }
+    }
+  ]
+}

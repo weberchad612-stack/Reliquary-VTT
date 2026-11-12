@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "stance-tenacious-stance",
+  "system": "pf2e",
+  "name": "Stance: Tenacious Stance",
+  "source": {
+    "title": "Pathfinder Lost Omens Highhelm",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Tenacious Stance\n\nYou gain a number of temporary Hit Points equal to half your level (minimum 1) and a +2 circumstance bonus to DCs against being Shoved and Tripped. However, you no longer negate your armor check penalty or Speed penalty for having a high Strength while in this stance.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "fortitude-dc",
+        "reflex-dc"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "action:shove",
+            "action:trip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "max(1,floor(@actor.level/2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "dex-skill-check",
+        "key": "RollOption",
+        "option": "armor:strength-requirement-met",
+        "phase": "beforeDerived",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "str-skill-check",
+        "key": "RollOption",
+        "option": "armor:strength-requirement-met",
+        "phase": "beforeDerived",
+        "value": false
+      }
+    }
+  ]
+}

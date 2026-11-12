@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "eldritch-researcher-dedication",
+  "system": "pf2e",
+  "name": "Eldritch Researcher Dedication",
+  "source": {
+    "title": "Pathfinder #164: Hands of the Devil",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "trained in Arcana",
+    "trained in Occultism"
+  ],
+  "text": "You gain the ability to cast a single arcane or occult cantrip of your choice (which is heightened to a spell rank equal to half your level rounded up). If you weren't already, you become trained in that tradition's spell DCs and spell attack rolls with Intelligence as your spellcasting ability.\n\nRegardless of whether you choose an arcane or occult cantrip, you also become an expert in your choice of either Arcana or Occultism. You also gain a +1 circumstance bonus to checks you attempt with the chosen skill when Investigating or Identifying Magic.\n\nEldritch Researcher",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Skill.Arcana",
+            "value": {
+              "name": "arcana",
+              "value": "arcana"
+            }
+          },
+          {
+            "label": "PF2E.Skill.Occultism",
+            "value": {
+              "name": "occultism",
+              "value": "occultism"
+            }
+          }
+        ],
+        "flag": "eldritch",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.eldritch.name}",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "action:identify-magic",
+            "action:investigate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.eldritch.value}.rank",
+        "value": 2
+      }
+    }
+  ]
+}

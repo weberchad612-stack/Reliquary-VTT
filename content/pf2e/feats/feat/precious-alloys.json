@@ -1,0 +1,103 @@
+{
+  "kind": "feat",
+  "slug": "precious-alloys",
+  "system": "pf2e",
+  "name": "Precious Alloys",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "talos"
+  ],
+  "category": "ancestry",
+  "maxTakable": 3,
+  "text": "Choose cold iron or silver. Your melee unarmed attacks have the special properties of a weapon made of that metal. If you are at least 13th level, you can choose adamantine instead of just cold iron or silver.\n\n---\n\nSpecial You can take this ancestry feat multiple times, choosing a different metal each time.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.PreciousMaterialAdamantine",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  13
+                ]
+              },
+              {
+                "not": "precious-alloys:adamantine"
+              }
+            ],
+            "value": "adamantine"
+          },
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "predicate": [
+              {
+                "not": "precious-alloys:cold-iron"
+              }
+            ],
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "predicate": [
+              {
+                "not": "precious-alloys:silver"
+              }
+            ],
+            "value": "silver"
+          }
+        ],
+        "flag": "material",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  {
+                    "gte": [
+                      "self:level",
+                      13
+                    ]
+                  },
+                  {
+                    "not": "precious-alloys:adamantine"
+                  }
+                ]
+              },
+              {
+                "nand": [
+                  "precious-alloys:cold-iron",
+                  "precious-alloys:silver"
+                ]
+              }
+            ]
+          }
+        ],
+        "rollOption": "precious-alloys"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:unarmed",
+          "item:melee"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "materials",
+        "selector": "strike-damage",
+        "value": "{item|flags.system.rulesSelections.material}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "kind": "condition",
+  "slug": "deafened",
+  "system": "pf2e",
+  "name": "Deafened",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "valued": false,
+  "group": "senses",
+  "note": "Reference text: the ruleset defines how conditions work (rulesets/pf2e/rules.js).",
+  "text": "You can't hear. You automatically critically fail Perception checks that require you to be able to hear. You take a –2 status penalty to Perception checks for initiative and checks that involve sound but also rely on other senses. If you perform an action that has the auditory trait, you must succeed at a DC 5 Flat check or the action is lost; attempt the check after spending the action but before any effects are applied. You are immune to auditory effects while deafened.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "perception",
+        "skill-check"
+      ],
+      "type": "status",
+      "value": -2,
+      "slug": "deafened",
+      "when": [
+        {
+          "or": [
+            {
+              "and": [
+                "check:type:skill",
+                "item:trait:auditory"
+              ]
+            },
+            {
+              "and": [
+                "check:statistic:base:perception",
+                "check:statistic:initiative"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "immunity",
+      "type": "auditory"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:auditory"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.deafened.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:auditory"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.deafened.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "item:trait:subtle"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.condition.deafened.note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "all": "to-critical-failure"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:trait:auditory"
+        ],
+        "selector": "perception"
+      }
+    }
+  ]
+}

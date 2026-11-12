@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-glimpse-weakness",
+  "system": "pf2e",
+  "name": "Spell Effect: Glimpse Weakness",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Glimpse Weakness\n\nYou deal additional precision damage equal to 1 + this spell's rank, and then the spell ends.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageCategory": "precision",
+        "key": "FlatModifier",
+        "selector": "strike-damage",
+        "slug": "glimpse-weakness",
+        "value": "1+@item.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "ceil(@item.level / 2)",
+        "dieSize": "d4",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "parent:origin:item:tag:amped"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "parent:origin:item:tag:amped"
+        ],
+        "selector": "strike-damage",
+        "slug": "glimpse-weakness",
+        "value": "ceil(@item.level / 2)"
+      }
+    }
+  ]
+}

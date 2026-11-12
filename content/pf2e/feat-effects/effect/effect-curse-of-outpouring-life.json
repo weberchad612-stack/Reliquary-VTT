@@ -1,0 +1,158 @@
+{
+  "kind": "effect",
+  "slug": "effect-curse-of-outpouring-life",
+  "system": "pf2e",
+  "name": "Effect: Curse of Outpouring Life",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "labels": [
+      "Minor",
+      "Moderate",
+      "Major",
+      "Extreme"
+    ]
+  },
+  "text": "Granted by Life\n\nCurse of Outpouring Life\n\nLife energy flows outward from you and connects you to all living things, but you expend your vital essence to do so. Your presence comforts the ill and injured, causes scars to fade slightly, spurs new growth in plants, and otherwise infuses your surroundings with vitality.\n\nMinor Curse\n\nAs your life force seeps outward, it becomes more difficult to keep your body functioning. Effects that restore Hit Points to you take a status penalty equal to half your level (minimum 1) to the number of HP you recover.\n\nModerate Curse\n\nThe flow of life energy away from you can't be reversed.\n\nIn addition to the effects of your minor curse, you can't be healed by magical effects originating from other creatures. However, if you are unconscious, magical effects can restore you to 1 HP (but no higher). You are affected normally by healing elixirs, potions, and other items.\n\nWhen you cast Heal and all your targets are living creatures, you roll d12s instead of d8s for the amount of healing.\n\nWhenever you finish casting a non-cantrip spell, you restore Hit Points equal to the spell rank to your choice of either one target of the spell or the creature nearest to you. You can't heal yourself in this way. This healing has the healing, necromancy, and vitality traits, as well as the tradition trait of the spell.\n\nMajor Curse (11th)\n\nLife energy tears through you to empower your magic. Some of your spells carry vitality energy with them.\n\nEach time you use a spell slot to cast a 5th-rank or higher spell that takes 2 or more actions to cast, you disperse vitality energy in a 30-foot burst with the effects of a 3-action heal spell with a rank 4 lower than that of the spell you cast. This healing occurs immediately after you finish Casting the Spell. You don't benefit from this healing. Instead, you lose double the number of Hit Points rolled for the heal spell.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "healing-received",
+      "type": "status",
+      "value": "-max(floor(@level/2),1)"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "dieSize": "d12"
+        },
+        "predicate": [
+          "class:oracle",
+          "item:slug:heal",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          },
+          "all-living-targets"
+        ],
+        "selector": "spell-healing"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.OracleCurses.Life.ToggleLabel",
+        "option": "all-living-targets",
+        "placement": "spellcasting",
+        "predicate": [
+          "class:oracle",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:major-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:extreme-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "oracular-curse:stage:{item|badge.value}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "description",
+        "value": [
+          {
+            "predicate": [
+              {
+                "gte": [
+                  "oracular-curse:stage",
+                  2
+                ]
+              },
+              {
+                "not": "cantrip"
+              }
+            ],
+            "text": "PF2E.OracleCurses.Life.DescriptionModerate",
+            "title": "PF2E.OracleCurses.Label.Moderate"
+          },
+          {
+            "predicate": [
+              {
+                "gte": [
+                  "oracular-curse:stage",
+                  3
+                ]
+              },
+              {
+                "gte": [
+                  "item:rank",
+                  5
+                ]
+              },
+              "item:spell-slot"
+            ],
+            "text": "PF2E.OracleCurses.Life.DescriptionMajor",
+            "title": "PF2E.OracleCurses.Label.Major"
+          }
+        ]
+      }
+    }
+  ]
+}

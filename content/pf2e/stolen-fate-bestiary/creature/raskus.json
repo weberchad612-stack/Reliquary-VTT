@@ -1,0 +1,220 @@
+{
+  "kind": "creature",
+  "slug": "raskus",
+  "system": "pf2e",
+  "name": "Raskus",
+  "source": {
+    "title": "Pathfinder #190: The Choosing",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "tengu"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 175,
+    "perception": 18,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 21,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 21,
+      "athletics": 19,
+      "intimidation": 19,
+      "religion": 18,
+      "stealth": 21
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "razatlani",
+      "tengu"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Blindness",
+          "rank": 4,
+          "ref": "spells:spell/blindness"
+        },
+        {
+          "name": "Earthbind",
+          "rank": 4,
+          "ref": "spells:spell/earthbind"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Spike Launcher",
+      "ref": "equipment:item/spike-launcher",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Simple)",
+      "ref": "equipment:item/manacles-simple",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Spikes",
+      "ref": "equipment:item/rounds-spike-launcher",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 22,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6 + 11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 21,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4 + 11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spike Launcher",
+      "attack": 22,
+      "traits": [
+        "backstabber",
+        "fatal-d12",
+        "kickback",
+        "magical",
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8 + 9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snap Shot",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements Raskus holds a loaded spike launcher\n\nTrigger A creature within 30 feet of Raskus uses a move action, makes a ranged attack, or leaves a square during a move action it's using\n\n---\n\nEffect Raskus attempts a spike launcher Strike against the triggering creature. This Strike doesn't contribute to his multiple attack penalty, and his multiple attack penalty doesn't apply to this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Go For the Eyes",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger Raskus critically hits with a beak Strike\n\n---\n\nEffect Raskus attempts to peck out his victim's eyes. The target must attempt a DC 29 Fortitude save save.\n\n---\n\nSuccess The target is unaffected.\n\nFailure The target is Blinded for 1 round.\n\nCritical Failure The target is blinded until healed to its maximum Hit Points."
+    },
+    {
+      "kind": "ability",
+      "name": "Opportunistic Attack",
+      "category": "offensive",
+      "text": "Raskus's Strikes deal an additional 3d6 damage to any foe that has a reduction to its Speed, is Blinded, or is Immobilized.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "target:condition:blinded",
+                  "target:condition:immobilized",
+                  "opportunistic-attack"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Target has reduction to Speed",
+            "option": "opportunistic-attack",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Spiker",
+      "category": "offensive",
+      "text": "Raskus requires only 1 action, rather than 2 actions, to reload a spike launcher. He can change his grip on a spike launcher easily, improving its fatal aim d12 trait to fatal d12."
+    }
+  ],
+  "blurb": "Male tengu commander"
+}

@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "ragewight-5-6",
+  "system": "pf2e",
+  "name": "Ragewight (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-15: A Dirge for Sarkoris",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "undead",
+    "unholy",
+    "wight"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 115,
+    "perception": 15,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 11,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 2,
+      "int": 1,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 15,
+      "intimidation": 13,
+      "stealth": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 17,
+      "traits": [
+        "cold-iron",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the ragewight damages a living creature with its claw Strike, the ragewight gains 3 temporary Hit Points and the creature must succeed at a DC 21 Fortitude save save or become Drained 1. Further damage dealt to the creature by the ragewight increases the amount of drain by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Furious Grab",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger A creature uses a move action to leave a square adjacent to the ragewight\n\n---\n\nEffect The ragewight attempts an Athletics check to Grapple the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The ragewight goes into a frenzy, gaining 10 temporary Hit Points. Its Strikes deal 2 additional damage, and it takes a -1 penalty to AC.\n\nThis lasts for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wight Spawn",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A living humanoid slain by a ragewight's claw Strike rises as a spawned wight after 1d4 rounds. This spawned wight is under the command of the ragewight that killed it. It doesn't have the drain life or wight spawn abilities and is Clumsy 2 for as long as it is a spawned wight. If the creator of the wight spawn dies, the wight spawn becomes a full-fledged, autonomous wight; it regains its free will, gains the drain life and wight spawn abilities, and is no longer clumsy."
+    }
+  ]
+}

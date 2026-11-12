@@ -1,0 +1,191 @@
+{
+  "kind": "creature",
+  "slug": "inspector",
+  "system": "pf2e",
+  "name": "Inspector",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 40,
+    "perception": 12,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 10,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 0,
+      "dex": 3,
+      "int": 4,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 9,
+      "diplomacy": 12,
+      "intimidation": 13,
+      "medicine": {
+        "value": 8,
+        "special": [
+          {
+            "value": 13,
+            "label": "to Recall Knowledge",
+            "when": [
+              "action:recall-knowledge"
+            ]
+          }
+        ]
+      },
+      "society": 12,
+      "legal-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+15 to Sense Motive, Seek, or Search)",
+      "languages": "up to 3 additional languages"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1",
+          "type": "piercing",
+          "category": "precision"
+        },
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1",
+          "type": "bludgeoning",
+          "category": "precision"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+3 to Sense Motive, Seek, or Search",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            "action:sense-motive",
+            "action:seek",
+            "action:search"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Investigation Specialist",
+      "category": "interaction",
+      "text": "For encounters involving investigation, the inspector is a 5th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Sense Demise",
+      "category": "interaction",
+      "text": "The inspector can sense-motive on a corpse, learning about the creature in the moments before its death."
+    },
+    {
+      "kind": "ability",
+      "name": "Unavoidable Question",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "linguistic"
+      ],
+      "text": "Frequency once per turn\n\n---\nEffect The inspector Demoralizes a creature and asks a question. On a success, the next Strike the inspector attempts against that target deals an additional 1d6 precision damage. If the target spends an action on their next turn to answer the question, either truthfully or by succeeding at a DC 25 Deception check check, they are temporarily immune to the inspector's Unavoidable Question for 1 minute.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "unavoidable-question",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "unavoidable-question"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Inspectors cultivate a wide selection of skills to investigate arson, murder, and other serious crimes, usually in major urban centers. They can assist adventurers, perhaps noticing an object or creature that seems out of the ordinary without being sure why.\n\n---\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. Some carry out these duties fairly, but others are harsh and cruel, imposing severe punishments on anyone unable to pay for clemency."
+}

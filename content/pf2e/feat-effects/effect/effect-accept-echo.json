@@ -1,0 +1,50 @@
+{
+  "kind": "effect",
+  "slug": "effect-accept-echo",
+  "system": "pf2e",
+  "name": "Effect: Accept Echo",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Accept Echo\n\nYou gain a +4 status bonus to all saves against possession effects. You become trained and expert, respectively, in the weapon and skill you chose with Echo of the Fallen.\n\nAt 7th level you become a master of the skill you chose, at 13th level you become an expert with the weapon you chose, and at 15th level you become legendary with the skill you chose.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 4,
+      "when": [
+        "item:trait:possession"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{actor|flags.system.echoSkill}.rank",
+        "value": "ternary(gte(@actor.level,15),4,ternary(gte(@actor.level,7),3,2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:base:{actor|flags.system.echoWeapon}"
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.Weapon.Base.{actor|flags.system.echoWeapon}",
+        "value": "ternary(gte(@actor.level,13),2,1)"
+      }
+    }
+  ]
+}

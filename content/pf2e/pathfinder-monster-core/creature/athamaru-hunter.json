@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "athamaru-hunter",
+  "system": "pf2e",
+  "name": "Athamaru Hunter",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "amphibious",
+    "humanoid",
+    "locathah"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 38,
+    "perception": 9,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 3,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "diplomacy": 5,
+      "nature": 7,
+      "stealth": 8,
+      "survival": 7
+    },
+    "speeds": {
+      "land": 10,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "thalassic"
+    ],
+    "notes": {
+      "speed": "smooth swimmer"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longspear",
+      "ref": "equipment:item/longspear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Fan Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 12
+    },
+    {
+      "kind": "strike",
+      "name": "Longspear",
+      "attack": 11,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "fan-bolt"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cooperative Hunting",
+      "category": "offensive",
+      "text": "After the hunter attempts a Strike at a Large or larger target (regardless of success or failure), the next Strike one of the hunter's allies makes against the same target gains a +2 circumstance bonus to the attack roll."
+    },
+    {
+      "kind": "ability",
+      "name": "Fan Bolt",
+      "category": "offensive",
+      "text": "The hunter prepares their hooked crossbow bolts with carefully woven seaweed.\n\nOn a successful crossbow Strike, the bolt embeds and the seaweed fan deploys. The target takes a –10-foot status penalty to its swim Speed. A creature can Interact to attempt a DC 18 Athletics check check, removing the bolt on a success.\n\nEffect: Fan Bolt"
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The athamaru hunter designates a single creature they can see and hear, or one they're Tracking, as their prey. The hunter gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey.\n\nThe first time the athamaru hits their designated prey in a round, they deal an additional 1d8 precision damage. These effects last until the hunter uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "survival"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hunted-prey",
+            {
+              "or": [
+                "action:seek",
+                "action:track"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitSwitch",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The hunter's Strikes deal an additional 1d8 damage to creatures within reach of at least two of the hunter's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smooth Swimmer",
+      "category": "offensive",
+      "text": "The athamaru hunter ignores difficult terrain caused by aquatic terrain features."
+    }
+  ],
+  "text": "Deep in the sea, schools of athamarus—piscine humanoids armed with spears and specialized crossbows—stalk sharks, sea serpents, and giant squid from the backs of their giant moray eel mounts. The first hunters to strike are armed with barbed harpoons that deploy large fans of seaweed, slowing and exhausting their prey. A daring few athamarus use the embedded harpoon as a handle to ride prey for a short time. Once the creature is tired, remaining hunters finish it with longspears. Athamarus developed this hunting tradition to forge skilled warriors and deter potential attackers, partially in response to centuries of oppression and mistreatment from other aquatic cultures.\n\nAthamarus rarely hunt land-dwellers, instead offering to trade their services as guides in exchange for metal and ceramic items they can't build underwater—and for tubers, which they consider earthy delicacies. They render aid to damaged sailing ships and rescue shipwrecked sailors, providing food and guidance.\n\nAthamaru communities—usually villages of 200 individuals or fewer—are matriarchal. The ruler of a given community is also the primary egg-layer, providing each generation with powerful familial bonds. The communities are tight-knit and loyal. Matriarchs are advised and assisted by primal spellcasters and healers."
+}

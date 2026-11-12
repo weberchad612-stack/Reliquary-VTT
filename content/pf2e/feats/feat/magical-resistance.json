@@ -1,0 +1,136 @@
+{
+  "kind": "feat",
+  "slug": "magical-resistance",
+  "system": "pf2e",
+  "name": "Magical Resistance",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "text": "Your animating magic provides some defense. Choose one of the following energy damage types: cold, electricity, or sonic. You gain resistance 5 to that damage type.\n\nEnhancement You tap deeper into your animating magic, and your resistances improve. Choose one of the following benefits: you gain resistance 5 to the remaining two damage types from the above list, or your chosen resistance increases to a value equal to 1 + half your level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          }
+        ],
+        "flag": "featMagicalResistance",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Automaton.MagicalResistance.Prompt",
+        "rollOption": "feat:magical-resistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.lesser",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.MagicalResistance",
+          "predicate": [
+            {
+              "not": "enhancement:magical-resistance"
+            }
+          ],
+          "value": "magical-resistance"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.MagicalResistance",
+          "predicate": [
+            {
+              "not": "enhancement:magical-resistance"
+            }
+          ],
+          "value": "magical-resistance"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "enhancement:magical-resistance:increase"
+        ],
+        "type": "{item|flags.system.rulesSelections.featMagicalResistance}",
+        "value": "1+floor(@actor.level/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "feat:magical-resistance:cold",
+              "enhancement:magical-resistance:all"
+            ]
+          }
+        ],
+        "type": "cold",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "feat:magical-resistance:electricity",
+              "enhancement:magical-resistance:all"
+            ]
+          }
+        ],
+        "type": "electricity",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "feat:magical-resistance:sonic",
+              "enhancement:magical-resistance:all"
+            ]
+          }
+        ],
+        "type": "sonic",
+        "value": 5
+      }
+    }
+  ]
+}

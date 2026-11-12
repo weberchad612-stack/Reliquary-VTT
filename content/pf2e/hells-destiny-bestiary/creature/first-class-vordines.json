@@ -1,0 +1,186 @@
+{
+  "kind": "creature",
+  "slug": "first-class-vordines",
+  "system": "pf2e",
+  "name": "First-Class Vordines",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "fiend",
+    "troop",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 33,
+    "hp": 240,
+    "perception": 23,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 23,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 4,
+      "int": 0,
+      "str": 8,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 27,
+      "warfare-lore": 24
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 12
+        },
+        {
+          "type": "splash-damage",
+          "value": 12
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "No Retreat",
+      "category": "defensive",
+      "text": "These soldiers have been extensively trained to hold their ground no matter the situation. If any effect would force the first-class vordines to move, reduce the distance by 10 feet. Any time they would be affected by the Fleeing condition, the first-class vordines is instead Slowed 2 for the same duration."
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 240 (4 segments); Thresholds 160 (3 segments), 80 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Bolt Salvo",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The first-class vordines draw, load, and shoot a salvo from their crossbows. The salvo is a 10-foot burst within 120 feet that deals 4d8 piercing damage (DC 30 basic Reflex save save). When the first-class vordines are reduced to 2 segments, this area decreases to a 5-foot burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Clash of Steel",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The first-class vordines attack each enemy in a 5-foot emanation, with a DC 29 basic Reflex save save. The damage depends on the number of actions.\n\n1 2d6+1 slashing damage\n\n2 4d6+10 slashing damage\n\n3 4d6+18 slashing damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Drilled in Formations",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The first-class vordines uses Change Formation. An first-class vordines unit typically knows the marching column and wedge formations.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "change-formation",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeFormation.MarchingColumn.Label",
+                "value": "marching-column"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeFormation.Wedge.Label",
+                "value": "wedge"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "all-speeds",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "change-formation:marching-column"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "change-formation:marching-column"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "change-formation:marching-column"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "change-formation:wedge"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "First-class Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The first-class vordines rushes forward with a hunger for battle. They Stride up to twice their Speed. At the end of their movement, each enemy within a 5-foot emanation takes 2d6+5 slashing damage, with a DC 30 basic Reflex save save."
+    }
+  ],
+  "text": "Soldiers who participate in multiple campaigns of war gain the experience necessary to become their military's finest fighting forces. First-class vordines troops are deployed on battlefields where winning the day is of the utmost importance.",
+  "blurb": "Variant first-class infantry"
+}

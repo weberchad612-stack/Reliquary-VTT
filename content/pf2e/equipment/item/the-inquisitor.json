@@ -1,0 +1,63 @@
+{
+  "kind": "equipment",
+  "slug": "the-inquisitor",
+  "system": "pf2e",
+  "name": "The Inquisitor",
+  "source": {
+    "title": "Pathfinder #192: Worst of All Possible Worlds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "unique",
+  "traits": [
+    "artifact",
+    "harrow-court",
+    "invested",
+    "magical"
+  ],
+  "text": "Suit Books (Int)\n\nAlignment lawful neutral\n\n---\n\nThe Inquisitor represents the search for the truth and the power to see through lies. As long as you have The Inquisitor invested, the results of your Perception Checks to Sense Motive against targets that are equal to or lower than your level are increased by one degree of success. Against targets that are higher level than you, you instead gain a +2 item bonus to your check. This bonus increases to +3 if you are at least 17th level.\n\nActivate 2 envision, Interact (linguistic, mental)\n\nFrequency once per day\n\n---\n\nEffect You swipe the card over the head of an adjacent creature to delve into their thoughts. You cast Mind Probe, but as a two-action spell rather than one that takes 1 minute to cast. The rank of the spell is one-half your level, rounded down (minimum 5th level), and the save DC is your class DC or spell DC (Will save).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:sense-motive",
+          {
+            "gte": [
+              "target:level",
+              "self:level"
+            ]
+          }
+        ],
+        "selector": "perception",
+        "type": "item",
+        "value": "ternary(gte(@actor.level,17),3,2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better",
+          "failure": "one-degree-better",
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:sense-motive",
+          {
+            "gt": [
+              "self:level",
+              "target:level"
+            ]
+          }
+        ],
+        "selector": "perception"
+      }
+    }
+  ],
+  "usage": "carried",
+  "bulk": 0
+}

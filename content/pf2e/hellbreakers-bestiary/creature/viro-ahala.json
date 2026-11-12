@@ -1,0 +1,221 @@
+{
+  "kind": "creature",
+  "slug": "viro-ahala",
+  "system": "pf2e",
+  "name": "Viro Ahala",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 9,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 0,
+      "int": 0,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 13,
+      "intimidation": 12,
+      "society": 10,
+      "survival": 12,
+      "hell-lore": 10
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 4
+        },
+        {
+          "type": "piercing",
+          "value": 4
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(23 with shield raised)",
+      "saves": "+12 Reflex vs. area effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sturdy Shield (Minor)",
+      "ref": "equipment:item/sturdy-shield-minor",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Hellknight Plate",
+      "ref": "equipment:item/hellknight-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 15,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 11,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gauntlet",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+3 to Reflex Saves vs. Area Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            {
+              "or": [
+                "area-effect",
+                "area-damage"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Punishing Cut",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Viro makes a longsword Strike. This counts as two attacks for his multiple attack penalty. If the Strike hits, it deals an additional die of weapon damage and 1d4 persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "punishing-cut",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "key": "DamageDice",
+            "predicate": [
+              "punishing-cut"
+            ],
+            "selector": "longsword-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "punishing-cut"
+            ],
+            "selector": "longsword-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shielded Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Viro is wielding a shield\n\n---\nEffect Viro Raises his Shield and then Strides twice. If he ends his movement adjacent to a foe, that foe is Off-Guard to Viro's Strikes until the end of Viro's current turn."
+    }
+  ],
+  "blurb": "Male human Hellknight armiger"
+}

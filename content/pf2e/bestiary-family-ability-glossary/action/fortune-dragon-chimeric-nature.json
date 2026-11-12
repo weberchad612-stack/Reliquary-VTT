@@ -1,0 +1,100 @@
+{
+  "kind": "action",
+  "slug": "fortune-dragon-chimeric-nature",
+  "system": "pf2e",
+  "name": "(Fortune Dragon) Chimeric Nature",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "arcane"
+  ],
+  "category": "offensive",
+  "text": "When the fortune dragon makes a Strike or uses its Disruptive Breath, it can choose acid, cold, electricity, fire, poison, void, or vitality. Its Strike deals an additional 1d6 damage of that type instead of additional force damage, and its Disruptive Breath deals that type of damage instead of force damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "name",
+        "value": "PF2E.NPCAbility.FortuneDragon.ChimericNature.Name"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.NPCAbility.FortuneDragon.ChimericNature.Label",
+        "option": "chimeric-nature",
+        "suboptions": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitVitality",
+            "value": "vitality"
+          },
+          {
+            "label": "PF2E.TraitVoid",
+            "value": "void"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "chimeric-nature"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "disruptive-breath-inline-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.chimericNature}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "dice:slug:base",
+          "dice:damage:type:force",
+          "chimeric-nature"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.chimericNature}"
+      }
+    }
+  ]
+}

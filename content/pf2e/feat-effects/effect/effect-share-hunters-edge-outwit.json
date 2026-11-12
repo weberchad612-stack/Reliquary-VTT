@@ -1,0 +1,83 @@
+{
+  "kind": "effect",
+  "slug": "effect-share-hunters-edge-outwit",
+  "system": "pf2e",
+  "name": "Effect: Share Hunter's Edge (Outwit)",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Animal Companion (Ranger), Shared Prey, Triple Threat, Warden's Boon\n\nYou gain a +2 circumstance bonus to Deception checks, Intimidation checks, Stealth checks, and any checks to Recall Knowledge about the marked creature, and a +1 circumstance bonus to AC against the marked creature's attacks.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "share-hunters-edge"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:seek",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:track",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          "target:mark:share-hunters-edge"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "origin:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "check:statistic:deception",
+            "check:statistic:intimidation",
+            "check:statistic:stealth",
+            "action:recall-knowledge"
+          ]
+        },
+        "target:mark:share-hunters-edge"
+      ]
+    }
+  ]
+}

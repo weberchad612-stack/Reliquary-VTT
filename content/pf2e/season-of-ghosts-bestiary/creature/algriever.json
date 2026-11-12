@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "algriever",
+  "system": "pf2e",
+  "name": "Algriever",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "spirit"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 155,
+    "perception": 21,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 17,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 4,
+      "int": 0,
+      "str": 4,
+      "wis": 6
+    },
+    "skills": {
+      "intimidation": 17,
+      "religion": 17,
+      "stealth": 19,
+      "survival": 19
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Divine Wrath",
+          "rank": 4,
+          "ref": "spells:spell/divine-wrath",
+          "uses": 3
+        },
+        {
+          "name": "Crisis of Faith",
+          "rank": 5,
+          "ref": "spells:spell/crisis-of-faith"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 5,
+          "ref": "spells:spell/dispel-magic"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "algriever-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Web",
+      "attack": 19,
+      "range": 30,
+      "effects": [
+        "web-trap"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Acolyte's Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "attack",
+        "move"
+      ],
+      "text": "Trigger A creature within sight of the algriever damages, desecrates, or defiles their bonded shrine\n\nRequirements The algriever is bonded with a shrine\n\n---\nEffect The algriever Strides toward the creature; this movement doesn't trigger reactions. The algriever marks the creature as their enemy and gains a +2 status bonus to attack rolls against that enemy until they select a new enemy with Acolyte's Defense.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "acolytes-defense",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "acolytes-defense"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shrine Bond",
+      "category": "defensive",
+      "text": "The algriever bonds with a shrine after they spend 24 hours at the site. While bonded, the algriever gains a +2 circumstance bonus to Perception checks and skill checks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shrine-bond",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "skill-check"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "shrine-bond"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Algriever Venom",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "poison"
+      ],
+      "text": "Saving Throw DC 28 Will save\n\nMaximum Duration 6 rounds\n\nStage 1 2d6 mental damage\n\nStage 2 2d6 mental damage and Stupefied 1\n\nStage 3 2d6 mental damage and Stupefied 2"
+    },
+    {
+      "kind": "ability",
+      "name": "Pilgrim's Ward",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Frequency once per month\n\n---\nEffect The algriever touches a willing creature and fills it with reverence for their bonded shrine. As long as the target creature obeys the edicts and anathemas of the algriever's bonded shrine, or until that algriever grants Pilgrim's Ward to a different creature, that creature gains a +1 status bonus to all Religion checks and Will saves.\n\nEffect: Pilgrim's Ward",
+      "frequency": {
+        "max": 1,
+        "per": "P1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Web Trap",
+      "category": "offensive",
+      "text": "A creature hit by an algriever's web Strike is Immobilized and stuck to the nearest surface until it Escapes."
+    }
+  ],
+  "text": "Some mistake these spiderlike spirits as scavengers looking to loot abandoned shrines, but they're actually the opposite: self-appointed guardians of forgotten places of worship, defending the sanctity of discarded faiths and tending sites that have no caretakers. Sometimes, an algriever's duties are tinged with sadness and grief, as they mourn the loss of those who once attended their chosen shrine. Others are filled with frustration and rage, viewing any who stumble upon their shrine as lapsed faithful at best or blasphemers at worse—sinners who deserve punishment.\n\nAlgrievers have little interest in living creatures until they wander into their territory. Once an algriever's shrine has been breached, they block passage until the interlopers pay their respects. Aggressive algrievers steal from travelers or take hostages until their demands for an offering are satisfied. When algrievers suspect someone of committing blasphemy, no gifts can slake their thirst for vengeance.\n\nReactive Punishment\n\nAn algriever follows the edicts and anathemas of the deity or faith of the shrine to which they're bonded, although they remain neutral in alignment. Regardless of how large the shrine is, an algriever chooses three Medium or smaller objects in the shrine as their own focus for defense, and can use Acolyte's Defense against any creature that touches or disturbs those objects."
+}

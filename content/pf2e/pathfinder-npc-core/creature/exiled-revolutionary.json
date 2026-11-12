@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "exiled-revolutionary",
+  "system": "pf2e",
+  "name": "Exiled Revolutionary",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 140,
+    "perception": 17,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 20,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 5,
+      "int": 3,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 15,
+      "deception": 19,
+      "diplomacy": 19,
+      "intimidation": 17,
+      "society": 20,
+      "stealth": 20,
+      "thievery": 18,
+      "lore-home-region-or-settlement-lore": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+20 to Sense Motive)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Wyvern Poison",
+      "ref": "equipment:item/wyvern-poison",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "gear",
+      "name": "Signet Ring",
+      "ref": "equipment:item/engraved-copper-ring",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 21,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+3 to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Former Courtier",
+      "category": "interaction",
+      "text": "An exiled revolutionary remembers well their former realm. In their home realm, be it a manor, castle, or capital city, the exiled revolutionary gains a +4 circumstance bonus to Perception checks and Will saves, and to Deception, Diplomacy, Intimidation, and Stealth checks, and is a 12th-level challenge in the arena of noble politics.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "former-courtier",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "will",
+            "deception",
+            "diplomacy",
+            "stealth",
+            "intimidation"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "former-courtier"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Follow Me",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "visual"
+      ],
+      "text": "20 feet. This aura is active only while in the exiled revolutionary's home realm, as they share knowledge to avoid guard patrols and get past checkpoints. Any ally in the aura gets a +2 circumstance bonus to Deception and Stealth checks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "follow-me",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Follow Me"
+              }
+            ],
+            "key": "Aura",
+            "predicate": [
+              "follow-me"
+            ],
+            "radius": 30,
+            "traits": [
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "It's... You!",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "When the exiled revolutionary sees or hears someone who was part of their downfall in person, they break cover and attack their betrayer immediately, even if their actions would doom them and their allies. The revolutionary must succeed at a DC 35 Will save save or be Fascinated by their betrayer and unable to cease targeting them exclusively until the betrayer is defeated.\n\nAn ally can convince the revolutionary to forgo their vengeance with a DC 30 Diplomacy check to make a request dc=30. This lasts for 1 minute, but talking the revolutionary down after that time requires more thorough engagement."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Darting Feint",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The exiled revolutionary Feints, Steps, and Strikes in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The exiled revolutionary deals an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Forces hire an exiled revolutionary because they were once part of the enemy. A lost scion, noble who spoke against tyranny, or wrongly persecuted politician possesses an intimate knowledge of their foe's tactics, logistics, and territory.\n\n---\nWhether they're hired to wage war, protect a caravan, or infiltrate an impenetrable fortress, there's ample work for mercenaries all over Golarion."
+}

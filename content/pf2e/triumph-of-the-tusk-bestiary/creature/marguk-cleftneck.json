@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "marguk-cleftneck",
+  "system": "pf2e",
+  "name": "Marguk Cleftneck",
+  "source": {
+    "title": "Pathfinder #208: Hoof, Cinder, and Storm",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "giant",
+    "troll"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 175,
+    "perception": 16,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 17,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 6,
+      "dex": 1,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 16,
+      "intimidation": 16
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "jotun",
+      "orcish"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        },
+        {
+          "type": "electricity",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 20 (deactivated by electricity or fire)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Grim Trophy",
+      "ref": "equipment:item/grim-trophy",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 17,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+18",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 18,
+      "traits": [
+        "magical",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Independent Brains",
+      "category": "interaction",
+      "text": "Each of Marguk's heads rolls its own initiative and has its own turn. Neither head can Delay. At the start of a head's turn, that head gets 2 actions and 1 reaction. Each brain controls one of Marguk's arms, but both can move the legs. Any ability that would sever one of the heads (such as the vorpal weapon property) doesn't cause Marguk to die if she still has her other head, but it does cause her to lose the turns, actions, and reactions of the severed head. Mental effects that target a single creature affect only one of Marguk's heads."
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 20 (Deactivated by Electricity or Fire)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "acid",
+              "fire"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Head Regrowth",
+      "category": "defensive",
+      "text": "Marguk's regeneration can regrow a severed head. After regaining Hit Points from regeneration, she attempts a DC 10 Flat check. On a success, the missing head is fully restored. If Marguk loses her last remaining head, she dies immediately."
+    },
+    {
+      "kind": "ability",
+      "name": "Partial Armor",
+      "category": "defensive",
+      "text": "Marguk's armor primarily protects her abdomen and legs, leaving her shoulders and head exposed. Strikes made with ranged or reach weapons gain a +1 circumstance bonus to attack rolls against Marguk. At the GM's discretion, other attacks that can easily reach her head level (such as attacks made from high ground) also gain this bonus.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "affects": "origin",
+            "key": "EphemeralEffect",
+            "selectors": [
+              "strike-attack-roll"
+            ],
+            "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Partial Armor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Sweeping Hammer",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Marguk is wielding a warhammer\n\n---\nEffect Marguk makes a warhammer Strike against each creature in a 15-foot cone."
+    },
+    {
+      "kind": "ability",
+      "name": "Tenderized Feast",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger Marguk successfully Strikes a creature with her warhammer\n\n---\nEffect One of Marguk's heads takes advantage of the disoriented foe and makes a jaws Strike against that creature with a –2 penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tenderized-feast",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "tenderized-feast"
+          ]
+        }
+      ]
+    }
+  ]
+}

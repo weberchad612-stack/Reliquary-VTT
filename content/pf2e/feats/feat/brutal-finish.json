@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "brutal-finish",
+  "system": "pf2e",
+  "name": "Brutal Finish",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "fighter",
+    "press"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "Requirements You are wielding a melee weapon in two hands.\n\n---\n\nYour final blow can make an impact even if it rebounds off a foe's defenses. Make a Strike with a melee weapon you're wielding in two hands. After the Strike, your turn ends. The Strike deals one additional weapon damage die, or two additional weapon damage dice if you're at least 18th level. The Strike also gains the following failure effect.\n\nFailure You deal damage equal to one weapon damage die of the required weapon. Increase this to two dice if you're at least 18th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "brutal-finish",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "ternary(gte(@actor.level,18),2,1)",
+        "key": "DamageDice",
+        "predicate": [
+          "item:type:weapon",
+          "brutal-finish"
+        ],
+        "selector": "melee-strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "melee-strike-attack-roll",
+      "text": "PF2E.SpecificRule.Fighter.BrutalFinish.Note",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "brutal-finish",
+        "item:type:weapon"
+      ]
+    }
+  ]
+}

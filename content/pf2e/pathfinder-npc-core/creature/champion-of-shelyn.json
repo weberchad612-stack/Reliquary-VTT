@@ -1,0 +1,279 @@
+{
+  "kind": "creature",
+  "slug": "champion-of-shelyn",
+  "system": "pf2e",
+  "name": "Champion of Shelyn",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "holy",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 15,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 1,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 17,
+      "diplomacy": 16,
+      "performance": 14,
+      "religion": 15,
+      "society": 12
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Champion Devotion Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Lay on Hands",
+          "rank": 1,
+          "ref": "spells:spell/lay-on-hands"
+        },
+        {
+          "name": "Protector's Sacrifice",
+          "rank": 1,
+          "ref": "spells:spell/protectors-sacrifice"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Glaive",
+      "ref": "equipment:item/glaive",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Shelyn",
+      "ref": "equipment:item/religious-symbol-silver",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Glaive",
+      "attack": 18,
+      "traits": [
+        "deadly-d8",
+        "forceful",
+        "magical",
+        "reach"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+10",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "vitality",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 14,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Champion's Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "15 feet.\n\nAny follower of Shelyn in the aura knows the champion is a champion of Shelyn. At the end of the champion's turn, each ally in the aura reduces its Frightened value by 1. The aura can be suppressed or resumed with a single action, which has the concentrate trait, and ends if the champion falls Unconscious.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "champions-aura",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "champions-aura"
+            ],
+            "radius": 15,
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Champion's Courage",
+      "category": "defensive",
+      "text": "When the champion becomes Frightened, they reduce the condition value by 1 (to a minimum of 0)."
+    },
+    {
+      "kind": "ability",
+      "name": "Liberating Step",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Trigger An enemy damages, grabs, or restrains the champion's ally, and both are in the champion's aura\n\n---\nEffect The champion frees an ally from restraint. If the trigger was an ally taking damage, the ally gains resistance 10 to all damage against the triggering damage.\n\nEffect: Liberating Step\n\nThe ally can attempt to break free of effects grabbing, Restraining, Immobilizing, or Paralyzing them. They either attempt a new save against one such effect that allows a save or attempt to Escape from one effect as a free action. Whether or not it needed to escape, the ally can then Step as a free action if it's able to move."
+    },
+    {
+      "kind": "ability",
+      "name": "Blessed Weapon",
+      "category": "offensive",
+      "text": "If a champion's glaive Strike is a critical hit, the weapon deals an additional 1d6 persistent vitality damage, and they can force the target to move 5 feet in a direction of their choice.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "critical": true,
+            "damageType": "vitality",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "glaive-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "glaive-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smite",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The champion chooses one enemy they can see. Their Strikes against that enemy gain a +4 status bonus to damage, or +8 if the target is unholy.\n\nThis benefit lasts until the start of the champion's next turn, but if the target takes a hostile action against the champion or one of their allies, the duration is extended until the end of the target's next turn (this can be extended indefinitely if the target keeps taking hostile actions on subsequent rounds).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "smite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "status",
+          "value": 4,
+          "slug": "smite-damage",
+          "when": [
+            "smite"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "target:trait:unholy"
+            ],
+            "relabel": "Smite (vs Unholy)",
+            "selector": "damage",
+            "slug": "smite-damage",
+            "value": 8
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Champions are bastions of their deities' virtues and are living beacons for their causes. Those who walk these paths must adhere to the tenets of their patron deity or risk losing their abilities altogether. The champion depicted here follows the example of Shelyn, embodying the spirit of inspiring beauty and fighting for the cause of peace.\n\n---\nReligions inspire devout individuals to uphold their tenets."
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "effect",
+  "slug": "effect-energy-shield-tunic",
+  "system": "pf2e",
+  "name": "Effect: Energy Shield Tunic",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Energy Shield Tunic, or Energy Shield Tunic (Greater)\n\nYou gain resistance to the chosen energy type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:energy-shield-tunic",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Energy Shield Tunic"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:energy-shield-tunic-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Energy Shield Tunic (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "energy-shield-tunic"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "resistance",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Resistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "energy-shield-tunic:energy-shield-tunic"
+        ],
+        "type": "{item|flags.system.rulesSelections.resistance}",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "energy-shield-tunic:energy-shield-tunic-greater"
+        ],
+        "type": "{item|flags.system.rulesSelections.resistance}",
+        "value": 15
+      }
+    }
+  ]
+}

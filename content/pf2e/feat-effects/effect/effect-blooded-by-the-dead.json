@@ -1,0 +1,106 @@
+{
+  "kind": "effect",
+  "slug": "effect-blooded-by-the-dead",
+  "system": "pf2e",
+  "name": "Effect: Blooded by the Dead",
+  "source": {
+    "title": "Pathfinder Bastion of Blasphemies Player's Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 24,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Blooded by the Dead\n\nYou can choose one of the following benefits\n- Bolster the Blood: You gain resistance to persistent bleed 2, and whenever you attempt a flat check to end persistent bleed damage, reduce the DC of the check by 2.\n\n- Bolster the Fury: You deal 2 additional damage with melee Strikes that deal piercing damage against vampires or creatures that drink blood.\n\n- Bolster the Mind: You treat your level as 2 higher than it is to determine the effects of mental effects with the incapacitation trait utilized against you, and gain a +2 circumstance bonus to Will saving throws against a vampire's Dominate ability.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BastionOfBlasphemies.Background.BloodedByTheDead.BolsterTheBlood.Label",
+            "value": "bolster-the-blood"
+          },
+          {
+            "label": "PF2E.SpecificRule.BastionOfBlasphemies.Background.BloodedByTheDead.BolsterTheFury.Label",
+            "value": "bolster-the-fury"
+          },
+          {
+            "label": "PF2E.SpecificRule.BastionOfBlasphemies.Background.BloodedByTheDead.BolsterTheMind.Label",
+            "value": "bolster-the-mind"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "blooded-by-the-dead"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blooded-by-the-dead:bolster-the-blood"
+        ],
+        "type": "bleed",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "subtract",
+        "predicate": [
+          "item:damage:type:bleed",
+          "blooded-by-the-dead:bolster-the-blood"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 2
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "untyped",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "target:trait:vampire",
+            "blood-drinker"
+          ]
+        },
+        "blooded-by-the-dead:bolster-the-fury",
+        "item:damage:type:piercing"
+      ],
+      "damageType": "piercing"
+    },
+    {
+      "key": "note",
+      "selector": [
+        "saving-throw"
+      ],
+      "text": "PF2E.SpecificRule.BastionOfBlasphemies.Background.BloodedByTheDead.BolsterTheMind.Note",
+      "when": [
+        "blooded-by-the-dead:bolster-the-fury",
+        "item:trait:incapacitation"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "will",
+      "type": "untyped",
+      "value": 2,
+      "when": [
+        "blooded-by-the-dead:bolster-the-mind",
+        "item:slug:dominate",
+        "origin:trait:vampire"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "kind": "feat",
+  "slug": "benefactors-resistance",
+  "system": "pf2e",
+  "name": "Benefactor's Resistance",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kobold"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "dragonscaled kobold heritage"
+  ],
+  "text": "Your scales have taken on the characteristics of your draconic benefactor and insulate you from certain damage types. You gain resistance equal to half your level to the damage type dealt by the breath of your draconic benefactor.\n\nIf your draconic benefactor's breath deals bludgeoning, piercing, or slashing damage, instead of gaining resistance to that type, you must choose acid, cold, fire, electricity, or sonic.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "feature:draconic-benefactor"
+          }
+        ],
+        "uuid": "Compendium.pf2e.ancestryfeatures.Item.Draconic Benefactor"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "nor": [
+              "draconic-benefactor:breath-damage:bludgeoning",
+              "draconic-benefactor:breath-damage:piercing",
+              "draconic-benefactor:breath-damage:slashing"
+            ]
+          }
+        ],
+        "type": "{actor|flags.system.draconicBenefactor.breathDamage}",
+        "value": "floor(@actor.level / 2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "nonPhysicalResistance",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              "draconic-benefactor:breath-damage:bludgeoning",
+              "draconic-benefactor:breath-damage:piercing",
+              "draconic-benefactor:breath-damage:slashing"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "draconic-benefactor:breath-damage:bludgeoning",
+              "draconic-benefactor:breath-damage:piercing",
+              "draconic-benefactor:breath-damage:slashing"
+            ]
+          }
+        ],
+        "type": "{item|flags.system.rulesSelections.nonPhysicalResistance}",
+        "value": "floor(@actor.level / 2)"
+      }
+    }
+  ]
+}

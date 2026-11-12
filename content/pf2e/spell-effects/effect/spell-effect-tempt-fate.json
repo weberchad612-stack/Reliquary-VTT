@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-tempt-fate",
+  "system": "pf2e",
+  "name": "Spell Effect: Tempt Fate",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Tempt Fate\n\nYou gain a status bonus to the triggering saving throw. If the saving throw's result is a success, it becomes a critical success. If it's a failure, it becomes a critical failure, and the critical failure can't be reduced by abilities that usually reduce critical failure.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "removeAfterRoll": true,
+        "selector": "saving-throw",
+        "type": "status",
+        "value": "ternary(gte(@item.level,8),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "failure": "one-degree-worse",
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "saving-throw",
+      "text": "PF2E.SpecificRule.SpellEffectTemptFate.Note"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "kind": "feat",
+  "slug": "destined-victory",
+  "system": "pf2e",
+  "name": "Destined Victory",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a worn ikon\n\n---\nYou demand a battle against your chosen enemy. The imbued ikon gains the following abilities.\n\nImmanence Whenever an enemy successfully Strikes you with a melee weapon, you gain a +2 status bonus to your AC against the next attack from that enemy before the start of your next turn.\n\nTranscendence—Only You and I 1 (concentrate, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Only You and I"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "chosen-ikon:{item|flags.system.rulesSelections.ikon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "destined-victory",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "destined-victory"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "key": "EphemeralEffect",
+        "predicate": [
+          "divine-spark:{item|flags.system.rulesSelections.ikon}"
+        ],
+        "selectors": [
+          "melee-strike-attack-roll"
+        ],
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Destined Victory (Note)"
+      }
+    }
+  ]
+}

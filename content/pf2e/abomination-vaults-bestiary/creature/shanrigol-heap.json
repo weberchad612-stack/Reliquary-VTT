@@ -1,0 +1,205 @@
+{
+  "kind": "creature",
+  "slug": "shanrigol-heap",
+  "system": "pf2e",
+  "name": "Shanrigol Heap",
+  "source": {
+    "title": "Pathfinder #164: Hands of the Devil",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 55,
+    "perception": 9,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 3,
+      "dex": 2,
+      "int": -4,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 12,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fleshy Slap",
+      "attack": 14,
+      "traits": [
+        "forceful"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Bone Shard",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "versatile-p"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sapping Squeeze",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The shanrigol has a creature Grabbed\n\n---\n\nEffect The shanrigol squeezes the life essence from its target, dealing 1d6+5 bludgeoning and 1d4 persistent bleed damage (DC 18 basic Fortitude save save).\n\nThe shanrigol regains temporary Hit Points equal to half the amount of bludgeoning damage a single target takes; these temporary Hit Points last for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Shred Flesh",
+      "category": "offensive",
+      "text": "A shanrigol rips flesh away from targets in great chunks. Creatures critically hit by the shanrigol's fleshy slap Strike take an additional 1d6 persistent bleed damage and are Enfeebled 1 for as long as they are bleeding.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "fleshy-slap-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fleshy-slap-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Undulating Step",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The shanrigol separates its flesh from its bones to fit through small spaces. It Strides, ignoring difficult terrain and fitting through tight spaces as though it were a Tiny creature. It can't use any actions other than Undulating Step until it occupies an area large enough for its normal form."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The most basic and common type of shanrigol is called, based on its general shape, a shanrigol heap. These amalgamations of warped flesh and shattered bone establish hunting grounds by accident rather than design, remaining where prey has been plentiful in the past so they can grow larger and larger as they add to their jumbled forms. Only rare fleshwarpers create these abominations willingly, as they ignore all commands and containment to seek out prey.\n\n---\n\nFleshwarpers, regardless of their origin or training, create a shocking amount of waste. When the discarded remnants of aberrant flesh are heaped together with an accidental mixture of alchemical compounds or odious energy, the mass can quicken and regain life. Without the guidance of a fleshwarper, these aberrant body parts form into a shanrigol, a mess of bone, muscle, and sinew."
+}

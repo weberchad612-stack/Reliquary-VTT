@@ -1,0 +1,158 @@
+{
+  "kind": "creature",
+  "slug": "animated-furnace",
+  "system": "pf2e",
+  "name": "Animated Furnace",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 30,
+    "hp": 135,
+    "perception": 15,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 11,
+      "will": 13
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": -2,
+      "int": -5,
+      "str": 7,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 18
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(26 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Door",
+      "attack": 21,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+9",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d8",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated furnace has Hardness. This Hardness reduces any damage the furnace takes by an amount equal to the Hardness. Once an animated furnace is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 26.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fan the Flames",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The animated furnace opens its door and fans its flames in a 30-foot cone that deals 5d6 fire damage (DC 28 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 2d8+9 fire, Rupture 15\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "This huge forge or oven is animated to protect a workspace or kitchen, travel alongside its owner, or both.\n\n---\n\nMany animated objects have useful functions but become dangerous when left uncontrolled."
+}

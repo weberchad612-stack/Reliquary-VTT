@@ -1,0 +1,85 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-fortissimo-composition",
+  "system": "pf2e",
+  "name": "Spell Effect: Fortissimo Composition",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Fortissimo Composition\n\nIncrease the status bonus from the composition to +2 (+3 on a critical success).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 3
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 2
+          }
+        ],
+        "flag": "fortissimoBonus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "and": [
+              "bonus:type:status",
+              {
+                "or": [
+                  {
+                    "and": [
+                      "bonus:slug:courageous-anthem",
+                      "courageous-anthem:origin:signature:{item|origin.signature}"
+                    ]
+                  },
+                  {
+                    "and": [
+                      "bonus:slug:rallying-anthem",
+                      "rallying-anthem:origin:signature:{item|origin.signature}"
+                    ]
+                  },
+                  {
+                    "and": [
+                      "bonus:slug:song-of-strength",
+                      "song-of-strength:origin:signature:{item|origin.signature}"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw",
+          "attack-roll",
+          "damage",
+          "athletics",
+          "fortitude",
+          "reflex"
+        ],
+        "value": "@item.flags.system.rulesSelections.fortissimoBonus"
+      }
+    }
+  ]
+}

@@ -1,0 +1,291 @@
+{
+  "kind": "creature",
+  "slug": "wild-hunt-horse",
+  "system": "pf2e",
+  "name": "Wild Hunt Horse",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "fey",
+    "wild-hunt"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 37,
+    "hp": 320,
+    "perception": 29,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 23,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 4,
+      "int": -1,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 31,
+      "survival": 29
+    },
+    "speeds": {
+      "land": 80,
+      "fly": 80
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "perception": "greensight",
+      "languages": "speak with animals; speak with plants"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 36,
+      "attack": 28,
+      "spells": [
+        {
+          "name": "Stone Tell",
+          "rank": 6,
+          "ref": "spells:spell/speak-with-stones"
+        },
+        {
+          "name": "Tree Stride (Self plus Willing Rider)",
+          "rank": 8,
+          "ref": "spells:spell/natures-pathway"
+        },
+        {
+          "name": "Freedom of Movement",
+          "rank": 8,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Speak with Plants (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Know Direction",
+          "rank": 1,
+          "ref": "spells:spell/know-the-way"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "bleed"
+        },
+        {
+          "dice": "3d10+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greensight",
+      "category": "interaction",
+      "text": "The wild hunt horse ignores the Concealed condition from leaves and other foliage."
+    },
+    {
+      "kind": "ability",
+      "name": "Planar Acclimation",
+      "category": "interaction",
+      "text": "The wild hunt horse treats the plane it is located on as its home plane."
+    },
+    {
+      "kind": "ability",
+      "name": "Wild Hunt Link",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ],
+      "text": "500 feet. A wild hunt horse grants a +10-foot status bonus to wild hunt creatures' Speed other than wild hunt horses."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Buck",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "DC 36 Reflex save"
+    },
+    {
+      "kind": "ability",
+      "name": "Instinctive Cooperation",
+      "category": "defensive",
+      "text": "The wild hunt horse automatically achieves a critical success on saving throws against effects created by other allied wild hunt creatures.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "saving-throw",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalFailure",
+            "failure",
+            "success"
+          ],
+          "when": [
+            "wild-hunt"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rider Synergy",
+      "category": "defensive",
+      "text": "If the wild hunt horse has a wild hunt rider, damage done to the horse or rider from Strikes is split equally between the two."
+    },
+    {
+      "kind": "ability",
+      "name": "Wild Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fear",
+        "incapacitation",
+        "mental",
+        "primal",
+        "visual"
+      ],
+      "text": "30 feet. Those who meet the gaze of a wild hunt horse come face-to-face with the hunt's fearful power and find it difficult to act in the face of such a legendary legacy. When a creature ends its turn in the aura, it must succeed at a DC 33 Will save save to resist becoming Slowed 1 (Slowed 2 on a critical failure). The wild hunt horse can deactivate or activate this aura by using a single action, which has the concentrate trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "wild-gaze-active"
+            ],
+            "radius": 30,
+            "slug": "wild-gaze",
+            "traits": [
+              "fear",
+              "incapacitation",
+              "mental",
+              "primal",
+              "visual"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "wild-gaze-active",
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bewildering Hoofbeats",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "aura",
+        "emotion",
+        "mental",
+        "primal"
+      ],
+      "text": "60 feet. The wild hunt horse stamps its hooves and prances in place, creating the sound of hundreds of horses apparently approaching from all directions. Each creature within 60-foot emanation must attempt a DC 33 Will save save.\n\n---\n\nCritical Success The creature is unaffected and is temporarily immune to Bewildering Hoofbeats for 1 hour.\n\nSuccess The creature is distracted by the sound. Until the start of the creature's next turn, if it attempts to use a reaction, it must succeed at a DC 5 Flat check or the reaction is disrupted, wasted with no effect.\n\nFailure The creature is bewildered by the sound, with the same effects as success except it is also Confused for 1 round.\n\nCritical Failure As failure, but the confusion effect persists for 1 minute or until the creature recovers by other means."
+    },
+    {
+      "kind": "ability",
+      "name": "Deafening Cry",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "primal",
+        "sonic"
+      ],
+      "text": "The wild hunt horse gives out a thundering cry in a 15-foot cone. Creatures in the area take 16d6 sonic damage (DC 36 basic Fortitude save, plus Deafened for 1 minute on a critical failure). The wild hunt horse can't use Deafening Cry again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "fear",
+        "incapacitation",
+        "mental",
+        "primal",
+        "visual"
+      ],
+      "text": "The wild hunt horse fixes its glare at a creature it can see within 30 feet. The target must immediately attempt a Will save against the wild hunt hound's wild gaze. If the creature was already slowed by the wild gaze before attempting its save, a failed save causes it to be Paralyzed for 1 round. After attempting its save, the creature is temporarily immune to Focus Gaze from any wild hunt until the start of the wild hunt horse's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Medium or smaller, Hoof, DC 36 basic Reflex save\n\n---"
+    }
+  ],
+  "text": "These steeds stand upon puffs of air, their grassy manes and tails swishing majestically in the wind. When they are not participating in a hunt, wild hunt horses enjoy constructing complicated courses through land and sky and racing each other for ever-changing stakes.\n\n---\n\nAlthough some believe the wild hunt is nothing more than legend, the riders of the wild hunt are real. Countless members of these fey compose the wild hunt-the term \"wild hunt\" refers to the family of creatures as a whole as well as to individual groups of these fey who gather to pursue their quarry.\n\nWild hunt monarchs set the terms of each specific hunt, depending upon the prey and their own whims. The easier the prey, the more likely a monarch is to impose rules to make the hunt more entertaining, such as forbidding anyone but their hounds from injuring the quarry, or holding back their forces to give the target creature time to rest and recover.\n\nWhile most missions come from rumors gathered by a wild hunt monarch, monarchs occasionally consider proposals from the few who are brave and knowledgeable enough to seek them out. They accept tasks only from sources they deem worthy, and the payments they demand for their services vary significantly, though they have no interest in material wealth. Wild hunt monarchs take grave offense at unfavorable deals. Those who attempt to cheat a monarch often become the enraged fey's next target."
+}

@@ -1,0 +1,173 @@
+{
+  "kind": "creature",
+  "slug": "spirit-hound",
+  "system": "pf2e",
+  "name": "Spirit Hound",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-13: All That Glitters",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "ghost",
+    "incorporeal",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 8,
+    "perception": 2,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 0,
+      "dex": 2,
+      "int": -4,
+      "str": -5,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 6,
+      "stealth": 7,
+      "survival": 6
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 2,
+          "except": "force, ghost-touch, spirit, vitality"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "rejuvenation, void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Ghostly Jaws",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "interaction",
+      "text": "A typical ghost can stray only a short distance from where it was killed or the place it haunts. A typical limit is 120 feet. Some ghosts are instead bound to a room, building, item, or creature that was special to it rather than a location."
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The spirit hound returns with the Caretaker."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Moan",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The spirit hound howls, forcing each living creature within 30 feet to attempt a DC 15 Will save save. On a failure, the creature becomes Frightened 2 (Frightened 3 on a critical failure). On a success, the creature is temporarily immune to this hound's frightful moan for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The spirit hound's Strikes deal 1d4 extra damage to creatures within the reach of at least two of its allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

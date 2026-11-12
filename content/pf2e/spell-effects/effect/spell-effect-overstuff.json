@@ -1,0 +1,102 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-overstuff",
+  "system": "pf2e",
+  "name": "Spell Effect: Overstuff",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Overstuff\n\nYou are sickened and take a –10-foot status penalty to your Speed until you are no longer sickened.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": {
+              "badge": 1,
+              "degree": "success"
+            }
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": {
+              "badge": 1,
+              "degree": "failure"
+            }
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": {
+              "badge": 2,
+              "degree": "critical-failure"
+            }
+          }
+        ],
+        "flag": "overstuff",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "overstuff:{item|flags.system.rulesSelections.overstuff.degree}"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "status",
+      "value": -10,
+      "when": [
+        "self:condition:sickened"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": "@item.flags.system.rulesSelections.overstuff.badge"
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Sickened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:granter:id:{item|id}",
+          "overstuff:success"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.SpellEffectOverstuff.Addendum"
+          }
+        ]
+      }
+    }
+  ]
+}

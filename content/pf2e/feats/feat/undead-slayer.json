@@ -1,0 +1,64 @@
+{
+  "kind": "feat",
+  "slug": "undead-slayer",
+  "system": "pf2e",
+  "name": "Undead Slayer",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "dhampir"
+  ],
+  "category": "ancestry",
+  "text": "Your knowledge of your own not-quite-living anatomy, combined with your experience in combat, helps you take down undead foes with ease. Against undead creatures, you gain a circumstance bonus to damage with weapon and unarmed Strikes equal to the number of weapon damage dice for the Strike. This bonus increases to double the number of weapon damage dice if your target has the vampire trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "target:mode:undead"
+        ],
+        "selector": "strike-damage",
+        "slug": "undead-slayer",
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "target:trait:vampire"
+        ],
+        "selector": "strike-damage",
+        "slug": "undead-slayer",
+        "value": "2"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.Undead",
+        "option": "target:mode:undead",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.Vampire",
+        "option": "target:trait:vampire",
+        "toggleable": "totm"
+      }
+    }
+  ]
+}

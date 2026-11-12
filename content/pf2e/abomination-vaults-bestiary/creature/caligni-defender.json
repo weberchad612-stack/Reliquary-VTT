@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "caligni-defender",
+  "system": "pf2e",
+  "name": "Caligni Defender",
+  "source": {
+    "title": "Pathfinder #165: Eyes of Empty Death",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "caligni",
+    "chaotic",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 125,
+    "perception": 16,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 19,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 5,
+      "int": -1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 17,
+      "athletics": 18,
+      "intimidation": 16,
+      "stealth": 17,
+      "survival": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "caligni",
+      "sakvroth"
+    ],
+    "notes": {
+      "hp": "death flame"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 24,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Darkness (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Obscuring Mist (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/mist"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Black Smear Poison",
+      "ref": "equipment:item/black-smear-poison",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "black-smear-poison"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 19,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "black-smear-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When the caligni defender rolls a success on a Will save against a fear effect, they get a critical success instead. In addition, any time they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:fear"
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Death Flame",
+      "category": "defensive",
+      "traits": [
+        "light"
+      ],
+      "text": "When the caligni defender dies, their body combusts in a flash of white-hot flame. All creatures in a 20-foot burst take 6d10 fire damage (DC 26 basic Reflex save save). Their gear and treasure are unaffected by the flames and are left in a pile where they died."
+    },
+    {
+      "kind": "ability",
+      "name": "Black Smear Poison",
+      "category": "offensive",
+      "text": "Many calignis use a debilitating poison crafted from subterranean fungi.\n\n---\n\nSaving Throw DC 16 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d6 poison damage and Enfeebled 1 (1 round)\n\nStage 2 As stage 1\n\nStage 3 1d6 poison damage, and Enfeebled 2 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Shoulder to Shoulder",
+      "category": "offensive",
+      "text": "When adjacent to one or more defenders they can see, the defender deals an additional 2d6 damage with their Strikes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "shoulder-to-shoulder-active"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "shoulder-to-shoulder-active",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "kind": "creature",
+  "slug": "servitor-phantom-cook",
+  "system": "pf2e",
+  "name": "Servitor Phantom (Cook)",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "ethereal",
+    "incorporeal",
+    "phantom",
+    "spirit"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 22,
+    "perception": 10,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 7,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 0,
+      "int": 0,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "stealth": 7,
+      "cooking-lore": 8
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 2,
+          "except": "force, ghost-touch, spirit",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "saves": "-1 status penalty to all saves vs. death effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 15,
+      "attack": 7,
+      "spells": [
+        {
+          "name": "Mending",
+          "rank": 2,
+          "ref": "spells:spell/mending"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 9,
+      "traits": [
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bound to Bastardhall",
+      "category": "interaction",
+      "text": "Unlike the typical phantom, these phantoms exist fully in the Ethereal Plane and cannot shift back and forth between this plane and the Universe."
+    },
+    {
+      "kind": "ability",
+      "name": "-1 Status to All Saves vs. Death Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "death"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Skull-Faced Servant",
+      "category": "defensive",
+      "text": "A servitor phantom's head is that of an animal skull, as determined by their original role in the castle before the curse fell. This skull head grants the servitor phantom a horns or jaws Strike (as appropriate). Each type of skull is associated with a different Lore skill.\n\nBrewers have deer skulls and Alcohol Lore.\n\nCooks have bird skulls and Cooking Lore.\n\nHousekeepers have cat skulls and Labor Lore.\n\nValets have dog skulls and Labor Lore."
+    },
+    {
+      "kind": "ability",
+      "name": "Susceptible to Death",
+      "category": "defensive",
+      "text": "Though phantoms aren't alive, neither are they undead, and they are uniquely vulnerable to the effects of death.\n\nA phantom whose Hit Points are reduced to 0 as a result of a death effect (such as from a spell like Execute) is immediately whisked away to the River of Souls, where their soul resumes the usual path to the afterlife."
+    },
+    {
+      "kind": "ability",
+      "name": "Phantom Touch",
+      "category": "offensive",
+      "traits": [
+        "spirit"
+      ],
+      "text": "Each time they make a Strike, a phantom can choose to deal spirit damage instead of the normal physical damage type.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "phantom-touch",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "phantom-touch"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "strike-damage"
+            ],
+            "value": "spirit"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant phantom"
+}

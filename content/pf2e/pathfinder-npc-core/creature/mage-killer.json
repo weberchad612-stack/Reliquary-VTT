@@ -1,0 +1,309 @@
+{
+  "kind": "creature",
+  "slug": "mage-killer",
+  "system": "pf2e",
+  "name": "Mage Killer",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 145,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 17,
+      "arcana": 13,
+      "athletics": {
+        "value": 16,
+        "special": [
+          {
+            "value": 18,
+            "label": "to Disarm magic staves and wands",
+            "when": [
+              "action:disarm",
+              {
+                "or": [
+                  "magic-staves",
+                  "wands"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "stealth": 18
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "magical-static"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "magical-static"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 20,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "magical-static"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "magical-static"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The mage killer is targeted by a spell\n\n---\nEffect The mage killer gains a +2 circumstance bonus to AC and saving throws against the triggering spell.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "spell-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "item:type:spell"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Interception",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 10 feet of the mage killer Casts a Spell\n\n---\nEffect The mage killer makes a melee Strike or thrown dagger Strike against the triggering creature. If it hits, the spell is disrupted."
+    },
+    {
+      "kind": "ability",
+      "name": "Magical Static",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "mental"
+      ],
+      "text": "The mage killer's Strikes deal an additional 1d8 mental damage to a creature that has Cast (or attempted to Cast) a Spell within the last round, and on a critical hit, the creature is Stupefied 1 for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "magical-static",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "magical-static"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shift Energy Runes",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "concentrate"
+      ],
+      "text": "Frequency once per hour\n\n---\nEffect The mage killer alters the magical countermeasures in the runes on their armor. They change their resistance to the energy type of their choice (acid, cold, electricity, fire, force, sonic, vitality, or void).",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "shift-energy-runes",
+            "selection": "cold",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitForce",
+                "value": "force"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              },
+              {
+                "label": "PF2E.TraitVitality",
+                "value": "vitality"
+              },
+              {
+                "label": "PF2E.TraitVoid",
+                "value": "void"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "resistance",
+          "type": "{item|flags.system.rulesSelections.shiftEnergyRunes}",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mage killer Strides twice. If they end their movement within melee reach of at least one enemy, they can make a melee Strike against it."
+    }
+  ],
+  "text": "Whenever high command needs an enemy spellcaster taken off the board in the midst of battle, they send in a mage killer.\n\n---\nWhether they're hired to wage war, protect a caravan, or infiltrate an impenetrable fortress, there's ample work for mercenaries all over Golarion."
+}

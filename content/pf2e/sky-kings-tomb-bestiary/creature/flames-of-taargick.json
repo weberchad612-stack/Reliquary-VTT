@@ -1,0 +1,192 @@
+{
+  "kind": "creature",
+  "slug": "flames-of-taargick",
+  "system": "pf2e",
+  "name": "Flames of Taargick",
+  "source": {
+    "title": "Pathfinder #195: Heavy is the Crown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "elemental",
+    "fire"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 31,
+    "hp": 210,
+    "perception": 22,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 23,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 6,
+      "int": 0,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 21
+    },
+    "speeds": {
+      "land": 70
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "pyric"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "fire",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "explosion",
+      "perception": "smoke vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tendril",
+      "attack": 26,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+12",
+          "type": "fire"
+        },
+        {
+          "dice": "3d8",
+          "type": "fire",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fire Mote",
+      "attack": 24,
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d10+6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smoke Vision",
+      "category": "interaction",
+      "text": "The elemental inferno ignores the Concealed condition from smoke."
+    },
+    {
+      "kind": "ability",
+      "name": "Explosion",
+      "category": "defensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "When the elemental inferno dies, it explodes, dealing 7d6 fire damage to each creature in a 10-foot emanation (DC 30 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Intense Heat",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fire"
+      ],
+      "text": "10 feet. 7d6 fire damage DC 28 basic Reflex save",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "intense-heat",
+            "traits": [
+              "fire"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blue Flames",
+      "category": "offensive",
+      "text": "When the elemental inferno scores a critical hit, its body surges with blue flames, increasing the damage of its intense heat and Inferno Leap by 3d6 until the start of its next turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "blue-flames",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "add",
+            "predicate": [
+              "blue-flames"
+            ],
+            "property": "dice-number",
+            "selectors": [
+              "inferno-leap-inline-damage",
+              "intense-heat-inline-damage"
+            ],
+            "value": 3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Inferno Leap",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "The elemental inferno jumps horizontally and vertically with a maximum height and distance each equal to its Speed. Its intense heat is suppressed until the end of the jump. At any point during the jump, flames explode from the elemental in a 20-foot emanation, dealing 12d6 fire damage to each creature within the area (DC 30 basic Reflex save save).\n\nThe elemental inferno can't Inferno Leap again for 1d4 rounds."
+    }
+  ],
+  "text": "Walking conflagrations of unimaginably hot fire, elemental infernos are harbingers of destruction and heedless chaos.\n\n---\n\nFire elementals are destructive manifestations of the scorching Plane of Fire.",
+  "blurb": "Variant weak elemental infernos"
+}

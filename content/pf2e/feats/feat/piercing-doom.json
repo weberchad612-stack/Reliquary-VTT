@@ -1,0 +1,63 @@
+{
+  "kind": "feat",
+  "slug": "piercing-doom",
+  "system": "pf2e",
+  "name": "Piercing Doom",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Warrior of Legend Dedication"
+  ],
+  "text": "Requirements You are Doomed 2 or greater.\n\n---\nYou have grown accustomed to the curse that comes with your blessing, able to channel its effects through your attacks and forestall your own demise. Make a melee Strike; on a success, the target takes an additional 1d10 void damage and your doomed value is reduced by 1.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": {
+              "gte": [
+                "self:condition:doomed",
+                2
+              ]
+            }
+          }
+        ],
+        "disabledValue": false,
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "piercing-doom",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "void",
+        "diceNumber": 1,
+        "dieSize": "d10",
+        "key": "DamageDice",
+        "predicate": [
+          "piercing-doom",
+          {
+            "gte": [
+              "self:condition:doomed",
+              2
+            ]
+          }
+        ],
+        "selector": "melee-strike-damage"
+      }
+    }
+  ]
+}

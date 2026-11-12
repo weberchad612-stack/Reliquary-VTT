@@ -1,0 +1,143 @@
+{
+  "kind": "spell",
+  "slug": "qi-blast",
+  "system": "pf2e",
+  "name": "Qi Blast",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "uncommon",
+  "traits": [
+    "concentrate",
+    "focus",
+    "force",
+    "manipulate",
+    "monk"
+  ],
+  "rank": 3,
+  "focus": true,
+  "actions": "1 to 3",
+  "area": {
+    "type": "cone",
+    "value": 15
+  },
+  "defense": {
+    "save": "fortitude",
+    "basic": false
+  },
+  "damage": [
+    {
+      "formula": "2d6",
+      "type": "force",
+      "kind": [
+        "damage"
+      ]
+    }
+  ],
+  "text": "You unleash your qi as a powerful blast that deals 2d6 force damage. If you use 2 actions to cast qi blast, increase the size of the cone to 30 feet and the damage to 3d6. If you use 3 actions to cast qi blast, increase the cone to 60 feet and the damage to 4d6. Each creature in the area must attempt a Fortitude save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is pushed 5 feet.\n\nCritical Failure The creature takes double damage and is pushed 10 feet.\n\n---\nHeightened (+1) The damage increases by 1d6, or by 2d6 if you use 2 or 3 actions.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Monk.QiSpells.HeavensThunder.RollOptionLabel",
+        "option": "heavens-thunder",
+        "placement": "spellcasting",
+        "predicate": [
+          "self:effect:heavens-thunder"
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "heavens-thunder"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "{item|id}-damage"
+        ],
+        "value": "{item|flags.system.rulesSelections.heavensThunder}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "heavens-thunder"
+        ],
+        "property": "traits",
+        "value": "force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "heavens-thunder"
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.heavensThunder}"
+      }
+    }
+  ],
+  "heightening": {
+    "every": 1,
+    "damage": {
+      "0": "1d6"
+    }
+  },
+  "variants": [
+    {
+      "actions": 1,
+      "target": "All creatures"
+    },
+    {
+      "actions": 2,
+      "area": {
+        "value": 30
+      },
+      "target": "All creatures",
+      "damage": [
+        {
+          "formula": "3d6"
+        }
+      ]
+    },
+    {
+      "actions": 3,
+      "area": {
+        "value": 60
+      },
+      "target": "All creatures",
+      "damage": [
+        {
+          "formula": "4d6"
+        }
+      ]
+    }
+  ]
+}

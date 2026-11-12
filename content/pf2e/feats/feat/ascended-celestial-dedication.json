@@ -1,0 +1,108 @@
+{
+  "kind": "feat",
+  "slug": "ascended-celestial-dedication",
+  "system": "pf2e",
+  "name": "Ascended Celestial Dedication",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "destiny",
+    "mythic"
+  ],
+  "category": "class",
+  "text": "Your Calling has driven you to perform mortal deeds that will result in your ascension to the ranks of celestials. You're headstrong and determined and hardly waver in your resolve; once per hour, you can roll twice and use the higher result on a Will saving throw. If you ever become Confused, rather than attack wildly, you become stubbornly immobile, wasting all your actions until the condition ends.\n\nAdditionally, you emanate a nimbus of light. You shed bright light in a 30-foot radius (and dim light to the next 30 feet). You can suppress or reestablish this light as a single action that has the concentrate trait. As long as your nimbus is active, all allies in the area of your nimbus gain a +1 status bonus to saves against fear. You gain the Bless Ally action.\n\nAscended Celestial",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Bless Ally"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          "self:effect:channel-divine-spark"
+        ],
+        "disabledValue": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.AscendedCelestial.Dedication.NimbusToggle",
+        "option": "ascended-celestial-nimbus",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.AscendedCelestial.Dedication.RollTwiceToggle",
+        "option": "ascended-celestial-will",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.ascendedCelestial.aura",
+        "value": 30
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "includesSelf": false,
+            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Ascended Celestial Nimbus"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "ascended-celestial-nimbus"
+        ],
+        "radius": "@actor.flags.system.ascendedCelestial.aura",
+        "slug": "ascended-celestial-nimbus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "ascended-celestial-nimbus"
+        ],
+        "value": {
+          "alpha": 0.2,
+          "animation": {
+            "type": "starlight"
+          },
+          "bright": "@actor.flags.system.ascendedCelestial.aura",
+          "color": "#ffc629",
+          "coloration": 101,
+          "dim": "2*@actor.flags.system.ascendedCelestial.aura"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "ascended-celestial-will"
+        ],
+        "selector": "will"
+      }
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "atticus",
+  "system": "pf2e",
+  "name": "Atticus",
+  "source": {
+    "title": "Pathfinder #180: The Smoking Gun",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 18,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 5,
+      "int": 0,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 17,
+      "crafting": 15,
+      "intimidation": 15,
+      "legal-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "dwarven",
+      "kelish"
+    ],
+    "notes": {
+      "perception": "+20 to sense motive or vs. conceal an object"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Jezail",
+      "ref": "equipment:item/jezail",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 17,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jezail",
+      "attack": 19,
+      "traits": [
+        "concussive",
+        "fatal-aim-d12",
+        "magical",
+        "reload-1"
+      ],
+      "range": 90,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Bonus on Perception to Find concealed objects",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "target:condition:concealed",
+                "item:tag:object"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Bonus on Perception to Sense motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Firearms Critical Specialization",
+      "category": "offensive",
+      "text": "When the shieldmarshal makes a critical hit with a firearm weapon, the target must succeed at a DC 25 Fortitude save save or be Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:group:firearm"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.classDC.value",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lawbringer",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The shieldmarshal marks a foe for judgment, granting the shieldmarshal a +10-foot circumstance bonus to Speed whenever it Strides toward that creature. The shieldmarshal's Strikes against that creature deal an additional 2d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mark:lawbringer"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reloading Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The shieldmarshal makes a melee Strike against an opponent within reach and Interacts to reload a firearm in their other hand."
+    }
+  ],
+  "blurb": "Male human corrupt shieldmarshal"
+}

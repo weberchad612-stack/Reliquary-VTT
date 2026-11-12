@@ -1,0 +1,250 @@
+{
+  "kind": "creature",
+  "slug": "sickened-doprillu",
+  "system": "pf2e",
+  "name": "Sickened Doprillu",
+  "source": {
+    "title": "Pathfinder #192: Worst of All Possible Worlds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "aberration",
+    "evil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 260,
+    "perception": 22,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 28,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 7,
+      "dex": 6,
+      "int": 1,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 26,
+      "athletics": 30,
+      "intimidation": 22,
+      "stealth": 24
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "sakvroth"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 20 (deactivated by cold)",
+      "saves": "+2 status to all saves vs. fear"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 28,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "See Invisibility (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/see-the-unseen"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sickened",
+      "text": "You feel ill. Sickened always includes a value. You take a status penalty equal to this value on all your checks and DCs. You can't willingly ingest anything-including elixirs and potions-while sickened.\n\nYou can spend a single action retching in an attempt to recover, which lets you immediately attempt a Fortitude save against the DC of the effect that made you sickened. On a success, you reduce your sickened value by 1 (or by 2 on a critical success)."
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+16",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status Bonus to Saves vs. Fear",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "fear"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 20 (Deactivated by Cold)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold"
+            ],
+            "key": "FastHealing",
+            "predicate": [
+              "mask-of-power"
+            ],
+            "type": "regeneration",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deflect Arrow",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The doprillu is the target of a physical ranged attack\n\nRequirements The doprillu is aware of the attack, isn't Off-Guard against it, and has a hand free\n\n---\n\nEffect The doprillu gains a +4 circumstance bonus to its AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "deflect-arrow",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "deflect-arrow",
+            "item:damage:category:physical",
+            "item:ranged",
+            {
+              "not": "self:condition:off-guard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mask of Power",
+      "category": "defensive",
+      "text": "A doprillu's unique wooden mask is the source of its power.\n\nA doprillu deprived of its mask loses its regeneration and its immunity to Enfeebled and Slowed, and it immediately becomes Enfeebled 1. The Enfeebled value increases by 1 at the start of each of the doprillu's turns, to a maximum of Enfeebled 4. If the mask is put back on, the doprillu immediately regains its abilities and loses the Enfeebled condition.\n\nA creature can pull off the mask with a successful Athletics check to Force Open.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mask-of-power",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "mask-of-power"
+            ],
+            "type": [
+              "enfeebled",
+              "slowed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Volcanic Veins",
+      "category": "defensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "Fiery magma runs through the doprillu's veins. A creature that starts its turn Grabbed by the doprillu takes 7d6 fire damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Body Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The doprillu has a creature Grabbed\n\n---\n\nEffect The doprillu swings the grabbed creature as a weapon. This Strike has a +30 attack modifier and deals 3d8+16 bludgeoning damage. The Strike is magical and has a reach of 10 feet. On a hit, the grabbed creature takes half the damage dealt to the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Whirlwind Throw",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The doprillu has a creature Grabbed\n\n---\n\nEffect The doprillu whirls the grabbed creature about, making a Body Strike against each creature in reach. After that Strike, the doprillu can hurl the grabbed creature up to 50 feet as a ranged Strike. This Strike has the same attack modifier and damage as Body Strike, but has the thrown 20 feet weapon trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "The aberrations known as doprillus are hulks with banded muscles who wear ornate masks at all times that fill their wearers with magical strength and fighting spirit. Doprillus love to battle, especially by grappling, and are eager to start brawls. On neutral ground, a doprillu offers to duel the strongest-looking opponent, but when a doprillu's home turf is invaded, no rules apply to the confrontation. As befits the superheated blood that fuels them, doprillus make their homes in warm locations: hot jungles, sunny deserts, and underground caverns near sulfur vents.",
+  "blurb": "Variant doprillu"
+}

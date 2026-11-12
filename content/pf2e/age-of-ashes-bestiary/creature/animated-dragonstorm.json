@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "animated-dragonstorm",
+  "system": "pf2e",
+  "name": "Animated Dragonstorm",
+  "source": {
+    "title": "Pathfinder #150: Broken Promises",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless",
+    "unholy"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 42,
+    "hp": 255,
+    "perception": 30,
+    "saves": {
+      "fortitude": 33,
+      "reflex": 30,
+      "will": 27
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 9,
+      "dex": 7,
+      "int": -5,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 35
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 20
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 35,
+      "traits": [
+        "deadly-3d12",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "5d10+12",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "dragonstorm-strike"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Dispelling",
+      "category": "defensive",
+      "text": "The animated dragonstorm can be targeted by Disjunction and Dispel Magic. If targeted by such a spell of 9th rank or higher, the construct loses its resistance to acid, cold, electricity, fire, and physical damage and is Slowed 1 for 1d4 rounds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "vulnerable-to-dispelling",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "vulnerable-to-dispelling"
+              }
+            ],
+            "type": [
+              "acid",
+              "cold",
+              "electricity",
+              "fire",
+              "physical"
+            ],
+            "value": 15
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "vulnerable-to-dispelling"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Channel Dragonstorm",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The animated dragonstorm directs a 30-foot cone of dragonstorm energy. This deals 3d8 acid, 3d8 cold, 3d8 electricity, 3d8 fire, and 3d8 poison damage to creatures in the cone (DC 40 basic Reflex save save). The animated dragonstorm can't use Channel Dragonstorm again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Destructive Strikes",
+      "category": "offensive",
+      "text": "The animated dragonstorm's attacks ignore the Hardness of objects with Hardness 20 or less."
+    },
+    {
+      "kind": "ability",
+      "name": "Dragonstorm Strike",
+      "category": "offensive",
+      "text": "On a critical hit, the animated dragonstorm's fist bursts with dragonstorm energy. The target takes 1d6 acid, 1d6 cold, 1d6 electricity, 1d6 fire, and 1d6 poison damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "acid",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "cold",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "electricity",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "fire",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "fist-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

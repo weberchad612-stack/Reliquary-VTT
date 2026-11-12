@@ -1,0 +1,103 @@
+{
+  "kind": "effect",
+  "slug": "effect-kinetic-aura",
+  "system": "pf2e",
+  "name": "Effect: Kinetic Aura",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Channel Elements\n\nYou activate your kinetic aura.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Foot.Preformatted.5",
+            "predicate": [
+              "feat:aura-shaping"
+            ],
+            "value": 5
+          },
+          {
+            "label": "PF2E.Foot.Preformatted.10",
+            "value": 10
+          },
+          {
+            "label": "PF2E.Foot.Preformatted.15",
+            "predicate": [
+              "feat:aura-shaping"
+            ],
+            "value": 15
+          },
+          {
+            "label": "PF2E.Foot.Preformatted.20",
+            "predicate": [
+              "feat:aura-shaping"
+            ],
+            "value": 20
+          },
+          {
+            "label": "PF2E.Foot.Preformatted.25",
+            "predicate": [
+              "feat:aura-shaping",
+              {
+                "gte": [
+                  "self:level",
+                  15
+                ]
+              }
+            ],
+            "value": 25
+          },
+          {
+            "label": "PF2E.Foot.Preformatted.30",
+            "predicate": [
+              "feat:aura-shaping",
+              {
+                "gte": [
+                  "self:level",
+                  20
+                ]
+              }
+            ],
+            "value": 30
+          }
+        ],
+        "flag": "auraRadius",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.AuraSize"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Aura",
+        "level": "@actor.level",
+        "priority": 99,
+        "radius": "@item.flags.system.rulesSelections.auraRadius",
+        "slug": "kinetic-aura",
+        "traits": [
+          "primal"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.auraRadius",
+        "value": "@item.flags.system.rulesSelections.auraRadius"
+      }
+    }
+  ]
+}

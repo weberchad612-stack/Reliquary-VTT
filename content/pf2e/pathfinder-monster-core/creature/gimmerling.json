@@ -1,0 +1,282 @@
+{
+  "kind": "creature",
+  "slug": "gimmerling",
+  "system": "pf2e",
+  "name": "Gimmerling",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 34,
+    "hp": 235,
+    "perception": 21,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 25,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 7,
+      "int": 5,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 22,
+      "crafting": 23,
+      "deception": 25,
+      "nature": 21,
+      "stealth": 25,
+      "thievery": 25
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "perception": "hungersense (imprecise) 30 feet",
+      "speed": "trickster's step"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "disarm"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 26,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+7",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 28,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+3",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hungersense (Imprecise) 30 feet",
+      "category": "interaction",
+      "text": "Hungersense allows the gimmerling to sense creatures that require food to live."
+    },
+    {
+      "kind": "ability",
+      "name": "Treacherous Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "15 feet.\n\nTangled roots, jagged divots, sharp rocks and other hazards appear on surfaces in the aura, creating difficult terrain.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "slug": "treacherous-aura",
+            "traits": [
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trip Up",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature critically fails a melee attack to hit the gimmerling or moves into a space within the gimmerling's treacherous aura\n\n---\n\nEffect The triggering creature must attempt a DC 32 Reflex save save.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target is Off-Guard until the start of its next turn.\n\nFailure The target takes 2d10 bludgeoning damage and is off-guard until the start of its next turn.\n\nCritical Failure As failure, and the target is knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The gimmerling takes on the appearance of any humanoid. In humanoid form, They lose their treacherous aura, and their equipment appears to be trinkets or toys. If the chosen form lacks claws or fangs, they lose the matching Strike. If they lose their claw Strike, they gain a fist Strike that is identical except that it deals bludgeoning damage.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "gimmerling",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Gimmerling",
+                "value": "gimmerling"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sly Disarm",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The gimmerling's last action was a successful claw Strike\n\n---\n\nEffect The gimmerling attempts to disarm options=sly-disarm the creature they hit. They gain a +4 status bonus on the Athletics check. This attempt neither applies nor counts toward the gimmerling's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "sly-disarm",
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The gimmerling deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trickster's Step",
+      "category": "offensive",
+      "text": "The gimmerling ignores difficult terrain and doesn't trigger traps with its movement.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.movement.terrain.difficult.ignored",
+            "value": {
+              "environment": "all",
+              "feature": "all"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Gimmerlings are small, shapeshifting fey who stage ambushes to sate their endless hunger and childish greed. These cruelly curious fey obsess over finding and making unusual traps and sadistic weapons, and their favorite amusement is seeing these traps sprung or the weapons wielded. When residing on Golarion, they're frequently found in urban areas, particularly slums or other parts of town, where they can either go unnoticed or be easily forgotten—and have plenty of victims to choose from.\n\nA typical gimmerling disguises themself as an endangered child, hoping to draw creatures close enough to rob. The gimmerling puts themself in apparent danger using a trap, construct, a bribed ally, or even a coerced monster.\n\nBecause gimmerlings sometimes trade obscure smithing or trapping techniques in exchange for gifts that sate their curiosity, their greed, or their hunger, they have at times been worshipped as minor gods of the forge. Some disciplined gimmerlings work as honored artisans, elite guards, or spies for the demigods known as the Eldest, who dwell in the depths of the First World."
+}

@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "ruby",
+  "system": "pf2e",
+  "name": "Ruby",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "halfling",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 40,
+    "hp": 390,
+    "perception": 25,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 32,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 6,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 33,
+      "athletics": 29,
+      "deception": 30,
+      "diplomacy": 30,
+      "intimidation": 30,
+      "performance": 30,
+      "stealth": 33
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common",
+      "halfling"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 33,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Keen Eyes",
+      "category": "interaction",
+      "text": "Ruby gains a +2 circumstance bonus when using the Seek action to find Hidden or Undetected creatures within 30 feet. When she targets an opponent that's Concealed or hidden, she reduces the DC of the flat check to DC 3 Flat check for a concealed target or DC 9 Flat check for a hidden one.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "action:seek",
+              {
+                "lte": [
+                  "target:distance",
+                  30
+                ]
+              },
+              {
+                "or": [
+                  "target:condition:hidden",
+                  "target:condition:undetected"
+                ]
+              }
+            ],
+            "selector": "perception",
+            "type": "circumstance",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Daring Gambit",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Ruby attempts to distract an enemy with a death-defying maneuver. She attempts an Acrobatics check check against the Reflex DC of one target within her melee reach. On a success, Ruby Strides up to 15 feet (or 30 feet on a critical success) without triggering reactions from her target due to her movement, and the target is Off-Guard against Ruby's next melee Strike before the end of her turn. Regardless of the result of her Acrobatics check, Ruby attempts a melee Strike against the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Light Step",
+      "category": "offensive",
+      "text": "Ruby ignores difficult terrain when she Strides or Steps."
+    },
+    {
+      "kind": "ability",
+      "name": "Mobile Combatant",
+      "category": "offensive",
+      "text": "Ruby's Strikes deal an additional 4d6 damage if she has moved at least 10 feet during her turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mobile-combatant",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "mobile-combatant"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Timely Boast",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger A creature is critically hit by Ruby, or a creature critically misses Ruby\n\n---\n\nEffect Ruby taunts the triggering creature and boasts about her prowess. Ruby attempts to Demoralize the triggering creature."
+    }
+  ]
+}

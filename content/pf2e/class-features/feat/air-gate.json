@@ -1,0 +1,384 @@
+{
+  "kind": "feat",
+  "slug": "air-gate",
+  "system": "pf2e",
+  "name": "Air Gate",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "category": "classfeature",
+  "text": "Air Gate Junction |\nCritical Blast Push the target up to 10 feet. |\nElemental Resistance air, electricity |\n\nImpulse Junction Before or after the other effects of the impulse, you can either Stride up to half your Speed or Step. If you have a fly Speed, you can Fly up to half your fly Speed instead. |\nAura Junction You and any ally that starts its turn in the aura gets a +10-foot status bonus to land Speed until the end of that turn, and to fly Speed if applicable |\nSkill Junction Stealth, Experienced Smuggler |",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "lte": [
+                "item:level",
+                "parent:granter:level"
+              ]
+            },
+            "item:trait:impulse",
+            "item:trait:air",
+            {
+              "not": "item:trait:composite"
+            }
+          ],
+          "itemType": "feat"
+        },
+        "flag": "impulseOne",
+        "key": "ChoiceSet",
+        "predicate": [
+          "class:kineticist"
+        ],
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.Impulse"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "class:kineticist"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.impulseOne}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:level:1",
+            "item:trait:impulse",
+            "item:trait:air"
+          ],
+          "itemType": "feat"
+        },
+        "flag": "impulseTwo",
+        "key": "ChoiceSet",
+        "predicate": [
+          "kinetic-gate:initial:single-gate",
+          "kinetic-gate:first-element:air-gate"
+        ],
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.Impulse"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "kinetic-gate:initial:single-gate",
+          "kinetic-gate:first-element:air-gate"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.impulseTwo}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "kinetic-gate:air",
+        "priority": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.kineticist.elements",
+        "value": {
+          "label": "PF2E.TraitAir",
+          "value": "air"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "junction:air:impulse",
+        "predicate": [
+          "kinetic-gate:initial:single-gate",
+          "kinetic-gate:first-element:air-gate"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.one",
+        "predicate": [
+          {
+            "or": [
+              "kinetic-gate:first-element:air-gate",
+              "parent:granter:slug:kineticist-dedication"
+            ]
+          }
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.two",
+        "predicate": [
+          {
+            "or": [
+              "kinetic-gate:second-element:air-gate",
+              "parent:slug:through-the-gate"
+            ]
+          }
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.three",
+        "predicate": [
+          "parent:granter:slug:gates-threshold"
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.four",
+        "predicate": [
+          "parent:granter:slug:second-gates-threshold"
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.five",
+        "predicate": [
+          "parent:granter:slug:third-gates-threshold"
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.gate.six",
+        "predicate": [
+          "parent:granter:slug:fourth-gates-threshold"
+        ],
+        "value": "air"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "junction:air:skill"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.feats-srd.Item.Experienced Smuggler"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.stealth.rank",
+        "predicate": [
+          "junction:air:skill"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "junction:air:skill",
+          "self:effect:kinetic-aura"
+        ],
+        "selector": "stealth",
+        "type": "status",
+        "value": "ternary(gte(@actor.level,17),3, ternary(gte(@actor.level,10),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "junction:air:resistance",
+          "self:effect:kinetic-aura"
+        ],
+        "type": [
+          "air",
+          "electricity"
+        ],
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Immunity",
+        "predicate": [
+          "junction:air:resistance",
+          {
+            "gte": [
+              "self:level",
+              17
+            ]
+          },
+          "self:effect:kinetic-aura"
+        ],
+        "type": [
+          "air",
+          "electricity"
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "elemental-blast-damage",
+      "text": "PF2E.SpecificRule.Kineticist.Impulse.CriticalBlast.Air",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "junction:air:critical",
+        "item:trait:air"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "predicate": [
+          {
+            "gte": [
+              "action:cost",
+              2
+            ]
+          },
+          "junction:air:impulse",
+          "self:action:trait:impulse",
+          "self:action:trait:air"
+        ],
+        "selector": "impulse-attack-roll",
+        "text": "PF2E.SpecificRule.Kineticist.Impulse.ImpulseJunction.Air",
+        "title": "PF2E.SpecificRule.Kineticist.Impulse.ImpulseJunction.Title"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "gte": [
+              "item:action:cost",
+              2
+            ]
+          },
+          "junction:air:impulse",
+          "item:trait:impulse",
+          "item:trait:air"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Kineticist.Impulse.ImpulseJunction.Air",
+            "title": "PF2E.SpecificRule.Kineticist.Impulse.ImpulseJunction.Title"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.elementalBlast.air",
+        "predicate": [
+          "self:effect:kinetic-aura",
+          {
+            "not": "battle-form"
+          }
+        ],
+        "priority": 19,
+        "value": {
+          "damageTypes": [
+            "electricity",
+            "slashing"
+          ],
+          "dieFaces": 6,
+          "element": "air",
+          "img": "icons/magic/lightning/bolt-beam-strike-blue.webp",
+          "label": "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.Label.Air",
+          "range": 60
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "predicate": [
+              "junction:air:aura"
+            ],
+            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Aura Junction (Air)"
+          }
+        ],
+        "key": "Aura",
+        "level": "@actor.level",
+        "predicate": [
+          "self:effect:kinetic-aura",
+          "junction:air:aura"
+        ],
+        "priority": 99,
+        "radius": "@actor.flags.system.kineticist.auraRadius",
+        "slug": "kinetic-aura",
+        "traits": [
+          "primal"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "kind": "creature",
+  "slug": "adma-heavenstriker",
+  "system": "pf2e",
+  "name": "Adma Heavenstriker",
+  "source": {
+    "title": "Pathfinder Society Scenario #7-11: The Darkness Within",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "humanoid",
+    "vishkanya"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 130,
+    "perception": 19,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 19,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 1,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 18,
+      "deception": 14,
+      "diplomacy": 12,
+      "intimidation": 12,
+      "stealth": 19,
+      "thievery": 18
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "shadowtongue",
+      "vishkanyan"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 8
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sample 73",
+      "type": "weapon",
+      "text": "Awaiting classification. Synthesized from [redacted] in the Mwangi Expanse. Highly toxic and volatile. DO NOT expose to planar beings and/or forces."
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Giant Scorpion Venom",
+      "ref": "equipment:item/giant-scorpion-venom",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Lethargy Poison",
+      "ref": "equipment:item/lethargy-poison",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Spider Venom",
+      "ref": "equipment:item/spider-venom",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 19,
+      "traits": [
+        "deadly-2d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sample 73",
+      "attack": 19,
+      "traits": [
+        "magical",
+        "splash"
+      ],
+      "range": 10,
+      "damage": [
+        {
+          "dice": "1",
+          "type": "acid",
+          "category": "splash"
+        },
+        {
+          "dice": "1d6",
+          "type": "acid",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d6",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Close Quarters",
+      "category": "defensive",
+      "text": "Adma isn't Off-Guard to creatures of 8th-level or lower that are flanking her.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Venom Spit",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Adma is targeted with a Strike by a creature within 30 feet\n\n---\nEffect Adma spits venom into the attacker's eyes. The attacker takes 2d6 poison damage (DC 23 basic Reflex save save). On a failure, the creature is Off-Guard until the end of the target's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Extend Potency",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements Adma has envenomed her weapon\n\n---\nEffect Adma spits on the blade, revitalizing the venom. The venom remains potent until the end of Adma's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Envenom",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Adma Interacts to draw her rapier, then applies a venom to it. The venom remains potent until the end of Adma's next turn, or until Adma hits a target or critically fails an attack roll."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Adma deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to Adma.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female vishkanya thief"
+}

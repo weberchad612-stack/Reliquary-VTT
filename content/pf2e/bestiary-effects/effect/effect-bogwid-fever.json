@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "effect-bogwid-fever",
+  "system": "pf2e",
+  "name": "Effect: Bogwid Fever",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "max": 4
+  },
+  "text": "You are enfeebled, and the DC to recover from persistent bleed damage increases based on the stage of disease.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": "@item.badge.value"
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:damage:type:bleed",
+          "parent:badge:value:2"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:damage:type:bleed",
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "property": "pd-recovery-dc",
+        "value": 5
+      }
+    }
+  ]
+}

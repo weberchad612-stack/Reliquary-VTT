@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "synthetic-khismar-5-6",
+  "system": "pf2e",
+  "name": "Synthetic Khismar (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-24: Lightning Strikes, Stars Fall",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "construct",
+    "evil"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 24,
+    "hp": 70,
+    "perception": 12,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 10,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 15,
+      "deception": 10,
+      "intimidation": 12,
+      "technology-lore": 13
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "gnomish",
+      "hallit"
+    ],
+    "iwr": {
+      "immunities": [
+        "mental"
+      ]
+    },
+    "notes": {
+      "ac": "20 when broken, construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Storm-fist",
+      "attack": 17,
+      "traits": [
+        "forceful",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Electrical Discharge",
+      "attack": 12,
+      "range": 30,
+      "damage": [
+        {
+          "dice": "4d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "defensive",
+      "text": "Like normal objects, Synthetic Khismar has Hardness. This Hardness reduces any damage he takes by an amount equal to his Hardness. Once Synthetic Khismar is reduced to fewer than half his Hit Points, or immediately upon being damaged by a critical hit, his construct armor breaks and his AC is reduced to 20.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Overcharge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Synthetic Khismar takes electricity damage\n\n---\n\nEffect Synthetic Khismar gains resistance 20 to electricity against the triggering attack and becomes Quickened for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Programmed Combo",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Synthetic Khismar makes two storm-fist Strikes against a single target. If either of the attacks deals damage, the target is Off-Guard until the beginning of Synthetic Khismar's next turn. His multiple attack penalty increases after making both attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Destruct",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Synthetic Khismar has 20 HP or fewer\n\n---\n\nEffect Synthetic Khismar explodes in a ball of burning plasma, destroying himself completely and dealing 8d6 electricity damage to all creatures within 10-foot emanation (DC 24 basic Reflex save)\n\n---\n\nSpecial Synthetic Khismar automatically activates this ability as a free action when brought to 0 Hit Points."
+    },
+    {
+      "kind": "ability",
+      "name": "Technology Control",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Frequency once per turn\n\nRange 100 feet\n\n---\n\nEffect Synthetic Khismar chooses the target of one technological construct or hazard; if this would cause the technological construct or hazard to attack a creature it would not normally attack, it takes a -2 circumstance penalty to its attack rolls and DCs against that creature.\n\nEffect: Technology Control",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    }
+  ]
+}

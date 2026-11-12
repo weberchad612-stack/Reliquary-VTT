@@ -1,0 +1,83 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shield",
+  "system": "pf2e",
+  "name": "Spell Effect: Shield",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Shield\n\nYou gain a +1 circumstance bonus to AC. While the spell is in effect, you can use the Shield Block reaction with your magic shield. After you use Shield Block, the spell ends.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ],
+        "value": {
+          "ac": 1,
+          "broken": false,
+          "brokenThreshold": 0,
+          "destroyed": false,
+          "hp": {
+            "max": 0,
+            "value": 0
+          },
+          "icon": "systems/pf2e/icons/spells/shield.webp",
+          "itemId": "{item|_id}",
+          "name": "PF2E.ShieldLabel",
+          "raised": true
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield.hardness",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ],
+        "value": "5*ceil(@item.level/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:shield:equipped",
+        "predicate": [
+          {
+            "or": [
+              "self:type:character",
+              "self:type:npc"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

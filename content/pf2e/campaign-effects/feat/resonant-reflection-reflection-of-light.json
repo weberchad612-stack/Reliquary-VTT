@@ -1,0 +1,85 @@
+{
+  "kind": "feat",
+  "slug": "resonant-reflection-reflection-of-light",
+  "system": "pf2e",
+  "name": "Resonant Reflection: Reflection of Light",
+  "source": {
+    "title": "Pathfinder #153: Life's Long Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "light",
+    "magical"
+  ],
+  "category": "deityboon",
+  "text": "Your eyes are imbued with an inner light that is not visible externally but that provides you with darkvision and the ability to distinguish color in darkness. You can also focus this inner light to manifest as a brilliant beam of energy from your eyes.\n\n---\n\nActivate 2 envision\n\nFrequency once per day\n\n---\n\nEffect You cast Holy Light as an innate divine spell, heightened to a spell rank equal to half your level rounded up.",
+  "rules": [
+    {
+      "key": "sense",
+      "type": "darkvision",
+      "acuity": "precise"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.colorDarkvision",
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "resonant-reflection"
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Activate Resonant Reflection"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:activate-resonant-reflection",
+          "resonant:reflection-of-light"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.ResonantReflection.ReflectionOfLight.Description",
+            "title": "PF2E.SpecificRule.ResonantReflection.ReflectionOfLight.Title"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.ResonantReflection.Label",
+        "mergeable": true,
+        "option": "resonant",
+        "placement": "actions",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "reflection-of-light"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

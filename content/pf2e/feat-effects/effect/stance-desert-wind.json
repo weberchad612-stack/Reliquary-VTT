@@ -1,0 +1,71 @@
+{
+  "kind": "effect",
+  "slug": "stance-desert-wind",
+  "system": "pf2e",
+  "name": "Stance: Desert Wind",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Desert Wind\n\nWhen you use a damaging air impulse that affects at least one creature in your kinetic aura, that impulse deals additional slashing damage. This damage is doubled if the impulse has a single target.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Kineticist.DesertWind.DamageToggle",
+        "option": "desert-wind-damage",
+        "suboptions": [
+          {
+            "label": "PF2E.GenericLabel.TargetNumber.Multiple",
+            "value": "multiple"
+          },
+          {
+            "label": "PF2E.GenericLabel.TargetNumber.Single",
+            "value": "single"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "inline-damage",
+        "impulse-damage"
+      ],
+      "type": "untyped",
+      "value": "floor(@level/2) - 2",
+      "slug": "desert-wind",
+      "when": [
+        "item:trait:air",
+        "item:trait:impulse",
+        "desert-wind-damage"
+      ],
+      "damageType": "slashing"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "desert-wind-damage:single"
+        ],
+        "selectors": [
+          "inline-damage",
+          "impulse-damage"
+        ],
+        "slug": "desert-wind",
+        "value": 2
+      }
+    }
+  ]
+}

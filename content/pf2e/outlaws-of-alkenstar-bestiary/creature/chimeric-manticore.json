@@ -1,0 +1,209 @@
+{
+  "kind": "creature",
+  "slug": "chimeric-manticore",
+  "system": "pf2e",
+  "name": "Chimeric Manticore",
+  "source": {
+    "title": "Pathfinder #179: Cradle of Quartz",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "rare",
+  "traits": [
+    "beast",
+    "chaotic",
+    "evil"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": -3,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 17,
+      "intimidation": 11,
+      "stealth": 13,
+      "survival": 15
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Dragon Jaws",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Lion Jaws",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Goat Horns",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spike",
+      "attack": 16,
+      "range": 40,
+      "damage": [
+        {
+          "dice": "1d10+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Three-Headed",
+      "category": "defensive",
+      "text": "Any ability that would sever a chimera's head (such as a critical hit with a Vorpal Weapon) severs one head at random. Losing a head doesn't kill a chimera (as long as it has one head left), but it does prevent it from making Strikes with the lost head or using the head's Breath Weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane"
+      ],
+      "text": "The chimeric manticore's blue-dragon head breathes a 60-foot line of electricity that deals 8d6 electricity damage to all creatures in the area (DC 25 basic Reflex save).\n\nThe chimeric manticore can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Spike Volley",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The manticore flings up to two spikes from its tail, targeting either two different creatures or a single creature. If the manticore targets two different creatures, these creatures must be within 20 feet of one another, and the manticore makes a separate Strike against each; this counts as only one Strike for the manticore's multiple attack penalty, and the penalty doesn't increase until after both attacks. If the manticore fires both spikes at the same creature, it makes a single Strike. If the attack hits, it deals the damage of a single spike, but the target is pinned in place, rendering it Immobilized. A creature that succeeds at a DC 25 Athletics check check (attempted as a single action) can pull the spike free.\n\nA manticore can hurl no more than 12 spikes in 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Three-Headed Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The chimera makes a Strike with its dragon jaws, lion jaws, and goat horns, each at a -2 penalty and targeting a different creature. These Strikes count as only one attack for the chimera's multiple attack penalty, and the penalty doesn't increase until after it has made all three attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "three-headed-strike",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "dragon-jaws-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "three-headed-strike"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "lion-jaws-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "three-headed-strike"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "goat-horns-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "three-headed-strike"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Triple Opportunity",
+      "category": "offensive",
+      "text": "A chimera gains 2 extra reactions each round that it can use only to make Attacks of Opportunity. It must use a different head for each reaction, and it can't use more than one on the same triggering action. If it loses one of its heads, it also loses one of these extra reactions."
+    }
+  ],
+  "blurb": "Genderless chimera‑manticore hybrid"
+}

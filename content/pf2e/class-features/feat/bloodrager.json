@@ -1,0 +1,162 @@
+{
+  "kind": "feat",
+  "slug": "bloodrager",
+  "system": "pf2e",
+  "name": "Bloodrager",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "barbarian"
+  ],
+  "category": "classfeature",
+  "text": "You use the power of ingested blood to generate magical power and fuel you in combat, transforming you into a horrifyingly fearsome opponent. You must select Bloodrager Dedication as your 2nd-level class feat.\n\nPrerequisites: You must be a barbarian.\n\nBloodrager Adjustments: You are trained in Athletics, Medicine, and a number of additional skills equal to 2 plus your Intelligence modifier, instead of your normal starting skill proficiencies. You must choose the bloodrager instinct for your barbarian instinct.\nBloodrager Instinct\nDrinking the potent magical blood of supernatural creatures has changed you and awakened magical power within you, along with a grim thirst.\n\nBlood Rage (Instinct Ability): When raging, your physical attacks deal extra persistent bleed damage equal to half your additional damage from Rage. When you Cast a Spell that requires a spell attack roll while raging, apply the additional damage from Rage to that spell, even on a failure.\n\nSpecialization Ability: When using blood rage, increase the additional damage from Rage from 2 to 4. If you have greater weapon specialization, instead increase the damage from 4 to 8.\n\nRaging Resistance: You resist slashing damage and persistent bleed damage, as well as damage dealt by the creature whose blood you last drank using Harvest Blood (see below), regardless of the damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "self:effect:rage",
+          {
+            "or": [
+              "class:barbarian",
+              "feat:instinct-ability"
+            ]
+          }
+        ],
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "rage",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "class:barbarian",
+          {
+            "gte": [
+              "self:level",
+              7
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "class:barbarian",
+          "feature:greater-weapon-specialization"
+        ],
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 8
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance"
+        ],
+        "type": [
+          "bleed",
+          "slashing"
+        ],
+        "value": "@actor.flags.system.ragingResistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "origin:mark:harvest-blood"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.HarvestBlood",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance"
+        ],
+        "type": "custom",
+        "value": "@actor.flags.system.ragingResistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "key": "FlatModifier",
+        "predicate": [
+          "self:effect:rage",
+          "item:damage:category:physical"
+        ],
+        "selector": [
+          "attack-damage"
+        ],
+        "value": "ternary(gte(@actor.level,15),4,ternary(gte(@actor.level,7),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "selector": [
+          "attack-spell-damage"
+        ],
+        "slug": "blood-rage-spell",
+        "value": "ternary(gte(@actor.level,15),8,ternary(gte(@actor.level,7),4,2))"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "spell-attack-roll",
+      "text": "PF2E.SpecificRule.Barbarian.Bloodrager.SpellMiss",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "self:effect:rage"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "bloodragerDedication",
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              2
+            ]
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.feats-srd.Item.Bloodrager Dedication"
+      }
+    }
+  ]
+}

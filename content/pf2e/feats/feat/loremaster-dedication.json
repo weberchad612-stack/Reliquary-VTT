@@ -1,0 +1,49 @@
+{
+  "kind": "feat",
+  "slug": "loremaster-dedication",
+  "system": "pf2e",
+  "name": "Loremaster Dedication",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "trained in at least one skill to Decipher Writing"
+  ],
+  "text": "You've compiled a vast repository of information that touches on nearly every subject. You are trained in Loremaster Lore, a special Lore skill that can be used only to recall-knowledge skill=loremaster-lore, but on any topic.\n\nIf you have legendary proficiency in a skill used to Decipher Writing, you gain expert proficiency in Loremaster Lore, but you can't increase your proficiency rank in Loremaster Lore by any other means.\n\nYou can take feats in the loremaster's additional feats entry even if you don't meet the Enigma Muse prerequisite.\n\nIf you have the Bardic Lore class feat, you gain a +1 circumstance bonus to skill checks with Bardic Lore.\n\nLoremaster",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "bardic",
+        "bardic-lore",
+        "lore-bardic"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "feat:bardic-lore"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.loremaster-lore",
+        "value": {
+          "attribute": "int",
+          "label": "PF2E.SpecificLore.Loremaster",
+          "rank": "match(when(gte(@actor.system.skills.arcana.rank, 4), 2),when(gte(@actor.system.skills.occultism.rank, 4), 2),when(gte(@actor.system.skills.nature.rank, 4), 2),when(gte(@actor.system.skills.religion.rank, 4), 2),1)"
+        }
+      }
+    }
+  ]
+}

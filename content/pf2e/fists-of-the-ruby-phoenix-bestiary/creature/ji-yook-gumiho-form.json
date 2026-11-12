@@ -1,0 +1,277 @@
+{
+  "kind": "creature",
+  "slug": "ji-yook-gumiho-form",
+  "system": "pf2e",
+  "name": "Ji-yook (Gumiho Form)",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "humanoid",
+    "kitsune"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 42,
+    "hp": 331,
+    "perception": 29,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 34,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 3,
+      "dex": 6,
+      "int": 5,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 37,
+      "athletics": 35,
+      "deception": 35,
+      "diplomacy": 31
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "nagaji",
+      "taldane",
+      "tengu",
+      "tien"
+    ],
+    "iwr": {
+      "immunities": [
+        "emotion"
+      ]
+    },
+    "notes": {
+      "perception": "emotionsense",
+      "languages": "(can't speak any language)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dart",
+      "ref": "equipment:item/dart",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Explorer's Clothing",
+      "ref": "equipment:item/explorers-clothing",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Smokestick (Greater)",
+      "ref": "equipment:item/smoke-ball-greater",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 34,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "6d4+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dart",
+      "attack": 34,
+      "traits": [
+        "agile",
+        "magical",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "6d4+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foxfire",
+      "attack": 34,
+      "range": 20,
+      "damage": [
+        {
+          "dice": "6d4+8",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Emotionsense",
+      "category": "interaction",
+      "text": "Ji-yook can sense the emotions of those within 60 feet as an imprecise sense."
+    },
+    {
+      "kind": "ability",
+      "name": "Waylay",
+      "category": "defensive",
+      "traits": [
+        "illusion"
+      ],
+      "text": "When Ji-yook Strides at least 10 feet, illusions make her Concealed until the start of her next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "Ji-yook transforms into her human form. Using Change Shape counts as creating a disguise for the Impersonate use of Deception. Ji-yook can remain in her human form indefinitely, and she can shift back to her true kitsune form by using this action again.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Disquieting Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "Ji-yook selects one enemy within 60 feet, then Changes Shape into humanoid form, taking the form of a person emotionally close to that enemy, such as a dead family member. Ji-yook is not aware of the form she will take until she transforms. If her target sees her, even if they are aware it is a trick, they must attempt a DC 40 Will save save or be Frightened 1 (Frightened 2 on a critical failure) for 1 round. This is a fear effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Foxfire Blast",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "flourish",
+        "magical"
+      ],
+      "text": "Ji-yook makes a fist Strike. On a hit, the target takes an additional 3d6 electricity damage and is pushed back 5 feet. On a critical hit, the target is pushed back and then knocked Prone",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "electricity",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "foxfire-blast"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "foxfire-blast",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "foxfire-blast"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pinning Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Ji-yook pins a foe's clothing to a wall or floor or the ground. Ji-yook makes a dart Strike. If the attack hits, it deals no damage and instead pins the target to an adjacent surface. The target is Immobilized and must spend an Interact action to attempt a DC 10 Athletics check check to pull the dart free; it can't move from its space until it succeeds. If Ji-yook's dart Strike was a critical hit, the target must succeed at two separate Athletics checks to pull the dart free. The target is Off-Guard while it remains immobilized in this way."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Ji-yook's Strikes deal an additional 4d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Toughest Teamwork: Unsettling Murmur",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear"
+      ],
+      "text": "Trigger An enemy within 60 feet is the target of a Strike or attempts a Will save\n\n---\n\nEffect Just when an enemy is preparing to defend itself, Ji-yook sends an illusion of herself to whisper a disquieting secret or threat into their ear. The enemy takes a -2 circumstance penalty to their AC or Will save against the triggering attack or effect."
+    }
+  ],
+  "blurb": "Dimensional superposition form of Ji-yook"
+}

@@ -1,0 +1,297 @@
+{
+  "kind": "creature",
+  "slug": "bastion-archon",
+  "system": "pf2e",
+  "name": "Bastion Archon",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "rare",
+  "traits": [
+    "archon",
+    "celestial",
+    "good",
+    "holy",
+    "lawful"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 47,
+    "hp": 280,
+    "perception": 37,
+    "saves": {
+      "fortitude": 38,
+      "reflex": 31,
+      "will": 34
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 10,
+      "dex": 7,
+      "int": 6,
+      "str": 10,
+      "wis": 8
+    },
+    "skills": {
+      "athletics": 38,
+      "diplomacy": 34,
+      "intimidation": 34,
+      "religion": 32
+    },
+    "speeds": {
+      "land": 70
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(fast healing 30)",
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "tongues"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 42,
+      "attack": 34,
+      "spells": [
+        {
+          "name": "Air Walk (Constant)",
+          "rank": 10,
+          "ref": "spells:spell/air-walk"
+        },
+        {
+          "name": "Polar Ray",
+          "rank": 10,
+          "ref": "spells:spell/polar-ray"
+        },
+        {
+          "name": "Sunburst",
+          "rank": 10,
+          "ref": "spells:spell/sunburst"
+        },
+        {
+          "name": "Tongues (Constant)",
+          "rank": 10,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "True Seeing (Constant)",
+          "rank": 10,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Meteor Swarm",
+          "rank": 10,
+          "ref": "spells:spell/falling-stars"
+        },
+        {
+          "name": "Prismatic Spray",
+          "rank": 7,
+          "ref": "spells:spell/prismatic-spray"
+        },
+        {
+          "name": "True Target",
+          "rank": 7,
+          "ref": "spells:spell/true-target",
+          "uses": 3
+        },
+        {
+          "name": "Vibrant Pattern",
+          "rank": 7,
+          "ref": "spells:spell/vibrant-pattern"
+        },
+        {
+          "name": "Dimension Door (At will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 40,
+      "traits": [
+        "holy",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+20",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bastion Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "good",
+        "healing"
+      ],
+      "text": "50 feet. All good-aligned creatures in the aura have fast healing 30 for as long as they remain in range, and they gain a +2 status bonus to attack rolls and damage rolls.\n\nEffect: Bastion Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "predicate": [
+                  "target:trait:good"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Bastion Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 50,
+            "slug": "bastion-aura",
+            "traits": [
+              "divine",
+              "healing"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Retributive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Damage Reduction 22\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Ultimate Sacrifice",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "good",
+        "healing"
+      ],
+      "text": "If the bastion archon is slain by an evil creature, it explodes in a geyser of holy light, restoring 140 healing HP to all good-aligned creatures in a 40-foot emanation. The ground in the affected area is also subjected to a 10th rank Consecrate ritual, and the ground is consecrated for 10 years (or only 24 hours if the ultimate sacrifice took place in Hell, Abaddon, or the Abyss)."
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Door",
+      "category": "offensive",
+      "text": "Once per day, if an archon sees another creature cast Translocate, the archon can use dimension door (heightened to 5th level) within 1 round to attempt to follow that creature to the maximum distance of the archon's dimension door. If the archon's dimension door has enough distance, the archon appears the same distance and direction from the creature as before either creature used dimension door."
+    },
+    {
+      "kind": "ability",
+      "name": "Blinding Beams",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger The bastion archon hits a creature with two fist Strikes this turn and can use its Holy Beam\n\n---\n\nEffect The bastion archon fires its Holy Beam at only the creature it hit twice. The creature's save result is one degree of success worse than the result it rolled."
+    },
+    {
+      "kind": "ability",
+      "name": "Entrench",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The bastion archon locks itself in place, becoming voluntarily Immobilized. While Entrenched, the archon can't be forcibly moved or tripped, and it gains a +2 circumstance bonus to AC and Reflex saves. Entrench ends automatically as soon as the bastion archon uses another move action.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "entrench",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "reflex"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "entrench"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Holy Beam",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "good",
+        "holy",
+        "incapacitation",
+        "light"
+      ],
+      "text": "The bastion archon releases a blinding beam of holy light in a 500-foot line that deals 20d6 spirit damage to non-archons in the area, with a DC 38 Reflex save save.\n\nThe bastion archon can't use Holy Beam again for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is Blinded for 1d4 rounds.\n\nCritical Failure The creature takes double damage and is blinded permanently."
+    }
+  ],
+  "text": "The mightiest of archon-kind form in the heat of battle from incredibly uncommon circumstances. When a gathering of lantern archons converges into a gestalt in order to defend allies in a fight that seems all but lost, a fellow archon of significant strength-such as a star archon-can commit a brave act of self-sacrifice by dimensionally transposing itself with the gestalt. If the circumstances are just right and luck is with the archons, the result is not a glorious sacrifice, but instead the earth-rocking emergence of a bastion archon. In this way, the lowliest of archons-the lanterns-can, in an instant, become their kind's greatest hope.\n\nBastion archons are massive beings made of the very stone of Heaven's Holy Mountain, with their visages obscured by a blinding light surrounding the gestalt that originally formed the bastion. Tireless in their embodiment of the virtue of sacrifice, a bastion archon almost always protects the area where they manifested, and even when they are destroyed they leave an indelible mark of righteousness upon the surrounding region."
+}

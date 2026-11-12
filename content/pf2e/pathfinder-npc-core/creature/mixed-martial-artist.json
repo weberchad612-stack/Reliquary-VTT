@@ -1,0 +1,236 @@
+{
+  "kind": "creature",
+  "slug": "mixed-martial-artist",
+  "system": "pf2e",
+  "name": "Mixed Martial Artist",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 130,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 2,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 17,
+      "martial-arts-lore": 17
+    },
+    "speeds": {
+      "land": 35
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "magical",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Fists",
+      "category": "offensive",
+      "text": "The mixed martial artist's fist Strikes don't take penalties when making lethal attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Stance Shift",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "The mixed martial artist enters a stance of their choice, gaining the listed circumstance bonus and Strike but losing the ability to make other Strikes.\n- Elbow Knockout Stance +2 to Athletics checks to shove or trip; Melee 1 cross elbow +16 (nonlethal, trip, unarmed) Damage 2d6+8 bludgeoning\n- Secure Grapple Stance +2 to Athletics checks to grapple; Melee 1 grappling limb +16 (grapple, nonlethal, unarmed) Damage 2d4+8 bludgeoning\n- Thrashing Barrage Stance +2 to damage against Off-Guard opponents; Melee 1 thrashing fist +16 (forceful, nonlethal, unarmed) Damage 2d8+8 bludgeoning",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "mergeable": true,
+            "option": "stance-shift",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.ElbowKnockoutStance",
+                "value": "elbow-knockout-stance"
+              },
+              {
+                "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.SecureGrappleStance",
+                "value": "secure-grapple-stance"
+              },
+              {
+                "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.ThrashingBarrageStance",
+                "value": "thrashing-barrage-stance"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "untyped",
+          "value": 2,
+          "slug": "elbow-knockout-athletics",
+          "when": [
+            "stance-shift:elbow-knockout-stance",
+            {
+              "or": [
+                "action:shove",
+                "action:trip"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "untyped",
+          "value": 2,
+          "slug": "secure-grapple-athletics",
+          "when": [
+            "stance-shift:secure-grapple-stance",
+            "action:grapple"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "stance-shift:thrashing-barrage-stance",
+            "target:condition:off-guard"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 16,
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.CrossElbow",
+            "predicate": [
+              "stance-shift:elbow-knockout-stance"
+            ],
+            "replaceAll": true,
+            "traits": [
+              "nonlethal",
+              "trip",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 16,
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.GrapplingLimb",
+            "predicate": [
+              "stance-shift:secure-grapple-stance"
+            ],
+            "replaceAll": true,
+            "traits": [
+              "grapple",
+              "nonlethal",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 16,
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 8
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.NPCAbility.MixedMartialArtist.StanceShift.ThrashingFist",
+            "predicate": [
+              "stance-shift:thrashing-barrage-stance"
+            ],
+            "replaceAll": true,
+            "traits": [
+              "forceful",
+              "nonlethal",
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Takedown Fluidity",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The mixed martial artist's last action was a successful Grapple, Shove, or Trip.\n\n---\nEffect The mixed martial artist uses Stance Shift."
+    }
+  ],
+  "text": "These fighters combine the takedowns of a wrestler with aggressive stances and unorthodox blows, ensuring that contenders won't know what hit them.\n\n---\nMartial artists strive to master the art of hand-to-hand fighting."
+}

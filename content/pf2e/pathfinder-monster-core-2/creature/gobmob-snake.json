@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "gobmob-snake",
+  "system": "pf2e",
+  "name": "Gobmob Snake",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "goblin",
+    "mutant"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 10,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 13,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 5,
+      "int": -2,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 10,
+      "intimidation": 9,
+      "stealth": 12,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 5,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ],
+    "notes": {
+      "languages": "snake empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 14,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snake Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A gobmob snake can communicate with snakes."
+    },
+    {
+      "kind": "ability",
+      "name": "Coiled Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "As Reactive Strike, but the gobmob snake can use this reaction only if it's Coiled."
+    },
+    {
+      "kind": "ability",
+      "name": "Incessant Yammering",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "aura",
+        "linguistic"
+      ],
+      "text": "15 feet.\n\nA gobmob snake's heads constantly bicker and snipe at one another, annoying and distracting anyone nearby. Each non-goblin creature that begins its turn in the aura must attempt a DC 21 Will save save. On a failure, it takes a –1 status penalty to Perception checks and Will saves for 1 round. On a success, it is temporarily immune for 1 minute.\n\nEffect: Incessant Yammering",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "slug": "incessant-yammering",
+            "traits": [
+              "auditory",
+              "linguistic"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infighting",
+      "category": "defensive",
+      "text": "Whenever a gobmob snake critically fails at an attack roll or skill check, it must succeed at a DC 5 Flat check or become Slowed 1 as its heads argue over which of them is to blame. An enemy can provoke an argument by attempting a DC 20 Deception check check as a single action with the auditory, concentrate, linguistic, and mental traits.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": [
+            "attack-roll",
+            "skill-check"
+          ],
+          "text": "{item|description}",
+          "outcome": [
+            "criticalFailure"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coil",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The gobmob snake uses an action to coil itself, increasing its reach with its fangs from 5 to 10 feet. After the gobmob snake Strikes with its fangs, it becomes uncoiled.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "coil",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fangs"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "coil"
+            ],
+            "property": "weapon-traits",
+            "value": "reach-10"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Goblin Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "olfactory",
+        "poison"
+      ],
+      "text": "The gobmob snake belches a cloud of nauseating vapor in a 15-foot cone. Non-goblin creatures within the cloud must succeed at a DC 20 Fortitude save save or become Sickened 1. On a critical failure, a creature is also Slowed 1 for as long as it is sickened. Creatures that successfully save are immune for 24 hours. The gobmob snake can't use Goblin Breath again for 1d4 rounds."
+    }
+  ],
+  "text": "These bizarre mutant goblin snakes possess no fewer than three heads.\n\n---\nA goblin snake is a foul-smelling serpentine creature covered in greasy black scales and sporting a fanged, lipless head resembling that of a goblin."
+}

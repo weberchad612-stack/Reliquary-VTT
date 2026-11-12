@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "clockwork-dragon",
+  "system": "pf2e",
+  "name": "Clockwork Dragon",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "clockwork",
+    "construct",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 39,
+    "hp": 265,
+    "perception": 28,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 28,
+      "will": 25
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": 5,
+      "int": -5,
+      "str": 9,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 29,
+      "athletics": 33
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 120
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 15
+        },
+        {
+          "type": "orichalcum",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 15,
+          "except": "adamantine, orichalcum"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Adamantine Jaws",
+      "attack": 33,
+      "traits": [
+        "adamantine",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Adamantine Claw",
+      "attack": 33,
+      "traits": [
+        "adamantine",
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+17",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 31,
+      "traits": [
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+15",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wing",
+      "attack": 31,
+      "traits": [
+        "agile",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+15",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wind-Up",
+      "category": "interaction",
+      "text": "1 week, disable-device dc=35, standby\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "perception",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ClockworkWindUp",
+            "option": "wind-up",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "wind-up"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Destruct",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "A clockwork dragon must use this reaction unless specifically programmed otherwise by its creator\n\nTrigger The clockwork dragon is reduced to 0 Hit Points\n\n---\nEffect The dragon screeches to a stop and emits a steady, loud ticking sound. At the beginning of what would have been its next turn, the dragon explodes, dealing 12d10 piercing damage in a 40-foot emanation (DC 37 basic Reflex save save).\n\nAn adjacent creature can cancel the self-destruct sequence by succeeding at a DC 37 Thievery check to disable-device dc=37."
+    },
+    {
+      "kind": "ability",
+      "name": "Breathe Oil",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "fire"
+      ],
+      "text": "The clockwork dragon breathes a spray of flaming oil that deals 16d6 fire damage in a 40-foot cone with a DC 37 basic Reflex save save. Creatures that fail their saves are covered in burning oil and take 2d6 persistent,fire damage. The clockwork dragon can't Breathe Oil again for 2 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The clockwork dragon makes two adamantine claw Strikes and one wing Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Spearing Tail",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The clockwork dragon attacks with the sharp point of its tail. It makes a tail Strike against each creature in a 20-foot line, rolling the attack roll once and applying the result to each target. Any creature that takes damage also takes 4d6 persistent bleed damage (doubled on a critical hit). This counts as two attacks for the dragon's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "spearing-tail",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "spearing-tail"
+            ],
+            "selector": "tail-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Clockwork dragons are marvels of clockwork design. These powerful masterpieces have the ability to fly, making them versatile and dangerous killers. A clockwork dragon's winding mechanism is more efficient than those of other clockworks, allowing it to partially reuse energy generated by flapping its wings. Creating a clockwork dragon requires not only an advanced understanding of clockwork design, but also a greater cache of rare resources, as its body requires solid reinforcement. As a result, most clockwork dragons have adamantine fortification. Creating a clockwork dragon without adamantine is entirely possible, though such dragons are typically smaller and more fragile.\n\n---\nIntricate, complex machines, clockworks are built with care by highly skilled engineers. Though their creation involves some amount of magic, they're primarily mechanical, packed with precision-tuned gears and springs working in concert.\n\nThe sturdy mainspring within a clockwork must be wound to provide the energy needed to power the device. Some larger clockworks contain a series of springs for different limbs that each need to be wound. A clockwork's crafter creates a unique metal key while building the clockwork; winding the clockwork usually involves inserting the key into the machine's back and turning clockwise. Larger clockworks require greater strength to turn the key and typically have larger keys to allow for more torque—some even accommodate a team of winders rather than an individual. Programming a clockwork requires both the key and the knowledge to set the program correctly, information usually reserved for the clockwork's creator or owner."
+}

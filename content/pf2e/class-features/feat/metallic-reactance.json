@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "metallic-reactance",
+  "system": "pf2e",
+  "name": "Metallic Reactance",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "The metals in your armor are carefully alloyed to ground electricity and protect from acidic chemical reactions. You gain resistance equal to 3 + half your level to acid and electricity damage. When under the effects of Overdrive, the resistance increases by 2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armor:id:{actor|flags.system.innovationId}"
+        ],
+        "type": [
+          "acid",
+          "electricity"
+        ],
+        "value": "3 + floor(@actor.level / 2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armor:id:{actor|flags.system.innovationId}",
+          {
+            "or": [
+              "self:effect:overdrive-success",
+              "self:effect:overdrive-critical-success"
+            ]
+          }
+        ],
+        "type": [
+          "acid",
+          "electricity"
+        ],
+        "value": "5 + floor(@actor.level / 2)"
+      }
+    }
+  ]
+}

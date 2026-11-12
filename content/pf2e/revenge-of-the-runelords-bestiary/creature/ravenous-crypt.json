@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "ravenous-crypt",
+  "system": "pf2e",
+  "name": "Ravenous Crypt",
+  "source": {
+    "title": "Pathfinder #220: Crypt of Runes",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 36,
+    "hp": 200,
+    "perception": 23,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 24,
+      "will": 21
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 7,
+      "dex": 4,
+      "int": -5,
+      "str": 8,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 30
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(32 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Doors",
+      "attack": 28,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Leg",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d4+14",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 15)",
+      "category": "defensive",
+      "text": "The ravenous crypt reduces any damage it takes by an amount equal to its Hardness. Once it's reduced to less than 100 Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing its Hardness and reducing the crypt's Armor Class to 32.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reduced to Rubble",
+      "category": "defensive",
+      "text": "When the ravenous crypt is reduced to 0 Hit Points, its space becomes an area of difficult terrain, and any creatures swallowed by the crypt fall Prone in a space of their choice within the area."
+    },
+    {
+      "kind": "ability",
+      "name": "Sap Strength",
+      "category": "offensive",
+      "text": "A creature that takes void damage from the ravenous crypt's Swallow Whole ability must attempt a DC 34 Fortitude save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is Enfeebled 1 for 1 round.\n\nFailure The creature is Enfeebled 2 for 1 minute.\n\nCritical Failure The creature is Enfeebled 3 for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Spacious Stomach",
+      "category": "offensive",
+      "text": "A ravenous crypt has a 10-foot-space inside of it. A creature swallowed by the ravenous crypt isn't Grabbed or slowed, and the creature doesn't need to hold its breath. It can attack the ravenous crypt normally. Because it isn't grabbed, it can't Escape the crypt, but it can break free by dealing bludgeoning damage to the crypt equal to the crypt's Rupture value or by Forcing Open the crypt's doors with a successful DC 34 Athletics check check."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 5d8 void plus sap strength, Rupture 20\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Thrash",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Each adjacent creature and each creature swallowed by the ravenous crypt takes 5d10 bludgeoning damage (DC 34 basic Reflex save save). Swallowed creatures take a –2 circumstance penalty to this save. On a critical failure, a creature is also knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "When tomb robbers loot the dead, sometimes the resting places of those victims animate to avenge them. This happens most frequently when the entombed person was a particularly greedy, gluttonous, or vindictive individual in life. Other ravenous crypts arise spontaneously in places where energy from the Void flows freely into other planes.\nBoneyard Guardians\nRavenous crypts are occasionally encountered in the Boneyard, roaming that vast necropolis like packs of hungry dogs, although they quickly come to heel while in Pharasma's presence. This behavior has led some scholars to posit that the constructs are created at the behest—or at least with the blessing—of the Lady of Graves. Magrim, the demigod of the dwarven afterlife, is also believed to have some connection to ravenous crypts, as suggested by the fact the pediments of many crypts are carved with the scowling visages of dwarven elders."
+}

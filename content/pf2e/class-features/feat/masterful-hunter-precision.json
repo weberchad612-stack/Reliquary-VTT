@@ -1,0 +1,80 @@
+{
+  "kind": "feat",
+  "slug": "masterful-hunter-precision",
+  "system": "pf2e",
+  "name": "Masterful Hunter (Precision)",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "ranger"
+  ],
+  "category": "classfeature",
+  "text": "Your weapon mastery allows you to hit your prey's vital areas multiple times. The second time in a round you hit your hunted prey, you also deal 1d8 precision damage.\n\nAt 19th level, your second hit in a round against your hunted prey deals 2d8 precision damage, and your third hit in a round against your hunted prey deals 1d8 precision damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Ranger.HuntersEdge.Precision.ToggleLabel",
+        "mergeable": true,
+        "option": "precision-hunters-edge",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Numbers.Ordinals.Second",
+            "value": "second-hit"
+          },
+          {
+            "label": "PF2E.SpecificRule.Numbers.Ordinals.Third",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  19
+                ]
+              }
+            ],
+            "value": "third-hit"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "precision-hunters-edge:second-hit"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "precision",
+        "value": "ternary(gte(@actor.level,19),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "precision-hunters-edge:third-hit"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "precision",
+        "value": 1
+      }
+    }
+  ]
+}

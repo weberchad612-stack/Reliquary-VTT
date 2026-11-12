@@ -1,0 +1,48 @@
+{
+  "kind": "feat",
+  "slug": "speed-boosters",
+  "system": "pf2e",
+  "name": "Speed Boosters",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "You have boosters in your armor that increase your Speed. You gain a +5-foot status bonus to your Speed, which increases to a +10-foot status bonus when under the effects of Overdrive.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "status",
+      "value": 5,
+      "slug": "speed-boosters",
+      "when": [
+        "armor:id:{actor|flags.system.innovationId}"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              "self:effect:overdrive-success",
+              "self:effect:overdrive-critical-success"
+            ]
+          }
+        ],
+        "selector": "land-speed",
+        "slug": "speed-boosters",
+        "value": 10
+      }
+    }
+  ]
+}

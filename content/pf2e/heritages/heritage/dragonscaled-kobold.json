@@ -1,0 +1,48 @@
+{
+  "kind": "heritage",
+  "slug": "dragonscaled-kobold",
+  "system": "pf2e",
+  "name": "Dragonscaled Kobold",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Kobold",
+    "ref": "ancestries:ancestry/kobold"
+  },
+  "text": "Thanks to your warren's association with a dragon, your scales are sturdier than other kobolds'. You gain 10 Hit Points from your ancestry instead of 6. You gain a +1 circumstance bonus to saves against dragon breath, effects with the sleep trait, and effects that would make you Paralyzed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.ancestryhp",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "item:trait:sleep",
+            "inflicts:paralyzed",
+            {
+              "and": [
+                "action:breath-weapon",
+                "origin:trait:dragon"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "kind": "creature",
+  "slug": "sickly-eshmok",
+  "system": "pf2e",
+  "name": "Sickly Eshmok",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "demon",
+    "fiend",
+    "fungus",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 180,
+    "perception": 16,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 3,
+      "dex": 4,
+      "int": 2,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 17,
+      "intimidation": 18,
+      "religion": 16,
+      "stealth": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        },
+        {
+          "type": "holy",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 28,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Confusion",
+          "rank": 4,
+          "ref": "spells:spell/confusion"
+        },
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 5,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Harmony Vulnerability",
+      "category": "defensive",
+      "text": "An eshmok's wrathful infestations defines them, and forcing peace upon them wrenches at their soul. If they fail a save against calm or a similar effect forcing them to be peaceful, an eshmok takes 4d6 mental damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The eshmok turns into their fungus form or back into their normal humanoid wasp form. In fungus form, they lose their fly Speed and can't make stinger Strikes. In fungus form, they gain a tendril melee Strike (+21 for 2d8+9 slashing plus eshmok infection); the tendril strike has the agile, magical, reach 10 feet, and unholy traits.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "wasp",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Plant.Fungus",
+                "value": "fungus"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Wasp",
+                "value": "wasp"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 19,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Tendril",
+            "predicate": [
+              "change-shape:fungus"
+            ],
+            "slug": "tendril",
+            "traits": [
+              "agile",
+              "magical",
+              "reach-10",
+              "unholy"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 19,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Stinger",
+            "predicate": [
+              "change-shape:wasp"
+            ],
+            "slug": "stinger",
+            "traits": [
+              "magical",
+              "unholy"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "label": "PF2E.BattleForm.Attack.Stinger",
+            "selector": "stinger-damage"
+          }
+        },
+        {
+          "key": "speed",
+          "type": "fly",
+          "value": 35
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eshmok Infection",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "poison"
+      ],
+      "text": "A creature that's Quickened by eshmok infection can use the extra action each round for only Strike actions. A creature that's Confused by eshmok infection never considers an eshmok in fungal form as a target\n\nSaving Throw DC 26 Will save\n\nMaximum Duration 6 rounds\n\nStage 1 confused (1 round)\n\nStage 2 confused and quickened (1 round)\n\nStage 3 confused, Off-Guard, and quickened (1 round)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "tendril-attack",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infesting Exhalation",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "olfactory",
+        "poison"
+      ],
+      "text": "The eshmok exhales a wave of stinging fiendish wasps out in a 30-foot cone, dealing 4d8 poison damage to every creature within the cone (DC 28 basic Reflex save save). The swarming fiend wasps linger in the area for 6 rounds or until the eshmok is able to use Infesting Exhalation again, whichever comes first. Each creature damaged by Infesting Exhalation or that enters the area must succeed at a DC 28 Fortitude save save or take 2d8 persistent,poison damage and become Clumsy 1 as the poison renders them dizzy and nauseous. At the end of each of their turns, they can attempt a new Fortitude save to end the effects. The eshmok can't use Infesting Exhalation again for 1d6 rounds."
+    },
+    {
+      "kind": "spell",
+      "name": "Demonic Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ],
+  "text": "Eshmoks are proof that anger consumes a creature. Formed from wrathful souls, these demons resemble giant humanoid wasps who have fallen victim to parasitic fungi. The fungi's foul-looking fibrous material is a physical manifestation of wrath. Tendrils of it burst from eshmok bodies, emitting rage-inducing spores, while lattices of nest-like growths from their torsos shelter wasplike infestations.\nWrathful Parasites\nThe swarms that infest an eshmok aren't its allies, but incarnations of anger that serve to constantly harry and agonize the creature. Some maintain that these wasps are manifestations of Calistria's vengeance, but her faithful believe something closer to the truth—that these wasps represent a mockery of vengeance and a corruption of the directed rage their goddess teaches and epitomizes. Eshmoks are particularly reviled by worshipers of Calistria as a result.",
+  "blurb": "Variant eshmok"
+}

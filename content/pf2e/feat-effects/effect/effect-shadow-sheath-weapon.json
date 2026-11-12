@@ -1,0 +1,135 @@
+{
+  "kind": "effect",
+  "slug": "effect-shadow-sheath-weapon",
+  "system": "pf2e",
+  "name": "Effect: Shadow Sheath Weapon",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Shadow Sheath\n\nYou load a weapon into the sheath.\n\nImmanence Your Strikes with the weapon deal 2 additional spirit damage per weapon damage die, which increases to 3 per die if the target is off-guard.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "or": [
+                "item:bulk:negligible",
+                "item:bulk:light"
+              ]
+            },
+            "item:usage:hands:1",
+            "item:trait:thrown"
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "shadowSheathWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:effect:shadow-sheath-weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+        "option": "target:condition:off-guard",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "label": "PF2E.SpecificRule.Exemplar.Ikon.ShadowSheath.Label",
+        "predicate": [
+          "divine-spark:shadow-sheath"
+        ],
+        "selector": "{item|flags.system.rulesSelections.shadowSheathWeapon}-damage",
+        "slug": "shadow-sheath-immanence-damage",
+        "tags": [
+          "exemplar"
+        ],
+        "value": "2*@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "target:condition:off-guard"
+        ],
+        "selector": "{item|flags.system.rulesSelections.shadowSheathWeapon}-damage",
+        "slug": "shadow-sheath-immanence-damage",
+        "value": 1.5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.shadowSheathWeapon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "physical-ikon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.shadowSheathWeapon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "physical-ikon:shadow-sheath"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.shadowSheathWeapon}",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Exemplar.Ikon.ShadowSheath.Label",
+        "mode": "add",
+        "property": "description",
+        "value": [
+          {
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.ktgzHtKoeUZ5H8KA inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.shadowSheathWeapon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "divine"
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-unfaltering-ranks",
+  "system": "pf2e",
+  "name": "Effect: Unfaltering Ranks",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Unfaltering Ranks\n\nYou gain temporary hit points and a circumstance bonus to your speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 2
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 1
+          }
+        ],
+        "flag": "degreeOfSuccess",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "all-speeds"
+        ],
+        "type": "circumstance",
+        "value": "5*@item.flags.system.rulesSelections.degreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "@item.flags.system.rulesSelections.degreeOfSuccess*@item.origin.level"
+      }
+    }
+  ]
+}

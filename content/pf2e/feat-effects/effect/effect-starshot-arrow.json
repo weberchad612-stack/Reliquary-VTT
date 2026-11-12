@@ -1,0 +1,89 @@
+{
+  "kind": "effect",
+  "slug": "effect-starshot-arrow",
+  "system": "pf2e",
+  "name": "Effect: Starshot Arrow",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "duration": {
+    "value": 8,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Starshot Arrow\n\nYou take a –10-foot circumstance penalty to your Speeds or become immobilized if the Strike was a critical hit.\n\nNote: Adjust duration based on roll results.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.success",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:2",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.criticalSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:3",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "effect-starshot-arrow"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "circumstance",
+      "value": -10,
+      "when": [
+        "effect-starshot-arrow:success"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "effect-starshot-arrow:critical-success"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    }
+  ]
+}

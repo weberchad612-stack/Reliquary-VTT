@@ -1,0 +1,251 @@
+{
+  "kind": "creature",
+  "slug": "artillerist",
+  "system": "pf2e",
+  "name": "Artillerist",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 12,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": 2,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "crafting": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "for siege weapons",
+            "when": [
+              "siege-weapons"
+            ]
+          }
+        ]
+      },
+      "diplomacy": 9,
+      "society": 9,
+      "thievery": 8,
+      "engineering-lore": 11,
+      "explosive-lore": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+10 if the artillerist is crewing a siege weapon)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dueling Pistol",
+      "ref": "equipment:item/dueling-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Light Hammer",
+      "ref": "equipment:item/light-hammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Artisan's Toolkit (Siege Weaponry)",
+      "ref": "equipment:item/artisans-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Repair Toolkit",
+      "ref": "equipment:item/repair-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Light Hammer",
+      "attack": 10,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Light Hammer",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dueling Pistol",
+      "attack": 10,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Siege Acumen",
+      "category": "interaction",
+      "text": "The artillerist is permanently quickened. They can use this extra action only to Aim, Load, or Launch a siege weapon.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "condition",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:granter:id:{item|id}"
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "{item|description}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Siege Shield",
+      "category": "defensive",
+      "text": "While adjacent to a siege weapon, the artillerist gains a +1 circumstance bonus to AC.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "siege-shield",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "siege-shield"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Siege Weapons Expert",
+      "category": "defensive",
+      "text": "The artillerist gains a +2 bonus to Perception check if the artillerist is crewing a siege weapon. Additionally, they gain a +2 bonus to Engineering-lore check and Explosive-lore check for siege weapons.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "engineering-lore",
+            "explosive-lore"
+          ],
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "siege-weapon"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bombard",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The artillerist activates a shoulder-mounted artillery piece to launch an explosive shell up to 120 feet away that explodes in 10-foot burst. Creatures within the burst take 2d6 piercing,2d6 fire damage with a DC 19 basic Reflex save save. A creature that fails its save is also knocked Prone. The artillerist can't use Bombard again until they reload the artillery with 2 Interact actions; these actions don't have to be consecutive."
+    }
+  ],
+  "text": "The maintenance and operation of a siege weapon is the highest form of art for the artillerist. They are second to none in terms of reliability and speed due to years of experience and training. Their mastery is such that they often construct smaller models of their preferred weapon to mount on their shoulders. Many will insist this is in case of an emergency, but they often truly enjoy crafting, designing, and perfecting their personal piece of artillery. Traditionally, artillerists are used on both side of a siege. Massive weapons are both fired towards the walls and from the walls. In such battles, artillerists are invaluable. However, artillerists are seen in other places outside of massive wars. For example, artillerists are often employed on ships to manage their cannons and harpoons.\n\n---\nAlthough relatively uncommon across much of Golarion, the frequently eccentric but undeniably brilliant minds who create elaborate devices of clockwork, gunpowder, and steam often loom much larger in the public eye than their numbers would suggest."
+}

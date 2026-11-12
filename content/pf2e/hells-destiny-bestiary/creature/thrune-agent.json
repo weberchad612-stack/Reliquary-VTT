@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "thrune-agent",
+  "system": "pf2e",
+  "name": "Thrune Agent",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 180,
+    "perception": 26,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 4,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 23,
+      "deception": 23,
+      "society": 26,
+      "stealth": 26,
+      "thievery": 23
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "diabolic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "House Thrune Signet Ring",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 24,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Clever Gambit",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The agent critically hits a creature that they've identified with Recall Knowledge\n\n---\nEffect The agent Steps or Strides. This movement doesn't trigger reactions from the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Consider Options",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The agent Recalls Knowledge about a creature they can see. On a success, the subject is Off-Guard to the agent until the end of the agent's next turn (or for 1 minute on a critical success)."
+    },
+    {
+      "kind": "ability",
+      "name": "Debilitating Strike",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The agent's last action was a successful Strike against an Off-Guard creature\n\n---\nEffect Until the end of the agent's next turn, the target takes a –10-foot status penalty to its Speeds or becomes Enfeebled 1. The agent decides which penalty to apply.\n\nEffect: Debilitating Strike"
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "offensive",
+      "text": "The agent isn't Off-Guard to hidden, undetected, or flanking creatures of their level or lower, or creatures their level or lower using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The agent deals an additional 3d6 precision damage to creatures that are Off-Guard to them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "If the agent rolled Deception or Stealth for initiative, creatures that haven't yet acted are off-guard to them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

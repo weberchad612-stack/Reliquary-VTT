@@ -1,0 +1,190 @@
+{
+  "kind": "creature",
+  "slug": "warpigrade",
+  "system": "pf2e",
+  "name": "Warpigrade",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "aberration",
+    "amphibious"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 29,
+    "hp": 180,
+    "perception": 21,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 21,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 8,
+      "dex": 4,
+      "int": -5,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 26,
+      "stealth": 18,
+      "survival": 24
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "wavesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Stylet",
+      "attack": 25,
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Pincers",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+13",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eyespots",
+      "category": "interaction",
+      "text": "A warpigrade can't see anything beyond 30 feet."
+    },
+    {
+      "kind": "ability",
+      "name": "Tun State",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Trigger The warpigrade would be reduced to 0 Hit Points or would die due to starvation, suffocation, or similar environmental causes\n\nFrequency once per week\n\nRequirements The warpigrade isn't already in tun state\n\n---\nEffect The warpigrade doesn't die but instead remains at 1 Hit Point and curls into a dry ball, called a tun. While in this tun state, the warpigrade is Unconscious, doesn't need to eat, drink, or breathe, and doubles its resistance to 20. It remains in tun state indefinitely until covered in significant amounts of water, at which point it begins to rehydrate, gaining regeneration 5. The regeneration persists until it reaches maximum Hit Points. The warpigrade then exits its tun state.",
+      "frequency": {
+        "max": 1,
+        "per": "P1W"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tun-state",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.GiantTardigrade.TunState.Dry",
+                "value": "dry"
+              },
+              {
+                "label": "PF2E.NPCAbility.GiantTardigrade.TunState.Rehydrating",
+                "value": "rehydrating"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "tun-state"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Unconscious"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "tun-state"
+            ],
+            "type": "all-damage",
+            "value": 20
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "tun-state:rehydrating"
+            ],
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ingest Aspect",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult"
+      ],
+      "text": "Requirements The warpigrade has a creature Grabbed with its pincers\n\n---\nEffect The warpigrade makes a stylet Strike. If it succeeds, the warpigrade attempts to absorb some of the victim's essence. The creature attempts a DC 33 Fortitude save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature becomes Clumsy 1 or Enfeebled 1 (determine randomly) for 1 round. If the creature becomes clumsy, the warpigrade gains a +1 status bonus to its AC and Reflex save for 1 round; if the creature becomes enfeebled, the warpigrade instead gains the bonus to its attack and damage rolls.\n\nFailure As success, except if the creature is already clumsy or enfeebled, the condition value and corresponding status bonus increase by 1 (to a maximum of 4), and the effect lasts for 1 minute.\n\nCritical Failure As failure, except the condition value and status bonus increase by 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Vacuum Mouth",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The warpigrade doesn't have a target Grabbed\n\n---\nEffect The warpigrade draws in air with its mouth. All creatures in a 20-foot cone must succeed at a DC 30 Reflex save save or be pulled adjacent to the warpigrade. The warpigrade chooses one creature that failed its save, Grabbing the target in its claws and making a stylet Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "blurb": "Variant giant tardigrade"
+}

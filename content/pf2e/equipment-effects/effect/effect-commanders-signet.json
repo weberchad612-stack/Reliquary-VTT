@@ -1,0 +1,115 @@
+{
+  "kind": "effect",
+  "slug": "effect-commanders-signet",
+  "system": "pf2e",
+  "name": "Effect: Commander's Signet",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Commander's Signet, General's Signet\n\nYou gain a status bonus to attack rolls, Perception checks, saving throws, and skill checks. The status bonus is doubled for saving throws made against fear effects.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:commanders-signet",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Commander's Signet"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:generals-signet",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.General's Signet"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "commanders-signet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "perception",
+        "saving-throw",
+        "skill-check"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "commanders-signet"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "commanders-signet:generals-signet"
+        ],
+        "relabel": "PF2E.SpecificRule.Equipment.CommandersSignet.General.Label",
+        "selectors": [
+          "attack-roll",
+          "perception",
+          "saving-throw",
+          "skill-check"
+        ],
+        "slug": "commanders-signet",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "item:trait:fear"
+        ],
+        "priority": 50,
+        "selector": "saving-throw",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "predicate": [
+          "commanders-signet:generals-signet"
+        ],
+        "property": "name",
+        "value": "PF2E.SpecificRule.Equipment.CommandersSignet.General.EffectLabel"
+      }
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "prazil",
+  "system": "pf2e",
+  "name": "Prazil",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "humanoid",
+    "kobold"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 85,
+    "perception": 12,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 14,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 13,
+      "deception": 10,
+      "stealth": 13,
+      "survival": 12,
+      "thievery": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "draconic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 13,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hurried Retreat",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The kobold warrior is adjacent to at least one enemy.\n\n---\n\nEffect The kobold warrior Strides up to its Speed plus 5 feet and gains a +2 circumstance bonus to AC against reactions triggered by this movement. It must end this movement in a space that's not adjacent to any enemy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hurried-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "hurried-retreat"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hurried-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smash Kneecaps",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Prazil attempts a warhammer Strike on a creature that is at least Medium sized and that has legs. He gains a +2 circumstance bonus to his attack roll and deals an extra 1d8 points of damage on a hit. The creature struck must succeed at a DC 22 Fortitude save save or have its Speed reduced by 10 feet for 1 minute.\n\nEffect: Smash Kneecaps",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "smash-kneecaps",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "smash-kneecaps"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "smash-kneecaps"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Prazil deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male kobold spy"
+}

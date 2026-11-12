@@ -1,0 +1,91 @@
+{
+  "kind": "feat",
+  "slug": "counterclockwork-focus",
+  "system": "pf2e",
+  "name": "Counterclockwork Focus",
+  "source": {
+    "title": "Pathfinder Lost Omens Impossible Lands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Shieldmarshal Dedication"
+  ],
+  "frequency": {
+    "max": 1,
+    "per": "round"
+  },
+  "text": "Frequency once per round\n\n---\n\nYou understand the need for law enforcement doctrine to adapt to the ever-changing innovations in technology and arcana. Your training in special weapons and tactics give you access to unusual techniques to respond to clockwork- and magic-related crimes. You apply special additives to a loaded firearm. On your next Strike with that firearm before the end of your turn, you deal an additional 2d6 damage if the target is a construct, and you can treat the ammunition as your choice of cold iron or adamantine. At 18th level, this additional damage increases to 3d6, and you can choose to instead treat the ammunition as orichalcum.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "counterclockwork-focus",
+        "suboptions": [
+          {
+            "label": "PF2E.NoneOption",
+            "value": "none"
+          },
+          {
+            "label": "PF2E.PreciousMaterialAdamantine",
+            "value": "adamantine"
+          },
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialOrichalcum",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  18
+                ]
+              }
+            ],
+            "value": "orichalcum"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "ternary(gte(@actor.level,18),3,2)",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "target:trait:construct",
+          "counterclockwork-focus"
+        ],
+        "selector": "firearm-weapon-group-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:group:firearm"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "counterclockwork-focus",
+          {
+            "not": "counterclockwork-focus:none"
+          }
+        ],
+        "property": "materials",
+        "value": "{item|flags.system.rulesSelections.counterclockworkFocus}"
+      }
+    }
+  ]
+}

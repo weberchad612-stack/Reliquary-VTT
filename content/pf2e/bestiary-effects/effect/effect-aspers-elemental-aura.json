@@ -1,0 +1,105 @@
+{
+  "kind": "effect",
+  "slug": "effect-aspers-elemental-aura",
+  "system": "pf2e",
+  "name": "Effect: Asper's Elemental Aura",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-20: The Rakshasa's Court",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "You gain resistance 10 to damage of the chosen element (electricity for air, fire, or cold for water). If air, you double your speed. If fire, any creature within 30 feet of you who receives fire damage receives an extra 2d10 persistent fire damage. If water, you gain fast healing 20.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "value": "air"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": "water"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element",
+        "rollOption": "elemental-aura"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-aura:air"
+        ],
+        "type": "electricity",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-aura:fire"
+        ],
+        "type": "fire",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-aura:water"
+        ],
+        "type": "cold",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "untyped",
+      "value": 35,
+      "when": [
+        "elemental-aura:air"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FastHealing",
+        "predicate": [
+          "elemental-aura:water"
+        ],
+        "value": 20
+      }
+    },
+    {
+      "key": "note",
+      "selector": "damage",
+      "text": "PF2E.NPCAbility.Asper.Aura.Fire",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "item:damage:type:fire",
+        "elemental-aura:fire"
+      ]
+    }
+  ]
+}

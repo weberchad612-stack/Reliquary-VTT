@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "onyiji",
+  "system": "pf2e",
+  "name": "Onyiji",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "human",
+    "humanoid",
+    "lawful",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 140,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 2,
+      "int": 4,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 14,
+      "arcana": 16,
+      "athletics": 18,
+      "intimidation": 16,
+      "nature": 14,
+      "warfare-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Prepared Spells",
+      "tradition": "divine",
+      "type": "prepared",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Produce Flame",
+          "rank": 1,
+          "text": "A small ball of flame appears in the palm of your hand, and you lash out with it either in melee or at range. Make a spell attack roll against your target's AC. This is normally a ranged attack, but you can also make a melee attack against a creature in your unarmed reach.\n\nOn a success, you deal 2d4 fire damage. On a critical success, the target takes double damage and @item.leveld4 persistent,fire damage.\n\n---\n\nHeightened (+1) Increase the damage by 1d4 and the persistent damage on a critical hit by 1d4."
+        },
+        {
+          "name": "Ray of Frost",
+          "rank": 1,
+          "ref": "spells:spell/ray-of-frost"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Shocking Grasp",
+          "rank": 1,
+          "ref": "spells:spell/shocking-grasp"
+        },
+        {
+          "name": "True Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Staff",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Staff",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Orc Superstition",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Trigger Onyiji is about to make a saving throw against a spell or magical effect\n\n---\n\nEffect Onyiji gains a +1 circumstance bonus to the triggering save.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "saving-throw",
+            "key": "RollOption",
+            "option": "orc-superstition",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "orc-superstition"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spellstrike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency twice per day\n\n---\n\nEffect Onyiji casts a spell and couples it with a staff Strike. She casts Ignition, Ray of Frost, or Shocking Grasp, but the effects don't occur immediately. She makes a melee Strike with her staff and uses the attack roll result as the effect of both the Strike and the spell.\n\nThis counts as two attacks towards her multiple attack penalty, but the penalties don't apply until after the Spellstrike.",
+      "frequency": {
+        "max": 2,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Twisting Tree",
+      "category": "offensive",
+      "text": "When Onyiji wields a staff in one hand, it gains the agile trait and its damage die size increases to d6 (these adjustments are reflected in the Strike above). When she wields a staff in two hands, it gains the parry, reach, and trip traits.\n\nShe can Interact to Release or change her grip on her staff as a free action when she Strikes with the staff (including Strikes made in a Spellstrike).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "two-handed",
+              "item:slug:staff"
+            ],
+            "property": "traits",
+            "value": "parry"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "two-handed",
+              "item:slug:staff"
+            ],
+            "property": "traits",
+            "value": "reach"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "two-handed",
+              "item:slug:staff"
+            ],
+            "property": "traits",
+            "value": "trip"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "two-handed",
+              "item:slug:staff"
+            ],
+            "property": "traits",
+            "value": "agile"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female half-orc staff warrior"
+}

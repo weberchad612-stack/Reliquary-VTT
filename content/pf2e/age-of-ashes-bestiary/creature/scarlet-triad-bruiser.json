@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "scarlet-triad-bruiser",
+  "system": "pf2e",
+  "name": "Scarlet Triad Bruiser",
+  "source": {
+    "title": "Pathfinder #147: Tomorrow Must Burn",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 180,
+    "perception": 19,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 17,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 3,
+      "int": 0,
+      "str": 5,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 21,
+      "intimidation": 18,
+      "stealth": 19,
+      "sailing-lore": 18
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greatclub",
+      "ref": "equipment:item/greatclub",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Average) (Marked with the Symbol of the Scarlet Triad)",
+      "ref": "equipment:item/manacles-average",
+      "type": "equipment",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Greatclub",
+      "attack": 22,
+      "traits": [
+        "backswing",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+1",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Kick",
+      "attack": 21,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 21,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Batter the Fallen",
+      "category": "offensive",
+      "text": "The Scarlet Triad Bruiser's kick Strikes deal 2d6 extra damage to Prone creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:prone"
+            ],
+            "selector": "kick-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brutal Cleave",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The bruiser's melee Strike kills a creature or knocks it Unconscious, and another foe is adjacent to that creature.\n\n---\n\nEffect The bruiser makes another melee Strike against the second foe at the same multiple attack penalty as the triggering Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Efficient Capture",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "manipulate"
+      ],
+      "text": "Requirements The bruiser has manacles in hand and is adjacent to a creature.\n\n---\n\nEffect The bruiser attempts to bind the creature's wrists or ankles with the manacles. They must succeed at an attack roll with a +23 modifier against the target's AC.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "slug": "efficient-capture",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "efficient-capture-attack-roll",
+          "type": "untyped",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pummeling Flurry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per turn\n\n---\n\nEffect The bruiser makes a greatclub Strike and a kick Strike. If both hit the same creature, combine their damage for the purposes of resistances and weaknesses.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    }
+  ]
+}

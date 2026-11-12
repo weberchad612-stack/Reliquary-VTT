@@ -1,0 +1,161 @@
+{
+  "kind": "creature",
+  "slug": "carvey",
+  "system": "pf2e",
+  "name": "Carvey",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "golem",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 26,
+    "hp": 140,
+    "perception": 14,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 3,
+      "dex": -1,
+      "int": -5,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity",
+        "magic"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Suicidal Obedience",
+      "category": "interaction",
+      "text": "Carvey is unerringly loyal to the Skinsaw cult and to Mobana especially. When Carvey goes berserk, she doesn't attack the nearest living creature or object but instead moves adjacent to the creature nearest the balcony (or similar falling hazard, if the battle is taking place elsewhere) and attempts to Shove the creature over the cliff's edge.\n\nThe number of feet Carvey can Shove a creature is doubled as long as Carvey has 40 or fewer HP (thus, she pushes a creature 10 feet on a successful check and 20 feet on a critical success), but she must move the same distance and in the same direction as the pushed creature.\n\nIf the shoved creature falls over the cliff's edge, so does Carvey."
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk",
+      "category": "defensive",
+      "text": "A severely damaged flesh golem has a chance of going berserk.\n\nIf it has 40 or fewer HP at the start of its turn, the golem must succeed at a DC 5 Flat check check or go berserk. A berserk golem wildly attacks the nearest living creature, or the nearest object if no creatures are nearby."
+    },
+    {
+      "kind": "ability",
+      "name": "Electric Reflexes",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The golem takes electricity damage and a creature is adjacent to it.\n\n---\n\nEffect The golem lashes out and tries to grab a nearby creature. The golem attempts an Athletics check to grapple an adjacent creature. The creature also takes 3d6 electricity damage on a success, or 6d6 electricity damage on a critical success."
+    },
+    {
+      "kind": "ability",
+      "name": "Golem Antimagic",
+      "category": "defensive",
+      "text": "Harmed by fire (5d8 untyped, 3d4 untyped from areas or persistent damage); healed by electricity (area 2d4 healing HP); slowed by cold\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Flesh to Stone",
+      "category": "defensive",
+      "text": "Casting a Petrify spell on the flesh golem affects the golem normally."
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk Slam",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirement The flesh golem is berserk.\n\n---\n\nEffect The flesh golem Strikes with its fist at a -1 circumstance penalty. If it hits, it deals 1d6 extra damage and knocks the target Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "berserk-slam",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "fist-attack",
+          "type": "circumstance",
+          "value": -1,
+          "when": [
+            "berserk-slam"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "berserk-slam"
+            ],
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "fist-attack",
+          "text": "PF2E.AttackEffects.KnockProne",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "berserk-slam"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Made of odd scraps of skin and muscle, a flesh golem is a grotesque parody of life. Though it has no mind, it can still go into a berserk rage when harmed, giving it a faint semblance of emotion. Flesh golems guard the laboratories and charnel houses of fleshwarpers and necromancers who feel no compunctions about desecrating corpses for their own ends. Though the first flesh golem is believed to have been a misguided attempt to create from simple base elements, these monstrosities are far from human. In isolated cases, echoes of a personality might rise in a flesh golem if the brain used as part of its construction belonged to a particularly powerful personality, but such tragic instances are rare in the extreme."
+}

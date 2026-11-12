@@ -1,0 +1,158 @@
+{
+  "kind": "creature",
+  "slug": "sedacthy-warband",
+  "system": "pf2e",
+  "name": "Sedacthy Warband",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "amphibious",
+    "humanoid",
+    "sedacthy",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 27,
+    "hp": 220,
+    "perception": 19,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 17,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 3,
+      "int": 2,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 19,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "thalassic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Sea Speech"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Sea Speech",
+      "category": "interaction",
+      "text": "A sedacthy speaking Thalassic can be understood by any animal that has a swim Speed or the amphibious or aquatic trait. By spending a week regularly interacting with such an animal, the sedacthy can make it permanently helpful."
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Frenzied Feast",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The warband launches a frenzy of attacks against each enemy in a 5-foot emanation with a DC 26 basic Reflex save save. The damage depends on the number of actions. For each enemy damaged by this attack, the damage of the attack increases by 1d4 piercing for all targets (up to a maximum of 3d4 additional damage).\n\n1 1d6+3 piercing,1d4 bleed damage\n\n2 2d6+6 piercing,1d6 bleed damage\n\n3 3d6+9 piercing,1d8 bleed damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.SedacthyWarband.FrenziedFeast.Label",
+            "option": "frenzied-feast",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.Numbers.One",
+                "value": "1"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Two",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.SpecificRule.Numbers.Three",
+                "value": "3"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "piercing",
+            "diceNumber": "@item.flags.system.rulesSelections.frenziedFeast",
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "selector": "{item|id}-inline-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "War Shriek",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The warband unleashes a chorus of terrifying battle cries. Each enemy in a 30-foot emanation must attempt a DC 29 Will save save. Regardless of the results, creatures are temporarily immune for 1 minute.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2.\n\nCritical Failure The creature is Immobilized for 1 round and Frightened 3."
+    }
+  ]
+}

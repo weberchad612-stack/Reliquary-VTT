@@ -1,0 +1,167 @@
+{
+  "kind": "creature",
+  "slug": "tar-zombie-snatcher",
+  "system": "pf2e",
+  "name": "Tar Zombie Snatcher",
+  "source": {
+    "title": "Pathfinder #177: Burning Tundra",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "mindless",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 130,
+    "perception": 12,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 10,
+      "will": 13
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 15,
+      "stealth": {
+        "value": 10,
+        "special": [
+          {
+            "value": 14,
+            "label": "in tar pits",
+            "when": [
+              "terrain:tar-pit"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 5
+        },
+        {
+          "type": "vitality",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flammable",
+      "category": "defensive",
+      "text": "A tar zombie requires a successful DC 20 flat check to recover from persistent fire damage. This DC isn't reduced for assisted recovery.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "condition",
+            "key": "ItemAlteration",
+            "mode": "upgrade",
+            "predicate": [
+              "item:damage:type:fire"
+            ],
+            "property": "pd-recovery-dc",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vomit Tar",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The tar zombie vomits a gout of sticky tar in a 15-foot cone that deals 5d6 bludgeoning damage ((DC 24 basic Reflex save) save). Creatures that fail the save are Slowed 1 and gain fire weakness 5. Both conditions end after 3 rounds or when the tar is scrubbed off (which requires 3 Interact actions). The tar zombie can't Vomit Tar again for 1d4 rounds.\n\nEffect: Vomit Tar"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ]
+}

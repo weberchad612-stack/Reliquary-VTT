@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "shikwashim-mercenary",
+  "system": "pf2e",
+  "name": "Shikwashim Mercenary",
+  "source": {
+    "title": "Pathfinder #159: All or Nothing",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "humanoid",
+    "lizardfolk"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 155,
+    "perception": 18,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 19,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 19,
+      "stealth": 19,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 15
+    },
+    "languages": [
+      "common",
+      "draconic",
+      "iruxi"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Wooden Shield",
+      "ref": "equipment:item/wooden-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkvision Elixir (Moderate)",
+      "ref": "equipment:item/darkvision-elixir-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Gold Pieces",
+      "ref": "equipment:item/gold-pieces",
+      "type": "treasure",
+      "quantity": 32
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 20,
+      "traits": [
+        "forceful",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 19,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 19,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "defensive",
+      "text": "A Shikwashim mercenary can hold their breath for 20 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Coordinated Distraction",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "visual"
+      ],
+      "text": "With a sharp whistle or wave of their hand, the mercenary distracts an opponent so one of the mercenary's allies can land a clean blow.\n\nThe mercenary chooses a target and an ally, both of whom must be within 30 feet of the mercenary. The target is Off-Guard against the first Strike the mercenary's ally makes on its next turn; if the ally doesn't Strike that target, the effect is lost.\n\nDepending on how the mercenary distracts their foe, this action gains either the auditory or visual trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Human Hunter",
+      "category": "offensive",
+      "text": "A Shikwashim mercenary's multiple attack penalty for attacks against humans is -3 (-2 with an agile weapon) on their second attack per turn or -6 (-4 with an agile weapon) on their third or subsequent attack per turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "MultipleAttackPenalty",
+            "predicate": [
+              "agile",
+              {
+                "or": [
+                  "target:trait:human",
+                  "human-hunter"
+                ]
+              }
+            ],
+            "selector": "attack",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "MultipleAttackPenalty",
+            "predicate": [
+              {
+                "or": [
+                  "target:trait:human",
+                  "human-hunter"
+                ]
+              },
+              {
+                "not": "agile"
+              }
+            ],
+            "selector": "attack",
+            "value": -3
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "human-hunter",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Shikwashim mercenary makes a melee Strike. If it hits, it deals an extra die of damage.\n\nThis counts as two attacks for the mercenary's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "powerful-swipe",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "key": "DamageDice",
+            "predicate": [
+              "powerful-swipe"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Terrain Advantage",
+      "category": "offensive",
+      "text": "Non-lizardfolk creatures in difficult terrain and non-lizardfolk creatures that are in water and lack a Swim speed are Off-Guard to a Shikwashim mercenary.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "terrain-advantage",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "terrain-advantage",
+              {
+                "not": "target:trait:lizardfolk"
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

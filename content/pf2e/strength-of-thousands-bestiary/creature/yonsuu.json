@@ -1,0 +1,207 @@
+{
+  "kind": "creature",
+  "slug": "yonsuu",
+  "system": "pf2e",
+  "name": "Yonsuu",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "unique",
+  "traits": [
+    "catfolk",
+    "evil",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 31,
+    "hp": 200,
+    "perception": 21,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 24,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 5,
+      "int": 2,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 21,
+      "diplomacy": 19,
+      "intimidation": 21,
+      "society": 19,
+      "stealth": 21,
+      "survival": 19
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "amurrun",
+      "common",
+      "cyclops",
+      "thalassic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Good)",
+      "ref": "equipment:item/manacles-good",
+      "type": "equipment",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Norgorber (Wooden)",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 24,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cat's Luck",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "fortune"
+      ],
+      "text": "Frequency once per day\n\nTrigger Yonsuu fails or critically fails a Reflex saving throw\n\n---\n\nEffect Yonsuu rerolls the saving throw and takes the better result.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Hampering Strike",
+      "category": "offensive",
+      "text": "A foe that takes damage from Yonsuu's melee Strike is Slowed 1 for 1 round (Slowed 3 if the Strike is a critical hit).",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "melee-strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Subduing Attack",
+      "category": "offensive",
+      "text": "Yonsuu deals an additional 3d6 precision damage to creatures that are Frightened or within reach of at least one of their allies.\n\nYonsuu can make an attack with this additional damage as a nonlethal attack, if they choose.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "subduing-attack",
+                  "target:condition:frightened"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "subduing-attack",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male catfolk head warden"
+}

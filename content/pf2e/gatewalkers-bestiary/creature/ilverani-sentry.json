@@ -1,0 +1,201 @@
+{
+  "kind": "creature",
+  "slug": "ilverani-sentry",
+  "system": "pf2e",
+  "name": "Ilverani Sentry",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "rare",
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 17,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "intimidation": 11,
+      "nature": 17,
+      "stealth": 17,
+      "survival": 17,
+      "arctic-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "erutaki"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 18,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Arctic Forager",
+      "category": "interaction",
+      "text": "While using Survival to Subsist in arctic environments, if the Ilverani sentry rolls a failure or a critical failure, they get a success instead. If the sentry rolls a success, they can provide food for 4 additional creatures that eat about as much as a human, or 8 creatures on a critical success."
+    },
+    {
+      "kind": "ability",
+      "name": "Snow Walker",
+      "category": "interaction",
+      "text": "The Ilverani sentry ignores the effects of difficult terrain from snowy environments. When moving through snow, an Ilverani sentry minimizes traces left behind and makes it harder for others to find them. The DC of checks to Track an Ilverani sentry through snowy terrain gains a +4 status bonus."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The Ilverani sentry designates a single creature they can see and hear, or one they're Tracking, as their prey. The sentry gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. The first time the sentry hits the designated prey in a round, they deal an additional 1d8 precision damage. The sentry ignores the penalty for making ranged attacks within their second range increment. These effects last until the sentry uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitSwitch",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "survival"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hunted-prey",
+            {
+              "or": [
+                "action:seek",
+                "action:track"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Elf hunter"
+}

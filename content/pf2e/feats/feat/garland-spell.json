@@ -1,0 +1,66 @@
+{
+  "kind": "feat",
+  "slug": "garland-spell",
+  "system": "pf2e",
+  "name": "Garland Spell",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "druid",
+    "manipulate",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "leaf order"
+  ],
+  "text": "If your next action is to Cast a Spell with the fungus or plant trait, a garland of plants grows in a 10-foot burst in the spell's range. The plants are difficult terrain and hazardous terrain, covered in your choice of thorns or poisonous vines. Any creature that moves into one of these squares or ends its turn in one takes 2d6 damage (ternary(gte(@actor.level,20,4,ternarygte(@actor.level,16,3,2)))d6 piercing damage for thorns or ternary(gte(@actor.level,20,4,ternarygte(@actor.level,16,3,2)))d6 poison for vines). A creature can take this damage only once per turn. You and your familiar are immune to this damage.\n\nThe plants last for 1 minute or until you cast another Garland Spell, whichever comes first.\n\nThe damage increases to 3d6 at 16th level and 4d6 at 20th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:garland-spell",
+          {
+            "or": [
+              "item:trait:fungus",
+              "item:trait:plant"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.GarlandSpell"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "garland-spell"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

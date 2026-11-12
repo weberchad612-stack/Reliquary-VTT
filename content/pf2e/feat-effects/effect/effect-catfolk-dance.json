@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-catfolk-dance",
+  "system": "pf2e",
+  "name": "Effect: Catfolk Dance",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Catfolk Dance\n\nYou gain a −2 circumstance penalty to Reflex saves. On a critical success, you are also off-guard.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "catfolk-dance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "catfolk-dance:critical-success"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "circumstance",
+      "value": -2
+    }
+  ]
+}

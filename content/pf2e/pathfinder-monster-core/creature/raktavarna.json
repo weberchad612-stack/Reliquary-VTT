@@ -1,0 +1,223 @@
+{
+  "kind": "creature",
+  "slug": "raktavarna",
+  "system": "pf2e",
+  "name": "Raktavarna",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "rakshasa",
+    "spirit",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 6,
+      "deception": 7,
+      "diplomacy": 7,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "sakvroth",
+      "chthonian",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 3
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. divine magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Read Omens",
+          "rank": 4,
+          "ref": "spells:spell/read-omens"
+        },
+        {
+          "name": "Charm",
+          "rank": 1,
+          "ref": "spells:spell/charm"
+        },
+        {
+          "name": "Command",
+          "rank": 1,
+          "ref": "spells:spell/command"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "reach-0",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "raktavarna-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Divine Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:divine"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knowledge of Delusion",
+      "category": "defensive",
+      "text": "A creature that fails a Recall Knowledge check or a Perception check to Sense Motive on a rakshasa is Off-Guard until the end of its next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Betraying Bite",
+      "category": "offensive",
+      "text": "A raktavarna gains a +2 bonus to Strikes against any creature that is holding it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack",
+            "key": "RollOption",
+            "option": "betraying-bite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "betraying-bite"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult",
+        "polymorph"
+      ],
+      "text": "The raktavarna takes on the appearance of a Tiny inanimate object. If, while transformed, the raktavarna takes any action other than the purely mental (such as Recall Knowledge), they immediately revert to their original form. Until then, they can use Deception to Impersonate the object.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "raktavarna",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Rakshasa.Raktavarna",
+                "value": "raktavarna"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Object.Tiny",
+                "value": "inanimate-object"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Designate Master",
+      "category": "offensive",
+      "text": "The raktavarna spends 10 minutes on an invocation alongside another creature. That creature becomes the raktavarna's master until the raktavarna dies or Dismisses the effect. The master gains the Master's Eyes activity as long as the bond lasts.\n\nMaster's Eye"
+    },
+    {
+      "kind": "ability",
+      "name": "Raktavarna Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 16 Fortitude save\n\n---\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage and Stupefied 1 (1 round)\n\nStage 2 1d4 poison damage and Stupefied 2 (1 round)"
+    }
+  ],
+  "text": "Raktavarnas are simple rakshasa incarnations of betrayal and assassination, often existing to test the mettle of those who were treacherous or poisonous in a previous life. They typically appear as a snake with blood-red eyes and oversized fangs, though they just as often appear in the guise of a sword or a piece of jewelry.\n\n---\n\nRakshasas are primordial, divine beings who serve as incarnations of all that is foul within creation, born the moment that the concepts of good and evil were first conceived. It is their divine purpose to exemplify the profane—by murdering their own kin, eating the flesh of sapient beings, and performing thousands of other atrocities, they define these acts as obscene and taboo, so that mortals know these acts to be crimes in the eyes of the holy. It is a role they must play, in the same way that a stage play must have an actor to serve as the villain, a role that damned all rakshasas from the moment of their genesis.\n\nMost rakshasas enjoy their role, in the same way an actor enjoys delivering a masterful performance, yet there is an element of tragedy to their existence. They are fated to serve solely as foils to others, to corrupt the unworthy and fall to the heroic, never free to forge their own path. They are condemned to perform the most heinous of deeds, even if it rankles their sensibilities and conscience. To do otherwise is to defy their nature and their purpose: the greatest sin a rakshasa can perform."
+}

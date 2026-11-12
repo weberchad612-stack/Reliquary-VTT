@@ -1,0 +1,209 @@
+{
+  "kind": "creature",
+  "slug": "runaway-blueblood",
+  "system": "pf2e",
+  "name": "Runaway Blueblood",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 7,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 3,
+      "int": 2,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "deception": 9,
+      "diplomacy": 9,
+      "society": 11,
+      "genealogy-lore": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dueling Pistol",
+      "ref": "equipment:item/dueling-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Clothing (Fine)",
+      "ref": "equipment:item/clothing-fine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Signet Ring",
+      "ref": "equipment:item/forgotten-signet",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dueling Pistol",
+      "attack": 10,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "\"Courageous\" Retreat",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The runaway blueblood is adjacent to at least one enemy\n\n---\nEffect The runaway blueblood gains the Fleeing condition, gains a +5-foot status bonus to their Speed, and gains a +2 circumstance bonus to their AC against reactions triggered by their movement. The blueblood Strides. The effects last until the end of the blueblood's current turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "courageous-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "courageous-retreat"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Fleeing"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "status",
+          "value": 5,
+          "when": [
+            "courageous-retreat"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "courageous-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The runaway blueblood deals an extra 1d6 damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Dissatisfied with their privileged upbringing, the runaway blueblood has left the life of luxury behind to forge a new path for themself.\n\n---\nThese lone wolves have an aura of mystery, bravado, and swagger."
+}

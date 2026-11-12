@@ -1,0 +1,197 @@
+{
+  "kind": "creature",
+  "slug": "einherji-host",
+  "system": "pf2e",
+  "name": "Einherji Host",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "aesir",
+    "monitor",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 35,
+    "hp": 270,
+    "perception": 22,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 23,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 6,
+      "dex": 4,
+      "int": 0,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 28,
+      "intimidation": 24
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit",
+      "jotun"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 18
+        },
+        {
+          "type": "splash-damage",
+          "value": 9
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "ac": "37 with shields raised",
+      "hp": "Thresholds 180 (3 segments), 90 (2 segments)",
+      "saves": "+4 to will vs. fear",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Form Up",
+      "actions": 1,
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+4 to Will Vs. Fear",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "item:trait:fear",
+            {
+              "not": "self:effect:song-of-freedom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "Thresholds 180 (3 segments), 90 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Dagger Volley",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The einherji host launches a ranged attack in the form of a volley of thrown daggers. This volley fills a 30-foot cone; all creatures in the area take 5d4+15 piercing damage (DC 36 basic Reflex save save). When the troop is reduced to 2 or fewer segments, this area decreases to a 15-foot cone."
+    },
+    {
+      "kind": "ability",
+      "name": "Jotun Slayer",
+      "category": "offensive",
+      "text": "An einherji host has a +4 circumstance bonus to Strike as One damage rolls made against giants and creatures that are Huge or larger.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "gte": [
+                  "target:size",
+                  4
+                ]
+              }
+            ],
+            "selector": "strike-as-one-damage",
+            "type": "circumstance",
+            "value": 4
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pay For Every Inch",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The einherji host Forms Up, Raises Shields, and prepares to counterattack. Until the start of the troop's next turn, each time an enemy takes an action to move through a space adjacent to the troop, they take 4d8+18 slashing damage (DC 36 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Raise Shields",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The troop raises their shields, increasing their Armor Class by 2 until the start of the troop's next turn.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:raise-a-shield"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Song of Freedom",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "mental"
+      ],
+      "text": "The troop sings of freedom, bolstering their conviction and morale. Until the start of the troop's next turn, their Will saves increase to +29 against all mental effects, not just against fear effects."
+    },
+    {
+      "kind": "ability",
+      "name": "Strike as One",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The einherji host makes melee attacks against each enemy in a 5-foot emanation (DC 36 basic Reflex save save). The damage depends on the number of actions.\n\n1 2d8+7 slashing damage\n\n2 3d8+14 slashing damage\n\n3 4d8+14 slashing damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "offensive",
+      "text": "Whenever the einherji host Strides, they first Form Up as a free action to condense into a 20-foot-by-20-foot area (minus any missing squares they may have as the result of having taken Hit Point damage), then move up to their Speed. This works just like a Gargantuan creature moving; for instance, if any square of the troop enters difficult terrain, the extra movement cost applies to the whole troop."
+    }
+  ]
+}

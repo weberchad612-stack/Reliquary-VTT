@@ -1,0 +1,63 @@
+{
+  "kind": "condition",
+  "slug": "confused",
+  "system": "pf2e",
+  "name": "Confused",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "valued": false,
+  "note": "Reference text: the ruleset defines how conditions work (rulesets/pf2e/rules.js).",
+  "text": "You don't have your wits about you, and you attack wildly. You are Off-Guard, you don't treat anyone as your ally (though they might still treat you as theirs), and you can't Delay, Ready, or use reactions.\n\nYou use all your actions to Strike or cast offensive cantrips, though the GM can have you use other actions to facilitate attack, such as draw a weapon, move so target is in reach, and so forth. Your targets are determined randomly by the GM. If you have no other viable targets, you target yourself, automatically hitting but not scoring a critical hit. If it's impossible for you to attack or cast spells, you babble incoherently, wasting your actions.\n\nEach time you take damage from an attack or spell, you can attempt a DC 11 Flat check to recover from your confusion and end the condition.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.canFlank",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "target:ally",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "origin:ally",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.condition.confused.note",
+      "when": [
+        {
+          "or": [
+            "item:type:spell",
+            "origin:action:trait:attack"
+          ]
+        }
+      ]
+    }
+  ]
+}

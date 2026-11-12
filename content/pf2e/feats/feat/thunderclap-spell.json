@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "thunderclap-spell",
+  "system": "pf2e",
+  "name": "Thunderclap Spell",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "druid",
+    "sonic",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "storm order"
+  ],
+  "text": "Your lightning splits the air, generating a booming shock wave. If your next action is to Cast a Spell that has the electricity trait or deals electricity damage, has no duration, and requires creatures to attempt a saving throw, the force of the spell's lightning creates a thunderclap, in addition to its other effects. Each creature that failed its Reflex save against the spell is Deafened for 1 round, and those who critically failed are also knocked Prone.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:thunderclap-spell",
+          {
+            "or": [
+              "item:damage:type:electricity",
+              "item:trait:electricity",
+              "item:duration:0"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.ThunderclapSpell"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "thunderclap-spell"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "kind": "creature",
+  "slug": "quarry-construct",
+  "system": "pf2e",
+  "name": "Quarry Construct",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "construct",
+    "earth",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 18,
+    "hp": 23,
+    "perception": 8,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 4,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": -2,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(14 when broken), construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 10,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 4)",
+      "category": "defensive",
+      "text": "Like normal objects, a quarry construct has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once a quarry construct is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 14.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ]
+}

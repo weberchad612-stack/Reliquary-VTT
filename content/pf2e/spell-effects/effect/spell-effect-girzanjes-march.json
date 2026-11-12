@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-girzanjes-march",
+  "system": "pf2e",
+  "name": "Spell Effect: Girzanje's March",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Girzanje's March\n\nAllied creatures who can hear and understand you gain a +1 status bonus to attack rolls, Fortitude saves, and Will saves against mental effects.\n\n---\nHeightened (7th) The status bonus increases to +2.\n\nHeightened (10th) The status bonus increases to +3.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "fortitude",
+        "type": "status",
+        "value": "match(when(lte(@item.level, 6), 1), when(btwn(@item.level, 7, 9), 2), when(gte(@item.level, 10), 3))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "attack",
+        "type": "status",
+        "value": "match(when(lte(@item.level, 6), 1), when(btwn(@item.level, 7, 9), 2), when(gte(@item.level, 10), 3))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "mental"
+        ],
+        "selector": "will",
+        "type": "status",
+        "value": "match(when(lte(@item.level, 6), 1), when(btwn(@item.level, 7, 9), 2), when(gte(@item.level, 10), 3))"
+      }
+    }
+  ]
+}

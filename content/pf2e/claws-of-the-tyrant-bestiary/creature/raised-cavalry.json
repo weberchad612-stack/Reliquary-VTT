@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "raised-cavalry",
+  "system": "pf2e",
+  "name": "Raised Cavalry",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "uncommon",
+  "traits": [
+    "mindless",
+    "troop",
+    "undead",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 42,
+    "hp": 360,
+    "perception": 32,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 28,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 5,
+      "int": 5,
+      "str": 10,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 37
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 20
+        },
+        {
+          "type": "splash-damage",
+          "value": 20
+        },
+        {
+          "type": "vitality",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "Thresholds 360 (4 segments), 240 (3 segments), 140 (2 segments)",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Mounted",
+      "category": "interaction",
+      "text": "When not mounted, the raised cavalry is slowed 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mounted",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              {
+                "not": "mounted"
+              }
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shuffle Forces",
+      "category": "defensive",
+      "text": "The raised cavalry consists of skeletons, zombies, and other undead hastily bound to a shared cause. The cavalry has resistance 20 to physical damage, as it shuffles its weakest members to the front lines. When the cavalry is reduced to 12 squares or fewer, its resistance to physical drops to 10. Once the cavalry reaches the 2-segment threshold, it loses its resistance to physical damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              {
+                "gte": [
+                  "hp-remaining",
+                  241
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 20
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              {
+                "gte": [
+                  "hp-remaining",
+                  121
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "Thresholds 360 (4 segments), 240 (3 segments), 140 (2 segments)\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Claws and Jaws",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect Members of the cavalry leap from their mounts and attack each enemy within 10 feet (DC 41 basic Reflex save save).\n\nThe damage depends on the number of actions.\n\n1 2d12+14 piercing and slashing plus 1d12 void\n\n2 3d12+14 piercing and slashing plus 1d12 void\n\n3 4d12+14 piercing and slashing plus 1d12 void",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Hail of Arrows",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Members of the raised cavalry draw or reload their shortbows, then launch a ranged attack in the form of a volley. This volley is a 10-foot burst within 60 feet that deals 7d8 piercing damage (DC 41 basic Reflex save save). When the cavalry is reduced to 2 segments, this area decreases to a 5-foot burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Trampling Charge",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The raised cavalry Strides twice with a +10-foot circumstance bonus to its Speed. During this movement, the cavalry can move through the spaces of Medium or smaller creatures. It deals 3d12+14 bludgeoning damage to each creature whose space it moves through (DC 41 basic Reflex save save). A creature that fails its save is also knocked Prone. The cavalry can affect the same creature only once in a single use of Trampling Charge.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "trampling-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "trampling-charge"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Undead are plentiful throughout the Gravelands, but even so, necromancers must sometimes get creative to organize the varied undead they have on hand into a cohesive military unit. While the typical raised cavalry is a mix of skeletons, zombies, and ghouls, many units also incorporate mummies, ghosts, and more powerful undead.\n\nThe Knights of Lastwall have reported battalions of undead rising from the fields where they were buried, presumably in preparation for a future assault. One of the most infamous of these staging grounds was Fallowdeep, the network of subterranean tunnels beneath the former dwarven fortress of Hammer Rock. When the Whispering Tyrant attacked the nations of the Inner Sea, Fallowdeep's supply of undead was vastly depleted, but caches of corpses no doubt remain there for a resourceful necromancer to exploit."
+}

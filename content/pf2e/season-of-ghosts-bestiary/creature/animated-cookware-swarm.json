@@ -1,0 +1,182 @@
+{
+  "kind": "creature",
+  "slug": "animated-cookware-swarm",
+  "system": "pf2e",
+  "name": "Animated Cookware Swarm",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "construct",
+    "mindless",
+    "swarm"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 16,
+    "hp": 14,
+    "perception": 5,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 8,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 3,
+      "int": -5,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 8
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "precision"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 3
+        },
+        {
+          "type": "splash-damage",
+          "value": 3
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(12 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 3)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated silverware swarm has Hardness. This Hardness reduces any damage the swarm takes by an amount equal to the Hardness. Once an animated silverware swarm is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 12.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slice and Pound",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "Each enemy in the animated cookware swarm's space takes 1d6 untyped bludgeoning or slashing damage (DC 17 basic Reflex save save).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "slice-and-pound",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitBludgeoning",
+                "value": "bludgeoning"
+              },
+              {
+                "label": "PF2E.TraitSlashing",
+                "value": "slashing"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "property": "damage-type",
+            "selectors": [
+              "{item|id}-inline-damage"
+            ],
+            "value": "{item|flags.system.rulesSelections.sliceAndPound}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stick a Fork in It",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The animated cookware swarm attempts to pin a single creature.\n\nThe target must attempt a DC 17 Reflex save save.\n\n---\nCritical Success The target is unaffected.\n\nSuccess Cookware pins portions of the target's clothing and gear. The target takes a –10-foot circumstance penalty to its Speeds as long as it remains in the swarm's space.\n\nFailure As success, and the target also can't Step until it leaves the swarm's space.\n\nCritical Failure The target is thoroughly pinned by the cookware, becoming Immobilized until it Escapes or uses 2 Interact actions to remove all of the cookware pinning them down.\n\nEffect: Stick a Fork in It"
+    }
+  ],
+  "text": "Nobles are known to pay great amounts to animate their silverware, both for ease in cleaning and to serve as novelties during dinner parties.\n\n---\n\nMany animated objects have useful functions but become dangerous when left uncontrolled.",
+  "blurb": "Variant animated silverware swarm"
+}

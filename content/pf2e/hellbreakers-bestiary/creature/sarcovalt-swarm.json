@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "sarcovalt-swarm",
+  "system": "pf2e",
+  "name": "Sarcovalt Swarm",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "fiend",
+    "swarm",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 155,
+    "perception": 19,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 6,
+      "int": 0,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 18,
+      "intimidation": 18,
+      "stealth": 20
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "necril",
+      "chthonian"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "poison",
+        "precision",
+        "swarm-mind",
+        "sickened"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "holy",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 5
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. death effects",
+      "languages": "telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Acid Grip",
+          "rank": 4,
+          "ref": "spells:spell/acid-grip"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Grim Tendrils",
+          "rank": 3,
+          "ref": "spells:spell/grim-tendrils"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 30 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Death Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "death"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarm Mind",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Blight",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "disease"
+      ],
+      "text": "15 feet. The sarcovalt is surrounded by a miasma of infection. An enemy that enters or ends their turn in the aura must attempt a DC 25 Fortitude save save.\n\n---\nSuccess The creature is unaffected and becomes temporarily immune to the aura for 1 minute.\n\nFailure Until the end of its next turn, the creature takes a –1 circumstance penalty to saves against disease effects.\n\nCritical Failure Until the end of its next turn, the creature takes a –2 circumstance bonus against disease effects and is Enfeebled 2.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "traits": [
+              "disease"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Droning Waste",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "mental"
+      ],
+      "text": "The buzzing of the swarm's wings hit an unholy pitch, making those who hear it feel dizzy and lightheaded. Each creature within a 15-foot emanation must attempt a DC 27 Will save save. On a failure, it is Stupefied 1 and takes a –1 circumstance penalty to attack rolls until the start of its next turn (Stupefied 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Heads Will Roll",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The swarm detaches its heads from its bodies and rains them down on its enemies in a 10-foot burst radius within 30 feet. Each head deals falling damage, as if falling from 20 feet up, on any creature it lands on and otherwise takes the damage itself. If a head has a creature within its reach after it falls, it attempts to bite that creature. If any of these bites are critical successes, the head can immediately attempt to Grapple the creature.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "heads-will-roll",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 15,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d8",
+                "modifier": 5
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Bite",
+            "predicate": [
+              "heads-will-roll"
+            ],
+            "slug": "bite",
+            "traits": "reach-10"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Bites",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Each enemy in the swarm's space takes 4d6 piercing,2d4 persistent,bleed damage (DC 27 basic Fortitude save save)."
+    }
+  ],
+  "text": "In most cases, it's very unlikely that one will come across a sarcovalt on their own. More likely, a swarm of Urgathoa's disgusting creations will be beset upon an unfortunate village, the creatures just clever enough to duck away from the best attempts to kill them.\n\n---\nThere are few creatures throughout the multiverse more bizarrely revolting than the sarcovalt, a fiend with the body of a fly and the head of a fleshless vulture skull. While a creature barely 2 feet long might not seem threatening, sarcovalt swarms can overwhelm entire villages. Sarcovalts' heads almost seem to be wholly separate entities from their bodies and will vomit up whatever they capture in their beaks hours later as putrid, coagulated sludge."
+}

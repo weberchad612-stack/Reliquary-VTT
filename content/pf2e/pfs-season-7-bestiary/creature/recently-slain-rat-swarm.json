@@ -1,0 +1,155 @@
+{
+  "kind": "creature",
+  "slug": "recently-slain-rat-swarm",
+  "system": "pf2e",
+  "name": "Recently Slain Rat Swarm",
+  "source": {
+    "title": "Pathfinder Society Scenario #7-08: The Haunted Corridor",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "mindless",
+    "swarm",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 17,
+    "hp": 31,
+    "perception": 9,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 1,
+      "dex": 3,
+      "int": -5,
+      "str": -2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": {
+        "value": 7,
+        "special": [
+          {
+            "value": 9,
+            "label": "to Climb or Swim",
+            "when": [
+              {
+                "or": [
+                  "action:swim",
+                  "action:climb"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 3
+        },
+        {
+          "type": "vitality",
+          "value": 5
+        },
+        {
+          "type": "splash-damage",
+          "value": 3
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 6,
+          "except": "bludgeoning"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "negative healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "interaction",
+      "text": "A partially decomposed rat swarm is permanently Slowed 1 and can't use reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frenzied Bites",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Each enemy in the swarm's space takes 2d6 piercing damage and must attempt a DC 20 basic Reflex save save. A creature that fails its save is exposed to zombie plague."
+    },
+    {
+      "kind": "ability",
+      "name": "Zombie Plague",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "divine",
+        "void"
+      ],
+      "text": "The sickened and Unconscious conditions from zombie plague can't end or be reduced until the disease is cured.\n\nSaving Throw DC 17 Fortitude save\n\nStage 1 carrier with no ill effect (1d4 hours),\n\nStage 2 Sickened 1 (1 day),\n\nStage 3 sickened 1 and Slowed 1 (1 day),\n\nStage 4 unconscious (1 day),\n\nStage 5 dead"
+    }
+  ]
+}

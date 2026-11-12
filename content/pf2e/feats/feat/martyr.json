@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "martyr",
+  "system": "pf2e",
+  "name": "Martyr",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "cleric",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "divine font"
+  ],
+  "text": "You go to extreme lengths to support your allies, even when it means bringing harm to yourself. If your next action is to cast Harm or Heal to restore Hit Points to a single ally, you can channel your own vitality along with the spell. You lose 1d8 Hit Points per rank of the spell, which can't be reduced or mitigated in any way, and your ally regains an equal number of Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:martyr",
+          {
+            "or": [
+              "item:slug:harm",
+              "item:slug:heal"
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.Martyr"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "martyr"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

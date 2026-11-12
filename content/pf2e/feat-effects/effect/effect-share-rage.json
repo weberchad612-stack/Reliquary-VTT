@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-share-rage",
+  "system": "pf2e",
+  "name": "Effect: Share Rage",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Share Rage\n\nYou gain a number of temporary Hit Points equal to your level plus your Constitution modifier. While you are raging, you deal 2 additional damage on melee Strikes. This additional damage is halved if your weapon or unarmed attack is agile.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 2,
+      "slug": "rage",
+      "when": [
+        {
+          "not": "ranged"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "item:trait:agile"
+        ],
+        "priority": 95,
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 0.5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "@actor.level + @actor.abilities.con.mod"
+      }
+    }
+  ]
+}

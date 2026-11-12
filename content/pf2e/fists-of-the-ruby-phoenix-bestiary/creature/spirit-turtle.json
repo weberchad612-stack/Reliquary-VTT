@@ -1,0 +1,325 @@
+{
+  "kind": "creature",
+  "slug": "spirit-turtle",
+  "system": "pf2e",
+  "name": "Spirit Turtle",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 21,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "fey",
+    "good"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 45,
+    "hp": 320,
+    "perception": 35,
+    "saves": {
+      "fortitude": 40,
+      "reflex": 32,
+      "will": 38
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 11,
+      "dex": 6,
+      "int": 6,
+      "str": 8,
+      "wis": 10
+    },
+    "skills": {
+      "diplomacy": 36,
+      "medicine": 40,
+      "nature": 36,
+      "occultism": 34,
+      "survival": 40,
+      "all-lores-lore": 34
+    },
+    "speeds": {
+      "land": 30,
+      "swim": 40
+    },
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 20
+        },
+        {
+          "type": "physical",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 25 (deactivated by cold iron or unholy)",
+      "languages": "tongues"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 44,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Primal Phenomenon",
+          "rank": 10,
+          "ref": "spells:spell/primal-phenomenon"
+        },
+        {
+          "name": "Revival",
+          "rank": 10,
+          "ref": "spells:spell/revival"
+        },
+        {
+          "name": "Moment of Renewal",
+          "rank": 8,
+          "ref": "spells:spell/moment-of-renewal",
+          "uses": 2
+        },
+        {
+          "name": "Plane Shift (Self Only)",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Regenerate",
+          "rank": 7,
+          "ref": "spells:spell/regenerate",
+          "uses": 2
+        },
+        {
+          "name": "Field of Life",
+          "rank": 9,
+          "ref": "spells:spell/field-of-life",
+          "uses": 2
+        },
+        {
+          "name": "Breath of Life",
+          "rank": 5,
+          "ref": "spells:spell/breath-of-life",
+          "uses": 3
+        },
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 10,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Vital Beacon (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/vital-beacon"
+        },
+        {
+          "name": "Restoration",
+          "rank": 6,
+          "ref": "spells:spell/restoration",
+          "uses": 2
+        },
+        {
+          "name": "Heal (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/heal"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 37,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foot",
+      "attack": 37,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Environmental Balance",
+      "actions": "free",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "Trigger The spirit turtle begins their turn\n\n---\n\nEffect The spirit turtle harnesses their connection with the world around them to augment their attacks. They choose acid, cold, electricity, or fire. The energy damage dealt by their Strikes and Unbalancing Stomp changes to the selected energy type.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "environmental-balance",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "{item|flags.system.rulesSelections.environmentalBalance}",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "damage:type:untyped"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "unbalancing-stomp-inline-damage"
+            ],
+            "value": "{item|flags.system.rulesSelections.environmentalBalance}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 25 (Deactivated by Cold Iron or Unholy)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold-iron",
+              "unholy"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pacifying Aura",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "primal"
+      ],
+      "text": "100 feet. A spirit turtle exudes a constant feeling of calm. Creatures within the aura are subjected to a 10th-rank Calm spell (DC 44 Will save save). The effects persist up to 1 hour, even if the creature leaves the aura. Regardless of the result of the saving throw, the creature is temporarily immune for 1 hour.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 100,
+            "slug": "pacifying-aura",
+            "traits": [
+              "emotion",
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "4d12+7 bludgeoning, DC 41 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Unbalancing Stomp",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The spirit turtle makes a foot Strike. Whether or not the Strike hits, the stomp creates a shockwave on the ground in a 15-foot burst centered on the target. All creatures in the area other than the spirit turtle take 10d10 bludgeoning damage and 4d8 energy damage and are knocked Prone (DC 41 basic Reflex save save). Creatures that critically succeed at their Reflex save are not knocked prone. The spirit turtle can't use Unbalancing Stomp again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Knockdown",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Spirit turtles are benevolent fey known to heal those in need and confer other powerful gifts. These gentle giants resemble enormous turtles and often bear entire ecosystems on their shells.\n\nIn ancient times, so the legend goes, spirit turtles used to grant wishes to many mortals. After millennia of such encounters, the giant creatures grew tired and went into hiding or returned to their home plane, the First World. Those few spirit turtles who remain on Golarion now grant their favors only to the purest and worthiest mortal petitioners."
+}

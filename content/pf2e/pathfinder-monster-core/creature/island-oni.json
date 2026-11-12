@@ -1,0 +1,350 @@
+{
+  "kind": "creature",
+  "slug": "island-oni",
+  "system": "pf2e",
+  "name": "Island Oni",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "traits": [
+    "giant",
+    "humanoid",
+    "oni",
+    "water"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 38,
+    "hp": 390,
+    "perception": 32,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 28,
+      "will": 34
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 6,
+      "int": 2,
+      "str": 9,
+      "wis": 9
+    },
+    "skills": {
+      "acrobatics": 30,
+      "athletics": 33,
+      "deception": 32,
+      "intimidation": 32,
+      "nature": 29
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 40,
+      "swim": 50
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ],
+      "weaknesses": [
+        {
+          "type": "spirit",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. water",
+      "perception": "mist vision",
+      "speed": "water walk"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 37,
+      "attack": 29,
+      "spells": [
+        {
+          "name": "Invisibility (At Will, Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Water Walk (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/water-walk"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longspear",
+      "ref": "equipment:item/longspear",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Longspear",
+      "attack": 35,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+10",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 33,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "electricity",
+          "category": "persistent"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Thunderbolt",
+      "attack": 30,
+      "traits": [
+        "electricity",
+        "magical"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "3d12+12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Mist Vision",
+      "category": "interaction",
+      "text": "The island oni ignores the Concealed condition from fog and mist."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Water",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "water"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bean Panic",
+      "category": "defensive",
+      "text": "Oni are curiously afraid of beans, especially as the seasons begin to change. If a creature Interacts to throw a handful of beans at the oni, the oni becomes Frightened 2. While frightened this way, their weakness to spirit damage is increased by 5. The oni then becomes immune to bean panic for 24 hours.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bean-panic",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "bean-panic"
+            ],
+            "type": "spirit",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lost Oni Island",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "An island oni can claim an island of up to 1-mile radius in a process that takes 1 week, during which the oni must defeat any who come to challenge its claim. If successful, the oni can freely control the weather on its island and in a 1-mile radius from the shore, with the effect of a successful Control Weather ritual.\n\nThis altered weather surrounds the island in thick fog, seaborne mirages, or other phenomena that increase the DC of checks to locate and navigate to the island (Such as Sailing Lore or Survival) to 40, though the oni can allow allies to pass freely. If the oni dies or leaves the island, the weather returns to normal immediately."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The island oni can take on the appearance of any Medium or Large humanoid creature. This doesn't change their Speed or their attack and damage bonuses with their Strikes but might change the damage type their Strikes deal (typically to bludgeoning).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "oni",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Oni",
+                "value": "oni"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Medium",
+                "value": "humanoid-medium"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Large",
+                "value": "humanoid-large"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid-medium"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid-large"
+            ],
+            "value": "large"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Conductive Downpour",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "primal",
+        "water"
+      ],
+      "text": "The island oni fires a bolt of lightning into the air, which immediately roils with dark clouds. Rain falls in a 60-foot radius emanation, centered on the oni, for 1 minute, filling the air and pooling on the ground.\n\nCreatures in the aura gain weakness 10 to electricity, and the entire area is greater difficult terrain for Flying creatures, and difficult terrain for creatures on the ground or Climbing, unless they also have a swim Speed.\n\nEffect: Conductive Downpour"
+    },
+    {
+      "kind": "ability",
+      "name": "Electrifying Pierce",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "primal"
+      ],
+      "text": "Requirements The island oni's last action was a successful longspear Strike against a Medium or smaller target\n\n---\n\nEffect The island oni drives the spear through the target and calls lightning to strike the spear. The target takes 6d6 electricity damage with a DC 37 basic Fortitude save save. On a failure, the creature is also impaled on the spear. It's Grabbed, and if the oni moves, they bring the grabbed creature along with them.\n\nThe island oni doesn't need to use additional actions to keep the creature grabbed; the creature remains grabbed as long as it's impaled. The grabbed creature can attempt to Escape as normal. The island oni can only have one creature impaled this way at a time."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 3d8+10 bludgeoning, Rupture 30\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Tripping Tide",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "water"
+      ],
+      "text": "The island oni sweeps their spear in a full circle, releasing waves of seawater. All creatures in a 20-foot emanation must succeed a DC 37 Reflex save saving throw or fall Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Island oni are those powerful enough to claim small coastal islands, often creating makeshift armies of lesser oni who pillage surrounding lands and waters. Island oni hoard this material wealth, garbing themselves in luxurious clothing and adorning their monstrous faces with all manner of jewelry.\n\nIsland oni typically scavenge sunken shipwrecks for weapons, armor, and treasure. This can also bring them into contact with undead sailors, which island oni have been known to press into service.\n\n---\n\nOni are large, brutal creatures originating in Tian Xia who resemble humanoids with brightly colored skin, tusks, and horns. Though commonly mistaken for fiends, the first oni were originally kami, tutelary nature spirits. These kami suffered a terrible trauma, losing their sacred wards to dramatic disasters or the callousness of others, and as a result transformed into the violent creatures they are today. While some believe that oni can be spiritually placated through proper ritual worship that transforms them back into kami, many of these would-be saviors fall to oni's notorious brute strength, flesh-rending teeth, and command of storms.\n\nOni possess the ability to disguise themselves as other humanoids. They are rarely creative in their disguises, often choosing a specific appearance similar to their oni form and sticking with it. This simplicity catches many by surprise, however, as people assume oni are limited to a single alternate form, which is by no means the case."
+}

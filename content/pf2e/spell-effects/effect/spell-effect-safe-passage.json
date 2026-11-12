@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-safe-passage",
+  "system": "pf2e",
+  "name": "Spell Effect: Safe Passage",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Safe Passage\n\nYou gain a +2 status bonus to AC and saves against harmful effects of the terrain and environment, and resistance to all damage from such effects.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "safe-passage",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 2,
+      "when": [
+        "safe-passage"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "safe-passage"
+        ],
+        "type": "all-damage",
+        "value": "ternary(gte(@item.level,8),15,ternary(gte(@item.level,5),10,5))"
+      }
+    }
+  ]
+}

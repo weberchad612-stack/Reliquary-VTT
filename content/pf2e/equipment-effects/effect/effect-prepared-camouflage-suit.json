@@ -1,0 +1,82 @@
+{
+  "kind": "effect",
+  "slug": "effect-prepared-camouflage-suit",
+  "system": "pf2e",
+  "name": "Effect: Prepared Camouflage Suit",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Camouflage Suit\n\nYou gain an item bonus to Stealth checks while you attempt to Hide or Sneak.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:camouflage-suit",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Camouflage Suit"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:camouflage-suit-superb",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Camouflage Suit (Superb)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "camouflage-suit"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "item",
+      "value": 1,
+      "slug": "camouflage-suit-bonus",
+      "when": [
+        "action:sneak",
+        "action:hide"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "camouflage-suit:camouflage-suit-superb"
+        ],
+        "selector": "stealth",
+        "slug": "camouflage-suit-bonus",
+        "value": 2
+      }
+    }
+  ]
+}

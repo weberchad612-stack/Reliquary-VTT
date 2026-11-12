@@ -1,0 +1,58 @@
+{
+  "kind": "feat",
+  "slug": "vampire-lore",
+  "system": "pf2e",
+  "name": "Vampire Lore",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dhampir"
+  ],
+  "category": "ancestry",
+  "text": "You were raised by your vampiric parent, or you've invested substantial time and energy researching the secrets of your undead progenitors. You're trained in Religion and Society. If you would automatically become trained in one of those skills (from your background or class, for example), you instead become trained in a skill of your choice.\n\nYou also gain the Additional Lore general feat for Vampire Lore.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.society.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.religion.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Additional Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.vampire-lore",
+        "value": {
+          "attribute": "int",
+          "label": "{item|name}",
+          "rank": "match(when(gte(@actor.level, 15), 4), when(gte(@actor.level, 7), 3),when(gte(@actor.level, 3), 2),1)"
+        }
+      }
+    }
+  ]
+}

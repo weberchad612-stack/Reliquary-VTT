@@ -1,0 +1,96 @@
+{
+  "kind": "weapon",
+  "slug": "fire-poi",
+  "system": "pf2e",
+  "name": "Fire Poi",
+  "source": {
+    "title": "Pathfinder #151: The Show Must Go On",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "rarity": "uncommon",
+  "traits": [
+    "agile",
+    "backswing",
+    "finesse",
+    "twin"
+  ],
+  "text": "These special poi are made from a rare, light metal or from fire-retardant fibers and can be ignited before being wielded. Igniting a pair of fire poi is an Interact action and requires 1 pint of Oil for every 10 minutes the poi remain ignited.\n\nWhile lit, fire poi cast dim light in a 10-foot radius; in combat, they deal 1d4 bludgeoning plus 1d4 fire damage. On a critical hit with a lit fire poi, the target takes 1 persistent fire damage. The fire can be extinguished using the Interact action.\n\nWhen unlit, the poi deal only the listed bludgeoning damage. Regardless of whether it is lit, the poi's 1d4 bludgeoning damage is the weapon damage dice, so striking runes and other effects don't affect the fire damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.LitFirePoi",
+        "option": "lit-fire-poi",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "lit-fire-poi"
+        ],
+        "selector": "{item|_id}-damage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|_id}-damage",
+      "type": "untyped",
+      "value": 1,
+      "when": [
+        "lit-fire-poi"
+      ],
+      "damageType": "fire"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "lit-fire-poi"
+        ],
+        "value": {
+          "animation": {
+            "intensity": 4,
+            "speed": 1,
+            "type": "torch"
+          },
+          "color": "#9b7337",
+          "coloration": 101,
+          "dim": 10,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenEffectIcon",
+        "predicate": [
+          "lit-fire-poi"
+        ],
+        "value": "systems/pf2e/icons/equipment/weapons/fire-poi.webp"
+      }
+    }
+  ],
+  "category": "advanced",
+  "group": "flail",
+  "damage": {
+    "die": "d4",
+    "type": "bludgeoning"
+  },
+  "hands": "held-in-one-hand",
+  "baseItem": "fire-poi",
+  "bulk": 0.1,
+  "price": {
+    "gp": 5
+  }
+}

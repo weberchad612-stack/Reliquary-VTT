@@ -1,0 +1,194 @@
+{
+  "kind": "creature",
+  "slug": "innkeeper",
+  "system": "pf2e",
+  "name": "Innkeeper",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 20,
+    "perception": 7,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 3,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 0,
+      "int": 2,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "deception": 6,
+      "diplomacy": 6,
+      "society": 7,
+      "accounting-lore": 5,
+      "alcohol-lore": 7,
+      "cooking-lore": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Broom (Functions as a Staff)",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Innkeeper's Apron (Functions as Leather Armor)",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Ledger",
+      "ref": "equipment:item/basic-crafters-book",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Pewter Mug",
+      "ref": "equipment:item/mug",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Broom",
+      "attack": 7,
+      "traits": [
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Pewter Mug",
+      "attack": 5,
+      "traits": [
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Font of Gossip",
+      "category": "interaction",
+      "text": "The innkeeper's business gives them insight into the neighborhood's happenings. A person can Gather Information from an innkeeper in 30 minutes rather than canvassing an entire neighborhood. Each person can learn gossip from an innkeeper only once per day, and only if the innkeeper is friendly or helpful to that individual. Whatever information the innkeeper knows about a given topic doesn't change if someone else asks the innkeeper about that topic, unless the innkeeper has since learned more."
+    },
+    {
+      "kind": "ability",
+      "name": "Innkeeper's Advice",
+      "actions": 3,
+      "category": "interaction",
+      "traits": [
+        "auditory",
+        "fortune",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The innkeeper gives some pertinent advice to a single creature other than themself. For 24 hours, when that creature fails a skill check or saving throw, they can recall this advice and reroll the check, using the second result instead. Once that creature uses this ability, its effect ends. A creature that receives the Innkeeper's Advice is temporarily immune to the ability for 1 month.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Home Base Brawler",
+      "category": "offensive",
+      "text": "The innkeeper knows how to settle fights that break out. When the innkeeper is fighting in their establishment, their Strikes gain a +1 circumstance bonus to the attack roll, deal an additional 1d4 damage, and gain the nonlethal trait if they don't already have it. The innkeeper can choose not to gain this benefit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "home-base-brawler",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "home-base-brawler"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "home-base-brawler"
+            ],
+            "property": "traits",
+            "value": "nonlethal"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "home-base-brawler"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The sight of an inn is a welcome one to any weary traveler. Innkeepers can often be found cleaning the common room, overseeing the evening meal, or settling in new lodgers. Innkeepers keep an eye on their neighbors' doings and are often excellent sources of information.\n\n---\nSociety is built upon the backs of laborers."
+}

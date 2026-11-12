@@ -1,0 +1,194 @@
+{
+  "kind": "creature",
+  "slug": "akiros-ismort",
+  "system": "pf2e",
+  "name": "Akiros Ismort",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 53,
+    "perception": 10,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 8,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 11,
+      "intimidation": 9,
+      "religion": 7,
+      "survival": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Rusted Iron Holy Symbol of Erastil",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Lesser)",
+      "ref": "equipment:item/healing-potion-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "gear",
+      "name": "Silver Stag Lord Amulet",
+      "type": "treasure"
+    },
+    {
+      "kind": "gear",
+      "name": "Gold Pieces",
+      "ref": "equipment:item/gold-pieces",
+      "type": "treasure",
+      "quantity": 8
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 12,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 8,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shameful Memories",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "mental",
+        "visual"
+      ],
+      "text": "If Akiros sees another creature openly wearing Erastil's holy symbol, he must attempt a DC 15 Will save save. Unless he critically fails his saving throw, he is temporarily immune to Shameful Memories for 24 hours.\n\n---\n\nCritical Success Akiros is unaffected.\n\nSuccess Akiros is distracted by shame and becomes Sickened 1 for 1 round.\n\nFailure Akiros becomes Sickened 2 with his shame.\n\nCritical Failure As failure, but Akiros is Stunned 1 as well. He does not become temporarily immune to Shameful Memories, and he can be affected by this weakness again; this likely means he will have to immediately attempt the save again once he recovers from the stun."
+    },
+    {
+      "kind": "ability",
+      "name": "No Escape",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger An adjacent foe moves away.\n\n---\n\nEffect Akiros can Stride up to his speed, following the triggering creature and keeping it in reach throughout its movement until it stops moving or Akiros has moved his full Speed."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "Akiros flies into a rage. He gains 6 temporary Hit Points, deals 2 additional Damage with melee Strikes, takes a -1 penalty to AC, and can't use other actions with the concentrate trait. This effect lasts for 1 minute, until he falls Unconscious, or until there are no enemies he can perceive, whichever comes first, at which point he loses any remaining temporary Hit Points from Rage and can't Rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "upgrade",
+            "path": "flags.system.rageTempHP",
+            "phase": "beforeDerived",
+            "value": 6
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "melee-strike-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Male human bandit lieutenant"
+}

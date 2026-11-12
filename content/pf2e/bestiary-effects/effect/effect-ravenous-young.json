@@ -1,0 +1,45 @@
+{
+  "kind": "effect",
+  "slug": "effect-ravenous-young",
+  "system": "pf2e",
+  "name": "Effect: Ravenous Young",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Once a larva is attached, the target becomes Drained 1. While the larva remains attached, the target cannot recover from persistent bleed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalSuccess": "to-failure",
+          "success": "to-failure"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:damage:type:bleed"
+        ],
+        "selector": "pd-recovery-check"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Drained"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "pd-recovery-check",
+      "text": "{item|system.description.value}"
+    }
+  ]
+}

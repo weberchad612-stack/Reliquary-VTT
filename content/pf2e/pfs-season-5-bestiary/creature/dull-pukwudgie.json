@@ -1,0 +1,253 @@
+{
+  "kind": "creature",
+  "slug": "dull-pukwudgie",
+  "system": "pf2e",
+  "name": "Dull Pukwudgie",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-08: Protecting the Firelight",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 23,
+    "hp": 80,
+    "perception": 15,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 13,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 6,
+      "int": 4,
+      "str": 4,
+      "wis": 6
+    },
+    "skills": {
+      "crafting": 13,
+      "deception": 12,
+      "medicine": 13,
+      "nature": 15,
+      "stealth": 15,
+      "thievery": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "fey",
+      "gnomish"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Freedom of Movement",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "Hallucinatory Terrain",
+          "rank": 4,
+          "ref": "spells:spell/mirage"
+        },
+        {
+          "name": "Wall of Thorns",
+          "rank": 3,
+          "ref": "spells:spell/wall-of-thorns"
+        },
+        {
+          "name": "Invisibility (At Will) (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "pukwudgie-poison"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 17,
+      "traits": [
+        "magical",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "pukwudgie-poison"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 16,
+      "traits": [
+        "deadly-d10"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "pukwudgie-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Quills",
+      "category": "defensive",
+      "text": "A creature that hits a pukwudgie with an unarmed Strike or a non-reach melee Strike takes 3d8 piercing damage (DC 21 basic Reflex save save). On a critical failure, the creature also takes 1d6 persistent,poison from the poisoned quills.\n\n---\n\nNote: A DC was not provided for this ability by Paizo. The DC present here is a moderate DC for the creature level according to the Gamemastery Guide creature building Tables"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The pukwudgie takes on the physical form of a Giant Porcupine. Their size changes to Medium, they lose their weapon Strikes, and they gain a quill Strike (+16 for 2d8+4 piercing plus 1d8 persistent poison).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "change-shape",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 16,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "predicate": [
+              "change-shape"
+            ],
+            "replaceAll": true,
+            "slug": "quill"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "label": "PF2E.BattleForm.Attack.Quill",
+            "selector": "{item|id}-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pukwudgie Poison",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 23 Fortitude save\n\n---\n\nMaximum Duration 6 rounds\n\nStage 1 1d6 poison damage and Stupefied 1 (1 round)\n\nStage 2 1d6 poison damage and Stupefied 2 (1 round)\n\nStage 3 1d6 poison damage, Confused, and stupefied 2 (1 round)"
+    }
+  ],
+  "text": "Pukwudgies go by many names in many regions, but those who know of them agree that defying their mischievous nature provokes their wrath.\n\nIn ancient times, pukwudgies traveled to the Material Plane from the First World, perhaps in the wake of the gnome emigration. These proud fey are obsessed with displays of respect, and while they first attempted to befriend mortals, each attempt ended in tragedy as the pukwudgies perceived any potential slight as a grave insult. Mortals, fearing these reactions, began to view pukwudgies as nuisances, and pukwudgies in turn began to resent mortals and the gods that favored them. At their best, pukwudgies play cruel jokes on mortals they encounter. At their worst, they've been known to kidnap and even kill those who don't treat them with proper respect.\n\nPukwudgies make their villages in the oldest forests, concealed under Mirage spells and Fantastic Facade rituals. They travel freely between the Material Plane and the First World through tiny portals beneath hills, trees, or stones. No strangers to violence, pukwudgies rarely travel alone and often anoint their quills or weapons with a custom-brewed poison before entering hostile situations.\n\nStanding about 2 feet tall, a pukwudgie sports sharp quills growing from their head that extends down their back. Their skin tone varies by the region in which they live, ranging from pale gray to brown.",
+  "blurb": "Variant pukwudgie"
+}

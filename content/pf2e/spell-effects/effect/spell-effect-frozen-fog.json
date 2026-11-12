@@ -1,0 +1,60 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-frozen-fog",
+  "system": "pf2e",
+  "name": "Spell Effect: Frozen Fog",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Frozen Fog\n\nYou are clumsy 1 (clumsy 2 on a critical failure) and take a –10-foot status penalty to Speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": 1
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": 2
+          }
+        ],
+        "flag": "clumsyValue",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": "{item|flags.system.rulesSelections.clumsyValue}"
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": -10
+    }
+  ]
+}

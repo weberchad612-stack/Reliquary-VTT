@@ -1,0 +1,147 @@
+{
+  "kind": "creature",
+  "slug": "carnotaurus",
+  "system": "pf2e",
+  "name": "Carnotaurus",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "animal",
+    "dinosaur"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 24,
+    "hp": 145,
+    "perception": 15,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 15,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": -4,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 18,
+      "survival": 14
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 18,
+      "traits": [
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "vicious-mauling"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 18,
+      "traits": [
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Headbutt",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger A creature ends a move action within reach of the carnotaurus's horn Strike\n\n---\n\nEffect The carnotaurus makes a horn Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The carnotaurus lowers its horns and surges toward a foe. It Strides twice, then makes a horn Strike. If it moved at least 20 feet from its starting position, the Strike's damage is increased to 2d12+9 and knocks the target Prone if successful.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "powerful-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "powerful-charge"
+            ],
+            "selector": "horn-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vicious Mauling",
+      "category": "offensive",
+      "text": "The carnotaurus's jaws Strike deals an additional 1d8 persistent bleed damage to Prone targets.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:prone"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "This 2,000-pound predator lives up to its name by ramming its prey with its distinctive horns lowered, knocking them Prone, and viciously tearing into fallen victims before they can regain their footing. Do not let its size fool you; this massive dinosaur is deceptively quick when charging a potential meal. Aggressive and highly territorial, a carnotaurus will not hesitate to hunt down and slay any creature unlucky enough to cross its path."
+}

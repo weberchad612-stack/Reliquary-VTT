@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "radlight-cap",
+  "system": "pf2e",
+  "name": "Radlight Cap",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "fungus",
+    "mindless"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 120,
+    "perception": 15,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 5,
+      "dex": 0,
+      "int": -5,
+      "str": 4,
+      "wis": 2
+    },
+    "speeds": {
+      "land": 5
+    },
+    "senses": [
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Color Change",
+      "category": "interaction",
+      "text": "At the start of each round, the radlight cap changes color, going in order from red to yellow to green to blue and back to red, provided the radlight cap is alive and isn't black. Multiple radlight caps encountered within 100 feet of each other synchronize their color changes, such that all caps are the same color at the same time.\n\nAt the start of each round, if a radlight cap is within 100 feet of an object or creature that emits radiation, the radlight cap's color changes to black. While black, the radlight cap loses its Radlight aura and can't take actions or reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "color-change",
+            "selection": "red",
+            "suboptions": [
+              {
+                "label": "PF2E.Color.Red",
+                "value": "red"
+              },
+              {
+                "label": "PF2E.Color.Yellow",
+                "value": "yellow"
+              },
+              {
+                "label": "PF2E.Color.Green",
+                "value": "green"
+              },
+              {
+                "label": "PF2E.Color.Blue",
+                "value": "blue"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.colorChange",
+            "predicate": [
+              "color-change:red"
+            ],
+            "value": {
+              "color": "#d11515",
+              "damageType": "fire"
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.colorChange",
+            "predicate": [
+              "color-change:yellow"
+            ],
+            "value": {
+              "color": "#ffea05",
+              "damageType": "electricity"
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.colorChange",
+            "predicate": [
+              "color-change:green"
+            ],
+            "value": {
+              "color": "#1daa2d",
+              "damageType": "force"
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.colorChange",
+            "predicate": [
+              "color-change:blue"
+            ],
+            "value": {
+              "color": "#137eb4",
+              "damageType": "mental"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Radlight",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "light"
+      ],
+      "text": "30 feet. The aura sheds dim light the same color as the radlight cap's current color (see Color Change).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "light"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "value": {
+              "alpha": 0.4,
+              "animation": {
+                "type": "pulse"
+              },
+              "bright": 0,
+              "color": "{actor|flags.system.colorChange.color}",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Radlight Spores",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The radlight cap takes damage or meets the condition corresponding to its current color, as described below\n\n---\nEffect The radlight cap uses Radlight Spores.\n- Blue The radlight cap detects a sound louder than a whisper.\n\n- Green A non-fungus creature within 30 feet ends their turn without having moved at least 5 feet.\n\n- Red A non-fungus creature within 30 feet takes an attack, move, or manipulate action that the radlight cap can detect.\n\n- Yellow A non-fungus creature within 30 feet ends their turn without being Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Radlight Spores",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The radlight cap releases a cloud of spores in a 30-foot emanation. The spores deal 2d10 damage (DC 24 basic Fortitude save save) to all non-fungus creatures in the area. The type of damage dealt and an additional effect is determined by the radlight cap's current color.\n- Blue The spores deal mental damage. Creatures that fail their save can't breathe or speak for 1 round.\n\n- Green The spores deal force damage. Creatures that fail their save are pushed 10 feet away from the radlight cap.\n\n- Red The spores deal fire damage. Creatures that fail their save are Paralyzed for 1 round.\n\n- Yellow The spores deal electricity damage. Creatures that fail their save are knocked Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "property": "damage-type",
+            "selectors": [
+              "{item|id}-inline-damage"
+            ],
+            "value": "{actor|flags.system.colorChange.damageType}"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The radlights caps that flourish in many parts of Nar-Voth look like softly glowing, halfling-sized toadstools: a relatively common sight in the Darklands. When radlight caps change color, however, their dangerous nature becomes evident. With each color change, the fungi gain a new set of stimuli that trigger their deadly spore clouds. While a field of blue mushrooms may have attacked noisy interlopers, when they shift to red they assault anyone who moves a muscle. Many Nar-Voth natives, even non-sentient ones, have learned the colors and corresponding behaviors that will see them safely through a field of radlight caps.\nRed Light, Green Light\nAyindilar elves claim that they originally cultivated radlight caps as an advanced warning system against radiation, and that the fungus's other color changes are merely an unintended mutation. Regardless, their original function remains useful enough that the elves rarely eradicate growths of radlight caps. Rather, they teach this warning rhyme to those who must pass through a radlight forest:\n\nRed light stop,\nYellow drop.\nGreen light rush,\nBlue light hush.\nBlack for terror, black for flight,\nFor this way comes the sickness light."
+}

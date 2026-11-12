@@ -1,0 +1,254 @@
+{
+  "kind": "creature",
+  "slug": "crag-linnorm",
+  "system": "pf2e",
+  "name": "Crag Linnorm",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "uncommon",
+  "traits": [
+    "dragon",
+    "fire"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 37,
+    "hp": 270,
+    "perception": 26,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 24,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 6,
+      "dex": 4,
+      "int": -3,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 28
+    },
+    "speeds": {
+      "land": 35,
+      "fly": 100,
+      "swim": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "draconic",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "curse",
+        "fire",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 10 (deactivated by cold iron)",
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "unfettered movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Truesight (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Unfettered Movement (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/unfettered-movement"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "crag-linnorm-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 10 (Deactivated by Cold Iron)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold-iron"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of Fire",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "fire",
+        "primal"
+      ],
+      "text": "When a creature slays the crag linnorm, it must succeed at a DC 35 Will save save or gain weakness to fire 15 with an unlimited duration.\n\nEffect: Curse of Fire"
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Tail Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "2d6+14 bludgeoning, DC 34 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Crag Linnorm Venom",
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "injury",
+        "poison"
+      ],
+      "text": "Saving Throw DC 34 Fortitude save;\n\n---\n\nMaximum Duration 10 rounds\n\nStage 1 4d6 fire damage and Drained 1 (1 round)\n\nStage 2 6d6 fire damage and Drained 2 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Magma Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal"
+      ],
+      "text": "The crag linnorm breathes out a stream of magma in a 120-foot line that deals 12d6 fire damage to creatures within the area (DC 34 basic Reflex save save). Any creature that fails its save also takes 4d6 persistent,fire damage.\n\nThe linnorm can't use Magma Breath again for 1d4 rounds.\n\nThe magma remains until the start of the linnorm's next turn. If the linnorm was on the ground, the magma remains as a burning line on the ground directly under the line of the Magma Breath; if the linnorm was airborne, the magma rains down in a sheet 60 feet high. Any creature that moves across or through the magma takes 6d6 fire damage (DC 34 basic Reflex save save).\n\nAt the start of the linnorm's next turn, the magma cools to a thin layer of brittle stone, or the magma rain finishes falling and turns to harmless pebbles. The cooled magma quickly degrades to powder and sand over the course of several hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Despite being among the weakest linnorms, the crag linnorm is a devastating predator, capable of quickly cooking their foes with their magma breath.\n\n---\n\nImmense, primeval dragons of the northern reaches of the world, linnorms hate those they deem to be lesser creatures and seek to inflict as much suffering as possible upon their unfortunate victims. While these serpentine monstrosities might not be the powerful winged dragons most imagine, they nonetheless possess incredible strength and deadly powers that often rival more notorious dragons' brutality."
+}

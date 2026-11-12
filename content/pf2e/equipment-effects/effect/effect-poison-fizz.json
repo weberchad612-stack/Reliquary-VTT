@@ -1,0 +1,99 @@
+{
+  "kind": "effect",
+  "slug": "effect-poison-fizz",
+  "system": "pf2e",
+  "name": "Effect: Poison Fizz",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Poison Fizz (Lesser), Poison Fizz (Moderate), Poison Fizz (Greater)\n\nYou gain an item bonus to saving throws against poison and being petrified.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poison-fizz-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poison Fizz (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poison-fizz-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poison Fizz (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:poison-fizz-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Poison Fizz (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "poison-fizz"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "poison-fizz-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:poison",
+            "inflicts:petrified"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "poison-fizz:poison-fizz-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "poison-fizz-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

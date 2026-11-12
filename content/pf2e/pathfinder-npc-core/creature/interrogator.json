@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "interrogator",
+  "system": "pf2e",
+  "name": "Interrogator",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 90,
+    "perception": 13,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 15,
+      "intimidation": 13,
+      "medicine": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dart",
+      "ref": "equipment:item/dart",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "War Razor",
+      "ref": "equipment:item/war-razor",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Apron (Functions as Leather Armor)",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Healer's Toolkit",
+      "ref": "equipment:item/healers-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dart",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "torment"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "War Razor",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "backstabber",
+        "deadly-d8",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "torment"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "torment"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood and Fear",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The interrogator Strikes with a slashing melee weapon. If they hit and deal damage, the target takes an additional 1d4 persistent bleed damage and is Frightened 1 (or 2d4 persistent bleed damage and Frightened 2 on a critical hit).\n\nEach of the interrogator's other enemies in a 30-foot emanation around the target that witnesses the bloodshed must succeed at a DC 19 Will save save or be frightened 1. The frightened part of this ability is an emotion, fear, mental, and visual effect.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "blood-and-fear",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "blood-and-fear",
+              "item:damage:type:slashing"
+            ],
+            "selector": "strike-damage",
+            "slug": "blood-and-fear"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "upgrade",
+            "predicate": [
+              "check:outcome:critical-success"
+            ],
+            "property": "dice-number",
+            "selectors": [
+              "strike-damage"
+            ],
+            "slug": "blood-and-fear",
+            "value": 2
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "blood-and-fear",
+            "item:damage:type:slashing"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hobble",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements A creature is Grabbed or Restrained by the interrogator\n\n---\nEffect One creature grabbed or restrained by the interrogator takes 2d6 bludgeoning damage with a DC 23 basic Fortitude save save. If the creature fails its save, it also gains a condition of the interrogator's choice: Clumsy 2 for 1 minute, Enfeebled 2 for 1 minute, or Drained 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Torment",
+      "category": "offensive",
+      "text": "The interrogator's Strikes deal an additional 1d8 mental damage to Frightened creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.Frightened",
+            "option": "target:condition:frightened",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Interrogators use pain and intimidation against prisoners and other helpless victims to force \"confessions.\"\n\n---\nVillains pursue selfish and cruel goals, trampling over anyone in their way."
+}

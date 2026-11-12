@@ -1,0 +1,142 @@
+{
+  "kind": "creature",
+  "slug": "archheathens-fool",
+  "system": "pf2e",
+  "name": "Archheathen's Fool",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 180,
+    "perception": 19,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 19,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 7,
+      "dex": 2,
+      "int": -5,
+      "str": 7,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 25
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(34 when broken)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 25,
+      "damage": [
+        {
+          "dice": "4d6+10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "defensive",
+      "text": "Like normal objects, the archheathen's fool has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once the archheathen's fool is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 34.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": [
+              "ac"
+            ],
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trickery Vulnerability",
+      "category": "defensive",
+      "text": "The effigy is easily tricked. It isn't immune to attempts to create-a-diversion or feint. If a creature succeeds at either action, it becomes Slowed 1 for 1 round as it processes the trickery. Each additional success increases its slowed condition by 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

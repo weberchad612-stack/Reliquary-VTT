@@ -1,0 +1,254 @@
+{
+  "kind": "creature",
+  "slug": "branwaen",
+  "system": "pf2e",
+  "name": "Branwaen",
+  "source": {
+    "title": "Pathfinder Bounty #14: The Blackwood Truce",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "unique",
+  "traits": [
+    "dwarf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 17,
+    "perception": 6,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 8,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": 2,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": 3,
+      "crafting": 5,
+      "deception": 5,
+      "diplomacy": 3,
+      "intimidation": 3,
+      "society": 5,
+      "stealth": 8,
+      "survival": 5,
+      "thievery": 6,
+      "engineering-lore": 5,
+      "underworld-lore": 5
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven"
+    ],
+    "notes": {
+      "ac": "(18 vs. traps)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Clan Dagger",
+      "ref": "equipment:item/clan-dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sap",
+      "ref": "equipment:item/sap",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Padded Armor",
+      "ref": "equipment:item/padded-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Crowbar",
+      "ref": "equipment:item/crowbar",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Antidote (Lesser)",
+      "ref": "equipment:item/antidote-lesser",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Minor)",
+      "ref": "equipment:item/elixir-of-life-minor",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Sunrod",
+      "ref": "equipment:item/glow-rod",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Sap",
+      "attack": 5,
+      "traits": [
+        "agile",
+        "nonlethal"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Clan Dagger",
+      "attack": 5,
+      "traits": [
+        "agile",
+        "parry",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 7,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 AC, Reflex, and Perception versus Traps",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "origin:trait:trap",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "origin:trait:trap"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "origin:trait:trap"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "origin:trait:trap"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Branwaen deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "kind": "creature",
+  "slug": "bolar-of-stonemoor",
+  "system": "pf2e",
+  "name": "Bolar Of Stonemoor",
+  "source": {
+    "title": "Pathfinder #157: Devil at the Dreaming Palace",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "chaotic",
+    "dwarf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 13,
+    "perception": 3,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 6,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 3,
+      "dex": 2,
+      "int": -1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 4,
+      "athletics": 6,
+      "intimidation": 2
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 6,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "Requirements Bolar isn't Fatigued or raging\n\n---\nEffect Bolar gains 3 temporary Hit Points that last until the rage ends. While raging, he deals 2 additional damage with melee attacks and takes a -1 penalty to AC. The rage lasts for 1 minute, until there are no enemies Bolar can perceive, or until Bolar falls Unconscious.\n\nOnce the rage ends, Bolar can't Rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "melee-strike-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 3
+          }
+        }
+      ]
+    }
+  ]
+}

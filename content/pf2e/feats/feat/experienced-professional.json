@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "experienced-professional",
+  "system": "pf2e",
+  "name": "Experienced Professional",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Lore"
+  ],
+  "text": "You carefully safeguard your professional endeavors to prevent disaster. When you use Lore to Earn Income, if you roll a critical failure, you instead get a failure. If you're an expert in Lore, you gain twice as much income from a failed check to Earn Income, unless it was originally a critical failure.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": "lore-skill-check",
+      "text": "PF2E.SpecificRule.Feat.ExperiencedProfessional.Note",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        {
+          "or": [
+            "proficiency:expert",
+            "proficiency:master",
+            "proficiency:legendary"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:earn-income"
+        ],
+        "selector": "lore-skill-check",
+        "type": "skill"
+      }
+    }
+  ]
+}

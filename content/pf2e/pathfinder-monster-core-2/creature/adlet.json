@@ -1,0 +1,225 @@
+{
+  "kind": "creature",
+  "slug": "adlet",
+  "system": "pf2e",
+  "name": "Adlet",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "cold",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 180,
+    "perception": 18,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 22,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 6,
+      "int": 0,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 21,
+      "stealth": 20,
+      "survival": 18
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "adlet",
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 20,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Avenging Bite",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within reach of an adlet's jaws Strike attacks one of the adlet's allies.\n\n---\n\nEffect The adlet makes a jaws Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Wolfstorm",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "cold",
+        "primal"
+      ],
+      "text": "60 feet. A clammy, frigid mist billows forth ahead of the adlet. Creatures within the mist become Concealed, and creatures outside the mist become concealed to creatures within it. An adlet can see through the aura without penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "slug": "wolfstorm",
+            "traits": [
+              "cold",
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frozen Weapons",
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Weapons wielded by an adlet gain the effect of the Frost property rune.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "frost"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "An adlet's Strikes deal an additional 2d6 damage to creatures that are within the reach of at least two of the adlet's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wolfrime",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "concentrate",
+        "primal"
+      ],
+      "text": "An adlet's mist turns biting cold and coalesces into a thick rime of frost that deals 6d6 cold damage to creatures inside the adlet's wolfstorm aura (DC 26 basic Fortitude save), and the aura is deactivated until the start of the adlet's next turn."
+    }
+  ],
+  "text": "Adlets dwell in the farthest, harshest reaches of the Crown of the World, with a few journeying beyond to similarly frigid regions in other continents. At frst glance, these isolated people look much like their Erutaki human cousins; they typically have straight, black hair and compact, powerful builds. However, adlets tend move with more grace their human kin. Up close, their strangeness reveals itself, as each has a furry face and sports a maw full of wolfike teeth. Their legs and tails resemble those of dogs.\n\nAdlets' legends say that long ago, a mighty hunter lost his way far from home and came upon a house of whalebone and ice. A woman dressed in white fox furs greeted him, fed him, and tended to his frostbite. In time, they married and had 10 children, fve of whom bore the legs and tails of foxes. These children stayed with their mother, while the other fve—born with the legs and tails of wolves—traveled with their father back to the human lands and became the frst adlets.\n\nMost adlets aren't inherently evil, but their culture is warlike, xenophobic, and noticeably lacking in humility. They see themselves as the natural rulers of the arctic wastes and view everyone else as squatters at best and invaders at worst. A typical adlet is stronger and faster than any mundane human, with the ability to walk naked in a blizzard and call up ice-cold mists. Given that, it's little wonder that adlets have developed something of a superiority complex. Still, while adlet raids are a common problem for travelers in the Crown of the World, a handful of wily and intrepid merchants have forged peaceful relations with certain adlet communities along more common routes."
+}

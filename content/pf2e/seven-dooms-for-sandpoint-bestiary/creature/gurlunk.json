@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "gurlunk",
+  "system": "pf2e",
+  "name": "Gurlunk",
+  "source": {
+    "title": "Pathfinder #200: Seven Dooms for Sandpoint",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "goblin",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 8,
+      "intimidation": 8,
+      "nature": 9,
+      "stealth": 10,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dogslicer",
+      "ref": "equipment:item/dogslicer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Dogslicer",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "backstabber",
+        "finesse",
+        "goblin"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 13,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Goblin Scuttle",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A goblin ally ends a move action adjacent to the goblin.\n\n---\n\nEffect The goblin Steps."
+    },
+    {
+      "kind": "ability",
+      "name": "Disorienting Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect Gurlunk makes two Strikes against his hunted prey with his shortbow. If both hit the same creature, the creature succeed at a DC 21 Will save save or become Off-Guard until the start of their next turn (or the start of Gurlunk's next turn on a critical failure).",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Gurlunk designates a single creature he can see or hear, and gains a +2 circumstance bonus to Perception checks to Seek and Track that prey. He can only have one creature so designated at a time, and if he selects a new hunted prey, the previous designation ends.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Edge",
+      "category": "offensive",
+      "text": "Gurlunk deals an additional 1d8 precision damage the first time he hits his hunted prey in a round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Whistling Threat",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "fear",
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect Gurlunk whistles sharply at a Medium or larger animal or beast he can see within 30 feet, using his voice to dull the creature's wits and cause it to lower its defenses. The target must attempt a DC 21 Will save save.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target is Frightened 1.\n\nFailure The target is Frightened 2.\n\nCritical Failure The target is Frightened 3 and Slowed 1 for 1 round as it shakes in fear.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    }
+  ],
+  "blurb": "Male goblin ranger"
+}

@@ -1,0 +1,90 @@
+{
+  "kind": "effect",
+  "slug": "effect-martial-mayhem-mutagen-greater",
+  "system": "pf2e",
+  "name": "Effect: Martial Mayhem Mutagen (Greater)",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Martial Mayhem Mutagen (Greater)\n\nBenefit You gain a +3 item bonus to skill checks to Disarm, Grapple, Reposition, Shove, and Trip, and your melee Strikes deal 1d6 additional precision damage to off-guard creatures. When you succeed at a melee attack roll, the target is off-guard to your next attack roll against it before the start of your next turn.\n\nDrawback You take a –2 penalty to Will saves, Intelligence-based skill checks, and skill checks to Sense Motive. When you fail at a melee attack roll, you are clumsy 1 until the end of your next turn.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "item",
+      "value": 3,
+      "slug": "martial-mayhem-mutagen-skill",
+      "when": [
+        {
+          "or": [
+            "action:disarm",
+            "action:grapple",
+            "action:reposition",
+            "action:shove",
+            "action:trip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "int-skill-check",
+        "will"
+      ],
+      "type": "untyped",
+      "value": -2,
+      "slug": "martial-mayhem-mutagen-int-will"
+    },
+    {
+      "key": "modifier",
+      "selector": "check",
+      "type": "untyped",
+      "value": -2,
+      "slug": "martial-mayhem-mutagen-sense-motive",
+      "when": [
+        "action:sense-motive"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "target:condition:off-guard"
+        ],
+        "selector": "melee-strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "melee-attack-roll",
+      "text": "PF2E.Mutagens.MartialMayhemMutagen.SuccessNote",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "melee-attack-roll",
+      "text": "PF2E.Mutagens.MartialMayhemMutagen.FailureNote",
+      "outcome": [
+        "criticalFailure",
+        "failure"
+      ]
+    }
+  ]
+}

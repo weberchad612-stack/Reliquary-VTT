@@ -1,0 +1,205 @@
+{
+  "kind": "creature",
+  "slug": "dispatch-disciple",
+  "system": "pf2e",
+  "name": "Dispatch Disciple",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-99: Under the Eye of the Mantis",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 19,
+    "perception": 7,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": 7,
+      "deception": 3,
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Crimson Cloak",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "versatile-s"
+      ],
+      "range": 10,
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snagging Catch",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements The disciple has their crimson cloak raised\n\nTrigger The disciple is attacked by a melee weapon\n\n---\nEffect After the attack's result is resolved, the disciple attempts to Disarm the triggering weapon, gaining a +1 circumstance bonus. The cloak is destroyed after this action.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "cloak-and-dagger"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "option": "snagging-catch",
+            "priority": 51,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "action:disarm",
+            "snagging-catch"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cloak and Dagger",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The disciple raises their heavy crimson cloak, providing them with a +1 circumstance bonus to their AC and also giving them access to the Snagging Catch reaction.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "cloak-and-dagger",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "cloak-and-dagger"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pattern Attack",
+      "category": "offensive",
+      "text": "The disciple's strikes deal 1d4 extra damage to creatures within reach of at least one of the disciple's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "strike-damage",
+            "key": "RollOption",
+            "option": "pattern-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "pattern-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "kind": "feat",
+  "slug": "unlimited-potential",
+  "system": "pf2e",
+  "name": "Unlimited Potential",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "traits": [
+    "concentrate",
+    "manipulate",
+    "psychic",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "frequency": {
+    "max": 1,
+    "per": "PT1M"
+  },
+  "text": "Frequency once per minute\n\n---\n\nThe laws of magic can limit your mind only if you think you need them, and you've grown past the need for such limits. If your next action is to Cast a Spell of 5th rank or lower that has no duration, you don't expend the prepared spell as you cast it.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:unlimited-potential",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.UnlimitedPotential"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "unlimited-potential"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

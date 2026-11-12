@@ -1,0 +1,230 @@
+{
+  "kind": "creature",
+  "slug": "vetalarana-emergent",
+  "system": "pf2e",
+  "name": "Vetalarana Emergent",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "chaotic",
+    "evil",
+    "undead",
+    "unholy",
+    "vampire"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 100,
+    "perception": 14,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 3,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 18,
+      "intimidation": 16,
+      "occultism": 13,
+      "stealth": 17
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "thoughtsense",
+        "range": 100,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 10
+        },
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "cold-iron"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "fast healing 10, mental rebirth, void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Thoughtsense (Precise) 100 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 10",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "type": "fast-healing",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mental Rebirth",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "incapacitation",
+        "mental",
+        "occult"
+      ],
+      "text": "Unlike most other undead, a vetalarana isn't destroyed when they reach 0 HP. Instead, their body is destroyed, crumbling to ash, and their mind is immediately transferred into a creature they rendered comatose through Drain Thoughts. This creature must be within 1 mile; if no such creature is in range, the vetalarana is destroyed. The creature becomes controlled by the vetalarana and loses the stupefied and Unconscious conditions. If the creature controlled by a vetalarana in this way is killed, the vetalarana's mind transfers to another creature within 1 mile who they rendered comatose through Drain Thoughts.\n\nAfter 1d6 days of being controlled, the controlled creature dies, and its body transforms into that of the vetalarana who rendered it comatose."
+    },
+    {
+      "kind": "ability",
+      "name": "Vetalarana Vulnerabilities",
+      "category": "defensive",
+      "text": "All vetalaranas possess the following weaknesses.\n\n- Barred Senses A vetalarana can't see or sense through force effects or cold iron, and their mind can't penetrate force effects or cold iron. Such barriers can prevent the transference of a vetalarana's mind through Mental Rebirth.\n\n- Revulsion A vetalarana delights in consuming memories and secrets, and is disgusted by those who share such sensitive tidbits openly. A vetalarana can't voluntarily come within 10 feet of a creature loudly voicing their intimate personal secrets or most cherished memories aloud. Speaking such information aloud with conviction is a single action that has the auditory, concentrate, and linguistic traits, and protects the creature until the start of its next turn. A vetalarana that involuntarily comes within 10 feet of a creature sharing such information gains the Fleeing condition until they're 10 feet or farther from the creature. After 1 round of being exposed to the secrets of a creature, a vetalarana can attempt a DC 25 Will save save as a single action, which has the concentrate trait. On a success, they overcome their revulsions for 1d6 rounds (or 1 hour on a critical success).\n\n- Vulnerable to Brain Destruction A vetalarana whose brain has been destroyed, or is reduced to 0 HP while unable to take mental actions, can't use Mental Rebirth."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Anticipatory Attack",
+      "category": "offensive",
+      "text": "The vetalarana emergent uses consumed memories to anticipate their prey's movements. The vetalarana emergent's Strikes deal an additional 1d8 precision damage to creatures stupefied due to the vetalarana's Drain Thoughts.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "anticipatory-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "anticipatory-attack",
+              "target:condition:stupefied"
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Thoughts",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult"
+      ],
+      "text": "Requirements A Grabbed, Paralyzed, Restrained, Unconscious, or willing creature is within the vetalarana's reach\n\n---\n\nEffect The vetalarana seizes a creature and consumes its memories. This requires an Athletics check check against the victim's Fortitude DC if the victim is grabbed and is automatic for any of the other conditions. The victim is Stupefied 1, and the vetalarana regains 10 healing HP, gaining any excess as temporary Hit Points. Draining Thoughts from a creature that is already stupefied doesn't restore any HP to the vetalarana but increases the victim's stupefied value by 1. Additionally, the vetalarana views one of the victim's memories.\n\nA victim's stupefied condition value decreases by 1 every week.\n\nA victim that becomes stupefied 5 in this way is rendered comatose, becoming permanently Unconscious. As long as the vetalarana lives, a comatose victim can't regain consciousness, and its stupefied condition doesn't decrease."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Vetalarana vampires feed on the emotions, thoughts, and memories of others. Although they are capable of feeding on animals, beings of the planes, and other intelligent undead, only the thoughts of an intelligent, living humanoid bring a vetalarana any sense of satisfaction. Slender and pale, with sunken cheeks and exceptionally long nails, vetalaranas become flushed with color and life after feeding on particularly potent emotions and thoughts, enabling some to pass as living for a short time.\n\nA vetalarana is created when a person with psychic or occult abilities dies in denial of their death, refusing to pass on to the afterlife but unable to retain their grip on life. As their spirit has no cause left undone nor debt to settle, these tenacious souls rise not as ghosts but as vetalaranas, a formidable and tenacious mind animating their own corpse in a mockery of life.\n\nA vetalarana's predations inevitably turn their victims into living husks, incapable of thought and devoid of any spark of personality. These victims fall into a senseless stupor, comatose but still living, without identity or memories. If a vetalarana is killed, they can occupy one of these comatose husks, while more powerful vetalaranas can control them like living puppets.\n\nWhen a vetalarana is destroyed, all of their comatose victims are immediately freed. Most often, these people regain consciousness as amnesiacs whose memories return over time—taking at least months but sometimes as long as decades. These returned memories are fragmented and often jumbled with the thoughts of others the vetalarana fed upon. If a victim served as a failed host or was frequently controlled while comatose, a sliver of the vetalarana's corrupted thoughts remain in the victim's mind. These tainted victims recover much faster than their fellows, regaining their memories in record time and transforming into a new vetalarana soon after.\n\nA vetalarana emergent is inexperienced and ravenous, often caring more for the consumption of thoughts than the quality of the thoughts and memories consumed. These undead gluttons gorge themselves on memories, leaving a crowd of addled and terrified victims in their wake. Experienced emergents are cannier than their newly risen kin, stalking their chosen victims and being sure to abduct, kill, or render their victims comatose after draining their memories to ensure no witnesses remain to reveal the presence of a vetalarana."
+}

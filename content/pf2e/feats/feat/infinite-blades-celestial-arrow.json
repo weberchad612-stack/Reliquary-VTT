@@ -1,0 +1,108 @@
+{
+  "kind": "feat",
+  "slug": "infinite-blades-celestial-arrow",
+  "system": "pf2e",
+  "name": "Infinite Blades Celestial Arrow",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a ranged weapon ikon\n\n---\nEach shot you launch multiplies itself with spiritual blades, rings, and other missiles that shower upon your foes. Your weapon ikon gains the following abilities.\n\nImmanence Whenever you successfully Strike an enemy with your weapon ikon, up to two enemies adjacent to the target take spirit damage equal to your weapon ikon's damage dice as they are struck by duplicated missiles.\n\nTranscendence—Heaven Rains an Ending 3 (transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Heaven Rains an Ending"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "chosen-ikon:{item|flags.system.rulesSelections.ikon}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "ranged-strike-attack-roll",
+      "text": "PF2E.SpecificRule.Exemplar.InfiniteBladesCelestialArrow.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "divine-spark:{item|flags.system.rulesSelections.ikon}",
+        "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.InfiniteBladesCelestialArrow.HeavenRainsAnEnding.Label",
+        "option": "heaven-rains-an-ending",
+        "priority": 51,
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "heaven-rains-an-ending",
+          "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "ranged-strike-damage"
+        ],
+        "value": "spirit"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ranged-strike-attack-roll",
+      "type": "untyped",
+      "value": -2,
+      "when": [
+        "heaven-rains-an-ending",
+        "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "exemplar-spirit-damage",
+        "predicate": [
+          "heaven-rains-an-ending"
+        ],
+        "priority": 51
+      }
+    }
+  ]
+}

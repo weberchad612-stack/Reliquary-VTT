@@ -1,0 +1,280 @@
+{
+  "kind": "creature",
+  "slug": "ledorick-banyan",
+  "system": "pf2e",
+  "name": "Ledorick Banyan",
+  "source": {
+    "title": "Pathfinder #154: Siege of the Dinosaurs",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 260,
+    "perception": 24,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 26,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": {
+        "value": 25,
+        "special": [
+          {
+            "value": 27,
+            "label": "to Disarm",
+            "when": [
+              "action:disarm"
+            ]
+          }
+        ]
+      },
+      "deception": 23,
+      "diplomacy": 25,
+      "intimidation": 25,
+      "society": 20,
+      "willowside-lore": 18
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+26 when using perception for initiative)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Ring of Sustenance",
+      "ref": "equipment:item/ring-of-sustenance",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Moderate)",
+      "ref": "equipment:item/healing-potion-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 40
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 29,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 27,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+26 when using Perception for Initiative",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "perception"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Ledorick gains an additional reaction at the beginning of each of his turns that he can use only for an Attack of Opportunity.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Riposte",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements Ledorick is using Dueling Parry\n\nTrigger A creature within Ledorick's reach critically fails a Strike against him\n\n---\n\nEffect Ledorick makes a melee Strike against the triggering creature or attempts to Disarm the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Juggernaut",
+      "category": "defensive",
+      "text": "When Ledorick rolls a success on a Fortitude save, it is a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "fortitude",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Ledorick has a single one-handed melee weapon in one hand and has his other hand free\n\n---\n\nEffect Ledorick gains a +2 circumstance bonus to AC until the start of his next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "dueling-parry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "dueling-parry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guiding Finish",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Ledorick has a single one-handed melee weapon in one hand and has his other hand free\n\n---\n\nEffect Ledorick Strikes with the required weapon. On a hit, he moves the target up to 10 feet into a space he can reach, even moving the target through his own space. On a failed Strike, Ledorick can still move the target 5 feet in this way. This action can be used only if Ledorick has a multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Show-Off",
+      "category": "offensive",
+      "text": "When Ledorick can see and be seen by at least two allies, his attacks deal 3d6 extra precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "show-off"
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "show-off",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Ledorick Strides twice and makes a melee Strike."
+    }
+  ],
+  "blurb": "Male human folk hero"
+}

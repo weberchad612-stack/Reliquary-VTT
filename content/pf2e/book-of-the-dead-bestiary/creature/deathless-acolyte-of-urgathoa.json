@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "deathless-acolyte-of-urgathoa",
+  "system": "pf2e",
+  "name": "Deathless Acolyte Of Urgathoa",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 36,
+    "perception": 9,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 7,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 0,
+      "dex": 2,
+      "int": 1,
+      "str": 1,
+      "wis": 4
+    },
+    "skills": {
+      "intimidation": 9,
+      "occultism": 8,
+      "religion": 11,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Prepared Spells",
+      "tradition": "divine",
+      "type": "prepared",
+      "dc": 19,
+      "attack": 11,
+      "spells": [
+        {
+          "name": "Animate Dead",
+          "rank": 1,
+          "ref": "spells:spell/summon-undead"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Chill Touch",
+          "rank": 1,
+          "ref": "spells:spell/void-warp"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Forbidding Ward",
+          "rank": 1,
+          "ref": "spells:spell/forbidding-ward"
+        },
+        {
+          "name": "Harm",
+          "rank": 1,
+          "ref": "spells:spell/harm"
+        },
+        {
+          "name": "Ray of Enfeeblement",
+          "rank": 1,
+          "ref": "spells:spell/enfeeble"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Cleric Domain Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 19,
+      "attack": 11,
+      "spells": [
+        {
+          "name": "Touch of Undeath",
+          "rank": 1,
+          "ref": "spells:spell/touch-of-undeath"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Scythe",
+      "ref": "equipment:item/scythe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Urgathoa",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Scythe",
+      "attack": 10,
+      "traits": [
+        "deadly-d10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Denounce Heretic",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Trigger A creature within 60 feet who the deathless acolyte can see and who doesn't worship Urgathoa casts a divine spell\n\n---\n\nEffect The deathless acolyte attempts to counteract the triggering spell using their spell attack modifier and a counteract rank of 2. If the deathless acolyte fails to counteract the spell, the caster is temporarily immune to further uses of Denounce Heretic for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Field of Undeath",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "20 feet. Allies within the aura who have void healing gain fast healing 2. When a creature within the aura would receive vitality healing, it must succeed at a DC 5 Flat check or receive no healing from the effect.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.fieldOfUndeathFastHealing",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "predicate": [
+                  "target:negative-healing"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Field of Undeath"
+              }
+            ],
+            "key": "Aura",
+            "radius": 20,
+            "slug": "field-of-undeath",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Deathless acolytes typically arise when a deity or their herald expends a minor amount of power to return a low-ranking priest. Some priests are powerful enough in life to return, greatly lessened, of their own volition.\n\n---\n\nDeathless acolytes are an oddity among undead, neither willingly transformed nor, strictly speaking, transformed against their will. The creation of a deathless acolyte is an act of direct intervention by a deity, typically as a double-edged reward and curse granted to a faithful priest who failed in completing a divine mandate due to circumstances beyond their control."
+}

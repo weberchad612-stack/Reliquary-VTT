@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "redwood-leshy",
+  "system": "pf2e",
+  "name": "Redwood Leshy",
+  "source": {
+    "title": "Pathfinder #203: Shepherd of Decay",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "leshy",
+    "plant"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 29,
+    "hp": 205,
+    "perception": 22,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 16,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 2,
+      "int": 3,
+      "str": 6,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 18,
+      "nature": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. fear",
+      "languages": "speak with plants (trees only)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Speak with Plants (Constant, Trees Only)",
+          "rank": 3,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Enlarge (Self Only)",
+          "rank": 4,
+          "ref": "spells:spell/enlarge"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Bo Staff",
+      "ref": "equipment:item/bo-staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Bo Staff",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "monk",
+        "parry",
+        "reach-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Fear",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "fear"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Verdant Burst",
+      "category": "defensive",
+      "traits": [
+        "healing",
+        "primal",
+        "vitality"
+      ],
+      "text": "When a redwood leshy dies, a burst of primal energy explodes from their body, restoring 5d8 Hit Points to each plant creature in a 30-foot emanation. This area is filled with saplings, becoming difficult terrain. If the environment isn't a viable environment for these trees, they wither after 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The redwood leshy can take the form of a Large tree, using the effects of One with Plants.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "leshy",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Plant.Leshy",
+                "value": "leshy"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Tree",
+                "value": "tree"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:tree"
+            ],
+            "value": "large"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Looming Strike",
+      "category": "offensive",
+      "text": "The leshy deals an additional 1d8 damage to creatures smaller than it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target:size:tiny"
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Needles That Catch the Clouds",
+      "category": "offensive",
+      "text": "The leshy can cast Create Water, Downpour, and Mist as innate primal spells once per day, but only while Large or larger."
+    }
+  ],
+  "text": "Guardians of old growth forests and the mightiest trees, redwood leshies behave with the courage and self-assurance that they believe befits their legacy. They rarely lord their duties over other leshies, instead believing it's their responsibility to shield, guide, and provide for others.\n\n---\nFor all their cute appearances and harmless pretenses, leshies can become a formidable force when riled. What's more, leshies can grow larger, stronger, and more aggressive in regions rich in primal energy. The following presents several higher-level leshy threats that grow in primordial forests."
+}

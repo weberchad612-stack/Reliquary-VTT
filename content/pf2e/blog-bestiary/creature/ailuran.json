@@ -1,0 +1,229 @@
+{
+  "kind": "creature",
+  "slug": "ailuran",
+  "system": "pf2e",
+  "name": "Ailuran",
+  "source": {
+    "title": "Pathfinder Blog",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 20,
+    "hp": 80,
+    "perception": 14,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 4,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 12,
+      "diplomacy": 10,
+      "nature": 12,
+      "stealth": 10,
+      "survival": 10,
+      "silver-lore": 13
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all vs. poison",
+      "perception": "silversense (imprecise) 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Passwall",
+          "rank": 5,
+          "ref": "spells:spell/magic-passage"
+        },
+        {
+          "name": "Glitterdust",
+          "rank": 2,
+          "ref": "spells:spell/revealing-light",
+          "uses": 2
+        },
+        {
+          "name": "Illusory Object (At Will) (Silver Objects only)",
+          "rank": 2,
+          "ref": "spells:spell/illusory-object"
+        },
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Boomerang",
+      "ref": "equipment:item/boomerang",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 13,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Boomerang",
+      "attack": 13,
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Silversense",
+      "category": "interaction",
+      "text": "Silversense allows the ailurian to sense the presence of silver objects."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:trait:poison"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Silver Sustenance",
+      "actions": 1,
+      "category": "defensive",
+      "text": "The ailuran eats an amount of silver equal to 10 sp and regains 1d6 healing Hit Points. An ailuran can subsist by consuming silver instead of normal food."
+    },
+    {
+      "kind": "ability",
+      "name": "Returning Throw",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The ailuran makes a boomerang Strike, after which the boomerang returns to the ailuran's hand."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The ailuran deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Ailurans are reclusive fey with an obsession for silver. This fixation makes them a pesky foil to silver miners and werecreatures alike. Though the creatures don't necessarily harbor any ill will to others and would prefer to just be left alone, miners consider them pests. Ailurans, sometimes called silver seekers, are infamous for sneaking into or breaking into silver mines to obtain the object of their affection—silver. Miners, not wanting to be stolen from, keep alert for ailuran activity. It's unsure why ailurans have an animosity to werecreatures, but their obsession with silver serves them well in this regard. Some ailurans use the silver they collect to make silver weapons they use to hunt down these shapeshifters. Werecreatures aware of this enmity tend to avoid regions where ailurans live. Ailurans live in small groups in secluded forested hills and mountains—typically locations in which silver can be found in abundance. When not raiding mines, ailurans can be found in trees where they often make their homes. They have a supernatural ability to sense the presence of silver and have been known to accost travelers and charge them a silver toll to allow passage through their lands. While not outwardly friendly, many ailurans are open to trade and will barter with creatures passing through their forests. However, if a visitor makes a bad impression, the creatures sometimes use their illusory magic to create false silver items they use to trade, leaving the traveler empty handed once the magic's duration runs out."
+}

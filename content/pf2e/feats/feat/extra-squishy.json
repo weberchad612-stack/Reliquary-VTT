@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "extra-squishy",
+  "system": "pf2e",
+  "name": "Extra Squishy",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "goblin"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "unbreakable goblin heritage"
+  ],
+  "text": "Your rubbery physique makes it easier for you to wedge yourself into tight spaces and more difficult for your enemies to dislodge you.\n\nYou become trained in Acrobatics. If you would automatically become trained in Acrobatics (from your background or class, for example), you instead become trained in a skill of your choice.\n\nIf you roll a success to Squeeze, you get a critical success instead. While you're Squeezing, you gain a +4 circumstance bonus to your Fortitude or Reflex DCs against attempts to Shove you or otherwise move you from your space.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.acrobatics.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "fortitude",
+        "reflex"
+      ],
+      "type": "circumstance",
+      "value": 4,
+      "when": [
+        "action:shove",
+        "while-squeezing"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "acrobatics",
+      "text": "PF2E.SpecificRule.Goblin.ExtraSquishy.Note",
+      "when": [
+        "action:squeeze"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:squeeze"
+        ],
+        "selector": "acrobatics"
+      }
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "kind": "creature",
+  "slug": "interlocutor",
+  "system": "pf2e",
+  "name": "Interlocutor",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "fiend",
+    "unholy",
+    "velstrac"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 33,
+    "hp": 215,
+    "perception": 24,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 21,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 3,
+      "int": 2,
+      "str": 7,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 25,
+      "crafting": {
+        "value": 22,
+        "special": [
+          {
+            "value": 24,
+            "label": "sculpting flesh",
+            "when": [
+              "sculpting-flesh"
+            ]
+          }
+        ]
+      },
+      "intimidation": 25,
+      "medicine": 26,
+      "religion": 22,
+      "stealth": 19,
+      "torture-lore": 20
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 15
+        },
+        {
+          "type": "silver",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "painsight"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Interplanar Teleport (self only, to the Netherworld or the Universe only)",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Breath of Life",
+          "rank": 5,
+          "ref": "spells:spell/breath-of-life"
+        },
+        {
+          "name": "Sound Body",
+          "rank": 4,
+          "ref": "spells:spell/sound-body",
+          "uses": 2
+        },
+        {
+          "name": "Heal",
+          "rank": 4,
+          "ref": "spells:spell/heal",
+          "uses": 2
+        },
+        {
+          "name": "Stabilize",
+          "rank": 1,
+          "ref": "spells:spell/stabilize"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 25,
+      "traits": [
+        "deadly-2d10",
+        "magical",
+        "reach-10",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+13",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Painsight",
+      "category": "interaction",
+      "traits": [
+        "divine"
+      ],
+      "text": "A velstrac automatically knows whether a creature it sees has any of the Doomed, Dying, and Wounded conditions as well as the value of those conditions."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 20 (Deactivated by Holy or Silver)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy",
+              "silver"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Glimpse of Stolen Flesh",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "30 feet. When a creature ends its turn in the aura, it sees pieces of its own body amid the interlocutor's form. The creature must succeed at a DC 29 Will save save or become Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "divine",
+              "fear",
+              "mental",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Siphon",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "shadow"
+      ],
+      "text": "Trigger The interlocutor would take damage from a spell or magical effect\n\n---\nEffect The interlocutor takes half the triggering damage instead."
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "The interlocutor stares at a creature they can see within 30 feet. The creature must immediately attempt a Will save against glimpse of stolen flesh. In addition, if the creature was already stunned, on a failed save, it feels its internal organs twist and writhe, and is Clumsy 2 for 1 minute. After attempting this save, the creature is then temporarily immune to Focus Gaze until the start of the interlocutor's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Surgical Rend",
+      "actions": 1,
+      "category": "offensive",
+      "text": "This functions as the Rend ability, dealing claw Strike damage. In addition, if the target is a living creature with organs and muscle, the interlocutor opens a precise wound. Until the creature is restored to its maximum Hit Points, thus closing the wound, Strikes against the creature deal an additional 1d6 precision damage."
+    }
+  ],
+  "text": "Interlocutors are the most talented surgeon-sculptors of the velstracs, carving away flesh and replacing it with new body parts of muscle, sinew, and metal. Each interlocutor structures their individual appearance carefully, but all are towering, multi-limbed amalgamations of the strongest limbs, densest bones, and sharpest metals they can find. They continually search for new material to graft to their forms, and their slain foes are rarely found intact, as little is more valuable to interlocutors than a powerful opponent's legs, eyes, or even brain. Due to their unique properties, deposits of skymetals sometimes draw interlocutors to the mortal Universe. Interlocutors average 9 feet in height and weigh approximately 800 pounds.\n\n---\nThe shadow-dwelling fiends known as velstracs all share a horrifying preoccupation with the search for ultimate sensation through self-mutilation. Velstracs transcend their stoic detachment only when inflicting pain and terror upon their victims, practicing new forms of torture, or turning their agonizing practices back on themselves. They consider themselves enlightened beings, transcending such limitations as morality or mortal taboos, but their victims know them as emotionless tormentors who inflict sadistic suffering. These fiends claim to seek perfection in thought, form, and action, although they don't recognize any refinement that doesn't require the painful excision of the flesh or spirit.\n\nVelstracs manifest from the souls of the most extreme masochistic or sadistic mortals who are judged and sent on to the Netherworld. They take on forms that suit their vile predilections, ranging from the low-ranking augurs to the maestros of suffering and mutilation, the eremites. The process of transformation warps the soul step by step, with other velstracs conveying their new members through untold chambers of pain among the dark reaches of the Netherworld."
+}

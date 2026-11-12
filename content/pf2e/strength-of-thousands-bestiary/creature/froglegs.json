@@ -1,0 +1,215 @@
+{
+  "kind": "creature",
+  "slug": "froglegs",
+  "system": "pf2e",
+  "name": "Froglegs",
+  "source": {
+    "title": "Pathfinder #170: Spoken on the Song Wind",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "humanoid",
+    "tripkee"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 27,
+    "hp": 135,
+    "perception": 16,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 15,
+      "deception": 16,
+      "intimidation": 16,
+      "stealth": 16,
+      "thievery": {
+        "value": 18,
+        "special": [
+          {
+            "value": 20,
+            "label": "to Pick a Lock",
+            "when": [
+              "action:pick-a-lock"
+            ]
+          }
+        ]
+      },
+      "underworld-lore": 15
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "tripkee",
+      "iruxi"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Habu's Cudgel",
+      "ref": "equipment:item/habus-cudgel",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools (Infiltrator)",
+      "ref": "equipment:item/thieves-toolkit-infiltrator",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Habu's Cudgel",
+      "attack": 19,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Froglegs isn't Off-Guard to creatures of 8th level or lower that are Hidden, Undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knife Fighter",
+      "category": "offensive",
+      "text": "Froglegs deals an additional 2d6 precision damage with weapons from the knife group, and knives gain the deadly d10 weapon property while she wields them. (Already added to dagger attacks)",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "item:group:knife"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:group:knife"
+            ],
+            "property": "traits",
+            "value": "deadly-d10"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Roll and Snatch",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger Froglegs successfully Tumbles Through an enemy's space\n\n---\n\nEffect Froglegs attempts to Disarm or Trip the enemy. She can use her tongue for this attempt and does not need to have a free hand."
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Slash",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Froglegs makes two dagger Strikes."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "kind": "feat",
+  "slug": "accursed-touch",
+  "system": "pf2e",
+  "name": "Accursed Touch",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Mummy Dedication"
+  ],
+  "text": "You've learned to harness the supernatural curse that animates you, imbuing your most powerful attacks with a terrible curse. When you critically hit with a fist Strike, void energy binds to it; this is a curse and a disease. The creature takes 2d6 persistent void damage. While the creature has this persistent damage, it's also Stupefied 1. The persistent damage increases to 3d6 at 14th level and 4d6 at 20th level. This is a critical specialization effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "critical": true,
+        "damageType": "void",
+        "diceNumber": "ternary(gte(@actor.level,20),4,ternary(gte(@actor.level,14),3,2))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "fist-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "outcome": [
+          "criticalSuccess"
+        ],
+        "predicate": [
+          {
+            "lte": [
+              "self:level",
+              13
+            ]
+          }
+        ],
+        "selector": "fist-damage",
+        "text": "PF2E.SpecificRule.Mummy.AccursedTouch.Note.Base",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "outcome": [
+          "criticalSuccess"
+        ],
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              14
+            ]
+          },
+          {
+            "not": {
+              "gte": [
+                "self:level",
+                20
+              ]
+            }
+          }
+        ],
+        "selector": "fist-damage",
+        "text": "PF2E.SpecificRule.Mummy.AccursedTouch.Note.FourteenthLevel",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "outcome": [
+          "criticalSuccess"
+        ],
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              20
+            ]
+          }
+        ],
+        "selector": "fist-damage",
+        "text": "PF2E.SpecificRule.Mummy.AccursedTouch.Note.TwentiethLevel",
+        "title": "{item|name}"
+      }
+    }
+  ]
+}

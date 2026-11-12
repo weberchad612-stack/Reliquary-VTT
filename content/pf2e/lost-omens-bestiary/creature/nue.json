@@ -1,0 +1,220 @@
+{
+  "kind": "creature",
+  "slug": "nue",
+  "system": "pf2e",
+  "name": "Nue",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia World Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "beast"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 30,
+    "hp": 200,
+    "perception": 21,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 24,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 6,
+      "int": 1,
+      "str": 7,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 22,
+      "deception": 18,
+      "intimidation": 18,
+      "occultism": 18,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "tien"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "resistances": [
+        {
+          "type": "non-magical",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Viper Tail",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 15 feet of the nue leaves a square during a move action it's using or moves into a square that would cause the nue to become flanked\n\n---\n\nEffect The nue whips around and attempts a tail Strike against the triggering creature. This Strike doesn't count toward the nue's multiple attack penalty, and its multiple attack penalty doesn't apply to this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Cloud Form",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The nue changes its shape into that of a dark storm cloud. In Cloud Form, the nue is Concealed, gains a 60-foot fly Speed, gains a +4 status bonus to its Deception DC to prevent others from seeing through its disguise, and can't make attacks, though it can use its howl abilities. The nue can Dismiss this effect.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "cloud-form",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "cloud-form"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 24,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 3,
+                "die": "d8",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "cloud-form"
+              }
+            ],
+            "traits": [
+              "agile",
+              "disarm",
+              "finesse",
+              "reach-10"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 24,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Tail",
+            "predicate": [
+              {
+                "not": "cloud-form"
+              }
+            ],
+            "traits": [
+              "agile",
+              "finesse",
+              "reach-15"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 24,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "cloud-form"
+              }
+            ],
+            "traits": [
+              "finesse",
+              "reach-10"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 2,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "selector": "tail-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Monstrous Howl",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "mental",
+        "void"
+      ],
+      "text": "The nue lets out an eerie howl that rattles creatures' very souls. Creatures within 60 feet must attempt a DC 27 Will save save (DC 29 at night). They're then temporarily immune to Monstrous Howl for 10 minutes.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 2d8 persistent,void damage.\n\nFailure As success, plus the target is Drained 1.\n\nCritical Failure As success, plus the target is Drained 2 and Stunned 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Thundering Howl",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "electricity"
+      ],
+      "text": "The nue howls to the sky, calling down a bolt of lightning that strikes the creature closest to the nue, to a maximum range of 60 feet. The bolt deals 12d6 electricity damage (DC 27 basic Reflex save save). The nue then can't use Thundering Howl for 1d4 rounds."
+    }
+  ],
+  "text": "A nue is an ancient creature of enormous size and destructive power. Though sightings are rare, it's described as having the head of a monkey, the body of a tanuki, the limbs of a tiger, and a snake for a tail. The beast's eerie body is matched by its ability to drain the life force of those around it just by howling.\n\nAccording to certain tales, in ancient times, a nue would freely terrorize kingdoms and inflict nightmares upon it victims. It first appears as an enormous storm cloud before turning a poisonous black color. When angered, a nue can summon lightning to cause massive amounts of collateral damage. Hearing a nue's howl is considered an ill omen."
+}

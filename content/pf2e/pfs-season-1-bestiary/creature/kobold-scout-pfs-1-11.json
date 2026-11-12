@@ -1,0 +1,197 @@
+{
+  "kind": "creature",
+  "slug": "kobold-scout-pfs-1-11",
+  "system": "pf2e",
+  "name": "Kobold Scout (PFS 1-11)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-11: Flames of Rebellion",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "evil",
+    "humanoid",
+    "kobold",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 18,
+    "hp": 16,
+    "perception": 8,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 7,
+      "crafting": {
+        "value": 3,
+        "special": [
+          {
+            "value": 5,
+            "label": "traps",
+            "when": [
+              "trap"
+            ]
+          }
+        ]
+      },
+      "nature": 6,
+      "stealth": 7,
+      "survival": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Snare Kit",
+      "ref": "equipment:item/artisans-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 9,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hurried Retreat",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The kobold scout is adjacent to at least one enemy.\n\n---\n\nEffect The kobold scout Strides up to its Speed plus 5 feet and gains a +2 circumstance bonus to AC against reactions triggered by this movement. It must end this movement in a space that's not adjacent to any enemy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hurried-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "hurried-retreat"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hurried-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The kobold scout deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Most kobolds encountered outside of a well-defended warren or lair are kobold scouts, creatures trained for stalking and the hunt.\n\n---\n\nKobolds are small, reptilian humanoids who carry physical similarities to true dragons. They lurk in dark spaces, usually tunnels and mines beneath the earth, in either warrens of their own design or complexes discovered and colonized after the original builders have moved on. Though kobolds are far more pragmatic than they are courageous, they use every inch of their cunning to even the playing field between themselves and other, stronger creatures. They attack from the darkness and at range, and kobold artificers and engineers master the art of simple but effective traps, which they use to protect their lairs. Kobolds are skilled at working together by necessity, and they often set up ambushes or hit-and-run assaults that allow them to do the most damage possible without being harmed in return.\n\nKobolds are diligent and hardworking creatures, though they often turn these virtues toward selfish ends. While some kobolds live in communal collectives that maintain neutral relations with the creatures around them, they can be easily swayed into serving malevolent powers or megalomaniac leaders. This is in part due to kobolds' innate pragmatism, as they would rather concede to servitude than risk being killed, but it is also in part due to a reverence for the power that kobolds generally lack. Dragons in particular are viewed with a deferential awe, and kobolds eagerly offer their services to such mighty and glorious creatures when they can. While kobolds may scheme against other leaders, especially those that control them via subjugation, dragons are usually viewed with adoration, no matter how brutal they might be to their kobold minions."
+}

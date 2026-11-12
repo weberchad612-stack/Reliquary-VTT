@@ -1,0 +1,83 @@
+{
+  "kind": "effect",
+  "slug": "effect-bombers-eye-elixir",
+  "system": "pf2e",
+  "name": "Effect: Bomber's Eye Elixir",
+  "source": {
+    "title": "Pathfinder GM Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 5,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Bomber's Eye Elixir (Lesser), Bomber's Eye Elixir (Greater)\n\nYour alchemical bomb Strikes reduce the circumstance bonus to AC your targets gain from cover.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "not": "parent:origin:item:slug:bombers-eye-elixir-greater"
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Bomber's Eye Elixir (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "not": "parent:origin:item:slug:bombers-eye-elixir-lesser"
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Bomber's Eye Elixir (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "bombers-eye-elixir"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.bombersEyeElixir",
+        "predicate": [
+          "bombers-eye-elixir:bombers-eye-elixir-lesser"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.bombersEyeElixir",
+        "predicate": [
+          "bombers-eye-elixir:bombers-eye-elixir-greater"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "EphemeralEffect",
+        "predicate": [
+          "target:effect:cover"
+        ],
+        "selectors": "alchemical-bomb-base-attack-roll",
+        "uuid": "Compendium.pf2e.equipment-effects.Item.Effect: Bomber's Eye Elixir Cover Reduction"
+      }
+    }
+  ]
+}

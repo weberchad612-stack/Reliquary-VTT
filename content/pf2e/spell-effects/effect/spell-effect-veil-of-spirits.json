@@ -1,0 +1,74 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-veil-of-spirits",
+  "system": "pf2e",
+  "name": "Spell Effect: Veil of Spirits",
+  "source": {
+    "title": "Pathfinder Lost Omens Shining Kingdoms",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Veil of Spirits\n\nYou are dazzled. On a failure or critical failure, you gain a weakness to spirit damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "veil-of-spirits"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Dazzled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "veil-of-spirits:failure"
+        ],
+        "type": "spirit",
+        "value": "(@item.origin.level / 2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          "veil-of-spirits:critical-failure"
+        ],
+        "type": "spirit",
+        "value": "@item.origin.level"
+      }
+    }
+  ]
+}

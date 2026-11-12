@@ -1,0 +1,116 @@
+{
+  "kind": "feat",
+  "slug": "surki-weapon-familiarity",
+  "system": "pf2e",
+  "name": "Surki Weapon Familiarity",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "surki"
+  ],
+  "category": "ancestry",
+  "text": "Surki weapons favor utility and practicality over grace and brutality. You have familiarity with picks, light hammers, sickles, scythes, and one additional common weapon of your choice from the axe or hammer group—for the purposes of proficiency, you treat any of these that are martial weapons as simple weapons and any that are advanced weapons as martial weapons.\n\nAt 5th level, whenever you get a critical hit with one of these weapons, you get its critical specialization effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:rarity:common",
+            {
+              "or": [
+                "item:group:axe",
+                "item:group:hammer"
+              ]
+            },
+            {
+              "not": "item:base:light-hammer"
+            }
+          ],
+          "itemType": "weapon",
+          "slugsAsValues": true
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              {
+                "and": [
+                  "item:group:pick",
+                  "item:category:martial"
+                ]
+              },
+              {
+                "and": [
+                  "item:base:{item|flags.system.rulesSelections.weapon}",
+                  "item:category:martial"
+                ]
+              },
+              "item:base:light-hammer",
+              "item:base:sickle",
+              "item:base:scythe"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.MartialSurkiWeapons",
+        "sameAs": "simple",
+        "slug": "martial-surki-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:group:pick",
+              "item:base:{item|flags.system.rulesSelections.weapon}"
+            ]
+          },
+          "item:category:advanced"
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.AdvancedSurkiWeapons",
+        "sameAs": "martial",
+        "slug": "advanced-surki-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          },
+          {
+            "or": [
+              "item:group:pick",
+              "item:base:{item|flags.system.rulesSelections.weapon}",
+              "item:base:light-hammer",
+              "item:base:sickle",
+              "item:base:scythe"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

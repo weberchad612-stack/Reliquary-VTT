@@ -1,0 +1,67 @@
+{
+  "kind": "effect",
+  "slug": "effect-hunters-brooch",
+  "system": "pf2e",
+  "name": "Effect: Hunter's Brooch",
+  "source": {
+    "title": "Pathfinder #164: Hands of the Devil",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Hunter's Brooch\n\nYou grant the weapon the deadly d12 trait. Against undead, the weapon instead gains the fatal d12 trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectHuntersBrooch",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.effectHuntersBrooch}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "target:mode:undead"
+          }
+        ],
+        "property": "weapon-traits",
+        "value": "deadly-d12"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.effectHuntersBrooch}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "target:mode:undead"
+        ],
+        "property": "weapon-traits",
+        "value": "fatal-d12"
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "kind": "effect",
+  "slug": "effect-thorn-of-milani-spirit-damage",
+  "system": "pf2e",
+  "name": "Effect: Thorn of Milani (Spirit Damage)",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Thorn of Milani (Lesser), Thorn of Milani (Moderate)\n\nYou deal additional spirit damage with the holy trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thorn-of-milani-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thorn of Milani (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thorn-of-milani-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thorn of Milani (Moderate)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "thorn-of-milani"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "selector": "{item|flags.pf2e.rulesSelections.weapon}-damage",
+        "slug": "thorn-of-milani"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "thorn-of-milani:thorn-of-milani-moderate"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "{item|flags.pf2e.rulesSelections.weapon}-damage"
+        ],
+        "slug": "thorn-of-milani",
+        "value": 2
+      }
+    }
+  ]
+}

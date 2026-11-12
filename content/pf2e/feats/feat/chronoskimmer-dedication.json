@@ -1,0 +1,95 @@
+{
+  "kind": "feat",
+  "slug": "chronoskimmer-dedication",
+  "system": "pf2e",
+  "name": "Chronoskimmer Dedication",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "text": "You became partially unstuck from time and have learned how to manipulate your place in the flow of time. When you roll initiative, you can choose one of three options: either do nothing and roll initiative normally, stabilize your timestream, or destabilize your timestream and send it into intense fluctuations.\n- Stabilize your Timestream (fortune) You don't roll initiative, and instead your initiative is equal to 10 + the modifier you would have used for initiative.\n- Destabilize your Timestream (fortune) You don't roll initiative, and instead attempt a DC 11 Flat check. On a success, your initiative is equal to 19 + the modifier you would have used for initiative, and on a failure, your initiative is equal to 1 + that modifier.\nAdditionally, if your initiative roll result is tied with an opponent's initiative roll, you go first.\n\nYour manipulation of time grants you access to a number of abilities, some of which require a saving throw. The DC for these abilities is either your class DC or spell DC, whichever is higher, and is called your chronoskimmer DC\n\nChronoskimmer",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "chronoskimmer-dedication",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Chronoskimmer.DestabilizeFailureLabel",
+            "value": "destabilize-failure"
+          },
+          {
+            "label": "PF2E.SpecificRule.Chronoskimmer.DestabilizeSuccessLabel",
+            "value": "destabilize-success"
+          },
+          {
+            "label": "PF2E.SpecificRule.Chronoskimmer.StabilizeLabel",
+            "value": "stabilize"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effectType": "fortune",
+        "key": "SubstituteRoll",
+        "label": "PF2E.SpecificRule.Chronoskimmer.StabilizeLabel",
+        "predicate": [
+          "chronoskimmer-dedication:stabilize"
+        ],
+        "required": true,
+        "selector": "initiative",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effectType": "fortune",
+        "key": "SubstituteRoll",
+        "label": "PF2E.SpecificRule.Chronoskimmer.DestabilizeSuccessLabel",
+        "predicate": [
+          "chronoskimmer-dedication:destabilize-success"
+        ],
+        "required": true,
+        "selector": "initiative",
+        "value": 19
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effectType": "fortune",
+        "key": "SubstituteRoll",
+        "label": "PF2E.SpecificRule.Chronoskimmer.DestabilizeFailureLabel",
+        "predicate": [
+          "chronoskimmer-dedication:destabilize-failure"
+        ],
+        "required": true,
+        "selector": "initiative",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.initiative.tiebreakPriority",
+        "value": 0
+      }
+    }
+  ]
+}

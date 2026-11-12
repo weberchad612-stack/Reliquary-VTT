@@ -1,0 +1,144 @@
+{
+  "kind": "feat",
+  "slug": "decay-instinct",
+  "system": "pf2e",
+  "name": "Decay Instinct",
+  "source": {
+    "title": "Pathfinder #202: Severed at the Root",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "barbarian"
+  ],
+  "category": "classfeature",
+  "text": "Your rage is intrinsically tied to the decomposition of organic beings, and the new growth that decay allows. You may have meddled with ancient relics created by Ghorus, been infected by exposure to Ayrzul's Blight or the Tanglebriar, or been blessed by the green man Zibik. As you unleash your rage, you rot, becoming riddled with mold and flesh-eating fungi. Though this rot recedes when you let your emotions settle, it doesn't go away completely, and the scars left behind spread bit by bit throughout your lifetime, multiplying with every rage.\n\nAnathema\n\nPreventing the decomposition of dead creatures or plants is anathema to your instinct, as is destroying or interfering with the growth of molds or fungi in a natural setting. This doesn't prevent you from defending yourself against fungus creatures or hazards or harvesting fungi or molds solely for sustenance.\n\nRotting Rage (Instinct Ability)\n\nWhen you rage, you can choose to increase the additional damage from Rage from 2 to 6 and change its damage type to poison, instead of the damage type for your weapon or unarmed attack. If you do this, your Rage action gains the primal and poison traits, and you take 1 damage at the end of each of your turns as your flesh decays. This damage can't be reduced or avoided by any means. You may make this choice only when your rage begins, and it remains in effect until your rage ends.\n\nSpecialization AbilityLevel 7\n\nWhen you use rotting rage, increase the additional damage from Rage from 6 to 10, but the damage you take at the end of your turn increases to 5. If you have greater weapon specialization, instead increase the damage from Rage when using rotting rage from 10 to 18, but the damage you take increases to 10.\n\nRaging ResistanceLevel 9\n\nYou resist poison damage, as well as damage dealt by the attacks and abilities of creatures with the fungus trait, regardless of the damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Barbarian.Decay.ToggleLabel",
+        "option": "rotting-rage",
+        "predicate": [
+          {
+            "or": [
+              "class:barbarian",
+              "feat:instinct-ability"
+            ]
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance"
+        ],
+        "type": "poison",
+        "value": "@actor.flags.system.ragingResistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "origin:trait:fungus"
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.AllDamageFromFungus",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance"
+        ],
+        "type": "custom",
+        "value": "@actor.flags.system.ragingResistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "rotting-rage"
+        ],
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "rage",
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "class:barbarian",
+          "rotting-rage",
+          {
+            "gte": [
+              "self:level",
+              7
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "class:barbarian",
+          "feature:greater-weapon-specialization",
+          "rotting-rage"
+        ],
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 18
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:rage",
+          "rotting-rage"
+        ],
+        "property": "traits",
+        "value": "primal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:rage",
+          "rotting-rage"
+        ],
+        "property": "traits",
+        "value": "poison"
+      }
+    }
+  ]
+}

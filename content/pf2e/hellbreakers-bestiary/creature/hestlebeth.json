@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "hestlebeth",
+  "system": "pf2e",
+  "name": "Hestlebeth",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 10,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "diplomacy": 5,
+      "intimidation": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+10 to find concealed objects)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Keyring",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Simple)",
+      "ref": "equipment:item/manacles-simple",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Signal Whistle",
+      "ref": "equipment:item/signal-whistle",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 11,
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 10,
+      "traits": [
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Bonus on Perception to Find Concealed Objects",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            {
+              "or": [
+                "target:condition:concealed",
+                "item:tag:object"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Efficient Capture",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "manipulate"
+      ],
+      "text": "Requirements The jailer has manacles in hand and is adjacent to a creature\n\n---\n\nEffect The jailer attempts to bind the creature's wrists or ankles with the manacles. If the jailer succeeds at an attack roll with a +9 modifier against the target's AC, they apply the manacles.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "slug": "efficient-capture",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "efficient-capture-attack-roll",
+          "type": "untyped",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Fatigue",
+      "category": "offensive",
+      "text": "Having fought undead nonstop for the entire day, both Hellknights have the Fatigued condition. The condition goes away as usual with a full night's rest.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Fatigued"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Strike",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The jailer makes a melee Strike. If it hits and deals damage, the target is Frightened 1, or Frightened 2 on a critical hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Subdue Prisoners",
+      "category": "offensive",
+      "text": "The jailer doesn't take the normal penalty for making a nonlethal attack when attacking with their club."
+    }
+  ],
+  "text": "A jailer's primary responsibility is to keep prisoners from escaping. Jailers must often use force, or the threat of force, to keep their charges in line, as even the most carefully crafted cells, manacles, or chains can fail with time and persistence when the prisoners have the will to attempt an escape.\n\n---\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. Some carry out these duties fairly, but others are harsh and cruel, imposing severe punishments on anyone unable to pay for clemency.",
+  "blurb": "Jailer"
+}

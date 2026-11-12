@@ -1,0 +1,46 @@
+{
+  "kind": "feat",
+  "slug": "contract-negotiator",
+  "system": "pf2e",
+  "name": "Contract Negotiator",
+  "source": {
+    "title": "Pathfinder Lost Omens Highhelm",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Legal Lore"
+  ],
+  "text": "Your experience with bargaining and deciding terms as part of Highhelm's guilds helps you make deals in other situations. When negotiating deals or agreements, you can use Legal Lore in place of Diplomacy to Make an Impression or a Request, even if there is no legal framework under which you are negotiating. If you are an expert in Diplomacy, you gain a +1 circumstance bonus to these checks; if you are a master in Diplomacy, this increases to +2, and +3 if you are legendary.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "action:make-an-impression",
+              "action:request"
+            ]
+          },
+          {
+            "gte": [
+              "skill:diplomacy:rank",
+              2
+            ]
+          }
+        ],
+        "selector": "legal-lore",
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.diplomacy.rank,4),3,ternary(gte(@actor.system.skills.diplomacy.rank,3),2,ternary(gte(@actor.system.skills.diplomacy.rank,2),1,0)))"
+      }
+    }
+  ]
+}

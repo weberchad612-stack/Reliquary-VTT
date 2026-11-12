@@ -1,0 +1,114 @@
+{
+  "kind": "feat",
+  "slug": "animal-skin",
+  "system": "pf2e",
+  "name": "Animal Skin",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "barbarian",
+    "morph",
+    "primal"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Animal Instinct"
+  ],
+  "text": "Your proficiency in unarmored defense increases to expert. When you are raging and unarmored, your skin transforms into a thick hide. You gain a +2 item bonus to AC (+3 if you have the Greater Juggernaut class feature). The thickness of your hide gives you a Dexterity modifier cap to your AC of +3. This item bonus to AC is cumulative with Armor Potency runes on your explorer's clothing, Mystic Armor, and Bands of Force.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DexterityModifierCap",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.animalSkinBonus",
+        "priority": 19,
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.animalSkinBonus",
+        "predicate": [
+          "feature:greater-juggernaut"
+        ],
+        "priority": 19,
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "selector": "ac",
+        "type": "item",
+        "value": "@actor.flags.system.animalSkinBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "relabel": "PF2E.SpecificRule.AnimalSkin.BandsOfForce",
+        "selector": "ac",
+        "slug": "bands-of-force",
+        "value": "@actor.flags.system.animalSkinBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "relabel": "PF2E.SpecificRule.AnimalSkin.ExplorersClothing",
+        "selector": "ac",
+        "slug": "explorers-clothing",
+        "value": "@actor.flags.system.animalSkinBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "relabel": "PF2E.SpecificRule.AnimalSkin.MageArmor",
+        "selector": "ac",
+        "slug": "mage-armor",
+        "value": "@actor.flags.system.animalSkinBonus"
+      }
+    }
+  ]
+}

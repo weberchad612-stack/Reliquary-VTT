@@ -1,0 +1,156 @@
+{
+  "kind": "creature",
+  "slug": "human-bandit-pfs-1-06",
+  "system": "pf2e",
+  "name": "Human Bandit (PFS 1-06)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-06: Lost on the Spirit Road",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 8,
+    "perception": 7,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 7,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 0,
+      "dex": 2,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 4,
+      "athletics": 5,
+      "deception": 2,
+      "intimidation": 2,
+      "society": 3,
+      "stealth": 4,
+      "survival": 5,
+      "thievery": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "tien"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling",
+      "ref": "equipment:item/sling",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling Bullets",
+      "ref": "equipment:item/sling-bullets",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 6,
+      "traits": [
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sling",
+      "attack": 5,
+      "traits": [
+        "propulsive",
+        "reload-1"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ruffian Strike",
+      "category": "offensive",
+      "text": "A bandit deals 3 extra precision damage to an Off-Guard creature.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            "target:condition:off-guard"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attacker",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the bandit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

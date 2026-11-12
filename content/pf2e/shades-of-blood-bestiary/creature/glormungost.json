@@ -1,0 +1,321 @@
+{
+  "kind": "creature",
+  "slug": "glormungost",
+  "system": "pf2e",
+  "name": "Glormungost",
+  "source": {
+    "title": "Pathfinder #214: The Broken Palace",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "undead",
+    "unholy",
+    "vampire"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 66,
+    "perception": 10,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 14,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 4,
+      "int": 2,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 14,
+      "crafting": 12,
+      "deception": 14,
+      "nature": 12,
+      "stealth": 12
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "alghollthu",
+      "azlanti",
+      "necril",
+      "sakvroth",
+      "thalassic"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 5
+        },
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "silver"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "coffin restoration, fast healing 7, void healing",
+      "saves": "+2 status to all saves vs. auditory and visual",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Sickle",
+      "ref": "equipment:item/sickle",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sickle",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Blood Bomb",
+      "attack": 14,
+      "traits": [
+        "splash"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "2",
+          "type": "slashing",
+          "category": "splash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Bombs",
+      "category": "interaction",
+      "text": "Glormungost carries 6 glass vials filled with alchemically treated blood that deal persistent bleed damage, and 2 splash slashing damage. Glormungost replenishes these bombs each day using blood drawn from prisoners."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Auditory and Visual",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "auditory",
+                "visual"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 7",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coffin Restoration",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "Unlike other undead, a vampire isn't destroyed at 0 HP. Instead, it falls Unconscious. If its body rests in its coffin for 1 hour, the vampire gains 1 HP, after which its fast healing begins to function normally."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Assume Form",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult",
+        "polymorph"
+      ],
+      "text": "The ugothol spends 10 minutes reshaping its appearance to take on the shape of any Small or Medium humanoid. It gains a +4 circumstance bonus to Deception checks to pass as that creature.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "assume-form"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "skill-check",
+            "key": "RollOption",
+            "option": "assume-form",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Compression",
+      "category": "offensive",
+      "text": "When the ugothol successfully Squeezes, it moves through the tight space at full speed. Narrow confines are not difficult terrain for an ugothol."
+    },
+    {
+      "kind": "ability",
+      "name": "Drink Blood",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Requirement A Grabbed, Paralyzed, Restrained, Unconscious, or willing creature is within the vampire's reach.\n\n---\nEffect The vampire uses its tongue to drink the creature's blood. This requires an Athletics check check against the victim's Fortitude DC if the victim is grabbed and is automatic for any of the other conditions.\n\nThe victim is Drained 2 and the vampire regains 6 healing HP, gaining any excess HP as temporary Hit Points. Drinking Blood from a creature that's already drained doesn't restore any HP to the vampire but increases the victim's drained value by 1, killing the victim when it reaches drained 5. A vampire can also consume blood that's been emptied into a vessel for sustenance, but it gains no HP from doing so.\n\nA victim's drained condition decreases by 1 per week. A blood transfusion, which requires a DC 20 Medicine check check and sufficient blood or a blood donor, reduces the drain by 1 after 10 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Bombardier",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Glormungost draws a blood bomb with an Interact action and throws it as a ranged Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Revert Form",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The ugothol is in an assumed form\n\n---\n\nEffect The ugothol resumes its true form. Until the start of its next turn, it gains a +2 status bonus to attack rolls, damage rolls, saving throws, and skill checks.\n\nEffect: Revert Form"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Glormungost deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Among the subtler of the alghollthu creations were the ugothols—also known as faceless stalkers. These twisted beings used shapeshifting to infiltrate settlements and assassinate key targets. They sowed discord and replaced leaders, causing unwanted organizations to implode and bothersome people to lose face and eventually disappear.\n\n---\n\nIn bygone millennia, aquatic monsters known as alghollthus used their occult powers to conquer and rule vast swaths of the world. Alghollthus shaped their servitors and other creatures using mental manipulation and physically transformative magic. The rulers of the alghollthus, the so-called \"veiled masters,\" further shaped entire societies by assuming the forms of those they controlled.\n\nIn time, the alghollthus grew frustrated with upstart surface societies and meddling gods. They used incredible magical power to call forth a cataclysm, hoping to destroy the rebellious societies they'd manipulated. Yet they miscalculated the will to survive of those they treated as their pawns, and in time the world recovered, this time free of alghollthu influence.\n\nToday, the alghollthus have mostly remained within the deep aquatic realms where they still rule without question. Yet they have not abandoned their plots entirely, and the reemergence of servitors like faceless stalkers suggests that the alghollthus have turned their hateful eyes to the surface once again.",
+  "blurb": "Agender ugothol vampire alchemist"
+}

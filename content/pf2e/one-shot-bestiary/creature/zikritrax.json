@@ -1,0 +1,370 @@
+{
+  "kind": "creature",
+  "slug": "zikritrax",
+  "system": "pf2e",
+  "name": "Zikritrax",
+  "source": {
+    "title": "Pathfinder Adventure: The Scourge of Sheerleaf",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "dragon",
+    "primal"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 33,
+    "hp": 220,
+    "perception": 23,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 20,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 6,
+      "dex": 3,
+      "int": 3,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 27,
+      "intimidation": 24,
+      "nature": 23,
+      "survival": 25,
+      "mining-lore": 24
+    },
+    "speeds": {
+      "land": 30,
+      "burrow": 40,
+      "fly": 150
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 90,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "petran",
+      "fey",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "petrified",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs primal"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 25,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 25,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 90 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Abandon Armor",
+      "category": "defensive",
+      "text": "Once Zikritrax is reduced to fewer than half his Hit Points, his resistance is reduced by 10 and he gains a +10 circumstance bonus to his Speeds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "speed",
+            "type": "circumstance",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "gte": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 15
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 30 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Resilient Form",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Zikritrax is critically hit with a weapon or unarmed attack\n\n---\nEffect The dragon's tough scales ward off deadly attacks. The dragon attempts a DC 17 Flat check. On a success, the triggering attack becomes a normal hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Adamantine Body",
+      "category": "offensive",
+      "text": "The dragon's unarmed melee Strikes are adamantine.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "not": "item:slug:rock"
+              }
+            ],
+            "property": "traits",
+            "value": "adamantine"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Avalanche Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Zikritrax belches a mass of boulders that deals 11d8 bludgeoning damage in a 40-foot cone (DC 33 basic Reflex save save). He can't use Avalanche Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Burrowing Pounce",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements Zikritrax is burrowed\n\n---\nEffect Zikritrax Burrows, then Leaps out of the ground, landing at a point within 25 feet. Zikritrax makes a melee Strike against a creature within reach when he lands. If the Strike is a critical hit, the target is knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Zikritrax makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "Zikritrax recharges his Avalanche Breath whenever he scores a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rock Tunneler",
+      "category": "offensive",
+      "text": "Zikritrax can burrow through solid stone at a Speed of 20 feet. He can leave a tunnel if he desires, but he usually doesn't."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 3d12+7 bludgeoning, Rupture 29\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The powerful adamantine dragons are one of several dragons known as skymetal dragons. The innate magic that flows through these dragons causes them to draw particular metals to their bodies like magnets or, in some cases, naturally grow these skymetals on their bodies. Adamantine dragons begin their lives with tough scales that are naturally replaced with thicker and even tougher adamantine plating as they grow older. Adamantine dragons are typically steadfast and loyal. Once they commit to a certain purpose, changing their minds is nigh impossible.\n\n---\n\nDragons come in myriad forms, with many having magical abilities or connections to magic. Some dragons draw greater power from magic than others, allowing them to manifest abilities or alter their physiques with prolonged exposure to magic. These dragons become more powerful as they age and strengthen their connections with their magical origins. Scholars debate the classification of these dragons, with some preferring the name magical dragons and others using traditional dragons due to their connection to specific magical traditions. Regardless of their names, these dragons share a number of characteristics: their ability to tap into magical energies, intensified might and cunning as they grow older, and an inclination to hoard vast amounts of treasure and wealth.",
+  "blurb": "Variant adult adamantine dragon"
+}

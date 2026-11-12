@@ -1,0 +1,308 @@
+{
+  "kind": "creature",
+  "slug": "hadrinnex",
+  "system": "pf2e",
+  "name": "Hadrinnex",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 118,
+    "perception": 17,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 17
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 6,
+      "dex": 4,
+      "int": -3,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 18,
+      "occultism": 11
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "notes": {
+      "languages": "telepathy (touch)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Weapon Arm",
+      "attack": 20,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8 + 9",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Energy Ray",
+      "attack": 18,
+      "traits": [
+        "occult"
+      ],
+      "maxRange": 120,
+      "damage": [
+        {
+          "dice": "5d6",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy (Touch)",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rapid Evolution",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "morph",
+        "occult"
+      ],
+      "text": "Trigger The hadrinnex takes damage of a physical or energy damage type (bludgeoning, piercing, or slashing for physical; acid, cold, electricity, fire, force, sonic, or void for energy)\n\n---\n\nEffect The hadrinnex reconfigures its husk (if triggered by physical damage) or its energy gland (if triggered by energy damage). Any reconfiguration applies to the triggering damage and lasts until the next time the hadrinnex uses Rapid Evolution.\n\n- Energy Gland Reconfiguring the energy gland changes both the hadrinnex's energy damage resistance and the damage of its energy ray to that type. By default, the energy gland is configured to sonic.\n\n- Husk The hadrinnex's physical damage resistance and the damage of its weapon arm Strikes change to the triggering type. Weapon arm Strikes gain an additional trait depending on the current damage type: bludgeoning adds shove, piercing adds deadly d8, and slashing adds sweep. By default the husk is configured to bludgeoning.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Hadrinnex.RapidEvolution.EnergyGland",
+            "option": "rapid-evolution-energy-gland",
+            "selection": "sonic",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitForce",
+                "value": "force"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              },
+              {
+                "label": "PF2E.TraitVoid",
+                "value": "void"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.energyGland.type",
+            "value": "{item|flags.system.rulesSelections.rapidEvolutionEnergyGland}"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "rapid-evolution-energy-gland"
+            ],
+            "type": "{item|flags.system.rulesSelections.rapidEvolutionEnergyGland}",
+            "value": 15
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "{item|flags.system.rulesSelections.rapidEvolutionEnergyGland}"
+            },
+            "predicate": [
+              "rapid-evolution-energy-gland"
+            ],
+            "selector": "energy-ray-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Hadrinnex.RapidEvolution.Husk",
+            "option": "rapid-evolution-husk",
+            "selection": "bludgeoning",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitBludgeoning",
+                "value": "bludgeoning"
+              },
+              {
+                "label": "PF2E.TraitPiercing",
+                "value": "piercing"
+              },
+              {
+                "label": "PF2E.TraitSlashing",
+                "value": "slashing"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "resistance",
+          "type": "{item|flags.system.rulesSelections.rapidEvolutionHusk}",
+          "value": 15
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "{item|flags.system.rulesSelections.rapidEvolutionHusk}"
+            },
+            "selector": "weapon-arm-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "rapid-evolution-husk:bludgeoning",
+              "item:slug:weapon-arm"
+            ],
+            "property": "traits",
+            "value": "shove"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "rapid-evolution-husk:piercing",
+              "item:slug:weapon-arm"
+            ],
+            "property": "traits",
+            "value": "deadly-d8"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "rapid-evolution-husk:slashing",
+              "item:slug:weapon-arm"
+            ],
+            "property": "traits",
+            "value": "sweep"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Extend Limbs",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The hadrinnex makes two weapon arm Strikes, each targeting a different creature. The hadrinnex's reach increases to 20 feet for these Strikes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extend-limbs",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "extend-limbs",
+              "item:slug:weapon-arm"
+            ],
+            "property": "traits",
+            "value": "reach-20"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vent Energy",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The hadrinnex purges the energy in its energy gland for an external discharge.\n\nIt either blasts the energy to deal 7d6 @actor.flags.system.energyGland.type damage to creatures in a 30-foot cone (DC 26 basic Reflex save save), or directs the energy to its weapon arms, making its weapon arm Strikes deal an extra 2d6 energy damage for 1 minute.\n\nEither one expends the damage type stored in the hadrinnex's energy gland, as described below.\n\nAfter the energy is vented, the energy gland goes dormant. The hadrinnex loses its energy resistance and can't use energy ray until it uses Rapid Evolution to reconfigure its energy gland again. Directing energy to its weapon arms again removes any previous energy boost to its weapon arm.\n\nEffect: Vent Energy"
+    }
+  ],
+  "text": "The bizarre hadrinnexes resemble defensive systems more than living creatures. They evolve at a rapid rate, but only to specific attacks against them, which suggests they were created through advanced technology or magic. The husk surrounding a hadrinnex-flecks of metal suspended in a malleable organic carapace-reshapes in response to harm. So too can a glowing gland within the creature's thorax, which collects energy and restructures the creature's biology to protect it from that energy. This organ is fragile and ruptures soon after a hadrinnex is killed.\n\nHadrinnexes have only a rudimentary intellect and usually follow more intelligent aberrations. As bodyguards or peons, they perform simple tasks diligently. Though poor at problem-solving and improvisation, hadrinnexes' dependability and adaptive physiology make them ideal for dangerous tasks in hazardous environments."
+}

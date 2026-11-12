@@ -1,0 +1,270 @@
+{
+  "kind": "creature",
+  "slug": "nosferatu-malefactor",
+  "system": "pf2e",
+  "name": "Nosferatu Malefactor",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "undead",
+    "unholy",
+    "vampire"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 135,
+    "perception": 19,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 7,
+      "int": 7,
+      "str": 5,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 21,
+      "arcana": 21,
+      "athletics": 19,
+      "deception": 17,
+      "intimidation": 19,
+      "stealth": 23
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "languages": "Telepathy 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Dominate (At-Will)",
+          "rank": 6,
+          "ref": "spells:spell/dominate",
+          "uses": 99
+        },
+        {
+          "name": "Telekinetic Haul",
+          "rank": 5,
+          "ref": "spells:spell/telekinetic-haul",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "vampire-nosferatu-plague-of-ancients"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 23,
+      "traits": [
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "vampire-nosferatu-drink-blood"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 60 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 10",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The nosferatu transforms into a swarm of pale-gray rats. They gain a land Speed of 30 feet and a climb Speed of 10 feet, and they become Large. In this swarm form, the nosferatu can take an action to deal each enemy in the swarm's space 2d10 piercing damage with a DC 29 basic Reflex save save. A creature that fails its save is also exposed to plague of ancients.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Command Thrall",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "mental"
+      ],
+      "text": "Requirements One of the nosferatu's thralls is present and can hear the nosferatu\n\n---\nEffect The nosferatu gives a single command to one of their thralls, which the thrall follows to the best of its ability during its next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Dominate",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "incapacitation",
+        "mental",
+        "visual"
+      ],
+      "text": "The nosferatu can cast Dominate at will as a divine innate spell. Casting it requires staring into the target's eyes, giving the spell the visual trait. The save DC uses a high DC for the nosferatu's level, and a creature that succeeds is temporarily immune to that nosferatu's Dominate for 24 hours. Fully destroying the nosferatu ends the domination, but merely reducing the nosferatu to 0 HP is insufficient to break the spell.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:dominate",
+              "spellcasting:tradition:divine",
+              "spellcasting:category:innate"
+            ],
+            "property": "traits",
+            "value": "visual"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drink Blood",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Requirements The nosferatu's last action was a successful fangs Strike\n\n---\nEffect The nosferatu sinks their fangs into the targeted creature to drink its blood. This requires an Athletics check check against the creature's Fortitude DC. On a success, the creature becomes Drained 1, and the nosferatu regains 13 HP, gaining any excess HP as temporary Hit Points. Drinking Blood from a creature that's already drained doesn't restore any HP to the nosferatu but increases the creature's drained condition value by 1, killing the victim when it reaches Drained 5. A nosferatu can also consume blood that's been emptied into a vessel for sustenance, but they gain no HP from doing so.\n\nThe target creature's drained condition value decreases by 1 per week. A blood transfusion, which requires a successful DC 20 Medicine check check and sufficient blood or a blood donor, reduces the drained value by 1 after 10 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Nosferatu Vulnerabilities",
+      "category": "offensive",
+      "text": "- Revulsion A nosferatu can't voluntarily come within 10 feet of brandished garlic or a brandished religious symbol of a deity with a holy sanctification option. To brandish garlic or a religious symbol, a creature must Interact to do so for 1 round (similar to Raising a Shield). If the nosferatu involuntarily comes within 10 feet of an object of their revulsion, they gain the Fleeing condition, running from the object of their revulsion until they end an action beyond 10 feet. After 1 round of being exposed to the subject of their revulsion, a nosferatu can attempt a DC 25 Will save save as a single action, which has the concentrate trait. On a success, they overcome their revulsions for 1d6 rounds (or 1 hour on a critical success).\n- Stake A magical wooden stake (such as one affected by a weapon potency rune, Runic Weapon, or similar magic) driven through the nosferatu's heart drops the nosferatu to 0 HP and prevents them from healing above 0 HP, even in their coffin. Staking a nosferatu requires 3 actions and works only if the nosferatu is Unconscious. If the stake is removed, the nosferatu can heal above 0 HP again, and if they're in their coffin, the 1-hour rest period begins once the stake is removed. If the nosferatu's head is severed and anointed with Holy Water while the stake is in place, the nosferatu is destroyed.\n- Sunlight If exposed to direct sunlight, a nosferatu immediately becomes Slowed 1. The slowed value increases by 1 each time the nosferatu ends their turn in sunlight, and the condition ends when they're no longer in sunlight. If the nosferatu loses all their actions in this way, they're destroyed.",
+      "rules": [
+        {
+          "key": "resistance",
+          "type": "physical",
+          "value": 10,
+          "except": "PF2E.IWR.Custom.MagicalWood"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Plague of Ancients",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "virulent"
+      ],
+      "text": "Saving Throw DC 29 Fortitude save\n\n---\nOnset 1 day\n\nStage 1 Drained 1 (1 day)\n\nStage 2 Drained 2 and Enfeebled 2 (1 day)\n\nStage 3 Doomed 1, Drained 3, and Enfeebled 3 (1 day)\n\nStage 4 Doomed 2, drained 3, and enfeebled 3 (1 day)\n\nStage 5 Unconscious (1 day)\n\nStage 6 death"
+    },
+    {
+      "kind": "ability",
+      "name": "Plagued Coffin Restoration",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "Unlike other undead, a nosferatu isn't destroyed at 0 HP. Instead, they disperse into an immense number of rats heading in every direction in an attempt to return to their coffin. If even a single rat reaches the coffin, the nosferatu can recover. A nosferatu regains their strength through resting in earth taken from the grave of a creature that died of plague. If their body rests in their earth-filled coffin for 1 hour, the nosferatu gains 1 HP, after which their fast healing begins to function normally. If the coffin doesn't contain this plagued grave dirt, they instead need to rest in their coffin for 1 day before they gain 1 HP and regain their fast healing."
+    }
+  ],
+  "text": "Nosferatu malefactors spread plague in their wake and yearn for mortal blood.\n\n---\nNosferatus are ancient vampires born of mortals who died in great plagues of old. Perhaps because of their old age, nosferatus can't create more of their kind."
+}

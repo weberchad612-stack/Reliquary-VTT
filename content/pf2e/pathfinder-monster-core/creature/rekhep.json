@@ -1,0 +1,286 @@
+{
+  "kind": "creature",
+  "slug": "rekhep",
+  "system": "pf2e",
+  "name": "Rekhep",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "archon",
+    "celestial",
+    "holy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 150,
+    "perception": 19,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 15,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 7,
+      "dex": 1,
+      "int": 2,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 21,
+      "diplomacy": 19,
+      "intimidation": 19,
+      "religion": 19,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Share Life",
+          "rank": 2,
+          "ref": "spells:spell/share-life",
+          "uses": 3
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Sure Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Lance",
+      "ref": "equipment:item/lance",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Holy Lance",
+      "attack": 22,
+      "traits": [
+        "deadly-d8",
+        "divine",
+        "holy",
+        "jousting-d6",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Protection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages the archon's ally and both are within 15 feet of the archon\n\n---\n\nEffect The ally gains resistance 15 to all damage against the triggering damage and the archon can make a Strike against the enemy."
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Pursuit",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per day\n\nRequirements The rekhep saw another creature teleport within the last round and has at least one Translocate spell remaining\n\n---\n\nEffect The rekhep casts one of their translocate spells, which is heightened to 5th rank and causes the qarna to arrive in an unoccupied space it chooses within 30 feet of the creature it's pursuing. If the creature is too far away, the rekhep arrives as close as possible.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Courageous Switch",
+      "category": "offensive",
+      "text": "When a rekhep uses their Translocate innate spell, they can choose to move into the space of a willing ally they can see within range. If they do, the ally switches places with the archon, appearing in the space the archon just vacated, as if it too had cast translocate."
+    },
+    {
+      "kind": "ability",
+      "name": "Holy Armament",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "holy"
+      ],
+      "text": "Any weapon gains the Holy rune while the rekhep wields it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "holy"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Living Shield",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The rekhep grants an adjacent ally a +2 circumstance bonus to AC until they're no longer adjacent or until the start of the archon's next turn, whichever comes first. When the rekhep uses Archon's Protection against an attack against the shielded ally, the rekhep gains the resistance and takes the damage rather than the ally.\n\n---\n\nEffect: Living Shield"
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Smite",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The rekhep makes a Strike against an enemy that has one of the rekhep's allies within its reach. On a hit, the target takes an additional 2d8 mental damage and is Frightened 2. The extra damage and frightened value are doubled on a critical hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "strike-damage",
+            "key": "RollOption",
+            "option": "terrifying-smite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "terrifying-smite"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "terrifying-smite"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Rekheps are the living shields that defend Heaven against fiendish incursions. They tile together in massive formations capable of withstanding any onslaught. Given their tremendous strength and imposing stature, shield archons are ideal guardians of the meek and are sometimes summoned to the mortal Universe to ward off the attacks of great numbers of evildoers.\n\n---\n\nArchons are guardians of Heaven and enemies of corruption. Before gods and their servants set foot in the celestial planes, archons already resided in Heaven, the original inhabitants of the realm. Upon meeting, the archons and divine angels quickly discovered they were of a kind, holding justice and righteousness in their hearts. An alliance was formed, and archons now serve as stalwart allies to all celestials and mortals they find worthy.\n\nWhile the first archons coalesced from the immense seven-tiered mountain of Heaven, they choose willing and worthy Heaven-bound souls to join their ranks. These mortals hear and answer the call of a mysterious voice, manifesting in the Garden at the mountain's peak. There they swear to forever serve the cause of justice and transform into their new archon forms.\n\nThough deeply concerned with defending mortal life and willing to sacrifice themselves in battle against fiends, archons often feel rote and inscrutable to others, and their forms can border on frightening and bizarre. For this reason, they often have issues with interacting with mortals, or with the free spirited azatas. Despite this, archons draw great strength from others, especially those who exemplify virtue.\n\nBeyond their celestial allies, archons also maintain ancient ties with aeons. The inscrutable factions can still be seen working together to defend longforgotten secrets and enforce rules that predate mortal life. Archons explain these missions as necessary without further elaboration, leaving even their angelic allies frustrated with archons' obstinance."
+}

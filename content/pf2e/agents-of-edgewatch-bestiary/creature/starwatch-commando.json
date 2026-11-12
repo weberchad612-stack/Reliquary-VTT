@@ -1,0 +1,202 @@
+{
+  "kind": "creature",
+  "slug": "starwatch-commando",
+  "system": "pf2e",
+  "name": "Starwatch Commando",
+  "source": {
+    "title": "Pathfinder #161: Belly of the Black Whale",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 31,
+    "hp": 195,
+    "perception": 24,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 20,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 5,
+      "dex": 3,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 21,
+      "diplomacy": 18,
+      "intimidation": 20,
+      "society": 18,
+      "stealth": 20,
+      "legal-lore": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Striking Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Thunderstone (Greater)",
+      "ref": "equipment:item/blasting-stone-greater",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Tinted Goggles",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 24,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Thunderstone",
+      "attack": 22,
+      "traits": [
+        "alchemical",
+        "bomb",
+        "consumable",
+        "splash"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "3d4",
+          "type": "sonic"
+        },
+        {
+          "dice": "3",
+          "type": "sonic",
+          "category": "splash"
+        }
+      ],
+      "effects": [
+        "binding-blast"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Binding Blast",
+      "category": "offensive",
+      "text": "A commando's thunderstone is infused with special reagents to produce a blinding flash of light. In addition to the thunderstone's normal effects, creatures that fail the saving throw against the thunderstone are also Dazzled for 1 round. Creatures that critically fail are Blinded for 1 round. Creatures who protect their eyes, such as by wearing tinted goggles, are immune to the infused thunderstone's blinding effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Target Culprit",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The commando designates a single creature as their culprit. The commando gains a +2 circumstance bonus to Perception checks to Seek their culprit and a +2 circumstance bonus to Survival checks to Track their culprit. The commando's attacks deal an additional 2d8 precision damage to the culprit. This designation lasts for 24 hours or until the commando targets another creature with this ability.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "target-culprit",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "target-culprit"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "target-culprit"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "target-culprit"
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    }
+  ]
+}

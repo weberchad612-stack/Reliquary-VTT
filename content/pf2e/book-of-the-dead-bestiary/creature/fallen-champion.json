@@ -1,0 +1,296 @@
+{
+  "kind": "creature",
+  "slug": "fallen-champion",
+  "system": "pf2e",
+  "name": "Fallen Champion",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 130,
+    "perception": 17,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 14,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 2,
+      "int": 2,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 19,
+      "intimidation": 19,
+      "religion": 17,
+      "kazutal-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 25,
+      "attack": 17,
+      "spells": [
+        {
+          "name": "Harm",
+          "rank": 4,
+          "ref": "spells:spell/harm",
+          "uses": 2
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Champion Devotion Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 25,
+      "attack": 17,
+      "spells": [
+        {
+          "name": "Touch of Corruption",
+          "rank": 1,
+          "ref": "spells:spell/touch-of-the-void"
+        },
+        {
+          "name": "Unimpeded Stride",
+          "rank": 1,
+          "ref": "spells:spell/unimpeded-stride"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Machete",
+      "ref": "equipment:item/machete",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Defiled Religious Symbol of Kazutal",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Machete",
+      "attack": 20,
+      "traits": [
+        "deadly-d8",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "heretics-smite"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Agent of Despair",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "15 feet. A fallen champion emanates an aura of utter despair. Living creatures are Frightened 1 while in a fallen champion's aura. They can't naturally recover from this fear while in the area but recover instantly once they leave the aura.\n\nEffect: Despair",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:mode:living"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Despair"
+              }
+            ],
+            "key": "Aura",
+            "radius": 15,
+            "slug": "agent-of-despair",
+            "traits": [
+              "divine",
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Final Blasphemy",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "When the herexen is destroyed, it explodes in a wave of void energy with the effects of a 4th-rank, 3-action Harm spell (DC 26 basic Fortitude save). The herexen is destroyed, so it doesn't gain any Hit Points from this use of harm, and it doesn't need to have any harm spells remaining to use this ability."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heretic's Armaments",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "While the fallen champion wields the favored weapon of its former deity, that weapon gains the effect of a Fearsome property rune.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:machete"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "fearsome"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heretic's Smite",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "While wielding the favored weapon of its former deity (such as a machete for an ex-Kazutal herexen), the herexen's Strikes deal an additional 2d6 spirit damage against creatures that can cast divine spells. This damages divine spellcasters who follow the herexen's former faith regardless of their alignment.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "heretics-smite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "heretics-smite"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reap Faith",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Requirements The fallen champion's last action was a Strike that dealt damage to a living creature\n\n---\n\nEffect The fallen champion saps the hope and faith from that creature. It takes 3d6 void damage with a DC 25 basic Will save. Regardless of the result of the save, the creature becomes Frightened 1 or increases the value of its frightened condition by 1."
+    }
+  ],
+  "text": "While most herexens were clerics or clergy in life, fallen champions were holy crusaders that upheld the ideals of their deity while fighting enemies of the church and defending its congregants. Fallen champions are direct in their actions and wage their divine war on a grand scale. This fallen champion once worshiped the Arcadian goddess Kazutal, also called Mother Jaguar.\n\n---\n\nA herexen is an undead heretic, driven by hate to destroy the deity they once served. Herexens choose their faith willingly in life, rising to become respected religious figures within their church. Shortly before or during their death, they lose faith in their chosen deity so completely they become a full heretic, blaspheming, committing atrocities, and cursing their god. These anathemic acts bind their soul to their flesh, causing them to rise as cursed beings. To a herexen, faith is the ultimate lie.\n\nAlthough the circumstances that drive a pious worshipper to break with their faith are varied, herexens are unified in purpose. Herexens spend their existence fighting their former god in every manner they can, destroying iconography and temples, slaying worshippers, banding together with other herexens who oppose the same deity, conscripting lesser undead, and hiring living proxies to wreak havoc or spread misinformation. A particularly motivated herexen may even plot to kill or unseat the deity they once revered. Curiously, herexens maintain a corrupted form of their divine powers after death, wielding the weapons and magic of their past faith to tear it down."
+}

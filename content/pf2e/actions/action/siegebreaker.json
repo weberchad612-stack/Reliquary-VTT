@@ -1,0 +1,64 @@
+{
+  "kind": "action",
+  "slug": "siegebreaker",
+  "system": "pf2e",
+  "name": "Siegebreaker",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "gunslinger"
+  ],
+  "actions": 2,
+  "category": "offensive",
+  "text": "Requirements You're wielding a firearm that has the kickback or scatter trait, or a two-handed crossbow.\n\n---\nWith unbelievable force, you charge and smash your weapon into a target before digging in your heels and pulling the trigger. Leap or Stride, then make a Strike with the required firearm or crossbow against an adjacent target. This Strike deals an additional 3d8 bludgeoning damage and ignores 10 points of the target's Hardness (if any), or of their shield's Hardness if the target uses Shield Block.\n\nAfter the Strike, you become Immobilized and position the required weapon defensively, as the parry trait, gaining a +1 circumstance bonus to AC, or a +2 circumstance bonus if the chosen weapon has the parry trait. Both effects last until the start of your next turn. If a force would move you while you're immobilized in this way, it must succeed at an appropriate check against your class DC.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "siegebreaker-damage",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 3,
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "siegebreaker-damage",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:group:firearm",
+                  {
+                    "or": [
+                      "item:trait:scatter",
+                      "item:trait:kickback"
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:group:crossbow",
+                  "item:usage:hands:2"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": [
+          "firearm-weapon-group-damage",
+          "crossbow-weapon-group-damage"
+        ]
+      }
+    }
+  ]
+}

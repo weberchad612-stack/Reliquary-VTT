@@ -1,0 +1,81 @@
+{
+  "kind": "feat",
+  "slug": "hardened-chassis",
+  "system": "pf2e",
+  "name": "Hardened Chassis",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "text": "Your exterior is so tough that only the strongest of weapons can fully damage it. Choose one type of damage among bludgeoning, piercing, or slashing damage. You gain resistance 3 to that type of damage. This resistance does not apply if the weapon or attack is adamantine.\n\nEnhancement Your chassis gets even tougher. Choose one of the following benefits: you gain resistance 3 to all physical damage, or your chosen resistance increases to a value equal to half your level (minimum 3). This resistance is still bypassed by adamantine.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.lesser",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.HardenedChassis",
+          "predicate": [
+            {
+              "not": "enhancement:hardened-chassis"
+            }
+          ],
+          "value": "hardened-chassis"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.HardenedChassis",
+          "predicate": [
+            {
+              "not": "enhancement:hardened-chassis"
+            }
+          ],
+          "value": "hardened-chassis"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitPiercing",
+            "value": "piercing"
+          },
+          {
+            "label": "PF2E.TraitSlashing",
+            "value": "slashing"
+          }
+        ],
+        "flag": "damageType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.damageType}",
+      "value": "3"
+    }
+  ]
+}

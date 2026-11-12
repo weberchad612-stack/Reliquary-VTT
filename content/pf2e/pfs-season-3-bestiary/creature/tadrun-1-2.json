@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "tadrun-1-2",
+  "system": "pf2e",
+  "name": "Tadrun (1-2)",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-08: Foundation's Price",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "goblin",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 32,
+    "perception": 8,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 3,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 9,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Spiked Gauntlet",
+      "ref": "equipment:item/spiked-gauntlet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 9,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spiked Gauntlet",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Formation",
+      "category": "defensive",
+      "text": "When he's adjacent to at least two other allies, Tadrun gains a +1 circumstance bonus to AC and saving throws. This bonus increases to +2 to Reflex saves against area effects.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "formation",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "formation",
+            "area-effect"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Tadrun designates a single creature he can see and hear, or one he's Tracking, as his prey. Tadrun gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. The first time Tadrun hits his designated prey in a round, he deals an additional 1d8 precision damage. These effects last until Tadrun uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

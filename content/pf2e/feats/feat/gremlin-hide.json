@@ -1,0 +1,52 @@
+{
+  "kind": "feat",
+  "slug": "gremlin-hide",
+  "system": "pf2e",
+  "name": "Gremlin Hide",
+  "source": {
+    "title": "Pathfinder Feybound",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "gremlin"
+  ],
+  "category": "ancestry",
+  "text": "Gremlins are surprisingly durable little monsters, and they're capable of taking far more punishment than something of their size really should—unless, that is, it comes from cold iron. Increase your maximum Hit Points by your level. When you have the dying condition, the DC of your recovery checks is equal to 9 + your dying value (instead of 10 + your dying value). You also gain weakness to cold iron equal to half your level.\n\nIf you also have the Toughness feat, the Hit Points gained from it and this feat are cumulative, and the DC of your recovery checks is equal to 6 + your dying value.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "hp",
+      "type": "untyped",
+      "value": "@level"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "downgrade",
+        "path": "system.attributes.dying.recoveryDC",
+        "predicate": [
+          {
+            "not": "feat:toughness"
+          }
+        ],
+        "value": 9
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "downgrade",
+        "path": "system.attributes.dying.recoveryDC",
+        "predicate": [
+          "feat:toughness"
+        ],
+        "value": 6
+      }
+    }
+  ]
+}

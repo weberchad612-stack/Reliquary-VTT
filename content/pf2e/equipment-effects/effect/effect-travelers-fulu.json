@@ -1,0 +1,69 @@
+{
+  "kind": "effect",
+  "slug": "effect-travelers-fulu",
+  "system": "pf2e",
+  "name": "Effect: Traveler's Fulu",
+  "source": {
+    "title": "unknown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Traveler's Fulu\n\nYour attempt to Sense Direction functions as if you have a compass, and you use the outcome one degree of success better than the result of your Survival check to Sense Direction, or by two degrees of success if you're a master in Survival.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "selector": "survival",
+        "slug": "no-compass",
+        "suppress": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "all": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:sense-direction",
+          {
+            "not": {
+              "gte": [
+                "skill:survival:rank",
+                3
+              ]
+            }
+          }
+        ],
+        "selector": "survival"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "all": "two-degrees-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:sense-direction",
+          {
+            "gte": [
+              "skill:survival:rank",
+              3
+            ]
+          }
+        ],
+        "selector": "survival"
+      }
+    }
+  ]
+}

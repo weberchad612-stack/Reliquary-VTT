@@ -1,0 +1,42 @@
+{
+  "kind": "feat",
+  "slug": "burning-cascade",
+  "system": "pf2e",
+  "name": "Burning Cascade",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "magus"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Arcane Cascade"
+  ],
+  "text": "Energy flares out around you when you drop into your signature stance. When you use Arcane Cascade, each enemy in a 5-foot emanation takes damage equal to the extra damage from Arcane Cascade. This damage is the same type as that of Arcane Cascade. A creature that takes this damage is temporarily immune to further uses of Burning Cascade for 1 minute.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:arcane-cascade"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "divider": true,
+            "text": "Each enemy in a @Template[type:emanation|distance:5] takes @Damage[(ternary(gte(@actor.level,15),3,ternary(gte(@actor.level,7),2,1)))[@actor.flags.system.arcaneCascade.damageType]|options:area-damage]. A creature that takes this damage is temporarily immune to Burning Cascade for 1 minute.",
+            "title": "{item|name}"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "kind": "creature",
+  "slug": "garrholdion",
+  "system": "pf2e",
+  "name": "Garrholdion",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "incorporeal",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 46,
+    "hp": 350,
+    "perception": 33,
+    "saves": {
+      "fortitude": 36,
+      "reflex": 27,
+      "will": 30
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 7,
+      "dex": 6,
+      "int": -5,
+      "str": 10,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 36,
+      "athletics": 38,
+      "faction-lore": 41
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 15,
+          "except": "force, ghost-touch, spirit",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "ac": "48 with shield raised"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 39,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Truesight (Constant)",
+          "rank": 10,
+          "ref": "spells:spell/truesight"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Belief Ray",
+      "attack": 34,
+      "traits": [
+        "magical",
+        "spirit"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "8d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "seed-of-doubt"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Faction-Bound",
+      "category": "interaction",
+      "text": "A garrholdion is bound to a faction at its creation. It can't harm a known member of its faction, a symbol of its faction, or relics associated with its faction. It gains a +4 circumstance bonus to Perception checks to verify the identity of such creatures and objects. A garrholdion is also bound to a location associated with its faction, such as a fortress, an academy, or a secret hideout. It can't move more than 120 feet from its designated location. Finally, a garrholdion bears an obvious mark of its faction somewhere on its body. This mark can't be hidden.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "faction-bound"
+          ]
+        },
+        {
+          "key": "immunity",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Shield Block",
+      "category": "defensive",
+      "text": "The garrholdion gains an additional reaction each round that can be used only for Shield Block."
+    },
+    {
+      "kind": "ability",
+      "name": "Raise a Shield",
+      "actions": 1,
+      "category": "defensive",
+      "text": "Requirements You are wielding a shield.\n\n---\n\nYou position your shield to protect yourself. When you have Raised a Shield, you gain its listed circumstance bonus to AC. Your shield remains raised until the start of your next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within reach attacks the garrholdion's ally\n\n---\nEffect The garrholdion positions its shield in front of the attack, granting its ally a +2 circumstance bonus to AC against the triggering attack. It then makes a melee Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Belief Fortification",
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "occult"
+      ],
+      "text": "30 feet. Members of the garrholdion's faction gain a +1 status bonus to saving throws against emotion effects while within the aura.\n\nEffect: Belief Fortification (Mark)",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "predicate": [
+                  "target:effect:belief-fortification-mark"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Belief Fortification"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "emotion",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Seed of Doubt",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult"
+      ],
+      "text": "A creature hit by the garrholdion's belief ray Strike doubts their actions, forcing them to hesitate. The target must succeed at a DC 39 Will save save or be Stunned 1 (or Stunned 3 on a critical failure). On a critical success, the target becomes temporarily immune to seed of doubt for 24 hours."
+    },
+    {
+      "kind": "spell",
+      "name": "Consecrate",
+      "rank": 7,
+      "ref": "spells:spell/consecrate"
+    }
+  ],
+  "text": "Belief is a powerful force. When strong-willed individuals gather beneath a common banner, their unified conviction can take on a life of its own. The result is a garrholdion, a spirit construct that defends the meeting place of the faction that created it.\n\nA garrholdion usually appears as a shimmering, idealized version of a typical faction member, though it might instead shift its appearance among that of specific individuals, never settling on just one. Whatever form it takes, a garrholdion is always marked by its faction's symbol. A Firebrands garrholdion, for example, bears that faction's crossed swords symbol, while a Pathfinder Society garrholdion is marked with the Glyph of the Open Road."
+}

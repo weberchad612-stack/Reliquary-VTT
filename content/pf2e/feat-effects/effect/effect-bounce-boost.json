@@ -1,0 +1,67 @@
+{
+  "kind": "effect",
+  "slug": "effect-bounce-boost",
+  "system": "pf2e",
+  "name": "Effect: Bounce Boost",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Bounce Boost\n\nYou gain a circumstance bonus to your Athletics check to High Jump or Long Jump.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusOne",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusTwo",
+            "value": 2
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusThree",
+            "value": 3
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusFour",
+            "value": 4
+          }
+        ],
+        "flag": "bounceBoostBonus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Bonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "action:long-jump",
+              "action:high-jump"
+            ]
+          }
+        ],
+        "removeAfterRoll": "if-enabled",
+        "selector": [
+          "athletics"
+        ],
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.bounceBoostBonus"
+      }
+    }
+  ]
+}

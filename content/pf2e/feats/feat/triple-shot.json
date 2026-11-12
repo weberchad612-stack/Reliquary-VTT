@@ -1,0 +1,53 @@
+{
+  "kind": "feat",
+  "slug": "triple-shot",
+  "system": "pf2e",
+  "name": "Triple Shot",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "fighter"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Double Shot"
+  ],
+  "text": "You can quickly fire multiple shots with greater control. When you use Double Shot, you can make the attacks against the same target. You can add an additional action to Double Shot to make three ranged Strikes instead of two. If you do, the penalty is –4. All attacks count toward your multiple attack penalty, but the penalty doesn't increase until after you've made all of them.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "double-shot"
+          }
+        ],
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "triple-shot",
+        "priority": 51,
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "double-shot",
+          "triple-shot"
+        ],
+        "relabel": "{item|name}",
+        "selector": "ranged-attack-roll",
+        "slug": "double-shot",
+        "value": -4
+      }
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "kind": "creature",
+  "slug": "corrupted-blade-spirit",
+  "system": "pf2e",
+  "name": "Corrupted Blade Spirit",
+  "source": {
+    "title": "Pathfinder #193: Mantle of Gold",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "incorporeal",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 50,
+    "perception": 9,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 11,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 3,
+      "int": 1,
+      "str": -5,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "intimidation": 10,
+      "stealth": 11
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 5,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Amulet",
+      "type": "equipment",
+      "text": "Relics are a special type of magic item that can grow in power as their wielders unlock additional abilities. The full rules for relics and their aspects begin on page 94 of the Gamemastery Guide."
+    },
+    {
+      "kind": "strike",
+      "name": "Clan Dagger",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "dwarf",
+        "parry",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+3",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spectral Hand",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+3",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Deadly Spark",
+      "attack": 14,
+      "traits": [
+        "air",
+        "divine",
+        "electricity"
+      ],
+      "maxRange": 20,
+      "damage": [
+        {
+          "dice": "2d12",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Clan Dagger Relic",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "divine"
+      ],
+      "text": "The corrupted relic is Taargick's clan dagger rather than an amulet. When the spirit Manifests, the clan dagger teleports into its hand. The clan dagger can be targeted by Strikes (AC 21, Hardness 8, HP 20, BT 10)."
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Manifestation",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The relic detects a creature using its lifesense.\n\n---\n\nEffect The relic Manifests. If this causes an encounter to begin, the relic gains a +4 status bonus to its initiative roll.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "initiative",
+            "key": "RollOption",
+            "option": "sudden-manifestation",
+            "priority": 50,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "sudden-manifestation"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Accusation",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "fear",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Trigger A creature within 30 feet of the corrupted blade spirit takes persistent bleed damage\n\n---\n\nEffect The corrupted blade spirit shapes the spilled blood into words that remind the bleeding creature of their fears, mistakes, and shames. The corrupted blade spirit Demoralizes the creature, additionally dealing 1d6 mental damage on a critical success."
+    },
+    {
+      "kind": "ability",
+      "name": "Death Gaze",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "void"
+      ],
+      "text": "The spirit targets a creature it can see within 30 feet, dealing to it 4d6 void damage (DC 20 basic Fortitude save save).\n\nA creature with Void Healing instead regains 4d6 healing Hit Points and is then temporarily immune for 10 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Manifest",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Requirements The relic detects at least one creature using its lifesense.\n\n---\n\nEffect The spirit within the relic manifests in an open space within 10 feet of the amulet. When it does, the relic teleports around its neck. The spirit remains in its manifested state until it no longer senses any living creatures within range of its lifesense."
+    }
+  ],
+  "text": "Creatures that once held particular items dear can be bound to them after death, their souls inhabiting the item from within. These might be the faithful haunting symbols of their faith, warriors clinging to their old weapons, or the greedy inhabiting their precious wealth. These spirits' physical bodies have long since degraded, but they keep their corrupted relics pristine. The spirits manifest on the unsuspecting or curious, determined to destroy anyone who would dare show any interest in their one precious possession.\n\nThough rare, there are several kinds of corrupted relics. The bound spirit can manifest in different ways, from animating an ancient weapon to possessing anyone who dons the item. Destroying the relic often ends up being the simplest, most direct way to banish the haunt itself. Destroying or dispelling the spirit without destroying the relic, however, can sometimes leave priceless treasure behind.\n\nThe amulet shown here has the air and death aspects. Its minor gifts, deadly spark and death gaze, power some of the spirit's abilities. Someone who claims the relic might gain different gifts from those aspects.",
+  "blurb": "Variant Corrupted Relic"
+}

@@ -1,0 +1,107 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-blessing-of-defiance",
+  "system": "pf2e",
+  "name": "Spell Effect: Blessing of Defiance",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Blessing of Defiance\n\nChoose one saving throw: Fortitude, Reflex, or Will. The target gets a +4 status bonus to that saving throw.\n\nIf you cast the two-action version, you additionally receive the following: if you choose Fortitude, the target gains resistance 15 to poison. If you choose Reflex, the target gains a +15-foot status bonus to its Speeds. If you choose Will, the target gains resistance 15 to mental damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SavesFortitude",
+            "value": "fortitude"
+          },
+          {
+            "label": "PF2E.SavesReflex",
+            "value": "reflex"
+          },
+          {
+            "label": "PF2E.SavesWill",
+            "value": "will"
+          }
+        ],
+        "flag": "blessingOfDefianceSave",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.BlessingOfDefiance.Prompt",
+        "rollOption": "blessing-of-defiance-save"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.blessingOfDefianceSave}",
+      "type": "status",
+      "value": 4
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blessing-of-defiance-save:fortitude",
+          "blessing-of-defiance-actions:two"
+        ],
+        "type": "poison",
+        "value": 15
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": 15,
+      "when": [
+        "blessing-of-defiance-save:reflex",
+        "blessing-of-defiance-actions:two"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "blessing-of-defiance-save:will",
+          "blessing-of-defiance-actions:two"
+        ],
+        "type": "mental",
+        "value": 15
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.ActionNumber1",
+            "value": "one"
+          },
+          {
+            "label": "PF2E.ActionNumber2",
+            "value": "two"
+          },
+          {
+            "label": "PF2E.ActionNumber3",
+            "value": "three"
+          }
+        ],
+        "flag": "blessingOfDefianceActions",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.FeatActionsLabel",
+        "rollOption": "blessing-of-defiance-actions"
+      }
+    }
+  ]
+}

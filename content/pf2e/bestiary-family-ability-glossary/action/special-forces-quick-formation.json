@@ -1,0 +1,127 @@
+{
+  "kind": "action",
+  "slug": "special-forces-quick-formation",
+  "system": "pf2e",
+  "name": "(Special Forces) Quick Formation",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "actions": 1,
+  "category": "offensive",
+  "frequency": {
+    "max": 1,
+    "per": "round"
+  },
+  "text": "Frequency once per round\n\n---\nEffect The special forces unit uses Change Formation. Special forces units typically know the loose and wedge formations. If the troops are shielded, they instead know the turtle shell and wedge formations.\n\n---",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "change-formation",
+        "suboptions": [
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.Loose.Label",
+            "predicate": [
+              {
+                "not": "special-forces-shielded"
+              }
+            ],
+            "value": "loose"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.TurtleShell.Label",
+            "predicate": [
+              "special-forces-shielded"
+            ],
+            "value": "turtle-shell"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.Wedge.Label",
+            "value": "wedge"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "change-formation:loose",
+          {
+            "not": "item:slug:change-formation"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.NPCAbility.ChangeFormation.Loose.Drawback"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "mode": "remove",
+        "predicate": [
+          "change-formation:loose"
+        ],
+        "type": [
+          "area-damage",
+          "splash-damage"
+        ],
+        "value": 0
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "turtle-shell-ac-bonus",
+      "when": [
+        "item:ranged",
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "turtle-shell-reflex-bonus",
+      "when": [
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "untyped",
+      "value": -10,
+      "when": [
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "change-formation:wedge"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+      }
+    }
+  ]
+}

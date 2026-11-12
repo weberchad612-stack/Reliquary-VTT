@@ -1,0 +1,70 @@
+{
+  "kind": "feat",
+  "slug": "grudge-strike",
+  "system": "pf2e",
+  "name": "Grudge Strike",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "animist",
+    "apparition",
+    "divine",
+    "wandering"
+  ],
+  "category": "class",
+  "actions": 2,
+  "text": "Requirements Your attuned apparition grants Heraldry Lore or Underworld Lore as an apparition skill.\n\n---\nYou channel the spiritual power of spiteful grudges. Make a melee Strike against a creature within your reach. You gain a +2 circumstance bonus to your attack roll and deal an additional 2d6 void damage to the target; if the target is undead or otherwise has void healing, this Strike instead deals an additional 2d6 vitality damage. This ability gains the vitality trait if it deals vitality damage, or the void trait if it deals void damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "grudge-strike",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-attack-roll",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "grudge-strike"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "void",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "grudge-strike"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "dice:slug:grudge-strike",
+          "target:negative-healing"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": "vitality"
+      }
+    }
+  ]
+}

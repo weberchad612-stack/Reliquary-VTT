@@ -1,0 +1,118 @@
+{
+  "kind": "effect",
+  "slug": "effect-mutate-weapon",
+  "system": "pf2e",
+  "name": "Effect: Mutate Weapon",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Mutate Weapon\n\nThe damage die for the attack you gained with Living Weapon increases by one step. In addition, choose to either have the attack gain a reach of 10 feet or for you to gain a +1 status bonus to attack rolls with the chosen unarmed attack.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              "living-weapon:claw"
+            ],
+            "value": "claw"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Horn",
+            "predicate": [
+              "living-weapon:horn"
+            ],
+            "value": "horn"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              "living-weapon:jaws"
+            ],
+            "value": "jaws"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Tusk",
+            "predicate": [
+              "living-weapon:tusk"
+            ],
+            "value": "tusk"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Tail",
+            "predicate": [
+              "living-weapon:tail"
+            ],
+            "value": "tail"
+          }
+        ],
+        "flag": "mutateWeaponTarget",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Fleshwarp.MutateWeapon.Target",
+        "rollOption": "mutate-weapon-target"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "upgrade": true
+        },
+        "selector": "{item|flags.system.rulesSelections.mutateWeaponTarget}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Fleshwarp.MutateWeapon.Reach",
+            "value": "reach"
+          },
+          {
+            "label": "PF2E.SpecificRule.Fleshwarp.MutateWeapon.Accuracy",
+            "value": "accuracy"
+          }
+        ],
+        "flag": "effectMutateWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Fleshwarp.MutateWeapon.Bonus",
+        "rollOption": "mutate-weapon-bonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:{item|flags.system.rulesSelections.mutateWeaponTarget}",
+          "mutate-weapon-bonus:reach"
+        ],
+        "property": "traits",
+        "value": "reach"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.mutateWeaponTarget}-attack-roll",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "mutate-weapon-bonus:accuracy"
+      ]
+    }
+  ]
+}

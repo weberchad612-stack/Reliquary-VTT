@@ -1,0 +1,120 @@
+{
+  "kind": "effect",
+  "slug": "effect-targeting-finisher",
+  "system": "pf2e",
+  "name": "Effect: Targeting Finisher",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Targeting Finisher\n\nYou gain an effect based on the selected body part.\n- Arm (or another limb used for attacks, such as a tentacle) You are enfeebled 2.\n- Head You are stupefied 2.\n- Legs You take a –10-foot status penalty to your Speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "targeting-finisher-result"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Arms",
+            "value": "arms"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Head",
+            "value": "head"
+          },
+          {
+            "label": "PF2E.SpecificRule.BodyParts.Legs",
+            "value": "legs"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "targeting-finisher"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "upgrade",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "targeting-finisher:arms"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "upgrade",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "targeting-finisher:head"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": -10,
+      "when": [
+        "targeting-finisher:legs"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "predicate": [
+          "targeting-finisher-result:critical-success"
+        ],
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Targeting Finisher (Critical)"
+      }
+    }
+  ]
+}

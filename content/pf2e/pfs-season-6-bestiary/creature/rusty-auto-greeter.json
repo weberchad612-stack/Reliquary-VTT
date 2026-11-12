@@ -1,0 +1,211 @@
+{
+  "kind": "creature",
+  "slug": "rusty-auto-greeter",
+  "system": "pf2e",
+  "name": "Rusty Auto-Greeter",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-13: All That Glitters",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 42,
+    "perception": 12,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 12,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 5,
+      "int": -5,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "stealth": {
+        "value": 7,
+        "special": [
+          {
+            "value": 12,
+            "label": "when still",
+            "when": [
+              "still"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 4
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 3,
+          "except": "bludgeoning"
+        }
+      ]
+    },
+    "notes": {
+      "ac": "construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Blazing Bolt",
+          "rank": 2,
+          "ref": "spells:spell/blazing-bolt"
+        },
+        {
+          "name": "Magnetic Attraction",
+          "rank": 2,
+          "ref": "spells:spell/magnetic-attraction"
+        },
+        {
+          "name": "Breathe Fire",
+          "rank": 1,
+          "ref": "spells:spell/breathe-fire"
+        },
+        {
+          "name": "Command",
+          "rank": 1,
+          "ref": "spells:spell/command"
+        },
+        {
+          "name": "Electric Arc",
+          "rank": 1,
+          "ref": "spells:spell/electric-arc"
+        },
+        {
+          "name": "Figment",
+          "rank": 1,
+          "ref": "spells:spell/figment"
+        },
+        {
+          "name": "Ignition",
+          "rank": 1,
+          "ref": "spells:spell/ignition"
+        },
+        {
+          "name": "Needle Darts",
+          "rank": 1,
+          "ref": "spells:spell/needle-darts"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Thunderstrike",
+          "rank": 1,
+          "ref": "spells:spell/thunderstrike"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spinning Arm",
+      "attack": 9,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 5)",
+      "category": "defensive",
+      "text": "The automatic greeter has Hardness. Once the automatic greeter is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 15.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "kind": "creature",
+  "slug": "ghoul-razorclaw",
+  "system": "pf2e",
+  "name": "Ghoul Razorclaw",
+  "source": {
+    "title": "Pathfinder #184: The Ghouls Hunger",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 230,
+    "perception": 25,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 7,
+      "int": 5,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 24,
+      "deception": 24,
+      "diplomacy": 24,
+      "intimidation": 24,
+      "medicine": 24,
+      "society": 24,
+      "stealth": 27,
+      "thievery": 27,
+      "underworld-lore": 24
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "draconic",
+      "kelish",
+      "necril",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools (Infiltrator)",
+      "ref": "equipment:item/thieves-toolkit-infiltrator",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Shadow Essence",
+      "ref": "equipment:item/nethershade",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 27,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ghoul-ghoul-fever",
+        "ghoul-paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "adamantine-edges"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 27,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The razorclaw isn't Off-Guard to creatures of 13th level or lower that are Hidden, Undetected, flanking, or using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Adamantine Edges",
+      "category": "offensive",
+      "text": "The ghoul's claws have been dipped in adamantine. The razorclaw treats any object they hit with a claw Strike as if it had half as much Hardness and any creature they hit as if they had half as much physical resistance."
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The ghoul is adjacent to the corpse of a creature that died within the last hour.\n\n---\n\nEffect The ghoul devours a chunk of the corpse and regains 7d6 healing Hit Points.\n\nIt can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 31 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 4d6 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 4d6 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a Ghoul the next midnight."
+    },
+    {
+      "kind": "ability",
+      "name": "Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Any living, non-elf creature hit by a ghoul's attack must succeed at a DC 31 Fortitude save save or become Paralyzed. It can attempt a new save at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The ghoul razorclaw deals an extra 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attacker",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the ghoul razorclaw.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The ghoul razorclaw jumps up to half its Speed. This movement doesn't trigger reactions."
+    }
+  ],
+  "text": "Ghoul assassins who survive dipping their claws in molten adamantine transform into razorclaws."
+}

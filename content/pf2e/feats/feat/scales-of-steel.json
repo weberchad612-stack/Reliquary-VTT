@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "scales-of-steel",
+  "system": "pf2e",
+  "name": "Scales of Steel",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dragonet"
+  ],
+  "category": "ancestry",
+  "text": "Your scales are hard as armor, ensuring you always have some protection in the dangerous world. When you're unarmored, your scales give you a +1 item bonus to AC with a Dexterity cap of +3. The item bonus increases to +2 at 5th level. The item bonus to AC from these scales is cumulative with armor potency runes on your Explorer's Clothing, the Mystic Armor spell, or Bands of Force.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DexterityModifierCap",
+        "predicate": [
+          {
+            "not": "self:armored"
+          }
+        ],
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "self:armored"
+          }
+        ],
+        "selector": [
+          "ac"
+        ],
+        "slug": "scales-of-steel",
+        "type": "item",
+        "value": "ternary(gte(@actor.level,5),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "self:armored"
+          },
+          {
+            "or": [
+              "bonus:slug:bands-of-force",
+              "bonus:slug:explorers-clothing",
+              "bonus:slug:mage-armor"
+            ]
+          }
+        ],
+        "relabel": "{item|name}",
+        "selector": "ac",
+        "value": "ternary(gte(@actor.level,5),2,1)"
+      }
+    }
+  ]
+}

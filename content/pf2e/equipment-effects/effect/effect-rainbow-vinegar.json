@@ -1,0 +1,125 @@
+{
+  "kind": "effect",
+  "slug": "effect-rainbow-vinegar",
+  "system": "pf2e",
+  "name": "Effect: Rainbow Vinegar",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Rainbow Vinegar (Moderate), Rainbow Vinegar (Greater)\n\nYour unarmed attacks deal additional acid damage, and you have resistance to electricity. Vampires take additional acid damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:rainbow-vinegar-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Rainbow Vinegar (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:rainbow-vinegar-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Rainbow Vinegar (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "rainbow-vinegar"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "acid",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "selector": "unarmed-damage",
+        "tags": [
+          "rainbow-vinegar-acid"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "rainbow-vinegar:rainbow-vinegar-greater",
+          "dice:tag:rainbow-vinegar-acid"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": 8
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "target:trait:vampire",
+          "dice:tag:rainbow-vinegar-acid"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "unarmed-damage"
+        ],
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "rainbow-vinegar:rainbow-vinegar-moderate"
+        ],
+        "type": "electricity",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "rainbow-vinegar:rainbow-vinegar-greater"
+        ],
+        "type": "electricity",
+        "value": 15
+      }
+    }
+  ]
+}

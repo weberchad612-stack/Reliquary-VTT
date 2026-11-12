@@ -1,0 +1,215 @@
+{
+  "kind": "creature",
+  "slug": "bodach",
+  "system": "pf2e",
+  "name": "Bodach",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "fey"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 110,
+    "perception": 14,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 12,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 2,
+      "int": 4,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 11,
+      "deception": 15,
+      "diplomacy": 11,
+      "intimidation": 13,
+      "nature": 13,
+      "stealth": 13,
+      "thievery": 15
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 24,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Mist (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/mist"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Staff",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Staff",
+      "attack": 16,
+      "traits": [
+        "magical",
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Gray Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "15 feet. The bodach is always surrounded by a pall of gloomy gray, like the air before it rains. A non-fey or non-hag creature entering the aura or beginning their turn in the aura must succeed at a DC 21 Will save save or become Slowed 1 for 1 round (Slowed 2 on a critical failure). A creature who succeeds is temporarily immune to the aura for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Implacable Curse",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The bodach makes a staff Strike. If it hits, it deals an additional 2d8 spirit damage, and the target must attempt a save against either Mumbletongue or Stumblefoot (the bodach's choice).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "implacable-curse",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "implacable-curse"
+            ],
+            "selector": "staff-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mumbletongue",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "primal"
+      ],
+      "text": "The bodach mumbles a string of half-comprehensible nonsense, cursing creatures within a 10-foot emanation. Each creature in the area must succeed at a DC 24 Will save save or become Stupefied 1 for 1 minute (Stupefied 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Stumblefoot",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "primal",
+        "visual"
+      ],
+      "text": "The bodach stares unblinkingly at its foes, cursing creatures within a 15-foot cone. Each creature in the area must succeed at a DC 24 Fortitude save save or become Clumsy 1 and Enfeebled 1 for 1 minute (Clumsy 2 and Enfeebled 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Unstoppable",
+      "category": "offensive",
+      "text": "A bodach reduces any penalty it takes to its Speed by 5 feet (to a minimum of 0 feet). A bodach can fit into tight spaces as if it were a Small creature. It can move at its full Speed while Squeezing.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "add",
+            "predicate": [
+              {
+                "or": [
+                  "penalty:type:ability",
+                  "penalty:type:circumstance",
+                  "penalty:type:item",
+                  "penalty:type:potency",
+                  "penalty:type:proficiency",
+                  "penalty:type:status",
+                  "penalty:type:untyped"
+                ]
+              }
+            ],
+            "selector": "land-speed",
+            "value": 5
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A bodach, also known in legends as The Old Gray Man, is the fey embodiment of age and decrepitude, a malicious thief whose greed is depthless and unburdened by morality. They're likewise associated with the gray, ceaseless drizzle of winter and the steady weathering of cliffs and castles alike.\n\nIn appearance, a bodach resembles an old man, and many can pass for mortal at first glance. A closer look betrays them, however—everything a bodach carries is old and decaying, every piece of fabric frayed and every scrap of metal tarnished and rusted. There's an odd grayness to them, as if the light never illuminates them properly. Bodachs are most often spotted at twilight or on overcast days; they aren't harmed by sunlight, but they don't much like it either.\n\nDespite their association with age, bodachs are quite spry. A bodach is a thief and a trickster by preference, accosting travelers and trying to wheedle away their coins with a plausible lie. More sinisterly, some bodachs steal people as well, crawling down chimneys to spirit away a household's children.\n\nMany non-fey believe catching even a glimpse of bodachs is an ill omen that foretells of grave dangers or even death, beliefs that might be tied to the dread these creatures inspire. Local folk tales note that circles of salt are enough to keep a bodach at bay, though in truth this has little effect. Regardless, many homes found near where bodach sightings are common are protected by a line of salt meant to \"seal\" the hearth or fireplace."
+}

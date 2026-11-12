@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "unrisen",
+  "system": "pf2e",
+  "name": "Unrisen",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 220,
+    "perception": 21,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 17,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 4,
+      "int": -2,
+      "str": 7,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 24,
+      "stealth": 19
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "meant to live, void healing",
+      "languages": "Can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Meant to Live",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Whenever an unrisen would take damage from vitality energy, it instead heals half that number of Hit Points.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|description}",
+          "when": [
+            "item:damage:type:vitality"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Resurrection Vulnerability",
+      "category": "defensive",
+      "text": "A creature with a prepared or spontaneous spell that can restore the dead to life (such as Breath of Life or Raise Dead) can expend an appropriate spell slot as a 2-action activity to destroy an unrisen within 30 feet. The attempt fails if the unrisen succeeds at a Will save save against the creature's spell DC.",
+      "rules": [
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rise Again",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "If the unrisen is reduced to 0 Hit Points by means other than fire damage, disintegration, or its resurrection vulnerability, it returns to unlife at the start of its next turn. It has 100 Hit Points and is Prone in the space in which it was destroyed. The unrisen can't be returned by this ability again for 1 hour."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Agonized Howl",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "mental",
+        "occult"
+      ],
+      "text": "The unrisen howls in pain at its cursed existence. Creatures within a 30-foot emanation take 9d8 mental damage with a DC 30 basic Will save save. The unrisen can't use Agonized Howl again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Awful Approach",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per 10 minutes\n\n---\nEffect The unrisen reshapes its grotesque form to move swiftly. It Strides twice. Any living creature that can see the unrisen during this movement must succeed at a DC 28 Fortitude save save or be Sickened 1 (or Sickened 2 on a critical failure); this is a mental and visual effect.",
+      "frequency": {
+        "max": 1,
+        "per": "PT10M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Death Grip",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "occult"
+      ],
+      "text": "Requirements The unrisen has a living creature Grabbed or Restrained\n\n---\nEffect The unrisen attempts to destroy its victim's life force so it shares in the unrisen's fate. The creature must succeed at a DC 30 Fortitude save save or become Doomed 1. While the curse lasts, the creature regains only half as many HP from effects with both the healing and vitality traits; if it dies, any attempt to raise it from the dead causes it to return as an unrisen. The curse ends automatically if the creature's doomed value is reduced to 0."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "An unrisen is a mangled conglomeration of splintered bones, decaying organs, and rotting flesh, created when a ritual such as resurrect goes catastrophically wrong. Immense care must be taken, for if such a ritual fails utterly, an unrisen can be the result—as many a ritualist has learned to their horror.\n\nUnrisen are barely intelligent, aware only of the agony constantly inflicted by their flawed creation and their resentment for the living. They tend to attack the casters involved in the botched ritual first before lashing out at everyone else around them. Though an unrisen's twisted form is unrecognizable as the intended target of the resurrection, its wordless howls are often disturbingly similar to the deceased's voice. If an unrisen is destroyed before it can rise again, it's reduced to a handful of metallic blue-green salts referred to as essential salts."
+}

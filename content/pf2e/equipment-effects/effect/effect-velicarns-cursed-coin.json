@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-velicarns-cursed-coin",
+  "system": "pf2e",
+  "name": "Effect: Velicarn's Cursed Coin",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 24,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Velicarn's Cursed Coin\n\nIf the result is heads, you become immune to fear effects. If the result is tails, you take a –2 item penalty against fear saves.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.GenericLabel.CoinFlip.Heads",
+            "value": "heads"
+          },
+          {
+            "label": "PF2E.GenericLabel.CoinFlip.Tails",
+            "value": "tails"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "velicarns-cursed-coin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Immunity",
+        "predicate": [
+          "velicarns-cursed-coin:heads"
+        ],
+        "type": "fear-effects"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": -2,
+      "when": [
+        "velicarns-cursed-coin:tails",
+        "item:trait:fear"
+      ]
+    }
+  ]
+}

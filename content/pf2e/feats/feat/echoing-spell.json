@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "echoing-spell",
+  "system": "pf2e",
+  "name": "Echoing Spell",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "concentrate",
+    "sorcerer",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "You time the components of your spell with exacting precision, setting up a resonance that duplicates the spell's effects. If your next action is to Cast a Spell of 4th rank or lower that has no duration, the spell's energy reverberates and echoes. You can Cast the Spell a second time before the end of your next turn without expending a spell slot.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:echoing-spell",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              4
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.EchoingSpell"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "echoing-spell"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

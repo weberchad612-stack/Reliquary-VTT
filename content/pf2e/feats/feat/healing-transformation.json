@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "healing-transformation",
+  "system": "pf2e",
+  "name": "Healing Transformation",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "druid",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "You can take advantage of shapechanging magic to close wounds and patch injuries. If your next action is to cast a non-cantrip polymorph spell that targets only one creature, your polymorph spell also restores 1d6 Hit Points per spell rank to that creature. This is a healing effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:healing-transformation",
+          "item:trait:polymorph",
+          {
+            "not": "item:trait:cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.HealingTransformation"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "healing-transformation"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

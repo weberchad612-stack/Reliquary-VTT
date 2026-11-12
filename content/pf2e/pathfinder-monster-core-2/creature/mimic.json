@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "mimic",
+  "system": "pf2e",
+  "name": "Mimic",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "aberration"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 75,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 9,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": {
+        "value": 12,
+        "special": [
+          {
+            "value": 14,
+            "label": "to Grapple",
+            "when": [
+              "action:grapple"
+            ]
+          }
+        ]
+      },
+      "deception": 8,
+      "dwelling-lore-applies-only-to-the-dungeon-they-live-in-lore": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Pseudopod",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Object Lesson",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature touches or physically interacts with the mimic while the mimic is transformed using Mimic Object\n\n---\nEffect The mimic makes a jaws Strike against the triggering creature. If initiative hasn't yet been rolled, the mimic then rolls initiative. Object Lesson can't be used again until the mimic escapes and takes on a new disguise."
+    },
+    {
+      "kind": "ability",
+      "name": "Mimic Object",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The mimic assumes the shape of any Medium object. This doesn't change the mimic's texture or overall size but can alter their coloration and visual appearance. They have an automatic result of 28 on Deception checks and DCs to pass as the object that they're mimicking.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mimic-object",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "deception-dc",
+            "deception"
+          ],
+          "type": "untyped",
+          "value": 19,
+          "slug": "mimic-object-bonus",
+          "when": [
+            "mimic-object"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SubstituteRoll",
+            "predicate": [
+              "mimic-object"
+            ],
+            "required": true,
+            "selector": "deception-check",
+            "slug": "mimic-object-bonus",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "rubble",
+              "in-rubble"
+            ],
+            "selectors": [
+              "deception-dc",
+              "deception"
+            ],
+            "slug": "rubble-bonus",
+            "value": 22
+          }
+        },
+        {
+          "key": "note",
+          "selector": "deception",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mobile Morph",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The mimic transforms part of their body into climbing claws, wings, or paddles. Until the end of their turn, they gain a climb, fly, or swim Speed of 40 feet. This speed is halved if the mimic has a creature swallowed. If they're in the air at the end of their turn, they fall as normal."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 2d8 acid, Rupture 13\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Thought to be the result of a failed experiment meant to animate furniture or possibly a sinister alghollthu creation, mimics are clever monsters that can take the form of common manufactured objects. While rumored to prefer to be doors, any object that another creature will eventually interact with is an acceptable form to take. Mimics are ambush predators and voracious eaters, surprising their prey through their uncanny ability to imitate the form of ordinary furniture and other common miscellany. They remain disguised until unsuspecting adventurers happen by, then they lash out in ambush.\n\nMimics possess complex alien minds, and while often cruel and self-serving, they also enjoy conversation with their prey from time to time. For unknown reasons, they're especially interested in humanoids, and tales tell of the occasional mimic who has even formed a partnership with them for larger, shared goals. Mimics have a strong dislike for others of their kind and tend to live alone. Mimics can remain in their alternate form for an extremely long period of time, sometimes remaining disguised in a dungeon chamber for decades. Regardless of how long they wait, mimics remain vigilant and alert, ever ready to ensnare an unsuspecting victim."
+}

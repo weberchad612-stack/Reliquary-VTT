@@ -1,0 +1,123 @@
+{
+  "kind": "feat",
+  "slug": "hag-magic",
+  "system": "pf2e",
+  "name": "Hag Magic",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "changeling"
+  ],
+  "category": "ancestry",
+  "text": "Through your heritage, you can replicate a hag's magic. Choose one common spell of 4th rank or lower from those available to a coven, including the spells contributed to a coven by a hag of your mother's type. You can cast this spell once per day as a 4th-rank occult innate spell.\n\nSpells available to all covens are Augury, Charm, Clairaudience, Clairvoyance, Dream Message, and Illusory Disguise. The eligible spells granted by the most prominent types of hag are:\n\nCuckoo Hag Nightmare, Spellwrack\n\nIron Hag Earthbind, Spellwrack\n\nSea Hag Humanoid Form, Mariner's Curse, Water Walk\n\nSweet Hag Charm, Honeyed Words, Outcast's Curse",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "filter": [
+            {
+              "or": [
+                "item:slug:augury",
+                "item:slug:charm",
+                "item:slug:clairaudience",
+                "item:slug:clairvoyance",
+                "item:slug:dream-message",
+                "item:slug:illusory-disguise",
+                {
+                  "and": [
+                    "feat:brine-may",
+                    {
+                      "or": [
+                        "item:slug:humanoid-form",
+                        "item:slug:water-walk"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    "feat:callow-may",
+                    {
+                      "or": [
+                        "item:slug:honeyed-words",
+                        "item:slug:outcasts-curse"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    {
+                      "or": [
+                        "feat:dream-may",
+                        "feat:veil-may"
+                      ]
+                    },
+                    "item:slug:nightmare"
+                  ]
+                },
+                {
+                  "and": [
+                    "feat:slag-may",
+                    "item:slug:earthbind"
+                  ]
+                },
+                {
+                  "and": [
+                    "feat:snow-may",
+                    "item:slug:solid-fog"
+                  ]
+                },
+                {
+                  "and": [
+                    "feat:virga-may",
+                    "item:slug:hydraulic-torrent"
+                  ]
+                }
+              ]
+            }
+          ],
+          "itemType": "spell",
+          "slugsAsValues": true
+        },
+        "flag": "hagMagic",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:innate",
+          "item:slug:{item|flags.system.rulesSelections.hagMagic}"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:innate",
+          "item:slug:{item|flags.system.rulesSelections.hagMagic}"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:changeling"
+      }
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "kind": "creature",
+  "slug": "fire-eye-cyclops-zombie-1-2",
+  "system": "pf2e",
+  "name": "Fire-Eye Cyclops Zombie (1-2)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-05: Balancing the Scales",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "fire",
+    "mindless",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 16,
+    "hp": 93,
+    "perception": 5,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 4,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 3,
+      "dex": -1,
+      "int": -5,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "fire",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Spiked Club",
+      "attack": 12,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Eye",
+      "attack": 12,
+      "traits": [
+        "brutal"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d4",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "interaction",
+      "text": "A zombie is permanently Slowed 1 and can't use reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Searing Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fire"
+      ],
+      "text": "10 feet. The fire-eye zombie emits an aura of heat that causes open wounds to sizzle.\n\nAny living creature that starts its turn within 10 feet of the zombie and isn't at full HP must succeed at a DC 17 Fortitude save save or take 1d4 fire damage as its wounds burn.\n\nCreatures critically hit by the fire-eye zombie's Strikes must attempt this saving throw immediately.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "searing-aura",
+            "traits": [
+              "fire"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "On a critical hit a creature must immediately succeed at a DC 17 Fortitude save save or take 1d4 fire damage as its wounds burn.",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eye Throwing",
+      "category": "offensive",
+      "text": "A fire-eye zombie can launch its eye at foes. While its eye is out of its head, the fire-eye zombie is Blinded.\n\nAt the end of its turn, a fire-eye zombie's eye flies back into its eye socket."
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "effect-psi-strikes",
+  "system": "pf2e",
+  "name": "Effect: Psi Strikes",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Psi Strikes\n\nYour chosen attack deals an extra 1d6 force damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "attacks": true
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.WeaponOrUnarmed"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "force",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+        "slug": "psi-strikes"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "parent:origin:item:tag:mindshifted",
+          "dice:slug:psi-strikes"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "{item|flags.system.rulesSelections.weapon}-damage"
+        ],
+        "value": "mental"
+      }
+    }
+  ]
+}

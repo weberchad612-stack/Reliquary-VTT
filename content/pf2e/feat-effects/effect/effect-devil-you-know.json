@@ -1,0 +1,65 @@
+{
+  "kind": "effect",
+  "slug": "effect-devil-you-know",
+  "system": "pf2e",
+  "name": "Effect: Devil You Know",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Devil You Know\n\nYou gain a +1 circumstance bonus to your next skill check against the marked creature. If you're a master in Devil Lore or Hellknight Lore, the bonus increases to +2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "devil-you-know"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "devil-you-know",
+      "when": [
+        "target:mark:devil-you-know"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              {
+                "gte": [
+                  "skill:devil-lore:rank",
+                  3
+                ]
+              },
+              {
+                "gte": [
+                  "skill:hellknight-lore:rank",
+                  3
+                ]
+              }
+            ]
+          }
+        ],
+        "slug": "devil-you-know",
+        "value": 2
+      }
+    }
+  ]
+}

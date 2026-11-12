@@ -1,0 +1,176 @@
+{
+  "kind": "creature",
+  "slug": "pickled-punk",
+  "system": "pf2e",
+  "name": "Pickled Punk",
+  "source": {
+    "title": "Pathfinder #157: Devil at the Dreaming Palace",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 9,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 3,
+      "dex": 4,
+      "int": -3,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 5,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "attach"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        },
+        {
+          "dice": "2",
+          "type": "poison"
+        }
+      ],
+      "effects": [
+        "attach"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Combustible",
+      "category": "defensive",
+      "text": "The first time each round that a pickled punk takes fire damage, its fumes combust, dealing 5 fire damage to all other creatures within the area of its Suffocating Fumes aura."
+    },
+    {
+      "kind": "ability",
+      "name": "Suffocating Fumes",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "inhaled",
+        "poison"
+      ],
+      "text": "5 feet. A creature that enters or begins its turn within the aura must attempt a DC 14 Fortitude save save, or DC 17 Fortitude save if the pickled punk is attached to the creature.\n\nOn a failed save, the creature is Sickened 1, and on a critical failure, it's also Enfeebled 1 for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 5,
+            "slug": "suffocating-fumes",
+            "traits": [
+              "inhaled",
+              "poison"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attach",
+      "category": "offensive",
+      "text": "When a pickled punk hits a target larger than itself, it uses bizarre excretions to adhere to that creature. This is similar to Grabbing the creature, but the pickled punk is not Off-Guard, and it moves with that creature rather than holding it in place.\n\nEach turn while attached, the pickled punk automatically deals the damage from its jaws Strike to the creature to which it's attached. It also wriggles about, gaining a +2 circumstance bonus to AC as long as it's not also Grabbed or Restrained.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "attach",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "attach",
+              {
+                "nor": [
+                  "self:condition:grabbed",
+                  "self:condition:restrained"
+                ]
+              }
+            ],
+            "selector": "ac",
+            "type": "circumstance",
+            "value": 2
+          }
+        }
+      ]
+    }
+  ]
+}

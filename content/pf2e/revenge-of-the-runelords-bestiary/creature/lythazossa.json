@@ -1,0 +1,331 @@
+{
+  "kind": "creature",
+  "slug": "lythazossa",
+  "system": "pf2e",
+  "name": "Lythazossa",
+  "source": {
+    "title": "Pathfinder #221: Into the Apocalypse Archive",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "unique",
+  "traits": [
+    "ghost",
+    "incorporeal",
+    "mythic",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 44,
+    "hp": 280,
+    "perception": 35,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 36,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 9,
+      "con": 0,
+      "dex": 8,
+      "int": -2,
+      "str": -5,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 36,
+      "athletics": 35,
+      "intimidation": 37,
+      "stealth": 38
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 100
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "draconic",
+      "fey",
+      "thassilonian"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "curse",
+        "paralyzed",
+        "bleed",
+        "death-effects",
+        "disease",
+        "poison",
+        "precision",
+        "sleep",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15,
+          "except": "force, ghost-touch, spirit, vitality",
+          "doubleVs": "non-magical"
+        },
+        {
+          "type": "mythic",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "rejuvenation, void healing",
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "unfettered movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 42,
+      "attack": 34,
+      "spells": [
+        {
+          "name": "Truesight (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Unfettered Movement (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/unfettered-movement"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spectral Jaws",
+      "attack": 38,
+      "traits": [
+        "finesse",
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+10",
+          "type": "void"
+        }
+      ],
+      "effects": [
+        "vestige-of-an-ancient-curse"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spectral Claw",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+10",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spectral Tail",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+10",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Remove a Condition",
+      "actions": 1,
+      "category": "interaction",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Cost 1 Mythic Point\n\n---\nEffect Lythazossa ends one condition affecting her."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Resilience (Reflex)",
+      "category": "defensive",
+      "text": "The creature treats its saving throws with the associated save as one degree of success better than it rolled. This is not cumulative with other effects that change their degree of success, like the incapacitation trait (except for rolling a natural 1 or 20). Each time the monster gains mythic resilience, choose one save. The ability should apply to the creature's highest saves first.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Spectral Tail Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When Lythazossa is destroyed, she re-forms after 2d4 days in the Prosperity Vault, fully healed. She can be permanently destroyed if the apocalypse seed is removed from Varisia."
+    },
+    {
+      "kind": "ability",
+      "name": "Undying Myth",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Cost all of Lythazossa's Mythic Points\n\nTrigger Lythazossa would be destroyed and has at least 1 Mythic Point\n\n---\nEffect Lythazossa remains active, and recovers 140 healing Hit Points."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Calamitous Roar",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Lythazossa laments her cursed fate. Each living creature within 30 feet attempts a DC 42 Will save save with the following results.\n\n---\nCritical Success The creature is unaffected and is temporarily immune to Calamitous Roar for 1 minute.\n\nSuccess The creature is unaffected.\n\nFailure The creature becomes Frightened 2\n\nCritical Failure The creature becomes Frightened 3"
+    },
+    {
+      "kind": "ability",
+      "name": "Recharge",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Cost 1 Mythic Point\n\n---\nEffect Lythazossa can use Soul-Melting Breath again."
+    },
+    {
+      "kind": "ability",
+      "name": "Reroll",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "fortune"
+      ],
+      "text": "Cost 1 Mythic Point\n\nTrigger Lythazossa fails a check\n\n---\nEffect Lythazossa rerolls the check."
+    },
+    {
+      "kind": "ability",
+      "name": "Soul-Melting Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "acid",
+        "divine"
+      ],
+      "text": "Lythazossa expels a 60-foot cone of ghostly acid that melts a creature's very soul, dealing 20d6 spirit damage to creatures in the area (DC 42 basic Will save save). The ghostly acid also saps the life from affected creatures. At the beginning of Lythazossa's next turn, each creature that failed the Reflex save must succeed at a DC 42 Fortitude save save or become Drained 1 (Drained 2 on a critical failure). Lythazossa can't use Soul-Melting Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Telekinetic Assault",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Lythazossa cries out in pain and anguish, hurling small objects and debris is a 30-foot emanation. Creatures in the area take 10d6 bludgeoning damage (DC 42 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Vestige of an Ancient Curse",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "When Lythazossa hits a creature with her jaws Strike, the target must succeed at a DC 42 Will save save or become Enfeebled 2 until Lythazossa's spirit is put to rest. If the target critically fails this saving throw, Lythazossa regains 40 healing HP, and the target is instead Enfeebled 3."
+    }
+  ],
+  "blurb": "Variant cairn linnorm ghost"
+}

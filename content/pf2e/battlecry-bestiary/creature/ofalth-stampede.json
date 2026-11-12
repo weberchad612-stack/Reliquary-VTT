@@ -1,0 +1,206 @@
+{
+  "kind": "creature",
+  "slug": "ofalth-stampede",
+  "system": "pf2e",
+  "name": "Ofalth Stampede",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 36,
+    "hp": 270,
+    "perception": 26,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 24,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 6,
+      "dex": 5,
+      "int": 0,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 32,
+      "stealth": {
+        "value": 28,
+        "special": [
+          {
+            "value": 32,
+            "label": "in trash",
+            "when": [
+              "in-trash"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "poison"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 15
+        },
+        {
+          "type": "splash-damage",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments), filth wallow; Thresholds 180 (3 segments), 90 (2 segments)",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Refuse Pile",
+      "category": "interaction",
+      "text": "When an ofalth stampede is not in danger, they can spend 1 minute settling into a 20-foot pile that looks like a heap of garbage. Until the next time they take an action, the troop gains a +2 circumstance bonus to AC. A creature that enters the area of the garbage heap or interacts with it must attempt a save against the ofalth stampede's stench.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "refuse-pile",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "refuse-pile"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Filth Wallow",
+      "category": "defensive",
+      "text": "A trash stampede gains fast healing 10 when in an area with a high concentration of debris or excrement, such as a refuse heap or sewer.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "filth-wallow"
+            ],
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "filth-wallow",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. DC 33 Fortitude save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 270 (4 segments), filth wallow; Thresholds 180 (3 segments), 90 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Offal Rain",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The ofalth stampede hurls a tremendous amount of rotting trash, which rains down in a 10-foot burst within 60 feet. All creatures in the area take 4d10 bludgeoning damage (DC 33 basic Reflex save save). Creatures that fail the saving throw are also exposed to wretched weeps. When the troop is reduced to 2 segments, the area decreases to a 5-foot burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Putrid Pummeling",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The ofalths pummel all enemies in a 10-foot emanation, with a DC 33 basic Reflex save save. The damage depends on the number of actions. Creatures that fail the saving throw are exposed to wretched weeps.\n\n1 1d12+3 bludgeoning damage\n\n2 3d12+7 bludgeoning damage\n\n3 4d12+10 bludgeoning damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Wretched Weeps",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 36 Fortitude save\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d4 persistent bleed every hour and Enfeebled 1 (1 day)\n\nStage 3 2d6 persistent bleed every hour and Enfeebled 2 (1 day)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "offal-rain-inline-damage",
+          "text": "{item|description}"
+        }
+      ]
+    }
+  ],
+  "text": "If a large city's waste management system spirals out of control, ofalths can grow and propagate unchecked. These reeking creatures haul tons of trash on their backs and carry a particularly virulent disease."
+}

@@ -1,0 +1,295 @@
+{
+  "kind": "creature",
+  "slug": "vat-needler",
+  "system": "pf2e",
+  "name": "Vat Needler",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "alchemical",
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 39,
+    "hp": 270,
+    "perception": 29,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 31,
+      "will": 27
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 4,
+      "int": -5,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 34
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 25,
+          "except": "adamantine, bludgeoning"
+        },
+        {
+          "type": "spells",
+          "value": 25,
+          "except": "sonic"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Syringe",
+      "attack": 34,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "alchemical-injection"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Chambers",
+      "category": "defensive",
+      "text": "A noxious needler's body contains six alchemical chambers filled with different substances. When a noxious needler's ability calls upon a randomly determined alchemical effect, roll 1d6 and consult the following (if you roll the result of a chamber that was shattered, there is no alchemical effect):\n1d6\n| Alchemical Effect\n|\n1\n| Acid Damage\n|\n2\n| Cold Damage\n|\n3\n| Electricity Damage\n|\n4\n| Fire Damage\n|\n5\n| Poison Damage\n|\n6\n| Sickness: DC 38 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure)\n|"
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Rupture",
+      "category": "defensive",
+      "text": "When a noxious needler takes physical damage from a critical hit or is affected by a shatter spell, one glass chamber within its body shatters, spewing alchemical liquid in a 10-foot emanation. Roll on the alchemical chambers list to determine which one shatters—on a roll of 1–5, creatures in the area take 15d6 damage of the appropriate type (DC 40 basic Reflex). On a roll of 6, creatures must instead save against the sickness effect.\n1d6\n| Alchemical Effect\n|\n1\n| 15d6 acid damage DC 40 basic Reflex save\n|\n2\n| 15d6 cold damage DC 40 basic Reflex save\n|\n3\n| 15d6 electricity damage DC 40 basic Reflex save\n|\n4\n| 15d6 fire damage DC 40 basic Reflex save\n|\n5\n| 15d6 poison damage DC 40 basic Reflex save\n|\n6\n| Sickness: DC 40 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure)\n|"
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Injection",
+      "category": "offensive",
+      "text": "When a noxious needler hits a creature with a syringe Strike, roll 1d6 on the alchemical chambers list to determine the additional effect of the attack. The syringe deals an additional 2d6 damage of the appropriate type (or exposes the target to the sickness effect, as appropriate).\n1d6\n| Alchemical Effect\n|\n1\n| Acid\n|\n2\n| Cold\n|\n3\n| Electricity\n|\n4\n| Fire\n|\n5\n| Poison\n|\n6\n| Sickness: DC 26 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure)\n|",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "alchemical-injection",
+            "selection": "acid",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitPoison",
+                "value": "poison"
+              },
+              {
+                "label": "PF2E.NPCAbility.AlchemicalGolem.Sickness",
+                "value": "sickness"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "{item|flags.system.rulesSelections.alchemicalInjection}",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "alchemical-injection:sickness"
+              }
+            ],
+            "selector": "syringe-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Generate Bomb",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The needler fills an empty vial from one of its alchemical chambers to create a bomb and then makes a bomb Strike. Roll 1d6 on the table below. On a roll of 1–5, the bomb deals 4d10 damage and 4 splash damage, matching the damage type of the chamber; you can instead choose to create an alchemical bomb of 11th level or lower that deals the same damage type, such as an acid flask on a roll of 1. On a roll of 6, it creates a sickness bomb, which exposes the target and all creatures in the splash radius to the sickness effect; creatures hit by only the splash receive a +2 circumstance bonus to their Fortitude saves.\n1d6\n| Alchemical Effect\n|\n1\n| Acid Damage\n|\n2\n| Cold Damage\n|\n3\n| Electricity Damage\n|\n4\n| Fire Damage\n|\n5\n| Poison Damage\n|\n6\n| Sickness: DC 26 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure)\n|",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "generate-bomb",
+            "selection": "acid",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitPoison",
+                "value": "poison"
+              },
+              {
+                "label": "PF2E.NPCAbility.AlchemicalGolem.Sickness",
+                "value": "sickness"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.bombDamageDice",
+            "predicate": [
+              "generate-bomb",
+              {
+                "not": "generate-bomb:sickness"
+              }
+            ],
+            "value": 4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.bombDamageDice",
+            "predicate": [
+              "generate-bomb:sickness"
+            ],
+            "value": 0
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 32,
+            "category": "martial",
+            "damage": {
+              "base": {
+                "dice": "@actor.flags.system.bombDamageDice",
+                "die": "d10"
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.WeaponGroupBomb",
+            "predicate": [
+              "generate-bomb"
+            ],
+            "range": {
+              "increment": 20
+            },
+            "slug": "bomb",
+            "traits": [
+              "magical",
+              "thrown"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "generate-bomb",
+              {
+                "not": "generate-bomb:sickness"
+              }
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "{item|id}-damage"
+            ],
+            "slug": "base",
+            "value": "{item|flags.system.rulesSelections.generateBomb}"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "{item|id}-damage",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "generate-bomb",
+            {
+              "not": "generate-bomb:sickness"
+            }
+          ],
+          "damageType": "{item|flags.system.rulesSelections.generateBomb}"
+        },
+        {
+          "key": "note",
+          "selector": [
+            "{item|id}-attack"
+          ],
+          "text": "PF2E.NPCAbility.VatNeedler.GenerateBomb.Note"
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant noxious needler"
+}

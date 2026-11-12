@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "junth-rundel",
+  "system": "pf2e",
+  "name": "Junth Rundel",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "alchemical",
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 150,
+    "perception": 15,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 19,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": 4,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine, bludgeoning"
+        },
+        {
+          "type": "spells",
+          "value": 10,
+          "except": "sonic"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Syringe",
+      "attack": 22,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "alchemical-injection"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Blood Siphon",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "tethered",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "attach-siphon"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Chambers",
+      "category": "defensive",
+      "text": "A noxious needler's body contains six alchemical chambers filled with different substances. When a noxious needler's ability calls upon a randomly determined alchemical effect, roll 1d6 and consult the following (if you roll the result of a chamber that was shattered, there is no alchemical effect):\n1d6 | Alchemical Effect |\n1 | Acid Damage\n|\n2 | Cold Damage |\n3 | Electricity Damage |\n4 | Fire Damage |\n5 | Poison Damage |\n6 | Sickness: DC 26 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure) |"
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Rupture",
+      "category": "defensive",
+      "text": "When a noxious needler takes physical damage from a critical hit or is affected by a shatter spell, one glass chamber within its body shatters, spewing alchemical liquid in a 5-foot emanation. Roll on the alchemical chambers list to determine which one shatters—on a roll of 1–5, creatures in the area take 10d6 damage of the appropriate type (DC 28 basic Reflex). On a roll of 6, creatures must instead save against the sickness effect.\n1d6 | Alchemical Effect |\n1 | 10d6 acid damage DC 28 basic Reflex save\n|\n2 | 10d6 cold damage DC 28 basic Reflex save |\n3 | 10d6 electricity damage DC 28 basic Reflex save |\n4 | 10d6 fire damage DC 28 basic Reflex save |\n5 | 10d6 poison damage DC 28 basic Reflex save |\n6 | Sickness: DC 26 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure) |"
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Injection",
+      "category": "offensive",
+      "text": "When a noxious needler hits a creature with a syringe Strike, roll 1d6 on the alchemical chambers list to determine the additional effect of the attack. The syringe deals an additional 2d6 damage of the appropriate type (or exposes the target to the sickness effect, as appropriate).\n1d6 | Alchemical Effect |\n1 | 2d6 acid damage\n|\n2 | 2d6 cold damage |\n3 | 2d6 electricity damage |\n4 | 2d6 fire damage |\n5 | 2d6 poison damage |\n6 | Sickness: DC 26 Fortitude save save or Sickened 1 (Sickened 2 on a critical failure) |",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "alchemical-injection",
+            "selection": "acid",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitPoison",
+                "value": "poison"
+              },
+              {
+                "label": "PF2E.NPCAbility.AlchemicalGolem.Sickness",
+                "value": "sickness"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "{item|flags.system.rulesSelections.alchemicalInjection}",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "alchemical-injection:sickness"
+              }
+            ],
+            "selector": "syringe-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attach Siphon",
+      "category": "offensive",
+      "text": "A creature that takes any damage from a blood siphon Strike must attempt a DC 28 Reflex save save. On a failure, the siphon attaches to the creature. It's attached to Junth by a long length of flexible leather hose, so if he misses with a blood siphon he can retract it as an Interact action. The tether can also be severed (AC 27, Hardness 10, 10 HP), and the creature to which it has been attached can escape dc=28."
+    },
+    {
+      "kind": "ability",
+      "name": "Siphon Blood",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Junth has a blood siphon attached to a target creature\n\nFrequency once per round\n\n---\nEffect Junth drains blood from the target creature, dealing 5d6 bleed damage. Unlike most bleed damage, this isn't persistent damage. A creature that takes any of this bleed damage must also attempt a DC 28 Fortitude save save.\n\n---\nCritical Success The creature takes no damage.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and becomes Enfeebled 1 for 1 hour.\n\nCritical Failure The creature takes full damage, becomes Enfeebled 2 for 1 hour, and becomes Drained 1. If the creature is already drained, it instead increases the value of its drained condition by 1.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "This construct is a walking alchemical nightmare capable of inflicting all manner of painful wounds. The noxious needlers' ability to follow orders is granted by the otherwise mindless humanoid brain that floats in their dome-like heads, allowing them to serve as laborers and guards for their creators.\n\nIn exceptionally rare cases, the brain used in their creation might retain fragments of memories or even an actual intellect, resulting in a noxious needler with a personality and agenda of its own. Unwilling creations often hunt down their creators, venting their rage on similar targets if revenge is impossible. Others blankly replicate the experiments from their last memory",
+  "blurb": "Variant noxious needler"
+}

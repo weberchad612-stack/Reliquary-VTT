@@ -1,0 +1,116 @@
+{
+  "kind": "feat",
+  "slug": "swashbuckler-dedication",
+  "system": "pf2e",
+  "name": "Swashbuckler Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication",
+    "multiclass"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Charisma +2",
+    "Dexterity +2"
+  ],
+  "text": "Choose a swashbuckler's style. You gain the Panache and Stylish Combatant class features, and you apply the bravado trait to Tumble Through and any actions indicated in your swashbuckler style, allowing you to gain panache. You become trained in Acrobatics or the skill associated with your style. If you were already trained in both skills, you instead become trained in a skill of your choice. You also become trained in swashbuckler class DC. You don't gain any other effects of your chosen style.\n\nSwashbuckler",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:swashbuckler-style",
+            {
+              "not": "item:tag:class-archetype"
+            }
+          ]
+        },
+        "flag": "swashbucklersStyle",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Swashbuckler.Style.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.swashbucklersStyle}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Acrobatics",
+            "value": "acrobatics"
+          },
+          {
+            "label": "PF2E.Skill.Intimidation",
+            "predicate": [
+              "feature:braggart"
+            ],
+            "value": "intimidation"
+          },
+          {
+            "label": "PF2E.Skill.Deception",
+            "predicate": [
+              "feature:fencer"
+            ],
+            "value": "deception"
+          },
+          {
+            "label": "PF2E.Skill.Athletics",
+            "predicate": [
+              "feature:gymnast"
+            ],
+            "value": "athletics"
+          },
+          {
+            "label": "PF2E.Skill.Diplomacy",
+            "predicate": [
+              "feature:wit"
+            ],
+            "value": "diplomacy"
+          }
+        ],
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.skill}.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.classfeatures.Item.Panache"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.classfeatures.Item.Stylish Combatant"
+      }
+    }
+  ]
+}

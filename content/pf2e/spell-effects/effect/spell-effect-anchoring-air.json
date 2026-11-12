@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-anchoring-air",
+  "system": "pf2e",
+  "name": "Spell Effect: Anchoring Air",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Anchoring Air\n\nSuccess You take a –2 circumstance penalty to the triggering melee Strike's attack roll.\n\nFailure You take a –2 circumstance penalty to all attack rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "anchoring-air"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-attack-roll",
+      "type": "circumstance",
+      "value": -2,
+      "slug": "anchoring-air-success",
+      "when": [
+        "anchoring-air:success"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "circumstance",
+      "value": -2,
+      "slug": "anchoring-air-failure",
+      "when": [
+        "anchoring-air:failure"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "kind": "creature",
+  "slug": "rhenei-1-2",
+  "system": "pf2e",
+  "name": "Rhenei (1-2)",
+  "source": {
+    "title": "Pathfinder Society Quest #14: The Swordlord's Challenge",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "unique",
+  "traits": [
+    "good",
+    "humanoid",
+    "ratfolk"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 13,
+    "hp": 6,
+    "perception": 3,
+    "saves": {
+      "fortitude": 2,
+      "reflex": 3,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 2,
+      "int": 0,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "arcana": 2,
+      "athletics": 4,
+      "intimidation": 5,
+      "dueling-lore": 3
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "ysoki"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Spontaneous Spells",
+      "tradition": "primal",
+      "type": "spontaneous",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Acid Splash",
+          "rank": 1,
+          "ref": "spells:spell/acid-splash"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Produce Flame (Bludgeoning, Water)",
+          "rank": 1,
+          "text": "A small ball of flame appears in the palm of your hand, and you lash out with it either in melee or at range. Make a spell attack roll against your target's AC. This is normally a ranged attack, but you can also make a melee attack against a creature in your unarmed reach.\n\nOn a success, you deal 2d4 fire damage. On a critical success, the target takes double damage and @item.leveld4 persistent,fire damage.\n\n---\n\nHeightened (+1) Increase the damage by 1d4 and the persistent damage on a critical hit by 1d4."
+        },
+        {
+          "name": "Ray of Frost",
+          "rank": 1,
+          "ref": "spells:spell/ray-of-frost"
+        },
+        {
+          "name": "Tanglefoot",
+          "rank": 1,
+          "ref": "spells:spell/tangle-vine"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Sorcerer Bloodline Spells",
+      "tradition": "primal",
+      "type": "focus",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Elemental Toss",
+          "rank": 1,
+          "ref": "spells:spell/elemental-toss"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Aldori Dueling Sword",
+      "ref": "equipment:item/aldori-dueling-sword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Aldori Dueling Sword",
+      "attack": 5,
+      "traits": [
+        "finesse",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8-2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aldori Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Rhenei gains a +2 circumstance bonus to AC until the start of their next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "aldori-parry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "aldori-parry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Elemental Bloodline",
+      "category": "offensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              {
+                "or": [
+                  "item:slug:breathe-fire",
+                  "item:slug:burning-hands",
+                  "item:slug:produce-flame"
+                ]
+              }
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "spell-damage",
+              "inline-damage"
+            ],
+            "value": "bludgeoning"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              {
+                "or": [
+                  "item:slug:breathe-fire",
+                  "item:slug:burning-hands",
+                  "item:slug:produce-flame"
+                ]
+              }
+            ],
+            "property": "traits",
+            "value": "fire"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "or": [
+                  "item:slug:breathe-fire",
+                  "item:slug:burning-hands",
+                  "item:slug:elemental-toss",
+                  "item:slug:produce-flame"
+                ]
+              }
+            ],
+            "property": "traits",
+            "value": "water"
+          }
+        }
+      ]
+    }
+  ]
+}

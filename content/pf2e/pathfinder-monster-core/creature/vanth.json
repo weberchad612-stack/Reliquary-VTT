@@ -1,0 +1,303 @@
+{
+  "kind": "creature",
+  "slug": "vanth",
+  "system": "pf2e",
+  "name": "Vanth",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "monitor",
+    "psychopomp"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 105,
+    "perception": 15,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 13,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 17,
+      "athletics": 17,
+      "intimidation": 15,
+      "occultism": 13,
+      "religion": 13,
+      "stealth": 17,
+      "boneyard-lore": 15
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease"
+      ],
+      "resistances": [
+        {
+          "type": "void",
+          "value": 10
+        },
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Holy Light",
+          "rank": 3,
+          "ref": "spells:spell/holy-light",
+          "uses": 3
+        },
+        {
+          "name": "Locate",
+          "rank": 3,
+          "ref": "spells:spell/locate",
+          "uses": 3
+        },
+        {
+          "name": "Invisibility (At Will, Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Scythe",
+      "ref": "equipment:item/scythe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Scythe",
+      "attack": 18,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "spirit-touch"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "spirit-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "20 feet. DC 22 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Infuse Weapon",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A vanth's scythe is its symbol of office and gains a measure of its personal power. This scythe becomes a +1 scythe and is treated as if it were adamantine while the vanth wields it. A vanth whose scythe is taken or destroyed can infuse a new one with an hour of work.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:scythe"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "adamantine"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shepherd's Touch",
+      "category": "offensive",
+      "text": "A vanth's Strikes affect incorporeal creatures with the effects of a Ghost Touch property rune and deal 2d6 void damage to living creatures and 2d6 vitality damage to undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vanth's Curse",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine",
+        "misfortune"
+      ],
+      "text": "Frequency three times per day\n\n---\n\nEffect The vanth bestows a curse on a creature by touching it with its scythe. The creature must attempt a DC 25 Will save save.\n\n---\n\nCritical Success The target is unaffected and is temporarily immune to Vanth's Curse for 24 hours.\n\nSuccess The target feels a momentary shudder of doom and is Stupefied 1 for 1 minute by the distracting sensation.\n\nFailure The target becomes morose and glum as it accepts its own inevitable fate. For 1 hour, the target is Stupefied 2. Each time the target gains the dying condition, the stupefied condition value increases by 1, to a maximum value of Stupefied 4.\n\nCritical Failure As failure, but the effect is permanent.",
+      "frequency": {
+        "max": 3,
+        "per": "day"
+      }
+    }
+  ],
+  "text": "Protectors of the Boneyard, the stern and resolute guardians of the dead, vanths are psychopomps who resemble skeletons with raven-like wings and a mask resembling a vulture's skull. Vanths carry black scythes to fight against those who would disturb the natural progression of souls, and they consider any visitor to the Boneyard a potential troublemaker. They rarely speak and even more rarely show any emotion other than a grim adherence to duty.\n\nWhen the psychopomp armies go to war, vanths serve as front-line soldiers. In particular, daemons continually stage raids on the River of Souls, requiring constant patrol. Implacable warriors, vanths fly in perfect formation. This can backfire, as they often suppress any adaptability they possess as they wage war.\n\n---\n\nPsychopomps are guardians and shepherds of the dead in the Boneyard, the vast plane of graves where mortal souls are judged and sent on to their eternal rewards or damnations. Psychopomps ensure that the dead come to terms with their transition from mortality and are properly sorted into the appropriate afterlife. They also protect souls from being preyed upon by supernatural predators. Nearly all psychopomps wear masks, especially when they're likely to be interacting with mortals, although the types of masks they wear are as varied as the psychopomps themselves. The courts of the Boneyard preside in Requian, a somber yet melodic language spoken slowly with various tonal shifts.\n\nMany psychopomps are intimately involved with the Boneyard's massive bureaucracy. Few pursue mercy, justice, or personal gain; their duties to Pharasma and her Boneyard are supreme. Nevertheless, individual psychopomps interpret their duties in different ways, which might put them in conflict with mortals or even with each other."
+}

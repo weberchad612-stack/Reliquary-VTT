@@ -1,0 +1,178 @@
+{
+  "kind": "creature",
+  "slug": "wayang-whisperblade",
+  "system": "pf2e",
+  "name": "Wayang Whisperblade",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "humanoid",
+    "shadow",
+    "wayang"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 19,
+    "perception": 9,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 9,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 3,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "deception": 4,
+      "occultism": 6,
+      "performance": 6,
+      "stealth": 7,
+      "thievery": 7,
+      "netherworld-lore": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "shadowtongue",
+      "wayang"
+    ],
+    "notes": {
+      "saves": "+1 status to all saves vs. darkness or shadow"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Darkness or Shadow",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            {
+              "or": [
+                "darkness",
+                "shadow"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadowplay",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "Requirements The wayang's last action was a melee Strike that damaged their opponent\n\n---\nEffect The wayang attempts to Tumble Through the opponent's space, with a +2 circumstance bonus to the Acrobatics check. If they succeed, the wayang leaves a shadowy afterimage in their original space, which provides flanking against the opponent until the beginning of the wayang's next turn (usually making them Off-Guard to the wayang's melee attacks).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "skill-check",
+            "key": "RollOption",
+            "option": "shadowplay",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "acrobatics",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:tumble-through"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The wayang deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Some wayangs make use of their connections to shadows to outmaneuver their foes in combat.\n\n---\nIn hushed tones, superstitious people tell their children stories of wayangs—living shadows who come out at night to eat misbehaving children. Mostly, these stories are just fictions of fearful minds, but it's true that wayangs were originally creatures of shadow, straddling the edge between light and darkness. The ancestors of modern-day wayangs set out on a great exodus some 10,000 years ago, leaving their native Netherworld to seek out a new home. On Golarion, they found a great cataclysm had blocked out the sun behind a cloud of smoke and ash, enshrouding the planet in a seemingly endless night, and here they made their new home. When the light returned, wayangs retreated into what shadowy places they could find, avoiding contact with humans and other peoples of the light, who viewed the small, gaunt beings as suspicious reminders of difficult times.\n\nMany wayang groups are nomadic, though other groups have settled communities. Some live in homes carved out of natural caves, where they create works of art from stalagmites and other natural features. Others live in treetop villages in rainforests where sunlight barely penetrates the thick canopy of the forest. Wayangs are most populous in southeastern Tian Xia, especially in the archipelago of Minata, also known as the Wandering Isles, but their travels can sometimes take them to even further lands.\n\nDespite their sinister reputation and secretive nature, wayangs are joyous creatures who tell stories and express their emotions through whisper-singing, dancing, and shadow puppetry, enhancing their performances with shadow magic. Similarly, they weave shadow magic into their deadly fighting styles, but wayangs aren't a violent people, usually fighting only to protect what's theirs. Wayangs decorate their stringy hair with beads and their dusky skin with tattooed white dots that form pictures, with each picture silently telling stories about their family's history or their worship of various deities of shadow."
+}

@@ -1,0 +1,56 @@
+{
+  "kind": "feat",
+  "slug": "infuse-void",
+  "system": "pf2e",
+  "name": "Infuse Void",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "concentrate",
+    "necromancer",
+    "occult",
+    "spellshape",
+    "void"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "If the next action you use is to cast a grave spell that deals damage, creatures damaged by the spell take additional void damage equal to the rank of the spell. If this void damage or the spell reduces one or more creatures to 0 Hit Points, you regain 1 Focus Point. You can regain a Focus Point this way only once per 10 minutes.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "infuse-void"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "void",
+        "key": "FlatModifier",
+        "predicate": [
+          "item:trait:focus",
+          "item:trait:necromancer",
+          "spellshape:infuse-void"
+        ],
+        "selector": "spell-damage",
+        "value": "@spell.rank"
+      }
+    }
+  ]
+}

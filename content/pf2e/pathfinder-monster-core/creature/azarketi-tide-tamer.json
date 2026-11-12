@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "azarketi-tide-tamer",
+  "system": "pf2e",
+  "name": "Azarketi Tide Tamer",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "amphibious",
+    "azarketi",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 15,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 15,
+      "nature": 12,
+      "stealth": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "underwater",
+            "when": [
+              "terrain:underwater"
+            ]
+          }
+        ]
+      },
+      "survival": 14,
+      "underwater-lore": 11
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "languages": [
+      "common",
+      "alghollthu"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 18,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 17,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hydration",
+      "category": "defensive",
+      "text": "Azarketi must regularly submerge themselves in water to rehydrate their water-acclimated skin. After the first 24 hours outside of water, they gain a –1 status penalty to Fortitude saves as their skin cracks and their gills become painful. After 48 hours, they begin to suffocate until returned to water.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "fortitude",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "day-out-of-water"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Spent 24 Hours Out of the Water",
+            "option": "day-out-of-water",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Speaker of the Oceans",
+      "category": "defensive",
+      "text": "An azarketi tide tamer can speak with animals that have the aquatic or amphibious trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Predator",
+      "category": "offensive",
+      "text": "An azarketi deals 2d8 additional damage on a successful weapon Strike while they are underwater.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "The Azarketi is Underwater",
+            "option": "terrain:underwater",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "terrain:underwater"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The most ambitious and capable azarketis become tide tamers, learning how to speak with and train aquatic animals.\n\n---\n\nAzarketis, also known as gillmen, can be found all over Golarion, with a particularly high concentration around Absalom and the Inner Sea. Descendants of the ancient Azlanti, the azarketis survived the cataclysm of Earthfall by fleeing into the ocean, where they were warped into amphibious forms by the alghollthu."
+}

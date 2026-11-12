@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "seven-colored-cosmic-bridge",
+  "system": "pf2e",
+  "name": "Seven-Colored Cosmic Bridge",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a melee weapon ikon\n\n---\nYour divine spark shines in a riot of shimmering colors, capable of carrying you through the world as fast as light itself. The imbued ikon gains the following abilities.\n\nImmanence (light, teleportation) Your weapon scatters rainbow-colored light across nearby surroundings, each a possible destination. When you successfully Strike an enemy, you can choose to teleport to an unoccupied location within 10 feet as a free action.\n\nTranscendence—Fleeting Arc through Heaven and Earth 3 (light, spirit, teleportation, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Fleeting Arc through Heaven and Earth"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "chosen-ikon:{item|flags.system.rulesSelections.ikon}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "melee-strike-attack-roll",
+      "text": "PF2E.SpecificRule.Exemplar.SevenColoredCosmicBridge.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "divine-spark:{item|flags.system.rulesSelections.ikon}",
+        "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}"
+      ]
+    }
+  ]
+}

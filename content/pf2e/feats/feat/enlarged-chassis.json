@@ -1,0 +1,68 @@
+{
+  "kind": "feat",
+  "slug": "enlarged-chassis",
+  "system": "pf2e",
+  "name": "Enlarged Chassis",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "Medium or Small size"
+  ],
+  "text": "You've empowered your core to support a larger body, granting you size and additional reach. You gain the effects of enlarge constantly.\n\nEnhancement Your core's empowerment has stabilized, allowing for greater support. You are no longer clumsy due to the effects of enlarge.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.EnlargedChassis",
+          "value": "enlarged-chassis"
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "item:melee"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "reach": {
+          "override": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "enhancement:enlarged-chassis"
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    }
+  ]
+}

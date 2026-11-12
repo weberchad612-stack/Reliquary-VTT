@@ -1,0 +1,293 @@
+{
+  "kind": "feat",
+  "slug": "noble-branch",
+  "system": "pf2e",
+  "name": "Noble Branch",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ikon"
+  ],
+  "category": "classfeature",
+  "text": "Usage a staff, bo staff, fighting stick, khakkara, or any weapon in the spear or polearm weapon group\n\n---\nThis humble stick-like weapon has an elegant simplicity to it, affording you reliable strikes over flashy maneuvers.\n\nImmanence The noble branch deals 2 additional spirit damage per weapon damage die to creatures it Strikes.\n\nTranscendence—Strike, Breathe, Rend 1 (spirit, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.DivineSpark.Label",
+        "mergeable": true,
+        "option": "divine-spark",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "noble-branch"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.exemplar.ikons",
+        "value": {
+          "label": "PF2E.SpecificRule.Exemplar.Ikon.NobleBranch.Label",
+          "predicate": [
+            "parent:tag:weapon-ikon-feat"
+          ],
+          "value": "noble-branch"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Strike, Breathe, Rend"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Grant",
+            "value": "granted"
+          },
+          {
+            "label": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Existing",
+            "value": "existing"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Prompt",
+        "rollOption": "noble-branch-origin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "or": [
+                "item:base:staff",
+                "item:base:bo-staff",
+                "item:base:fighting-stick",
+                "item:base:khakkhara",
+                "item:group:spear",
+                "item:group:polearm"
+              ]
+            },
+            {
+              "not": "item:trait:consumable"
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "existingIkon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "noble-branch-origin:existing"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:level:0",
+            {
+              "nor": [
+                "item:magical",
+                "item:trait:consumable"
+              ]
+            },
+            {
+              "or": [
+                "item:base:staff",
+                "item:base:bo-staff",
+                "item:base:fighting-stick",
+                "item:base:khakkara",
+                "item:group:spear",
+                "item:group:polearm"
+              ]
+            }
+          ],
+          "itemType": "weapon"
+        },
+        "flag": "grantedIkon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "noble-branch-origin:granted"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "noble-branch-origin:granted"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.grantedIkon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "noble-branch-origin:existing",
+                  "item:id:{item|flags.system.rulesSelections.existingIkon}"
+                ]
+              },
+              {
+                "and": [
+                  "noble-branch-origin:granted",
+                  "item:granter:slug:noble-branch"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "physical-ikon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "noble-branch-origin:existing",
+                  "item:id:{item|flags.system.rulesSelections.existingIkon}"
+                ]
+              },
+              {
+                "and": [
+                  "noble-branch-origin:granted",
+                  "item:granter:slug:noble-branch"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "physical-ikon:noble-branch"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:noble-branch"
+        ],
+        "priority": 121,
+        "property": "traits",
+        "value": "divine"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:noble-branch"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.ndSCXO9Dg57fmZIY inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "key": "FlatModifier",
+        "predicate": [
+          "item:tag:physical-ikon:noble-branch",
+          "divine-spark:noble-branch"
+        ],
+        "selector": "weapon-damage",
+        "slug": "barrows-edge-immanence",
+        "tags": [
+          "exemplar"
+        ],
+        "value": "2*@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:transcendence",
+          {
+            "or": [
+              "item:granter:tag:chosen-ikon:noble-branch",
+              "item:slug:strike-breathe-rend"
+            ]
+          },
+          {
+            "not": "divine-spark:noble-branch"
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Exemplar.DivineSpark.SparkTranscendence.Reminder"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "exemplar-spirit-damage",
+        "predicate": [
+          "divine-spark:noble-branch"
+        ]
+      }
+    }
+  ]
+}

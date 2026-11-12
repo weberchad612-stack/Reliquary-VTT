@@ -1,0 +1,260 @@
+{
+  "kind": "creature",
+  "slug": "sarglagon",
+  "system": "pf2e",
+  "name": "Sarglagon",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "amphibious",
+    "devil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 120,
+    "perception": 18,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 13,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 3,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "arcana": 14,
+      "athletics": 18,
+      "deception": 15,
+      "diplomacy": 15,
+      "intimidation": 17,
+      "stealth": 15
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "empyrean"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "silver"
+        },
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 23,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Control Water",
+          "rank": 5,
+          "ref": "spells:spell/control-water"
+        },
+        {
+          "name": "Hydraulic Torrent",
+          "rank": 4,
+          "ref": "spells:spell/hydraulic-torrent"
+        },
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Unfettered Movement",
+          "rank": 4,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "See the Unseen (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/see-the-unseen"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tentacle Arm",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "sarglagon-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heavy Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "incapacitation"
+      ],
+      "text": "10 feet.\n\nA creature that enters the heavy aura must attempt a DC 23 Will save save. It is then temporarily immune for 10 minutes.\n\n---\n\nSuccess The creature is unaffected.\n\nFailure The creature is encumbered while it remains in the area. If the creature is already encumbered, it is Immobilized while it remains within the aura.\n\nCritical Failure As failure, but the effect persists for 3 rounds after leaving the aura.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "heavy-aura",
+            "traits": [
+              "divine",
+              "incapacitation"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stygian Guardian",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature or object within the sarglagon's reach is targeted by an attack\n\n---\n\nEffect The sarglagon interposes themself, giving the creature or object Standard Cover against the attack (+2 circumstance bonus to AC), or Greater Cover (+4 circumstance bonus to AC) if the sarglagon was already granting it lesser cover."
+    },
+    {
+      "kind": "ability",
+      "name": "Drown",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "incapacitation"
+      ],
+      "text": "The sarglagon conjures murky water to fill the lungs of a creature within 30 feet of it that can't breathe water. The target must attempt a DC 26 Fortitude save save.\n\n---\n\nCritical Success The target is unaffected.\n\nSuccess The target coughs up water and is Sickened 1.\n\nFailure The target is holding its breath. The only action it can take is to attempt a Fortitude save against Drown to expel the water, which is a single action.\n\nCritical Failure The target falls Unconscious and begins suffocating. If the target succeeds at its Fortitude save while suffocating, it coughs up the water and can breathe again."
+    },
+    {
+      "kind": "ability",
+      "name": "Sarglagon Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 26 Fortitude save\n\n---\n\nMaximum Duration 6 rounds\n\nStage 1 2d6 poison damage and Clumsy 1 (1 round)\n\nStage 2 3d6 poison damage and Clumsy 2 (1 round)"
+    },
+    {
+      "kind": "spell",
+      "name": "Diabolic Pact",
+      "rank": 1,
+      "ref": "spells:spell/diabolic-pact"
+    }
+  ],
+  "text": "Sarglagons dwell in Hell's myriad waterways, lakes, and oceans. They serve as guardians of the Academy of Lies—the repository of secrets in Stygia, the fifth layer of Hell. Sarglagons breathe water and air with equal ease, and can move through water, land, and even air with uncanny swiftness. Few fiends travel the waterways of the multiverse, but where a river crosses the planes, odds are sarglagons have traveled it to further their infernal machinations. The only body of water they avoid is the River Styx, as the fiends have yet to develop any defense against that waterway's memory-sapping qualities. Mortal spellcasters sometimes bind sarglagons as guardians of precious secrets or treasures, particularly in aquatic areas. Most strangely, sarglagons sometimes act as unnerving caretakers to mortals who have no idea what they did to earn their unwanted protectors' attention. The constant uninvited vigilance of these devils is often disturbing and stifling to their wards.\n\n---\n\nMasters of corruption and architects of conquest, devils seek both to tempt mortal life to join in their pursuit of all things profane and to spread tyranny throughout all worlds. The temptations they offer mortals range from great powers granted by the signing of an infernal contract to twisted favors following a whispered pledge to a diabolic patron, or any number of even subtler exchanges. Those who succumb to these temptations find themselves consigned to an afterlife of endless torment in the pits of Hell, wherein the only hope of escape lies in the chance of being promoted to become a devil in the infernal ranks.\n\nEvery devil has a specific role to play in the upkeep of the remorseless bureaucratic machine that is Hell, from soldiers and scholars to inquisitors, lawyers, judges, and executioners. Lowly orts perform subservient labor to more powerful and specialized devils, such as infantry and contract devils, while the greatest nessaris command entire infernal armies.\n\nAsmodeus stands at the apex of the structure he created, but the layers below him are marked by a constant jockeying for position. Most diabolic plans ultimately serve to improve the schemer's place in the hierarchy."
+}

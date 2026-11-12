@@ -1,0 +1,42 @@
+{
+  "kind": "effect",
+  "slug": "effect-overflowing",
+  "system": "pf2e",
+  "name": "Effect: Overflowing",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Absorb Magic, Harness Natural Magic\n\nYou gain a status bonus to saving throws against effects with the arcane, divine, magical, occult, and primal traits.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "item:trait:arcane",
+              "item:trait:divine",
+              "item:trait:occult",
+              "item:trait:primal"
+            ]
+          }
+        ],
+        "selector": [
+          "saving-throw"
+        ],
+        "type": "status",
+        "value": "ternary(gte(@actor.level,15),2,1)"
+      }
+    }
+  ]
+}

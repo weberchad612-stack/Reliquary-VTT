@@ -1,0 +1,201 @@
+{
+  "kind": "creature",
+  "slug": "bul-gae",
+  "system": "pf2e",
+  "name": "Bul-Gae",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "cold",
+    "fire",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 255,
+    "perception": 26,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 22,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 7,
+      "dex": 4,
+      "int": 5,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 28,
+      "intimidation": 23,
+      "stealth": 23,
+      "survival": 25
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 15
+        },
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Leap",
+      "actions": 1,
+      "category": "interaction",
+      "traits": [
+        "occult",
+        "shadow",
+        "teleportation"
+      ],
+      "text": "Requirements The bul-gae is in dim light or darkness\n\n---\n\nEffect The bul-gae dives into a shadow and reappears from a shadow within 40 feet."
+    },
+    {
+      "kind": "ability",
+      "name": "Eclipse Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "darkness",
+        "occult"
+      ],
+      "text": "100 feet. Light and shadows morph strangely around the bul-gae. A creature attempting to create a light effect within the aura must attempt a DC 5 Flat check check. On a failure, the attempt fails, the effect is lost, and the DC to counteract darkness effects within the aura is increased by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 100,
+            "slug": "eclipse-aura",
+            "traits": [
+              "darkness",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Solar Flare",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "fire",
+        "occult"
+      ],
+      "text": "Trigger The bul-gae takes damage\n\n---\n\nEffect The bul-gae releases a solar flare in a 30-foot emanation. Each creature in the area takes 6d8 fire damage (DC 34 basic Reflex save save). On a critical failure, a creature also takes 2d10 persistent,fire damage. After using this ability, the bul-gae's flames cool and they can't use Solar Flare again until after they have used Lunar Burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Lunar Burst",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "occult"
+      ],
+      "text": "The bul-gae releases a blast of otherworldly frost that deals 6d8 cold damage to each creature in a 10-foot emanation (DC 34 basic Reflex save save). On a critical failure, a creature also becomes Slowed 2. After using this ability, the bul-gae's flames heat up and they can't use Lunar Burst again until after they have used Solar Flare."
+    },
+    {
+      "kind": "ability",
+      "name": "Thermal Mastery",
+      "category": "offensive",
+      "text": "The bul-gae has total control over the powers of cold and fire. Each time it attacks with its jaws, it can choose to have the additional damage be either cold damage or fire damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "thermal-mastery",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "{item|flags.system.rulesSelections.thermalMastery}",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Bul-gaes are manifestations of the eclipsed sun and moon. They resemble large canines, though their coloration and features change as they exercise their powers over heat and cold. Depending on whether they have most recently unleashed their lunar or solar powers, a bul-gae resembles either a crimson hound wreathed in flames or a cerulean, frostbitten fox, respectively.\n\nLegends say that the first bul-gae attempted to steal the sun from the sky. As they bit down on the burning sphere, though, the bul-gae was badly burned. Having failed, they then tried to retrieve the moon, but when they touched the moon the bul-gae froze solid and fell to the ground. The descendants of that bul-gae forever hone their powers of flame and ice so that they may one day succeed where their ancestor failed."
+}

@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "effect-sacred-defense",
+  "system": "pf2e",
+  "name": "Effect: Sacred Defense",
+  "source": {
+    "title": "Pathfinder Lost Omens Gods & Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sacred Defense\n\nYou gain temporary Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Cleric.SacredDefense.ReligionDCThirty",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.Cleric.SacredDefense.ReligionDCForty",
+            "predicate": [
+              {
+                "gte": [
+                  "skill:religion:rank",
+                  4
+                ]
+              }
+            ],
+            "value": 3
+          }
+        ],
+        "flag": "dc",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DifficultyClass"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 1
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 1.5
+          }
+        ],
+        "flag": "degree",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "ceil(@item.flags.system.rulesSelections.dc*@item.flags.system.rulesSelections.degree)*5"
+      }
+    }
+  ]
+}

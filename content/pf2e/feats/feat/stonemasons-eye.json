@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "stonemasons-eye",
+  "system": "pf2e",
+  "name": "Stonemason's Eye",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dwarf"
+  ],
+  "category": "ancestry",
+  "text": "You understand the intricacies of stonework. You become trained in Crafting. If you're already trained in Crafting, you instead gain the Specialty Crafting skill feat for stonemasonry.\n\nYou also gain a +2 circumstance bonus to Perception checks to notice unusual stonework. This bonus applies to checks to discover mechanical traps made of stone or Hidden within stone.\n\nIf you aren't using the Seek action or searching, the GM automatically rolls a secret check for you to notice unusual stonework anyway. This check doesn't gain your normal circumstance bonus.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:seek",
+        "terrain:unusual-stonework"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "skill:crafting:rank",
+              1
+            ]
+          }
+        ],
+        "preselectChoices": {
+          "specialtyCrafting": "stonemasonry"
+        },
+        "uuid": "Compendium.pf2e.feats-srd.Item.Specialty Crafting"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.crafting.rank",
+        "value": 1
+      }
+    }
+  ]
+}

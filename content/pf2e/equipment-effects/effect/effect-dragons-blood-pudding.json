@@ -1,0 +1,88 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragons-blood-pudding",
+  "system": "pf2e",
+  "name": "Effect: Dragon's Blood Pudding",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Dragon's Blood Pudding (Moderate), Dragon's Blood Pudding (Greater)\n\nYou are quickened. You can use the additional action to Step, Stride, Strike, or Demoralize. You gain an item bonus to Intimidation checks to Demoralize.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dragons-blood-pudding-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dragon's Blood Pudding (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dragons-blood-pudding-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dragon's Blood Pudding (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "dragons-blood-pudding"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "intimidation",
+      "type": "item",
+      "value": 2,
+      "slug": "dragons-blood-pudding-bonus",
+      "when": [
+        "action:demoralize"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "dragons-blood-pudding:dragons-blood-pudding-greater"
+        ],
+        "selector": "intimidation",
+        "slug": "dragons-blood-pudding-bonus",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    }
+  ]
+}

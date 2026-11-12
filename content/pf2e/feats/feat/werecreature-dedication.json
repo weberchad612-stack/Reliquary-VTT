@@ -1,0 +1,589 @@
+{
+  "kind": "feat",
+  "slug": "werecreature-dedication",
+  "system": "pf2e",
+  "name": "Werecreature Dedication",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "text": "Requirements You were born into a lineage of true werecreatures or were afflicted with the curse of the werecreature.\n\n---\nYou're a werecreature, able to shift between your humanoid shape, an animal shape, and a monstrous hybrid of the two. You gain the beast and werecreature traits. Choose your werecreature type.\n\nOnce chosen, this can't be changed. You gain the Toughness feat but also a weakness to silver equal to half your level. You gain the Change Shape action. On the night of the full moon, you automatically use Change Shape to assume your hybrid shape, and you can't voluntarily activate or dismiss Change Shape until sunrise.\n\nWerecreature\n\n---\nSpecial If you're a beastkin, you can use unarmed attacks from your hybrid shape while you're in your werecreature hybrid shape. These forms are otherwise separate.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Werebat.Label",
+            "value": "werebat"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Werebear.Label",
+            "value": "werebear"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Wereboar.Label",
+            "value": "wereboar"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Werecrocodile.Label",
+            "value": "werecrocodile"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Weremoose.Label",
+            "value": "weremoose"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Wererat.Label",
+            "value": "wererat"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Wereshark.Label",
+            "value": "wereshark"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Weretiger.Label",
+            "value": "weretiger"
+          },
+          {
+            "label": "PF2E.SpecificRule.Werecreature.Werewolf.Label",
+            "value": "werewolf"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "werecreature"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Toughness"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "feat:beastkin-resilience"
+          }
+        ],
+        "type": "silver",
+        "value": "floor(@actor.level/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "beast",
+          "werecreature"
+        ],
+        "key": "ActorTraits"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Change Shape"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.NPCAbility.ChangeShape.Label",
+        "mergeable": true,
+        "option": "change-shape",
+        "suboptions": [
+          {
+            "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+            "value": "hybrid"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+            "value": "animal"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:change-shape"
+        ],
+        "property": "traits",
+        "value": "primal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Werecreature.ChangeShape.AlterationLabel",
+        "mode": "override",
+        "predicate": [
+          "item:slug:change-shape"
+        ],
+        "priority": 160,
+        "property": "description",
+        "value": [
+          {
+            "divider": true,
+            "text": "PF2E.SpecificRule.ChangeShape.Werecreature"
+          },
+          {
+            "predicate": [
+              "werecreature:werebat"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Werebat.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:werebear"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Werebear.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:wereboar"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Wereboar.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:werecrocodile"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Werecrocodile.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:weremoose"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Weremoose.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:wererat"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Wererat.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:wereshark"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Wereshark.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:weretiger"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Weretiger.Description"
+          },
+          {
+            "predicate": [
+              "werecreature:werewolf"
+            ],
+            "text": "PF2E.SpecificRule.Werecreature.Werewolf.Description"
+          }
+        ]
+      }
+    },
+    {
+      "key": "speed",
+      "type": "land",
+      "value": 10
+    },
+    {
+      "key": "speed",
+      "type": "fly",
+      "value": 15
+    },
+    {
+      "key": "speed",
+      "type": "land",
+      "value": 25
+    },
+    {
+      "key": "speed",
+      "type": "land",
+      "value": 30
+    },
+    {
+      "key": "speed",
+      "type": "swim",
+      "value": 15
+    },
+    {
+      "key": "speed",
+      "type": "land",
+      "value": 15
+    },
+    {
+      "key": "speed",
+      "type": "land",
+      "value": 0
+    },
+    {
+      "key": "speed",
+      "type": "swim",
+      "value": 25
+    },
+    {
+      "key": "speed",
+      "type": "swim",
+      "value": 35
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/fangs.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Fangs",
+        "predicate": [
+          "werecreature:werebat",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "fangs",
+        "traits": [
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Jaws",
+        "predicate": [
+          {
+            "or": [
+              "werecreature:werebear",
+              "werecreature:weretiger"
+            ]
+          },
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "jaws",
+        "traits": [
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/claw.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Claw",
+        "predicate": [
+          {
+            "or": [
+              "werecreature:werebear",
+              "werecreature:weretiger"
+            ]
+          },
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "claw",
+        "traits": [
+          "agile",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/tusk.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Tusk",
+        "predicate": [
+          "werecreature:wereboar",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "tusk",
+        "traits": [
+          "sweep",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Jaws",
+        "predicate": [
+          {
+            "or": [
+              "werecreature:werecrocodile",
+              "werecreature:wereshark"
+            ]
+          },
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "jaws",
+        "traits": [
+          "grapple",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/antler.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Antler",
+        "predicate": [
+          "werecreature:weremoose",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "antler",
+        "traits": [
+          "shove",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Jaws",
+        "predicate": [
+          "werecreature:wererat",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "jaws",
+        "traits": [
+          "finesse",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/claw.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Claw",
+        "predicate": [
+          "werecreature:wererat",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "claw",
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Jaws",
+        "predicate": [
+          "werecreature:werewolf",
+          {
+            "or": [
+              "change-shape:hybrid",
+              "change-shape:animal"
+            ]
+          }
+        ],
+        "slug": "jaws",
+        "traits": [
+          "trip",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "werecreature:wererat",
+          "change-shape:animal"
+        ],
+        "value": "small"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "amphibious"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          "werecreature:wereshark",
+          "change-shape:hybrid"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "aquatic"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          "werecreature:wereshark",
+          "change-shape:animal"
+        ]
+      }
+    }
+  ]
+}

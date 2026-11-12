@@ -1,0 +1,153 @@
+{
+  "kind": "creature",
+  "slug": "old-crackjaw",
+  "system": "pf2e",
+  "name": "Old Crackjaw",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "animal"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 78,
+    "perception": 11,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 9,
+      "will": 13
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 4,
+      "dex": 2,
+      "int": -4,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 12,
+      "stealth": {
+        "value": 11,
+        "special": [
+          {
+            "value": 13,
+            "label": "in Water",
+            "when": [
+              "terrain:water"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 15,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "interaction",
+      "text": "Old Crackjaw can hold its breath for 30 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Clench Jaws",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Old Crackjaw damaged a creature with a jaws Strike in its previous action\n\n---\n\nEffect Old Crackjaw clenches its jaws down and automatically deals an additional 2d8 bludgeoning damage to the creature it just bit."
+    },
+    {
+      "kind": "ability",
+      "name": "Gnawing Bite",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Old Crackjaw makes a jaws Strike against an object. This counts as two attacks when calculating Old Crackjaw's multiple attack penalty. If this Strike hits, Old Crackjaw deals an extra die of weapon damage to the object.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "gnawing-bite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "piercing",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "gnawing-bite"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shell Defense",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Old Crackjaw retracts its limbs and head into its shell and ends its turn. This increases its AC to 25, but it can't act except to reemerge, which it can do as a single action.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "shell-defense"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "shell-defense",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Snapping turtles are freshwater reptiles with a long flexible neck, a sharp piercing beak, and a confrontational temperament that doesn't prevent some spellcasters from choosing these creatures as familiars. They weigh about 20 pounds and have shells around 18 inches in length.",
+  "blurb": "Variant snapping turtle"
+}

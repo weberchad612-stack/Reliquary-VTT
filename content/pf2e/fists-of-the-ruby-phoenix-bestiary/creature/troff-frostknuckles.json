@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "troff-frostknuckles",
+  "system": "pf2e",
+  "name": "Troff Frostknuckles",
+  "source": {
+    "title": "Pathfinder #167: Ready? Fight!",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "goblin",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 250,
+    "perception": 23,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 27,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 5,
+      "int": 1,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 27,
+      "stealth": 27
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "goblin",
+      "skald",
+      "taldane"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+2 Striking Frost Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bands of Force (Greater)",
+      "ref": "equipment:item/bands-of-force-greater",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Icicle Gouge",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "backstabber",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "trip"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Avalanche Pummel",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Troff makes an icicle gouge Strike against an Off-Guard creature. On a hit, the creature is Dazzled. On a critical hit, the creature is Blinded. Either way, the effect lasts until the start of Troff's next turn. If his Strike fails (but isn't a critical failure), Troff still deals 13 piercing damage to the creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Chattering Blow",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "press"
+      ],
+      "text": "Requirements Troff is within reach of a creature that has taken cold damage since the end of Troff's last turn\n\n---\n\nEffect Troff jabs a pressure point on the creature made vulnerable by cold. The creature must attempt a DC 31 Fortitude save save as its skin freezes and its limbs turn sluggish and clammy.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 2d4 persistent,cold damage and a –5-foot status penalty to its Speeds until the persistent cold damage ends. Dealing fire damage to the creature is an especially effective way to help end the persistent cold damage (allowing a new flat check to end it at DC 10).\n\nFailure As success, but the damage is 4d4 persistent,cold damage and the penalty is –15-foot.\n\nCritical Failure As success, but the damage is 6d4 persistent,cold damage and the creature is Immobilized instead of taking a Speed penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Troff makes two Strikes with his fist or with a monk weapon. If both hit the same creature, combine their damage for the purpose of resistances and weaknesses.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:trait:unarmed"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "frost"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Icicle Stance",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "Trigger Troff rolls initiative or his turn starts\n\n---\n\nEffect Troff readies himself to strike suddenly, like a falling icicle. While in this stance, Troff can make icicle gouge Strikes. While Troff is above a creature and in icicle stance, that creature is Off-Guard to him.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.TroffFrostknuckles.IcicleStance.AboveTarget",
+            "option": "icicle-stance-above",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "icicle-stance-above"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male hobgoblin brawler"
+}

@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "become-as-spirit",
+  "system": "pf2e",
+  "name": "Become as Spirit",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "necromancer"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "spirit grim fascination"
+  ],
+  "text": "You can move through an unwilling creature's spaces as if they were difficult terrain. Additionally, you ignore natural difficult terrain and gain a +2 circumstance bonus to escape attempts. Whenever you destroy a thrall, you gain resistance to all damage (except force, ghost touch, spirit, or vitality) equal to half your level for 1 round.\n\nEffect: Become as Spirit",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SkillVariant.Natural",
+        "option": "terrain:natural",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.movement.terrain.difficult.ignored",
+        "phase": "afterDerived",
+        "predicate": [
+          "terrain:natural"
+        ],
+        "value": {
+          "environment": "all",
+          "feature": "all"
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "acrobatics",
+        "athletics",
+        "unarmed-attack"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:escape"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-musical-shift",
+  "system": "pf2e",
+  "name": "Spell Effect: Musical Shift",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Musical Shift\n\nFlat (key signature) Whenever an enemy critically fails at a Strike, saving throw, or skill check, they fall Prone in addition to other effects from the critical failure.\n\nNatural (key signature) Enemies take a –2 status penalty to attack rolls.\n\nSharp (key signature) Whenever an enemy takes piercing or slashing damage, they also take 2d6 persistent bleed damage.\n\nDouble (time signature) You and your allies become Quickened and can use the extra action each round only for Leap, Stand, Step, or Stride actions.\n\nQuadruple (time signature) You and your allies gain a +2 status bonus to attack rolls.\n\nTriple (time signature) You and your allies gain a +2 status bonus to Armor Class and Reflex saving throws.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Flat.Label",
+            "value": "flat"
+          },
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Natural.Label",
+            "value": "natural"
+          },
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Sharp.Label",
+            "value": "sharp"
+          },
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Double.Label",
+            "value": "double"
+          },
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Quadruple.Label",
+            "value": "quadruple"
+          },
+          {
+            "label": "PF2E.SpecificRule.MusicalShift.Triple.Label",
+            "value": "triple"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.MusicalShift.Prompt",
+        "rollOption": "musical-shift"
+      }
+    },
+    {
+      "key": "note",
+      "selector": [
+        "strike-attack-roll",
+        "skill-check",
+        "saving-throw"
+      ],
+      "text": "PF2E.SpecificRule.MusicalShift.Flat.Note",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        "musical-shift:flat"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.MusicalShift.Sharp.Note",
+      "when": [
+        {
+          "or": [
+            "item:damage:type:piercing",
+            "item:damage:type:slashing"
+          ]
+        },
+        "musical-shift:sharp"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "musical-shift:double"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": -2,
+      "slug": "musical-shift-attack",
+      "when": [
+        {
+          "or": [
+            "musical-shift:natural",
+            "musical-shift:quadruple"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "reflex"
+      ],
+      "type": "status",
+      "value": 2,
+      "when": [
+        "musical-shift:triple"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "musical-shift:quadruple"
+        ],
+        "selector": "attack",
+        "slug": "musical-shift-attack",
+        "value": -1
+      }
+    }
+  ]
+}

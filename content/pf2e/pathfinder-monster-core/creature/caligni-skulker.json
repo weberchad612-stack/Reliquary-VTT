@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "caligni-skulker",
+  "system": "pf2e",
+  "name": "Caligni Skulker",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "caligni",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 19,
+    "hp": 30,
+    "perception": 8,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": -1,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 4,
+      "stealth": 10,
+      "thievery": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "caligni"
+    ],
+    "notes": {
+      "hp": "final night",
+      "perception": "light blindness"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkening Poison",
+      "ref": "equipment:item/darkening-poison",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "darkening-poison"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "darkening-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Final Night",
+      "category": "defensive",
+      "traits": [
+        "darkness",
+        "occult"
+      ],
+      "text": "When the caligni skulker dies, their remains dissolve into a 20-foot emanation of inky darkness before dissipating. The darkness extinguishes non-magical light sources and attempts to counteract magical light as a 1st-rank effect with a +10 counteract modifier.\n\nThe skulker's possessions are left in a pile where they died."
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The caligni skulker deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tumble Behind",
+      "category": "offensive",
+      "text": "When the caligni skulker Tumbles Through a creature's space, that creature is Off-Guard against the next attack the skulker makes against it before the end of its turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "acrobatics",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "action:tumble-through"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tumble-behind",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "tumble-behind"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Most often found on the surface are caligni skulkers, stealing staple goods and luxuries alike. When pressed into combat by more powerful caligni, skulkers will often be sacrificed in waves to wear down the enemy. Otherwise, skulkers are fairly cautious and prefer to flee unwinnable situations.\n\n---\n\nCalignis lurk in subterranean cities, with each caligni growing into a specific role and form determined by supernatural influences in caligni society. Regardless of their size or role, all calignis are gaunt, with pale flesh and white eyes. Many relish the chance to creep above ground at night to steal resources, shadow their surface counterparts, or simply make mischief."
+}

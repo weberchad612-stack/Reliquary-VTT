@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "dezullon-thicket",
+  "system": "pf2e",
+  "name": "Dezullon Thicket",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "plant",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 36,
+    "hp": 270,
+    "perception": 25,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 28,
+      "will": 23
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 8,
+      "int": -4,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 29,
+      "athletics": 27,
+      "stealth": {
+        "value": 29,
+        "special": [
+          {
+            "value": 33,
+            "label": "in forests or swamps",
+            "when": [
+              {
+                "or": [
+                  "terrain:forest",
+                  "terrain:swamp"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 15
+        },
+        {
+          "type": "splash-damage",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments); Thresholds 180 (3 segments), 90 (2 segments)",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Regeneration",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "fire"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regrowth",
+      "category": "defensive",
+      "text": "When the dezullon thicket's regeneration raises its Hit Points above a listed threshold after losing a segment for dropping below it, the thicket immediately regains that lost segment."
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 180 (4 segments); Thresholds 180 (3 segments), 90 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Acid Rain",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dezullon thicket discharges a cascade of acidic digestive juices as a ranged attack, dealing 6d6 acid damage in a 10-foot burst within 30 feet (DC 33 basic Reflex save save) and exposing any creature struck to amnesia venom. When the thicket is reduced to 2 segments, this area decreases to a 5-foot burst."
+    },
+    {
+      "kind": "ability",
+      "name": "Amnesia Venom",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "poison"
+      ],
+      "text": "Saving Throw DC 33 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 Clumsy 1 (1 round)\n\nStage 2 Clumsy 2 (1 round)\n\nStage 3 Confused, Off-Guard, and Clumsy 3 (1 round)\n\nStage 4 as Stage 3 and permanently forget the last hour (1 round)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "acid-rain-inline-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1d10+6 bludgeoning, DC 36 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Root",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the dezullon thicket appears to be a field of normal pitcher plants. It has an automatic result of 49 (53 in forests or swamps) on Deception checks and DCs to pass as a grove of non-creature plants."
+    },
+    {
+      "kind": "ability",
+      "name": "Thrashing Vines",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The thicket makes a melee attack against each enemy within a 5-foot emanation (DC 33 basic Reflex save save). The damage depends on the number of actions.\n\n1 1d8+3 bludgeoning plus 1d6 acid\n\n2 2d8+11 bludgeoning plus 2d6 acid and Mass Improved Grab\n\n3 3d8+12 bludgeoning plus 3d6 acid and Mass Improved Grab",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Mass Improved Grab",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger A creature fails or critically fails their Reflex save against the dezullon thicket's Thrashing Vines\n\n---\nEffect The dezullon thicket attempts an Athletics check to grapple the triggering creature. A dezullon thicket can Grapple as many creatures as it has remaining segments, though it needs to spend an action to extend the duration on subsequent rounds. These attempts neither apply nor count toward the creature's multiple attack penalty.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "thrashing-vines-inline-damage",
+          "text": "{item|description}",
+          "when": [
+            "mass-improved-grab"
+          ]
+        }
+      ]
+    }
+  ]
+}

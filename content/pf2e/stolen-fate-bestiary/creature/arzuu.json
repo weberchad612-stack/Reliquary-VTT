@@ -1,0 +1,230 @@
+{
+  "kind": "creature",
+  "slug": "arzuu",
+  "system": "pf2e",
+  "name": "Arzuu",
+  "source": {
+    "title": "Pathfinder #191: The Destiny War",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "earth",
+    "elemental"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 34,
+    "hp": 240,
+    "perception": 24,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 24,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 5,
+      "int": 4,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 26,
+      "stealth": 24,
+      "survival": 24,
+      "geology-lore": 25
+    },
+    "speeds": {
+      "land": 20,
+      "burrow": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "petran"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "bludgeoning",
+          "value": 15
+        },
+        {
+          "type": "sonic",
+          "value": 15
+        }
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 15
+        },
+        {
+          "type": "electricity",
+          "value": 15
+        },
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "speed": "earth glide"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaw",
+      "attack": 26,
+      "traits": [
+        "deadly-d10"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "crystal-corruption"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+13",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "crystal-corruption"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Claw Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The xorn makes three claw Strikes; no more than two can be against the same target. These attacks count toward the xorn's multiple attack penalty, but the penalty doesn't increase until after all the attacks have been made."
+    },
+    {
+      "kind": "ability",
+      "name": "Crystal Corruption",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "curse",
+        "incapacitation"
+      ],
+      "text": "Creatures afflicted by this curse slowly turn to solid crystal. This affliction's sickened, slowed, and paralyzed conditions can't be removed until the affliction itself is removed. Creatures with both the earth and elemental traits instead become carriers and suffer no ill effects aside from gaining the weakness to sonic.\n\nSaving Throw DC 33 Fortitude save\n\nStage 1 sickened 1 (1 hour)\n\nStage 2 weakness 5 to sonic and Sickened 1 (1 day)\n\nStage 3 weakness 5 to sonic and Slowed 1 (1 day)\n\nStage 4 weakness 10 to sonic and Paralyzed (1 day)\n\nStage 5 weakness 10 to sonic, and the creature is permanently Petrified."
+    },
+    {
+      "kind": "ability",
+      "name": "Crystal Splinter",
+      "category": "offensive",
+      "text": "On a critical hit with a claw Strike, the crystalline sentinel inflicts 2d6 persistent,bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Earth Glide",
+      "category": "offensive",
+      "text": "The xorn can Burrow through any earthen matter, including rock. When it does so, the xorn moves at its full burrow Speed, leaving no tunnels or signs of its passing."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Arzuu deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "These squat, rotund elementals have three legs, three arms, three eyes, and one massive maw, which they fill with the gems and metals they find so delicious.\n\n---\n\nEarth elementals make excellent bodyguards for adventuresome spelunkers and are ideal protectors of important subterranean locations such as vaults and treasuries.",
+  "blurb": "Variant xorn"
+}

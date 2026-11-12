@@ -1,0 +1,281 @@
+{
+  "kind": "creature",
+  "slug": "pathfinder-field-agent",
+  "system": "pf2e",
+  "name": "Pathfinder Field Agent",
+  "source": {
+    "title": "Pathfinder Lost Omens Character Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "elf",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 13,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "arcana": 8,
+      "athletics": 6,
+      "deception": 6,
+      "diplomacy": 6,
+      "stealth": 12,
+      "survival": 8,
+      "thievery": 10,
+      "pathfinder-society-lore": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ],
+    "notes": {
+      "ac": "(22 against traps)",
+      "saves": "+1 circumstance to all saves vs. traps",
+      "perception": "trap finder"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Comprehension Elixir (Lesser)",
+      "ref": "equipment:item/comprehension-elixir-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Minor)",
+      "ref": "equipment:item/healing-potion-minor",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Infiltrator's Elixir",
+      "ref": "equipment:item/infiltrators-elixir",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 12,
+      "traits": [
+        "deadly-d8",
+        "disarm"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 12,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scout's Warning",
+      "actions": "reaction",
+      "category": "interaction",
+      "text": "Trigger The field agent is about to roll a Perception check for initiative.\n\n---\n\nEffect The field agent audibly or visually warns their allies of imminent danger. This ability gains the auditory trait if the warning is audible, and the visual trait if the warning is visual. Any ally who is able to hear the agent (if the warning is audible) or see the agent (if the warning is visual) gains a +1 circumstance bonus to their initiative roll.\n\nEffect: Scout's Warning"
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The field agent isn't Off-Guard to flanking, Hidden, or Undetected creatures of 4th level or lower, or to creatures of 4th-level or lower using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 4
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "offensive",
+      "text": "When the field agent takes a Stride action to move half their Speed or less, that movement does not trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The pathfinder agent deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, any creatures that haven't acted yet are Off-Guard to the field agent.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Trap Finder",
+      "category": "offensive",
+      "text": "The field agent has an intuitive sense that alerts them to the dangers and presence of traps. They gain a +1 circumstance bonus to Perception checks to find traps, to AC against attacks made by traps, and to saves against traps. Even if they aren't Searching, they still get a check to find traps. They can disable traps that require a proficiency rank of master in Thievery.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Trap Finder (detecting or defending against traps)",
+            "option": "trap-finder",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "trap-finder"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "trap-finder"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "trap-finder"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "This half-elf woman looks dressed to travel anywhere and prepared for any eventuality she might find along the way.\n\nNo two field agents follow the same path to join the Pathfinder Society, nor the same path once they embark on their first expedition. The Society's treacherous missions require all types of adventurers, from seasoned combatants to ruin delvers and experts in the occult. Some field agents are highly specialized, filling a single role in a larger group of Pathfinders, while others branch out into a broad range of abilities.\n\nThis field agent seeks the thrill of discovering lost treasures from the Inner Sea's many ancient ruins. She scouts ahead for her team, keeping an eye out for enemies, traps, and other dangers. In fights, she is cautious and practical, preferring to stay mobile and out of sight. She sneaks in for a finishing blow when victory is certain.\n\n---\n\nThe Pathfinder Society is a large and influential organization seeking to learn and share their knowledge to others, and its members can be found even in the least likely of places. PCs who are members of the Pathfinder Society might accompany a Pathfinder field agent or get news and assignments from a Pathfinder venture-captain."
+}

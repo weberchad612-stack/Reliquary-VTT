@@ -1,0 +1,210 @@
+{
+  "kind": "creature",
+  "slug": "keff-the-lion-3-4",
+  "system": "pf2e",
+  "name": "Keff The Lion (3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-14: Lions of Katapesh",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "animal",
+    "evil"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 50,
+    "perception": 10,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 3,
+      "int": 2,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 9,
+      "arcana": 8,
+      "athletics": 12,
+      "diplomacy": 8,
+      "stealth": 11
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Prepared Spells",
+      "tradition": "arcane",
+      "type": "prepared",
+      "dc": 18,
+      "attack": 10,
+      "spells": [
+        {
+          "name": "Color Spray",
+          "rank": 1,
+          "ref": "spells:spell/dizzying-colors"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Electric Arc",
+          "rank": 1,
+          "ref": "spells:spell/electric-arc"
+        },
+        {
+          "name": "Grease",
+          "rank": 1,
+          "ref": "spells:spell/grease"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Read Aura",
+          "rank": 1,
+          "ref": "spells:spell/read-aura"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "True Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claws",
+      "attack": 12,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The lion deals 1d4 extra damage to any creature that's within reach of at least two of the lion's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The lion Strides and makes a Strike at the end of that movement. If the lion began this action Hidden, it remains hidden until after the ability's Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The lion deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "kind": "creature",
+  "slug": "evora-yarket",
+  "system": "pf2e",
+  "name": "Evora Yarket",
+  "source": {
+    "title": "Pathfinder #152: Legacy of the Lost God",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "human",
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 115,
+    "perception": 14,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 11,
+      "will": 13
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 0,
+      "int": 1,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 19,
+      "intimidation": 10,
+      "nature": 13,
+      "performance": 10,
+      "survival": 13
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit",
+      "orcish"
+    ],
+    "notes": {
+      "saves": "successful Fortitude saves are critical successes instead"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Bullhook",
+      "ref": "equipment:item/bullhook",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Falling Stone Unarmed Attack",
+      "attack": 18,
+      "traits": [
+        "forceful",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Orc Ferocity",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Frequency once per day\n\nTrigger Evora would be reduced to 0 Hit Points but not immediately killed\n\n---\n\nEffect Evora avoids being knocked out and remains at 1 Hit Point, and her Wounded condition increases by 1.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Stand Still",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within Evora's reach uses a move action or leaves a square during a move action it's using\n\n---\n\nEffect Evora makes a melee Strike against the triggering creature. If this attack is a critical hit and the trigger was a move action, she disrupts that action."
+    },
+    {
+      "kind": "ability",
+      "name": "Successful Fortitude saves are critical successes instead",
+      "category": "defensive",
+      "text": "Successful Fortitude saves are critical successes instead",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude",
+            "type": "save"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "fortitude",
+          "text": "PF2E.SpecificRule.SaveSuccessToCriticalSuccess.Fortitude",
+          "outcome": [
+            "success"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Effect Evora makes two unarmed Strikes. If both hit the same creature, combine their damage and apply resistances and weaknesses only once. She applies her multiple attack penalty to the Strikes normally.\n\nAs it has the flourish trait, Evora can use Flurry of Blows only once per turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Mountain Stance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "Requirements Evora is unarmored and touching the ground\n\n---\n\nEffect Evora enters the stance of an implacable mountain until she is knocked out or the encounter ends. She gains a +4 status bonus to AC and a +2 circumstance bonus to any defenses against being Shoved or Tripped. Her Speed is reduced by 5 feet.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mountain-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "mountain-stance"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "speed",
+          "type": "untyped",
+          "value": -5,
+          "when": [
+            "mountain-stance"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "mountain-stance",
+            {
+              "or": [
+                "action:shove",
+                "action:trip"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mountain Stronghold",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Evora is in Mountain Stance\n\n---\n\nEffect Evora gains a +2 circumstance bonus to AC until the beginning of her next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "mountain-stronghold",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "mountain-stance",
+            "mountain-stronghold"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Female half-orc mammoth trainer"
+}

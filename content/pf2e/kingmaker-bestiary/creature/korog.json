@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "korog",
+  "system": "pf2e",
+  "name": "Korog",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 295,
+    "perception": 29,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 27,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 2,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 29,
+      "athletics": 33,
+      "intimidation": 30,
+      "religion": 29,
+      "survival": 29
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "hallit"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "electricity",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing, rejuvenation"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Maul",
+      "ref": "equipment:item/maul",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greater Shock Maul",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When a graveknight is destroyed, its armor rebuilds its body over the course of 1d10 days-or more quickly if the armor is worn by a living host. If the body is destroyed before then, the process restarts.\n\nA graveknight can only be permanently destroyed by obliterating its armor (such as with Disintegrate), transporting it to the Forge of Creation, or throwing it into the heart of a volcano."
+    },
+    {
+      "kind": "ability",
+      "name": "Sacrilegious Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "evil"
+      ],
+      "text": "30 feet. When a creature in the aura uses a vitality spell or ability, the graveknight automatically attempts to counteract it, with a counteract modifier of +26.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "sacrilegious-aura",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Designate Blood Foe",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Korog declares one creature he can see within 30 feet to be his blood-foe whom he swears to defeat. He can have up to three blood-foes designated at a time; any additional blood-foe removes another blood-foe of Korog's choice. Korog treats the results of Perception checks made against blood-foes as improved by one degree, and he has a +2 circumstance bonus to AC against his blood-foes' attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "blood-foe",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "blood-foe"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devastating Blast",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "electricity"
+      ],
+      "text": "The graveknight unleashes a 30-foot cone of energy. Creatures in the area take 9d12 electricity damage (DC 37 basic Reflex save save). The graveknight can use this ability once every 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Graveknight's Curse",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "curse"
+      ],
+      "text": "This curse affects anyone who wears a graveknight's armor for at least 1 hour.\n\nSaving Throw DC 37 Will save save\n\n---\n\nOnset 1 hour\n\nStage 1 Doomed 1 and cannot remove the armor (1 day)\n\nStage 2 Doomed 2, the creature's Speed is reduced by 10, and cannot remove the armor (1 day)\n\nStage 3 dies and transforms into the armor's graveknight.\n\nEffect: Graveknight's Curse"
+    },
+    {
+      "kind": "ability",
+      "name": "Korog's Command",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect Korog commands his allies to take an action. All allies who hear or see him are Quickened for 1 round and can use this extra action to Step, Stride, or make a Strike against one of Korog's blood-foes.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Weapon Master",
+      "category": "offensive",
+      "text": "The graveknight has access to the critical specialization effects of any weapons it wields.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Graveknights are undead warriors granted unlife by a cursed suit of armor.",
+  "blurb": "Variant graveknight"
+}

@@ -1,0 +1,130 @@
+{
+  "kind": "creature",
+  "slug": "animated-army",
+  "system": "pf2e",
+  "name": "Animated Army",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "construct",
+    "mindless",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 27,
+    "hp": 120,
+    "perception": 13,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 14,
+      "will": 13
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": 0,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 18
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 8
+        },
+        {
+          "type": "splash-damage",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments); Thresholds 120 (4 segments); Thresholds 80 (3 segments), 40 (2 segments)",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Construct Armor",
+      "category": "defensive",
+      "text": "Like normal objects, the animated statues of the animated army have Hardness. This Hardness reduces any damage the animated army takes by an amount equal to the Hardness. Once an animated army is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 23.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 120 (4 segments); Thresholds 80 (3 segments), 40 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Battering Fists",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The animated army makes a melee attack against each enemy in a 5-foot emanation (DC 23 basic Reflex save save). The damage dealt depends on the number of actions.\n\n1 1d8+2 bludgeoning damage\n\n2 2d8+8 bludgeoning damage\n\n3 3d8+10 bludgeoning damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "Animated statues usually appear in pairs or alone, hiding in plain sight among the other decor. Occasionally, a creator will fashion dozens of animated statues to serve as a nigh-unstoppable fighting force that doesn't complain or tire."
+}

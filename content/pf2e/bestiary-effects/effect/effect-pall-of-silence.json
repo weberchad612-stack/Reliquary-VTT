@@ -1,0 +1,108 @@
+{
+  "kind": "effect",
+  "slug": "effect-pall-of-silence",
+  "system": "pf2e",
+  "name": "Effect: Pall of Silence",
+  "source": {
+    "title": "Pathfinder #220: Crypt of Runes",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "You can't use sonic attacks, use auditory actions, or Cast a Spell without the subtle trait.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": [
+        "attack-roll",
+        "attack-damage"
+      ],
+      "text": "{item|description}",
+      "when": [
+        {
+          "or": [
+            "item:trait:sonic",
+            "item:damage:type:sonic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:trait:auditory",
+              {
+                "and": [
+                  "item:trait:attack",
+                  "item:trait:sonic"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "{item|description}"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:trait:auditory",
+              {
+                "and": [
+                  "item:trait:attack",
+                  "item:trait:sonic"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "{item|description}"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "item:trait:subtle"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "{item|description}"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "batkin-guard",
+  "system": "pf2e",
+  "name": "Batkin Guard",
+  "source": {
+    "title": "Pathfinder #213: Thirst for Blood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "beastkin",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 7,
+      "will": 3
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 5,
+      "deception": 4,
+      "stealth": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Morningstar",
+      "ref": "equipment:item/morningstar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Minor)",
+      "ref": "equipment:item/elixir-of-life-minor",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Morningstar",
+      "attack": 7,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 5,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Change",
+      "actions": "free",
+      "category": "interaction",
+      "text": "Trigger The batkin rolls initiative\n\n---\nEffect The batkin's instincts kick in, and they take on an aggressive stance. The batkin uses Change Shape to enter their hybrid form.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The batkin changes into their humanoid or hybrid shape. Each shape has a specific, persistent appearance. In hybrid shape, the batkin appears as a mix between human and a bat. While in hybrid shape, they gain a jaws unarmed Strike resembling a bat's fangs. In their humanoid shape, they retain the appearance of their original ancestry.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "humanoid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 7,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              "change-shape:hybrid"
+            ],
+            "slug": "jaws",
+            "traits": [
+              "agile",
+              "finesse",
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snagging Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The batkin has one hand free, and their target is within reach of that hand\n\n---\nEffect The batkin makes a Strike while keeping one hand free. If this Strike hits, the target is Off-Guard until the start of the batkin's next turn or until the target is no longer within the reach of the batkin's hand, whichever comes first."
+    }
+  ],
+  "text": "Unlike true werecreatures, beastkin aren't affected by silver or the full moon, though they can still adopt a hybrid form.\nBatkin And Werebats\nParticularly large werebat colonies often host batkin among their ranks. Cultivating a population of batkin offers the werebats numerous benefits, the most obvious being the illusion of normality. Most werebats are nocturnal, so having batkin roam about during the day helps maintain the impression that the werebat settlement is nothing out of the ordinary. Batkin might also guard the colony during full moons, when the werebat members are away indulging in their lunar frenzies. Finally, batkin seem to have an easier time keeping their thirst for blood in check and thus serve as excellent infiltrators in non-werecreature settlements.",
+  "blurb": "Human beastkin"
+}

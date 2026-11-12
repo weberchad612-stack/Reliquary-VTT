@@ -1,0 +1,144 @@
+{
+  "kind": "action",
+  "slug": "resistance",
+  "system": "pf2e",
+  "name": "Resistance",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "category": "familiar",
+  "text": "Choose two of the following: acid, cold, electricity, fire, poison, or sonic. Your familiar gains resistance equal to half your level (minimum resistance 1) against the chosen damage types.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "resistanceOne",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Resistance",
+        "rollOption": "resistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "predicate": [
+              {
+                "not": "resistance:acid"
+              }
+            ],
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              {
+                "not": "resistance:cold"
+              }
+            ],
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              {
+                "not": "resistance:electricity"
+              }
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "not": "resistance:fire"
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "predicate": [
+              {
+                "not": "resistance:poison"
+              }
+            ],
+            "value": "poison"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "predicate": [
+              {
+                "not": "resistance:sonic"
+              }
+            ],
+            "value": "sonic"
+          }
+        ],
+        "flag": "resistanceTwo",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Resistance",
+        "rollOption": "resistance"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.resistanceOne}",
+      "value": "max(1,floor(@level/2))"
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.resistanceTwo}",
+      "value": "max(1,floor(@level/2))"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.resistance.resistanceOne",
+        "value": "{item|flags.system.rulesSelections.resistanceOne}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.resistance.resistanceTwo",
+        "value": "{item|flags.system.rulesSelections.resistanceTwo}"
+      }
+    }
+  ]
+}

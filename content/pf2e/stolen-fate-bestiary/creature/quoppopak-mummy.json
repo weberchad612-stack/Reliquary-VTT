@@ -1,0 +1,296 @@
+{
+  "kind": "creature",
+  "slug": "quoppopak-mummy",
+  "system": "pf2e",
+  "name": "Quoppopak Mummy",
+  "source": {
+    "title": "Pathfinder #191: The Destiny War",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "mummy",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 32,
+    "hp": 260,
+    "perception": 24,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 21,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 6,
+      "dex": 2,
+      "int": -2,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": {
+        "value": 27,
+        "special": [
+          {
+            "value": 30,
+            "label": "to Escape",
+            "when": [
+              "action:escape"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 10,
+      "swim": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "speed": "water glide 25 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 27,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "oil-rot"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab",
+        "oil-rot"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Ventral Tube",
+      "attack": 27,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d6+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "oil-rot"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Tentacle Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Despair",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "30 feet. Living creatures are Frightened 1 while in a mummy guardian's despair aura. They can't naturally recover from this fear while in the area but recover instantly once they leave the area. When a creature first enters the area, it must succeed at a DC 30 Will save save (after taking the penalty from being frightened) or be Paralyzed for 1 round. The creature is then temporarily immune for 24 hours.\n\nEffect: Despair",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:mode:living"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Despair"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "despair",
+            "traits": [
+              "divine",
+              "emotion",
+              "fear",
+              "incapacitation",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ignite Oil",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger The quoppopak mummy takes fire damage while it is above water\n\n---\n\nEffect The oil coating the mummy ignites. This fire does no additional damage to the mummy but does cause its melee Strikes to inflict an additional 1d6 fire damage. At the end of its turn, the mummy attempts a DC 10 Flat check; on a success, the fire goes out. The fire also goes out immediately if the mummy submerges in water.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "ignite-oil",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "ignite-oil"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Oil Rot",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "disease",
+        "divine"
+      ],
+      "text": "This disease and any damage from it can't be healed until this curse is removed. As the disease progresses, the creature's flesh grows leathery, while a foul-smelling oily layer spreads from painful splits in the dried skin. A creature killed by oil rot melts into a puddle of foul-smelling oil and can be resurrected only by a 7th-rank resurrect ritual or similar magic\n\nSaving Throw DC 33 Fortitude save\n\nStage 1 carrier with no ill effect (1 minute)\n\nStage 2 10d6 void damage and Clumsy 2 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Tentacle Stab",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The quoppopak makes two tentacle Strikes against the same creature. These Strikes deal piercing damage instead of bludgeoning, and the quoppopak can't Grab with them. Its multiple attack penalty doesn't increase until after both attacks.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "tentacle-stab",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "piercing"
+            },
+            "predicate": [
+              "tentacle-stab"
+            ],
+            "selector": "tentacle-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Water Glide",
+      "category": "offensive",
+      "text": "The quoppopak can stand and move on the surface of water or other liquids without falling through. It can go underwater if it wishes, but it must Swim to do so."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

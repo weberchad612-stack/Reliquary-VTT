@@ -1,0 +1,92 @@
+{
+  "kind": "effect",
+  "slug": "effect-furnace-form",
+  "system": "pf2e",
+  "name": "Effect: Furnace Form",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Furnace Form\n\nYou gain fire immunity, resistance 10 to precision damage, weakness 5 to cold and to water, and a fly Speed of 40 feet. Any creature that touches you or damages you with an unarmed attack or non-reach melee weapon takes 3d6 fire damage.\n\nYour unarmed attacks deal 1d4 additional fire damage, and your fire spells deal one additional die of fire damage (of the same damage die the spell uses). Your fire Elemental Blasts deal an additional die of damage.",
+  "rules": [
+    {
+      "key": "immunity",
+      "type": "fire"
+    },
+    {
+      "key": "resistance",
+      "type": "precision",
+      "value": 10
+    },
+    {
+      "key": "weakness",
+      "type": "cold",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "unarmed"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "speed",
+      "type": "fly",
+      "value": 40
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "item:trait:fire"
+        ],
+        "selector": "spell-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "item:trait:fire"
+        ],
+        "selector": "elemental-blast-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.SpellEffectFurnaceForm.Note",
+      "when": [
+        {
+          "or": [
+            "item:category:unarmed",
+            {
+              "not": "item:trait:reach"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

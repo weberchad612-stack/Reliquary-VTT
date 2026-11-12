@@ -1,0 +1,91 @@
+{
+  "kind": "background",
+  "slug": "curse-marked",
+  "system": "pf2e",
+  "name": "Curse-Marked",
+  "source": {
+    "title": "Pathfinder Bastion of Blasphemies Player's Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "rare",
+  "boosts": [
+    [
+      "int",
+      "wis"
+    ],
+    [
+      "cha",
+      "con",
+      "dex",
+      "int",
+      "str",
+      "wis"
+    ]
+  ],
+  "skills": [
+    "occultism"
+  ],
+  "lore": [
+    "Library Lore"
+  ],
+  "text": "You're not cursed now (unless you carry a curse from a different source, such as the oracle class), but you were at some point in the past. This could have been brought on by a cursed magic item, could have been the result of a botched adventure, or might have been brought upon you by some sort of supernatural force. Whatever the case, while you've since recovered from that curse, it's left an invisible mark upon your soul—a mark that functions almost like scar tissue. Your experience has also left you with a lifelong fascination about curses, and you've spent countless hours squirrelled away in libraries throughout the land researching curses, reading stories about those who endured curses, and examining the various complex ways one who becomes cursed can escape that fate. It was during one of these marathon study sessions you first met Florin Kindler, who had come to the same library as you to research a curse you've long been interested in—the curse of Bastardhall. Through this shared interest you've built something akin to a strong professional relationship that could even have grown into actual friendship. You were one of the first she contacted for assistance when she finally made the decision to mount an expedition to the notorious ruin.\n\nChoose two attribute boosts. One must be to Intelligence or Wisdom, and one is a free attribute boost.\n\nYou are trained in the Occultism skill and the Library Lore skill. As long as you are not cursed yourself (barring a class-based curse, such as that granted by the oracle), you gain a +2 circumstance bonus on checks made to counteract curses, on saving throws to resist curses, and on any skill check to disable a hazard capable of inflicting a curse. If you are cursed, you instead gain a –2 circumstance penalty to these rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.BastionOfBlasphemies.Background.CurseMarked.ToggleLabel",
+        "option": "curse-marked:cursed",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "counteract-check",
+        "saving-throw"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "slug": "curse-marked",
+      "when": [
+        "item:trait:curse"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "curse-marked-skill",
+      "when": [
+        {
+          "or": [
+            "origin:trait:curse",
+            "item:trait:curse"
+          ]
+        },
+        "disable-hazard"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "curse-marked:cursed",
+          "bonus:tag:curse-marked"
+        ],
+        "selectors": [
+          "counteract-check",
+          "saving-throw",
+          "skill-check"
+        ],
+        "value": -2
+      }
+    }
+  ]
+}

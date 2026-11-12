@@ -1,0 +1,241 @@
+{
+  "kind": "creature",
+  "slug": "saboteur",
+  "system": "pf2e",
+  "name": "Saboteur",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 28,
+    "perception": 8,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 3,
+      "int": 2,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 5,
+      "crafting": {
+        "value": 6,
+        "special": [
+          {
+            "value": 8,
+            "label": "to Craft snares",
+            "when": [
+              "action:craft:snare"
+            ]
+          }
+        ]
+      },
+      "deception": 7,
+      "diplomacy": 5,
+      "intimidation": 5,
+      "society": 6,
+      "stealth": 9,
+      "survival": 6,
+      "thievery": 9,
+      "engineering-lore": 8,
+      "underworld-lore": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "ac": "(19 vs. traps)",
+      "saves": "(+11 Reflex vs. traps)",
+      "perception": "(+10 to find traps)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sap",
+      "ref": "equipment:item/sap",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Artisan's Toolkit (Snare Toolkit)",
+      "ref": "equipment:item/artisans-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Crowbar",
+      "ref": "equipment:item/crowbar",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Sap",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "nonlethal"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 9,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Snare Crafting",
+      "category": "interaction",
+      "text": "The saboteur can Craft snares and has the supplies to make up to two Caltrop Snares and up to two Hampering Snares."
+    },
+    {
+      "kind": "ability",
+      "name": "Perception +10 to Find Traps",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "action:seek",
+                "target:trait:trap"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reflex +11 and AC 19 vs. Traps",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "reflex",
+            "ac"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "origin:trait:trap"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The saboteur deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Saboteurs excel at infiltration, using it to perform destructive acts.\n\n---\nVillains pursue selfish and cruel goals, trampling over anyone in their way."
+}

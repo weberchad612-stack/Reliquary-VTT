@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "dead-faine",
+  "system": "pf2e",
+  "name": "Dead Faine",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "good",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 315,
+    "perception": 32,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 29,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 0,
+      "dex": 5,
+      "int": 4,
+      "str": 0,
+      "wis": 5
+    },
+    "skills": {
+      "deception": 36,
+      "diplomacy": 33,
+      "intimidation": 33,
+      "religion": 30,
+      "society": 30
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "kelish",
+      "necril",
+      "osiriani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 35,
+      "attack": 27,
+      "spells": [
+        {
+          "name": "Tongues",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Mimic Undead",
+          "rank": 2,
+          "ref": "spells:spell/mimic-undead",
+          "uses": 2
+        },
+        {
+          "name": "Illusory Disguise",
+          "rank": 3,
+          "ref": "spells:spell/illusory-disguise"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Padded Armor",
+      "ref": "equipment:item/padded-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "3d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "3d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Give Them the Slip",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Dead Faine gains the Grabbed, Immobilized, or Restrained condition\n\n---\n\nEffect Dead Faine slips out of his disguise to escape; he removes the grabbed, immobilized, and restrained conditions imposed by the triggering event, then he Steps. If Dead Faine is currently Impersonating, his disguise is ruined, and he's exposed as himself."
+    },
+    {
+      "kind": "ability",
+      "name": "Adopt Persona",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Dead Faine attempts a Deception check to Impersonate. He doesn't take a penalty to this check due to lacking a disguise kit, to appear as an undead, or to appear as a specific individual."
+    },
+    {
+      "kind": "ability",
+      "name": "Feinting Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirements Dead Faine is within melee reach of an enemy\n\n---\n\nEffect Dead Faine Feints, then Strikes the target of his Feint.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Dead Faine deals an additional 4d6 precision damage to Off-Guard creatures. This increases to 6d6 against creatures off-guard due to Dead Faine's Feint or Traitorous Betrayal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "not": "target-feint-or-traitorous-betrayal"
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 6,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              "target-feint-or-traitorous-betrayal"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.DeadFaine.TargetFeintOrTraitorousBetrayal",
+            "option": "target-feint-or-traitorous-betrayal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Traitorous Betrayal",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Dead Faine Interacts to draw his dagger and Strikes with it. If the target believes Dead Faine was anyone other than himself, the target is Off-Guard against Dead Faine's attack."
+    }
+  ]
+}

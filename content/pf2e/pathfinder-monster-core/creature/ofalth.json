@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "ofalth",
+  "system": "pf2e",
+  "name": "Ofalth",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "aberration"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 170,
+    "perception": 18,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 17,
+      "will": 18
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 6,
+      "dex": 3,
+      "int": -2,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 23,
+      "stealth": {
+        "value": 19,
+        "special": [
+          {
+            "value": 23,
+            "label": "in trash",
+            "when": [
+              {
+                "or": [
+                  "terrain:trash",
+                  "terrain:rubbish"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "poison"
+      ]
+    },
+    "notes": {
+      "hp": "filth wallow"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 23,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "wretched-weeps"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Offal",
+      "attack": 19,
+      "range": 30,
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "wretched-weeps"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Refuse Pile",
+      "category": "interaction",
+      "text": "When they're not in danger, an ofalth can spend 1 minute settling into a 10-foot pile that looks like a heap of garbage. Until the next time it takes an action, the ofalth gains a +2 circumstance bonus to AC.\n\nA creature that enters the area of the garbage heap or interacts with it must attempt a save against the ofalth's stench.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "refuse-pile",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "refuse-pile"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Filth Wallow",
+      "category": "defensive",
+      "text": "An ofalth gains fast healing 2 when in an area with a high concentration of debris or excrement, such as a refuse heap or sewer.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "filth-wallow"
+            ],
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "filth-wallow",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stench",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "30 feet. DC 28 Fortitude save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "stench",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wretched Weeps",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 26 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d4 persistent bleed every hour and Enfeebled 1 (1 day);\n\nStage 3 2d6 persistent bleed every hour and Enfeebled 2 (1 day)"
+    }
+  ],
+  "text": "Fully grown ofalths capture victims and slowly eat them alive.\n\n---\n\nFound in castle dung heaps, city dumps, and sewers, ofalths are living amalgamations of wet detritus, sewage, and rubbish. They carry a disease called wretched weeps that causes the victim's blood to seep from its pores."
+}

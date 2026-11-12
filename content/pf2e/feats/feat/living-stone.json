@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "living-stone",
+  "system": "pf2e",
+  "name": "Living Stone",
+  "source": {
+    "title": "Pathfinder #195: Heavy is the Crown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Stonebound Dedication"
+  ],
+  "text": "Your body becomes living stone. You don't need to eat or drink and need only 6 hours of rest to feel well rested. You must still rest at least 8 hours and spend 1 hour of preparation to regain resources usable only a limited number of times per day, such as spell slots. You gain a +2 circumstance bonus to saving throws against diseases, poisons, and effects that would cause the Paralyzed or Stunned conditions. When you roll a successful saving throw against a disease or poison, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.stoneboundArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "disease",
+            "poison",
+            "inflicts:paralyzed",
+            "inflicts:stunned"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "poison",
+              "disease"
+            ]
+          }
+        ],
+        "selector": "saving-throw"
+      }
+    }
+  ]
+}

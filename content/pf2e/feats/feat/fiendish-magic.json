@@ -1,0 +1,76 @@
+{
+  "kind": "feat",
+  "slug": "fiendish-magic",
+  "system": "pf2e",
+  "name": "Fiendish Magic",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "nephilim"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "Grimspawn, Pitborn, Hellspawn, or another lineage feat associated with fiends"
+  ],
+  "text": "You possess fiendish magic. Choose two of the following spells: Disguise Magic, False Vitality, Invisibility, See the Unseen, Shatter, or Paranoia. You can use each of the chosen spells once per day as 2nd-rank divine innate spells.\n\nGrimspawn typically take false vitality and see the unseen, pitborn typically take paranoia and shatter, and hellspawn typically take invisibility and disguise magic.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "or": [
+                "item:slug:paranoia",
+                "item:slug:shatter",
+                "item:slug:disguise-magic",
+                "item:slug:see-the-unseen",
+                "item:slug:false-vitality",
+                "item:slug:invisibility"
+              ]
+            }
+          ],
+          "itemType": "spell",
+          "slugsAsValues": true
+        },
+        "flag": "spell",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.spell}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.spell}",
+          "spellcasting:innate"
+        ],
+        "property": "other-tags",
+        "value": "ancestral-spell:nephilim"
+      }
+    }
+  ]
+}

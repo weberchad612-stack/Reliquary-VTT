@@ -1,0 +1,155 @@
+{
+  "kind": "creature",
+  "slug": "najra-lizard",
+  "system": "pf2e",
+  "name": "Najra Lizard",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "dragon"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": -1,
+      "str": -1,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 14,
+      "deception": {
+        "value": 10,
+        "special": [
+          {
+            "value": 12,
+            "label": "to Create a Diversion",
+            "when": [
+              "action:create-a-diversion"
+            ]
+          }
+        ]
+      },
+      "stealth": 12,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "draconic"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "najra-lizard-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Venomous Spit",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "poison"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "poison"
+        }
+      ],
+      "effects": [
+        "najra-lizard-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shared Diversion",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Another creature in the najra lizard's square succeeds at a Deception check to Create a Diversion\n\n---\n\nEffect The najra lizard automatically successfully Creates a Diversion against the same targets."
+    },
+    {
+      "kind": "ability",
+      "name": "Najra Lizard Venom",
+      "category": "offensive",
+      "text": "The creature is extremely thirsty and can't quench its thirst while poisoned\n\nSaving Throw DC 21 Fortitude save\n\nMaximum Duration 4 hours\n\nStage 1 1d4 poison damage, Fatigued, and 1d4 untyped damage that can't be recovered until the creature quenches its thirst (1 round)\n\nStage 2 as stage 1 (1 hour)"
+    },
+    {
+      "kind": "ability",
+      "name": "Najra Swarm Attack",
+      "category": "offensive",
+      "text": "The najra lizard's melee Strikes deal 1d6 precision damage to creatures sharing a square with more than one najra lizard.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "najra-swarm-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "najra-swarm-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

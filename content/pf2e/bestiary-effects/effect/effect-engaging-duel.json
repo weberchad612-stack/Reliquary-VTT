@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "effect-engaging-duel",
+  "system": "pf2e",
+  "name": "Effect: Engaging Duel",
+  "source": {
+    "title": "Pathfinder #218: Titanbane",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "You gain a +1 circumstance bonus to Strike attack rolls and DCs against the marked creature. You take a –1 circumstance penalty to all checks and DCs against any creature other than the marked creature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "engaging-duel"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "strike-attack-roll",
+        "reflex-dc",
+        "fortitude-dc",
+        "will-dc"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "slug": "engaging-duel",
+      "when": [
+        {
+          "or": [
+            "target:mark:engaging-duel",
+            "origin:mark:engaging-duel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "nor": [
+              "target:mark:engaging-duel",
+              "origin:mark:engaging-duel"
+            ]
+          }
+        ],
+        "selector": [
+          "attack",
+          "skill-check",
+          "saving-throw"
+        ],
+        "slug": "engaging-duel-other",
+        "type": "circumstance",
+        "value": -1
+      }
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "kind": "creature",
+  "slug": "giant-tardigrade",
+  "system": "pf2e",
+  "name": "Giant Tardigrade",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "amphibious",
+    "animal"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 23,
+    "hp": 120,
+    "perception": 16,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 16,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 6,
+      "dex": 3,
+      "int": -5,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 19,
+      "stealth": 14,
+      "survival": 18
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Stylet",
+      "attack": 19,
+      "damage": [
+        {
+          "dice": "3d8+6",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claws",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+6",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eyespots",
+      "category": "interaction",
+      "text": "A giant tardigrade can't see anything beyond 30 feet."
+    },
+    {
+      "kind": "ability",
+      "name": "Tun State",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Trigger The tardigrade would be reduced to 0 Hit Points or would die due to starvation, suffocation, or similar environmental causes\n\nFrequency once per week\n\nRequirements The tardigrade isn't already in tun state\n\n---\n\nEffect The giant tardigrade doesn't die but instead remains at 1 Hit Point and curls into a dry ball, called a tun. While in this tun state, the giant tardigrade is Unconscious, doesn't need to eat, drink, or breathe, and doubles its resistance to 20. It remains in tun state indefinitely until covered in significant amounts of water, at which point it begins to rehydrate, gaining regeneration 5. The regeneration persists until it reaches maximum Hit Points. The giant tardigrade then exits its tun state.",
+      "frequency": {
+        "max": 1,
+        "per": "P1W"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tun-state",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.GiantTardigrade.TunState.Dry",
+                "value": "dry"
+              },
+              {
+                "label": "PF2E.NPCAbility.GiantTardigrade.TunState.Rehydrating",
+                "value": "rehydrating"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "tun-state"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Unconscious"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "tun-state"
+            ],
+            "type": "all-damage",
+            "value": 20
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "tun-state:rehydrating"
+            ],
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vacuum Mouth",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The giant tardigrade doesn't have a target Grabbed\n\n---\n\nEffect The giant tardigrade draws in air with its mouth. All creatures in a 20-foot cone must succeed at a DC 25 Reflex save save or be pulled adjacent to the giant tardigrade. The tardigrade chooses one creature that failed its save, Grabbing the target in its claws and making a stylet Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Tardigrades grow no larger than the width of a hair, but when their riverside environments are exposed to heightened levels of magic, these eight-legged omnivores can grow to tremendous sizes."
+}

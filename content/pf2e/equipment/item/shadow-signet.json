@@ -1,0 +1,74 @@
+{
+  "kind": "equipment",
+  "slug": "shadow-signet",
+  "system": "pf2e",
+  "name": "Shadow Signet",
+  "source": {
+    "title": "Pathfinder GM Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "invested",
+    "magical"
+  ],
+  "text": "This obsidian ring allows you to partially warp your spells through the Netherworld, allowing them to strike directly at a target's body.\n\nActivate f (concentrate, spellshape)\n\n---\nEffect If your next action is to Cast a Spell that requires a spell attack roll against Armor Class, choose Fortitude DC or Reflex DC. You make your spell attack roll against that defense instead of AC. If the spell has multiple targets, the choice of DC applies to all of them.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "shadow-signet",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.Check.DC.Specific.fortitude",
+            "value": "fortitude-dc"
+          },
+          {
+            "label": "PF2E.Check.DC.Specific.reflex",
+            "value": "reflex-dc"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "predicate": [
+          "shadow-signet",
+          "item:trait:attack",
+          "item:defense:ac"
+        ],
+        "property": "defense-passive",
+        "value": "{item|flags.system.rulesSelections.shadowSignet}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "spell-attack-roll",
+      "text": "PF2E.SpecificRule.ShadowSignet.Note",
+      "when": [
+        "shadow-signet",
+        "item:trait:attack",
+        {
+          "or": [
+            "item:defense:fortitude-dc",
+            "item:defense:reflex-dc"
+          ]
+        }
+      ]
+    }
+  ],
+  "usage": "worn",
+  "bulk": 0,
+  "price": {
+    "gp": 1000
+  }
+}

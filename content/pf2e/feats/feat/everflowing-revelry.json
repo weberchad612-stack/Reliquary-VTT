@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "everflowing-revelry",
+  "system": "pf2e",
+  "name": "Everflowing Revelry",
+  "source": {
+    "title": "Pathfinder Feybound",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "faun"
+  ],
+  "category": "ancestry",
+  "text": "Your indulgence in fine wines, food, and other pleasures hardened you against the worst indigestion and similar consequences. You can ingest elixirs and potions while sickened, and you gain a +2 circumstance bonus to saving throws against effects that inflict the sickened condition or to remove the sickened condition.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "consumable",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "self:condition:sickened",
+          {
+            "or": [
+              "item:tag:alchemical-food",
+              "item:trait:elixir",
+              "item:trait:ingested",
+              "item:trait:potion"
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Conditions.Sickened.AllowEatOrDrink"
+          }
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "inflicts:sickened",
+            "action:retch"
+          ]
+        }
+      ]
+    }
+  ]
+}

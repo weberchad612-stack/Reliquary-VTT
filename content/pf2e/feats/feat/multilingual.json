@@ -1,0 +1,53 @@
+{
+  "kind": "feat",
+  "slug": "multilingual",
+  "system": "pf2e",
+  "name": "Multilingual",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Society"
+  ],
+  "maxTakable": "unlimited",
+  "text": "You easily pick up new languages. You learn two new languages, chosen from common languages, uncommon languages, and any others you have access to. You learn an additional language if you are or become a master in Society and again if you are or become legendary.\n\n---\n\nSpecial You can select this feat multiple times. Each time, you learn additional languages.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.build.languages.max",
+        "value": "ternary(eq(@actor.system.skills.society.rank, 4), 2, ternary(eq(@actor.system.skills.society.rank, 3), 1, 0))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.multilingualTaken",
+        "priority": 19,
+        "value": 0
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.multilingualTaken",
+        "value": 1
+      }
+    }
+  ]
+}

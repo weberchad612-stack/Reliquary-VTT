@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "tanessa-fleer",
+  "system": "pf2e",
+  "name": "Tanessa Fleer",
+  "source": {
+    "title": "Pathfinder #153: Life's Long Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 155,
+    "perception": 19,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 16,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 17,
+      "intimidation": 16,
+      "stealth": 17,
+      "survival": 19,
+      "thievery": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "speed": "mobility"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Tanessa can make Attacks of Opportunity with a loaded ranged weapon she's wielding if the triggering creature is within 5 feet of her.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "defensive",
+      "text": "Tanessa moves in a way that denies her enemies the opportunity to retaliate. When she takes a Stride action to move half her Speed or less, that movement does not trigger reactions. She can use Mobility when Climbing, Flying, or Swimming instead of Striding if she has the corresponding movement type."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Tanessa designates as her prey a single creature that she can see and hear or that she is Tracking.\n\nShe gains a +2 circumstance bonus to Perception checks when she Seeks her prey and a +2 circumstance bonus to Survival checks when she Tracks her prey. She also ignores the penalty for making ranged attacks within her second range increment against her prey. Lastly, she deals 1d8 precision damage to her prey the first time she hits her prey each round. Tanessa can have only one prey designated at a time.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Incredible Reload",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "manipulate"
+      ],
+      "text": "Requirements Tanessa has a Hand Crossbow in each hand\n\n---\n\nEffect Tanessa quickly juggles her hand crossbows from one hand to another, reloading them both as she does so."
+    },
+    {
+      "kind": "ability",
+      "name": "Mobile Shot Stance",
+      "category": "offensive",
+      "text": "Tanessa's ranged Strikes don't trigger Attacks of Opportunity or other triggered by ranged attacks."
+    }
+  ],
+  "blurb": "Female human bandit"
+}

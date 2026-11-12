@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-educate-allies",
+  "system": "pf2e",
+  "name": "Effect: Educate Allies",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Educate Allies.\n\nAll allies affected by your composition spell gain your +1 circumstance bonus from Well-Versed until the start of your next turn. Your personal circumstance bonus from Well-Versed also increases to +2 until the start of your next turn.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "not": "self:signature:{item|origin.signature}"
+        },
+        {
+          "or": [
+            "auditory",
+            "illusion",
+            "linguistic",
+            "sonic",
+            "visual"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "selector": "saving-throw",
+        "slug": "well-versed",
+        "value": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "effect-current-spell",
+  "system": "pf2e",
+  "name": "Effect: Current Spell",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Current Spell if you cast a spell with the air trait.\n\nYou gain a +1 circumstance bonus to AC or a +2 circumstance bonus against ranged attacks. You also gain a +1 circumstance bonus to all saves against effects with the selected trait.\n\nThis effect has the selected trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitWater",
+            "value": "water"
+          },
+          {
+            "label": "PF2E.TraitAir",
+            "value": "air"
+          }
+        ],
+        "flag": "element",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "effect-current-spell"
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "{item|flags.system.rulesSelections.element}"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "ranged"
+        ],
+        "relabel": "Effect: Current Spell against ranged attacks",
+        "selector": "ac",
+        "slug": "effect-current-spell",
+        "type": "circumstance",
+        "value": 2
+      }
+    }
+  ]
+}

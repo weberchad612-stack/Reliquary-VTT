@@ -1,0 +1,239 @@
+{
+  "kind": "creature",
+  "slug": "nanoshard-swarm",
+  "system": "pf2e",
+  "name": "Nanoshard Swarm",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "elemental",
+    "metal",
+    "swarm"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 28,
+    "hp": 120,
+    "perception": 18,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 6,
+      "int": 3,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 21,
+      "athletics": 19,
+      "stealth": 21
+    },
+    "speeds": {
+      "land": 0
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "talican"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep",
+        "swarm-mind",
+        "precision"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 5
+        },
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tendril",
+      "attack": 19,
+      "traits": [
+        "reach-60",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarm Mind",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Electromagnetic Dispersal",
+      "category": "defensive",
+      "text": "When a nanoshard swarm takes electricity damage, they automatically shift into swarm form."
+    },
+    {
+      "kind": "ability",
+      "name": "Barrier Form",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "Requirements The nanoshard swarm is in swarm form\n\n---\n\nEffect The nanoshard swarm forms a continuous 6-inch-thick solid wall, up to 60 feet long and 10 feet high, originating from any one square in its current space. The wall can follow any path, with each 5 feet being placed on the border between squares. It doesn't need to stand vertically, so it can form a bridge or set of stairs, for example. The wall must be formed in an unbroken open space where its edges don't pass through any creatures or objects.\n\nA single 5-foot-by-5-foot section of the wall can be destroyed by dealing 18 points of damage to it, which also reduces the swarm's total Hit Points. A nanoshard swarm can't be knocked Prone or forcibly moved while in barrier form, nor can it voluntarily move. A nanoshard swarm in barrier form can originate tendril attacks from any square of its wall.",
+      "rules": [
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Battle Form",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "Requirements The nanoshard swarm is in swarm form\n\n---\n\nEffect The nanoshard swarm coalesces into a Huge shape that looks like a humanoid or beast and can hold items. In battle form, its Speed is 15 feet, it's Clumsy 1, and it has the following Strike.\n\nMelee 1 limb (reach 20 feet), Damage 4d8+9 bludgeoning",
+      "rules": [
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 15
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "form:battle"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 19,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 4,
+                "die": "d8",
+                "modifier": 9
+              }
+            },
+            "key": "Strike",
+            "label": "Limb",
+            "predicate": [
+              "form:battle"
+            ],
+            "traits": [
+              "reach-20"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Engulf (Swarm Form)",
+      "actions": 2,
+      "category": "offensive",
+      "text": "DC 27 Reflex save, 2d8+6 bludgeoning damage, escape dc=27, Rupture 18\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Swarm Form",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The nanoshard swarm collapses into its natural form: a Huge sea of tiny metal spheres. It drops anything it's holding. While in swarm form, the nanoshard swarm's Speed is 25 feet, it can move through any area large enough for a single sphere to fit through without having to Squeeze, and it gains Engulf.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "Form",
+            "option": "form",
+            "selection": "swarm",
+            "suboptions": [
+              {
+                "label": "Swarm Form",
+                "value": "swarm"
+              },
+              {
+                "label": "Barrier Form",
+                "value": "barrier"
+              },
+              {
+                "label": "Battle Form",
+                "value": "battle"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 25
+        }
+      ]
+    }
+  ],
+  "text": "This bizarre entity is actually a massive collective consisting of tens of thousands of constituent parts, each a tiny metal sphere barely the size of a pebble. Controlled by a single elemental spirit, the swarm is capable of flowing like liquid through the smallest openings before shaping itself into a powerful combatant, a solid wall, or any other form circumstances might require."
+}

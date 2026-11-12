@@ -1,0 +1,120 @@
+{
+  "kind": "action",
+  "slug": "mark-for-death",
+  "system": "pf2e",
+  "name": "Mark for Death",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "concentrate"
+  ],
+  "actions": 3,
+  "category": "offensive",
+  "text": "Requirements The creature you intend to mark is observed by you\n\n---\nEffect You designate a single creature as your mark. Using Mark for Death while Hidden or Undetected doesn't make you Observed. Mark for Death lasts until the mark dies or you use Mark for Death again. You gain a +2 circumstance bonus to Perception checks to Seek your mark, as well as to Deception checks to Feint against your mark. Your mark takes a –2 circumstance penalty to all Perception checks to Seek you.\n\nIn addition, when attacking your mark, you have the Sneak Attack class feature, except it deals 1d4 precision damage and you don't increase the number of dice as you gain levels. At 6th level, the damage increases to 1d6. If you already have the sneak attack class feature, you instead deal an additional 1 precision damage with your sneak attacks made against your mark, increasing to 2 precision damage at 6th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.MarkForDeath.TargetMark",
+        "option": "marked-for-death",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "perception",
+        "deception"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "slug": "mark-for-death-skill",
+      "when": [
+        "marked-for-death",
+        {
+          "or": [
+            "action:feint",
+            "action:seek"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "1",
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "not": "feature:sneak-attack"
+          },
+          "marked-for-death",
+          "target:condition:off-guard",
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse",
+              {
+                "and": [
+                  "item:ranged",
+                  {
+                    "not": "item:thrown-melee"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "sneak-attack"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "dice:slug:sneak-attack",
+          {
+            "not": "feature:sneak-attack"
+          },
+          {
+            "gte": [
+              "self:level",
+              6
+            ]
+          }
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageCategory": "precision",
+        "key": "FlatModifier",
+        "predicate": [
+          "marked-for-death",
+          "feature:sneak-attack",
+          "target:condition:off-guard",
+          "item:tag:sneak-attack"
+        ],
+        "selector": "strike-damage",
+        "slug": "mark-for-death-damage",
+        "value": "ternary(gte(@actor.level,6),2,1)"
+      }
+    }
+  ]
+}

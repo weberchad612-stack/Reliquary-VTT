@@ -1,0 +1,207 @@
+{
+  "kind": "creature",
+  "slug": "carnivorous-crystal",
+  "system": "pf2e",
+  "name": "Carnivorous Crystal",
+  "source": {
+    "title": "Pathfinder #148: Fires of the Haunted City",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "earth",
+    "mindless",
+    "ooze"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 300,
+    "perception": 15,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 10,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": -5,
+      "int": -5,
+      "str": 7,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 24
+    },
+    "speeds": {
+      "land": 10,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "motion-sense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        {
+          "type": "critical-hits",
+          "except": "bludgeoning, sonic"
+        },
+        "precision",
+        "unconscious",
+        "visual"
+      ],
+      "weaknesses": [
+        {
+          "type": "sonic",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Pseudopod",
+      "attack": 24,
+      "traits": [
+        "unarmed",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Motion Sense",
+      "category": "interaction",
+      "text": "A carnivorous crystal can sense nearby motion through vibration and air movement."
+    },
+    {
+      "kind": "ability",
+      "name": "Split",
+      "category": "defensive",
+      "text": "Whenever the carnivorous crystal takes a critical hit from an attack that deals bludgeoning or sonic damage, or it critically fails its saving throw against an effect that deals bludgeoning or sonic damage, it might split. If the carnivorous crystal has at least 15 HP remaining after taking the damage, it splits into two identical crystals, each with half the original's Hit Points. When the carnivorous crystal splits, one crystal remains in the same space and the other appears in an adjacent unoccupied space. If no adjacent space is unoccupied, the crystal automatically pushes creatures out of the way to fill a space."
+    },
+    {
+      "kind": "ability",
+      "name": "Subsonic Hum",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "aura",
+        "mental"
+      ],
+      "text": "60 feet. A creature that enters or starts its turn within the aura must succeed at a DC 28 Will save save or become Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "slug": "subsonic-hum",
+            "traits": [
+              "auditory",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Crystallize",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Requirements The crystal has a creature engulfed.\n\n---\n\nEffect The engulfed creature must succeed at a DC 28 Fortitude save save or become Slowed 1 until it is no longer engulfed. If the creature is already slowed, it becomes Petrified as it is turned into crystal and expelled by the carnivorous crystal onto the ground.\n\nIn 1d4 hours, the petrified victim shatters and a new carnivorous crystal emerges from the remains."
+    },
+    {
+      "kind": "ability",
+      "name": "Engulf",
+      "actions": 2,
+      "category": "offensive",
+      "text": "DC 28 Reflex save, 2d6 slashing damage, escape dc=28, Rupture 25 (bludgeoning only).\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Freeze",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time it acts, the carnivorous crystal appears to be a mundane crystal formation. It has an automatic result of 40 on Deception and Stealth checks and DCs to pass as a crystal formation."
+    },
+    {
+      "kind": "ability",
+      "name": "Razor Sharp",
+      "category": "offensive",
+      "text": "If a carnivorous crystal hits with an attack and rolls a natural 19 on the d20 roll, the attack is a critical hit. This has no effect if the 19 would be a failure.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "to-critical-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "check:total:natural:19",
+              {
+                "gte": [
+                  "check:total:delta",
+                  0
+                ]
+              }
+            ],
+            "selector": "strike-attack-roll"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Note",
+            "predicate": [
+              "check:total:natural:19",
+              {
+                "not": {
+                  "gte": [
+                    "check:total",
+                    "check:total:delta"
+                  ]
+                }
+              }
+            ],
+            "selector": "strike-attack-roll",
+            "text": "{item|description}",
+            "title": "{item|name}"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Carnivorous crystals are strange ooze creatures native to the Plane of Earth. Unlike most oozes, their bodies are not homogeneously fluid; rather, interspersed within their glassy, viscous resin are thousands of sharp mineral formations that nevertheless possess some of the same flexibility and mobility as the rest of the creature's gooey body."
+}

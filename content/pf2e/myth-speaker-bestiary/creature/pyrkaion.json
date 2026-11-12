@@ -1,0 +1,252 @@
+{
+  "kind": "creature",
+  "slug": "pyrkaion",
+  "system": "pf2e",
+  "name": "Pyrkaion",
+  "source": {
+    "title": "Pathfinder #217: Death Sails a Wine-Dark Sea",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "asura",
+    "spirit"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 132,
+    "perception": 18,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 13,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 3,
+      "int": 4,
+      "str": 4,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 16,
+      "diplomacy": 16,
+      "intimidation": 16,
+      "occultism": 16,
+      "religion": 18,
+      "academia-lore": 18
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "immunities": [
+        "curse"
+      ],
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Telepathy 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 18,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tusk",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Riddle",
+      "attack": 20,
+      "traits": [
+        "agile"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "mental",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d8",
+          "type": "mental"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Sophistry",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "mental"
+      ],
+      "text": "40 feet. The pyrkaion hones others' thoughts, enabling extraordinary reasoning or ruinous revelation. If the pyrkaion has the holy trait (see Glorious Visage below), all allied creatures within the aura gain a +1 status bonus to check to Recall Knowledge and resistance 4 to mental damage. If the pyrkaion has the unholy trait, all unallied creatures in the area take a –1 penalty to checks to Recall Knowledge and gain the effects of the Dubious Knowledge feat when Recalling Knowledge; whenever an affected creature Recalls Knowledge, they become Stupefied 1 and gain weakness 4 to mental damage for 1d4 rounds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "predicate": [
+                  "self:trait:holy"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Sophistry (Holy)"
+              },
+              {
+                "affects": "enemies",
+                "predicate": [
+                  "self:trait:unholy"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Sophistry (Unholy)"
+              }
+            ],
+            "key": "Aura",
+            "radius": 40,
+            "traits": [
+              "divine",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Witty Reversal",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "linguistic"
+      ],
+      "text": "Trigger A creature within 30 feet uses a linguistic or mental effect\n\n---\nEffect The pyrkaion attempts to counteract the effect (counteract rank 4, counteract modifier +16). If successful, the pyrkaion can choose to corrupt the effect, dealing 2d6 persistent,mental damage to the triggering effect's targets unless those targets succeed at a DC 26 Will save save."
+    },
+    {
+      "kind": "ability",
+      "name": "Glorious Visage",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The asura sanctifies themselves as either holy or unholy, gaining the trait corresponding to their choice and losing the opposing trait; their strikes, spells, and abilities also gain the trait corresponding to their choice. The asura also gains weakness 8 to the opposing sanctification and loses any weakness to its chosen sanctification. The choice is permanent until the asura uses this ability to change their sanctification.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "glorious-visage",
+            "selection": "unholy",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitHoly",
+                "value": "holy"
+              },
+              {
+                "label": "PF2E.TraitUnholy",
+                "value": "unholy"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "{item|flags.system.rulesSelections.gloriousVisage}"
+            ],
+            "key": "ActorTraits"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "property": "traits",
+            "value": "{item|flags.system.rulesSelections.gloriousVisage}"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "glorious-visage:unholy"
+            ],
+            "type": "holy",
+            "value": 8
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Weakness",
+            "predicate": [
+              "glorious-visage:holy"
+            ],
+            "type": "unholy",
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Insidious Query",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "linguistic"
+      ],
+      "text": "The pyrkaion questions a creature within 40 feet, who must attempt a DC 26 Will save save.\n\n---\nCritical Success The creature becomes immune for 1 hour.\n\nSuccess The creature is unaffected.\n\nFailure If the creature doesn't Recall Knowledge by the end of its next turn, it becomes Confused for 1 round.\n\nCritical Failure As failure, but until the end of their next turn, the creature also takes 2d6 mental damage when Recalling Knowledge."
+    }
+  ],
+  "text": "Reality is imperfect, yet many mortals focus on their world's virtues while refusing to address its failures. A pyrkaion believes mortal delusion is the last wall propping up a broken universe, and wisdom is the pickaxe that will tear it down. Pyrkaions vacillate between teaching mortals enough to wither from indulgent self-awareness and shredding their students' institutions through insidious interrogation that leads to infighting as the asura watches.\nPhilosophical Zeal\nWith each philosophical victory, these asuras increasingly wrestle with their own thoughts, recognizing that they're as vulnerable to self-delusion as their victims. This can drive a pyrkaion to ravenous fits of reading and research before jealously sequestering the texts. Sometimes a pyrkaion with an inflated ego instead seeks and loses debates, craving the sting of humility to recenter their thoughts."
+}

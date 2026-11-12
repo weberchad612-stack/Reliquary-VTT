@@ -1,0 +1,213 @@
+{
+  "kind": "creature",
+  "slug": "chelaxian-rogue",
+  "system": "pf2e",
+  "name": "Chelaxian Rogue",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-07: A God Falls Where Magic Fails",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 94,
+    "perception": 16,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 16,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "deception": 17,
+      "diplomacy": 15,
+      "performance": 15,
+      "society": 16,
+      "stealth": {
+        "value": 16,
+        "special": [
+          {
+            "value": 17,
+            "label": "in dungeons while wearing camouflage suit",
+            "when": [
+              "terrain:dungeon",
+              "camouflage-suit"
+            ]
+          }
+        ]
+      },
+      "thievery": 14,
+      "underworld-lore": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "dwarven",
+      "elven",
+      "gnomish",
+      "halfling"
+    ],
+    "notes": {
+      "perception": "(+18 to detect snares and hazards)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Camouflage Suit",
+      "ref": "equipment:item/camouflage-suit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unnoticeable Guile",
+      "category": "interaction",
+      "text": "The Chelaxian rogue is an expert at maintaining perfect stillness and blending into their surroundings. Each non-ally creature who has not been targeted by or subject to an attack or effect made by the Chelaxian rogue must, at the start of their turn, succeed at a DC 26 Will save save (DC 27 Will save in dungeon environments while the Chelaxian rogue is wearing their camouflage suit) or the Chelaxian rogue becomes Hidden to them. This effect ends if the Chelaxian rogue moves without Sneaking or takes any hostile action against the non-ally creature. This does not prevent a creature from making Perception checks to Seek, making the rogue Observed as normal on a success."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Perception to Detect Snares and Hazards",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "origin:trait:hazard",
+                "item:trait:snare"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devilish Feint",
+      "category": "offensive",
+      "text": "When the Chelaxian rogue successfully Feints, the target is Off-Guard against the Chelaxian rogue's weapon attacks until the end of the Chelaxian rogue's next turn. On a critical success, the target is off-guard against all weapon attacks for that time, not just the Chelaxian rogue's."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The Chelaxian rogue deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Strike of Terror",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The Chelaxian rogue is Hidden from the target of this ability\n\n---\nEffect The Chelaxian rogue makes a Strike with a dagger. If they hit and deal damage, the damaged creature is Frightened 1 (or Frightened 2 on a critical hit)."
+    }
+  ]
+}

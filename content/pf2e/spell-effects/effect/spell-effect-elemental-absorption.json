@@ -1,0 +1,103 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-elemental-absorption",
+  "system": "pf2e",
+  "name": "Spell Effect: Elemental Absorption",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Elemental Absorption\n\nYou gain resistance to damage dealt by effects with the chosen elemental trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "value": "air"
+          },
+          {
+            "label": "PF2E.TraitEarth",
+            "value": "earth"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": "metal"
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": "water"
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": "wood"
+          }
+        ],
+        "flag": "elementalAbsorption",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element",
+        "rollOption": "elemental-absorption"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.elementalAbsorption}",
+        "value": "5*floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-absorption:water"
+        ],
+        "type": "cold",
+        "value": "5*floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-absorption:metal"
+        ],
+        "type": [
+          "electricity",
+          "slashing"
+        ],
+        "value": "5*floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "elemental-absorption:wood"
+        ],
+        "type": [
+          "bludgeoning",
+          "vitality"
+        ],
+        "value": "5*floor(@item.level/3)"
+      }
+    }
+  ]
+}

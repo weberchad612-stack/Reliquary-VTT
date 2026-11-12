@@ -1,0 +1,215 @@
+{
+  "kind": "creature",
+  "slug": "neidre-fliavazzana-5-6",
+  "system": "pf2e",
+  "name": "Neidre Fliavazzana (5-6)",
+  "source": {
+    "title": "Pathfinder Society Quest #7: A Curious Claim",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "chaotic",
+    "evil",
+    "gnome",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 22,
+    "hp": 68,
+    "perception": 15,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 4,
+      "int": 3,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 8,
+      "deception": 13,
+      "intimidation": 11,
+      "society": 10,
+      "stealth": 15,
+      "thievery": 13,
+      "aspis-consortium-lore": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "gnomish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bronze Badge",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Minor)",
+      "ref": "equipment:item/healing-potion-minor",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 13,
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "offensive",
+      "text": "Neidre isn't Off-Guard to hidden, undetected, or flanking creatures of her level or lower, or creatures of her level or lower using surprise attack. However, they can still help their allies flank.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Neidre deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attacker",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to Neidre.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

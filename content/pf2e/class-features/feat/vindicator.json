@@ -1,0 +1,292 @@
+{
+  "kind": "feat",
+  "slug": "vindicator",
+  "system": "pf2e",
+  "name": "Vindicator",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ranger"
+  ],
+  "category": "classfeature",
+  "text": "You have been specially trained to use guile and magic to reveal hidden threats. You must select Vindicator Dedication as your 2nd-level class feat.\n\nPrerequisites: You must be a ranger.\n\nVindicator Adjustments: You must choose a deity to be a follower of, and you gain your deity's sanctification.\n\nYou are trained in Religion instead of Nature.\n\nYou are trained in your deity's favored weapon. If your deity's favored weapon is a simple weapon or unarmed attack with a damage die smaller than d6, you gain the Deadly Simplicity feat. If your deity's favored weapon is an advanced weapon, your proficiency with it is equal to your proficiency with martial weapons.\n\nYou must choose the vindication edge for your hunter's edge.\n\nYou learn warden spells as divine spells instead of primal spells, and your spellcasting attribute is Wisdom. When you gain domain spells via the Domain Initiate or Advanced Domain feats, they are warden spells for the purposes of all your vindicator feats and abilities.\nVindication Edge\nYour specialized training gives you a unique edge that allows you to more effectively bring the tools of your faith to bear against the monsters that lurk in the night or hide among the faithful.\n\nYou gain a +1 status bonus to your spell attack rolls against your hunted prey, and they take a –1 status penalty to their saving throws against divine spells you cast. You gain the Vindicator's Mark warden spell.\nTrackless Journey 5th\nVindicators can choose to gain the benefits of this class feature in either urban or natural terrain, chosen at the time the class feature is gained.\nMasterful Hunter 17th\nThe masterful hunter class feature gives an additional benefit based on your hunter's edge. Included here is the additional benefit for the vindication edge.\n\nVindication: You combine skill and magic to swiftly defeat your prey. The status bonus to divine spell attack rolls against your hunted prey increases to +2, and the status penalty to their saving throws against divine spells you cast is –2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.religion.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "or": [
+                "item:category:deity",
+                "item:category:pantheon"
+              ]
+            }
+          ],
+          "itemType": "deity"
+        },
+        "flag": "deity",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "not": "deity"
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Deity"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "deity"
+          }
+        ],
+        "uuid": "{item|flags.system.rulesSelections.deity}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitHoly",
+            "predicate": [
+              {
+                "or": [
+                  "deity:primary:sanctification:can:holy",
+                  "deity:primary:sanctification:must:holy"
+                ]
+              }
+            ],
+            "value": "holy"
+          },
+          {
+            "label": "PF2E.TraitUnholy",
+            "predicate": [
+              {
+                "or": [
+                  "deity:primary:sanctification:can:unholy",
+                  "deity:primary:sanctification:must:unholy"
+                ]
+              }
+            ],
+            "value": "unholy"
+          },
+          {
+            "label": "PF2E.NoneOption",
+            "predicate": [
+              {
+                "nor": [
+                  "deity:primary:sanctification:must:holy",
+                  "deity:primary:sanctification:must:unholy"
+                ]
+              }
+            ],
+            "value": "none"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "nor": [
+              "deity:primary:sanctification:none",
+              "sanctification:holy",
+              "sanctification:unholy"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Sanctification",
+        "rollOption": "sanctification",
+        "slug": "sanctification"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "{item|flags.system.rulesSelections.sanctification}"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          {
+            "not": "sanctification:none"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fist": true,
+        "key": "Strike",
+        "predicate": [
+          "deity:primary:favored-weapon:fist"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.favoredWeaponRank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Deadly Simplicity"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "label": "PF2E.SpecificRule.Ranger.Vindicator.Edge",
+        "predicate": [
+          "target:mark:hunted-prey",
+          "spellcasting:tradition:divine"
+        ],
+        "selector": "spell-attack",
+        "type": "status",
+        "value": "ternary(gte(@actor.level,17),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:tradition:divine",
+          "self:effect:hunt-prey"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Ranger.Vindicator.SpellPenaltyAddendum"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Vindication Edge]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:tradition:divine",
+          "self:effect:hunt-prey",
+          "feature:masterful-hunter"
+        ],
+        "property": "other-tags",
+        "value": "vindicator-masterful-hunter"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "vinidicatorDedication",
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              2
+            ]
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.feats-srd.Item.Vindicator Dedication"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:hunters-edge-sharing"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Ranger.Vindicator.BenefitsAddendum"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Share Hunter's Edge (Vindication)]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:hunt-prey"
+        ],
+        "priority": 130,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Ranger.Vindicator.BenefitsAddendum"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "feat:animal-companion-ranger",
+                  "feat:shared-prey"
+                ]
+              }
+            ],
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Share Hunter's Edge (Vindication)]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:deity-favored",
+          "item:category:advanced"
+        ],
+        "key": "MartialProficiency",
+        "sameAs": "martial",
+        "visible": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "kind": "feat",
+  "slug": "third-path-to-perfection",
+  "system": "pf2e",
+  "name": "Third Path to Perfection",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "monk"
+  ],
+  "category": "classfeature",
+  "text": "You have made great progress in your personal studies of enlightenment. Choose one of the saving throws you selected for path to perfection or second path to perfection. Your proficiency rank for the chosen type of save increases to legendary. When you roll a critical failure on the chosen type of save, you get a failure instead. When you roll a failure on the chosen type of save against an effect that deals damage, you take half damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SavesFortitude",
+            "predicate": [
+              "self:path-to-perfection:fortitude"
+            ],
+            "value": "fortitude"
+          },
+          {
+            "label": "PF2E.SavesReflex",
+            "predicate": [
+              "self:path-to-perfection:reflex"
+            ],
+            "value": "reflex"
+          },
+          {
+            "label": "PF2E.SavesWill",
+            "predicate": [
+              "self:path-to-perfection:will"
+            ],
+            "value": "will"
+          }
+        ],
+        "flag": "pathToPerfection",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.PathToPerfection",
+        "rollOption": "third-path-to-perfection"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.saves.{item|flags.system.rulesSelections.pathToPerfection}.rank",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "selector": "{item|flags.system.rulesSelections.pathToPerfection}"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "fortitude",
+      "text": "PF2E.SpecificRule.SaveCriticalFailureToFailure.FailureHalfDamage.Fortitude",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "damaging-effect",
+        "third-path-to-perfection:fortitude"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "reflex",
+      "text": "PF2E.SpecificRule.SaveCriticalFailureToFailure.FailureHalfDamage.Reflex",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "damaging-effect",
+        "third-path-to-perfection:reflex"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "will",
+      "text": "PF2E.SpecificRule.SaveCriticalFailureToFailure.FailureHalfDamage.Will",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "damaging-effect",
+        "third-path-to-perfection:will"
+      ]
+    }
+  ]
+}

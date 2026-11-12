@@ -1,0 +1,403 @@
+{
+  "kind": "creature",
+  "slug": "adamantine-archdragon",
+  "system": "pf2e",
+  "name": "Adamantine Archdragon",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 21,
+  "rarity": "rare",
+  "traits": [
+    "dragon",
+    "primal"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 45,
+    "hp": 400,
+    "perception": 35,
+    "saves": {
+      "fortitude": 40,
+      "reflex": 32,
+      "will": 35
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 9,
+      "dex": 5,
+      "int": 5,
+      "str": 10,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 35,
+      "athletics": 42,
+      "intimidation": 36,
+      "nature": 35,
+      "survival": 37,
+      "mining-lore": 34
+    },
+    "speeds": {
+      "land": 50,
+      "burrow": 60,
+      "fly": 200
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 120,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "draconic",
+      "fey",
+      "petran",
+      "sakvroth",
+      "talican"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "petrified",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs primal"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 39,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+18",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 39,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 37,
+      "traits": [
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+18",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 37,
+      "traits": [
+        "brutal"
+      ],
+      "range": 150,
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "adamantine-weight"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 120 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Abandon Armor",
+      "category": "defensive",
+      "text": "Once the adamantine dragon is reduced to fewer than half their Hit Points, their resistance is reduced by 10 and they gain a +10 circumstance bonus to their Speeds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "speed",
+            "type": "circumstance",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "gte": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 20
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 41 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Resilient Form",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The dragon is critically hit with a weapon or unarmed attack;\n\n---\nEffect The dragon's tough scales ward off deadly attacks. The dragon attempts a DC 14 Flat check. On a success, the triggering attack becomes a normal hit."
+    },
+    {
+      "kind": "ability",
+      "name": "Adamantine Body",
+      "category": "offensive",
+      "text": "The dragon's unarmed melee Strikes are adamantine.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "not": "item:slug:rock"
+              }
+            ],
+            "property": "traits",
+            "value": "adamantine"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Adamantine Weight",
+      "category": "offensive",
+      "traits": [
+        "earth",
+        "metal",
+        "primal"
+      ],
+      "text": "The dragon shapes rocks even after it throws them, capturing its prey. The creature struck must succeed at a DC 44 Reflex save save or be Immobilized. Creatures remain immobilized until they Escape and immediately fall if they're flying. The weight can be destroyed as an object with 40 Hit Points and 20 Hardness."
+    },
+    {
+      "kind": "ability",
+      "name": "Avalanche Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The dragon belches a mass of boulders that deals 17d8 bludgeoning damage in a 44-foot cone (DC 50 basic Reflex save save).\n\nThey can't use Avalanche Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Burrowing Pounce",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements The dragon is burrowed\n\n---\nEffect The dragon Burrows, then Leaps out of the ground, landing at a point within 40 feet. The dragon makes a melee Strike against a creature within reach when they land. If the Strike is a critical hit, the target is knocked Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Avalanche Breath whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Swallow",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The dragon Grabs a creature\n\n---\n\nEffect The dragon uses Swallow Whole."
+    },
+    {
+      "kind": "ability",
+      "name": "Rock Tunneler",
+      "category": "offensive",
+      "text": "The dragon can burrow through solid stone at a Speed of 40 feet. They can leave a tunnel if they desire, and they usually don't."
+    },
+    {
+      "kind": "ability",
+      "name": "Sky Below Stone",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "metal",
+        "primal"
+      ],
+      "text": "An eruption of skymetal blades churns the earth in a 40-foot emanation. The area becomes difficult terrain and creatures touching the ground take 8d8 slashing damage (basic DC 45 Reflex save save). Creatures that fail the save are knocked Prone and moved 20 feet in a direction of the dragon's choice."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 4d12+12 bludgeoning, Rupture 40\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The powerful adamantine dragons are one of several dragons known as skymetal dragons. The innate magic that flows through these dragons causes them to draw particular metals to their bodies like magnets or, in some cases, naturally grow these skymetals on their bodies. Adamantine dragons begin their lives with tough scales that are naturally replaced with thicker and even tougher adamantine plating as they grow older. Adamantine dragons are typically steadfast and loyal. Once they commit to a certain purpose, changing their minds is nigh impossible.\n\n---\n\nDragons come in myriad forms, with many having magical abilities or connections to magic. Some dragons draw greater power from magic than others, allowing them to manifest abilities or alter their physiques with prolonged exposure to magic. These dragons become more powerful as they age and strengthen their connections with their magical origins. Scholars debate the classification of these dragons, with some preferring the name magical dragons and others using traditional dragons due to their connection to specific magical traditions. Regardless of their names, these dragons share a number of characteristics: their ability to tap into magical energies, intensified might and cunning as they grow older, and an inclination to hoard vast amounts of treasure and wealth."
+}

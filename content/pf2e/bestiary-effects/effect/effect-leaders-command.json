@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "effect-leaders-command",
+  "system": "pf2e",
+  "name": "Effect: Leader's Command",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-14: Poisonous Council",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "The creatures gains the leader's choice of a +2 status bonus to attack rolls or a +10-foot status bonus to their Speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.AttackLabel",
+            "value": {
+              "selector": "attack",
+              "value": 2
+            }
+          },
+          {
+            "label": "PF2E.Actor.Speed.Plural",
+            "value": {
+              "selector": "all-speeds",
+              "value": 10
+            }
+          }
+        ],
+        "flag": "leadersCommand",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.UI.RuleElements.ChoiceSet.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "{item|flags.system.rulesSelections.leadersCommand.selector}",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.leadersCommand.value"
+      }
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "kind": "creature",
+  "slug": "drandle-dreng-9-10",
+  "system": "pf2e",
+  "name": "Drandle Dreng (9-10)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-22: Breaking the Storm: Excising Ruination",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "good",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 160,
+    "perception": 19,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 6,
+      "int": 5,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 15,
+      "crafting": 20,
+      "deception": 20,
+      "diplomacy": 18,
+      "intimidation": 18,
+      "society": 20,
+      "stealth": 22,
+      "survival": 19,
+      "thievery": 21,
+      "pathfinder-society-lore": 24
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common",
+      "draconic",
+      "dwarven",
+      "elven",
+      "gnomish",
+      "goblin",
+      "halfling",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Ring of Sustenance",
+      "ref": "equipment:item/ring-of-sustenance",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bloodseeker Beak",
+      "ref": "equipment:item/bloodseeker-beak",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkvision Elixir (Lesser)",
+      "ref": "equipment:item/darkvision-elixir-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 21,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Drandle Dreng isn't Off-Guard to flanking, Hidden, or Undetected creatures of 10th-level or lower, or creatures of 10th-level or lower using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Drandle Dreng rolls a success on a Reflex save, he get a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sidestep",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The attack roll for a Strike targeting Drandle Dreng fails or critically fails\n\n---\n\nEffect Drandle Dreng redirects the attack to a creature of his choice that is adjacent to him and within the reach of the triggering attack. The attacker rerolls the Strike's attack roll against the new target."
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "defensive",
+      "text": "On the first round of combat, if Drandle Dreng rolls Deception or Stealth for initiative, creatures who haven't acted are Off-Guard to him.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Debilitating Strike",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger Drandle Dreng's Strike hits an Off-Guard creature and deals damage\n\n---\n\nEffect Drandle Dreng chooses one of the following debilitations for the target, which lasts until the end of his next turn:\n\n- it can't flank or contribute to allies' flanking,\n\n- it takes a –10-foot status penalty to its Speeds,\n\n- or it becomes Enfeebled 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "offensive",
+      "text": "When Drandle Dreng Strides half his Speed or less, that movement doesn't trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Skirmish Strike",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Drandle Dreng either Steps and then Strikes, or Strikes and then Steps."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Drandle Dreng deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tumble Behind",
+      "category": "offensive",
+      "text": "When Drandle Dreng successfully Tumbles Through, the foe whose space he passed through is Off-Guard against the next attack he makes before the end of his turn."
+    }
+  ]
+}

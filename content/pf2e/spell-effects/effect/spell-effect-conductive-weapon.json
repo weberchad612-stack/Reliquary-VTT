@@ -1,0 +1,95 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-conductive-weapon",
+  "system": "pf2e",
+  "name": "Spell Effect: Conductive Weapon",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Conductive Weapon\n\nThe target becomes a +1 shock weapon. If any target of an attack with the weapon is wearing metal armor or is primarily made of metal, the electricity damage die from the shock rune is 1d12.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.weapon}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "runes-potency",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Target.Metal",
+        "option": "target:metal",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "target:metal"
+          }
+        ],
+        "property": "property-runes",
+        "value": "shock"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "electricity",
+        "diceNumber": 1,
+        "dieSize": "d12",
+        "key": "DamageDice",
+        "predicate": [
+          "target:metal"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+      "text": "PF2E.WeaponPropertyRune.shock.Note.criticalSuccess",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "target:metal"
+      ]
+    }
+  ]
+}

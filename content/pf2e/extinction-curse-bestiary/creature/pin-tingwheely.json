@@ -1,0 +1,254 @@
+{
+  "kind": "creature",
+  "slug": "pin-tingwheely",
+  "system": "pf2e",
+  "name": "Pin Tingwheely",
+  "source": {
+    "title": "Pathfinder #153: Life's Long Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "fey",
+    "sprite"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 29,
+    "hp": 95,
+    "perception": 19,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 20,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 6,
+      "int": 2,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 18,
+      "deception": 16,
+      "nature": 15,
+      "performance": 18,
+      "stealth": 21
+    },
+    "speeds": {
+      "land": 15,
+      "fly": 45
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 26,
+      "attack": 18,
+      "spells": [
+        {
+          "name": "Dispel Magic",
+          "rank": 3,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "Entangle",
+          "rank": 2,
+          "ref": "spells:spell/entangling-flora"
+        },
+        {
+          "name": "Faerie Fire",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Invisibility (At-Will) (Self-Only)",
+          "rank": 4,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Ghost Sound",
+          "rank": 1,
+          "ref": "spells:spell/ghost-sound"
+        },
+        {
+          "name": "Illusory Disguise",
+          "rank": 3,
+          "ref": "spells:spell/illusory-disguise"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longbow",
+      "ref": "equipment:item/longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 60
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Longbow",
+      "attack": 19,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "volley-20"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Pin rolls a success on a Reflex save, he gets a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Pin is targeted with a melee or ranged attack by an attacker he can see.\n\n---\n\nPin gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sprinkle Pixie Dust",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Pin sprinkles pixie dust onto one of his arrows. If Pin hits a creature with that arrow before his next turn, the arrow inflicts one of the following special effects instead of dealing damage. Each effect depends on the target's DC 26 Will save save. On a critical hit, the target treats its save result as one degree worse.\n\n- Befuddlement (enchantment, mental) On a failed Will save, the target is Stupefied 1 for 1 minute (Stupefied 2 on a critical failure).\n\n- Charm (emotion, enchantment, incapacitation, mental) The target suffers the result of a 4th-rank Charm spell, except it doesn't gain a bonus to its save if the only hostile act was Pin firing his bow, and Pin can choose to direct the target's adoration to another creature rather than himself.\n\n- Memory Loss (divination, mental) On a failed Will save, the target loses the last 5 minutes of its memory. Pin can add a single false memory if he chooses, which is the only memory the target retains in that time period.\n\n- Reckless Pride (emotion, enchantment, mental) The target suffers the result of Delusional Pride."
+    }
+  ],
+  "blurb": "Male pixie daredevil"
+}

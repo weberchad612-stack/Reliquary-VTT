@@ -1,0 +1,293 @@
+{
+  "kind": "creature",
+  "slug": "the-stag-lord",
+  "system": "pf2e",
+  "name": "The Stag Lord",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 110,
+    "perception": 16,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 16,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 13,
+      "intimidation": 15,
+      "stealth": 14,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Flask of Wine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Lock of green hair bound with red twine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Stag's Helm",
+      "ref": "equipment:item/stags-helm",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Lesser)",
+      "ref": "equipment:item/healing-potion-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "ability",
+      "name": "Sickened",
+      "text": "You feel ill. Sickened always includes a value. You take a status penalty equal to this value on all your checks and DCs. You can't willingly ingest anything-including elixirs and potions-while sickened.\n\nYou can spend a single action retching in an attempt to recover, which lets you immediately attempt a Fortitude save against the DC of the effect that made you sickened. On a success, you reduce your sickened value by 1 (or by 2 on a critical success)."
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 15,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 17,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Perpetual Hangover",
+      "category": "defensive",
+      "text": "The Stag Lord is in a constant cycling state of being drunk or hungover. As a result, he is constantly Sickened 1, and cannot reduce his sickened state to lower than 1 (although if effects increase his sickened value, he can reduce them back toward 1 as normal). The Stag Lord can willingly ingest food and drink (including potions and elixirs) while sickened. The values in this stat block have been adjusted to account for his sickened state."
+    },
+    {
+      "kind": "ability",
+      "name": "Dread Striker",
+      "category": "offensive",
+      "text": "The Stag Lord capitalizes on his enemies' fear; any creature that has the Frightened condition is also Off-Guard against his attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "You designate a single creature as your prey and focus your attacks against that creature. You must be able to see or hear the prey, or you must be tracking the prey during exploration.\n\nYou gain a +2 circumstance bonus to Perception checks when you Seek your prey and a +2 circumstance bonus to Survival checks when you Track your prey. You also ignore the penalty for making ranged attacks within your second range increment against the prey you're hunting.\n\nYou can have only one creature designated as your prey at a time. If you use Hunt Prey against a creature when you already have a creature designated, the prior creature loses the designation and the new prey gains the designation. Your designation lasts until your next daily preparations.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The Stag Lord deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unfair Aim",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The Stag Lord lines up a shot and then attempts a ranged Strike against a hunted prey. On this strike, he treats the target as if they were Off-Guard.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "hunted-prey"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "option": "unfair-aim",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "hunted-prey",
+              "unfair-aim"
+            ],
+            "selectors": [
+              "ranged-strike-attack-roll",
+              "ranged-strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male human bandit lord"
+}

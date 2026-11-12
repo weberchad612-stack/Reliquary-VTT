@@ -1,0 +1,57 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-runic-weapon",
+  "system": "pf2e",
+  "name": "Spell Effect: Runic Weapon",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Runic Weapon\n\nThe target weapon becomes a +1 striking weapon, gaining a +1 item bonus to attack rolls and increasing the number of weapon damage dice to two.\n\n---\nHeightened (6th) The weapon is +2 greater striking.\n\nHeightened (9th) The weapon is +3 major striking.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "itemId": "{item|flags.system.rulesSelections.weapon}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "runes-potency",
+        "value": "ternary(gte(@item.level,9),3,ternary(gte(@item.level,6),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "itemId": "{item|flags.system.rulesSelections.weapon}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "runes-striking",
+        "value": "ternary(gte(@item.level,9),3,ternary(gte(@item.level,6),2,1))"
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "feat",
+  "slug": "always-ready",
+  "system": "pf2e",
+  "name": "Always Ready",
+  "source": {
+    "title": "Pathfinder Lost Omens Knights of Lastwall",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Lastwall Sentry Dedication"
+  ],
+  "text": "Extensive training against undead has taught you to cover your weak points, even when you think that you're alone. You aren't Off-Guard to Hidden, Undetected, or flanking undead of your level or lower. However, the undead can still help their allies flank. If all of your opponents are undead, you gain a +1 circumstance bonus to initiative rolls; the GM determines whether to apply this bonus if undead are disguised as another type of creature, if another type of creature is disguised as undead, or if there are additional opponents you haven't noticed who aren't undead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.offGuardable",
+        "predicate": [
+          "origin:mode:undead"
+        ],
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "initiative",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "all-undead"
+      ]
+    }
+  ]
+}

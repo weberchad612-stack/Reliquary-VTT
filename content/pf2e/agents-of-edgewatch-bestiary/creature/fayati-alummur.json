@@ -1,0 +1,260 @@
+{
+  "kind": "creature",
+  "slug": "fayati-alummur",
+  "system": "pf2e",
+  "name": "Fayati Alummur",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 150,
+    "perception": 19,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 6,
+      "int": 0,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 18,
+      "deception": 18,
+      "diplomacy": 16,
+      "stealth": 18,
+      "thievery": 18
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "vudrani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Main-Gauche",
+      "ref": "equipment:item/main-gauche",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkvision Elixir (Moderate)",
+      "ref": "equipment:item/darkvision-elixir-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Jade Bauble (affixed to Main-Gauche)",
+      "ref": "equipment:item/jade-bauble",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 20,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Main-Gauche",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "disarm",
+        "finesse",
+        "magical",
+        "parry",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature targets Fayati with an attack and she can see the attacker\n\n---\n\nEffect Fayati dodges out of the way, gaining a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Opportune Backstab",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within Fayati's reach is hit by a melee Strike from one of her allies\n\n---\n\nEffect Fayati makes a Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Deepen the Wound",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Fayati's last attack was a successful melee Strike with her rapier\n\n---\n\nEffect Fayati makes a main-gauche Strike against the same creature that she just hit. This Strike deals an additional 4d6 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "deepen-the-wound",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "deepen-the-wound"
+            ],
+            "selector": "main-gauche-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guildmaster's Lead",
+      "category": "offensive",
+      "text": "Whenever Fayati critically succeeds at a Strike against a creature, until the start of her next turn, the first time that another member of the Copper Hand deals damage to that creature during their turn, they deal an additional 1d6 precision damage to it.\n\nEffect: Guildmaster's Lead"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Fayati deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

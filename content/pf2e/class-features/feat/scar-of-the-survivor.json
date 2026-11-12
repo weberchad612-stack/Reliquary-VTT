@@ -1,0 +1,107 @@
+{
+  "kind": "feat",
+  "slug": "scar-of-the-survivor",
+  "system": "pf2e",
+  "name": "Scar of the Survivor",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "ikon"
+  ],
+  "category": "classfeature",
+  "text": "Usage imbued in the skin\n\n---\nA scar on your body commemorates a time someone tried to end your story and failed—a testament to your resilience and fortitude.\n\nImmanence Divine energy spreads outward from your scar, reinforcing your flesh. You gain the benefits of the Diehard feat and a +1 status bonus to Fortitude saving throws.\n\nTranscendence—No Scar but This 1 (concentrate, healing, transcendence, vitality)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Exemplar.DivineSpark.Label",
+        "mergeable": true,
+        "option": "divine-spark",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "scar-of-the-survivor"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.exemplar.ikons",
+        "value": {
+          "label": "PF2E.SpecificRule.Exemplar.Ikon.ScarOfTheSurvivor.Label",
+          "predicate": [
+            "parent:tag:body-ikon-feat"
+          ],
+          "value": "scar-of-the-survivor"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.No Scar but This"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.attributes.dying.max",
+        "predicate": [
+          "divine-spark:scar-of-the-survivor"
+        ],
+        "priority": 51,
+        "value": 5
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "fortitude",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "divine-spark:scar-of-the-survivor"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:trait:transcendence",
+          {
+            "or": [
+              "item:granter:tag:chosen-ikon:scar-of-the-survivor",
+              "item:slug:no-scar-but-this"
+            ]
+          },
+          {
+            "not": "divine-spark:scar-of-the-survivor"
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Exemplar.DivineSpark.SparkTranscendence.Reminder"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,339 @@
+{
+  "kind": "creature",
+  "slug": "the-saboteur-5-6",
+  "system": "pf2e",
+  "name": "The Saboteur (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-06: The Crashing Wave",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "amphibious",
+    "evil",
+    "humanoid",
+    "lawful",
+    "sea-devil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 5,
+      "int": 1,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 11,
+      "deception": 15,
+      "intimidation": 11,
+      "medicine": 13,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "thalassic"
+    ],
+    "notes": {
+      "languages": "shark commune 150 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Striking Scalpel",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 15,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Scalpel",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+3",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Odru: Wind and Wavesense",
+      "category": "interaction",
+      "text": "Odru's faith extends her wavesense to a range of 60 feet and allows it to function equally well in clouds of water droplets or vapor, such as mist. (Odru only.)"
+    },
+    {
+      "kind": "ability",
+      "name": "Shark Commune 150 feet",
+      "category": "interaction",
+      "traits": [
+        "mental"
+      ],
+      "text": "The sea devil can communicate telepathically with sharks within range. It can communicate only simple concepts like \"come,\" \"guard,\" or \"attack.\""
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Sythi: Nervous Retreat",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An ally ends a move action adjacent to Sythi.\n\n---\n\nEffect Sythi hides behind his ally. He Steps to another square adjacent to the triggering ally and gains a +2 circumstance bonus to his AC against the next attack that targets him. (Sythi only.)",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nervous-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nervous-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Frenzy",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements The sea devil is not Fatigued or already in a frenzy\n\nTrigger The sea devil deals bleed damage to a living creature.\n\n---\nEffect The sea devil flies into a frenzy that lasts 1 minute. While frenzied, the sea devil gains a +1 status bonus to attack rolls with its claws and jaws, gains a +4 status bonus to damage rolls with its claws and jaws, gains 15 temporary HP until the end of the frenzy, and takes a -2 status penalty to AC. The sea devil can't voluntarily stop its frenzy. After its frenzy, the sea devil is Fatigued.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "claw-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "claw-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "flags.system.frenzyMod",
+            "value": 10
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": -2,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "When the sea devil deals piercing or slashing damage, it also deals 1d4 bleed if the target was Off-Guard or if the attack was a critical hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "target:condition:off-guard"
+              },
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rahla: Applied Anesthesia",
+      "category": "offensive",
+      "text": "Rahla's scalpel is coated with a disorienting agent. The first creature she successfully hits with a scalpel strike must succeed on a DC 24 Fortitude save save or be Sickened 1; this is a poison effect. (Rahla only.)"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The saboteur deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, if the saboteur rolls Deception or Stealth for initiative, creatures that haven't acted are Off-Guard to them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

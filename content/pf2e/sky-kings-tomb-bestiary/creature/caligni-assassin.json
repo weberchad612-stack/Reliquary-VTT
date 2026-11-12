@@ -1,0 +1,237 @@
+{
+  "kind": "creature",
+  "slug": "caligni-assassin",
+  "system": "pf2e",
+  "name": "Caligni Assassin",
+  "source": {
+    "title": "Pathfinder #194: Cult of the Cave Worm",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "caligni",
+    "evil",
+    "humanoid",
+    "shadow"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 135,
+    "perception": 14,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 18,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 6,
+      "int": 3,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 15,
+      "deception": 13,
+      "intimidation": 15,
+      "occultism": 13,
+      "stealth": 20
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "caligni",
+      "sakvroth",
+      "shadowtongue",
+      "shae"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spiked Gauntlet",
+      "ref": "equipment:item/spiked-gauntlet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Throwing Knife",
+      "ref": "equipment:item/throwing-knife",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Spiked Gauntlet",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "umbral-veil"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Throwing Knife",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Shift",
+      "category": "interaction",
+      "text": "Caligni assassins are Concealed in dim light or darkness even to creatures that can see clearly in those light levels."
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Sneak",
+      "category": "interaction",
+      "text": "The assassin can move their full speed while Sneaking."
+    },
+    {
+      "kind": "ability",
+      "name": "Countershadow",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "darkness",
+        "occult"
+      ],
+      "text": "Trigger A creature within 60 feet casts a light spell\n\n---\n\nEffect The caligni assassin attempts to counteract the triggering spell. Caligni assassins automatically recognize light spells."
+    },
+    {
+      "kind": "ability",
+      "name": "Death Umbral Shroud",
+      "category": "defensive",
+      "traits": [
+        "darkness",
+        "occult"
+      ],
+      "text": "When a caligni assassin dies, their body disintegrates into a veil of supernatural darkness for 1 round. A 4th-rank Darkness spell appears, centered on the assassin's location, with a counteract DC of 23."
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The assassin isn't Off-Guard to creatures of 8th level or lower that are Hidden, undetected, flanking, or using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "You draw your weapon and attack with the same motion. You Interact to draw a weapon, then Strike with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Leap",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "darkness",
+        "occult",
+        "teleportation"
+      ],
+      "text": "Requirements The assassin is in dim light or darkness\n\n---\n\nEffect The assassin vanishes into shadow, appearing in a square of dim light or darkness within 60 feet. If the assassin appears adjacent to a creature, they can Strike that creature, otherwise the assassin can Hide."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The assassin deals an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Umbral Veil",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "darkness"
+      ],
+      "text": "Requirements The assassin's last action was a successful melee Strike\n\n---\n\nEffect The assassin extends a tendril of shadow to obscure the target's vision, blinding them for 1 round (DC 23 Will save negates). On a critical failure, they're blind for 1 minute. Creatures with greater darkvision are immune to this ability."
+    }
+  ],
+  "text": "Lauded and shunned, caligni assassins often become unwitting pawns in clashes between caligni settlements or between rival factions of caligni society.\n\n---\n\nCalignis often get stereotyped as murderers, but the title of assassin is one of the rarest in their society. Caligni settlements go decades without having offspring born with enough potential. However, once a child shows they have \"the gift\"; the settlements leaders might give the babe to the owb, who mold and shape the child into an instrument of shadows and death.\n\nShadowfade\n\nCaligni assassins gain their power from an infusion of planar essence directly from the Netherworld, which the owb help them develop into powerful abilities. This comes at a cost: all caligni assassins eventually succumb to an affliction known as shadowfade. This magical malady causes the caligni's body to painfully warp when concealed in shadows, as the plane's ability to create twisted reflections of reality changes their physical form directly.\n\nSometimes a caligni assassin will flee home and strike out on their own to avoid becoming a twisted tool for their greedy leaders. Such freelancers are in high demand for those seeking a fatal solution to their own political problems."
+}

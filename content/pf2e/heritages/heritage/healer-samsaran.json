@@ -1,0 +1,42 @@
+{
+  "kind": "heritage",
+  "slug": "healer-samsaran",
+  "system": "pf2e",
+  "name": "Healer Samsaran",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "samsaran"
+  ],
+  "ancestry": {
+    "name": "Samsaran",
+    "ref": "ancestries:ancestry/samsaran"
+  },
+  "text": "In seeking enlightenment, your past incarnations have wandered away from the ancestral homelands of Zi Ha, exploring the different nations of Tian Xia and elsewhere in Golarion. Your past incarnations had dangerous encounters while traveling, and you frequently have flashbacks to healing wounds. You become trained in Medicine. If you would automatically become trained in Medicine (from your background or class, for example), you instead become trained in a skill of your choice.\n\nWhen you use Medicine to Treat Wounds on yourself, you can use your special techniques to add your level to the Hit Points you regain from the treatment.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.medicine.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "healing-received",
+      "type": "untyped",
+      "value": "@level",
+      "when": [
+        "action:treat-wounds",
+        "check:statistic:medicine",
+        "origin:signature:{actor|signature}"
+      ]
+    }
+  ]
+}

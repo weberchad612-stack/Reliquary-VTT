@@ -1,0 +1,130 @@
+{
+  "kind": "creature",
+  "slug": "animated-knickknack-1-2",
+  "system": "pf2e",
+  "name": "Animated Knickknack (1-2)",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-05: Inheritor's Rite",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 15,
+    "hp": 6,
+    "perception": 3,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 6,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 0,
+      "dex": 1,
+      "int": -5,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 5
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(13 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Slam",
+      "attack": 6,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 2)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated knickknack has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated knickknack is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 13.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ]
+}

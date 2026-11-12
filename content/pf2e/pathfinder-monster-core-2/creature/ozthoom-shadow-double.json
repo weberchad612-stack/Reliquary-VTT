@@ -1,0 +1,190 @@
+{
+  "kind": "creature",
+  "slug": "ozthoom-shadow-double",
+  "system": "pf2e",
+  "name": "Ozthoom Shadow Double",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "fey",
+    "summoned"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 35,
+    "hp": 85,
+    "perception": 25,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 28,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 4,
+      "dex": 8,
+      "int": 2,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 28,
+      "deception": 25,
+      "intimidation": 27,
+      "nature": 22,
+      "stealth": 28
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 75
+    },
+    "senses": [
+      {
+        "type": "lifesense",
+        "range": 120,
+        "acuity": "precise"
+      },
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Can't speak any language, Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "cold-iron",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+15",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wing",
+      "attack": 25,
+      "traits": [
+        "cold-iron",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+15",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 120 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Saving throws against Light effects",
+      "category": "defensive",
+      "text": "A shadow double that attempts a saving throw against a light effect can't get a result better than failure.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "saving-throw",
+          "text": "{item|description}",
+          "outcome": [
+            "failure"
+          ],
+          "when": [
+            "item:trait:light"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalSuccess": "to-failure",
+              "success": "to-failure"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:light"
+            ],
+            "selector": "saving-throw"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A ozthoom shadow double's Strikes deal an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Ozthooms are shadowy killers who serve powerful fey creatures or even the Eldest—the demigods of the First World. Amid the courts of the Eldest or other powerful fey rulers, these sinister assassins lurk overhead as they await the call to action—implied threats akin to deadly weapons hung as decor in a royal hall. Ozthooms never speak aloud; when they feel the need to communicate at all, they do so in a telepathic whisper directly into their victim's mind. While an ozthoom's body is a strange, fleshy material, their deadly claws and cruel hooked wings are made from razor-sharp cold iron, a quality that makes them highly feared among other fey. A typical ozthoom is 10 feet tall and has an 8-foot wingspan, but it weighs less than 80 pounds.\n\nWhile most ozthooms serve powerful masters, a few of these murderous fey have been left to their own devices and serve none but their own capricious whims. In some cases, their master has been slain, while in others, the ozthoom has been released from service for any number of reasons. An ozthoom left to indulge their cruel desires unrestrained is often the most dangerous ozthoom of them all."
+}

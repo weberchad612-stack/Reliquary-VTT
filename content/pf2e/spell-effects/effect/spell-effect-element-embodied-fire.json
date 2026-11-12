@@ -1,0 +1,111 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-element-embodied-fire",
+  "system": "pf2e",
+  "name": "Spell Effect: Element Embodied (Fire)",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Element Embodied\n\nYou transform into a Gargantuan elemental battle form. While in this form, you gain the elemental trait and the fire trait. You gain the following statistics and abilities regardless of which battle form you choose:\n- AC = 25 + your level. Ignore your armor's check penalty and Speed reduction.\n\n- 30 temporary Hit Points.\n\n- Darkvision.\n\n- One or more attacks specific to the battle form you choose, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +34, and your damage bonus is +15. These attacks are Dexterity based if you choose an air, fire, or metal elemental, or Strength based if you choose an earth, water, or wood elemental. (This distinction doesn't change the statistics but matters for the enfeebled and clumsy conditions, for example). If your unarmed attack modifier is higher, you can use it instead.\n\n- Acrobatics modifier of +36 for air, fire, or metal elemental, or Athletics modifier of +36 for earth, water, or wood elemental, unless your own modifier is higher.\n\nYou also gain specific abilities based on the type of elemental you choose:\n- Fire Elemental Speed 50 feet; immunity to fire; weakness 10 to cold\n- Intense Heat (aura, fire) 30 feet. A creature that enters the aura or starts its turn in the aura takes 5d6 fire damage with a basic Reflex save against your spell DC. A creature can take damage from the aura only once per round\n\n- Melee 1 tendril (reach 25 feet), Damage 3d10 fire plus 2d6 persistent fire\n\n- Ranged 1 fire mote (range increment 60 feet), Damage 3d8 fire.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "25 + @actor.level"
+          },
+          "immunities": [
+            {
+              "type": "fire"
+            }
+          ],
+          "size": "grg",
+          "skills": {
+            "acrobatics": {
+              "modifier": 23
+            }
+          },
+          "speeds": {
+            "land": 50
+          },
+          "strikes": {
+            "fire-mote": {
+              "category": "unarmed",
+              "damage": {
+                "damageType": "fire",
+                "dice": 3,
+                "die": "d8",
+                "modifier": 15
+              },
+              "modifier": 34,
+              "range": {
+                "increment": 60
+              }
+            },
+            "tendril": {
+              "ability": "dex",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "fire",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 15
+              },
+              "img": "icons/magic/fire/projectile-bolt-zigzag-orange.webp",
+              "modifier": 34,
+              "traits": [
+                "unarmed",
+                "reach-25"
+              ]
+            }
+          },
+          "tempHP": 30,
+          "traits": [
+            "elemental",
+            "fire"
+          ],
+          "weaknesses": [
+            {
+              "type": "cold",
+              "value": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "fire",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "tendril-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Aura",
+        "radius": 30,
+        "slug": "intense-heat",
+        "traits": [
+          "fire"
+        ]
+      }
+    }
+  ]
+}

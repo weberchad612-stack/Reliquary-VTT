@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "effect-deathdrinking",
+  "system": "pf2e",
+  "name": "Effect: Deathdrinking",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Deathdrinking\n\nIf the creature you killed was living you gain a +1 item bonus to attack and damage rolls. If the creature you destroyed was undead you gain a number of temporary HP equal to twice your level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitUndead",
+            "value": "undead"
+          },
+          {
+            "label": "PF2E.ModeOfBeing.Living",
+            "value": "living"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "deathdrinking"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "item",
+      "value": 1,
+      "when": [
+        "deathdrinking:living"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "deathdrinking:undead"
+        ],
+        "value": "@item.origin.level*2"
+      }
+    }
+  ]
+}

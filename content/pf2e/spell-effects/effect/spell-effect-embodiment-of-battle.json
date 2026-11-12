@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-embodiment-of-battle",
+  "system": "pf2e",
+  "name": "Spell Effect: Embodiment of Battle",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Embodiment of Battle\n\nYou gain a status bonus to attack and damage rolls made with weapon or unarmed attacks, and you gain the Reactive Strike reaction; this reaction gains the apparition trait. You take a –2 status penalty to your spell attack modifiers and your spell DCs.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.attacks.martial.rank",
+        "value": "@actor.system.proficiencies.attacks.simple.rank"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "weapon-attack-roll",
+          "unarmed-attack-roll",
+          "weapon-damage",
+          "unarmed-damage"
+        ],
+        "slug": "embodiment-of-battle-bonus",
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "add",
+            "property": "traits",
+            "value": "apparition"
+          }
+        ],
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Reactive Strike"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "spell-attack",
+        "spell-dc"
+      ],
+      "type": "status",
+      "value": -2,
+      "slug": "embodiment-of-battle-penalty"
+    }
+  ]
+}

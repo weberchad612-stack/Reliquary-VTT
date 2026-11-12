@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "reckless-scientist",
+  "system": "pf2e",
+  "name": "Reckless Scientist",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 95,
+    "perception": 12,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 14,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 4,
+      "int": 4,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "crafting": 16,
+      "deception": 9,
+      "medicine": 10,
+      "stealth": 14,
+      "engineering-lore": 14,
+      "underworld-lore": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Sickle",
+      "ref": "equipment:item/sickle",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Work Coat (Functions as Leather Armor)",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Alchemist's Toolkit",
+      "ref": "equipment:item/alchemists-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Sickle",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Alchemical Grenade",
+      "attack": 16,
+      "traits": [
+        "splash"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2",
+          "type": "untyped",
+          "category": "splash"
+        },
+        {
+          "dice": "2",
+          "type": "untyped",
+          "category": "persistent"
+        },
+        {
+          "dice": "2d6",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unstable Collection",
+      "category": "interaction",
+      "text": "A reckless scientist carries a collection of poorly stowed alchemical items: 3 elixirs of life and 6 alchemical grenades. The scientist replenishes these items each day using scavenged materials. The alchemical grenades deal either acid, cold, or fire damage plus 2 persistent damage and 2 splash damage of the same type (typically the collection contains two of each grenade).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "unstable-collection",
+            "selection": "acid",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "property": "damage-type",
+            "selectors": [
+              "alchemical-grenade-damage"
+            ],
+            "slug": "base",
+            "value": "{item|flags.system.rulesSelections.unstableCollection}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:trait:poison"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unstable Explosion",
+      "category": "defensive",
+      "text": "When an attacker scores a critical hit against the reckless scientist, one of the scientist's alchemical items bursts. The GM determines the item randomly. If it was a bomb, the alchemist takes damage from the bomb, and any creature adjacent to the alchemist takes the splash damage. Any other item is wasted.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Grenadier",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The reckless scientist Interacts to draw an alchemical grenade with an Interact action and throws it as a ranged Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Reckless Alchemy",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "manipulate"
+      ],
+      "text": "The reckless scientist attempts to combine two alchemical grenades or two elixirs of life into one item. They can Interact to draw the items if necessary. They attempt a DC 22 Crafting check check, destroying both component items to create one new item.\n\n---\nSuccess The new item has the full effect of both component items, and the reckless scientist can Activate it. If they don't Activate it before the end of their turn, the item explodes (as critical failure).\n\nFailure The new item is inert.\n\nCritical Failure The unstable item explodes, dealing 3d6 piercing damage to the reckless scientist."
+    }
+  ],
+  "text": "It's the reckless scientist's job to break the rules of reality, no matter the cost.\n\n---\nVillains pursue selfish and cruel goals, trampling over anyone in their way."
+}

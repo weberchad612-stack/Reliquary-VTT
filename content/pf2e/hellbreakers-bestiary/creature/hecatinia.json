@@ -1,0 +1,261 @@
+{
+  "kind": "creature",
+  "slug": "hecatinia",
+  "system": "pf2e",
+  "name": "Hecatinia",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 6,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 11,
+      "diplomacy": 6,
+      "intimidation": 9,
+      "society": 5,
+      "legal-lore": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "ac": "(21 with shield raised)",
+      "perception": "(+10 to Sense Motive)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Signal Whistle",
+      "ref": "equipment:item/signal-whistle",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 13,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Air of Authority",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "10 feet. Creatures in the aura who are the same or lower level than the watch officer take a -2 status penalty to their Will DC against the watch officer's attempts to coerce or demoralize them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "includesSelf": false,
+                "predicate": [
+                  {
+                    "gte": [
+                      "self:level",
+                      "target:level"
+                    ]
+                  }
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Air of Authority"
+              }
+            ],
+            "key": "Aura",
+            "radius": 10,
+            "slug": "air-of-authority",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When the watch officer rolls a success on a Will save against a fear effect, they get a critical success instead. In addition, any time they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:fear"
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Fatigue",
+      "category": "offensive",
+      "text": "Having fought undead nonstop for the entire day, both Hellknights have the Fatigued condition. The condition goes away as usual with a full night's rest.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "uuid": "Compendium.pf2e.conditionitems.Item.Fatigued"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The watch officer Strides twice. If they end their movement within melee reach of at least one enemy, they can make a melee Strike against that enemy.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "Often leading a small team of lower-ranking guards, watch officers patrol their assigned areas to maintain order and enforce laws. Watch officers get the job done, though their methods aren't always gentle or kind.\n\n---\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. Some carry out these duties fairly, but others are harsh and cruel, imposing severe punishments on anyone unable to pay for clemency.",
+  "blurb": "Watch Officer"
+}

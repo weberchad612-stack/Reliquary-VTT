@@ -1,0 +1,222 @@
+{
+  "kind": "creature",
+  "slug": "shadow-worm",
+  "system": "pf2e",
+  "name": "Shadow Worm",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "rare",
+  "traits": [
+    "animal",
+    "shadow"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 45,
+    "hp": 450,
+    "perception": 33,
+    "saves": {
+      "fortitude": 36,
+      "reflex": 32,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 9,
+      "dex": 2,
+      "int": -4,
+      "str": 10,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 41,
+      "stealth": {
+        "value": 32,
+        "special": [
+          {
+            "value": 37,
+            "label": "in Dim Light or Darkness",
+            "when": [
+              {
+                "or": [
+                  "lighting:darkness",
+                  "lighting:dim-light"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 40,
+      "burrow": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "light",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 20
+        },
+        {
+          "type": "void",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "shadow healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 38,
+      "traits": [
+        "deadly-2d10",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+20",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Body",
+      "attack": 38,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+20",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 100 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Inexorable",
+      "category": "defensive",
+      "text": "The shadow worm recovers from the Paralyzed, Slowed, and Stunned conditions at the end of its turn. It's also immune to penalties to its Speeds and the Immobilized condition, and it ignores difficult terrain and greater difficult terrain.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "immobilized"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Healing",
+      "category": "defensive",
+      "text": "As long as a shadow worm is in an area of dim light or darkness, it gains fast healing 20. When affected by a magical shadow effect from anything other than itself, a shadow worm becomes Quickened 1 for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Shrink from the Light",
+      "category": "defensive",
+      "text": "A shadow worm takes an additional 20 damage from any spell or ability with the light trait and uses the outcome one degree worse for saving throws made against a spell or ability with the light trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalSuccess": "one-degree-worse",
+              "failure": "one-degree-worse",
+              "success": "one-degree-worse"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:light"
+            ],
+            "selector": "saving-throw"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "cold",
+        "occult",
+        "shadow",
+        "void"
+      ],
+      "text": "The shadow worm exhales a blast of clinging shadow, dealing 11d6 cold,10d6 void damage to creatures in a 60-foot cone (DC 42 basic Reflex save). If the cone passes through an area of magical light or targets a creature affected by magical light, Breath Weapon attempts to counteract the light (+34 counteract modifier). The shadow worm can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Swallow",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The shadow worm Grabs a creature\n\n---\n\nEffect The worm uses Swallow Whole."
+    },
+    {
+      "kind": "ability",
+      "name": "Rock Tunneler",
+      "category": "offensive",
+      "text": "A shadow worm can burrow through solid stone at a Speed of 20 feet. It can leave a tunnel if it desires, and it usually does."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Huge, 3d10+15 bludgeoning, Rupture 42\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Thrash",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The worm makes a Strike once against each creature in its reach. It can Strike up to once with its jaws and any number of times with its body. Each attack counts toward the worm's multiple attack penalty, but the multiple attack penalty doesn't increase until after it makes all the attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Shadow worms are monstrous cave worms that dwell on the Shadow Plane. Larger and more cunning than most cave worms, shadow worms are fearsome predators that leave swaths of devastation in their wake. Most have glossy, black-armored hide, but those that burrow near velstrac lands are streaked with dark red, for the blood the velstracs spill has soaked into the very stones these shadow worms consume."
+}

@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "effect-deadweight-mutagen-moderate",
+  "system": "pf2e",
+  "name": "Effect: Deadweight Mutagen (Moderate)",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Deadweight Mutagen (Moderate)\n\nBenefit You gain a +2 item bonus to Athletics checks to Shove and Trip, to your Fortitude and Reflex DCs against attempts to Shove or Trip you, and to saving throws against effects that attempt to force you to move or knock you Prone.\n\nDrawback You gain the Encumbered condition and can't remove it while under the effects of the mutagen.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "item",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "action:shove",
+            "action:trip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "fortitude-dc",
+        "reflex-dc"
+      ],
+      "type": "item",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "action:shove",
+            "action:trip",
+            "forced-movement",
+            "inflicts:prone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Encumbered"
+      }
+    }
+  ]
+}

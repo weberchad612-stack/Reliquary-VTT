@@ -1,0 +1,262 @@
+{
+  "kind": "creature",
+  "slug": "master-of-disguise",
+  "system": "pf2e",
+  "name": "Master of Disguise",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 110,
+    "perception": 17,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "deception": 18,
+      "diplomacy": 16,
+      "performance": 16,
+      "society": 17,
+      "stealth": 17,
+      "thievery": 15,
+      "underworld-lore": 15
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "dwarven",
+      "elven",
+      "gnomish",
+      "halfling"
+    ],
+    "notes": {
+      "perception": "(+21 to Sense Motive)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit (Elite)",
+      "ref": "equipment:item/disguise-kit-elite",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Masquerade Scarf",
+      "ref": "equipment:item/masquerade-scarf",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+4 to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Cover",
+      "category": "interaction",
+      "text": "At most times, a master of disguise has infiltrated a specific organization, gaining a +2 circumstance bonus to gather-information, impersonate, lie, or request when dealing with its members.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "deep-cover",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "skill-check",
+          "type": "untyped",
+          "value": 0,
+          "when": [
+            "deep-cover",
+            {
+              "or": [
+                "action:gather-information",
+                "action:impersonate",
+                "action:lie",
+                "action:request"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disguise Specialist",
+      "category": "interaction",
+      "text": "For social encounters involving impersonation, the master of disguise is a 10th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Double Take",
+      "category": "offensive",
+      "text": "If the master of disguise and the creature they're Impersonating are in each others' presence, the genuine creature must Lie if they're vouching for their own identity, and are treated as though they were Impersonating themself if someone Seeks in an attempt to pierce their disguise. The genuine creature can use their Deception modifier, Diplomacy modifier, or a +15 modifier, whichever is highest."
+    },
+    {
+      "kind": "ability",
+      "name": "Impeccable Disguise",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The master of disguise creates a disguise and Impersonates. They gain a +5 status bonus to Deception checks to impersonate or to tell a lie that helps them maintain their disguise. When a spell or magical effect tries to read their mind, detect whether they're lying, or reveal their identity, they can attempt a Deception check check against the spell or effect's DC. If they succeed, the effect reveals information appropriate to their cover identity or nothing (the GM determines which).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "impeccable-disguise",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "status",
+          "value": 5,
+          "when": [
+            "impeccable-disguise",
+            {
+              "or": [
+                "action:lie",
+                "action:impersonate"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shocking Reveal",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The master of disguise removes their disguise with a dramatic gesture. Any creatures that previously failed to see through the disguise is Off-Guard to the master of disguise until the end of the turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The master of disguise deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A master of disguise uses costuming, makeup, and minor illusions to deceive. Some conceal their identity for years, infiltrating organizations under deep cover.\n\n---\nIn the underbelly of society, the lawless reign supreme."
+}

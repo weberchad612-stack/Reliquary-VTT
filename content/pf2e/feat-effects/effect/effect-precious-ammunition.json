@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "effect-precious-ammunition",
+  "system": "pf2e",
+  "name": "Effect: Precious Ammunition",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Precious Ammunition\n\nChoose cold iron or silver; if you shoot the arrow or bolt before the end of your turn, it counts as that material. At 14th level, add adamantine to the list of materials you can choose from.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.PreciousMaterialAdamantine",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  14
+                ]
+              }
+            ],
+            "value": "adamantine"
+          },
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "value": "silver"
+          }
+        ],
+        "flag": "material",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:group:bow",
+              "item:group:crossbow"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "materials",
+        "selector": "strike-damage",
+        "value": "{item|flags.system.rulesSelections.material}"
+      }
+    }
+  ]
+}

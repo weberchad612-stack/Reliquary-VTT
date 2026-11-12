@@ -1,0 +1,146 @@
+{
+  "kind": "feat",
+  "slug": "verdant-weapon",
+  "system": "pf2e",
+  "name": "Verdant Weapon",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "druid",
+    "exploration"
+  ],
+  "category": "class",
+  "text": "You cultivate a seed that can sprout into a wooden staff, vine whip, or another weapon. You spend 10 minutes focusing primal energy into a seed, imprinting it with the potential of a single level 0 weapon you are trained with and that has no mechanical parts or metal components. When holding the imprinted seed, you can use an Interact action to cause it to immediately grow into that weapon; a second Interact action returns it to seed form. The verdant weapon can be etched with runes or affixed with talismans as normal, which are suppressed when the weapon is in seed form.\n\nYou can have only one verdant seed at a time. If you prepare a second, your first verdant seed immediately becomes a mundane seed; any runes on the previous seed transfer to the new seed at no cost, but inapplicable runes are suppressed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.GrantItem.GrantNew",
+            "value": "granted"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.GrantItem.ExistingItem",
+            "value": "existing"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Physical.Prompt",
+        "rollOption": "verdant-weapon-origin"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:level:0",
+            {
+              "nor": [
+                "item:magical",
+                "item:trait:consumable",
+                "item:group:firearm"
+              ]
+            }
+          ],
+          "itemType": "weapon"
+        },
+        "flag": "grantedVerdantWeapon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "verdant-weapon-origin:granted"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "not": "item:trait:consumable"
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "existingVerdantWeapon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "verdant-weapon-origin:existing"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "flag": "grantedVerdantWeapon",
+        "key": "GrantItem",
+        "predicate": [
+          "verdant-weapon-origin:granted"
+        ],
+        "track": true,
+        "uuid": "{item|flags.system.rulesSelections.grantedVerdantWeapon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "verdant-weapon-origin:existing",
+                  "item:id:{item|flags.system.rulesSelections.existingVerdantWeapon}"
+                ]
+              },
+              {
+                "and": [
+                  "verdant-weapon-origin:granted",
+                  "item:granter:slug:verdant-weapon"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "verdant-weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:verdant-weapon"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Druid.VerdantWeapon.DescriptionAlteration"
+          }
+        ]
+      }
+    }
+  ]
+}

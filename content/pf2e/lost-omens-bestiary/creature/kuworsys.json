@@ -1,0 +1,230 @@
+{
+  "kind": "creature",
+  "slug": "kuworsys",
+  "system": "pf2e",
+  "name": "Kuworsys",
+  "source": {
+    "title": "Pathfinder Lost Omens Monsters of Myth",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "unique",
+  "traits": [
+    "aberration",
+    "evil",
+    "lawful"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 34,
+    "hp": 213,
+    "perception": 22,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 22,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 8,
+      "int": 7,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 22,
+      "crafting": 25,
+      "stealth": 28,
+      "thievery": 28
+    },
+    "speeds": {
+      "land": 35,
+      "climb": 35
+    },
+    "senses": [
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed"
+      ],
+      "weaknesses": [
+        {
+          "type": "acid",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "perception": "+26 vs. traps"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Sling",
+      "ref": "equipment:item/sling",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling Bullets",
+      "ref": "equipment:item/sling-bullets",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Explosive Ammunition",
+      "ref": "equipment:item/explosive-ammunition",
+      "type": "ammo",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Freezing Ammunition",
+      "ref": "equipment:item/freezing-ammunition",
+      "type": "ammo",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Limb",
+      "attack": 27,
+      "traits": [
+        "finesse",
+        "reach-15",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sling",
+      "attack": 28,
+      "traits": [
+        "propulsive",
+        "reload-1"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "2d6+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+4 Bonus on Perception to Find traps",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "origin:trait:trap"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pinion",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 10 feet of Kuworsys uses an action to Fly\n\nRequirements Kuworsys is Reared Back\n\n---\nEffect Kuworsys lashes out at the triggering creature, attempting to swat it to the ground. Kuworsys attempts a melee Strike against the creature. If the Strike hits, the creature's movement is interrupted. The creature is knocked to the ground; on a critical hit, they also can't Fly again for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Addictive Exhaustion",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 32 Fortitude save\n\nCreatures with addictive exhaustion can't reduce their sickened condition from addictive exhaustion while they have the disease\n\nStage 1 The creature is Sickened 1. One skill of the creature's choice doesn't suffer the status penalty from this sickened condition to its skill checks (1 day)\n\nStage 2 As Stage 1, but the creature is Sickened 2 and is Fatigued (5 days)\n\nStage 3 As Stage 2, but the creature is Sickened 3 and has incurable hunger and thirst, in addition to being fatigued (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Gauge Potential",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Kuworsys studies a creature it can see, attempting to predict its actions. The creature attempts a DC 32 Will save save. On a failed save, Kuworsys predicts the creature's moves, gaining a +2 circumstance bonus to attack rolls and AC against the target creature for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Attacking or Being Attacked by Target of Gauge Potential",
+            "option": "gauge-potential",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "gauge-potential"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "gauge-potential"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infectious Spores",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Kuworsys releases a choking field of spores within a 30-foot radius, continuing to release them until the end of its next turn. Creatures who begin their turns within the area of the spores, or who enter the area, must attempt a DC 32 Fortitude save save. On a failure, the creature becomes afflicted with addictive exhaustion.\n\nKuworsys then can't use its Infectious Spores again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Rear Back",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Kuworsys stands on its two hind limbs, bringing its other four limbs to bear on its foes. Kuworsys stays Reared Back until it uses a single action to return to its normal stance. While Kuworsys is Reared Back, it is Clumsy 1 but can use its Pinion and Yank abilities."
+    },
+    {
+      "kind": "ability",
+      "name": "Yank",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Kuworsys is Reared Back\n\n---\n\nEffect Kuworsys makes a melee limb Strike against a creature and, on a success, attempts to steal the creature's weapon from its hands. Kuworsys attempts a Thievery check check against the target's Reflex DC.\n\n---\n\nCritical Success The creature's weapon falls to the floor in the creature's space.\n\nSuccess Until the start of that creature's turn, attempts to Disarm the creature of its weapon gain a +2 circumstance bonus, and the target takes a -2 circumstance penalty to attacks with the weapon or other checks requiring a firm grasp on the weapon.\n\nFailure The creature is unaffected.\n\nCritical Failure The creature can use a reaction to attempt a melee Strike against Kuworsys with the weapon Kuworsys attempted to grab."
+    }
+  ],
+  "text": "At a distance, the creature known as Kuworsys might be mistaken for a crawling undead hand, possessed of two thumbs instead of one. These \"thumbs\" are actually the being's hind limbs, which it can clumsily stand upon should it choose. Each of its fingerlike limbs bears a smaller hand on the end, giving Kuworsys an eerie gait possessed of too many moving joints. Wedged within the wrist-shaped tissue that makes up the creature's head are three bloodshot eyes, glaring balefully from lids twisted into shape from ropes of flesh.\n\nWhether part of its base nature or due to its long imprisonment, Kuworsys appears to be skinned and rotting, its body riddled with ragged holes held together by raw sinew. Despite its glistening and putrid appearance, it isn't undead, nor does it leave any trace of blood or gristle in its wake. Those who believe its condition might slow it down are often shocked by the creature's jittering speed, and those who believe they might be able to track it by the scent of rotting flesh find themselves inhaling the beast's deadly, exhausting spores instead.\n\nWhen encountering another creature, Kuworsys doesn't approach initially, instead observing the stranger while hidden or at a distance. While it might grow bolder and approach to examine or provoke another being, it prefers to avoid direct confrontation and is intelligent and stealthy enough to deftly avoid discovery. Its presence proves deadly enough, even without any further aggression, as those who Kuworsys stalks eventually succumb to a lethal lethargy."
+}

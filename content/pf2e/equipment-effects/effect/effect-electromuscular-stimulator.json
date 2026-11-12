@@ -1,0 +1,71 @@
+{
+  "kind": "effect",
+  "slug": "effect-electromuscular-stimulator",
+  "system": "pf2e",
+  "name": "Effect: Electromuscular Stimulator",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Electromuscular Stimulator\n\nYou gain the quickened condition and you can use the extra action each round only to Stride or Strike. On a success, you also take 3 persistent electricity damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "electromuscular-stimulator"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "persistent-damage",
+            "value": {
+              "damageType": "electricity",
+              "formula": "3"
+            }
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "predicate": [
+          "electromuscular-stimulator:success"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Persistent Damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    }
+  ]
+}

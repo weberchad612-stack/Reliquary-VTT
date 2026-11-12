@@ -1,0 +1,48 @@
+{
+  "kind": "effect",
+  "slug": "effect-resurrection-tea",
+  "system": "pf2e",
+  "name": "Effect: Resurrection Tea",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 8,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Resurrection Tea\n\nYou reduce the DC of recovery checks by 1 (by 3 if consumed during a tea ceremony).\n\nNote: Adjust duration if consumed during a tea ceremony.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Actions.OneAction",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.TeaCeremony.Label",
+            "value": 3
+          }
+        ],
+        "flag": "tea",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "subtract",
+        "path": "system.attributes.dying.recoveryDC",
+        "value": "@item.flags.system.rulesSelections.tea"
+      }
+    }
+  ]
+}

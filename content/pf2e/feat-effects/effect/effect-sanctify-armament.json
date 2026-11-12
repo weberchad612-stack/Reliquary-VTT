@@ -1,0 +1,93 @@
+{
+  "kind": "effect",
+  "slug": "effect-sanctify-armament",
+  "system": "pf2e",
+  "name": "Effect: Sanctify Armament",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sanctify Armament\n\nThe weapon gains the origin's holy or unholy trait. It also deals an additional 2d6 spirit damage to creatures of the opposed trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "parent:origin:trait:holy",
+                  "target:trait:unholy"
+                ]
+              },
+              {
+                "and": [
+                  "parent:origin:trait:unholy",
+                  "target:trait:holy"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:trait:holy"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:trait:unholy"
+        ],
+        "property": "traits",
+        "value": "unholy"
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shields-of-the-spirit",
+  "system": "pf2e",
+  "name": "Spell Effect: Shields of the Spirit",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Shields of the Spirit\n\nChampion: You Raise your Shield.\n\nAlly: You gain a +1 status bonus to AC while in the Champion's aura.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "includesSelf": false,
+            "predicate": [
+              {
+                "not": "target:effect:shields-of-the-spirit-security"
+              }
+            ],
+            "uuid": "Compendium.pf2e.spell-effects.Item.Spell Effect: Shields of the Spirit"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "champions-aura",
+          "self:signature:{item|origin.signature}"
+        ],
+        "radius": "@actor.flags.system.champion.aura",
+        "slug": "champions-aura"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "status",
+      "value": 1,
+      "when": [
+        {
+          "not": "self:signature:{item|origin.signature}"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade",
+          "granter": "detach"
+        },
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.equipment-effects.Item.Effect: Raise a Shield"
+      }
+    }
+  ]
+}

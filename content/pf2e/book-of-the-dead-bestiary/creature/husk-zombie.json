@@ -1,0 +1,181 @@
+{
+  "kind": "creature",
+  "slug": "husk-zombie",
+  "system": "pf2e",
+  "name": "Husk Zombie",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "evil",
+    "undead",
+    "unholy",
+    "zombie"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 55,
+    "perception": 5,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 9,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 3,
+      "int": -1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "deception": 6,
+      "intimidation": 6,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 5
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "defensive",
+      "text": "A husk zombie is permanently Slowed 1 and can't use reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The husk zombie deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Surge",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger The husk zombie's turn begins\n\n---\n\nEffect The husk zombie has a sudden burst of speed. They are Quickened this turn and can use the extra action only to Stride or Strike. If the husk zombie's first action this turn is a melee Strike, the target is Off-Guard against the attack.\n\nThe husk zombie can't use Sudden Surge again until after they spend at least 10 minutes standing motionless."
+    }
+  ],
+  "text": "Rather than allow a body to rot, some necromancers attempt to dry-cure the corpse to prevent further deterioration. Combined with special reagents, this process can preserve a rudimentary form of intelligence, allowing husk zombies to act more like predators than their mindless kin. Most husk zombies have no memories of their prior lives, though some keep trinkets from that time, oblivious as to why they value such items. A rare few husk zombies retain most of their former knowledge, though they tend to have gaps in their memory.\n\n---\n\nSimple to create and varied in purpose, these shambling undead are often used for their strength and endless stamina to conduct boring, repetitive tasks."
+}

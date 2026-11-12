@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "twirling-throw",
+  "system": "pf2e",
+  "name": "Twirling Throw",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "finisher",
+    "swashbuckler"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "Flying Blade"
+  ],
+  "text": "Your thrown weapons seem to defy physics as they soar through the air and spin back to you after a strike. Make a thrown weapon strike, ignoring the penalty for making ranged attacks within the second and third range increment. The weapon returns to your hand after the attack unless you critically failed on the attack roll.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:effect:panache"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Swashbuckler.Finisher.Label",
+        "mergeable": true,
+        "option": "finisher",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Swashbuckler.Finisher.TwirlingThrow",
+            "value": "twirling-throw"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:3",
+        "predicate": [
+          "finisher:twirling-throw"
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "ranged-strike-attack-roll",
+      "text": "PF2E.SpecificRule.Swashbuckler.Finisher.TwirlingThrowNote",
+      "outcome": [
+        "failure",
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher:twirling-throw"
+      ]
+    }
+  ]
+}

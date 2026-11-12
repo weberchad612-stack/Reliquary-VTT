@@ -1,0 +1,289 @@
+{
+  "kind": "creature",
+  "slug": "halfling-smuggler",
+  "system": "pf2e",
+  "name": "Halfling Smuggler",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "halfling",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 23,
+    "hp": 95,
+    "perception": 13,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 16,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 11,
+      "deception": 14,
+      "intimidation": 14,
+      "society": 10,
+      "stealth": 15,
+      "thievery": 16,
+      "underworld-lore": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "halfling"
+    ],
+    "notes": {
+      "perception": "keen eyes"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Filcher's Fork",
+      "ref": "equipment:item/filchers-fork",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling",
+      "ref": "equipment:item/sling",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Clothing (Fine)",
+      "ref": "equipment:item/clothing-fine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arsenic",
+      "ref": "equipment:item/arsenic",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Smoke Ball (Lesser)",
+      "ref": "equipment:item/smoke-ball-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Filcher's Fork",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "backstabber",
+        "deadly-d6",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Filcher's Fork",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "backstabber",
+        "deadly-d6",
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sling",
+      "attack": 16,
+      "traits": [
+        "propulsive",
+        "reload-1"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grease Some Palms",
+      "category": "interaction",
+      "text": "A smuggler is adept at navigating official channels and makes network contacts in order to keep their goods moving. They gain a +2 circumstance bonus to Make an Impression and Request with members of the local bureaucracy.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "diplomacy-check",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "grease-some-palms",
+            {
+              "or": [
+                "action:request",
+                "action:make-an-impression"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Keen Eyes",
+      "category": "interaction",
+      "text": "The halfling gains a +2 circumstance bonus when using the Seek action to find Hidden or Undetected creatures within 30 feet of them. Whenever the halfling targets a creature that is Concealed or hidden from them, reduce the DC of the flat check to DC 3 Flat check for a concealed target or DC 9 Flat check for a hidden one.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "action:seek",
+              {
+                "lte": [
+                  "target:distance",
+                  30
+                ]
+              },
+              {
+                "or": [
+                  "target:condition:hidden",
+                  "target:condition:undetected"
+                ]
+              }
+            ],
+            "selector": "perception",
+            "type": "circumstance",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Distracting Escape",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect Smugglers succeed by making a move only after they've diverted others' attention. The smuggler Creates a Diversion. If the smuggler became Hidden to at least one creature, the smuggler can then Sneak.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Hidden Pockets",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The smuggler Interacts to draw an item of light Bulk concealed in one of their hidden pockets. The pockets can store up to four objects of light Bulk. For most smugglers, these items are Arsenic, an Elixir of Life (Lesser), a Smoke Ball (Lesser), and a Thieves' Toolkit. The smuggler can refill the pockets over the course of 1 minute.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The smuggler deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Halfling smugglers are sought out for their ability to deftly navigate the shadowy underworld to move illicit goods and information.\n\n---\nHalflings thrive on simple pleasures—having a pint at the pub or warming their feet by the hearth."
+}

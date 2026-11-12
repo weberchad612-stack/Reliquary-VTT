@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "guerrilla-weaponry",
+  "system": "pf2e",
+  "name": "Guerrilla Weaponry",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Guerrilla Dedication"
+  ],
+  "text": "You are especially skilled in transforming simple weapons that can be easily assembled from readily available materials into deadly weapons. In your hands, a blowgun's base damage increases from 1 to a 1d4 damage die, and it gains the deadly d4 trait. In addition, you gain the Guerrilla Assault action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Guerrilla Assault"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "predicate": [
+          "item:base:blowgun"
+        ],
+        "property": "damage-dice-faces",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "diceNumber": "max(1 + @weapon.system.runes.striking, @weapon.system.damage.dice)"
+        },
+        "predicate": [
+          "item:base:blowgun"
+        ],
+        "selector": "blowgun-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:base:blowgun"
+        ],
+        "property": "traits",
+        "value": "deadly-d4"
+      }
+    }
+  ]
+}

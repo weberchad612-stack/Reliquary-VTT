@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-inscrutable-mask",
+  "system": "pf2e",
+  "name": "Spell Effect: Inscrutable Mask",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Inscrutable Mask\n\nYou gain a +1 status bonus to Deception checks to Lie or Feint, Intimidation checks to Demoralize, and Stealth checks to Hide in areas of dim light or darkness.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "action:feint",
+              "action:lie"
+            ]
+          }
+        ],
+        "selector": "deception",
+        "type": "status",
+        "value": "floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:demoralize"
+        ],
+        "selector": "intimidation",
+        "type": "status",
+        "value": "floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:hide",
+          {
+            "or": [
+              "inscrutable-mask-darkness",
+              "lighting:darkness",
+              "lighting:dim-light"
+            ]
+          }
+        ],
+        "selector": "stealth",
+        "type": "status",
+        "value": "floor(@item.level/3)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SkillVariant.DimLightOrDarkness",
+        "option": "inscrutable-mask-darkness",
+        "toggleable": true
+      }
+    }
+  ]
+}

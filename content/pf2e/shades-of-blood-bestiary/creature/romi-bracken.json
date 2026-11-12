@@ -1,0 +1,420 @@
+{
+  "kind": "creature",
+  "slug": "romi-bracken",
+  "system": "pf2e",
+  "name": "Romi Bracken",
+  "source": {
+    "title": "Pathfinder #213: Thirst for Blood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 61,
+    "perception": 9,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 12,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 10,
+      "crafting": 7,
+      "deception": 10,
+      "diplomacy": 8,
+      "religion": 7,
+      "society": 7,
+      "stealth": 10,
+      "survival": 7,
+      "thievery": 10,
+      "camazotz-lore": 9
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "echolocation",
+        "range": 40,
+        "acuity": "precise"
+      },
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "sakvroth",
+      "thalassic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Bat empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Blood-Drinker Blade",
+      "ref": "equipment:item/blood-drinker-blade",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Intake Skeleton Key",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Lesser)",
+      "ref": "equipment:item/healing-potion-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Blood-Drinker Blade",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bat Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "Romi can communicate with bats."
+    },
+    {
+      "kind": "ability",
+      "name": "Echolocation",
+      "category": "interaction",
+      "text": "Romi can use their hearing as a precise sense at the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "interaction",
+      "text": "On the first round of combat, if Romi rolls Deception or Stealth for initiative, creatures that haven't acted are Off-Guard to him.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "- Human\n- Melee fist +10 Damage 1d6+4\n\n- Animal\n\n---\nThe werecreature changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape.\n\nIn humanoid shape, the werecreature uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw.\n\nIn animal shape, its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Fangs",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": -10,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "speed",
+          "type": "fly",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werebat",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\nSaving Throw DC 18 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "fangs-attack",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "offensive",
+      "text": "Romi isn't Off-Guard to Hidden, Undetected, or flanking creatures of his level or lower, or creatures of his level or lower using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Romi deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tumble Behind",
+      "category": "offensive",
+      "text": "When Romi successfully Tumbles Through a creature's space, the creature is Off-Guard against the next attack Romi makes against it before the end of his turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Unbalancing Blow",
+      "category": "offensive",
+      "text": "When Romi critically hits and deals damage with a Strike, the target is Off-Guard against his attacks until the end of his next turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-damage",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Male human scavenger/cult leader"
+}

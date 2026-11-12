@@ -1,0 +1,105 @@
+{
+  "kind": "effect",
+  "slug": "effect-helping-hand-weapon",
+  "system": "pf2e",
+  "name": "Effect: Helping Hand - Weapon",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Helping Hand, Helping Hand (Greater), Helping Hand (Major)\n\nYou gain an item bonus to skill checks to Aid.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:helping-hand",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Helping Hand"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:helping-hand-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Helping Hand (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:helping-hand-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Helping Hand (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "helping-hand"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "item",
+      "value": 1,
+      "slug": "helping-hand-bonus",
+      "when": [
+        "action:aid"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "helping-hand:helping-hand-greater"
+        ],
+        "selector": "skill-check",
+        "slug": "helping-hand-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "helping-hand:helping-hand-major"
+        ],
+        "selector": "skill-check",
+        "slug": "helping-hand-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

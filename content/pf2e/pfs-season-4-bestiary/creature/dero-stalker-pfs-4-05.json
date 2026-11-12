@@ -1,0 +1,223 @@
+{
+  "kind": "creature",
+  "slug": "dero-stalker-pfs-4-05",
+  "system": "pf2e",
+  "name": "Dero Stalker (PFS 4-05)",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-05: The Arclord who Never Was",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "chaotic",
+    "dero",
+    "evil",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 19,
+    "hp": 30,
+    "perception": 5,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 3
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "medicine": 3,
+      "stealth": 8,
+      "thievery": 8
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "vulnerable-to-sunlight",
+          "value": 0
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Ghost Sound",
+          "rank": 1,
+          "ref": "spells:spell/ghost-sound"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Aklys",
+      "ref": "equipment:item/aklys",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Giant Centipede Venom",
+      "ref": "equipment:item/giant-centipede-venom",
+      "type": "consumable",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Aklys",
+      "attack": 8,
+      "traits": [
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Aklys",
+      "attack": 10,
+      "traits": [
+        "ranged-trip",
+        "tethered",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "giant-centipede-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements The dero stalker is not Encumbered.\n\nTrigger A creature targets the dero with an attack and the dero can see the attacker.\n\n---\n\nEffect The dero dodges out of the way, gaining a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Sunlight",
+      "category": "defensive",
+      "text": "A dero stalker takes 4 untyped damage for every hour they're exposed to sunlight."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A dero stalker deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Dero stalkers are those charged with exploring the surface world by night and seeking out new victims to abduct.\n\n---\n\nDeros are short, wiry humanoids with milky white eyes, gray-blue skin, and wild shocks of off-white or gray hair. The descendants of a mysterious type of fey abandoned in the deepest, darkest caverns of Golarion, deros are the subject of fearful legends and folk tales to most of the world's surface races. They skulk beneath major metropolitan areas, performing cruel and twisted experiments on unwilling subjects. A dero is 3 feet tall and weighs approximately 70 pounds."
+}

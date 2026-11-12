@@ -1,0 +1,181 @@
+{
+  "kind": "creature",
+  "slug": "azarketi-crab-catcher",
+  "system": "pf2e",
+  "name": "Azarketi Crab Catcher",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "traits": [
+    "amphibious",
+    "azarketi",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 15,
+    "perception": 6,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 9,
+      "will": 3
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": {
+        "value": 4,
+        "special": [
+          {
+            "value": 6,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "diplomacy": 3,
+      "nature": 3,
+      "stealth": {
+        "value": 5,
+        "special": [
+          {
+            "value": 7,
+            "label": "underwater",
+            "when": [
+              "terrain:underwater"
+            ]
+          }
+        ]
+      },
+      "survival": 5,
+      "underwater-lore": 4
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "languages": [
+      "common",
+      "alghollthu"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Crab Cage",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Sack",
+      "ref": "equipment:item/sack",
+      "type": "backpack",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hydration",
+      "category": "defensive",
+      "text": "Azarketi must regularly submerge themselves in water to rehydrate their water-acclimated skin. After the first 24 hours outside of water, they gain a –1 status penalty to Fortitude saves as their skin cracks and their gills become painful. After 48 hours, they begin to suffocate until returned to water.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "fortitude",
+          "type": "status",
+          "value": -1,
+          "when": [
+            "day-out-of-water"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Spent 24 Hours Out of the Water",
+            "option": "day-out-of-water",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swim Away",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements The azarketi crab catcher is swimming\n\nTrigger The azarketi crab catcher is targeted with an attack and can see the attacker\n\n---\n\nEffect The azarketi crab catcher gains a +2 circumstance bonus to AC against the triggering attack. After the attack, they Swim 5 feet.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "swim-away",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "swim-away"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "The average azarketi citizen in Absalom makes a living fishing or catching crabs.\n\n---\n\nAzarketis, also known as gillmen, can be found all over Golarion, with a particularly high concentration around Absalom and the Inner Sea. Descendants of the ancient Azlanti, the azarketis survived the cataclysm of Earthfall by fleeing into the ocean, where they were warped into amphibious forms by the alghollthu."
+}

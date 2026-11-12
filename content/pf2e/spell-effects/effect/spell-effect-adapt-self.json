@@ -1,0 +1,60 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-adapt-self",
+  "system": "pf2e",
+  "name": "Spell Effect: Adapt Self",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Adapt Self\n\nYou gain one of the following options:\n- A Swim Speed equal to half your Speed.\n\n- Darkvision",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.Darkvision",
+            "value": "darkvision"
+          },
+          {
+            "label": "PF2E.Actions.Swim.Modifier.SwimSpeed",
+            "value": "swim"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Benefit",
+        "rollOption": "adapt-self"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "adapt-self:swim"
+        ],
+        "selector": "swim",
+        "value": "round(@actor.system.movement.speeds.land.value/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "adapt-self:darkvision"
+        ],
+        "selector": "darkvision"
+      }
+    }
+  ]
+}

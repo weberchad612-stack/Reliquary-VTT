@@ -1,0 +1,98 @@
+{
+  "kind": "effect",
+  "slug": "effect-drop-of-convergent-waters",
+  "system": "pf2e",
+  "name": "Effect: Drop of Convergent Waters",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Drop of Convergent Waters\n\nChoose an attack. It gains the magical, reach and water traits, and takes no penalties for being used underwater.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "attacks": true,
+          "predicate": [
+            "item:category:unarmed"
+          ]
+        },
+        "flag": "attack",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.attack}"
+        ],
+        "property": "traits",
+        "value": "magical"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.attack}"
+        ],
+        "property": "traits",
+        "value": "reach"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:{item|flags.system.rulesSelections.attack}"
+        ],
+        "property": "traits",
+        "value": "water"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "selector": "{item|flags.system.rulesSelections.attack}-attack-roll",
+        "slug": "aquatic-combat",
+        "suppress": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:ranged",
+          {
+            "not": "item:rune:property:underwater"
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "multiply",
+        "priority": 111,
+        "property": "range-increment",
+        "value": 2
+      }
+    }
+  ]
+}

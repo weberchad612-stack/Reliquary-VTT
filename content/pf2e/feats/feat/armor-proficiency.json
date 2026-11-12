@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "armor-proficiency",
+  "system": "pf2e",
+  "name": "Armor Proficiency",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general"
+  ],
+  "category": "general",
+  "maxTakable": 3,
+  "text": "You become trained in light armor. If you already were trained in light armor, you gain training in medium armor. If you were trained in both, you become trained in heavy armor. If you are at least 13th level, you become an expert in this armor type.\n\n---\n\nSpecial You can select this feat more than once. Each time, you become trained in the next type of armor, as detailed above.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.LightShort",
+            "predicate": [
+              "defense:light:rank:0"
+            ],
+            "value": "light"
+          },
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.MediumShort",
+            "predicate": [
+              "defense:medium:rank:0",
+              {
+                "not": "defense:light:rank:0"
+              }
+            ],
+            "value": "medium"
+          },
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.HeavyShort",
+            "predicate": [
+              {
+                "nor": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "heavy"
+          }
+        ],
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.{item|flags.system.rulesSelections.armorProficiency}.rank",
+        "value": "ternary(gte(@actor.level,13),2,1)"
+      }
+    }
+  ]
+}

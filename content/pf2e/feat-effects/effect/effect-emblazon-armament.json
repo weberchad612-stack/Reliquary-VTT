@@ -1,0 +1,95 @@
+{
+  "kind": "effect",
+  "slug": "effect-emblazon-armament",
+  "system": "pf2e",
+  "name": "Effect: Emblazon Armament",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Emblazon Armament\n\n- Shield The shield gains a +1 status bonus to its Hardness.\n\n- Weapon The wielder gains a +1 status bonus to damage rolls with the weapon.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "TYPES.Item.shield",
+            "value": "shield"
+          },
+          {
+            "label": "TYPES.Item.weapon",
+            "value": "weapon"
+          }
+        ],
+        "flag": "item",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.ShieldOrWeapon",
+        "rollOption": "emblazon-armament:item"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "shield"
+          ]
+        },
+        "flag": "shield",
+        "key": "ChoiceSet",
+        "predicate": [
+          "emblazon-armament:item:shield"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Shield"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "emblazon-armament:item:weapon"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.shield}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "emblazon-armament:item:shield"
+        ],
+        "property": "hardness",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "emblazon-armament:item:weapon"
+      ]
+    }
+  ]
+}

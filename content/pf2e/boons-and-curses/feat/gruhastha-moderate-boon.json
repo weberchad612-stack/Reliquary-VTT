@@ -1,0 +1,107 @@
+{
+  "kind": "feat",
+  "slug": "gruhastha-moderate-boon",
+  "system": "pf2e",
+  "name": "Gruhastha - Moderate Boon",
+  "source": {
+    "title": "Pathfinder Lost Omens Gods & Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "category": "deityboon",
+  "text": "The Keeper speeds your path toward learning new talents. You become permanently trained in two additional skills of your choice. Additionally, you can select a skill you are already trained in and permanently increase your proficiency rank in that skill, following the usual rules for skill increases.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:0"
+          ]
+        },
+        "flag": "untrainedSkillOne",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.SkillUntrained"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:0",
+            {
+              "not": {
+                "eq": [
+                  "{choice|value}",
+                  "{item|flags.system.rulesSelections.untrainedSkillOne}"
+                ]
+              }
+            }
+          ]
+        },
+        "flag": "untrainedSkillTwo",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.SkillUntrained"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            {
+              "gte": [
+                "skill:{choice|value}:rank",
+                1
+              ]
+            },
+            {
+              "lt": [
+                "skill:{choice|value}:rank",
+                4
+              ]
+            }
+          ]
+        },
+        "flag": "trainedSkill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.SkillTrained"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.untrainedSkillOne}.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.untrainedSkillTwo}.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.skills.{item|flags.system.rulesSelections.trainedSkill}.rank",
+        "value": 1
+      }
+    }
+  ]
+}

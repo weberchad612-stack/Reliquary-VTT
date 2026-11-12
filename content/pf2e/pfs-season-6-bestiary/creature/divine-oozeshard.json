@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "divine-oozeshard",
+  "system": "pf2e",
+  "name": "Divine Oozeshard",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-07: A God Falls Where Magic Fails",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "mythic",
+    "ooze"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 18,
+    "hp": 220,
+    "perception": 12,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 9,
+      "will": 18
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 7,
+      "dex": -5,
+      "int": -2,
+      "str": 8,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 23
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "motion-sense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "unconscious",
+        "critical-hits",
+        "electricity"
+      ]
+    },
+    "notes": {
+      "ac": "(26 while in armored apotheosis form)"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Armored Apotheosis",
+      "category": "interaction",
+      "text": "When it is first encountered, the divine oozeshard is in a lumpy, vaguely spherical ooze form. When it takes damage from any weapon attack, it suddenly reshapes, taking a form almost identical to the dead deity Gorum. The ooze hardens into armored plates (increasing its AC by +8) and its pseudopod transforms into a massive, acid-dripping greatsword. While in this form, it loses its pseudopod attack and its immunity to bludgeoning and precision damage. It cannot use its constrict or engulf abilities, and any creature currently engulfed by it is spat out into an adjacent random square, taking 1d8 acid damage and 1d8 slashing damage. It gains the Reactive Strike reaction. If it is critically hit by a Strike or critically fails a save against an effect that deals Hit Point damage to it, the divine oozeshard reverts back into its ooze form.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "armored-apotheosis",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 8,
+          "when": [
+            "armored-apotheosis"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 21,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 10
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Pseudopod",
+            "predicate": [
+              {
+                "not": "armored-apotheosis"
+              }
+            ],
+            "slug": "pseudopod",
+            "traits": [
+              "reach-10"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 21,
+            "category": "martial",
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 10
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Weapon.Base.greatsword",
+            "predicate": [
+              "armored-apotheosis"
+            ],
+            "slug": "greatsword",
+            "traits": [
+              "reach-15"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "pseudopod-damage"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "acid",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "label": "PF2E.TraitAcid",
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              {
+                "not": "armored-apotheosis"
+              }
+            ],
+            "type": [
+              "bludgeoning",
+              "precision"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Armored Apotheosis Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict (Ooze Form Only)",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1d8+10 bludgeoning,1d12 acid, DC 29 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Engulf (Ooze Form Only)",
+      "actions": 2,
+      "category": "offensive",
+      "text": "DC 25 Reflex save, 3d8 acid damage, escape dc=25, Rupture 22\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Gorumite Echoes",
+      "category": "offensive",
+      "text": "While in its armored apotheosis form, the divine oozeshard deals an additional 1d8 bleed damage and makes the target Off-Guard for 1 round whenever it critically hits with its greatsword.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "selector": "greatsword-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "greatsword-damage",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spawn Oozeshardling Node",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Whenever the divine oozeshard takes 55 or more damage from a single attack, it spawns a sparking oozeshardling node in an adjacent square. The sparking oozeshardling node's electric pulse reaction immediately activates and then the sparking oozeshardling node enters initiative at the bottom of the current initiative count."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

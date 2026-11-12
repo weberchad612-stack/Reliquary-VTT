@@ -1,0 +1,48 @@
+{
+  "kind": "effect",
+  "slug": "effect-renewed-vigor",
+  "system": "pf2e",
+  "name": "Effect: Renewed Vigor",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Renewed Vigor\n\nYou gain temporary Hit Points equal to half your level plus your Constitution modifier. If you made an attack action this turn, increase the number of temporary Hit Points to your level plus your Constitution modifier.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": 1
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": 2
+          }
+        ],
+        "flag": "outcome",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Barbarian.RenewedVigor.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "value": "floor(@actor.level/@item.flags.system.rulesSelections.outcome) + @actor.abilities.con.mod"
+      }
+    }
+  ]
+}

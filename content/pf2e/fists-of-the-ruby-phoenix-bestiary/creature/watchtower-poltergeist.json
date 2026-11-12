@@ -1,0 +1,219 @@
+{
+  "kind": "creature",
+  "slug": "watchtower-poltergeist",
+  "system": "pf2e",
+  "name": "Watchtower Poltergeist",
+  "source": {
+    "title": "Pathfinder #166: Despair on Danger Island",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "incorporeal",
+    "lawful",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 190,
+    "perception": 24,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 27,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 2,
+      "dex": 8,
+      "int": -1,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 29,
+      "intimidation": 30,
+      "stealth": 29
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "tien"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 35,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Telekinetic Maneuver (At Will)",
+          "rank": 7,
+          "ref": "spells:spell/telekinetic-maneuver"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Telekinetic Object",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "occult"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "3d12+10",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "interaction",
+      "text": "The poltergeist is tied to its watchtower.\n\n---\n\nA typical ghost can stray only a short distance from where it was killed or the place it haunts. A typical limit is 120 feet. Some ghosts are instead bound to a room, building, item, or creature that was special to it rather than a location."
+    },
+    {
+      "kind": "ability",
+      "name": "Natural Invisibility",
+      "category": "defensive",
+      "text": "A poltergeist is naturally Invisible. It becomes visible only when it uses Frighten."
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the watchtower poltergeist is destroyed, it re-forms, fully healed, at the watchtower after 12 hours. Destroying the poltergeist and lighting its watchtower's brazier permanently destroys it."
+    },
+    {
+      "kind": "ability",
+      "name": "Telekinetic Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature approaches within 10 feet of the poltergeist.\n\n---\n\nEffect The poltergeist makes a telekinetic object Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Frighten",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "Requirements The poltergeist must be Invisible.\n\n---\n\nEffect The poltergeist becomes visible, appearing as a skeletal, ghostlike humanoid. Each creature within 30 feet must attempt a DC 33 Will save save, becoming Frightened 2 on a failure. On a critical failure, it's also Fleeing for as long as it's frightened. On a success, the creature is temporarily immune for 1 minute. At the start of its next turn, the poltergeist becomes invisible again."
+    },
+    {
+      "kind": "ability",
+      "name": "Telekinetic Storm",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult"
+      ],
+      "text": "The poltergeist telekinetically throws numerous small objects, such as dozens of pieces of silverware or books, either spreading them out among multiple foes or directing them at one target. When this effect is spread out among multiple foes, the poltergeist makes a telekinetic object Strike at a -2 penalty against each creature within 30 feet. These count as one attack for the poltergeist's multiple attack penalty, and the penalty doesn't increase until after all the attacks. When this effect has only one target, the poltergeist makes a telekinetic object Strike against the target, and the damage increases to 4d12+15. It deals 2d12 untyped damage on a failure, and no damage on a critical failure.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "telekinetic-storm",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.PoltergeistTelekineticStorm.MultipleTargets",
+                "value": "multi"
+              },
+              {
+                "label": "PF2E.NPCAbility.PoltergeistTelekineticStorm.SingleTarget",
+                "value": "single"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "telekinetic-object-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "telekinetic-storm:multi"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d12",
+            "key": "DamageDice",
+            "predicate": [
+              "telekinetic-storm:single"
+            ],
+            "selector": "telekinetic-object-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "telekinetic-object-damage",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "telekinetic-storm:single"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "When a creature dies, and for whatever reason its spirit is unable or unwilling to leave the site of its death, that spirit may manifest as a poltergeist: a restless invisible spirit that is still able to manipulate physical objects. Many poltergeists perished in a way that resulted from or has led to extreme emotional trauma.",
+  "blurb": "Variant poltergeist"
+}

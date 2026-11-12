@@ -1,0 +1,70 @@
+{
+  "kind": "heritage",
+  "slug": "kijimuna-gnome",
+  "system": "pf2e",
+  "name": "Kijimuna Gnome",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "uncommon",
+  "traits": [
+    "gnome"
+  ],
+  "ancestry": {
+    "name": "Gnome",
+    "ref": "ancestries:ancestry/gnome"
+  },
+  "text": "Your ancestors lived in the trees and fished in all the waters of Tian Xia. You gain your choice of the following benefits. Once made, this choice can't be changed.\n- You can climb any banyan. You gain the Combat Climber feat, and if you roll a success on the Athletics check to Climb, you get a critical success instead.\n- You can catch any fish. You gain a swim Speed of 15 feet.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Type.Climb",
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Swim",
+            "value": "swim"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.MovementType",
+        "rollOption": "kijimuna-gnome"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "kijimuna-gnome:climb"
+        ],
+        "uuid": "Compendium.pf2e.feats-srd.Item.Combat Climber"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:climb",
+          "kijimuna-gnome:climb"
+        ],
+        "selector": "athletics"
+      }
+    },
+    {
+      "key": "speed",
+      "type": "swim",
+      "value": 15
+    }
+  ]
+}

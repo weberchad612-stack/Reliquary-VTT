@@ -1,0 +1,62 @@
+{
+  "kind": "effect",
+  "slug": "effect-sight-prey",
+  "system": "pf2e",
+  "name": "Effect: Sight Prey",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "The warmonger's ranged Strikes against the marked creature gain a +1 circumstance bonus to the attack roll and deal an extra 3d6 precision damage. Each time the warmonger hits that creature with a ranged Strike, the creature takes a –10-foot penalty to its Speeds for 1 minute and falls 20 feet if it's flying.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "sight-prey"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ranged-strike-attack-roll",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "target:mark:sight-prey"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": 3,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "target:mark:sight-prey"
+        ],
+        "selector": "ranged-strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "ranged-strike-attack-roll",
+      "text": "PF2E.NPCAbility.Warmonger.SightPrey.Note",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        "target:mark:sight-prey"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-divine-vessel",
+  "system": "pf2e",
+  "name": "Spell Effect: Divine Vessel",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Divine Vessel\n\nYou accept otherworldly energies into your body; while you are still recognizably yourself, you gain the features of one of your deity's servitors. Choose an alignment your deity has (chaotic, evil, good, or lawful). You can't cast this spell if you don't have a deity or your deity is true neutral. This spell gains the trait of the alignment you chose.\n\nIf you were Medium or smaller, you become Large, as the effects of Enlarge. You must have space to expand into, or the spell is lost. You also gain the following benefits.\n- 40 temporary Hit Points.\n- A fly Speed equal to your Speed.\n- Weakness 10 to lawful.\n- A +1 status bonus to saves against spells.\n- Darkvision.\n- Your unarmed attacks and weapons deal 1 additional spirit damage.\n- You gain a bite unarmed attack that deals 2d10 piercing damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitChaotic",
+            "value": {
+              "chosen": "chaotic",
+              "opposite": "lawful"
+            }
+          },
+          {
+            "label": "PF2E.TraitEvil",
+            "value": {
+              "chosen": "evil",
+              "opposite": "good"
+            }
+          },
+          {
+            "label": "PF2E.TraitGood",
+            "value": {
+              "chosen": "good",
+              "opposite": "evil"
+            }
+          },
+          {
+            "label": "PF2E.TraitLawful",
+            "value": {
+              "chosen": "lawful",
+              "opposite": "chaotic"
+            }
+          }
+        ],
+        "flag": "alignment",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Alignment"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "divine-vessel:{item|flags.system.rulesSelections.alignment.chosen}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 2,
+            "die": "d10"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Bite",
+        "predicate": [
+          "divine-vessel:chaotic"
+        ],
+        "traits": [
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 2,
+            "die": "d8"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "predicate": [
+          "divine-vessel:evil"
+        ],
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 2,
+            "die": "d8"
+          }
+        },
+        "group": "brawling",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.fist",
+        "predicate": [
+          {
+            "or": [
+              "divine-vessel:good",
+              "divine-vessel:lawful"
+            ]
+          }
+        ],
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed",
+          "nonlethal"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "spell"
+      ]
+    },
+    {
+      "key": "sense",
+      "type": "darkvision"
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "damageType": "{item|flags.system.rulesSelections.alignment.chosen}"
+    },
+    {
+      "key": "weakness",
+      "type": "{item|flags.system.rulesSelections.alignment.opposite}",
+      "value": 10
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "status",
+      "value": 2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "reach": {
+          "override": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": 40
+      }
+    }
+  ]
+}

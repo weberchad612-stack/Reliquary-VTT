@@ -1,0 +1,140 @@
+{
+  "kind": "weapon",
+  "slug": "axe-of-the-dwarven-lords",
+  "system": "pf2e",
+  "name": "Axe of the Dwarven Lords",
+  "source": {
+    "title": "Pathfinder Gamemastery Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 26,
+  "rarity": "unique",
+  "traits": [
+    "dwarf",
+    "magical",
+    "sweep",
+    "thrown-30",
+    "two-hand-d12"
+  ],
+  "text": "The blade of this +4 major striking Keen Returning Quickstrike dwarven waraxe is carved with an intricate design depicting countless generations of great dwarven warriors and leaders.\n\nThe axe has the thrown 30 feet weapon trait, in addition to the normal weapon traits for a dwarven waraxe. Strikes with the axe deal an additional 1d6 damage to orcs.\n\nWhile the axe is in your possession, you gain a +4 item bonus when Crafting armor, jewelry, metalworking, stonemasonry, snares, traps, and weapons.\n\nIf you are a dwarf, you gain greater darkvision while holding the axe. If you are not a dwarf, you are Stupefied 4 while holding the axe, and if you are an orc, you are also Drained 4 and Enfeebled 4 while holding it.\n\n---\n\nActivate 3 envision, Interact\n\nFrequency once per week\n\nEffect The axe casts a 10th-rank Summon Elemental spell to conjure an elite elemental avalanche. The spell is automatically sustained, requiring no action on your part but still allowing you to command the elemental on each of your turns. You can Dismiss the Spell.\n\n---\n\nDestruction If an orc beheads a dwarven king with the Axe of the Dwarven Lords, the axe rusts away to nothing.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "crafting",
+      "type": "item",
+      "value": 4,
+      "when": [
+        "action:craft",
+        {
+          "or": [
+            "armor",
+            "jewelry",
+            "metalworking",
+            "stonemasonry",
+            "snare",
+            "trap",
+            "weapon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "target:trait:orc"
+        ],
+        "selector": "{item|id}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "self:trait:dwarf"
+        ],
+        "selector": "greater-darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 4
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "self:trait:dwarf"
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 4
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "self:trait:orc"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Drained"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 4
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "self:trait:orc"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    }
+  ],
+  "category": "advanced",
+  "group": "axe",
+  "damage": {
+    "die": "d8",
+    "type": "slashing"
+  },
+  "reload": "-",
+  "hands": "held-in-one-hand",
+  "baseItem": "dwarven-war-axe",
+  "bulk": 3,
+  "runes": {
+    "potency": 4,
+    "property": [
+      "keen",
+      "returning",
+      "speed"
+    ],
+    "striking": 3
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "kind": "feat",
+  "slug": "breath-control",
+  "system": "pf2e",
+  "name": "Breath Control",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general"
+  ],
+  "category": "general",
+  "text": "You can breathe even in hazardous or sparse air. You can hold your breath for 25 times as long as usual before suffocating. You gain a +1 circumstance bonus to saving throws against inhaled threats, such as inhaled poisons, and if you roll a success on such a saving throw, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "item:trait:inhaled"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:trait:inhaled"
+        ],
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.remainingAir.rounds",
+        "value": "25 * (5 + @actor.abilities.con.mod)"
+      }
+    }
+  ]
+}

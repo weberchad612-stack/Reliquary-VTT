@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "vool",
+  "system": "pf2e",
+  "name": "Vool",
+  "source": {
+    "title": "Pathfinder #214: The Broken Palace",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 58,
+    "perception": 8,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 12,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 4,
+      "int": 3,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "Climbing",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "crafting": 11,
+      "religion": 8,
+      "stealth": 12,
+      "thievery": 12
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "azlanti",
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "+2 status to all saves vs. disease and poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Wooden Stake Pick",
+      "ref": "equipment:item/light-pick",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wooden Stake Pick",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "fatal-d8",
+        "magical",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Disease and Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "disease",
+                "poison"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "defensive",
+      "text": "When Vool Strides or Climbs and moves half his speed or less, he doesn't trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Vampires are Everywhere!",
+      "category": "defensive",
+      "text": "Vool is convinced there are vampires everywhere and is constantly Frightened 1. His frightened condition can be removed via magic like clear mind, if someone eases his fears by Lying to him with a successful DC 18 Deception check check, or by giving him something else to fear by Coercing him with a DC 18 Intimidation check check. Once his frightened condition is removed, Vool becomes particularly brave for 10 minutes and gains a +2 status bonus on saving throws against fear effects. After this time (or earlier, if he sees a vampire), he becomes frightened 1 again. Vool loses this trait while in full sunlight, as that triggers his Light Blindness. (It's tough being a morlock in a vampire's world!)"
+    },
+    {
+      "kind": "ability",
+      "name": "Instinctual Tinker",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock tinkers with an adjacent construct or mechanical hazard. They attempt a Crafting check check against the construct's or hazard's Fortitude DC. The morlock can't succeed if the target's level is more than double the morlock's.\n\n---\nCritical Success The target gains 4d6 healing Hit Points and a +1 circumstance bonus to attack rolls for 1 minute.\n\nSuccess The target gains 2d6 healing Hit Points.\n\nCritical Failure The morlock injures itself, taking 2d6 damage (typically bludgeoning, piercing, or slashing, but potentially a different type at the GM's discretion).\n\nEffect: Instinctual Tinker (Critical Success)\n\n---\nVool can also use this to repair a broken wooden stake pick with a DC 20 Crafting check check."
+    },
+    {
+      "kind": "ability",
+      "name": "Leap Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock Strides up to twice its Speed, during which it attempts a High Jump or a Long Jump. At any point during its movement, the morlock can make a melee Strike against an enemy in its reach.\n\nThe morlock then can't use Leap Attack for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Vool deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Stance",
+      "category": "offensive",
+      "text": "A morlock can share the same space as another morlock, but no more than two morlocks can occupy the same space. When morlocks share the same space, they gain a +1 circumstance bonus to attack rolls.\n\nVool can't use this ability if he's frightened (because the other morlock he could share a space with might be a vampire).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "swarming-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "swarming-stance"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wooden Stake Pick",
+      "category": "offensive",
+      "text": "Vool's \"pick\" consists of a femur with a wooden stake lashed to one end. This weapon functions as a light pick that also has the versatile bludgeoning trait. If Vool critically fails a Strike with the janky weapon, it breaks and becomes useless until he repairs it. If he critically hits a vampire with the weapon, the vampire must succeed at a DC 21 Fortitude save save or the stake is driven into its heart, reducing the vampire to 0 Hit Points. Despite his best efforts, Vool can't teach anyone to use the otherwise awkward weapon, although anyone can wield it as a normal +1 light pick with a head made of wood."
+    }
+  ],
+  "blurb": "Variant male morlock rogue"
+}

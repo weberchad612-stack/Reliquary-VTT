@@ -1,0 +1,82 @@
+{
+  "kind": "feat",
+  "slug": "starlit-span",
+  "system": "pf2e",
+  "name": "Starlit Span",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "magus"
+  ],
+  "category": "classfeature",
+  "text": "With magic, the sky's the limit, and you can't be bound by the confines of physical proximity. Your power reaches as far as your senses can perceive, transcending the space between you and your target even with spells that normally require direct physical contact.\n\nWhen you use Spellstrike, you can make a ranged weapon or ranged unarmed Strike, as long as the target is within the first range increment of your ranged weapon or ranged unarmed attack. This overrides the actual range of the spell.\n\nWhile you're in Arcane Cascade stance, your ranged attacks ignore any lesser cover your allies would grant to your target.\n\nConflux Spell Shooting Star\n\nStudious Spells 7th: Telekinetic Maneuver; 11th: Wall of Wind; 13th: Unfettered Movement",
+  "rules": [
+    {
+      "key": "note",
+      "selector": [
+        "ranged-attack-roll"
+      ],
+      "text": "PF2E.SpecificRule.Magus.StarlitSpan.Note",
+      "when": [
+        "self:effect:arcane-cascade",
+        "target:cover-level:lesser"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:category:prepared",
+          "spellcasting:tradition:arcane",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:slug:telekinetic-maneuver",
+                  {
+                    "gte": [
+                      "self:level",
+                      7
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:wall-of-wind",
+                  {
+                    "gte": [
+                      "self:level",
+                      11
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:unfettered-movement",
+                  {
+                    "gte": [
+                      "self:level",
+                      13
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "studious-spell"
+      }
+    }
+  ]
+}

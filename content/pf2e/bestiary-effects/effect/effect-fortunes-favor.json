@@ -1,0 +1,101 @@
+{
+  "kind": "effect",
+  "slug": "effect-fortunes-favor",
+  "system": "pf2e",
+  "name": "Effect: Fortune's Favor",
+  "source": {
+    "title": "Pathfinder #154: Siege of the Dinosaurs",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Whenever the creature attempts a specific type of saving throw, it rolls twice and takes the higher result. The type of saving throw is determined by the suit that featured most prominently in the harrow reading: Fortitude (Hammers or Shields), Reflex (Keys or Books), or Will (Stars or Crowns)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Books",
+            "value": "books"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Crowns",
+            "value": "crowns"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Hammers",
+            "value": "hammers"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Keys",
+            "value": "keys"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Shields",
+            "value": "shields"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Stars",
+            "value": "stars"
+          }
+        ],
+        "flag": "harrowSuit",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.HarrowDeck.Prompt",
+        "rollOption": "harrow-doll:harrow-suit"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          {
+            "or": [
+              "harrow-doll:harrow-suit:hammers",
+              "harrow-doll:harrow-suit:shields"
+            ]
+          }
+        ],
+        "selector": "fortitude"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          {
+            "or": [
+              "harrow-doll:harrow-suit:keys",
+              "harrow-doll:harrow-suit:books"
+            ]
+          }
+        ],
+        "selector": "reflex"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          {
+            "or": [
+              "harrow-doll:harrow-suit:stars",
+              "harrow-doll:harrow-suit:crowns"
+            ]
+          }
+        ],
+        "selector": "will"
+      }
+    }
+  ]
+}

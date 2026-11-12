@@ -1,0 +1,48 @@
+{
+  "kind": "action",
+  "slug": "cryptid-experimental-power-surge",
+  "system": "pf2e",
+  "name": "(Cryptid, Experimental) Power Surge",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "actions": 1,
+  "category": "offensive",
+  "text": "The experimental cryptid draws on its augmentations to empower its attacks. It attempts a DC 5 Flat check. On a success, the experimental cryptid deals 1d6 additional damage with its Strikes until the end of its turn. On a failure, the experimental cryptid takes that much damage instead. The damage and traits for Power Surge are the same as those of Energy Wave.\n\nThis additional damage increases to 2d6 if the experimental cryptid is 9th level or higher, 3d6 if the experimental cryptid is 15th level or higher, and 4d6 if the experimental cryptid is 18th level or higher.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "name",
+        "value": "PF2E.NPCAbility.Cryptid.PowerSurge.Name"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "match(when(lte(@actor.level, 8), 1), when(btwn(@actor.level, 9, 14), 2), when(btwn(@actor.level, 5, 17), 3), when(gte(@actor.level, 18), 4))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "power-surge"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "power-surge",
+        "toggleable": true
+      }
+    }
+  ]
+}

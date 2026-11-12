@@ -1,0 +1,147 @@
+{
+  "kind": "creature",
+  "slug": "animated-armor",
+  "system": "pf2e",
+  "name": "Animated Armor",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 3,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": -3,
+      "int": -5,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(13 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Glaive",
+      "attack": 10,
+      "traits": [
+        "deadly-d8",
+        "forceful",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gauntlet",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "free-hand",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 9)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated armor has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated armor is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 13.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Suits of animated armor see use both as guardians and as training partners in high-end martial academies able to afford the extravagance. Often, a warrior's old suit of armor can be turned into animated armor once it accrues too much battle damage to provide adequate protection. They're found most often in wizard laboratories and ancient dungeons.\n\n---\n\nGranted a semblance of life through the use of rituals or other strange magic, animated objects take many forms and serve a variety of uses. A few examples of typical animated objects are listed below. Many of these creatures serve as guardians, surprising unsuspecting adventurers when they suddenly attack. Others serve as idle distractions for the exceptionally rich, simple servants created to handle odd jobs, and the like."
+}

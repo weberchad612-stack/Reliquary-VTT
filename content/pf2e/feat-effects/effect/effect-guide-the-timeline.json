@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "effect-guide-the-timeline",
+  "system": "pf2e",
+  "name": "Effect: Guide the Timeline",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Guide the Timeline\n\nIf you are an ally, the next time you make an attack roll or skill check, roll it twice and take the higher result. If you are a foe, the next time you make an attack roll or skill check, you must roll twice and take the lower result.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitFortune",
+            "value": "fortune"
+          },
+          {
+            "label": "PF2E.TraitMisfortune",
+            "value": "misfortune"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "guide-the-timeline"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "guide-the-timeline:fortune"
+        ],
+        "removeAfterRoll": true,
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "lower",
+        "key": "RollTwice",
+        "predicate": [
+          "guide-the-timeline:misfortune"
+        ],
+        "removeAfterRoll": true,
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ]
+      }
+    }
+  ]
+}

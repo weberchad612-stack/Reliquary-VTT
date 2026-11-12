@@ -1,0 +1,72 @@
+{
+  "kind": "effect",
+  "slug": "effect-nymph-queens-inspiration",
+  "system": "pf2e",
+  "name": "Effect: Nymph Queen's Inspiration",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "The creature gains a +1 status bonus to all Crafting checks, Performance checks, and Will saves.\n\nBards receive additional benefits:\n\n- Enigma Muse: +1 status bonus to all Lore checks (not included)\n\n- Maestro Muse: +2 status bonus to Performance checks for the purpose of determining the effects of compositions\n\n- Polymath Muse: +4 status bonus to untrained skill checks\n\n- Other Muses: +2 status bonus to Will saves against fey",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "crafting",
+        "performance",
+        "will"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "inspiration-performance"
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "status",
+      "value": 4,
+      "slug": "inspiration-polymath",
+      "when": [
+        "proficiency:untrained",
+        "feature:polymath"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "performance",
+      "type": "status",
+      "value": 2,
+      "slug": "inspiration-maestro",
+      "when": [
+        "composition",
+        "feature:maestro"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "feature:muse",
+          "origin:trait:fey",
+          {
+            "nor": [
+              "feature:enigma",
+              "feature:maestro",
+              "feature:polymath"
+            ]
+          }
+        ],
+        "selector": "will",
+        "slug": "inspiration-other",
+        "type": "status",
+        "value": 2
+      }
+    }
+  ]
+}

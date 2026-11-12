@@ -1,0 +1,196 @@
+{
+  "kind": "creature",
+  "slug": "horned-dragon-juvenile-bb",
+  "system": "pf2e",
+  "name": "Horned Dragon (Juvenile, BB)",
+  "source": {
+    "title": "Pathfinder Beginner Box: Secrets of the Unlit Star",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "amphibious",
+    "dragon"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 1,
+      "int": 1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "arcana": 11,
+      "athletics": 12,
+      "deception": 9,
+      "diplomacy": 11,
+      "intimidation": 11,
+      "nature": 9,
+      "occultism": 12,
+      "society": 9,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep",
+        "poison"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "poison",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d4",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 12,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 12,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Twisting Tail",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "When a creature within 10 feet uses a move action or leaves a square during a move action it's using, the dragon can use their reaction to make a tail Strike at the creature with a –2 penalty. If it hits, the creature stops moving in the square it was in when the dragon used this reaction.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "twisting-tail",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "tail-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "twisting-tail"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "tail-attack",
+          "text": "PF2E.AttackEffects.InterruptAction",
+          "when": [
+            "twisting-tail"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "When the dragon gets a critical success on a Strike, they recharge their Poison Breath.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "primal"
+      ],
+      "text": "The dragon breathes a toxic cloud that deals 5d6 poison damage in a 30-foot cone. Each creature in the area must attempt a DC 21 basic Reflex save save. The dragon can't use Poison Breath again for 1d4 rounds."
+    }
+  ]
+}

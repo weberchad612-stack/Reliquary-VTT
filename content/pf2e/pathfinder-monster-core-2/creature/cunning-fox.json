@@ -1,0 +1,262 @@
+{
+  "kind": "creature",
+  "slug": "cunning-fox",
+  "system": "pf2e",
+  "name": "Cunning Fox",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "beast",
+    "incorporeal",
+    "spirit"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 15,
+    "perception": 9,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 8,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 0,
+      "dex": 3,
+      "int": 2,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 6,
+      "deception": 6,
+      "stealth": 8,
+      "survival": 5
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 2,
+          "except": "force, ghost-touch, spirit",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Wanderer's Guide",
+          "rank": 3,
+          "ref": "spells:spell/wanderers-guide"
+        },
+        {
+          "name": "Cleanse Cuisine",
+          "rank": 1,
+          "ref": "spells:spell/cleanse-cuisine"
+        },
+        {
+          "name": "Detect Poison",
+          "rank": 1,
+          "ref": "spells:spell/detect-poison"
+        },
+        {
+          "name": "Guidance",
+          "rank": 1,
+          "ref": "spells:spell/guidance"
+        },
+        {
+          "name": "Read Aura",
+          "rank": 1,
+          "ref": "spells:spell/read-aura"
+        },
+        {
+          "name": "Stabilize",
+          "rank": 1,
+          "ref": "spells:spell/stabilize"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 6,
+      "traits": [
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+1",
+          "type": "force"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 6,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "force"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bond with Mortal",
+      "actions": 2,
+      "category": "interaction",
+      "traits": [
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The spirit guide forms a bond with a mortal creature. While the bond exists, the spirit guide increases their current and maximum Hit Points by 10, gains a +2 status bonus to their attack and damage rolls, and can communicate telepathically with the bonded mortal as long as the two beings are on the same plane.\n\nThe spirit guide can only be bonded with one mortal at a time, and they can take this action again to end the bond or to form a new bond (which also ends the old bond). The bond also ends if the spirit guide or the mortal dies.\n\nThis bond strengthens the spirit guide's connection to the Universe. While bonded, the spirit guide loses the incorporeal and spirit traits, loses their immunities and resistances, and changes their Strikes to deal the appropriate physical damage (typically piercing or slashing) instead of force damage.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bond-with-mortal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": [
+              "disease",
+              "paralyzed",
+              "poison",
+              "precision"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": "all-damage",
+            "value": 2
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hp",
+          "type": "untyped",
+          "value": 10,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal",
+              "spirit"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The spirit guide is currently Bonded with a Mortal\n\n---\nEffect The spirit guide makes a jaws Strike. If this attack hits, the bonded mortal can spend their reaction to Strike the same target."
+    }
+  ],
+  "text": "Spirit guides of cunning are often seen as the weakest of the spirit guides, but they're also the most numerous and proactive, guiding families to safe paths or leaving food and water for warriors. Cunning guides often take the form of foxes.\n\n---\nSpirit guides are a distinctive form of spiritual entity with a tenuous attachment to the Universe. Some legends say the first spirit guides were the perfect conceptual forms of animals, and that from them, eagles, foxes, bears, and other mortal beasts were born. Each guide displayed an interest in mortal affairs, watching over communities and imparting their gifts. Fox shared his cunning with the mortals he befriended, while Bear taught them how to survive and endure.\n\nOver countless mortal generations, new spirit guides were born, many of them possessing traits from two or more of the original guides. In the ancient human nation of Sarkoris, the people abandoned traditional gods in favor of venerating the spirit guides who watched over them. While some in neighboring nations saw this as heresy, to the old Sarkorians, such worship felt perfectly natural. After all, the same beings who'd taught their forebears to survive and thrive still walked among them.\n\nEvery so often, a spirit guide bonds with a mortal partner. While many spirit guides permanently bond with mortals, such as the spirit guides of Sarkoris and the spiritual leaders known as god callers, some instead form temporary bonds, either to test the prospective mortal before committing or because a permanent bond is undesirable. It's not uncommon for a single spirit guide to form bonds with multiple generations of the same family or community, protecting and guiding mortals they've grown fond of or who do them a great service."
+}

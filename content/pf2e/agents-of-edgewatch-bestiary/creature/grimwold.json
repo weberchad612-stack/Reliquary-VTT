@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "grimwold",
+  "system": "pf2e",
+  "name": "Grimwold",
+  "source": {
+    "title": "Pathfinder #161: Belly of the Black Whale",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 270,
+    "perception": 27,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 24,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 2,
+      "int": 4,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "deception": 22,
+      "diplomacy": 20,
+      "society": 24,
+      "stealth": 24,
+      "legal-lore": 24
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "varisian"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Greater Striking Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit (Elite)",
+      "ref": "equipment:item/disguise-kit-elite",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Tinted Goggles",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 24,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "As long as he has one free hand, Grimwold can parry attacks against him with his longsword. He gains a +2 circumstance bonus to AC until the start of his next turn as long as his other hand remains free.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "dueling-parry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "dueling-parry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Studied Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Grimwold studies his foe for weaknesses to exploit. His next successful Strike against that target deals an additional 4d6 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "studied-strike",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "studied-strike"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "kind": "creature",
+  "slug": "muse-phantom",
+  "system": "pf2e",
+  "name": "Muse Phantom",
+  "source": {
+    "title": "Pathfinder #152: Legacy of the Lost God",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "incorporeal",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 50,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": -5,
+      "wis": 3
+    },
+    "skills": {
+      "deception": 14,
+      "diplomacy": 14,
+      "occultism": 13,
+      "performance": 16,
+      "theater-lore": 11
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 5,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Spontaneous Spells",
+      "tradition": "occult",
+      "type": "spontaneous",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Hideous Laughter",
+          "rank": 2,
+          "ref": "spells:spell/laughing-fit"
+        },
+        {
+          "name": "Invisibility (At-Will) (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Charm",
+          "rank": 1,
+          "ref": "spells:spell/charm"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Ghost Sound",
+          "rank": 1,
+          "ref": "spells:spell/ghost-sound"
+        },
+        {
+          "name": "Mindlink",
+          "rank": 1,
+          "ref": "spells:spell/mindlink"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Phantom Hand",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Resonating Note",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "sonic"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "2d4+5",
+          "type": "sonic"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Thespian Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental",
+        "occult"
+      ],
+      "text": "30 feet. The muse phantom inspires a supernatural emotional response-either comedy or drama. Each creature that begins its turn in the aura must attempt a DC 20 Will save save; on a failure, the creature is affected as long as it remains within the aura. If the muse phantom is emitting a comedic aura, affected creatures become Clumsy 1; if it is emitting a dramatic aura, affected creatures instead become Stupefied 1.\n\nThe muse phantom can change its aura from comedic to dramatic or vice-versa, or cease or activate this aura, by spending a single action, which has the concentrate trait. A creature possessed by a muse phantom is immune to this aura.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "thespian-aura-active"
+            ],
+            "radius": 30,
+            "slug": "thespian-aura",
+            "traits": [
+              "emotion",
+              "mental",
+              "occult"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "thespian-aura-active",
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grand Finale",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult"
+      ],
+      "text": "Requirements The muse phantom's thespian aura is active\n\n---\nEffect The muse ceases its thespian aura and deals 4d8 mental damage to creatures in a 30-foot burst, including the creature it is possessing, if any (DC 22 basic Will save save). Creatures that fail their Will saves are Fascinated by the muse phantom for 1 minute.\nThe muse phantom can't use Grand Finale again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Muse Possession",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The phantom muse attempts to possess an adjacent corporeal creature. This has the same effect as the Possession spell (DC 20 Will save), except the duration is 1d4 hours, and since the phantom muse doesn't have a physical body, it is unaffected by that restriction of the spell. If the target is at least trained in Performance, the DC of this ability is DC 24 Will save."
+    }
+  ],
+  "text": "For performers who die before their time and whose love of the theater is stronger than death's grasp, the show does indeed go on. Such actors rise from the grave to become muse phantoms-undead spirits that haunt opera houses or auditoriums and possess the bodies of living actors to continue their art.\n\nA host is often utterly unaware of being possessed by a muse phantom. Like egotistical parasites, muse phantoms assume command of their unwitting thespian shells only during big shows with packed audiences, and even then the host might chalk up their sudden lack of control to the transcendence of performance, not the nefarious influence of some paranormal entity. In time, a performer's mind can become utterly warped by the spirit's domination, twisting artistic temperament and vanity into evil selfishness and tireless obsession."
+}

@@ -1,0 +1,150 @@
+{
+  "kind": "creature",
+  "slug": "animated-armor-bb",
+  "system": "pf2e",
+  "name": "Animated Armor (BB)",
+  "source": {
+    "title": "Pathfinder Beginner Box: Secrets of the Unlit Star",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 3,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": -3,
+      "int": -5,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "vitality",
+        "void"
+      ]
+    },
+    "notes": {
+      "ac": "(13 after construct armor breaks), construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 11,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Armored Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor",
+      "category": "defensive",
+      "text": "The animated armor reduces all damage it takes by 9. However, after a critical hit that deals damage, or after its HP drops below 10, its construct armor breaks. Its AC drops to 13 and it no longer reduces damage by 9.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Objects can be given a semblance of life through the use of rituals or other strange magic, turning them into animated objects. These objects move, work, and fight based on the commands given to them by their creators, who usually set them on guard duty or have them perform menial labor.\n\nSuits of animated armor might serve as guardians, but sometimes high-end martial academies use them as training partners. They're most often found in wizards' laboratories and ancient dungeons."
+}

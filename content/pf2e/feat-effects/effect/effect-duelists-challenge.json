@@ -1,0 +1,63 @@
+{
+  "kind": "effect",
+  "slug": "effect-duelists-challenge",
+  "system": "pf2e",
+  "name": "Effect: Duelist's Challenge",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Duelist's Challenge\n\nAny time you hit your dueling opponent using a single one-handed melee weapon while your other hand or hands are free, you gain a circumstance bonus to the Strike's damage equal to the number of damage dice your weapon deals.\n\nIf you attack a creature other than your dueling opponent, you take a circumstance penalty to damage equal to the number of damage dice your weapon deals.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "duelists-challenge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "item:hands-held:1",
+          "target:mark:duelists-challenge",
+          {
+            "nor": [
+              "hands-free:0",
+              "item:category:unarmed",
+              "target:condition:fleeing"
+            ]
+          }
+        ],
+        "selector": "melee-strike-damage",
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "target:mark:duelists-challenge"
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "duelists-challenge-wrong-target",
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice * -1"
+      }
+    }
+  ]
+}

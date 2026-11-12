@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "effect-replenishment-of-war",
+  "system": "pf2e",
+  "name": "Effect: Replenishment of War",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Replenishment of War\n\nYou gain a number of temporary Hit Points equal to half your level, or equal to your level if the Strike was a critical hit.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.success",
+            "value": 2
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Attack.criticalSuccess",
+            "value": 1
+          }
+        ],
+        "flag": "outcome",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "max(floor(@item.origin.level/@item.flags.system.rulesSelections.outcome),1)"
+      }
+    }
+  ]
+}

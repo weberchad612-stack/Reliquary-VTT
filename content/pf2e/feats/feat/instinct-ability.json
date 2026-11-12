@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "instinct-ability",
+  "system": "pf2e",
+  "name": "Instinct Ability",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Barbarian Dedication"
+  ],
+  "text": "You gain the instinct ability for the instinct you chose for Barbarian Dedication.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.barbarian.archetypeFeatCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:level:1",
+            "item:category:class",
+            "item:trait:barbarian",
+            {
+              "not": "item:draconic-arrogance"
+            }
+          ],
+          "itemType": "feat"
+        },
+        "flag": "furyInstinct",
+        "key": "ChoiceSet",
+        "predicate": [
+          "feature:fury-instinct"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.LevelOneClassFeat"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "feature:fury-instinct"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.furyInstinct}"
+      }
+    }
+  ]
+}

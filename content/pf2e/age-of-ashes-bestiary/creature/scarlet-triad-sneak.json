@@ -1,0 +1,284 @@
+{
+  "kind": "creature",
+  "slug": "scarlet-triad-sneak",
+  "system": "pf2e",
+  "name": "Scarlet Triad Sneak",
+  "source": {
+    "title": "Pathfinder #147: Tomorrow Must Burn",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 95,
+    "perception": 12,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 14,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 10,
+      "deception": 12,
+      "intimidation": 10,
+      "stealth": 16,
+      "thievery": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Average) (Marked with the Symbol of the Scarlet Triad)",
+      "ref": "equipment:item/manacles-average",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Key to Manacles",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bloodseeker Beak (Affixed to Rapier)",
+      "ref": "equipment:item/bloodseeker-beak",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 17,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "bloodseeker-beak"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The sneak isn't Off-Guard to Hidden, Undetected, or flanking creatures of 6th level or lower, or creatures of 6th level or lower using surprise attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 6
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mobility",
+      "category": "defensive",
+      "text": "When the sneak takes a Stride action to move half their Speed or less, that movement does not trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirement A sneak can't use this reaction while encumbered.\n\nTrigger The sneak is hit by an attack made by a creature the sneak can see.\n\n---\n\nEffect The sneak gains a +2 circumstance bonus to their Armor Class against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Efficient Capture",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "manipulate"
+      ],
+      "text": "Requirements The sneak has manacles in hand and is adjacent to a creature.\n\n---\n\nEffect The sneak attempts to bind the creature's wrists or ankles with the manacles. If the sneak succeeds at an attack roll with a +16 modifier against the target's AC, they apply the manacles.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "slug": "efficient-capture",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "efficient-capture-attack-roll",
+          "type": "untyped",
+          "value": 16
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The scarlet triad sneak deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "In the first round of combat, creatures that haven't acted yet are Off-Guard to the sneak.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

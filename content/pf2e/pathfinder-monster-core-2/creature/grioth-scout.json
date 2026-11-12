@@ -1,0 +1,244 @@
+{
+  "kind": "creature",
+  "slug": "grioth-scout",
+  "system": "pf2e",
+  "name": "Grioth Scout",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "grioth",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 18,
+    "perception": 7,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "occultism": 6,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "echolocation",
+        "range": 20,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "grioth"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 3
+        }
+      ]
+    },
+    "notes": {
+      "languages": "telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Phantom Pain",
+          "rank": 1,
+          "ref": "spells:spell/phantom-pain"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Voidglass Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grioth-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 30 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Echolocation (Precise) 20 feet",
+      "category": "interaction",
+      "text": "A grioth can use its hearing as a precise sense at the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "No Breath",
+      "category": "defensive",
+      "text": "A grioth doesn't breathe except to speak and is immune to effects that require breathing (such as an inhaled poison)."
+    },
+    {
+      "kind": "ability",
+      "name": "Grioth Venom",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "poison"
+      ],
+      "text": "Saving Throw DC 17 Fortitude save\n\n---\n\nMaximum Duration 6 rounds\n\nStage 1 Frightened 1 (1 round)\n\nStage 2 Frightened 2 (1 round)\n\nStage 3 Frightened 3 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Shock Mind",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult"
+      ],
+      "text": "The grioth scout makes a Strike with a voidglass weapon.\n\nIf the Strike hits, it deals an additional 1d6 mental damage, and the target must succeed at a DC 17 Will save save (this has the incapacitation trait) or become Confused for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shock-mind",
+            "priority": 50,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "shock-mind"
+            ],
+            "selector": "kukri-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "kukri-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "shock-mind"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "The first grioths encountered on a new world are scouts. Typically traveling the vastness of space via one-way portals from their home worlds, grioth scouts never expect to see their homes again, as grioth leadership ensures true devotion to the colonization effort by stranding them on new worlds.\n\n---\n\nPlanets that drift out of orbit from their stars grow cold and lifeless as they float through the Dark Tapestry. Such dead worlds are coveted by the horrific creatures known as grioths, who endure the awful cold on these wandering worlds and convert them into planetary temples devoted to the dark gods of the Elder Mythos. From these bastions of frozen darkness, grioths seek out warm, living worlds to tear away from their respective suns through forbidden rituals, a process that often takes numerous generations.\n\nA single cultist typically leads a grioth scouting party, and the group seeks out a disused or forgotten location on the fringe of rural settlements as their initial invasion point. Over several generations, a grioth settlement grows powerful and conquers the surrounding cultures, and eventually, powerful grioths descend from the stars to begin the next stage of planetary conquest.\n\nGrioths speak a language composed of trills and clicks. While capable of speaking other languages, they do so in dry, raspy voices. As grioths have wings, wriggling tails, and four-eyed, bat-like visages, many cultures mistakenly associate them with the evil Outer Planes, but they very much belong to this reality."
+}

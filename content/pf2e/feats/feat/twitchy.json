@@ -1,0 +1,70 @@
+{
+  "kind": "feat",
+  "slug": "twitchy",
+  "system": "pf2e",
+  "name": "Twitchy",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "goblin"
+  ],
+  "category": "ancestry",
+  "text": "You are naturally suspicious and wary of danger, especially when you suspect someone might be leading you into an ambush. You gain a +1 circumstance bonus to AC and saves against hazards, and to all of your initiative rolls.\n\nIf at least one of your opponents is using Deception or Diplomacy to determine their initiative, your bonus to initiative from this feat increases to +4.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Goblin.Twitchy.TOTMToggle",
+        "option": "origin:type:hazard",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Goblin.Twitchy.InitiativeToggle",
+        "option": "twitchy-initiative",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "initiative",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "twitchy-initiative-bonus"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "twitchy-initiative"
+        ],
+        "selector": "initiative",
+        "slug": "twitchy-initiative-bonus",
+        "value": 4
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "slug": "twitchy-defense-bonus",
+      "when": [
+        "origin:type:hazard"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shillelagh",
+  "system": "pf2e",
+  "name": "Spell Effect: Shillelagh",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Shillelagh\n\nThe target weapon becomes a +1 striking weapon while in your hands, gaining a +1 item bonus to attack rolls and increasing the number of weapon damage dice to two. Additionally, as long as you are on your home plane, attacks you make with the weapon against aberrations, extraplanar creatures, and undead increase the number of weapon damage dice to three.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "or": [
+                "item:group:club",
+                "item:group:staff"
+              ]
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "spellEffectShillelagh",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Shillelagh"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.spellEffectShillelagh}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "runes-potency",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.spellEffectShillelagh}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "runes-striking",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Shillelagh.RollOptionLabel",
+        "option": "shillelagh-third-die",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "label": "PF2E.SpecificRule.Shillelagh.DamageDiceLabel",
+        "predicate": [
+          "shillelagh-third-die"
+        ],
+        "selector": "{item|flags.system.rulesSelections.spellEffectShillelagh}-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "feat",
+  "slug": "flexible-studies",
+  "system": "pf2e",
+  "name": "Flexible Studies",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "investigator"
+  ],
+  "category": "class",
+  "text": "You've collected a cross-section of information on various disciplines you can refer to when preparing for various tasks. During your daily preparations, you can cram on a certain subject to become temporarily trained in one skill of your choice. This proficiency lasts until you prepare again. As this proficiency is temporary, you can't use it as a prerequisite for a permanent character option like a skill increase or a feat.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "flexible-studies",
+        "phase": "beforeDerived",
+        "suboptions": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:0"
+          ]
+        },
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.flexibleStudies}.rank",
+        "phase": "beforeDerived",
+        "priority": 60,
+        "value": 1
+      }
+    }
+  ]
+}

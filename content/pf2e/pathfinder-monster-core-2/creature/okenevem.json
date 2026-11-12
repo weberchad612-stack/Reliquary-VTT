@@ -1,0 +1,277 @@
+{
+  "kind": "creature",
+  "slug": "okenevem",
+  "system": "pf2e",
+  "name": "Okenevem",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "archon",
+    "celestial",
+    "holy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 35,
+    "hp": 250,
+    "perception": 29,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 26,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 5,
+      "dex": 6,
+      "int": 6,
+      "str": 4,
+      "wis": 8
+    },
+    "skills": {
+      "diplomacy": 28,
+      "medicine": 28,
+      "nature": 28,
+      "religion": 31,
+      "society": 27,
+      "heaven-lore": 33
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "fear-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 36,
+      "attack": 28,
+      "spells": [
+        {
+          "name": "Spiritual Guardian",
+          "rank": 7,
+          "ref": "spells:spell/spiritual-guardian",
+          "uses": 3
+        },
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Calm",
+          "rank": 8,
+          "ref": "spells:spell/calm"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Humbling Touch",
+      "attack": 29,
+      "traits": [
+        "divine",
+        "finesse",
+        "holy",
+        "mental",
+        "nonlethal",
+        "spirit"
+      ],
+      "damage": [
+        {
+          "dice": "4d6",
+          "type": "spirit"
+        },
+        {
+          "dice": "4d8",
+          "type": "mental"
+        }
+      ],
+      "effects": [
+        "humble-bow"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Humbling Word",
+      "attack": 27,
+      "traits": [
+        "auditory",
+        "divine",
+        "holy",
+        "mental",
+        "nonlethal",
+        "spirit"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "4d8",
+          "type": "mental"
+        },
+        {
+          "dice": "4d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "humble-bow"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Archon's Protection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages the archon's ally and both are within 15 feet of the archon\n\n---\nEffect The ally gains resistance 15 to all damage against the triggering damage, and the archon can make a Strike against the enemy.\n\nEffect: Archon's Protection",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.archonsProtection",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Divine Defenders",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "holy",
+        "spirit"
+      ],
+      "text": "60 feet. Okenevem hold an exalted place among archons for their holy station. This draws lesser archons to defend them. When an enemy in the aura takes a hostile action against the okenevem, a cloud of minor archons swarms around it, causing it to take 2d6 persistent slashing damage and 2d6 persistent spirit damage. This persistent damage ends automatically if the enemy spends a round without taking a hostile action against the okenevem.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 60,
+            "traits": [
+              "divine",
+              "holy",
+              "spirit"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Humble Bow",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "holy",
+        "mental"
+      ],
+      "text": "A creature hit by one of the okenevem's Strikes is compelled to bow down in reverence. It must succeed at a DC 36 Will save save or fall Prone. If the creature Stands before the end of its next turn, it takes 3d8 mental damage. If the creature succeeds, it's temporarily immune for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Sublime Vision",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The okenevem casts the Overwhelming Presence spell, except instead of aggrandizing themself, the okenevem summons a vision of Heaven within 100 feet, and the target must humble themself in self-refection rather than pay tribute.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    }
+  ],
+  "text": "The most powerful archons reside in Iudica, the sixth tier on the holy mountain of Heaven. Okenevems live among their number. Okenevems have evolved from lowly zoaems to their current form, but they possess even further potential—the grace to pass through into the Garden at the pinnacle of Heaven. Yet these archons choose not to, instead prostrating themselves at its gates, at peace with never entering. Humble and unpretentious above all, they bow before the grandeur of Heaven and set themselves to work in other ways.\n\nOkenevems rarely travel away from Heaven unless they're tasked with a specifc deed by the divinities of that plane. Most of these missions require okenevems to bring humility to priests who press against the will of deities, defy the order of heaven, or consider themselves to be of equal power to their god. They seek to steer these priests away from the dangers of such arrogance, often by example."
+}

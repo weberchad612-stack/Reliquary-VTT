@@ -1,0 +1,174 @@
+{
+  "kind": "effect",
+  "slug": "effect-overdrive",
+  "system": "pf2e",
+  "name": "Effect: Overdrive",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Overdrive\n\nYour Strikes deal additional damage equal to your Intelligence modifier on a critical success, or half your Intelligence modifier on a success. On a failure, your Strikes deal 1 additional fire damage instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:1",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:2",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:3",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "critical-success"
+          }
+        ],
+        "flag": "baseDamage",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "overdrive"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.overdriveBaseDamage",
+        "phase": "beforeDerived",
+        "predicate": [
+          "overdrive:success"
+        ],
+        "value": "floor(@item.origin.system.abilities.int.mod/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.overdriveBaseDamage",
+        "phase": "beforeDerived",
+        "predicate": [
+          "overdrive:critical-success"
+        ],
+        "value": "@item.origin.system.abilities.int.mod"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "overdrive:critical-success",
+              "overdrive:success"
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "overdrive",
+        "value": "@actor.flags.system.overdriveBaseDamage+ternary(gte(@item.origin.level,15), 3, ternary(gte(@item.origin.level,7), 2, ternary(gte(@item.origin.level,3),1,0)))"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "slug": "overdrive-failure",
+      "when": [
+        "overdrive:failure"
+      ],
+      "damageType": "fire"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:effect:overdrive-failure",
+        "predicate": [
+          "overdrive:failure"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:effect:overdrive-success",
+        "predicate": [
+          "overdrive:success"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "self:effect:overdrive-critical-success",
+        "predicate": [
+          "overdrive:critical-success"
+        ]
+      }
+    }
+  ]
+}

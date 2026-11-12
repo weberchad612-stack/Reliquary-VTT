@@ -1,0 +1,87 @@
+{
+  "kind": "feat",
+  "slug": "dragonscaled-lore",
+  "system": "pf2e",
+  "name": "Dragonscaled Lore",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kobold"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "dragonscaled kobold heritage"
+  ],
+  "text": "The study of dragons is not merely academic to you but part of your family tree. Tracking lineages, benefactors, and communities has become second nature. You become trained in Intimidation and your choice of Arcana, Nature, Occultism, or Religion. For each of these skills in which you were already trained, you become trained in a skill of your choice. You also gain the Additional Lore general feat for Dragon Lore.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Additional Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.skills.dragon-lore",
+        "value": {
+          "attribute": "int",
+          "label": "PF2E.SpecificLore.Dragon",
+          "rank": "match(when(gte(@actor.level, 15), 4), when(gte(@actor.level, 7), 3),when(gte(@actor.level, 3), 2),1)"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Skill.Arcana",
+            "value": "arcana"
+          },
+          {
+            "label": "PF2E.Skill.Nature",
+            "value": "nature"
+          },
+          {
+            "label": "PF2E.Skill.Occultism",
+            "value": "occultism"
+          },
+          {
+            "label": "PF2E.Skill.Religion",
+            "value": "religion"
+          }
+        ],
+        "flag": "dragonscaledSkill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.dragonscaledSkill}.rank",
+        "value": 1
+      }
+    }
+  ]
+}

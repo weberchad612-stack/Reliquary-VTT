@@ -1,0 +1,126 @@
+{
+  "kind": "effect",
+  "slug": "effect-silver-crescent",
+  "system": "pf2e",
+  "name": "Effect: Silver Crescent",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Silver Crescent (Lesser), Silver Crescent (Moderate), Silver Crescent (Greater)\n\nYou shed cool, white light like a torch, and gain an item bonus to saving throws against olfactory effects.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:silver-crescent-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Silver Crescent (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:silver-crescent-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Silver Crescent (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:silver-crescent-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Silver Crescent (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "silver-crescent"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "value": {
+          "animation": {
+            "intensity": 1,
+            "speed": 2,
+            "type": "pulse"
+          },
+          "attenuation": 0.4,
+          "bright": 20,
+          "color": "#343434",
+          "coloration": 101,
+          "dim": 40,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "silver-crescent-bonus",
+      "when": [
+        "item:trait:olfactory"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "silver-crescent:silver-crescent-moderate"
+        ],
+        "selector": "saving-throw",
+        "slug": "silver-crescent-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "silver-crescent:silver-crescent-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "silver-crescent-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

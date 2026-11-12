@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "grikkitog",
+  "system": "pf2e",
+  "name": "Grikkitog",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "aberration",
+    "earth"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 36,
+    "hp": 200,
+    "perception": 29,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 23,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 4,
+      "int": 2,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 28,
+      "deception": {
+        "value": 27,
+        "special": [
+          {
+            "value": 31,
+            "label": "to imitate stone",
+            "when": [
+              "imitate-stone"
+            ]
+          }
+        ]
+      },
+      "survival": 25
+    },
+    "speeds": {
+      "land": 20,
+      "burrow": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "petran"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "adamantine"
+        }
+      ]
+    },
+    "notes": {
+      "perception": "manifold vision",
+      "speed": "earth glide"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 29,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "barbed-maw"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Implant Core",
+      "actions": 3,
+      "category": "interaction",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The grikkitog implants its core into an adjacent section of earth or stone, melding seamlessly and changing its visual appearance to match the surrounding rock. It's Immobilized but automatically succeeds at its Deception check to Impersonate the stone around it; creatures actively searching for it can still attempt Perception checks against its Deception DC as normal. A grikkitog can release its implantation as a free action, which has the manipulate trait. A grikkitog's infestation aura and manifold vision are only active while implanted.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "implant-core",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Manifold Vision",
+      "category": "interaction",
+      "text": "While its core is implanted, the grikkitog can see through the eyes it creates throughout the area of its infestation aura, gaining the benefits of All-Around Vision.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "predicate": [
+              "implant-core"
+            ],
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Infestation Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "earth",
+        "occult"
+      ],
+      "text": "120 feet.\n\nWhile its core is implanted, a grikkitog infests all earth and stone within 120 feet, as long as there is a contiguous physical connection between the earth, including stone objects touching the ground. This effect spreads even if the grikkitog does not have line of effect, though it can affect earth or stone on the surface and exposed to the air only if at least part of its core is exposed as well.\n\nWithin the aura, it can grow maws and eyes everywhere. It can make jaws attacks against any creature, originating from any earth or stone in the aura adjacent to that creature. Determine cover from the origin point of the attack, not from the grikkitog's core.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "implant-core"
+            ],
+            "radius": 120,
+            "slug": "infestation-aura",
+            "traits": [
+              "earth",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Barbed Maw",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Trigger The grikkitog hits a creature with a jaws Strike\n\n---\n\nEffect The grikkitog sinks its barbed teeth into the target, which must succeed at a DC 34 Reflex save save or be Immobilized. While immobilized, the victim takes 3d8 persistent,bleed damage and the grikkitog feeds upon its flesh. The creature is immobilized until the grikkitog ends the effect as a free action or the target succeeds at a DC 38 check to escape dc=38.\n\nThe grikkitog can immobilize any number of creatures with these maws."
+    },
+    {
+      "kind": "ability",
+      "name": "Earth Glide",
+      "category": "offensive",
+      "text": "The grikkitog can Burrow through dirt and stone at its full burrow Speed, leaving no tunnels or signs of its passing."
+    }
+  ],
+  "text": "Grikkitogs, also known as the \"hungry earth,\" are strange parasites from the Plane of Earth that infest earth, rock, and stone in order to feed their endless hunger. A young grikkitog is a formless apparition until it corrupts an earth elemental host, forming the grikkitog's core. A grikkitog can then possess the earth and stone nearby with its voracious essence, forming maws and eyes all around it. These creatures can be particularly dangerous to small creatures that lair within gaps among rocks, as well as mountain climbers searching for the perfect handhold."
+}

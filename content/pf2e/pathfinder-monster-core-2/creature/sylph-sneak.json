@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "sylph-sneak",
+  "system": "pf2e",
+  "name": "Sylph Sneak",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid",
+    "sylph"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 17,
+    "perception": 5,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 4,
+      "int": 1,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "deception": 6,
+      "diplomacy": 6,
+      "society": 4,
+      "stealth": 7,
+      "thievery": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "sussuran"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Starknife",
+      "ref": "equipment:item/starknife",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Starknife",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "deadly-d6",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Starknife",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "deadly-d6",
+        "thrown-30",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deflecting Gale",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "air",
+        "primal"
+      ],
+      "text": "Trigger The sylph sneak is the target of a physical ranged attack\n\nRequirements The sylph sneak is aware of the attack\n\n---\n\nEffect A swift gale whips up between the sylph sneak and the source of the ranged attack, giving the sneak a +3 status bonus to AC against the triggering attack. If the attack misses, the wind deflected it. The wind can't deflect unusually large or heavy ranged projectiles (such as boulders or ballista bolts).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "deflecting-gale",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": 3,
+          "when": [
+            "deflecting-gale"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The sylph sneak's Strikes deal 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attacker",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the sylph sneak.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wind's Guidance",
+      "category": "offensive",
+      "text": "When the sylph sneak attacks with a thrown weapon, the range increment increases by 10 feet."
+    }
+  ],
+  "text": "Born with elemental gales coursing through their breath, sylphs are wispy planar scions whose bodies seem caught in a perpetual, gentle breeze. Most commonly born of unions between mortals and jaathoom, sylphs are quick-witted and creative, but they're prone to flights of fancy and tend to be easily distracted.\n\nSylphs are notorious for their practice of \"listening to the wind,\" which most others dismiss as a fancy name for eavesdropping. Yet this custom means much more to sylphs, who spend hours listening to the stories brought to them on the proverbial breeze. While some less scrupulous sylphs can use the information they learn to blackmail or abuse others, most of them see listening to the wind as their way of staying connected to the world around them while still keeping it comfortably at arm's length. Certainly, the typical sylph sneak doesn't seek to use what they learn for ill but instead warns others of dangers yet unrealized or prepares themself for a dangerous task."
+}

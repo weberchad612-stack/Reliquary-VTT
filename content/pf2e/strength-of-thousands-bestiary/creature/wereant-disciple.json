@@ -1,0 +1,350 @@
+{
+  "kind": "creature",
+  "slug": "wereant-disciple",
+  "system": "pf2e",
+  "name": "Wereant Disciple",
+  "source": {
+    "title": "Pathfinder #174: Shadows of the Ancients",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "beast",
+    "evil",
+    "human",
+    "humanoid",
+    "lawful",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 305,
+    "perception": 28,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 30,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 9,
+      "int": 0,
+      "str": 6,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 31,
+      "athletics": 28,
+      "stealth": 29,
+      "survival": 28
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "languages": "insect empathy, telepathy 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Telepathy 120 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Insect Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "The wereant can communicate with insects."
+    },
+    {
+      "kind": "ability",
+      "name": "Gnawing Retort",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature adjacent to the wereant critically misses the wereant with a melee Strike\n\n---\n\nEffect The wereant makes a mandibles Strike against the triggering creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Hive Mind",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Wereants operate with a shared hive intelligence. While within telepathic range of at least one other wereant, a wereant disciple gains a +2 circumstance bonus to initiative checks, Perception checks, and saving throws against mental effects. If one wereant is aware of a combatant, all members of the hive mind within telepathic range are aware of it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hive-mind",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind",
+            "mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The wereant changes into their humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true wereant's natural form is their hybrid shape. In humanoid shape, they use their original humanoid size, lose their jaws and claw Strikes, and gain a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by their mandibles. In animal shape, they take the form of a Medium giant ant, gain a climb Speed of 20 feet, gain Grab on their mandibles Strike, and lose their weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 29,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 14
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 29,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 14
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Mandibles",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "mandibles",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 32,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d8",
+                "modifier": 14
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.CarapaceFist",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "carapace-fist",
+            "traits": [
+              "agile",
+              "finesse",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "mandibles-damage",
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "speed",
+          "type": "climb",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Wereant",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids\n\nSaving Throw DC 34 Fortitude save.\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into a wereant until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling Unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "mandibles-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flying Leap",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The wereant disciple Flies and makes two Strikes against different targets at any point during that movement. These Strikes deal an additional 2d6 precision damage if the disciple is above the target. If the wereant began this action Hidden, they remain hidden until after this ability's Strikes. Both attacks count toward the disciple's multiple attack penalty, but the penalty doesn't increase until after both Strikes.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "flying-leap",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "flying-leap"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the wereant must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of their mandibles Strike by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Staggering Blow",
+      "category": "offensive",
+      "text": "A creature damaged by the wereant disciple's carapace fist Strike must succeed at a DC 35 Fortitude save save or become Stunned 1 (Stunned 2 on a critical failure). If the Strike is a critical hit, a creature that fails the save is also Paralyzed for 1 round.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "carapace-fist-damage",
+          "text": "{item|description}"
+        }
+      ]
+    }
+  ],
+  "text": "Insectile werecreatures, such as wereants, only come about in unusual circumstances, such as powerful curses from inhuman gods or transformative magic run amok. Wereants work together with a natural cohesion that's rare in other types of werecreatures. The wereants presented here are more powerful than most wereants, as they've been warped by the forces contained within the Vesicant Egg.\n\nSome wereants have a religious zeal about training to protect their community and gladly give their lives for the hive."
+}

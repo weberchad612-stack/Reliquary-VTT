@@ -1,0 +1,136 @@
+{
+  "kind": "creature",
+  "slug": "ancestral-echo",
+  "system": "pf2e",
+  "name": "Ancestral Echo",
+  "source": {
+    "title": "Pathfinder #193: Mantle of Gold",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "rare",
+  "traits": [
+    "dwarf",
+    "ghost",
+    "incorporeal",
+    "spirit",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 15,
+    "perception": 9,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 6,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 1,
+      "int": 1,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "intimidation": 6,
+      "stealth": 7,
+      "dwarf-lore": 7
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 5,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing, rejuvenation"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Riled by Disrespect",
+      "category": "interaction",
+      "text": "An ancestral echo gains a +1 status bonus to attack rolls and saving throw DCs against any creature that has not performed at least one task to beautify the site to which the echo is bound. This applies to any PC who didn't succeed at one or more skill checks to clean area D2.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "saving-throw"
+          ],
+          "type": "status",
+          "value": 1,
+          "when": [
+            "riled-by-disrespect"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "riled-by-disrespect",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "interaction",
+      "text": "The ancestral echo can't leave the upper crypt.\n\n---\n\nA typical ghost can stray only a short distance from where it was killed or the place it haunts. A typical limit is 120 feet. Some ghosts are instead bound to a room, building, item, or creature that was special to it rather than a location."
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Restoring the vandalized inscriptions and reciting their corrected stories ushers these spirits back to the afterlife.\n\n---\n\nWhen a ghost is destroyed, it re-forms after 2d4 days within the location it's bound to, fully healed. A ghost can be permanently destroyed only if someone determines the reason for its existence and sets right whatever prevents the spirit from resting."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    }
+  ]
+}

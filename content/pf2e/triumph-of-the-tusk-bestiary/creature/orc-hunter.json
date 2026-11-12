@@ -1,0 +1,246 @@
+{
+  "kind": "creature",
+  "slug": "orc-hunter",
+  "system": "pf2e",
+  "name": "Orc Hunter",
+  "source": {
+    "title": "Pathfinder #209: Destroyer's Doom",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 155,
+    "perception": 19,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 23,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 7,
+      "int": 3,
+      "str": 4,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 18,
+      "medicine": 18,
+      "nature": 19,
+      "stealth": 22,
+      "survival": 21,
+      "hunting-lore": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Ranger Warden Spells",
+      "tradition": "primal",
+      "type": "focus",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Ephemeral Tracking",
+          "rank": 3,
+          "ref": "spells:spell/ephemeral-tracking"
+        },
+        {
+          "name": "Gravity Weapon",
+          "rank": 1,
+          "ref": "spells:spell/gravity-weapon"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Whip",
+      "ref": "equipment:item/whip",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Net",
+      "ref": "equipment:item/net",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Whip",
+      "attack": 22,
+      "traits": [
+        "disarm",
+        "finesse",
+        "magical",
+        "nonlethal",
+        "reach-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 21,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Experienced Tracker",
+      "category": "interaction",
+      "text": "An orc hunter can Track while moving at full Speed."
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The orc hunter designates a single creature as their prey. They must be able to see or hear the prey, or must be tracking the prey during exploration. They gain a +2 circumstance bonus to Perception checks to Seek their prey and a +2 circumstance bonus to Survival checks to Track their prey. They also ignore the penalty for making ranged attacks within their second range increment against the prey. They can only have one creature designated as their prey at a time. If they use Hunt Prey against another creature, the prior creature loses the designation and the new prey gains the designation.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hunt-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "survival"
+          ],
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "hunt-prey",
+            {
+              "or": [
+                "action:seek",
+                "action:track"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Edge",
+      "category": "offensive",
+      "text": "The orc hunter deals an additional 1d8 precision damage the first time they hit their hunted prey in a round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hunters-edge",
+            "predicate": [
+              "hunt-prey"
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "hunters-edge"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The elite hunters of an orc hold often operate alone, venturing into the wilderness of Belkzen for weeks at a time to track and bring down dangerous wildlife. They don't necessarily limit themselves to hunting animals, making them excellent bounty hunters, as their skills are just as useful against humanoids.\n\n---\nWhile some orc warriors specialize in a technique of their hold, others synthesize styles from all over into a unified yet versatile technique.\nHunting Trophies\nOrc hunters frequently take bone fragments from megafauna or powerful opponents they slay as trophies. To show off their combat skill, they display these bones by inlaying them in armor or weapons, forming intricate patterns that provide an account of that orc's triumphs in battle for those who know how to read them.\nOrc Duels\nDueling is a frequent practice among many cultures of Golarion, and orcs are no exception. The lethality of these duels varies based on the duel's impetus—a friendly bout goes to first blood or until a combatant is knocked out, while a fight in response to a vendetta or insult is more likely to the death. Unlike in many dueling traditions, spectators are encouraged to verbally aid combatants, shouting out encouragement to one's preferred fighter and invectives to their opponent."
+}

@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "android-infiltrator",
+  "system": "pf2e",
+  "name": "Android Infiltrator",
+  "source": {
+    "title": "Pathfinder Bestiary 3",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "android",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 28,
+    "perception": 6,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 10,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 2,
+      "dex": 4,
+      "int": 3,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 6,
+      "crafting": 7,
+      "deception": 3,
+      "society": 7,
+      "stealth": 10,
+      "thievery": 8,
+      "engineering-lore": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "androffan",
+      "common"
+    ],
+    "notes": {
+      "saves": "+1 circumstance to all saves vs. disease, poison, and radiation"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Circumstance to All Saves vs. Disease, Poison, and Radiation",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            {
+              "or": [
+                "disease",
+                "poison",
+                "radiation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Emotionally Unaware",
+      "category": "defensive",
+      "text": "The android takes a -1 circumstance penalty to Diplomacy and Performance checks, and to Perception checks to Sense Motive.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": -1,
+          "when": [
+            "action:sense-motive"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "diplomacy",
+          "type": "circumstance",
+          "value": -1
+        },
+        {
+          "key": "modifier",
+          "selector": "performance",
+          "type": "circumstance",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nanite Surge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The android infiltrator attempts a skill check but hasn't rolled yet\n\n---\n\nEffect The android infiltrator stimulates their nanites, forcing their body to temporarily increase its efficiency. They gain a +2 status bonus to the triggering skill check. In addition, their circuitry glows, creating a 10-foot emanation with dim light for 1 round.\n\nEffect: Nanite Surge (Glow)",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "nanite-surge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "skill-check",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "nanite-surge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The android infiltrator deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Androids possess synthetic bodies inhabited by living souls. These technological organisms first came to Golarion from another world when their starship crashed, scattering wreckage all across Numeria in an event known as the Rain of Stars. Feared by local Kellids and enslaved by the Technic League, androids on Golarion have spent eons being hated and hunted. Many androids survive by adopting human customs and hiding in plain sight, while others become criminals, hermits, or nomads.\n\nDesigned to resemble humans, androids have several distinctive features. Their eyes have a metallic sheen, they rarely fall ill, and they have trouble displaying complex emotions. Circuit-like tattoos decorate their bodies and control internal nanites. When stimulated, these nanites kick their internal chemistry into overdrive, allowing them to function at peak performance that causes their circuitry to glow.\n\nAndroids are created in sophisticated machines called foundries. They emerge as mature adults with newborn souls and no knowledge of their purpose or the world around them. Android bodies don't deteriorate, though their souls age like any other mortal's. When an android feels they've lived a full life, they willingly release their soul to the afterlife, causing their body to shut down and reboot. Once this process, known as Renewal, completes, a new soul inhabits the body.\n\nFoundry programming produces androids that mimic human anatomy. Numerous android models exist, each designed to excel at different tasks and purposes. Androids of all models display countless variations of coloration, body shapes, and gender identities. Theoretically, a foundry could be reprogrammed to create androids with new adaptations, colorations, and forms-perhaps even in the guise of other ancestries."
+}

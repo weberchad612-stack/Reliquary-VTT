@@ -1,0 +1,90 @@
+{
+  "kind": "feat",
+  "slug": "mystery-conduit",
+  "system": "pf2e",
+  "name": "Mystery Conduit",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "traits": [
+    "cursebound",
+    "oracle",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": "free",
+  "text": "The power of your mystery enables you access to myriad magic. If your next action is to Cast a Spell of 5th rank or lower that has no duration, you do not expend a spell slot.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:mystery-conduit",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "traits",
+        "value": "cursebound"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:mystery-conduit",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Oracle.MysteryConduit.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "mystery-conduit"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

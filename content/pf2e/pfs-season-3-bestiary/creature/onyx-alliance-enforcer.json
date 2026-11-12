@@ -1,0 +1,158 @@
+{
+  "kind": "creature",
+  "slug": "onyx-alliance-enforcer",
+  "system": "pf2e",
+  "name": "Onyx Alliance Enforcer",
+  "source": {
+    "title": "Pathfinder Society Intro: Year of Shattered Sanctuaries",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fetchling",
+    "humanoid",
+    "shadow"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 8,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 2,
+      "int": -1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 7,
+      "intimidation": 6,
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "shadowtongue"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadowy Ambush",
+      "category": "defensive",
+      "text": "When the Onyx Alliance enforcer rolls initiative using Deception or Stealth, they can attempt to demoralize one creature as a free action.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|description}",
+          "when": [
+            {
+              "or": [
+                "check:statistic:base:deception",
+                "check:statistic:base:stealth"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dread Striker",
+      "category": "offensive",
+      "text": "Frightened creatures are Off-Guard to the Onyx Alliance enforcer.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "target:condition:frightened"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "Effect The Onyx Alliance enforcer makes a melee Strike. If the attack hits, the enforcer Strides. If the enforcer ends this movement in dim light or darkness, they can attempt to Hide: Stealth."
+    }
+  ]
+}

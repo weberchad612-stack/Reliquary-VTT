@@ -1,0 +1,209 @@
+{
+  "kind": "creature",
+  "slug": "bounty-hunter",
+  "system": "pf2e",
+  "name": "Bounty Hunter",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 13,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 9,
+      "deception": 10,
+      "diplomacy": 8,
+      "intimidation": 8,
+      "stealth": 12,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Simple)",
+      "ref": "equipment:item/manacles-simple",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 13,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 14,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The bounty hunter designates a single creature they can see and hear, or one they're Tracking or Gathering Information about, as their prey. The bounty hunter gains a +2 circumstance bonus to Perception checks to Seek the prey, to Survival checks to Track the prey, and to Diplomacy checks to Gather Information about the prey. This effect lasts until they use Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "diplomacy",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "hunt-prey-gather-information",
+          "when": [
+            "action:gather-information",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Posse's Edge",
+      "category": "offensive",
+      "text": "The bounty hunter and their allies gain a +1 circumstance bonus on initiative rolls if the opposing side includes their hunted prey.\n\nEffect: Posse's Edge"
+    },
+    {
+      "kind": "ability",
+      "name": "Precision Edge",
+      "category": "offensive",
+      "text": "The first time the bounty hunter hits their hunted prey in a round, they deal an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running Reload",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The bounty hunter Strides, Steps, or Sneaks, and then Interacts to reload."
+    }
+  ],
+  "text": "Bounty hunters are constantly on the move, whether within city walls or the wilderness, trailing their fugitive quarries for capture... or disposal. Often relying on stealth or deception as much as martial skill, bounty hunters employ a vast array of talents to accomplish their goals and collect the hefty payout.\n\n---\nWhether they're hired to wage war, protect a caravan, or infiltrate an impenetrable fortress, there's ample work for mercenaries all over Golarion."
+}

@@ -1,0 +1,236 @@
+{
+  "kind": "effect",
+  "slug": "effect-fury-cocktail-moderate",
+  "system": "pf2e",
+  "name": "Effect: Fury Cocktail (Moderate)",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Fury Cocktail (Moderate)\n\nBenefit You gain a +3 item bonus to melee attack rolls and an additional effect depending on the additive chosen when the brew is created.\n- Animalistic choice between a jaws attack that deals 1d6 piercing damage or a claw attack that has the agile trait and deals 1d4 slashing damage.\n- Double resistance 2 to physical damage\n- Mournful resistance 5 to void or vitality depending on void healing\n- Skeptical +3 item bonus to saves against magic\n- Titanic size change to Large, Clumsy 1, and change of reach (+5 for Medium and Small, +10 for Tiny)\n- Wyrmhide resistance 5 to acid, cold, electricity, fire, and poison.\nDrawback You take a –1 penalty to AC and a –2 penalty to Reflex saves.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "untyped",
+      "value": -2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.AnimalisticLabel",
+            "value": "animalistic"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.DoubleLabel",
+            "value": "double"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.MournfulLabel",
+            "value": "mournful"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.SkepticalLabel",
+            "value": "skeptical"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.TitanicLabel",
+            "value": "titanic"
+          },
+          {
+            "label": "PF2E.SpecificRule.Equipment.FuryCocktail.WyrmhideLabel",
+            "value": "wyrmhide"
+          }
+        ],
+        "key": "ChoiceSet",
+        "priority": 1,
+        "rollOption": "fury-cocktail-moderate"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "untyped",
+      "value": -1
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-attack-roll",
+      "type": "item",
+      "value": 3
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "fury-cocktail-moderate:double"
+        ],
+        "type": "physical",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "fury-cocktail-moderate:mournful",
+          {
+            "not": "self:negative-healing"
+          }
+        ],
+        "type": "void",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "fury-cocktail-moderate:mournful",
+          "self:negative-healing"
+        ],
+        "type": "vitality",
+        "value": 5
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "fury-cocktail-moderate-skeptic",
+      "when": [
+        "fury-cocktail-moderate:skeptical",
+        "magical"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "fury-cocktail-moderate:wyrmhide"
+        ],
+        "type": [
+          "acid",
+          "cold",
+          "electricity",
+          "fire",
+          "poison"
+        ],
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "predicate": [
+          "fury-cocktail-moderate:titanic"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "fury-cocktail-moderate:titanic"
+        ],
+        "reach": {
+          "upgrade": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Weapon.Base.claw",
+            "value": "claw"
+          },
+          {
+            "label": "PF2E.Weapon.Base.jaws",
+            "value": "jaws"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "fury-cocktail-moderate:animalistic"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.UnarmedAttack",
+        "rollOption": "fury-cocktail-moderate-animal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "jaws",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.jaws",
+        "predicate": [
+          "fury-cocktail-moderate-animal:jaws"
+        ],
+        "traits": [
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "group": "brawling",
+        "img": "icons/commodities/claws/claw-bear-brown-grey.webp",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "predicate": [
+          "fury-cocktail-moderate-animal:claw"
+        ],
+        "traits": [
+          "unarmed",
+          "agile"
+        ]
+      }
+    }
+  ]
+}

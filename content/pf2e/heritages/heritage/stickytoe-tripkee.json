@@ -1,0 +1,57 @@
+{
+  "kind": "heritage",
+  "slug": "stickytoe-tripkee",
+  "system": "pf2e",
+  "name": "Stickytoe Tripkee",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Tripkee",
+    "ref": "ancestries:ancestry/tripkee"
+  },
+  "text": "Your hands and feet exude a film that helps them adhere to surfaces. You gain a +2 circumstance bonus to your Fortitude and Reflex DC against attempts to Disarm, Shove, Reposition, or Trip you. When ascending trees, vines, and other foliage, if you roll a success on the Athletics check to Climb, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "fortitude-dc",
+        "reflex-dc"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "action:disarm",
+            "action:shove",
+            "action:trip",
+            "action:reposition"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:climb",
+          {
+            "or": [
+              "terrain:forest",
+              "terrain:foliage"
+            ]
+          }
+        ],
+        "selector": "athletics"
+      }
+    }
+  ]
+}

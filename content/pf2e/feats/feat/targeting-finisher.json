@@ -1,0 +1,56 @@
+{
+  "kind": "feat",
+  "slug": "targeting-finisher",
+  "system": "pf2e",
+  "name": "Targeting Finisher",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "finisher",
+    "swashbuckler"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "Your attack harms and hinders your foe. Choose a particular part of your foe from the list below and Strike.\n\nIf you hit and damage the target, apply the effect corresponding to the chosen part. This hindrance lasts until the end of your next turn. On a critical hit, you also apply a lesser effect lasting for 1 minute.\n- Arm (or another limb used for attacks, such as a tentacle) The target is Enfeebled 2. On a critical hit, it is also Enfeebled 1 for 1 minute.\n- Head The target is Stupefied 2. On a critical hit, it is also Stupefied 1 for 1 minute.\n- Legs The target takes a –10-foot status penalty to its Speeds. On a critical hit, it also takes a –5-foot status penalty to its Speeds for 1 minute.\nEffect: Targeting Finisher",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:effect:panache"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Swashbuckler.Finisher.Label",
+        "mergeable": true,
+        "option": "finisher",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Swashbuckler.Finisher.Targeting",
+            "value": "targeting"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "{item|system.description.value}",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher:targeting"
+      ]
+    }
+  ]
+}

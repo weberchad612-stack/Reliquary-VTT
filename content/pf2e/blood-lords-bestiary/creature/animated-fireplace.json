@@ -1,0 +1,166 @@
+{
+  "kind": "creature",
+  "slug": "animated-fireplace",
+  "system": "pf2e",
+  "name": "Animated Fireplace",
+  "source": {
+    "title": "Pathfinder #182: Graveclaw",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "unique",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 24,
+    "hp": 65,
+    "perception": 9,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 6,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": -2,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 15
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(20 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Hearth",
+      "attack": 15,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8 + 6",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d6",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 7)",
+      "category": "defensive",
+      "text": "Like normal objects, the animated fireplace has Hardness. This Hardness reduces any damage the fireplace takes by 7. Once the animated fireplace is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 20.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bellow Soot",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The animated fireplace coughs out a cloud of soot, filling a 20-foot emanation; creatures within the soot are Concealed, and creatures outside the cloud are concealed to creatures within it. Creatures that begin their turn within the cloud must succeed at a DC 19 Fortitude save save or be Sickened 1 (Sickened 2 on a critical failure); creatures immune to inhaled effects automatically succeed at this save. The fireplace can't Bellow Soot again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Fan the Flames",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The animated fireplace releases a gout of flame in a 30-foot cone that deals 3d6 fire damage (DC 22 basic Reflex save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 2d6+5 fire, Rupture 5\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Many animated objects have useful functions but become dangerous when left uncontrolled.",
+  "blurb": "Variant animated furnace"
+}

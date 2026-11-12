@@ -1,0 +1,128 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-anima-invocation",
+  "system": "pf2e",
+  "name": "Spell Effect: Anima Invocation",
+  "source": {
+    "title": "Pathfinder #150: Broken Promises",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Anima Invocation (Modified)\n\nYou gain resistance to all damage and a status bonus to saves against effects created by evil creatures. Your Strikes gain the holy trait, the effects of the ghost touch rune, and deal additional spirit damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "anima-invocation"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "anima-invocation:success"
+        ],
+        "type": "all-damage",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "anima-invocation:critical-success"
+        ],
+        "type": "all-damage",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 2,
+      "slug": "anima-invocation-saves",
+      "when": [
+        "origin:trait:evil"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "anima-invocation:critical-success"
+        ],
+        "selector": "saving-throw",
+        "slug": "anima-invocation-saves",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "property-runes",
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "when": [
+        "anima-invocation:success"
+      ],
+      "damageType": "spirit"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d10",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "anima-invocation:critical-success"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "traits",
+        "value": [
+          "holy"
+        ]
+      }
+    }
+  ]
+}

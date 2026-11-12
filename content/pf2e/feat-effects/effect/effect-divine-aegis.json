@@ -1,0 +1,50 @@
+{
+  "kind": "effect",
+  "slug": "effect-divine-aegis",
+  "system": "pf2e",
+  "name": "Effect: Divine Aegis",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Divine Aegis\n\nYou gain a +1 circumstance bonus to saving throws against non-divine magical effects, but you also take a -1 circumstance penalty to saves against divine effects.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "divine-aegis-bonus",
+      "when": [
+        {
+          "or": [
+            "magical",
+            "item:trait:arcane",
+            "item:trait:primal",
+            "item:trait:occult",
+            "item:trait:divine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "item:trait:divine"
+        ],
+        "selector": "saving-throw",
+        "slug": "divine-aegis-bonus",
+        "value": -1
+      }
+    }
+  ]
+}

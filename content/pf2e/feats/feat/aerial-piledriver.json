@@ -1,0 +1,111 @@
+{
+  "kind": "feat",
+  "slug": "aerial-piledriver",
+  "system": "pf2e",
+  "name": "Aerial Piledriver",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "archetype",
+    "attack"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Wrestler Dedication"
+  ],
+  "text": "Requirements You have a creature Grabbed or Restrained.\n\n---\n\nHeaving both yourself and your opponent into the air, you bring them crashing to the ground. Make an unarmed melee Strike against the creature you have grabbed or restrained. This Strike deals 1d6 additional damage per weapon damage die, and it has the following additional effects on a success, failure, and critical failure.\n\nSuccess The target lands Prone.\n\nFailure You lose your grip on the target, and it is no longer grabbed or restrained by you.\n\nCritical Failure You lose both your grip on the target and your balance. You fall prone, and the target is no longer grabbed or restrained by you.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "aerial-piledriver",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "@weapon.system.damage.dice",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "aerial-piledriver",
+          "item:category:unarmed",
+          "item:melee",
+          {
+            "or": [
+              "target:condition:grabbed",
+              "target:condition:restrained"
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.AerialPiledriver.SuccessText",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        "aerial-piledriver",
+        "item:category:unarmed",
+        "item:melee",
+        {
+          "or": [
+            "target:condition:grabbed",
+            "target:condition:restrained"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.AerialPiledriver.FailureText",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "aerial-piledriver",
+        "item:category:unarmed",
+        "item:melee",
+        {
+          "or": [
+            "target:condition:grabbed",
+            "target:condition:restrained"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.AerialPiledriver.CriticalFailureText",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        "aerial-piledriver",
+        "item:category:unarmed",
+        "item:melee",
+        {
+          "or": [
+            "target:condition:grabbed",
+            "target:condition:restrained"
+          ]
+        }
+      ]
+    }
+  ]
+}

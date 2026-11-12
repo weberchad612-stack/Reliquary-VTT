@@ -1,0 +1,265 @@
+{
+  "kind": "creature",
+  "slug": "drow-fighter",
+  "system": "pf2e",
+  "name": "Drow Fighter",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "chaotic",
+    "drow",
+    "elf",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 18,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 9,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 5,
+      "intimidation": 3,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "elven",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic, +2 status to all saves vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 14,
+      "attack": 6,
+      "spells": [
+        {
+          "name": "Darkness (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Faerie Fire (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Lethargy Poison",
+      "ref": "equipment:item/lethargy-poison",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 9,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Main-Gauche",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "disarm",
+        "finesse",
+        "parry",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 9,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "lethargy-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The drow fighter draws a weapon using the Interact action, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Skewer",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The drow fighter Strikes with its rapier, and gains a +1 circumstance bonus to the attack roll. A creature damaged by the attack takes 1d6 bleed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "skewer",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "rapier-attack",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "skewer"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "skewer"
+            ],
+            "selector": "rapier-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Drow fighters train to master techniques that inflict deep, bleeding wounds and use poisoned crossbow bolts to exhaust enemies.\n\n---\n\nThe first drow were elves who fled into the depths of the world from a devastating cataclysm thousands of years ago. In their journey below, they fell to bickering and in-fighting, drawing the attention of sinister intelligences beyond their own. Whether it was the influence of a specific demon lord, the Rough Beast Rovagug, or some other fell force is unknown, but in that time the elves transformed both spiritually and physically, tainting their hearts with desires for cruelty, sadism, and violence. The hues of their eyes became sinister red or bleached white, and their flesh adopted an unearthly lavender sheen that made the drow instantly recognizable. The drow also developed potent magical abilities and resistances that further empowered them, if at the cost of their souls.\n\nOver the centuries to follow, the drow developed into a powerful, if violently dysfunctional society, influenced by the worship of demon lords and focused on providing power and glory to a relatively small collection of noble houses. Many of these noble houses are matriarchal in nature and all hold allegiance to a specific demon lord patron-but traditions of worship, warfare, and wizardry help to bind the oft-bickering houses together enough that drow society doesn't simply consume itself from within. Fear of earning the wrath of one's superior-be it a teacher, a parent, a commander, or the demon one worships-is the real bond holding drow society together, and this system is held in esteem by the lowliest drow servant and by the most powerful drow priestess alike.\n\nThe drow are infamous throughout the world, but until recently most assumed stories of demon-worshipping, underground-dwelling elves were spooky legends crafted to share around a campfire. Today, the existence of drow is an understood truth, and while their presence in the dark caverns deep below is unsettling, they seem content to leave the surface world alone for now."
+}

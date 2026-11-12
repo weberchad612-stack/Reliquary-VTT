@@ -1,0 +1,246 @@
+{
+  "kind": "creature",
+  "slug": "anadi-lurker",
+  "system": "pf2e",
+  "name": "Anadi Lurker",
+  "source": {
+    "title": "Pathfinder #169: Kindled Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "anadi",
+    "chaotic",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 11,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 0,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": {
+        "value": 10,
+        "special": [
+          {
+            "value": 12,
+            "label": "to climb in spider or hybrid form",
+            "when": [
+              "action:climb",
+              {
+                "or": [
+                  "spider-form",
+                  "hybrid-form"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "crafting": {
+        "value": 5,
+        "special": [
+          {
+            "value": 9,
+            "label": "to weave",
+            "when": [
+              "action:craft:weave"
+            ]
+          }
+        ]
+      },
+      "nature": 7,
+      "stealth": 11,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "languages": [
+      "anadi",
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Innate Arcane Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Blur",
+          "rank": 2,
+          "ref": "spells:spell/blur"
+        },
+        {
+          "name": "Web",
+          "rank": 2,
+          "ref": "spells:spell/web"
+        },
+        {
+          "name": "Color Spray",
+          "rank": 1,
+          "ref": "spells:spell/dizzying-colors"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Illusory Disguise",
+          "rank": 1,
+          "ref": "spells:spell/illusory-disguise"
+        },
+        {
+          "name": "Illusory Object",
+          "rank": 1,
+          "ref": "spells:spell/illusory-object"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 12,
+      "traits": [
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "anadi-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spin Silk",
+      "category": "interaction",
+      "traits": [
+        "concentrate",
+        "exploration",
+        "manipulate"
+      ],
+      "text": "By spending several minutes, an anadi can produce silk to craft items made of cloth. An anadi can produce enough silk in a day to craft a single garment."
+    },
+    {
+      "kind": "ability",
+      "name": "Anadi Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 18 Fortitude save\n\nMaximum Duration 4 rounds\n\nStage 1 1d6 poison damage and Off-Guard (1 round)\n\nStage 2 1d6 poison damage, off-guard, and Clumsy 1 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "concentrate",
+        "polymorph"
+      ],
+      "text": "The anadi changes into their hybrid, spider, or human form. The above statistics assume the anadi is in hybrid form. While in human form, the anadi seeker loses their climb Speed and can't use their fangs attack. When in spider form, they can't use weapons.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The anadi lurker deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "These anadis lurkers combine their innate magical talents and wilderness lore to snare prey.\n\n---\n\nAnadis have three distinct forms-human, spider, and a beautiful but unnerving hybrid shape that is their true form. Despite their unsettling arachnid features, anadis are peaceful and form tight-knit communities."
+}

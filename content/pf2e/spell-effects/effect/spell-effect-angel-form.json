@@ -1,0 +1,567 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-angel-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Angel Form",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Angel Form\n\nYou transform into an angel battle form. You gain the angel, celestial, and holytraits. You have hands in this battle form. You gain the following statistics and abilities regardless of the form that you choose:\n- AC = 22 + your level. Ignore your armor's check penalty and Speed reduction. 40 temporary Hit Points and weakness 10 to unholy.\n\n- Darkvision.\n\n- One or more attacks specific to the battle form you choose, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +25, and your damage bonus is +12. Melee attacks are Strength based (for the purpose of the enfeebled condition, for example), and ranged attacks are Dexterity based. If your attack modifier is higher for the given unarmed attack or weapon, you can use it instead.\n\n- Athletics modifier of +25, unless your own modifier is higher.\n\nYou also gain specific abilities based on the type of angel you choose:\n- Balisse\n- Speed 30 feet, fly 40 feet\n\n- Perception modifier of +26 to detect lies and illusions unless your own modifier is higher\n\n- Melee 1 scimitar (fire, forceful, holy, magical, sweep), Damage 2d6 slashing plus 2d6 fire.\n\n- Choral\n- Speed 30 feet, fly 40 feet\n\n- +1 status bonus to AC and saves against auditory and sonic\n\n- Melee 1 fist (agile, holy, magical, unarmed), Damage 2d6 bludgeoning\n\n- Ranged 1 piercing hymn (holy, magical, range 90 feet), Damage 3d6 sonic and Deafened for 1 round on a critical hit.\n\n- Kuribu\n- Speed 25 feet, fly 40 feet\n\n- resistance 10 to electricity and fire\n\n- Melee 1 fist (agile, holy, magical, unarmed), Damage 3d4 bludgeoning\n\n- Ranged 1 composite shortbow (deadly 2d10, holy, magical, propulsive, range increment 60 feet), Damage 3d6 piercing.\n\n- Tennin\n- Speed 30 feet, fly 60 feet\n\n- can Step into difficult terrain and use land and fly Speeds to Step\n\n- Melee 1 fist (agile, holy, magical, nonlethal, unarmed), Damage 1d6 bludgeoning plus 1d6 cold and 1d6 spirit.\n\n---\nHeightened (9th) Your battle form is Large if you choose balisse or tennin. You must have space to expand into, or the spell is lost. You instead gain AC = 22 + your level, 60 temporary Hit Points, weakness 15 to unholy, attack modifier +30, damage bonus +20, and Athletics +33.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.AngelForm.ChoiceSet.Balisse",
+            "value": "balisse"
+          },
+          {
+            "label": "PF2E.BattleForm.AngelForm.ChoiceSet.Choral",
+            "value": "choral"
+          },
+          {
+            "label": "PF2E.BattleForm.AngelForm.ChoiceSet.Kuribu",
+            "value": "kuribu"
+          },
+          {
+            "label": "PF2E.BattleForm.AngelForm.ChoiceSet.Tennin",
+            "value": "tennin"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "angel-form"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 7,
+            "value": {
+              "size": "med",
+              "skills": {
+                "athletics": {
+                  "modifier": 25
+                }
+              },
+              "strikes": {
+                "scimitar": {
+                  "modifier": 25
+                }
+              },
+              "tempHP": 40
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "scimitar": {
+                  "modifier": 30
+                }
+              },
+              "tempHP": 60,
+              "weaknesses": [
+                {
+                  "type": "unholy",
+                  "value": 15
+                }
+              ]
+            }
+          }
+        ],
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "22 + @actor.level"
+          },
+          "speeds": {
+            "fly": 40,
+            "land": 30
+          },
+          "strikes": {
+            "scimitar": {
+              "ability": "str",
+              "baseType": "scimitar",
+              "category": "martial",
+              "damage": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 12
+              },
+              "group": "sword",
+              "img": "icons/weapons/swords/scimitar-worn-blue.webp",
+              "label": "PF2E.Weapon.Base.scimitar",
+              "traits": [
+                "fire",
+                "forceful",
+                "holy",
+                "magical",
+                "sweep"
+              ]
+            }
+          },
+          "traits": [
+            "holy",
+            "angel",
+            "celestial"
+          ],
+          "weaknesses": [
+            {
+              "type": "unholy",
+              "value": 10
+            }
+          ]
+        },
+        "predicate": [
+          "angel-form:balisse"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "angel-form:balisse"
+        ],
+        "selector": "scimitar-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 7,
+            "value": {
+              "size": "sm",
+              "skills": {
+                "athletics": {
+                  "modifier": 25
+                }
+              },
+              "strikes": {
+                "fist": {
+                  "modifier": 25
+                },
+                "piercing-hymn": {
+                  "modifier": 25
+                }
+              },
+              "tempHP": 40
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "fist": {
+                  "modifier": 30
+                },
+                "piercing-hymn": {
+                  "modifier": 30
+                }
+              },
+              "tempHP": 60,
+              "weaknesses": [
+                {
+                  "type": "unholy",
+                  "value": 15
+                }
+              ]
+            }
+          }
+        ],
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "22 + @actor.level"
+          },
+          "speeds": {
+            "fly": 40,
+            "land": 30
+          },
+          "strikes": {
+            "fist": {
+              "ability": "str",
+              "baseType": "fist",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 12
+              },
+              "img": "icons/skills/melee/unarmed-punch-fist.webp",
+              "label": "PF2E.Weapon.Base.fist",
+              "traits": [
+                "agile",
+                "holy",
+                "magical",
+                "unarmed"
+              ]
+            },
+            "piercing-hymn": {
+              "category": "unarmed",
+              "damage": {
+                "damageType": "sonic",
+                "dice": 3,
+                "die": "d6",
+                "modifier": 12
+              },
+              "img": "icons/skills/trades/music-singing-voice-blue.webp",
+              "label": "PF2E.BattleForm.Attack.PiercingHymn",
+              "range": {
+                "max": 90
+              },
+              "traits": [
+                "holy",
+                "magical",
+                "sonic"
+              ]
+            }
+          },
+          "traits": [
+            "holy",
+            "angel",
+            "celestial"
+          ],
+          "weaknesses": [
+            {
+              "type": "unholy",
+              "value": 10
+            }
+          ]
+        },
+        "predicate": [
+          "angel-form:choral"
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "piercing-hymn-damage",
+      "text": "PF2E.BattleForm.AngelForm.DeafenedNote",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "angel-form:choral"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "choral-defense-bonus",
+      "when": [
+        "angel-form:choral",
+        {
+          "or": [
+            "item:trait:auditory",
+            "item:trait:sonic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 7,
+            "value": {
+              "size": "sm",
+              "skills": {
+                "athletics": {
+                  "modifier": 25
+                }
+              },
+              "strikes": {
+                "composite-shortbow": {
+                  "modifier": 25
+                },
+                "fist": {
+                  "modifier": 25
+                }
+              },
+              "tempHP": 40
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "composite-shortbow": {
+                  "modifier": 30
+                },
+                "fist": {
+                  "modifier": 30
+                }
+              },
+              "tempHP": 60,
+              "weaknesses": [
+                {
+                  "type": "unholy",
+                  "value": 15
+                }
+              ]
+            }
+          }
+        ],
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "22 + @actor.level"
+          },
+          "resistances": [
+            {
+              "type": "electricity",
+              "value": 10
+            },
+            {
+              "type": "fire",
+              "value": 10
+            }
+          ],
+          "speeds": {
+            "fly": 40,
+            "land": 25
+          },
+          "strikes": {
+            "composite-shortbow": {
+              "ability": "str",
+              "baseType": "composite-shortbow",
+              "category": "martial",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d6",
+                "modifier": 12
+              },
+              "group": "bow",
+              "img": "icons/weapons/bows/shortbow-recurve-bone.webp",
+              "label": "PF2E.Weapon.Base.composite-shortbow",
+              "range": {
+                "increment": 60
+              },
+              "traits": [
+                "deadly-2d10",
+                "holy",
+                "magical",
+                "propulsive"
+              ]
+            },
+            "fist": {
+              "ability": "str",
+              "baseType": "fist",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d4",
+                "modifier": 12
+              },
+              "group": "brawling",
+              "img": "systems/pf2e/icons/features/classes/powerful-fist.webp",
+              "traits": [
+                "agile",
+                "holy",
+                "magical"
+              ]
+            }
+          },
+          "traits": [
+            "holy",
+            "angel",
+            "celestial"
+          ],
+          "weaknesses": [
+            {
+              "type": "unholy",
+              "value": 10
+            }
+          ]
+        },
+        "predicate": [
+          "angel-form:kuribu"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 7,
+            "tempHP": 40,
+            "value": {
+              "size": "med",
+              "skills": {
+                "athletics": {
+                  "modifier": 25
+                }
+              },
+              "strikes": {
+                "fist": {
+                  "modifier": 25
+                }
+              }
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "fist": {
+                  "modifier": 30
+                }
+              },
+              "tempHP": 60,
+              "weaknesses": [
+                {
+                  "type": "unholy",
+                  "value": 15
+                }
+              ]
+            }
+          }
+        ],
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "22 + @actor.level"
+          },
+          "speeds": {
+            "fly": 60,
+            "land": 30
+          },
+          "strikes": {
+            "fist": {
+              "ability": "str",
+              "baseType": "fist",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 12
+              },
+              "group": "brawling",
+              "img": "systems/pf2e/icons/features/classes/powerful-fist.webp",
+              "traits": [
+                "agile",
+                "holy",
+                "magical",
+                "nonlethal"
+              ]
+            }
+          },
+          "traits": [
+            "holy",
+            "angel",
+            "celestial"
+          ],
+          "weaknesses": [
+            {
+              "type": "unholy",
+              "value": 10
+            }
+          ]
+        },
+        "predicate": [
+          "angel-form:tennin"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "cold",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "angel-form:tennin"
+        ],
+        "selector": "fist-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "angel-form:tennin"
+        ],
+        "selector": "fist-damage"
+      }
+    }
+  ]
+}

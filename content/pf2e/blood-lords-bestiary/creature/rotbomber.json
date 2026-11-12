@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "rotbomber",
+  "system": "pf2e",
+  "name": "Rotbomber",
+  "source": {
+    "title": "Pathfinder #184: The Ghouls Hunger",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "mindless",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 250,
+    "perception": 25,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 25,
+      "will": 19
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 4,
+      "dex": 7,
+      "int": -3,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 25
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Slowed",
+      "text": "You have fewer actions. Slowed always includes a value. When you regain your actions at the start of your turn, reduce the number of actions you regain by your slowed value. Because slowed has its effect at the start of your turn, you don't immediately lose actions if you become slowed during your turn."
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "necrotic-rot"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Necrotic Pustule",
+      "attack": 26,
+      "traits": [
+        "splash",
+        "void"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "necrotic-rot"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow",
+      "category": "interaction",
+      "text": "A rotbomber is permanently Slowed 1 and can't use reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Pressurized Pustules",
+      "category": "defensive",
+      "text": "When a rotbomber takes acid, fire, physical or sonic damage, there is a chance a prematurely developed pustule bursts open, determined by a DC 11 Flat check. All creatures in a 10-foot emanation must succeed at DC 29 Fortitude save save or become Sickened 2. A creature that gets a critical failure becomes Sickened 3. Any creature who attempts this save becomes temporarily immune to pressurized pustules for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Gaseous Smash",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The rotbomber pulls two necrotic pustules from its body, one in each hand, and leaps into the air in an attempt to detonate them simultaneously on a hapless victim. The rotbomber Leaps up to 15 feet horizontally and 10 feet vertically to land in a square adjacent to a target creature and makes a necrotic pustule Strike against the target. If the Strike hits, it deals an additional 4d6 bludgeoning damage to the target. This counts as two attacks for the purposes of determining the rotbomber's multiple attack penalty, but the penalty does not increase until after the Gaseous Smash.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "gaseous-smash",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "gaseous-smash"
+            ],
+            "selector": "necrotic-pustule-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Necrotic Rot",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "void"
+      ],
+      "text": "Necrotic rot withers and corrupts living tissue at an alarming rate. An infected creature can't heal damage it takes from necrotic rot until it has been cured of the disease.\n\nSaving Throw DC 29 Fortitude save\n\n---\n\nStage 1 2d6 void damage (1 day)\n\nStage 2 Drained 1\n\nStage 3 3d6 void damage and Drained 2\n\nStage 4 dead, rising as a rotbomber immediately"
+    },
+    {
+      "kind": "ability",
+      "name": "Propulsive Pestilence",
+      "category": "offensive",
+      "text": "The pressurized necrotic gases within the rotbomber's pustules make them explode far more dramatically than most alchemists' bombs. The rotbomber's necrotic pustules deal splash damage to every creature within 15 feet of the target."
+    }
+  ],
+  "text": "Disgusting and dangerous, rotbombers bound around on all four limbs, ripping off the pressurized and explosive necrotic pustules that grow out of their backs to lob them toward their enemies. When they explode, the pustules emit concussive blasts of force and deadly pestilence that can infect a victim. Though slow and overburdened by the intense weight of the pustules, rotbombers can move with a surprising speed when they need to hunt down their quarry."
+}

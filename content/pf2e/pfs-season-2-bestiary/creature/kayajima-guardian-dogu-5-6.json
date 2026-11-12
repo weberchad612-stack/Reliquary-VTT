@@ -1,0 +1,168 @@
+{
+  "kind": "creature",
+  "slug": "kayajima-guardian-dogu-5-6",
+  "system": "pf2e",
+  "name": "Kayajima Guardian Dogu (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-02: Mountain of Sea and Sky",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "construct",
+    "earth",
+    "mindless"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 26,
+    "hp": 130,
+    "perception": 14,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 11,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": -1,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(22 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Energized Fist",
+      "attack": 19,
+      "traits": [
+        "magical",
+        "reach-10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Eye Beam",
+      "attack": 14,
+      "traits": [
+        "fire",
+        "magical"
+      ],
+      "range": 80,
+      "damage": [
+        {
+          "dice": "4d6+10",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor",
+      "category": "defensive",
+      "text": "Like normal objects, the guardian dogu has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once the guardian is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 22.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ley Line Surge",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "force",
+        "primal"
+      ],
+      "text": "1 to 3\n\nFrequency once per day\n\n---\nEffect The Kayajima guardian pulses with mystical energies that emit a pale blue glow before it emits a wave of force. If the Kayajima guardian uses 1 action to use, it unleashes a powerful blast that deals 4d6 force damage to all creatures in a 15-foot cone. If the Kayajima guardian uses 2 actions to use Ley Line Surge, increase the size of the cone to 30-foot cone and the damage to 6d6 force damage. If the Kayajima guardian uses 3 actions to use Ley Line Surge, increase the size of the cone to 60-foot cone and the damage to 8d6 force damage.\n\nEach creature in the area must attempt a DC 22 Fortitude save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is pushed 5 feet.\n\nCritical Failure The creature takes double damage and is pushed 10 feet.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Kayajima guardian propels itself with jets of blue energy from its feet, dashing up to a foe and swinging its fist. It Strides twice. If it ends its movement within melee range of at least one enemy, it can make an energized fist Strike against that enemy."
+    }
+  ]
+}

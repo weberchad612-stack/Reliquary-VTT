@@ -1,0 +1,208 @@
+{
+  "kind": "creature",
+  "slug": "nosoi",
+  "system": "pf2e",
+  "name": "Nosoi",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "monitor",
+    "psychopomp"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 18,
+    "perception": 6,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 3,
+      "int": 1,
+      "str": -1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 6,
+      "performance": 6,
+      "religion": 6,
+      "society": 2,
+      "stealth": 6,
+      "boneyard-lore": 8,
+      "library-lore": 8
+    },
+    "speeds": {
+      "land": 15,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease"
+      ],
+      "resistances": [
+        {
+          "type": "void",
+          "value": 3
+        },
+        {
+          "type": "poison",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Read Omens",
+          "rank": 4,
+          "ref": "spells:spell/read-omens"
+        },
+        {
+          "name": "Talking Corpse",
+          "rank": 4,
+          "ref": "spells:spell/talking-corpse"
+        },
+        {
+          "name": "Invisibility (At Will, Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Noise Blast",
+          "rank": 2,
+          "ref": "spells:spell/noise-blast"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 6,
+      "traits": [
+        "finesse",
+        "magical",
+        "reach-0",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4-1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "spirit-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The nosoi takes the appearance of a raven or songbird. This doesn't change its Speed or its attack and damage modifiers with its Strikes.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Haunting Melody",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "divine",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "The nosoi croons an entrancing song. Each living or undead creature within a 60-foot emanation must attempt a DC 18 Will save save. The effect lasts until the end of the nosoi's next turn, but the nosoi can Sustain it. A creature that succeeds at its save is temporarily immune for 24 hours. Despite being a mental effect, this ability affects mindless undead.\n\nPsychopomps are immune to this ability.\n\n---\nFailure The creature is Fascinated with the nosoi.\n\nCritical Failure The creature is fascinated with the nosoi and must spend each of its actions on its turn to move closer to the nosoi as expediently as possible while avoiding obvious dangers. If a fascinated creature is adjacent to the nosoi, it stays still and doesn't act. If the creature is attacked, the fascination ends."
+    },
+    {
+      "kind": "ability",
+      "name": "Shepherd's Touch",
+      "category": "offensive",
+      "text": "A nosoi's Strikes have the benefit of a Ghost Touch property rune and deal an additional 1d6 void damage to living creatures or 1d6 vitality damage to undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:undead"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mode:living"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "A nosoi resembles a whippoorwill, sparrow, or other small bird wearing a heavy leather plague doctor's mask. They are the clerks, messengers, and scribes of the Boneyard, witnessing judgments, directing souls, and generally performing the administrative grunt work that keeps the Boneyard functioning. Most nosois are particularly chatty and eager to discuss how important they consider their individual assignments to be.\n\n---\n\nPsychopomps are guardians and shepherds of the dead in the Boneyard, the vast plane of graves where mortal souls are judged and sent on to their eternal rewards or damnations. Psychopomps ensure that the dead come to terms with their transition from mortality and are properly sorted into the appropriate afterlife. They also protect souls from being preyed upon by supernatural predators. Nearly all psychopomps wear masks, especially when they're likely to be interacting with mortals, although the types of masks they wear are as varied as the psychopomps themselves. The courts of the Boneyard preside in Requian, a somber yet melodic language spoken slowly with various tonal shifts.\n\nMany psychopomps are intimately involved with the Boneyard's massive bureaucracy. Few pursue mercy, justice, or personal gain; their duties to Pharasma and her Boneyard are supreme. Nevertheless, individual psychopomps interpret their duties in different ways, which might put them in conflict with mortals or even with each other."
+}

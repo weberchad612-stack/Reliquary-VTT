@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "lacedon",
+  "system": "pf2e",
+  "name": "Lacedon",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "amphibious",
+    "chaotic",
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 32,
+    "perception": 7,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "stealth": 8,
+      "survival": 7
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril",
+      "thalassic"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "corpse scent (imprecise)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 10,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ghoul-ghoul-fever"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Corpse Scent (Imprecise) 1 mile",
+      "category": "defensive",
+      "text": "The lacedon can smell humanoid corpses in the water from up to 1 mile away."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "text": "45 feet\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The lacedon is adjacent to the corpse of a creature that died within the last hour.\n\n---\n\nEffect The lacedon devours a chunk of the corpse and regains 2d6 healing Hit Points. It can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 16 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d6 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 2d6 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a Ghoul the next midnight."
+    },
+    {
+      "kind": "ability",
+      "name": "Paralyzing Spew",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "The lacedon discharges a spray of carrion vomit at a creature within 20 feet, dealing 1d6 poison damage with a DC 17 basic Fortitude save. A non-elf creature that fails its save is also Paralyzed. It can attempt a new save to end the paralysis at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save. The lacedon can't use Paralyzing Spew again for 1d4 rounds."
+    }
+  ],
+  "text": "Feared by mariners and coastal dwellers everywhere, the aquatic ghouls known as lacedons are said to be the spawn of an ancient crew of sailors who became lost at sea and were forced to resort to cannibalism to survive. Their appearance is the stuff of a diver's nightmare, supplementing the vicious traits of their land-bound kin with spines, fins, and wide mouths bristling with needle-sharp teeth like piscine predators of the nethermost ocean depths.\n\n---\n\nDevious and cunning, ghouls can be found anywhere corpses are laid to rest, forever seeking to satisfy their boundless craving for humanoid flesh."
+}

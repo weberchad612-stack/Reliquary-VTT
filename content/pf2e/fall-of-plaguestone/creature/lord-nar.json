@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "lord-nar",
+  "system": "pf2e",
+  "name": "Lord Nar",
+  "source": {
+    "title": "Pathfinder Adventure: The Fall of Plaguestone",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 68,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 8,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 2,
+      "int": -1,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 13,
+      "diplomacy": 8,
+      "intimidation": 8
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greatclub",
+      "ref": "equipment:item/greatclub",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bronze Key",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "+1 Greatclub",
+      "attack": 14,
+      "traits": [
+        "backswing",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "No Escape",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger An adjacent foe moves away.\n\n---\n\nEffect Lord Nar may move up to his speed but must end his move as close to the triggering creature as possible without entering the triggering creature's square."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Lord Nar flies into a rage that lasts 1 minute and grants him 8 temporary Hit Points, 4 additional damage with his listed attacks, and a -1 penalty to AC.\n\nHe cannot use actions that have the concentrate trait while raging, unless they also have the rage trait.\n\nOnce his rage ends, Nar cannot Rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.rageTempHP",
+            "value": 8
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    }
+  ]
+}

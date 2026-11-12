@@ -1,0 +1,100 @@
+{
+  "kind": "effect",
+  "slug": "effect-potion-of-stable-form",
+  "system": "pf2e",
+  "name": "Effect: Potion of Stable Form",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Potion of Stable Form, Potion of Stable Form (Greater)\n\nYou gain an item bonus against morph and polymorph effects. If you roll a success against a polymorph effect during that time, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:potion-of-stable-form",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Potion of Stable Form"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:potion-of-stable-form-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Potion of Stable Form (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "potion-of-stable-form"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 3,
+      "slug": "potion-of-stable-form-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:morph",
+            "item:trait:polymorph"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "polymorph"
+        ],
+        "selector": "saving-throw",
+        "type": "save"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "potion-of-stable-form:potion-of-stable-form-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "potion-of-stable-form-bonus",
+        "value": 4
+      }
+    }
+  ]
+}

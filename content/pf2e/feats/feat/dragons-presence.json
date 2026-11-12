@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "dragons-presence",
+  "system": "pf2e",
+  "name": "Dragon's Presence",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kobold"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "dragonscaled kobold heritage"
+  ],
+  "text": "As kin to dragonkind, you project unflappable confidence (that collapses catastrophically against the deadliest foes). When you roll a success on a saving throw against a fear effect, you get a critical success instead. When you roll a failure against a fear effect, you get a critical failure instead.\n\nIn addition, when you attempt to Demoralize a foe of your level or lower, you gain a +1 circumstance bonus to the Intimidation check.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:demoralize",
+          {
+            "lte": [
+              "target:level",
+              "self:level"
+            ]
+          }
+        ],
+        "selector": "intimidation",
+        "type": "circumstance",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "failure": "one-degree-worse",
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "item:trait:fear"
+        ],
+        "selector": "saving-throw"
+      }
+    }
+  ]
+}

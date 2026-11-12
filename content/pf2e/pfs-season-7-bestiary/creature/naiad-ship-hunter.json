@@ -1,0 +1,213 @@
+{
+  "kind": "creature",
+  "slug": "naiad-ship-hunter",
+  "system": "pf2e",
+  "name": "Naiad Ship Hunter",
+  "source": {
+    "title": "Pathfinder Society Scenario #7-03: A Foot in the Door",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "amphibious",
+    "fey",
+    "nymph",
+    "water"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 13,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 9,
+      "deception": 10,
+      "diplomacy": 8,
+      "intimidation": 8,
+      "stealth": 12,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "fey",
+      "thalassic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 3
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Coral Armor",
+      "ref": "equipment:item/coral-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Aqueous Boarding Pike",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "reach",
+        "shove",
+        "water"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Water Orb",
+      "attack": 14,
+      "traits": [
+        "magical",
+        "water"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Animal Empathy",
+      "category": "interaction",
+      "text": "The naiad can ask questions of, receive answers from, and use the Diplomacy skill with animals."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The naiad ship hunter designates a single creature they can see and hear, or one they're Tracking or Gathering Information about, as their prey. The naiad ship hunter gains a +2 circumstance bonus to Perception checks to Seek the prey, to Survival checks to Track the prey, and to Diplomacy checks to Gather Information about the prey. This effect lasts until they use Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "diplomacy",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "hunt-prey-gather-information",
+          "when": [
+            "action:gather-information",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Posse's Edge",
+      "category": "offensive",
+      "text": "The naiad ship hunter and their allies gain a +1 circumstance bonus on initiative rolls if the opposing side includes their hunted prey.\n\nEffect: Posse's Edge"
+    },
+    {
+      "kind": "ability",
+      "name": "Precision Edge",
+      "category": "offensive",
+      "text": "The frst time the naiad ship hunter hits their hunted prey in a round, they deal an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Bounty hunters are constantly on the move, whether within city walls or the wilderness, trailing their fugitive quarries for capture... or disposal. Often relying on stealth or deception as much as martial skill, bounty hunters employ a vast array of talents to accomplish their goals and collect the hefty payout.\n\n---\nWhether they're hired to wage war, protect a caravan, or infiltrate an impenetrable fortress, there's ample work for mercenaries all over Golarion.",
+  "blurb": "Variant bounty hunter"
+}

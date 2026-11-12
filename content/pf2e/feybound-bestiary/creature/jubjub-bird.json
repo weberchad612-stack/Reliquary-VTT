@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "jubjub-bird",
+  "system": "pf2e",
+  "name": "Jubjub Bird",
+  "source": {
+    "title": "Pathfinder Feybound",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "beast",
+    "tane"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 36,
+    "hp": 340,
+    "perception": 24,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 23,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 6,
+      "dex": 5,
+      "int": -4,
+      "str": 9,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 30,
+      "athletics": 32,
+      "intimidation": 28,
+      "nature": 30,
+      "survival": 32
+    },
+    "speeds": {
+      "land": 50,
+      "fly": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+17",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 28,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+17",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d12",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Planar Acclimation",
+      "category": "interaction",
+      "text": "The jubjub bird always treats the plane it's on as its home plane."
+    },
+    {
+      "kind": "ability",
+      "name": "Adaptive Defense",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The jubjub bird is damaged by an attack that deals cold, electricity, fire, or sonic damage\n\n---\nEffect The jubjub bird takes damage as normal, then gains resistance 20 to the triggering damage type for 1 round. If the triggering attack dealt more than one of the listed damage types, the jubjub bird gains resistance 20 to each of them."
+    },
+    {
+      "kind": "ability",
+      "name": "Perpetual Passion",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "Jubjub birds grow more frenzied and dangerous as their situation becomes more desperate. The first time the bird's Hit Points are reduced below half of its maximum HP (170 HP), it gains a +1 circumstance bonus to its AC and attack rolls. The first time its Hit Points are reduced below a quarter of its maximum HP (85 HP), the bonus increases to +2, and its Strikes deal an additional 2d6 bludgeoning damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lte": [
+                  "hp-remaining",
+                  170
+                ]
+              }
+            ],
+            "selector": [
+              "ac",
+              "attack-roll"
+            ],
+            "slug": "perpetual-passion-bonus",
+            "type": "circumstance",
+            "value": 1
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              {
+                "lte": [
+                  "hp-remaining",
+                  85
+                ]
+              }
+            ],
+            "selectors": [
+              "ac",
+              "attack-roll"
+            ],
+            "slug": "perpetual-passion-bonus",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "lte": [
+                  "hp-remaining",
+                  85
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scream Shrill and High",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The jubjub bird rends the sky with a shrill note like a pencil on a slate. Non-Tane creatures within 120 feet must attempt a DC 40 Will save save.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is startled by the cry and becomes Off-Guard for 1 round.\n\nFailure The creature becomes Frightened 2 and is momentarily frozen with fear, becoming Immobilized for 1 round.\n\nCritical Failure The creature becomes Frightened 3 and is immobilized for as long as it remains frightened."
+    },
+    {
+      "kind": "ability",
+      "name": "Sprint",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The jubjub bird Strides three times in a straight line."
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The jubjub bird Strides twice. If it ends its movement within melee reach of at least one creature, it can make a melee Strike against that creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "A jubjub bird resembles a giant dodo with long, muscular legs and wings capable of brief, if awkward, flight. When attacked with magic, their brilliant plumage, normally purple, shifts randomly in hue and pattern with each spell that hits home.\n\nJubjub birds belong to the Tane, a group of powerful creatures brought into existence as living weapons by the Eldest. Jubjubs have the dubious reputation of being the least powerful and intelligent of the Tane, though they're still formidable enough that few who underestimate them live long enough to regret the mistake.\n\nThough these birds are sometimes kept as guardians or mounts, the Eldest generally create them for a singular purpose: to be hunted. Just threatening enough to provide a sporting challenge for the high fey lords, once they've been brought down, they make a delicious prize. Their cooked meat is famously exquisite, especially fermented for a few months in mahogany or ivory jars. Mortals who participate in such hunts, however, should take care if they're offered a portion of the prize—certain fey enjoy adding unusual seasonings, including, but not limited to, sawdust, glue, and locusts."
+}

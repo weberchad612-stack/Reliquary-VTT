@@ -1,0 +1,61 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-tiny-wings",
+  "system": "pf2e",
+  "name": "Spell Effect: Tiny Wings",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Tiny Wings\n\nYou gain a 20-foot fly Speed. If you already have a fly Speed, you instead gain a +15-foot status bonus to your fly Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Type.Fly",
+            "predicate": [
+              {
+                "not": "speed:fly"
+              }
+            ],
+            "value": "gain-speed"
+          },
+          {
+            "label": "PF2E.Bonus",
+            "predicate": [
+              "speed:fly"
+            ],
+            "value": "increase-speed"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "tiny-wings"
+      }
+    },
+    {
+      "key": "speed",
+      "type": "fly-speed",
+      "value": 20
+    },
+    {
+      "key": "modifier",
+      "selector": "fly-speed",
+      "type": "status",
+      "value": 15,
+      "when": [
+        "tiny-wings:increase-speed"
+      ]
+    }
+  ]
+}

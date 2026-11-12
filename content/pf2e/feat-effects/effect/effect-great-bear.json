@@ -1,0 +1,93 @@
+{
+  "kind": "effect",
+  "slug": "effect-great-bear",
+  "system": "pf2e",
+  "name": "Effect: Great Bear",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 5,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Great Bear\n\nYou gain the effects of an enlarge spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.ActorSizeHuge",
+            "predicate": [
+              "feat:mighty-bear"
+            ],
+            "value": {
+              "damage": 4,
+              "reach": 15,
+              "size": "huge"
+            }
+          },
+          {
+            "label": "PF2E.ActorSizeLarge",
+            "predicate": [
+              {
+                "not": "feat:mighty-bear"
+              }
+            ],
+            "value": {
+              "damage": 2,
+              "reach": 10,
+              "size": "large"
+            }
+          }
+        ],
+        "flag": "enlarge",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.CreatureSize"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "self:effect:ursine-avenger-form"
+        ],
+        "reach": {
+          "override": "{item|flags.system.rulesSelections.enlarge.reach}"
+        },
+        "resizeEquipment": true,
+        "value": "{item|flags.system.rulesSelections.enlarge.size}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "self:effect:ursine-avenger-form"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:effect:ursine-avenger-form"
+        ],
+        "selector": "melee-damage",
+        "type": "status",
+        "value": "{item|flags.system.rulesSelections.enlarge.damage}"
+      }
+    }
+  ]
+}

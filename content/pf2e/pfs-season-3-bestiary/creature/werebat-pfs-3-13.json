@@ -1,0 +1,263 @@
+{
+  "kind": "creature",
+  "slug": "werebat-pfs-3-13",
+  "system": "pf2e",
+  "name": "Werebat (PFS 3-13)",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-13: Guardian's Covenant",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "beast",
+    "evil",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 35,
+    "perception": 9,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 10,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 6,
+      "deception": 4,
+      "society": 5,
+      "stealth": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "echolocation",
+        "range": 40,
+        "acuity": "precise"
+      },
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "bat empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "ability",
+      "name": "Bat Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A werebat can communicate with bats."
+    },
+    {
+      "kind": "ability",
+      "name": "Echolocation (Precise) 40 feet",
+      "category": "interaction",
+      "text": "A werebat can use their hearing as a precise sense at the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "Wing Thrash",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An adjacent enemy damages the werebat\n\n---\n\nEffect The werebat makes one or two wing Strikes, each against a different adjacent creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Human with Fist attack for 1d4+2 bludgeoning damage and no fly Speed. In hybrid form, their Speed changes to 25 feet and fly 25 feet.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 2
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Fangs",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "fangs",
+            "traits": [
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 10,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 4
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Wing",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "wing",
+            "traits": [
+              "agile",
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": -10,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "speed",
+          "type": "fly",
+          "value": 30
+        },
+        {
+          "key": "speed",
+          "type": "fly",
+          "value": 25
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werebat",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids\n\nSaving Throw DC 15 Fortitude save DC.\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into a werebat until dawn. The creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "fangs-attack",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werebat must enter hybrid form and can't Change Shape thereafter. When the moon sets or the sun rises, the werebat returns to human form and is Fatigued for 2d4 hours."
+    }
+  ],
+  "text": "Werecreatures are humanoids who transform into animals and animal-humanoid hybrids under the light of the full moon. The fate of these shapechanging creatures derives from an ancient primal curse that they can, in turn, transmit through their own bites. The stat blocks in this section reflect werecreatures in their hybrid forms.\n\n---\n\nWerebats form organized colonies of opportunistic hunters. They aren't shy about transforming creatures to add to their colony, whom they initiate with elaborate social ceremonies and bloody hazing. The curse of the werebat gives them a strong urge to prey upon on weaker, lonely creatures. True werebats are often unusually tall and thin, with angular features. In combat, werebats favor their unarmed attacks because they can't fly while wielding weapons in their wings."
+}

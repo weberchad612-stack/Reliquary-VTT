@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "ongoing-strategy",
+  "system": "pf2e",
+  "name": "Ongoing Strategy",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "investigator"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "strategic strike"
+  ],
+  "text": "You're constantly studying small aspects of everyone's movements, even if you don't have a stratagem in place ahead of time.\n\nOn any Strike for which you didn't Devise a Strategem, you still deal precision damage equal to your number of strategic strike damage dice so long as the weapon or unarmed attack you used is one that would have let you use your Intelligence modifier had you Devised a Stratagem.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": "floor((@level + 3)/4)",
+      "when": [
+        "class:investigator",
+        {
+          "not": "check:substitution:devise-a-stratagem"
+        },
+        {
+          "or": [
+            "item:trait:agile",
+            "item:trait:finesse",
+            {
+              "and": [
+                "item:ranged",
+                {
+                  "not": "item:thrown-melee"
+                }
+              ]
+            },
+            "item:base:sap",
+            {
+              "and": [
+                "feat:takedown-expert",
+                "item:group:club",
+                "item:hands-held:1"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

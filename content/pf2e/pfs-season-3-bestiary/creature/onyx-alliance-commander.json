@@ -1,0 +1,232 @@
+{
+  "kind": "creature",
+  "slug": "onyx-alliance-commander",
+  "system": "pf2e",
+  "name": "Onyx Alliance Commander",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-19: Mean Streets of Shadow Absalom",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fetchling",
+    "humanoid",
+    "lawful",
+    "shadow"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 110,
+    "perception": 13,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 13,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 4,
+      "int": 1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 14,
+      "deception": 13,
+      "intimidation": 15,
+      "stealth": 17,
+      "thievery": 15,
+      "shadow-plane-lore": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "shadowtongue"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 18,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4 + 11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Reinforced Loyalty",
+      "category": "defensive",
+      "text": "The commander is resistant to mind-affecting magics due to their repeated exposure to Marcien Blakros's enchantments. Whenever the commander rolls a success on a Will save against an enchantment or fear effect, they get a critical success instead, unless that effect originated from Marcien. In addition, anytime they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "will",
+          "text": "When you roll a success at a Will save against a fear effect, unless that effect originated from Marcien Blackrose, you get a critical success instead.",
+          "when": [
+            "fear"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "fear"
+            ],
+            "selector": "will",
+            "type": "save"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Blending",
+      "category": "defensive",
+      "text": "When the commander is concealed as a result of dim light, the flat check to target them has a DC of 7, not 5."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Stride",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "Requirements The commander is in dim light\n\n---\n\nEffect The commander Strides. They have a +10-foot status bonus to their Speed during this Stride. The DC from shadow blending increases to DC 11 Flat check during this Stride, and the commander remains Concealed by dim light until the end of the movement, even if they leave dim light during the Stride.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shadow-stride",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "status",
+          "value": 10,
+          "when": [
+            "shadow-stride"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The commander deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

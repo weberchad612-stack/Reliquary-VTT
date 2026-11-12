@@ -1,0 +1,99 @@
+{
+  "kind": "feat",
+  "slug": "divine-castigation",
+  "system": "pf2e",
+  "name": "Divine Castigation",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "cleric"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "holy or unholy trait"
+  ],
+  "text": "Your deity's grace doesn't extend to your sworn enemies. When you cast a Harm or Heal spell, you can add your holy or unholy trait to it. If you do, the spell deals damage to creatures with the opposing trait, even if it wouldn't normally damage them. The spell deals spirit damage when used this way. For example, if you are holy, you could add the holy trait to a heal spell and deal spirit damage to a fiend that has the unholy trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "divine-castigation",
+        "placement": "spellcasting",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "divine-castigation",
+          "self:trait:holy",
+          {
+            "or": [
+              "item:slug:harm",
+              "item:slug:heal"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "divine-castigation",
+          "self:trait:unholy",
+          {
+            "or": [
+              "item:slug:harm",
+              "item:slug:heal"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "unholy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "divine-castigation",
+          {
+            "or": [
+              "self:trait:holy",
+              "self:trait:unholy"
+            ]
+          },
+          {
+            "or": [
+              "item:slug:harm",
+              "item:slug:heal"
+            ]
+          }
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage"
+        ],
+        "value": "spirit"
+      }
+    }
+  ]
+}

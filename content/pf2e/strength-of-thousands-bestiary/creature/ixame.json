@@ -1,0 +1,285 @@
+{
+  "kind": "creature",
+  "slug": "ixame",
+  "system": "pf2e",
+  "name": "Ixamè",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "air",
+    "dragon",
+    "elemental",
+    "undead"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 30,
+    "hp": 175,
+    "perception": 22,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 18,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 2,
+      "int": 2,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 21,
+      "deception": 20,
+      "diplomacy": 18,
+      "intimidation": 22,
+      "nature": 18,
+      "stealth": 18,
+      "survival": 16
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 140
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "sussuran"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "electricity",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "mist vision",
+      "speed": "cloud walk"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Obscuring Mist",
+          "rank": 2,
+          "ref": "spells:spell/mist"
+        },
+        {
+          "name": "Gust of Wind (At Will)",
+          "rank": 1,
+          "ref": "spells:spell/gust-of-wind"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 23,
+      "traits": [
+        "poison",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+13",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d12",
+          "type": "poison"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 21,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 21,
+      "traits": [
+        "deadly-d8",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deflecting Cloud",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Ixamè is the target of a ranged attack\n\nRequirements Ixamè is aware of the attack and has a free wing\n\n---\n\nEffect Ixamè rapidly flexes one of her wings and creates a billowing cloud of mist. She is treated as if she were Hidden for the purposes of resolving the triggering attack, so normally the attacker must succeed at a DC 11 Flat check to target her.\n\nIxamè also gains a +4 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "deflecting-cloud"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "deflecting-cloud",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 26 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mist Vision",
+      "category": "defensive",
+      "text": "Fog and mist don't impair a cloud dragon's vision; Ixamè ignores the Concealed condition from fog and mist."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "primal"
+      ],
+      "text": "Ixamè breathes a cloud of poison like that emitted from Terwa Lake that deals 11d6 poison damage in a 40-foot cone (DC 29 basic Reflex save save).\n\nShe can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Cloud Walk",
+      "category": "offensive",
+      "text": "Ixamè can tread on clouds or fog as though on solid ground."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Ixamè makes two claw Strikes and one horn Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "Ixamè recharges her Breath Weapon whenever she scores a critical hit when making a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Female poison-wracked young cloud dragon"
+}

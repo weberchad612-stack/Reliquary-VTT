@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "kobold-breath",
+  "system": "pf2e",
+  "name": "Kobold Breath",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "kobold",
+    "magical"
+  ],
+  "category": "ancestry",
+  "actions": 2,
+  "prerequisites": [
+    "dragonscaled kobold heritage"
+  ],
+  "text": "You channel the power of your draconic benefactor to expel a torrent of energy from your mouth that manifests as a 30-foot line or a 15-foot cone, dealing ceil(@actor.level / 2)d4 damage. Each creature in the area must attempt a basic saving throw against the higher of your class DC or spell DC. You can't use this ability again for 1d4 rounds.\n\nAt 3rd level and every 2 levels after that, the damage increases by 1d4. The breath shape, damage type, and the saving throw match those of your draconic benefactor, such as those shown on the Draconic Benefactors table. This activity has the traits associated with the magical tradition of your draconic benefactor and the type of damage the breath deals.\n\n---\nFortitude save Reflex save Will save",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "not": "feature:draconic-benefactor"
+          }
+        ],
+        "uuid": "Compendium.pf2e.ancestryfeatures.Item.Draconic Benefactor"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "property": "damage-type",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "value": "{actor|flags.system.draconicBenefactor.breathDamage}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "{actor|flags.system.draconicBenefactor.tradition}"
+      }
+    }
+  ]
+}

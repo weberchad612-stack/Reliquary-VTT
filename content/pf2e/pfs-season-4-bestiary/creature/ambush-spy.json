@@ -1,0 +1,219 @@
+{
+  "kind": "creature",
+  "slug": "ambush-spy",
+  "system": "pf2e",
+  "name": "Ambush Spy",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-99: Blessings of the Forest",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 90,
+    "perception": 17,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 4
+    },
+    "skills": {
+      "deception": 15,
+      "diplomacy": 13,
+      "intimidation": 15,
+      "society": 12,
+      "stealth": 14,
+      "thievery": 12,
+      "local-court-lore": 16
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Clothing (Fine)",
+      "ref": "equipment:item/clothing-fine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Tools",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 16,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Noble's Ally",
+      "category": "interaction",
+      "text": "The ambush spy has positioned themself to seem a trusted ally, gaining a +2 circumstance bonus to gather-information options=nobles-ally or to make-an-impression options=nobles-ally among the nobles of that court.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "skill-check",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nobles-ally",
+            {
+              "or": [
+                "action:gather-information",
+                "action:make-an-impression"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hidden Blade",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The ambush spy draws a weapon and then Strikes with it. The target of the Strike is Off-Guard against the attack.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hidden-blade",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "hidden-blade"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The spy deals an extra 2d6 Precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "No empire would be complete without its spies. The spy is a master of infiltrating the court and blending in: they might be one of a number of nobles, a beloved confidante of the queen, or even the court jester. Spies use their skills to subtly manipulate courtiers, turn enemies against one another, and collect valuable information either for blackmail or to auction to the highest bidder.\n\n---\n\nThough adventurers travel through perilous dungeons and across treacherous wilderness, sometimes the most dangerous place they can end up is in a noble court.",
+  "blurb": "Variant spy"
+}

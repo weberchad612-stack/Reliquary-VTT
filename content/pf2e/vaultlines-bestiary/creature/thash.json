@@ -1,0 +1,182 @@
+{
+  "kind": "creature",
+  "slug": "thash",
+  "system": "pf2e",
+  "name": "Thash",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "earth",
+    "elemental"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 28,
+    "hp": 150,
+    "perception": 17,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 15,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 3,
+      "int": -4,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 20,
+      "stealth": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "In Rocky Areas",
+            "when": [
+              "rocky-areas"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "paralyzed",
+        "poison",
+        "sleep",
+        "visual"
+      ],
+      "weaknesses": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Prone Difficulty",
+      "category": "defensive",
+      "text": "The thash takes a –2 circumstance penalty to its Reflex DC against trip attempts. While Prone, the thash is upside down and Immobilized. The thash must succeed at a DC 30 Athletics check check to Stand.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex-dc",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "action:trip"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "self:condition:prone"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Soft Underbelly",
+      "category": "defensive",
+      "text": "The thash has an AC of 24 against attacks made directly below it or directly above it while the thash is Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "self:condition:prone"
+              }
+            ],
+            "key": "RollOption",
+            "option": "soft-underbelly",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -4,
+          "when": [
+            "soft-underbelly"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Splintery Shell",
+      "category": "defensive",
+      "text": "The thash has Hardness 10 against damage from sources directly above it. When the thash takes bludgeoning damage from a source directly above it, jagged splinters fly from its shell in a 5-foot emanation. Creatures in the area except the thash take 2d8 piercing damage (DC 27 basic Reflex save save).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "splintery-shell",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              "splintery-shell"
+            ],
+            "value": 10
+          }
+        },
+        {
+          "key": "note",
+          "selector": [
+            "damage-received"
+          ],
+          "text": "{item|description}",
+          "when": [
+            "splintery-shell"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "kind": "creature",
+  "slug": "zephyr-guard",
+  "system": "pf2e",
+  "name": "Zephyr Guard",
+  "source": {
+    "title": "Pathfinder #149: Against the Scarlet Triad",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 255,
+    "perception": 24,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 26,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 5,
+      "int": 2,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 28,
+      "diplomacy": 24,
+      "intimidation": 24,
+      "society": 22,
+      "katapesh-lore": 24
+    },
+    "speeds": {
+      "land": 25
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Heavy Crossbow",
+      "ref": "equipment:item/heavy-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Greater)",
+      "ref": "equipment:item/healing-potion-greater",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 30,
+      "traits": [
+        "forceful",
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "subduing-strikes"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Heavy Crossbow",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "reload-2"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d10+6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "subduing-strikes"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Adroit Disarm",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Zephyr Guard attempts to Disarm a creature, with a +2 circumstance bonus to the roll. On a critical success, the guard can also deal their Scimitar damage to the creature.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "adroit-disarm",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "adroit-disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hampering Shot",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Zephyr Guard makes a heavy crossbow Strike that deals one additional weapon damage die. If the Strike hits, the target takes a –10-foot status penalty to its Speeds and is Slowed 1. These last for 1 round, or 2 rounds if the Strike was a critical success.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "key": "DamageDice",
+            "predicate": [
+              "hampering-shot"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "hampering-shot",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Subduing Strikes",
+      "category": "offensive",
+      "text": "A Zephyr Guard takes no penalty for making nonlethal attacks with a weapon that doesn't have the nonlethal trait. The guard's nonlethal Strikes against a creature that is not wielding a weapon deal an additional 2d6 damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "subduing-strike"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "subduing-strike",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ]
+}

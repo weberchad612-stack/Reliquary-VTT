@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "sronwa",
+  "system": "pf2e",
+  "name": "Sronwa",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-14: Poisonous Council",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "dwarf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 12,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 9,
+      "deception": 4,
+      "diplomacy": 5,
+      "intimidation": 5,
+      "medicine": 7,
+      "society": 5,
+      "stealth": 11,
+      "survival": 4,
+      "thievery": 7,
+      "herbalism-lore": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "dwarven",
+      "vishkanyan"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Giant Centipede Venom",
+      "ref": "equipment:item/giant-centipede-venom",
+      "type": "consumable",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 12,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Sronwa is targeted with a melee or ranged attack by an attacker she can see\n\n---\n\nEffect Sronwa gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Weapon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements Sronwa is wielding a piercing or slashing weapon and has a free hand\n\n---\n\nEffect Sronwa applies a poison to the weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Sronwa Interacts to draw a weapon, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Sronwa deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

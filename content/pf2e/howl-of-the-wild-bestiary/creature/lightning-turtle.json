@@ -1,0 +1,183 @@
+{
+  "kind": "creature",
+  "slug": "lightning-turtle",
+  "system": "pf2e",
+  "name": "Lightning Turtle",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 34,
+    "hp": 190,
+    "perception": 22,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 19,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 7,
+      "dex": 1,
+      "int": -4,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 25
+    },
+    "speeds": {
+      "land": 15,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ]
+    },
+    "notes": {
+      "perception": "greater electrolocation 20 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 24,
+      "traits": [
+        "electricity",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+5",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Electrical Burst",
+      "attack": 22,
+      "traits": [
+        "electricity"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "4d10",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "interaction",
+      "text": "The lightning turtle can hold its breath for 30 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Electrolocation",
+      "category": "interaction",
+      "text": "A lightning turtle can sense minute electrical charges in living creatures, which it can use as a precise sense at a range of 20 feet. This distance increases to 100 feet against any creature that has used an electricity effect within the last minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Shell Shock",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "electricity",
+        "nonlethal"
+      ],
+      "text": "Trigger A lightning turtle is hit by a melee or an unarmed attack\n\n---\n\nEffect The lightning turtle releases some of its stored electrical power, inflicting 7d6 electricity damage to the creature attacking it."
+    },
+    {
+      "kind": "ability",
+      "name": "Healing Pulse",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "healing",
+        "primal"
+      ],
+      "text": "The lightning turtle releases a pulse of low-intensity electricity from its body to promote healing. This restores 5d8 healing Hit Points to the turtle and each living ally within 10 feet, including creatures normally immune to electricity. The turtle can't use Healing Pulse again for 1 minute and is temporarily immune to the Healing Pulse of any lightning turtle for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Sparking Shell",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The lightning turtle withdraws into its shell. This increases its AC to 36, but it can't act except to use Shell Shock or reemerge as a single action. While in its shell, the turtle's Shell Shock deals another 4d6 damage and loses the nonlethal trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sparking-shell",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "sparking-shell"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:shell-shock",
+              "sparking-shell"
+            ],
+            "property": "dice-number",
+            "selectors": [
+              "inline-damage"
+            ],
+            "value": 4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:shell-shock",
+              "sparking-shell"
+            ],
+            "property": "traits",
+            "value": "nonlethal"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Lightning turtles have a reputation as kind protectors of those lost or injured at sea. Their unique ability to promote healing by stimulating the body's natural bioelectricity has led to many attempts over the year to domesticate the creatures, but none have been successful."
+}

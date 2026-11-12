@@ -1,0 +1,120 @@
+{
+  "kind": "effect",
+  "slug": "effect-thirsty-chalice-weapon",
+  "system": "pf2e",
+  "name": "Effect: Thirsty Chalice - Weapon",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Thirsty Chalice, Thirsty Chalice (Greater), Thirsty Chalice (Major)\n\nStrikes with the weapon deal additional void damage until the end of your turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thirsty-chalice",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thirsty Chalice"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thirsty-chalice-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thirsty Chalice (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thirsty-chalice-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thirsty Chalice (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "thirsty-chalice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectThirstyChaliceWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.effectThirstyChaliceWeapon}-damage",
+      "type": "untyped",
+      "value": 1,
+      "slug": "thirsty-chalice-bonus",
+      "damageType": "void"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "thirsty-chalice:thirsty-chalice-greater"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectThirstyChaliceWeapon}-damage",
+        "slug": "thirsty-chalice-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "thirsty-chalice:thirsty-chalice-major"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectThirstyChaliceWeapon}-damage",
+        "slug": "thirsty-chalice-bonus",
+        "value": 4
+      }
+    }
+  ]
+}

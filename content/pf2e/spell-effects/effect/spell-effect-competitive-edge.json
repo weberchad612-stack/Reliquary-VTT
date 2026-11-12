@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-competitive-edge",
+  "system": "pf2e",
+  "name": "Spell Effect: Competitive Edge",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Competitive Edge\n\nYou gain a status bonus to attack rolls and skill checks. This bonus increases if an enemy critically succeeds at an attack roll or skill check.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Cleric.CompetitiveEdge.RollOptionLabel",
+        "option": "competitive-edge",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ],
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "competitive-edge"
+        ],
+        "selectors": [
+          "attack-roll",
+          "skill-check"
+        ],
+        "slug": "competitive-edge",
+        "value": "ternary(gte(@item.level,7),4,3)"
+      }
+    }
+  ]
+}

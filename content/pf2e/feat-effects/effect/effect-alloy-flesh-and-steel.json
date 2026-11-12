@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "effect-alloy-flesh-and-steel",
+  "system": "pf2e",
+  "name": "Effect: Alloy Flesh and Steel",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Alloy Flesh and Steel\n\nYou gain resistance 10 to physical damage, except adamantine. You're immune to death effects, disease, drained, fatigued, healing, nonlethal attacks, paralyzed, poison, sickened, vitality, and void.\n\nYour fist Strikes have a 1d10 damage die, and your metal spells deal one additional die of damage (of the same damage die and damage type the spell uses). Your metal Elemental Blasts deal an additional die of damage.",
+  "rules": [
+    {
+      "key": "immunity",
+      "type": "death-effects"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "exceptions": [
+          "adamantine"
+        ],
+        "key": "Resistance",
+        "type": "physical",
+        "value": "ternary(gte(@item.origin.level,16),15,10)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fist": true,
+        "key": "Strike"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "xxxxxxFISTxxxxxx",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "damage-dice-faces",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "item:trait:metal"
+        ],
+        "selector": [
+          "elemental-blast-damage",
+          "spell-damage"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-precious-gleam",
+  "system": "pf2e",
+  "name": "Spell Effect: Precious Gleam",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Precious Gleam\n\nYour next attack deals additional precision damage, and it gains the effects of cold iron, silver, or steel.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "value": "silver"
+          }
+        ],
+        "flag": "preciousMaterial",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Material",
+        "rollOption": "precious-gleam"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "@item.level",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "materials",
+        "value": "{item|flags.system.rulesSelections.preciousMaterial}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-revel-in-retribution",
+  "system": "pf2e",
+  "name": "Spell Effect: Revel in Retribution",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Revel in Retribution\n\nYou gain the Reactive Strike ability. Whenever you successfully hit with a Reactive Strike, you gain temporary Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Reactive Strike"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Oracle.RevelInRetribution.RollOptionLabel",
+        "option": "reactive-strike",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.Oracle.RevelInRetribution.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "reactive-strike"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.revelInRetribution",
+        "value": "-1+@item.level"
+      }
+    }
+  ]
+}

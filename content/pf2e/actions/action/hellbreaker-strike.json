@@ -1,0 +1,83 @@
+{
+  "kind": "action",
+  "slug": "hellbreaker-strike",
+  "system": "pf2e",
+  "name": "Hellbreaker Strike",
+  "source": {
+    "title": "unknown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "holy"
+  ],
+  "actions": 2,
+  "category": "offensive",
+  "text": "Make a weapon or unarmed Strike. This counts as two attacks when determining your multiple attack penalty. If your Strike hits, you deal an additional 2d8 spirit damage. At 18th level, this increases to 3d8 spirit damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "hellbreaker-strike",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 2,
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "hellbreaker-strike"
+        ],
+        "selector": "strike-damage",
+        "slug": "hellbreaker-strike"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              18
+            ]
+          }
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "hellbreaker-strike",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:category:unarmed",
+              "item:category:simple",
+              "item:category:martial",
+              "item:category:advanced"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "hellbreaker-strike"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    }
+  ]
+}

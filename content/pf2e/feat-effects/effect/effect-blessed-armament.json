@@ -1,0 +1,163 @@
+{
+  "kind": "effect",
+  "slug": "effect-blessed-armament",
+  "system": "pf2e",
+  "name": "Effect: Blessed Armament",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "The item gains the effect of a property rune.\n\n---\nFrom Blessed Armament\n\nVitalizing, Ghost Touch, Fearsome, Returning, or Shifting\n\n---\nFrom Radiant Armament:\n\nAstral, Brilliant, Holy, or Unholy\n\n---\nFrom Armament Paragon:\n\nAnimated, Vitalizing (Greater), or Keen",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.WeaponPropertyRune.astral.Name",
+            "predicate": [
+              "feat:radiant-armament"
+            ],
+            "value": "astral"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.greaterAstral.Name",
+            "predicate": [
+              "feat:armament-paragon",
+              "feat:radiant-armament"
+            ],
+            "value": "greater-astral"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.brilliant.Name",
+            "predicate": [
+              "feat:radiant-armament"
+            ],
+            "value": "brilliant"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.greaterBrilliant.Name",
+            "predicate": [
+              "feat:armament-paragon",
+              "feat:radiant-armament"
+            ],
+            "value": "greater-brilliant"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.fearsome.Name",
+            "value": "fearsome"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.greaterFearsome.Name",
+            "predicate": [
+              "feat:armament-paragon"
+            ],
+            "value": "greater-fearsome"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.ghostTouch.Name",
+            "value": "ghost-touch"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.grievous.Name",
+            "predicate": [
+              "feat:armament-paragon"
+            ],
+            "value": "grievous"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.holy.Name",
+            "predicate": [
+              "feat:radiant-armament",
+              "sanctification:holy"
+            ],
+            "value": "holy"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.keen.Name",
+            "predicate": [
+              "feat:armament-paragon"
+            ],
+            "value": "keen"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.returning.Name",
+            "value": "returning"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.shifting.Name",
+            "value": "shifting"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.unholy.Name",
+            "predicate": [
+              "feat:radiant-armament",
+              "sanctification:unholy"
+            ],
+            "value": "unholy"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.disrupting.Name",
+            "value": "disrupting"
+          },
+          {
+            "label": "PF2E.WeaponPropertyRune.greaterDisrupting.Name",
+            "predicate": [
+              "feat:armament-paragon"
+            ],
+            "value": "greater-disrupting"
+          }
+        ],
+        "flag": "rune",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:id:{item|flags.system.rulesSelections.weapon}",
+              "item:category:{item|flags.system.rulesSelections.weapon}"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "property-runes",
+        "value": "{item|flags.system.rulesSelections.rune}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ]
+      }
+    }
+  ]
+}

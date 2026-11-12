@@ -1,0 +1,85 @@
+{
+  "kind": "feat",
+  "slug": "choking-smoke",
+  "system": "pf2e",
+  "name": "Choking Smoke",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Smoldering Explosion"
+  ],
+  "text": "When you cast Fireball heightened to at least 6th level, you can modify the spell's standard effects as follows: Reduce the spell's damage by 6d6. Your fireball leaves behind a lingering cloud of toxic smoke in its area. While it's smoke instead of mist, this cloud otherwise has the effects of Stinking Cloud.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellTrickster.Label",
+        "mergeable": true,
+        "option": "spell-trickster",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "choking-smoke"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spell-trickster:choking-smoke",
+          "item:slug:fireball",
+          {
+            "gte": [
+              "item:level",
+              6
+            ]
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.SpellTrickster.ChokingSmoke.Description"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "item:slug:fireball",
+          "spell-trickster:choking-smoke",
+          {
+            "gte": [
+              "item:level",
+              6
+            ]
+          }
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "spell-damage"
+        ],
+        "value": "2*(@spell.rank - 3)"
+      }
+    }
+  ]
+}

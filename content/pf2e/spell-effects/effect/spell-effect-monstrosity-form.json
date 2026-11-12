@@ -1,0 +1,495 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-monstrosity-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Monstrosity Form",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Monstrosity Form\n\nYou transform into the shape of a legendary monster, assuming a Huge battle form. You must have enough space to expand into or the spell is lost. While in this form, you gain the beast trait (for phoenix) or the animal trait (for cave worm or sea serpent). You gain the following statistics and abilities regardless of which battle form you choose:\n- AC = 20 + your level. Ignore your armor's check penalty and Speed reduction.\n- 20 temporary Hit Points.\n- Darkvision.\n- One or more unarmed melee attacks specific to the battle form you choose, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +28, and you use the listed damage. These attacks are Strength based (for the purpose of the Enfeebled condition, for example). If your unarmed attack modifier is higher, you can use it instead.\n- Athletics modifier of +30, unless your own modifier is higher.\nYou also gain specific abilities based on the type of monster you choose:\n- Cave Worm\n- Speed 40 feet, burrow 30 feet, swim 20 feet;\n- Melee 1 jaws (reach 10 feet), Damage 2d12+20 piercing;\n- Melee 1 stinger (agile, reach 10 feet), Damage 2d8+15 piercing plus 2d6 persistent poison;\n- Melee 1 body (reach 10 feet) Damage 2d8+20 bludgeoning;\n- Inexorable You automatically recover from the Paralyzed, Slowed, and Stunned conditions at the end of each of your turns. You're also immune to being Immobilized and ignore difficult terrain and greater difficult terrain.\n\n- Phoenix\n- Speed 30 feet, fly 90 feet;\n- Melee 1 beak (reach 15 feet), Damage 2d6+12 piercing plus 2d4 fire and 2d4 persistent fire;\n- Melee 1 talon (agile, reach 15 feet), Damage 2d8+12 slashing;\n- Shroud of Flame (aura, fire, primal) 20 feet. You gain an aura of fire that extends out from you. A creature that enters or ends its turn within the aura takes 2d6 fire damage. A creature can take this damage only once per turn. You can activate or deactivate this aura with a Sustain action.\n\n- Sea Serpent\n- Speed 20 feet, swim 90 feet;\n- Melee 1 jaws (reach 15 feet), Damage 2d12+20 piercing;\n- Melee 1 tail (reach 25 feet), Damage 2d8+20 bludgeoning;\n- Spine Rake 2 (move) You extend your spines and Swim or Stride. Each creature you're adjacent to at any point during your movement takes 4d8+10 slashing damage (basic Reflex against your spell DC).\n\n---\nHeightened (9th) You instead gain AC = 22 + your level, 25 temporary HP, attack modifier +31, increase damage by one damage die, and Athletics +33.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.MonstrosityForm.ChoiceSet.CaveWorm",
+            "value": "cave-worm"
+          },
+          {
+            "label": "PF2E.BattleForm.MonstrosityForm.ChoiceSet.Phoenix",
+            "predicate": [
+              {
+                "not": "self:effect:untamed-form"
+              }
+            ],
+            "value": "phoenix"
+          },
+          {
+            "label": "PF2E.BattleForm.MonstrosityForm.ChoiceSet.Phoenix",
+            "predicate": [
+              "self:effect:untamed-form",
+              "feat:soaring-shape"
+            ],
+            "value": "phoenix"
+          },
+          {
+            "label": "PF2E.BattleForm.MonstrosityForm.ChoiceSet.SeaSerpent",
+            "value": "sea-serpent"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "monstrosity-form"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 8,
+            "value": {
+              "armorClass": {
+                "modifier": "20 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 30
+                }
+              },
+              "strikes": {
+                "body": {
+                  "modifier": 28
+                },
+                "jaws": {
+                  "modifier": 28
+                },
+                "stinger": {
+                  "modifier": 28
+                }
+              },
+              "tempHP": 20
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "body": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31,
+                  "traits": [
+                    "unarmed",
+                    "reach-10"
+                  ]
+                },
+                "jaws": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31,
+                  "traits": [
+                    "unarmed",
+                    "reach-10"
+                  ]
+                },
+                "stinger": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31,
+                  "traits": [
+                    "unarmed",
+                    "reach-10",
+                    "agile"
+                  ]
+                }
+              },
+              "tempHP": 25
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "immunities": [
+            {
+              "type": "immobilized"
+            }
+          ],
+          "speeds": {
+            "burrow": 30,
+            "land": 40,
+            "swim": 20
+          },
+          "strikes": {
+            "body": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 20
+              },
+              "traits": [
+                "unarmed",
+                "reach-10"
+              ]
+            },
+            "jaws": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 20
+              },
+              "traits": [
+                "unarmed",
+                "reach-10"
+              ]
+            },
+            "stinger": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 15
+              },
+              "traits": [
+                "unarmed",
+                "reach-10",
+                "agile"
+              ]
+            }
+          },
+          "traits": [
+            "animal"
+          ]
+        },
+        "predicate": [
+          "monstrosity-form:cave-worm"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "poison",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "monstrosity-form:cave-worm"
+        ],
+        "selector": "stinger-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 8,
+            "value": {
+              "armorClass": {
+                "modifier": "20 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 30
+                }
+              },
+              "strikes": {
+                "beak": {
+                  "modifier": 28
+                },
+                "talon": {
+                  "modifier": 28
+                }
+              },
+              "tempHP": 20
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "beak": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31,
+                  "traits": [
+                    "unarmed",
+                    "reach-15"
+                  ]
+                },
+                "talon": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31,
+                  "traits": [
+                    "unarmed",
+                    "reach-15",
+                    "agile"
+                  ]
+                }
+              },
+              "tempHP": 25
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "speeds": {
+            "fly": 90,
+            "land": 30
+          },
+          "strikes": {
+            "beak": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 12
+              },
+              "traits": [
+                "unarmed",
+                "reach-15"
+              ]
+            },
+            "talon": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 12
+              },
+              "traits": [
+                "unarmed",
+                "reach-15",
+                "agile"
+              ]
+            }
+          },
+          "traits": [
+            "beast"
+          ]
+        },
+        "predicate": [
+          "monstrosity-form:phoenix"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": "ternary(gte(@item.level, 9), 3, 2)",
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "monstrosity-form:phoenix"
+        ],
+        "selector": "beak-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "damageType": "fire",
+        "diceNumber": 2,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "monstrosity-form:phoenix"
+        ],
+        "selector": "beak-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Aura",
+        "predicate": [
+          "shrouded"
+        ],
+        "radius": 20,
+        "slug": "shroud-of-flame",
+        "traits": [
+          "fire",
+          "primal"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.BattleForm.MonstrosityForm.ShroudOfFlame",
+        "option": "shrouded",
+        "predicate": [
+          "monstrosity-form:phoenix"
+        ],
+        "toggleable": true,
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "feat:phoenixs-flight",
+          "monstrosity-form:phoenix"
+        ],
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Blazing Conflagration"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 8,
+            "value": {
+              "armorClass": {
+                "modifier": "20 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 30
+                }
+              },
+              "strikes": {
+                "jaws": {
+                  "modifier": 28
+                },
+                "tail": {
+                  "modifier": 28
+                }
+              },
+              "tempHP": 20
+            }
+          },
+          {
+            "start": 9,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 33
+                }
+              },
+              "strikes": {
+                "jaws": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31
+                },
+                "tail": {
+                  "damage": {
+                    "dice": 3
+                  },
+                  "modifier": 31
+                }
+              },
+              "tempHP": 25
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "speeds": {
+            "land": 20,
+            "swim": 90
+          },
+          "strikes": {
+            "jaws": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 20
+              },
+              "traits": [
+                "unarmed",
+                "reach-15"
+              ]
+            },
+            "tail": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 20
+              },
+              "traits": [
+                "unarmed",
+                "reach-25"
+              ]
+            }
+          },
+          "traits": [
+            "animal"
+          ]
+        },
+        "predicate": [
+          "monstrosity-form:sea-serpent"
+        ]
+      }
+    }
+  ]
+}

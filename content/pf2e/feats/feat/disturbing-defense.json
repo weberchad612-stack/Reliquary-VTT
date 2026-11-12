@@ -1,0 +1,63 @@
+{
+  "kind": "feat",
+  "slug": "disturbing-defense",
+  "system": "pf2e",
+  "name": "Disturbing Defense",
+  "source": {
+    "title": "Pathfinder Adventure: The Slithering",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Oozemorph Dedication"
+  ],
+  "text": "Your internal organs and blood vessels have shifted and changed, and even you don't know precisely where in your body they are. You gain resistance to precision damage equal to 2 + your number of class feats from the oozemorph archetype. The DC of your flat checks to recover from persistent bleed damage is 13, rather than 15.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.oozemorphDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "precision",
+        "value": "@actor.flags.system.oozemorphDedicationCount+2"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "feat:peculiar-anatomy"
+        ],
+        "type": "precision",
+        "value": "@actor.flags.system.oozemorphDedicationCount+7"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:damage:type:bleed"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 13
+      }
+    }
+  ]
+}

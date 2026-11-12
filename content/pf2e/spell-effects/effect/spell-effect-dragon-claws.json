@@ -1,0 +1,61 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-dragon-claws",
+  "system": "pf2e",
+  "name": "Spell Effect: Dragon Claws",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dragon Claws\n\nVicious claws grow from your fingers. They are finesse unarmed attacks that deal slashing damage and extra damage of a type determined by the dragon in your bloodline. You gain resistance to the same damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d4"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "slug": "dragon-claw",
+        "traits": [
+          "magical",
+          "unarmed",
+          "finesse"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{actor|flags.system.dragonBloodline.damageType}",
+        "diceNumber": "ternary(gte(@item.level, 9), 3, ternary(gte(@item.level, 5), 2, 1))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "label": "PF2E.Weapon.Base.claw",
+        "selector": "dragon-claw-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{actor|flags.system.dragonBloodline.damageType}",
+        "value": "ternary(gte(@item.level, 9), 15, ternary(gte(@item.level, 5), 10, 5))"
+      }
+    }
+  ]
+}

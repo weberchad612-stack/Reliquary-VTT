@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "caustic-wraith",
+  "system": "pf2e",
+  "name": "Caustic Wraith",
+  "source": {
+    "title": "Pathfinder #203: Shepherd of Decay",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "incorporeal",
+    "undead",
+    "unholy",
+    "wraith"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 130,
+    "perception": 18,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 19,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 3,
+      "dex": 6,
+      "int": 3,
+      "str": -5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 19,
+      "intimidation": 21,
+      "stealth": 19
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, spirit, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Caustic Touch",
+      "attack": 21,
+      "traits": [
+        "acid",
+        "finesse",
+        "reach-10",
+        "void"
+      ],
+      "damage": [
+        {
+          "dice": "2d8",
+          "type": "void"
+        },
+        {
+          "dice": "1d8",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Aggravating Aura",
+      "category": "defensive",
+      "traits": [
+        "acid",
+        "aura",
+        "mental"
+      ],
+      "text": "10 feet. Acidic vapor surrounds the caustic wraith, making other creatures' bodies feel raw and especially sensitive to pain. A creature that begins in the area must succeed at a DC 28 Will save save or gain weakness 3 to all damage for 1 round (weakness 5 on a critical failure).\n\n---\nEffect: Aggravating Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "traits": [
+              "acid",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dissolve From the Inside",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The caustic wraith reaches into the body of a creature within 10 feet, melting its organs and inflicting pain. The target takes 4d8 acid damage with a DC 28 basic Fortitude save save. On a critical failure, the creature is also Sickened 2."
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the caustic wraith damages a living creature with its caustic touch Strike, the wraith gains 10 temporary Hit Points, and the target must succeed at a DC 28 Fortitude save save or become Drained 1. Further damage dealt by the caustic wraith increases the drained condition value by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wraith Spawn",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "unholy"
+      ],
+      "text": "A living humanoid slain by a caustic wraith rises as a wraith spawn after 1d4 rounds. This wraith spawn is under the command of the wraith that killed it. It doesn't have drain life or wraith spawn and becomes Clumsy 2. After 24 hours, the wraith spawn dissipates and is destroyed."
+    }
+  ]
+}

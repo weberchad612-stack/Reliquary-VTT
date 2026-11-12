@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "coral-juggernaut",
+  "system": "pf2e",
+  "name": "Coral Juggernaut",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 155,
+    "perception": 15,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 15,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 20
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine, bludgeoning"
+        },
+        {
+          "type": "spells",
+          "value": 10,
+          "except": "acid, fire"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Healing 5 (While Underwater)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SkillVariant.Underwater",
+            "option": "terrain:underwater",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "terrain:underwater"
+            ],
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bioluminescent Mucus",
+      "actions": "free",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "poison",
+        "primal"
+      ],
+      "text": "Trigger The coral juggernaut rolls initiative while in water\n\n---\nEffect The vampire squids within the juggernaut's body are startled, causing them to exude a cloud of bioluminescent mucus in a 15-foot emanation that lasts for 1 minute. Non-squid creatures (other than the coral juggernaut) who end their turn within the cloud must succeed at a DC 23 Fortitude save save or become Sickened 1 (or Sickened 2 on a critical failure). The creature is then temporarily immune for 24 hours.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|description}",
+          "when": [
+            "terrain:underwater"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shattered Coral",
+      "category": "defensive",
+      "text": "Once the coral juggernaut is reduced to fewer than half its Hit Points, its resistance to physical damage is reduced by 5 and it gains a +10-foot circumstance bonus to its Speeds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "adamantine",
+              "bludgeoning"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "gte": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "type": "physical",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "lt": [
+                  "hp-percent",
+                  50
+                ]
+              }
+            ],
+            "selector": "all-speeds",
+            "type": "circumstance",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1d10+8 bludgeoning, DC 25 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Electric Eel Shock",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "electricity",
+        "incapacitation"
+      ],
+      "text": "Requirements The coral juggernaut has a creature Grabbed or Restrained\n\n---\nEffect The electric eels that live within the coral juggernaut unleash jolting waves of electricity. The required creature takes 4d8 electricity damage and must attempt a DC 28 basic Fortitude save save. On a failure the creature is also Stunned 1 for 1 round (Stunned 2 for 1 round on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Riptide Silt",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The coral juggernaut unleashes a powerful wave of silt and water that rises from the ground 30 feet away and surges back toward the juggernaut in a straight line. Each creature in the wave's path must attempt a DC 25 Reflex save save.\n\n---\nCritical Success The creature avoids the wave and is unaffected.\n\nSuccess The creature is Off-Guard until the end of its next turn due to the wave's force.\n\nFailure The creature is swept into a square adjacent to the juggernaut and is off-guard until the end of its next turn.\n\nCritical Failure As failure, and the creature is also slammed against the juggernaut, taking 2d6 bludgeoning damage, and falls Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Symbiotic Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The coral juggernaut has a creature Grabbed or Restrained\n\n---\nEffect The staghorn corals growing on the outer edge of the coral juggernaut start walking from place to place, dragging their stony branches against the required creature. The creature takes 5d10 slashing,1d8 bleed damage (DC 25 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Fashioned from vibrant coral reefs and ancient sediment, coral juggernauts are crafted for both formidable strength and striking appearance. With the inspiration for their design drawing from the ocean's fluidity and chaos, these constructs can resemble anything from graceful aquatic creatures to monstrous amalgamations of coral and rock. Adorned with sharp coral spikes and flowing tendrils of plant life, they possess a mesmerizing yet terrifying presence."
+}

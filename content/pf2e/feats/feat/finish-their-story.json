@@ -1,0 +1,85 @@
+{
+  "kind": "feat",
+  "slug": "finish-their-story",
+  "system": "pf2e",
+  "name": "Finish Their Story!",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "traits": [
+    "mythic"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Eternal Legend Dedication"
+  ],
+  "text": "Though your tale is immortal, your foes aren't afforded such an advantage and mainly serve only to further your legend. When the time is right, you can shepherd a weaker opponent off this mortal coil. Spend a Mythic Point and make a Strike at mythic proficiency against an enemy. This Strike counts as two attacks for your multiple attack penalty and either kills or damages the target depending on their level, as noted below. After you make this Strike, the target becomes temporarily immune to Finish Their Story!, for 1 hour.\n\n16th Level or Lower If the Strike hits, the target dies instantly.\n\n17th Level If the Strike hits, the target takes the Strike's normal damage plus an additional three damage die.\n\n18th Level or Higher If the Strike hits, the target takes the Strike's normal damage plus an additional two damage die.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "finish-their-story",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Note",
+        "outcome": [
+          "success",
+          "criticalSuccess"
+        ],
+        "predicate": [
+          "finish-their-story",
+          {
+            "lte": [
+              "target:level",
+              16
+            ]
+          }
+        ],
+        "selector": "strike-attack-roll",
+        "text": "PF2E.SpecificRule.EternalLegend.FinishTheirStory.Note",
+        "title": "{item|name}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 3,
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "finish-their-story",
+          "target:level:17"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 2,
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "finish-their-story",
+          {
+            "gte": [
+              "target:level",
+              18
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

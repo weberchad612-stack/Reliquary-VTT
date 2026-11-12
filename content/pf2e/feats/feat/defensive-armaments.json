@@ -1,0 +1,74 @@
+{
+  "kind": "feat",
+  "slug": "defensive-armaments",
+  "system": "pf2e",
+  "name": "Defensive Armaments",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "gunslinger"
+  ],
+  "category": "class",
+  "text": "You use bulky firearms or crossbows to shield your body. Any two-handed firearms and two-handed crossbows you wield gain the parry trait. If an appropriate weapon already has the parry trait, increase the circumstance bonus to AC it grants when used to parry from +1 to +2. While parrying with your weapon, you are immune to splash damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:group:crossbow",
+              "item:group:firearm"
+            ]
+          },
+          {
+            "or": [
+              "item:usage:hands:2",
+              "item:hands-held:2"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "parry"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Immunity",
+        "predicate": [
+          "self:effect:parry"
+        ],
+        "type": "splash"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "weapon-parry"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "parry-bonus-upgrade:yes"
+        ],
+        "selector": "ac",
+        "slug": "parry-bonus",
+        "value": 2
+      }
+    }
+  ]
+}

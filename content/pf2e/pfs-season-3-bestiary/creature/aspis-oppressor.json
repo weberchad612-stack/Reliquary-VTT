@@ -1,0 +1,145 @@
+{
+  "kind": "creature",
+  "slug": "aspis-oppressor",
+  "system": "pf2e",
+  "name": "Aspis Oppressor",
+  "source": {
+    "title": "Pathfinder Society Special #3-98: Expedition Into Pallid Peril",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "deception": 13,
+      "diplomacy": 11,
+      "performance": 11,
+      "stealth": 13,
+      "thievery": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "mwangi"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Bronze Aspis Consortium Badge",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Prepare Fangs",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The Aspis oppressor slices their palm with a dagger, and the blade glows as it absorbs some of their blood. The glow spreads to the daggers of the oppressor's Aspis allies. For 1 round, all daggers wielded by the oppressor and allies within 30 feet of them deal an additional 4 poison damage.\n\nEffect: Prepare Fangs 4"
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, if the Aspis oppressor rolls Deception or Stealth for initiative, creatures that haven't acted are Off-Guard to them.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ]
+}

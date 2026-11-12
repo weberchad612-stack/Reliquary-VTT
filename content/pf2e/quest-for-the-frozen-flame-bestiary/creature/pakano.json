@@ -1,0 +1,268 @@
+{
+  "kind": "creature",
+  "slug": "pakano",
+  "system": "pf2e",
+  "name": "Pakano",
+  "source": {
+    "title": "Pathfinder #175: Broken Tusk Moon",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 70,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 8,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 12,
+      "deception": 8,
+      "nature": 9,
+      "survival": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "hallit"
+    ],
+    "notes": {
+      "ac": "(21 with shield raised)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Tallow Bomb (Moderate)",
+      "ref": "equipment:item/tallow-bomb-moderate",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Buckler",
+      "ref": "equipment:item/buckler",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Mad Mammoth's Juke",
+      "ref": "equipment:item/mad-mammoths-juke",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 10,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tallow Bomb",
+      "attack": 10,
+      "traits": [
+        "splash",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d4",
+          "type": "fire",
+          "category": "persistent"
+        },
+        {
+          "dice": "2",
+          "type": "fire",
+          "category": "splash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Spurred by Death",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An ally within 30 feet reduces a creature to 0 HP\n\n---\n\nEffect Pakano Steps or Strides."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Pakano designates a single creature he can see and hear, or one he's Tracking, as his prey. He gains a +2 circumstance bonus to Perception checks to Seek his prey and to Survival checks to Track his prey.\n\nThe first time Pakano hits his designated prey in a round, he deals an additional 1d8 precision damage. Pakano also ignores the penalty for making ranged attacks within his second range increment.\n\nThese effects last until Pakano uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "hunted-prey"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spear Fighter",
+      "category": "offensive",
+      "text": "Pakano's spear has the parry weapon trait, and his Strikes with the spear deal an additional 1d6 damage. If he critically hits a creature with a spear, the creature is Clumsy 1 until the start of Pakano's next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:spear",
+              {
+                "not": "item:ranged"
+              }
+            ],
+            "property": "traits",
+            "value": "parry"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "spear-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "spear-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Male Kellid hunter"
+}

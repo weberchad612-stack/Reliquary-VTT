@@ -1,0 +1,274 @@
+{
+  "kind": "creature",
+  "slug": "spriggan-stooge",
+  "system": "pf2e",
+  "name": "Spriggan Stooge",
+  "source": {
+    "title": "Pathfinder Feybound",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "gnome",
+    "humanoid",
+    "spriggan"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 4,
+      "int": 4,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 13,
+      "diplomacy": 13,
+      "intimidation": 10,
+      "society": 11,
+      "stealth": 13,
+      "survival": 12,
+      "thievery": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "aklo",
+      "common"
+    ],
+    "notes": {
+      "perception": "low-light vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Spiked Rings",
+      "type": "weapon",
+      "text": "Providing the same defensive function as a standard gauntlet, this version has a group of spikes protruding from the knuckles."
+    },
+    {
+      "kind": "gear",
+      "name": "Spiked Rings",
+      "type": "weapon",
+      "text": "Providing the same defensive function as a standard gauntlet, this version has a group of spikes protruding from the knuckles."
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Barbed Net",
+      "type": "equipment",
+      "text": "You can use a net either on its own or attached to a rope. When attached to a rope, you can use the net to Grapple a Medium or smaller creature up to 10 feet away (instead of only adjacent creatures). You can continue to Grapple to keep your hold on the target so long as the target remains within 10 feet and you continue to hold the net. The grabbed creature gains a +2 circumstance bonus to Escape unless you are adjacent to them, and it can attempt a DC 16 Athletics check check to Force Open the net entirely. Once the target is no longer grabbed, the net is unwieldy until refolded with an Interact action with the concentrate trait that requires two hands; if used without being refolded, Grapple checks made with the net take a -2 penalty.\n\nWhen the net is unattached, you can attempt a ranged attack roll using your simple weapon proficiency against a Medium or smaller creature within 20 feet. On a hit, the target is off-guard and takes a -10- foot circumstance penalty to its Speeds until it Escapes, and on a critical hit, it's also immobilized until it Escapes. The Escape DC is 16 (escape dc=16). A creature adjacent to the target can Interact to remove the net."
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Average)",
+      "ref": "equipment:item/manacles-average",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Ringed Fist",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "1d4+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Barbed Net",
+      "attack": 14,
+      "traits": [
+        "ranged-trip"
+      ],
+      "effects": [
+        "cruel-net"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Enraged Growth",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "Trigger The spriggan bully takes damage\n\n---\nEffect The spriggan stooge grows to Large size, along with their equipment (which returns to natural size if removed). The spriggan bully's reach increases by 5 feet. They regain 10 healing Hit Points and gain a +2 status bonus to melee attacks and damage rolls. This effect continues until the end of the spriggan bully's next turn, but on any turn in which the spriggan bully deals damage to another creature and is not Fatigued, the effect extends until the end of the following turn.\n\nWhen Enraged Growth ends, the spriggan stooge is fatigued for 1 hour.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "enraged-growth",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "enraged-growth"
+            ],
+            "value": "large"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "enraged-growth",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "reach"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "melee-strike-attack-roll",
+            "melee-strike-damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "enraged-growth"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spoilsport",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "auditory"
+      ],
+      "text": "Trigger A creature targets an ally with an attack and the spriggan stooge can see both creatures\n\n---\nEffect The stooge shouts a warning, granting the ally a +1 circumstance bonus to AC against the triggering attack.\n\nEffect: Spoilsport"
+    },
+    {
+      "kind": "ability",
+      "name": "Bully's Bludgeon",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The spriggan stooge makes a ringed fist Strike with a +2 circumstance bonus to its attack roll. This attack is nonlethal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bullys-bludgeon",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "spiked-gauntlet-attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "bullys-bludgeon"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "bullys-bludgeon",
+              "item:slug:spiked-gauntlet"
+            ],
+            "property": "traits",
+            "value": "nonlethal"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cruel Net",
+      "category": "offensive",
+      "text": "On a successful barbed net Strike, the stooge's target is Off-Guard and takes a –10-foot circumstance penalty to its Speeds. On a critical hit, the creature is Restrained instead. The target can attempt to escape dc=22 to end the effect, or a creature adjacent to the target can Interact with the net to remove it. Each time a creature attempts to Escape or Interact to remove the net, it takes 1d6 piercing damage from the net's barbs, regardless of whether the attempt succeeds."
+    },
+    {
+      "kind": "ability",
+      "name": "Obvious Flattery",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory"
+      ],
+      "text": "Requirements An ally succeeded at a Strike against an opponent within the last round\n\n---\nEffect The spriggan stooge croons unctuous praise to the required ally, granting them a +1 circumstance bonus to the next saving throw they attempt before the end of their next turn.\n\nEffect: Obvious Flattery"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The spriggan stooge's Strikes deal an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "When gnomes left the First World, many embraced and adapted to life in the Universe, but not all were so resilient. Those who instead hardened their hearts in this time formed insular communities that prioritized survival by any means necessary. Over generations, these communities lost their interest in joy and beauty, diverging into sour creatures called spriggans. In exchange for this loss, they gained an immunity to the Bleaching and the ability to grow in size for short periods of time to increase their odds of survival—or better menace their victims. Over time, spriggans' culture of ruthless pragmatism has become one of sadistic cruelty, their only joy derived from visiting harm upon others."
+}

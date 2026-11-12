@@ -1,0 +1,53 @@
+{
+  "kind": "feat",
+  "slug": "mountain-strategy",
+  "system": "pf2e",
+  "name": "Mountain Strategy",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dwarf"
+  ],
+  "category": "ancestry",
+  "text": "Dwarves have a long history fighting common foes, and you've mastered the ancient tactics to better face these enemies. You gain a +1 circumstance bonus to damage with weapons and unarmed attacks against creatures with the giant, goblin, hryngar, or orc trait. If your attack would deal more than one weapon die of damage (as is common at higher levels than 1st), the bonus is equal to the number of weapon dice or unarmed attack dice.\n\nIn addition, if any creature critically succeeds at an attack against you and deals damage to you, you gain your bonus to damage against that creature for 1 minute regardless of whether it has one of the listed traits.\n\nEffect: Mountain Strategy (Critically Hit)\n\n---\nSpecial Your GM can add appropriate creature traits to the ancestral foes list if your character is from a community that commonly fights other types of enemies.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": [
+        "damage-received"
+      ],
+      "text": "PF2E.SpecificRule.Dwarf.MountainStrategy.Note",
+      "outcome": [
+        "criticalSuccess"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              "target:mark:mountain-strategy",
+              "target:trait:giant",
+              "target:trait:goblin",
+              "target:trait:hryngar",
+              "target:trait:orc"
+            ]
+          }
+        ],
+        "selector": [
+          "unarmed-damage",
+          "weapon-damage"
+        ],
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice"
+      }
+    }
+  ]
+}

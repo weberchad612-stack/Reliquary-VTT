@@ -1,0 +1,409 @@
+{
+  "kind": "creature",
+  "slug": "urushil",
+  "system": "pf2e",
+  "name": "Urushil",
+  "source": {
+    "title": "Pathfinder #156: The Apocalypse Prophet",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "chaotic",
+    "demon",
+    "evil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 45,
+    "hp": 410,
+    "perception": 32,
+    "saves": {
+      "fortitude": 34,
+      "reflex": 32,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 6,
+      "dex": 6,
+      "int": 4,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 33,
+      "deception": 30,
+      "diplomacy": 30,
+      "intimidation": 32,
+      "religion": 29,
+      "stealth": 29,
+      "warfare-lore": 31
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 15
+        },
+        {
+          "type": "holy",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "from fly spell",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 40,
+      "attack": 32,
+      "spells": [
+        {
+          "name": "Blade Barrier",
+          "rank": 9,
+          "ref": "spells:spell/blade-barrier",
+          "uses": 2
+        },
+        {
+          "name": "True Seeing (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Dimension Door",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Dimension Door (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Fly (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/fly"
+        },
+        {
+          "name": "Weapon Storm",
+          "rank": 9,
+          "ref": "spells:spell/weapon-storm",
+          "uses": 2
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Belt of Regeneration",
+      "ref": "equipment:item/belt-of-long-life",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Cold Iron Silver Longsword",
+      "attack": 38,
+      "traits": [
+        "evil",
+        "magical",
+        "reach-10",
+        "unholy",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 35,
+      "traits": [
+        "evil",
+        "magical",
+        "reach-10",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+18",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Special)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "A marilith gains 5 extra reactions per round that they can use only to make Attacks of Opportunity. The demon can't use more than one on the same triggering action, even if a creature leaves several squares in the marilith's reach, and the marilith must use a different weapon for each Attack of Opportunity.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Commander's Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "100 feet. Commanded or allied evil creatures in the aura of lower level than the marilith gain a +1 circumstance bonus to attack rolls, damage rolls, AC, saves, and skill checks.\n\n---\n\nEffect: Commander's Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:trait:evil",
+                  {
+                    "lt": [
+                      "target:level",
+                      "self:level"
+                    ]
+                  }
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Commander's Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 100,
+            "slug": "commanders-aura",
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Failure Vulnerability",
+      "category": "defensive",
+      "text": "A marilith's pride feeds their strength, so the sting of failure wounds them. If the marilith uses a damaging spell or makes a Strike on their turn but doesn't deal any damage that turn, they take 3d6+10 mental damage at the end of their turn and their commander's aura deactivates until the end of their next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Bladestorm",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The marilith makes up to six longsword Strikes, each against a different target. These attacks count toward the marilith's multiple attack penalty, but the multiple attack penalty doesn't increase until after all the attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The marilith makes two Strikes, each with a different weapon, and they use the remaining weapons for protection. The demon gains a circumstance bonus to AC for 1 round equal to the number of weapons not used for attacks. If the marilith later uses any of those weapons to attack (including for an Attack of Opportunity), the bonus to AC decreases by 1 for each weapon used."
+    },
+    {
+      "kind": "ability",
+      "name": "Focused Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The marilith attacks a single target with all the weapons they wield in their arms, overwhelming the target with multiple attacks and leaving almost nowhere to dodge. The demon makes a longsword Strike. On a successful attack, the marilith deals longsword damage to the target, plus an additional 1d8 slashing damage for every longsword they wield beyond the first (typically 5d8 slashing damage). Even on a failed attack, the marilith deals the damage from one longsword to the target, though they still miss completely on a critical failure. This counts toward the marilith's multiple attack penalty as a number of attacks equal to the number of longswords the pride demon wields.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "focused-assault",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.One",
+                "value": "0"
+              },
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.Two",
+                "value": "1"
+              },
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.Three",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.Four",
+                "value": "3"
+              },
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.Five",
+                "value": "4"
+              },
+              {
+                "label": "PF2E.NPCAbility.MarilithFocusedAssault.Six",
+                "value": "5"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": "{item|flags.system.rulesSelections.focusedAssault}",
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "selector": "cold-iron-silver-longsword-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "2d12+13 bludgeoning, DC 41 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Infuse Weapons",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Any weapon becomes a +2 Greater Striking weapon made of cold iron and silver while a marilith wields it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "traits",
+            "value": "unholy"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "cold-iron"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "materials",
+            "value": "silver"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "spell",
+      "name": "Abyssal Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ],
+  "text": "Mariliths are the generals of the Abyss, formed from the souls of proud evil mortals, often warlords and despots. They appear as tall and powerfully built humans from the waist up with snake tails and six arms. Because of Lamashtu's prominence over other demonic deities, most pride demons encountered by mortals take female form, but they can be of any gender.\n\nMariliths are among the greatest tacticians in the Abyss, and they have an almost supernatural knack for understanding the ripples of chaos and the unpredictable nature of demonic life. Their ability to command armies rises as much from their commanding presence as it does their ability to read into the potential results of any possible act and a sufficient understanding of the flow of entropy to allow them to predict likely outcomes.\n\n---\n\nWhen a sinful mortal soul is judged and sent on to the Abyss, it can become a deadly fiend-a demon. Demons are living incarnations of sin-be they classic sins like wrath or gluttony, or more \"specialized\" depravities like an obsession with torture or the act of treason or treachery. Once formed, a demon's driving goals are twofold-the amassing of personal power, and the corruption of mortal souls to cause them to become tainted by sin. In this way demons ensure a never-ending supply of new demons to bolster their ever-growing ranks in the Abyss.",
+  "blurb": "Elite marilith"
+}

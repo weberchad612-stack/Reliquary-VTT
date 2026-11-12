@@ -1,0 +1,81 @@
+{
+  "kind": "effect",
+  "slug": "effect-resounding-cascade",
+  "system": "pf2e",
+  "name": "Effect: Resounding Cascade",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Resounding Cascade\n\nYou emanate a 5-foot aura. If you're not the origin, you deal extra damage with your melee Strikes of the same damage type as the origin's Arcane Cascade damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "includesSelf": false,
+            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Resounding Cascade"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "self:effect:arcane-cascade",
+          "self:signature:{item|origin.signature}"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-strike-damage",
+      "type": "untyped",
+      "value": 1,
+      "slug": "resounding-cascade",
+      "when": [
+        {
+          "not": "self:signature:{item|origin.signature}"
+        }
+      ],
+      "damageType": "{item|origin.flags.system.stanceArcaneCascade}"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:weapon-specialization",
+          {
+            "not": "self:signature:{item|origin.signature}"
+          }
+        ],
+        "selector": "melee-strike-damage",
+        "slug": "resounding-cascade",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:greater-weapon-specialization",
+          {
+            "not": "self:signature:{item|origin.signature}"
+          }
+        ],
+        "selector": "melee-strike-damage",
+        "slug": "resounding-cascade",
+        "value": 3
+      }
+    }
+  ]
+}

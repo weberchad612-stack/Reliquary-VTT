@@ -1,0 +1,48 @@
+{
+  "kind": "effect",
+  "slug": "effect-caltrops",
+  "system": "pf2e",
+  "name": "Effect: Caltrops",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Caltrops\n\nYou take 1 persistent bleed damage. While taking this persistent bleed damage, you take a –5-foot penalty to your Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "persistent-damage",
+            "value": {
+              "damageType": "bleed",
+              "formula": "1"
+            }
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Persistent Damage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "untyped",
+      "value": -5,
+      "when": [
+        "self:condition:persistent-damage:bleed"
+      ]
+    }
+  ]
+}

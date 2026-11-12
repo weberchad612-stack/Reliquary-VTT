@@ -1,0 +1,58 @@
+{
+  "kind": "feat",
+  "slug": "curse-of-the-skys-call",
+  "system": "pf2e",
+  "name": "Curse of the Sky's Call",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "curse",
+    "divine",
+    "oracle"
+  ],
+  "category": "classfeature",
+  "text": "Your body is drawn toward the heavens, making you lighter and less substantial than you should be. Your eyes glow with starry light, and your hair and clothing float and drift around you. When you have the Cursebound condition, you are Enfeebled with a value equal to your cursebound value, and you take a status penalty to saves and DCs against all forms of forced movement equal to your cursebound value",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": "@actor.conditions.cursebound.value"
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "predicate": [
+          "self:condition:cursebound"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "forced-movement",
+          "self:condition:cursebound"
+        ],
+        "selector": "saving-throw",
+        "type": "status",
+        "value": "-@actor.conditions.cursebound.value"
+      }
+    }
+  ]
+}

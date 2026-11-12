@@ -1,0 +1,266 @@
+{
+  "kind": "creature",
+  "slug": "ostiarius",
+  "system": "pf2e",
+  "name": "Ostiarius",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "fiend",
+    "unholy",
+    "velstrac"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 65,
+    "perception": 15,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 15,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 13,
+      "deception": 12,
+      "diplomacy": 12,
+      "intimidation": 16,
+      "religion": 11,
+      "torture-lore": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        },
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "painsight, sense portal",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Enthrall",
+          "rank": 3,
+          "ref": "spells:spell/enthrall"
+        },
+        {
+          "name": "Safe Passage",
+          "rank": 3,
+          "ref": "spells:spell/safe-passage"
+        },
+        {
+          "name": "Calm (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/calm"
+        },
+        {
+          "name": "Darkness",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Silence",
+          "rank": 2,
+          "ref": "spells:spell/silence"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "2d6+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Painsight",
+      "category": "interaction",
+      "traits": [
+        "divine"
+      ],
+      "text": "A velstrac automatically knows whether a creature it sees has any of the Doomed, Dying, and Wounded conditions as well as the value of those conditions."
+    },
+    {
+      "kind": "ability",
+      "name": "Sense Portal",
+      "category": "interaction",
+      "traits": [
+        "divine"
+      ],
+      "text": "The ostiarius always knows the direction and distance to the closest portal between the Netherworld and the Universe. This sense functions only on these two planes."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 5 (Deactivated by Holy or Silver)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "holy",
+              "silver"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Whispering Wounds",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "mental",
+        "visual"
+      ],
+      "text": "30 feet. When a creature ends its turn in the aura, it hears the wounds on the ostiarius's body whisper obscene truths. The creature must succeed at a DC 21 Will save save or become Sickened 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "divine",
+              "mental",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Compel Courage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "The ostiarius inspires their willing allies and themself by whispering words of courage from their wounds. The ostiarius and their allies in a 50-foot emanation gain a +1 status bonus to attack rolls, damage rolls, and saves against fear effects. The ostiarius can Sustain Compel Courage. Non-velstracs who accept this compelled courage find bleeding wounds opening on their own bodies to whisper in thanks. They take 1 bleed damage and can't attempt a flat check to end this damage as long as they're compelled.\n\nEffect: Compel Courage"
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "The ostiarius stares at a creature they can see within 30 feet. The creature must immediately attempt a Will save against whispering wounds. In addition, if the creature was already Sickened and fails its save, the creature is Fascinated by the ostiarius and can't use hostile actions. This fascination lasts for 1 round or until the ostiarius takes any hostile action against the creature or the creature's allies. Whether the creature succeeds at or fails the save, it's temporarily immune to Focus Gaze for 1 hour."
+    },
+    {
+      "kind": "spell",
+      "name": "Inveigle",
+      "rank": 2,
+      "ref": "spells:spell/inveigle"
+    }
+  ],
+  "text": "Ostiariuses, as emissaries of the velstracs, tend to the portals between the Netherworld and the Universe. They not only escort other velstracs into the world of mortals but also work to entice mortals into the realms of the velstracs—from which most mortals never leave. Among the most pleasant and persuasive of the velstracs, ostiariuses are prepared to converse for hours upon any topic, and they're skilled at returning, again and again, to the subject of the delights found in their perverse philosophies. Ostiariuses stand over 6 feet tall, and individuals range from skeletally thin to hugely bulky.\n\n---\nThe shadow-dwelling fiends known as velstracs all share a horrifying preoccupation with the search for ultimate sensation through self-mutilation. Velstracs transcend their stoic detachment only when inflicting pain and terror upon their victims, practicing new forms of torture, or turning their agonizing practices back on themselves. They consider themselves enlightened beings, transcending such limitations as morality or mortal taboos, but their victims know them as emotionless tormentors who inflict sadistic suffering. These fiends claim to seek perfection in thought, form, and action, although they don't recognize any refinement that doesn't require the painful excision of the flesh or spirit. Velstracs manifest from the souls of the most extreme masochistic or sadistic mortals who are judged and sent on to the Netherworld. They take on forms that suit their vile predilections, ranging from the low-ranking augurs to the maestros of suffering and mutilation, the eremites. The process of transformation warps the soul step by step, with other velstracs conveying their new members through untold chambers of pain among the dark reaches of the Netherworld."
+}

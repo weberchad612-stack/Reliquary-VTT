@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "no-stranger-to-death",
+  "system": "pf2e",
+  "name": "No Stranger to Death",
+  "source": {
+    "title": "Pathfinder Lost Omens Knights of Lastwall",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Lastwall Sentry Dedication"
+  ],
+  "text": "Your regular exposure to the insidious putrescence of undeath inured you to its effects. You gain a +2 circumstance bonus to saving throws made against spells and effects with the death, disease, and evil traits. Whenever you become Drained or Sickened, reduce the status penalty you take from the condition by 1, to a minimum of 0.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "item:trait:death",
+            "item:trait:disease",
+            "item:trait:evil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "penalty:slug:drained",
+              "penalty:slug:sickened"
+            ]
+          }
+        ],
+        "selector": "all",
+        "value": 1
+      }
+    }
+  ]
+}

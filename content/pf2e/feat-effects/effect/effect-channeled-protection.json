@@ -1,0 +1,60 @@
+{
+  "kind": "effect",
+  "slug": "effect-channeled-protection",
+  "system": "pf2e",
+  "name": "Effect: Channeled Protection",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Channeled Protection\n\nYou gain a status bonus to your AC and to your Reflex saving throws.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "predicate": [
+              {
+                "gte": [
+                  "item:origin:level",
+                  13
+                ]
+              }
+            ],
+            "value": 2
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": 1
+          }
+        ],
+        "flag": "bonus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Animist.ChanneledProtection.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "ac",
+          "reflex"
+        ],
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bonus"
+      }
+    }
+  ]
+}

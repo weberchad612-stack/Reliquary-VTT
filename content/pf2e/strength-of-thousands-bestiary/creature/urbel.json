@@ -1,0 +1,263 @@
+{
+  "kind": "creature",
+  "slug": "urbel",
+  "system": "pf2e",
+  "name": "Urbel",
+  "source": {
+    "title": "Pathfinder #169: Kindled Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "fey",
+    "gremlin"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 68,
+    "perception": 8,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 12,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 4,
+      "int": -1,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "to shove",
+            "when": [
+              "action:shove"
+            ]
+          }
+        ]
+      },
+      "crafting": {
+        "value": 7,
+        "special": [
+          {
+            "value": 9,
+            "label": "to craft traps",
+            "when": [
+              "action:craft:trap"
+            ]
+          }
+        ]
+      },
+      "intimidation": 12,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 4
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Shatter",
+          "rank": 2,
+          "ref": "spells:spell/shatter"
+        },
+        {
+          "name": "Grease",
+          "rank": 1,
+          "ref": "spells:spell/grease"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Shocking Grasp",
+          "rank": 1,
+          "ref": "spells:spell/shocking-grasp"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Pick",
+      "ref": "equipment:item/pick",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Pouch with 4 gold teeth",
+      "type": "treasure",
+      "text": "Each tooth is worth 3 gp"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Pick",
+      "attack": 14,
+      "traits": [
+        "fatal-d10"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Kneecapper",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "move"
+      ],
+      "text": "Trigger A Medium creature within Urbel's reach leaves a square during its move action\n\n---\n\nEffect Urbel lashes out at the triggering creature's knees and tries to knock them Prone. He attempts an Acrobatics check check against the creature's Reflex DC. On a success, the target falls and lands Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Bully",
+      "category": "offensive",
+      "text": "Any melee weapon Urbel uses gains the shove trait, and if he rolls a critical failure when attempting to Shove a creature with the weapon, he treats the result as a failure instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:melee",
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "property": "traits",
+            "value": "shove"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bully",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:shove",
+              "bully"
+            ],
+            "selector": "athletics"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pound Down",
+      "category": "offensive",
+      "text": "Urbel's melee Strikes deal an additional 1d6 damage to Prone targets.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:prone"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The \"towering\" hunchbacked nuglubs are among the largest gremlins, though they're not quite three feet tall. Nuglubs have three glowing blue eyes and black, oily hair on their head and back that covers them like a cloak. Nuglubs enjoy killing with a glee that other gremlins reserve for sabotage. Indeed, they spend long hours preparing ambushes for unwary travelers or plotting the murders of sleeping villagers. Though less technically inclined than their kin, nuglubs do enjoy building traps. They delight in stealthily constructing traps in places their victims consider familiar, such as front doors and the floors around beds. If someone else gets blamed for the mayhem the nuglub creates, all the better.\n\nIn combat, nuglubs focus on targets wearing metal armor. Some attribute this to envy on the part of the nuglubs, who find it difficult to fit armor on their twisted bodies. Nuglubs are particularly talented at causing those nearby to stumble over them and fall prone. Once an enemy falls to the ground, all the nuglubs descend upon the target, biting and scratching until nothing remains.\n\nNuglubs rarely gather in groups larger than half a dozen, as quarrels often lead to violence and cannibalism. A lone nuglub who bullies a group of smaller gremlins is more likely to get their way, and thus less likely to attack their allies."
+}

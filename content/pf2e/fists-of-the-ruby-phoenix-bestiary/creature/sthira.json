@@ -1,0 +1,244 @@
+{
+  "kind": "creature",
+  "slug": "sthira",
+  "system": "pf2e",
+  "name": "Sthira",
+  "source": {
+    "title": "Pathfinder #168: King of the Mountain",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "uncommon",
+  "traits": [
+    "cold",
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 45,
+    "hp": 475,
+    "perception": 33,
+    "saves": {
+      "fortitude": 39,
+      "reflex": 27,
+      "will": 33
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 10,
+      "dex": 2,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 39
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "cold",
+        "death-effects",
+        "disease",
+        "mental",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "(can't speak any language)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Innate Primal Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 39,
+      "attack": 31,
+      "spells": [
+        {
+          "name": "Massacre",
+          "rank": 10,
+          "ref": "spells:spell/massacre"
+        },
+        {
+          "name": "Polar Ray",
+          "rank": 9,
+          "ref": "spells:spell/polar-ray",
+          "uses": 2
+        },
+        {
+          "name": "Storm of Vengeance (hail only each round)",
+          "rank": 9,
+          "ref": "spells:spell/storm-of-vengeance"
+        },
+        {
+          "name": "Wall of Ice",
+          "rank": 9,
+          "ref": "spells:spell/wall-of-ice"
+        },
+        {
+          "name": "Ray of Frost",
+          "rank": 1,
+          "ref": "spells:spell/ray-of-frost"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Greatsword",
+      "ref": "equipment:item/greatsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Greatsword",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+15",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ],
+      "effects": [
+        "frostbite"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "cold"
+        }
+      ],
+      "effects": [
+        "frostbite",
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Create Sthira",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "When a creature dies while it has persistent cold damage from the sthira's frostbite, the creature rises as a sthira in 24 hours. If the creature is grabbed by the sthira when it dies, the dying creature becomes permanently fused with the sthira instead. In this case, the sthira immediately recovers a number of Hit Points equal to the half the dead creature's maximum Hit Points."
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Frozen to the Touch",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "cold"
+      ],
+      "text": "A creature that damages the sthira with an unarmed attack, tries to Grapple it, or otherwise touches it takes 6d6 cold damage (DC 42 basic Fortitude save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Freezing Death",
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "cold",
+        "primal"
+      ],
+      "text": "20 feet. A creature that starts its turn in the aura takes 6d6 cold damage (DC 42 basic Fortitude save save). If the creature is grabbed or restrained by the sthira, it takes one degree of success worse than it rolled.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "slug": "freezing-death",
+            "traits": [
+              "cold",
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frostbite",
+      "category": "offensive",
+      "text": "A creature that takes cold damage from a sthira's Strikes or aura must attempt a DC 42 Fortitude save save. A creature that already has persistent cold damage from frostbite ignores this effect.\n\n---\n\nCritical Success The creature is unaffected, and is temporarily immune to this ability for 1 hour.\n\nSuccess The creature is unaffected.\n\nFailure The creature takes 3d6 persistent,cold damage.\n\nCritical Failure As failure, but the creature is also Drained 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "The Wall of Heaven claims many intrepid climbers. Some such travelers come seeking fortune. Others seek enlightenment. Many, however, find only an icy death. With no means for a proper burial, many of these unfortunate souls remain abandoned to the ice, their bodies becoming macabre guideposts along mountain trails.\n\nThrough means unknown, the most willful of these frozen travelers reanimate to seek vengeance upon the living for their denied burial. Such creatures, called sthiras, are composed of multiple bodies or body parts frozen together into one horrific monstrosity."
+}

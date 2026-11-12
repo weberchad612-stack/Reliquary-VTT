@@ -1,0 +1,72 @@
+{
+  "kind": "heritage",
+  "slug": "hardshell-surki",
+  "system": "pf2e",
+  "name": "Hardshell Surki",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Surki",
+    "ref": "ancestries:ancestry/surki"
+  },
+  "text": "Your carapace is much denser than that of other surkis, offering you a suit of your very own armor. Your carapace is medium armor in the plate armor group that grants a +4 item bonus to AC, a Dex cap of +1, a check penalty of –2, a Speed penalty of –5 feet, a Strength value of +3, and has the comfort trait. You can never wear other armor or remove your carapace. You can etch armor runes onto your carapace.\n\n- Evolution The magical circulatory system that runs between your nodes has become a reinforcing network that strengthens your carapace with magical energy. If you're struck by a critical hit that deals physical damage, you can use your reaction to attempt a DC 17 Flat check. If successful, the attack becomes a normal hit.\n\n- Evolution Your abdominal nodes can project a field around you that guards you against the type of magic you're most familiar with. You gain the Dampening Harmonics action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.StrengthenedCarapace",
+          "predicate": [
+            {
+              "not": "evolution:strengthened-carapace"
+            }
+          ],
+          "value": "strengthened-carapace"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.surki.evolutions",
+        "value": {
+          "label": "PF2E.SpecificRule.Surki.Evolutions.DampeningField",
+          "predicate": [
+            {
+              "not": "evolution:dampening-field"
+            }
+          ],
+          "value": "dampening-field"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "evolution:dampening-field"
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Dampening Harmonics"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Hardshell Surki Carapace"
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "kind": "creature",
+  "slug": "elite-anatomical-model-3-4",
+  "system": "pf2e",
+  "name": "Elite Anatomical Model (3-4)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-09: The Seven Secrets of Dacilane Academy",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 78,
+    "perception": 17,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 14,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 3,
+      "int": -5,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 14,
+      "stealth": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "notes": {
+      "ac": "(19 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Slam",
+      "attack": 16,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Guts",
+      "attack": 14,
+      "range": 30,
+      "effects": [
+        "slimy-guts"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 5)",
+      "category": "defensive",
+      "text": "Like normal objects, the anatomical model has Hardness. This Hardness reduces any damage the model takes by an amount equal to the Hardness.\n\nOnce an anatomical model is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 19.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slimy Guts",
+      "category": "offensive",
+      "text": "A creature hit by the anatomical model's guts attack is Off-Guard until it takes an action to remove the guts. A creature critically hit by the anatomical model's guts attack is Immobilized until it Escapes."
+    }
+  ]
+}

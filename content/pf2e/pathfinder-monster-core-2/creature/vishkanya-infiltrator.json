@@ -1,0 +1,219 @@
+{
+  "kind": "creature",
+  "slug": "vishkanya-infiltrator",
+  "system": "pf2e",
+  "name": "Vishkanya Infiltrator",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "rare",
+  "traits": [
+    "humanoid",
+    "vishkanya"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 10,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": 7,
+      "deception": 11,
+      "diplomacy": 9,
+      "society": 7,
+      "stealth": 11,
+      "thievery": 9
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "vishkanyan"
+    ],
+    "notes": {
+      "saves": "+2 to foritude saves vs. poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Fortitude Saves vs. Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "fortitude",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "poison"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Envenom",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per day\n\n---\nEffect Using either saliva or blood, the vishkanya applies vishkanyan venom to one weapon they're holding. To use their blood, they must be injured, or they can deal themself 1 slashing damage as part of the action.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Flexible",
+      "category": "offensive",
+      "text": "The vishkanya is adept at dealing with tight situations. They have a +1 circumstance bonus to checks to Escape.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "acrobatics",
+            "athletics"
+          ],
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "action:escape"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Proficient Poisoner",
+      "category": "offensive",
+      "text": "The vishkanya doesn't lose the poison on a weapon due to a critically failed Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The vishkanya's Strikes deal an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vishkanyan Venom",
+      "category": "offensive",
+      "traits": [
+        "injury",
+        "poison"
+      ],
+      "text": "Saving Throw DC 20 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage (1 round)\n\nStage 2 1d4 poison damage and Off-Guard (1 round)\n\nStage 3 1d4 poison damage, off-guard, and a –5-foot penalty to Speed (1 round)"
+    }
+  ],
+  "text": "These vishkanyas can meld with a crowd and slip into and out of places otherwise off-limits.\n\n---\nFrom a distance, vishkanyas share more than a passing resemblance to humans. However, a closer inspection reveals ophidian eyes with gold or white coloring, a forked tongue, and tiny, smooth scales set in serpentine patterns atop their skin. Even so, most onlookers assume these features to be an indicator of nephilim heritage or draconic magic, never suspecting how truly unusual the subject of their speculation is.\n\nAmong outsiders, little is known of the vishkanya ancestry other than that a vishkanya carries a potent venom within their blood and saliva, knowledge that has led to widespread fear and distrust. To avoid persecution, vishkanyas assimilate quietly into their chosen societies and maintain a culture of heavy subtlety. This clandestine life can draw vishkanyas to work that allows them to put their skills to good use, and they often take the roles of spy, mercenary, bodyguard, and even assassin. Some of the best-known guilds in the world employ vishkanyas, including the implacable Red Mantis Assassins and the famed Grand Sarret Conservatory for courtiers in the Impossible Kingdom of Jalmeray. In most cases, these employers know their employee's true identity, but not always.\n\nDue to the measures they must take to ensure their survival, vishkanyas don't congregate openly. Instead, they meet in secret, creating support networks and advisory bodies. Leading these gatherings are the most respected of vishkanya women, who work diligently to keep their ancestry and traditions alive. These underground communities are slow to spread, and leaving them means abandoning what little social and cultural support a vishkanya has. As a result, very few vishkanyas have emigrated from their Vudran homelands into the Inner Sea region or other lands."
+}

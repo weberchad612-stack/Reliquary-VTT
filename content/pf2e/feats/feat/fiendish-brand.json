@@ -1,0 +1,81 @@
+{
+  "kind": "feat",
+  "slug": "fiendish-brand",
+  "system": "pf2e",
+  "name": "Fiendish Brand",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype",
+    "divine",
+    "unholy"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Sister of the Golden Erinys Dedication"
+  ],
+  "text": "Make a Strike with a weapon or unarmed attack that deals piercing or slashing damage. If it's successful and deals damage, you carve bleeding words into your target. The target takes 1d6 bleed damage, which has the unholy trait. Anytime the creature casts a holy spell while this bleed damage persists, it must succeed at a DC 5 Flat check or the spell is disrupted.\n\nEffect: Fiendish Brand",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "fiendish-brand",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "fiendish-brand",
+          {
+            "or": [
+              "item:damage:type:slashing",
+              "item:damage:type:piercing"
+            ]
+          }
+        ],
+        "selector": "melee-strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "fiendish-brand"
+        ],
+        "property": "weapon-traits",
+        "value": "unholy"
+      }
+    },
+    {
+      "key": "note",
+      "selector": [
+        "melee-strike-damage"
+      ],
+      "text": "PF2E.SpecificRule.SisterOfTheGoldenErinys.FiendishBrand.StrikeNote",
+      "when": [
+        "fiendish-brand",
+        {
+          "or": [
+            "item:damage:type:slashing",
+            "item:damage:type:piercing"
+          ]
+        }
+      ]
+    }
+  ]
+}

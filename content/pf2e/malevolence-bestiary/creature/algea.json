@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "algea",
+  "system": "pf2e",
+  "name": "Algea",
+  "source": {
+    "title": "Pathfinder Adventure: Malevolence",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "monitor",
+    "psychopomp",
+    "swarm"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 30,
+    "hp": 144,
+    "perception": 22,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 24,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 7,
+      "int": 2,
+      "str": -1,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 22,
+      "occultism": 21,
+      "religion": 20,
+      "stealth": 22,
+      "boneyard-lore": 21
+    },
+    "speeds": {
+      "land": 15,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "chthonian",
+      "diabolic",
+      "empyrean",
+      "requian"
+    ],
+    "iwr": {
+      "immunities": [
+        "precision",
+        "death-effects",
+        "disease",
+        "swarm-mind"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 5
+        },
+        {
+          "type": "splash-damage",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        },
+        {
+          "type": "void",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "poison",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status bonus to all saves vs. magic",
+      "perception": "see magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Innate Divine Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 30,
+      "attack": 22,
+      "spells": [
+        {
+          "name": "Plane Shift (Self and soul caged creatures only, to the Boneyard only)",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Confusion",
+          "rank": 4,
+          "ref": "spells:spell/confusion"
+        },
+        {
+          "name": "Talking Corpse",
+          "rank": 4,
+          "ref": "spells:spell/talking-corpse"
+        },
+        {
+          "name": "Invisibility",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "See Magic",
+      "category": "interaction",
+      "text": "An algea can see magic auras on creatures or objects that it can observe; it can't see magic auras on creatures or objects that are hidden from its view. It learns the schools of magic for all spells affecting creatures."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grieving Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet. A creature that begins its turn in the aura must attempt a DC 27 Will save save. Undead take a -2 circumstance penalty to this saving throw. The creature is then temporarily immune to the grieving aura for 1 hour.\n\nSuccess The creature is unaffected.\n\nFailure For 1 round, the creature can't use reactions and is Slowed 1 for that turn as it sobs uncontrollably.\n\nCritical Failure As failure, but the effects lasts while the creature remains in the aura plus 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "grieving-aura",
+            "traits": [
+              "divine",
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Magic",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Whenever a creature fails its save against Frenzied Beaks, the algea attempts to counter a spell effect active on that creature (6th level, counteract check +22). The algea can choose which effect to attempt to counteract for each creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Frenzied Beaks",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Each foe in the swarm's space takes 5d6 piercing damage (DC 30 basic Reflex save) and is exposed to drain magic. This damage affects incorporeal creatures as if it had the effects of a ghost touch property rune."
+    },
+    {
+      "kind": "ability",
+      "name": "Soul Cage",
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "incapacitation"
+      ],
+      "text": "An incorporeal undead damaged by Frenzied Beaks must attempt a DC 30 Will save save.\n\n---\n\nCritical Success The undead is unaffected and is temporarily immune for 24 hours.\n\nSuccess The undead takes a –10-foot status penalty to Speeds for 1 round.\n\nFailure As success, but the undead is also Immobilized for 1 round, although it can attempt to Escape (DC 30).\n\nCritical Failure The undead is restrained for 1 round. The algea can attempt to plane shift with the Restrained creature even if that creature isn't willing, but an unwilling creature can attempt a Will save to resist Interplanar Teleport. If it succeeds, the algea plane shifts and leaves the incorporeal creature behind, which is then no longer restrained."
+    },
+    {
+      "kind": "spell",
+      "name": "Call Spirit",
+      "rank": 5,
+      "ref": "spells:spell/call-spirit"
+    }
+  ],
+  "text": "Algeas protect (and sometimes retrieve) souls at risk of being claimed by other entities, particularly spellcasters who dabbled with otherworldly forces but never officially pledged their souls."
+}

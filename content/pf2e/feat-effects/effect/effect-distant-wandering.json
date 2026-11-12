@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "effect-distant-wandering",
+  "system": "pf2e",
+  "name": "Effect: Distant Wandering",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Distant Wandering\n\nYou are invisible and inaudible.\n\nAwakening You gain a fly Speed and a +20-foot status bonus to your Speed\n\nAwakening You are Quickened while in spirit form and can use the extra action only to Recall Knowledge or Seek.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Invisible"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.emitsSound",
+        "phase": "beforeDerived",
+        "value": false
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "awakening:distant-wandering:fly"
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "land-speed",
+        "fly-speed"
+      ],
+      "type": "status",
+      "value": 20,
+      "when": [
+        "awakening:distant-wandering:fly"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "predicate": [
+          "awakening:distant-wandering:quick"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    }
+  ]
+}

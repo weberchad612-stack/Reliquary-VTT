@@ -1,0 +1,148 @@
+{
+  "kind": "creature",
+  "slug": "vorens",
+  "system": "pf2e",
+  "name": "Vorens",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "unique",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 254,
+    "perception": 23,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 28,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 22,
+      "deception": 21,
+      "diplomacy": 19,
+      "intimidation": 21,
+      "society": 21
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "diabolic",
+      "varisian"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 27,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Circumstance Bonus to Initiative Checks",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Adroit Duelist",
+      "category": "offensive",
+      "text": "Vorens is adept at exploiting an opponent's weaknesses in a duel. If he wins initiative in a duel round, he deals an extra 2d6 precision damage with Strikes made before the beginning of his next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Duel.Dueling",
+            "option": "dueling",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "dueling",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Dance",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Vorens wields a one-handed melee weapon and his other hand is free\n\n---\nEffect Vorens gains a +2 circumstance bonus to his AC until the start of his next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Riposte",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger A creature critically fails a Strike against Vorens\n\n---\nEffect Vorens makes a melee Strike against or attempts to disarm the triggering creature."
+    }
+  ],
+  "blurb": "Male human retired duelist"
+}

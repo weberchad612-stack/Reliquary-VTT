@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "beluthus",
+  "system": "pf2e",
+  "name": "Beluthus",
+  "source": {
+    "title": "Pathfinder Abomination Vaults Hardcover Compilation",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 31,
+    "hp": 175,
+    "perception": 22,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 18,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 3,
+      "int": 5,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "arcana": 21,
+      "deception": 21,
+      "intimidation": 23,
+      "occultism": 23,
+      "stealth": 19
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "diabolic",
+      "empyrean",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "spell-deflection",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "(void healing)",
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 31,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Feeblemind",
+          "rank": 6,
+          "ref": "spells:spell/never-mind"
+        },
+        {
+          "name": "True Seeing",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Confusion",
+          "rank": 4,
+          "ref": "spells:spell/confusion"
+        },
+        {
+          "name": "Suggestion",
+          "rank": 4,
+          "ref": "spells:spell/suggestion"
+        },
+        {
+          "name": "Bind Undead",
+          "rank": 3,
+          "ref": "spells:spell/bind-undead"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 3,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "Death Knell",
+          "rank": 2,
+          "ref": "spells:spell/death-knell"
+        },
+        {
+          "name": "Harm",
+          "rank": 1,
+          "ref": "spells:spell/harm"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 24,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+13",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Deflection",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "mental"
+      ],
+      "text": "A spellcaster who targets a devourer with a mental spell, Banishment, Seize Soul, Divine Decree, Divine Wrath, Possession, Spirit Blast, or Spirit Song can attempt a counteract check to free a soul the devourer has trapped with Devour Soul. If this counteract attempt succeeds, the trapped soul is released (though the creature remains dead), and the devourer can't use any soul charges from that creature.\n\nDevourers are otherwise immune to these spells."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devour Soul",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "death",
+        "divine"
+      ],
+      "text": "The devourer touches a creature within reach, dealing 8d6 void damage (DC 31 basic Fortitude save save). If a creature is slain by this attack, its soul becomes trapped within the devourer. While its soul is trapped, a creature can't be resurrected except by powerful magic such as a Wish spell. Destroying the devourer or successfully counteracting Devour Soul (see spell deflection) releases the soul. The devourer can hold only one soul at a time.\n\nA soul has 5 soul charges per level of the originating creature (see the soul spells ability below). The devourer can expend these charges to cast spells. If the soul is freed and the creature returns to life, the creature is Drained 1 for every 5 soul charges expended. If reduced to 0 soul charges, the soul is consumed and can be restored to life only by powerful magic such as wish."
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the devourer damages a living creature with its claw Strike, the devourer gains 10 temporary Hit Points and the creature must succeed at a DC 24 Fortitude save save or become Drained 1. Further damage dealt by the devourer increases the condition value by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Soul Spells",
+      "category": "offensive",
+      "text": "A devourer casts occult innate spells, but to do so it must expend a number of soul charges equal to the spell's rank (similar to casting a spell using charges from a staff). It can heighten any spell to a maximum of 6th level by expending more charges as it Casts the Spell. When encountered, a devourer typically has one trapped soul with 10 soul charges."
+    },
+    {
+      "kind": "spell",
+      "name": "Create Undead",
+      "rank": 2,
+      "ref": "spells:spell/create-undead"
+    }
+  ],
+  "text": "When fiends and powerful evil spellcasters are lost beyond the farthest reaches of the multiverse, they sometimes return as horrific undead called devourers that consume the souls of the living to fuel their arcane machinations. Their bodies are ruined and rebuilt, hollow and twisted, even as their minds undergo a spiritual transformation. They gain the ability to bind other souls to their own and drain their essence for magical power, yet can never be sated in their pursuit of it. Seething masses of distorted ghostly shapes surge within their hollow rib cages-manifestations of the devourers' most recently consumed souls.",
+  "blurb": "Male devourer (Pathfinder Bestiary 2 78)"
+}

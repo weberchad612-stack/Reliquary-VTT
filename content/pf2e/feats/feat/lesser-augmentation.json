@@ -1,0 +1,108 @@
+{
+  "kind": "feat",
+  "slug": "lesser-augmentation",
+  "system": "pf2e",
+  "name": "Lesser Augmentation",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "automaton"
+  ],
+  "category": "ancestry",
+  "text": "You know how to get the most out of your unique body and abilities. You gain the enhancement benefits of one of your 1st- or 5th-level automaton ancestry feats. You are also capable of reconfiguring your augmentations to meet your needs. You can spend one week of downtime to change the enhancement you gain with this feat.\n\nEnhancement You gain the enhancement benefits of another 1st- or 5th-level automaton ancestry feat. Also, your reconfigurations take less time. You only need to spend 1 day of downtime to change any of your enhancements. If you have multiple enhancements, changing each one requires a separate day.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.automaton.enhancements.lesser",
+        "flag": "lesserAugmentation",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Automaton.Enhancement.AugmentationPrompt",
+        "rollOption": "enhancement"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.LesserAugmentation",
+          "value": "lesser-augmentation"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Arcana",
+            "predicate": [
+              "skill:arcana:rank:1"
+            ],
+            "value": "arc-expert"
+          },
+          {
+            "label": "PF2E.Skill.Crafting",
+            "predicate": [
+              "skill:crafting:rank:1"
+            ],
+            "value": "cra-expert"
+          },
+          {
+            "label": "PF2E.Skill.Arcana",
+            "predicate": [
+              "skill:arcana:rank:2"
+            ],
+            "value": "arc-master"
+          },
+          {
+            "label": "PF2E.Skill.Crafting",
+            "predicate": [
+              "skill:crafting:rank:2"
+            ],
+            "value": "cra-master"
+          }
+        ],
+        "flag": "automatonLoreSkill",
+        "key": "ChoiceSet",
+        "predicate": [
+          "enhancement:automaton-lore"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Skill",
+        "rollOption": "enhancement:automaton-lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Automaton.Enhancement.MagicalResistanceAll",
+            "value": "all"
+          },
+          {
+            "label": "PF2E.SpecificRule.Automaton.Enhancement.MagicalResistanceIncrease",
+            "value": "increase"
+          }
+        ],
+        "flag": "lesserAugmentation",
+        "key": "ChoiceSet",
+        "predicate": [
+          "enhancement:magical-resistance"
+        ],
+        "prompt": "PF2E.SpecificRule.Automaton.Enhancement.EnhancementPrompt",
+        "rollOption": "enhancement:magical-resistance"
+      }
+    }
+  ]
+}

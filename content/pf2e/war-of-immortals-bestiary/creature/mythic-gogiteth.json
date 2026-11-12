@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "mythic-gogiteth",
+  "system": "pf2e",
+  "name": "Mythic Gogiteth",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "aberration",
+    "mythic"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 250,
+    "perception": 21,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 22,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 3,
+      "int": -2,
+      "str": 6,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 24,
+      "stealth": 28,
+      "survival": {
+        "value": 17,
+        "special": [
+          {
+            "value": 24,
+            "label": "to Track",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "languages": "(Can't Speak)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 26,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+12",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Leg",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Remove a Condition",
+      "actions": 1,
+      "category": "interaction",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Cost 1 Mythic Point\n\n---\nEffect The creature ends one condition affecting it."
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hazard Immunity",
+      "category": "defensive",
+      "text": "A mythic ambusher never triggers the reactions of hazards in its own lair and is immune to the negative consequences of damaging area effects created by hazards in its lair."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Resilience (Reflex and Will)",
+      "category": "defensive",
+      "text": "The creature treats its saving throws with the associated save as one degree of success better than it rolled. This is not cumulative with other effects that change their degree of success, like the incapacitation trait (except for rolling a natural 1 or 20). Each time the monster gains mythic resilience, choose one save. The ability should apply to the creature's highest saves first.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Skittering Reposition",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "move"
+      ],
+      "text": "Trigger A creature that starts its move outside the gogiteth's reach moves into its reach.\n\n---\n\nEffect The gogiteth moves 10 feet. This does not trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Carry Off Prey",
+      "category": "offensive",
+      "text": "The gogiteth can move at its full Speed while it has a creature Grabbed in its jaws, bringing the grabbed creature along."
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "3d6+12 bludgeoning, DC 32 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Power",
+      "category": "offensive",
+      "text": "The creature has a pool of 3 Mythic Points, and can spend those Mythic Points for any of the actions it has."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Skill",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Cost 1 Mythic Point\n\n---\nEffect The Mythic Gogiteth attempts its next Athletics or Stealth skill check with a +4 bonus and is considered to have mythic proficiency for that check.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mythic-skill",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "athletics",
+            "stealth"
+          ],
+          "type": "untyped",
+          "value": 4,
+          "slug": "mythic-skill-bonus",
+          "when": [
+            "mythic-skill"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Skittering Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The gogiteth Strides three times. Once per Stride, it can attempt a leg Strike against a creature in its reach at any point during the Stride; it must make each attack against a different creature, but it doesn't apply its multiple attack penalty until after making all its Strikes. If any of the Strikes result in a critical failure, Skittering Assault ends."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Gogiteths are horrific nightmares with grasping, spiderlike legs; vicious, gnashing teeth; and far too many eyes. Of all the creatures on Golarion for whom the acquisition of mythic power might prove a nightmare for others, the gogiteth is arguably one of the most terrible.\n\nNormally, a gogiteth's victims at least have the possible salvation of hearing the horrible crackling and popping of its joints as it clambers towards them through the dark, an opportunity to flee the slavering nightmare seeking them. Mythic ambusher gogiteths are unnaturally silent, however. The first sound a creature might hear when being hunted by such a monstrosity is the sharp wheeze of their own fleeting breath as the gogiteth's jaws snap shut around them, or the tearing of their flesh and clothing as one of its legs pierces them through.\n\nThough little is known about the origins of gogiteths, mythic gogiteths generally acquire mythic power in the same way that other creatures do. Golarion has no shortage of vile deities who might take cruel delight in bestowing a sliver of mythic power upon a creature as frightful and terrible as a gogiteth. Their traditional hive homes in the Darklands make it unlikely that they would be affected by the Godsrain, but it is not impossible that droplets of Gorum's spilled blood could seep through cracks and make their way down into the thirsty jaws of one of these nightmarish monstrosities."
+}

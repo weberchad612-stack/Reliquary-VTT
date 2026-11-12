@@ -1,0 +1,218 @@
+{
+  "kind": "creature",
+  "slug": "elven-court-guard",
+  "system": "pf2e",
+  "name": "Elven Court Guard",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 225,
+    "perception": 24,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 27,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 5,
+      "int": 2,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 26,
+      "athletics": 23,
+      "intimidation": 24,
+      "society": 19,
+      "heraldry-lore": 21
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "fey"
+    ],
+    "notes": {
+      "saves": "+1 status vs. mental effects",
+      "perception": "plus vigilance",
+      "languages": "plus one regional language"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Elven Curve Blade",
+      "ref": "equipment:item/elven-curve-blade",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Elven Curve Blade",
+      "attack": 27,
+      "traits": [
+        "finesse",
+        "forceful",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 27,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vigilance",
+      "category": "interaction",
+      "text": "A court guard gains a +1 circumstance bonus on Perception checks to sense-motive and seek creatures, and if they succeed, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            {
+              "or": [
+                "action:sense-motive",
+                "action:seek"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "to-critical-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "action:seek",
+                  "action:sense-motive"
+                ]
+              }
+            ],
+            "selector": "perception"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status vs. mental effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Interposition",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An ally within 15 feet of the guard would take damage\n\n---\nEffect The guard Strides. This movement does not trigger reactions, and the guard must end the Stride in a space adjacent to the ally. The guard then switches places with the ally, taking all damage and associated effects instead of the ally."
+    },
+    {
+      "kind": "ability",
+      "name": "Avenge the Fallen",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "fortune"
+      ],
+      "text": "Frequency once per round\n\nRequirements The guard is within 30 feet of the creature they were guarding, and that creature is either Dying or died since the guard's last turn\n\n---\nEffect The guard Strikes the creature that damaged their ally. They roll the attack roll twice and use the higher result.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Dancing Blade",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The guard makes a Strike against a creature, then Strides. This Stride doesn't trigger reactions. If the guard ends this Stride in a different space adjacent to the same creature, they make another Strike against it. If both Strikes succeed, the creature is Off-Guard until the start of the guard's next turn. Each attack counts toward the guard's multiple attack penalty, but the penalty doesn't increase until they've made both attacks."
+    }
+  ],
+  "text": "In the tangled web of lineages, rivalries, and shifting alliances that is an elven noble court, aristocratic families employ bodyguards loyal to them alone.\n\n---\nElves' long lives give them centuries to delve into studies, artistry, or exploration."
+}

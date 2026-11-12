@@ -1,0 +1,215 @@
+{
+  "kind": "effect",
+  "slug": "effect-debilitating-bomb",
+  "system": "pf2e",
+  "name": "Effect: Debilitating Bomb",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Debilitating Bomb\n\nYou are dazzled, deafened, off-guard, or take a –5-foot status penalty to Speeds.\n\nIf the origin has Greater Debilitating Bomb, add clumsy 1, enfeebled 1 and stupefied 1 to the list, and the status penalty to Speeds increases to –10.\n\nIf the origin has True Debilitating Bomb, the value of the enfeebled and stupefied conditions increase to 2, and the status penalty to Speeds increases to –15.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.condition.clumsy.name",
+            "predicate": [
+              "parent:origin:item:tag:greater-debilitating-bomb"
+            ],
+            "value": "clumsy"
+          },
+          {
+            "label": "PF2E.condition.dazzled.name",
+            "value": "dazzled"
+          },
+          {
+            "label": "PF2E.condition.deafened.name",
+            "value": "deafened"
+          },
+          {
+            "label": "PF2E.condition.enfeebled.name",
+            "predicate": [
+              "parent:origin:item:tag:greater-debilitating-bomb"
+            ],
+            "value": "enfeebled"
+          },
+          {
+            "label": "PF2E.condition.off-guard.name",
+            "value": "off-guard"
+          },
+          {
+            "label": "PF2E.SpecificRule.Alchemist.DebilitatingBomb.SpeedPenalty.Label",
+            "value": "speed-penalty"
+          },
+          {
+            "label": "PF2E.condition.stupefied.name",
+            "predicate": [
+              "parent:origin:item:tag:greater-debilitating-bomb"
+            ],
+            "value": "stupefied"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Effect",
+        "rollOption": "debilitating-bomb"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": -5,
+      "slug": "debilitating-bomb",
+      "when": [
+        "debilitating-bomb:speed-penalty"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:off-guard"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:deafened"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Deafened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:dazzled"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Dazzled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:clumsy"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:enfeebled",
+          {
+            "not": "parent:origin:item:tag:true-debilitating-bomb"
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "upgrade",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:enfeebled",
+          "parent:origin:item:tag:true-debilitating-bomb"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Enfeebled"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:stupefied",
+          {
+            "not": "parent:origin:item:tag:true-debilitating-bomb"
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "upgrade",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "debilitating-bomb:stupefied",
+          "parent:origin:item:tag:true-debilitating-bomb"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "parent:origin:item:tag:greater-debilitating-bomb"
+        ],
+        "selector": "all-speeds",
+        "slug": "debilitating-bomb",
+        "value": -10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "parent:origin:item:tag:true-debilitating-bomb"
+        ],
+        "selector": "all-speeds",
+        "slug": "debilitating-bomb",
+        "value": -15
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "heritage",
+  "slug": "heavenscribe-kobold",
+  "system": "pf2e",
+  "name": "Heavenscribe Kobold",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "uncommon",
+  "traits": [
+    "kobold"
+  ],
+  "ancestry": {
+    "name": "Kobold",
+    "ref": "ancestries:ancestry/kobold"
+  },
+  "text": "Your connection to wise and celestial imperial dragons has led others to seek your advice. You can speak Draconic. Whenever you critically fail a Diplomacy check to Make an Impression or Request, you get a failure instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.build.languages.granted",
+        "value": {
+          "slug": "draconic",
+          "source": "{item|name}"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "action:make-an-impression",
+              "action:request"
+            ]
+          }
+        ],
+        "selector": "diplomacy"
+      }
+    }
+  ]
+}

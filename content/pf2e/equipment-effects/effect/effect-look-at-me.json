@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-look-at-me",
+  "system": "pf2e",
+  "name": "Effect: Look at Me!",
+  "source": {
+    "title": "Pathfinder #204: Stage Fright",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Scene Stealer's Tunic\n\nYou take a –1 status penalty to Perception checks against everything but the source, a –1 status penalty to all saving throws against the source's visual effects, and gain a +2 status bonus to all saving throws against visual effects created by anyone else.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "status",
+      "value": -1,
+      "when": [
+        {
+          "not": "origin:signature:{item|origin.signature}"
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": -1,
+      "slug": "look-at-me-visual-penalty",
+      "when": [
+        "origin:signature:{item|origin.signature}",
+        "item:trait:visual"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 2,
+      "slug": "look-at-me-visual-bonus",
+      "when": [
+        {
+          "not": "origin:signature:{item|origin.signature}"
+        },
+        "item:trait:visual"
+      ]
+    }
+  ]
+}

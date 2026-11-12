@@ -1,0 +1,308 @@
+{
+  "kind": "creature",
+  "slug": "hill-giant-butcher",
+  "system": "pf2e",
+  "name": "Hill Giant Butcher",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "earth",
+    "evil",
+    "giant",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 36,
+    "hp": 260,
+    "perception": 25,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 23,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 4,
+      "int": -2,
+      "str": 8,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 28,
+      "intimidation": 24,
+      "survival": 25
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "jotun"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 31,
+      "attack": 23,
+      "spells": [
+        {
+          "name": "Barkskin",
+          "rank": 6,
+          "ref": "spells:spell/oaken-resilience"
+        },
+        {
+          "name": "Entangle",
+          "rank": 7,
+          "ref": "spells:spell/entangling-flora"
+        },
+        {
+          "name": "Longstrider",
+          "rank": 7,
+          "ref": "spells:spell/tailwind"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Sack for Holding Rocks",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rock",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+16",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+16",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+16",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 26,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d4+16",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "rock"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Menace Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The hill giant butcher designates up to two creatures they can see and hear, or one they're Tracking, as their prey. The hill giant butcher gains a +2 circumstance bonus to Perception checks to Seek the prey and to Intimidation checks to Demoralize the prey. This effect lasts until the hill giant butcher uses Menace Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "label": "Target of Menace Prey",
+            "option": "menace-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "menace-prey",
+            "action:seek"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "menace-prey",
+            "action:demoralize"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The hill giant butcher deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Butchery",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round;\n\nRequirement the hill giant butcher is wielding two melee weapons, each in a different hand\n\nEffect The hill giant butcher uses both of its axes against a single target. It makes two Strikes against its menaced prey, one with each of the required weapons. If both hit the same menaced prey, combine their damage for the purpose of its resistances and weaknesses. In addition, if both Strikes hit, the menaced prey is Off-Guard until the start of the hill giant butcher's next turn. Apply the hill giant butcher's multiple attack penalty normally.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Wide Swing",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The hill giant makes a single greatclub Strike and compares the attack roll result to the ACs of up to two foes within its reach.\n\nThis counts as two attacks for the hill giant's multiple attack penalty."
+    }
+  ],
+  "text": "Selfish and crude, these rough-skinned raiders are bullies and ultimately cowards. Quick-tempered and fond of violence, a hill giant gladly raids and pillages the defenseless but is quick to flee from those who are bigger, stronger, or better organized than they are. A hill giant is never above shoving or tricking one of their own kind to slow down their opponent or get the best loot.\n\n---\n\nGiants are massive humanoid creatures who live in remote regions throughout the world. They are divided into a number of subtypes.",
+  "blurb": "Variant hill giant"
+}

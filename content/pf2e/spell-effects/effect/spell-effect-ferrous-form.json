@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-ferrous-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Ferrous Form",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Ferrous Form\n\nYou gain resistance to physical damage, except adamantine. You're immune to death effects, disease, drained, fatigued, healing, nonlethal attacks, paralyzed, poison, sickened, vitality, and void.\n\nYour fist Strikes have a 1d10 damage die, and your metal spells deal one additional die of damage (of the same damage die and damage type the spell uses).",
+  "rules": [
+    {
+      "key": "immunity",
+      "type": "death-effects"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "exceptions": [
+          "adamantine"
+        ],
+        "key": "Resistance",
+        "type": "physical",
+        "value": "ternary(gte(@item.level,9),15,10)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fist": true,
+        "key": "Strike"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "xxxxxxFISTxxxxxx",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "damage-dice-faces",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "item:trait:metal"
+        ],
+        "selector": "spell-damage"
+      }
+    }
+  ]
+}

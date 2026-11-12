@@ -1,0 +1,272 @@
+{
+  "kind": "creature",
+  "slug": "shalelu-andosana",
+  "system": "pf2e",
+  "name": "Shalelu Andosana",
+  "source": {
+    "title": "Pathfinder #211: The Secret of Deathstalk Tower",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "unique",
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 234,
+    "perception": 23,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 25,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 5,
+      "int": 2,
+      "str": 3,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": 22,
+      "medicine": 21,
+      "nature": 23,
+      "stealth": 26,
+      "survival": 25,
+      "forest-lore": 21
+    },
+    "speeds": {
+      "land": 35,
+      "climb": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven",
+      "goblin",
+      "minkaian",
+      "tien",
+      "varisian"
+    ],
+    "notes": {
+      "speed": "(climb in forests)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Ranger Warden Spells",
+      "tradition": "primal",
+      "type": "focus",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Terrain Transposition",
+          "rank": 5,
+          "ref": "spells:spell/terrain-transposition"
+        },
+        {
+          "name": "Ranger's Bramble",
+          "rank": 3,
+          "ref": "spells:spell/rangers-bramble"
+        },
+        {
+          "name": "Soothing Mist",
+          "rank": 2,
+          "ref": "spells:spell/soothing-mist"
+        },
+        {
+          "name": "Gravity Weapon",
+          "rank": 1,
+          "ref": "spells:spell/gravity-weapon"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hunter's Anthem",
+      "ref": "equipment:item/hunters-anthem",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Katana",
+      "ref": "equipment:item/katana",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Coyote Cloak (Greater)",
+      "ref": "equipment:item/coyote-cloak-greater",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Katana",
+      "attack": 24,
+      "traits": [
+        "deadly-d8",
+        "magical",
+        "two-hand-d10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hunter's Anthem",
+      "attack": 26,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Resilient Hunter",
+      "category": "defensive",
+      "text": "When Shalelu rolls a success on a Fortitude or Reflex save, she gets a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "fortitude"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Favored Terrain",
+      "category": "offensive",
+      "text": "Shalelu gains a Climb speed of 35 feet when she's in forested terrain."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Shalelu designates a single creature she can see and hear, or one she's Tracking, as her prey. She gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. The first time she hits her designated prey in a round, she deals an additional 2d8 precision damage. These effects last until she uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "survival"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "action:seek",
+                "action:track"
+              ]
+            },
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.FirstHitDamage",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nature's Edge",
+      "category": "offensive",
+      "text": "Enemies are Off-Guard to Shalelu when they're in difficult terrain."
+    },
+    {
+      "kind": "ability",
+      "name": "Unimpeded Journey",
+      "category": "offensive",
+      "text": "Shalelu ignores the effects of difficult terrain and treats greater difficult terrain as difficult terrain."
+    }
+  ],
+  "blurb": "Female elf ranger"
+}

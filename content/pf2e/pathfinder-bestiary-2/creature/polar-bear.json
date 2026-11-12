@@ -1,0 +1,179 @@
+{
+  "kind": "creature",
+  "slug": "polar-bear",
+  "system": "pf2e",
+  "name": "Polar Bear",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 22,
+    "hp": 73,
+    "perception": 12,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 10,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 5,
+      "dex": 1,
+      "int": -4,
+      "str": 5,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 14,
+      "stealth": {
+        "value": 10,
+        "special": [
+          {
+            "value": 14,
+            "label": "in icy areas",
+            "when": [
+              {
+                "or": [
+                  "terrain:icy",
+                  "terrain:snow"
+                ]
+              }
+            ]
+          },
+          {
+            "value": 14,
+            "label": "in snowy areas",
+            "when": [
+              {
+                "or": [
+                  "terrain:icy",
+                  "terrain:snow"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "survival": 10
+    },
+    "speeds": {
+      "land": 35,
+      "swim": 15
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 15,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "The polar bear gains a +3 circumstance bonus to damage rolls against creatures it has Grabbed.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 3,
+          "when": [
+            "target:condition:grabbed"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Target is grabbed",
+            "option": "target:condition:grabbed",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The polar bear's Strikes deal an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The bear's last action was a success with a Strike that lists Grab in its damage entry, or it has a creature grabbed using this action.\n\n---\n\nEffect The bear automatically Grabs the target until the end of the bear's next turn. The creature is Grabbed by whichever body part the bear attacked with, and that body part can't be used to Strike creatures until the grab is ended. Using Grab extends the duration of the monster's Grab until the end of its next turn for all creatures grabbed by it. A grabbed creature can use the Escape action to get out of the grab, and the Grab ends for a grabbed creatures if the bear moves away from it."
+    }
+  ],
+  "text": "Polar bears are known for their pale fur, with black eyes, lips, and toe pads. They are aggressively predatory creatures, stalking prey for miles on land or across the icy waters of frozen oceans. They are also amazing ambush predators, leaping from the water to ambush seals resting on ice floes. If they are desperate, polar bears hunt not only other animals but also humanoids."
+}

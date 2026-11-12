@@ -1,0 +1,90 @@
+{
+  "kind": "effect",
+  "slug": "effect-poison-weapon",
+  "system": "pf2e",
+  "name": "Effect: Poison Weapon",
+  "source": {
+    "title": "Pathfinder Core Rulebook",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Applied when you apply a poison created with Poison Weapon.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:equipped",
+            {
+              "or": [
+                "item:damage:type:slashing",
+                "item:damage:type:piercing"
+              ]
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectPoisonWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "nor": [
+              "feat:improved-poison-weapon",
+              "feat:deadly-poison-weapon"
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectPoisonWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "diceNumber": 2,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "feat:improved-poison-weapon",
+          {
+            "not": "feat:deadly-poison-weapon"
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectPoisonWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "diceNumber": 4,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "feat:deadly-poison-weapon"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectPoisonWeapon}-damage"
+      }
+    }
+  ]
+}

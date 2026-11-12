@@ -1,0 +1,101 @@
+{
+  "kind": "effect",
+  "slug": "effect-ethereal-crescent",
+  "system": "pf2e",
+  "name": "Effect: Ethereal Crescent",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Ethereal Crescent, Ethereal Crescent (Greater)\n\nYour weapon gains the effects of a ghost touch rune, or astral rune if granted by a greater ethereal crescent.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:ethereal-crescent"
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Ethereal Crescent"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:ethereal-crescent-greater"
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Ethereal Crescent (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "ethereal-crescent"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "ethereal-crescent:ethereal-crescent"
+        ],
+        "property": "property-runes",
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "ethereal-crescent:ethereal-crescent-greater"
+        ],
+        "property": "property-runes",
+        "value": "astral"
+      }
+    }
+  ]
+}

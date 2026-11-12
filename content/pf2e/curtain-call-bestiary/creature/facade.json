@@ -1,0 +1,166 @@
+{
+  "kind": "creature",
+  "slug": "facade",
+  "system": "pf2e",
+  "name": "Facade",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "unique",
+  "traits": [
+    "astral",
+    "construct",
+    "eidolon"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 37,
+    "hp": 300,
+    "perception": 23,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 5,
+      "dex": 3,
+      "int": 2,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "arcana": 21,
+      "crafting": 21
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "saves": "+2 vs. death effects, disease, poison, and effects causing the fatigued or sickened conditions"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "magical",
+        "shove",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Vs. Death Effects, Disease, Poison, and Effects Causing the Fatigued or Sickened Conditions",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:death",
+                "item:trait:poison",
+                "inflicts:fatigued",
+                "inflicts:sickened"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Heart",
+      "category": "defensive",
+      "text": "Facade removes persistent bleed damage on a DC 10 flat check (DC 5 with aid).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "condition",
+            "key": "ItemAlteration",
+            "mode": "downgrade",
+            "predicate": [
+              "item:damage:type:bleed"
+            ],
+            "property": "pd-recovery-dc",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "2d10+14 bludgeoning, DC 38 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Encase in Wax",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Facade's previous action was to Constrict a creature\n\n---\nEffect Facade encases the creature they just Constricted with wax. That creature becomes Slowed 1 until it takes a 3-action activity to Interact with the wax and peel it off."
+    },
+    {
+      "kind": "ability",
+      "name": "Remake Self",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "polymorph"
+      ],
+      "text": "Facade changes their appearance to be similar to any Medium humanoid creature they've seen, though they're still obviously a wax statue and can't use this ability to Impersonate that creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Unsettle",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger Facade Strikes a creature they've assumed the basic appearance of\n\n---\nEffects The damaged creature becomes Frightened 1 (Frightened 2 on a critical hit)."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

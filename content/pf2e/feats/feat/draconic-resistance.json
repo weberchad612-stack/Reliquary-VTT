@@ -1,0 +1,100 @@
+{
+  "kind": "feat",
+  "slug": "draconic-resistance",
+  "system": "pf2e",
+  "name": "Draconic Resistance",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dragonblood"
+  ],
+  "category": "ancestry",
+  "text": "Draconic magic safeguards you against harm. You gain resistance equal to half your level (minimum 1) to the damage type associated with your draconic exemplar. Double this resistance against damage of that type dealt to you by dragons.\n\nIf your draconic exemplar is associated with bludgeoning, piercing, or slashing damage, instead of gaining resistance to that type you can choose acid, cold, fire, electricity, or sonic.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "draconic-resistance:{actor|flags.system.dragonblood.damageType}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "resistance",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "or": [
+              "draconic-resistance:bludgeoning",
+              "draconic-resistance:slashing",
+              "draconic-resistance:piercing"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "nor": [
+              "draconic-resistance:bludgeoning",
+              "draconic-resistance:piercing",
+              "draconic-resistance:slashing"
+            ]
+          }
+        ],
+        "type": "{actor|flags.system.dragonblood.damageType}",
+        "value": "max(1,floor(@actor.level/2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "draconic-resistance:bludgeoning",
+              "draconic-resistance:piercing",
+              "draconic-resistance:slashing"
+            ]
+          }
+        ],
+        "type": "{item|flags.system.rulesSelections.resistance}",
+        "value": "max(1,floor(@actor.level/2))"
+      }
+    }
+  ]
+}

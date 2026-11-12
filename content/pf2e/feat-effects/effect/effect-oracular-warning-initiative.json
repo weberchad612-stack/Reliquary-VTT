@@ -1,0 +1,57 @@
+{
+  "kind": "effect",
+  "slug": "effect-oracular-warning-initiative",
+  "system": "pf2e",
+  "name": "Effect: Oracular Warning (Initiative)",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Oracular Warning\n\nEach ally gains a +2 status bonus to their initiative roll. If you are cursebound 2 when you use Oracular Warning, the bonus increases to +3, and if you are cursebound 3, the bonus increases to +4.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "initiative",
+      "type": "status",
+      "value": 2,
+      "slug": "oracular-warning"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "parent:granter:origin:condition:cursebound:2"
+        ],
+        "selector": "initiative",
+        "slug": "oracular-warning",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "parent:granter:origin:condition:cursebound",
+              3
+            ]
+          }
+        ],
+        "selector": "initiative",
+        "slug": "oracular-warning",
+        "value": 4
+      }
+    }
+  ]
+}

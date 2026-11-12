@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-adaptive-ablation",
+  "system": "pf2e",
+  "name": "Spell Effect: Adaptive Ablation",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Adaptive Ablation\n\nYou gain resistance the triggering energy type; you gain this resistance after you take the triggering damage, so it applies only to future damage you take during the duration.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "adaptiveAblation",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.adaptiveAblation}",
+        "value": "5 + 5*floor((@item.level -4)/2)"
+      }
+    }
+  ]
+}

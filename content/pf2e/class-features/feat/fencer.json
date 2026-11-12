@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "fencer",
+  "system": "pf2e",
+  "name": "Fencer",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "classfeature",
+  "text": "You move carefully, feinting and creating false openings to lead your foes into inopportune attacks. You are trained in Deception. When you Create a Diversion or Feint, the action gains the bravado trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.deception.rank",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.ExemplaryFinisher.Fencer",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher",
+        "feature:exemplary-finisher"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:create-a-diversion",
+              "item:slug:feint"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "bravado"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "item:trait:bravado",
+        "predicate": [
+          {
+            "or": [
+              "action:create-a-diversion",
+              "action:feint"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

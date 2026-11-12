@@ -1,0 +1,222 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-imperial",
+  "system": "pf2e",
+  "name": "Bloodline: Imperial",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "sorcerer"
+  ],
+  "category": "classfeature",
+  "text": "One of your ancestors was a mortal who mastered magic.\n\nTradition arcane\n\nBloodline Skills Arcana, Society\n\nSorcerous Gifts cantrip Detect Magic, 1st: Force Barrage, 2nd: Dispel Magic, 3rd: Haste, 4th: Translocate, 5th: Scouting Eye, 6th: Disintegrate, 7th: Retrocognition, 8th: Quandary, 9th: Implosion\n\nBloodline Spells initial: Ancestral Memories, advanced: Extend Blood Magic, greater: Arcane Countermeasure\n\nBlood Magic—Imperious Defense Raw magic emanates from every cell in your body, protecting you. Until the start of your next turn, you gain your choice of either a +1 status bonus to AC or a +1 status bonus to saving throws.\n\nEffect: Imperial Blood Magic",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.arcana.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.society.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:sorcerer"
+                ]
+              },
+              {
+                "and": [
+                  "item:spell-slot",
+                  "spellcasting:category:spontaneous",
+                  "spellcasting:tradition:arcane",
+                  {
+                    "or": [
+                      "item:slug:force-barrage",
+                      "item:slug:dispel-magic",
+                      "item:slug:haste",
+                      "item:slug:translocate",
+                      "item:slug:scouting-eye",
+                      "item:slug:disintegrate",
+                      "item:slug:retrocognition",
+                      "item:slug:quandary",
+                      "item:slug:implosion"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mergeable": true,
+        "option": "blood-magic",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Imperial",
+            "predicate": [
+              "class:sorcerer"
+            ],
+            "value": "imperial"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.SecondBloodMagic",
+        "mergeable": true,
+        "option": "second-blood-magic",
+        "placement": "spellcasting",
+        "predicate": [
+          {
+            "or": [
+              "feat:blood-ascendancy",
+              "feat:blood-sovereignty"
+            ]
+          }
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Imperial",
+            "value": "imperial"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:tag:blood-magic-spell",
+          {
+            "or": [
+              "blood-magic:imperial",
+              {
+                "and": [
+                  "second-blood-magic:imperial",
+                  "feat:blood-sovereignty"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Imperial",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Imperial"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Imperial Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:slug:blood-rising",
+          {
+            "or": [
+              "blood-magic:imperial",
+              {
+                "and": [
+                  "second-blood-magic:imperial",
+                  "feat:blood-ascendancy"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Imperial",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Imperial"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Imperial Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:tradition:arcane",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ]
+      }
+    }
+  ]
+}

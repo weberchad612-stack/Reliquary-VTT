@@ -1,0 +1,248 @@
+{
+  "kind": "creature",
+  "slug": "champion-of-rovagug",
+  "system": "pf2e",
+  "name": "Champion of Rovagug",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 70,
+    "perception": 10,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 8,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 13,
+      "deception": 10,
+      "intimidation": 12,
+      "religion": 8,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 20
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Champion Devotion Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Touch of the Void",
+          "rank": 1,
+          "ref": "spells:spell/touch-of-the-void"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Fearsome Greataxe",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 10,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Gauntlet",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Champion's Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "15 feet. Any follower of Rovagug in the aura knows the champion is a champion of Rovagug. Enemies in the aura take a –1 circumstance penalty to saves against fear, and an enemy that ends its turn in the aura can't reduce the value of its Frightened condition below 1. The aura can be suppressed or resumed with a single action, which has the concentrate trait, and ends if the champion falls Unconscious.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "champions-aura",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "enemies",
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Champion's Aura (Champion of Rovagug)"
+              }
+            ],
+            "key": "Aura",
+            "predicate": [
+              "champions-aura"
+            ],
+            "radius": 15,
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Destructive Vengeance",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Trigger An enemy in the champion's aura damages the champion\n\n---\nEffect The champion increases the amount of damage they take by 2d6 and deals 2d6 spirit damage to the triggering enemy. In addition, until the end of the champion's next turn, the champion's Strikes against the triggering creature deals 2 extra spirit damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "destructive-vengeance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "destructive-vengeance"
+          ],
+          "damageType": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Axe Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The champion makes a melee Strike with a +1 circumstance bonus to the attack roll and compares the roll to the AC of up to two foes that are in reach and adjacent to each other. The champion rolls damage only once and applies it to each creature they hit. This counts as two attacks toward their multiple attack penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "fearsome-greataxe-attack-roll",
+            "key": "RollOption",
+            "option": "axe-swipe",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "fearsome-greataxe-attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "axe-swipe"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fearsome Armament",
+      "category": "offensive",
+      "text": "The champion grants their greataxe the Fearsome rune while they wield it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "item:slug:fearsome-greataxe"
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "fearsome"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "There are perhaps no mortals more anathematic to peace than champions of Rovagug or other destructive deities.\n\n---\nVillains pursue selfish and cruel goals, trampling over anyone in their way."
+}

@@ -1,0 +1,92 @@
+{
+  "kind": "effect",
+  "slug": "effect-beastmasters-sigil-armor",
+  "system": "pf2e",
+  "name": "Effect: Beastmaster's Sigil - Armor",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Beastmaster's Sigil, Beastmaster's Sigil (Greater), Beastmaster's Sigil (Major)\n\nYou gain an item bonus to saving throws against poison.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "beastmasters-sigil"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "sigil-bonus-armor",
+      "when": [
+        "item:trait:poison"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "beastmasters-sigil:beastmasters-sigil-major"
+        ],
+        "selector": "saving-throw",
+        "slug": "sigil-bonus-armor",
+        "value": 2
+      }
+    }
+  ]
+}

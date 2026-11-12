@@ -1,0 +1,135 @@
+{
+  "kind": "effect",
+  "slug": "effect-resonating-fork-armor",
+  "system": "pf2e",
+  "name": "Effect: Resonating Fork - Armor",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Resonating Fork, Resonating Fork (Greater), Resonating Fork (Major)\n\nYou gain resistance to sonic damage and an item bonus to saving throws against effects with the auditory or sonic trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:resonating-fork",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Resonating Fork"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:resonating-fork-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Resonating Fork (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:resonating-fork-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Resonating Fork (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "resonating-fork"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "resonating-fork:resonating-fork"
+        ],
+        "type": "sonic",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "resonating-fork:resonating-fork-greater"
+        ],
+        "type": "sonic",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "resonating-fork:resonating-fork-major"
+        ],
+        "type": "sonic",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "resonating-fork-armor-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:auditory",
+            "item:trait:sonic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              "resonating-fork:resonating-fork-greater",
+              "resonating-fork:resonating-fork-major"
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "slug": "resonating-fork-armor-bonus",
+        "value": 2
+      }
+    }
+  ]
+}

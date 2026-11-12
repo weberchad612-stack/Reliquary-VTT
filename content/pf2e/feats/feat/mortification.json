@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "mortification",
+  "system": "pf2e",
+  "name": "Mortification",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Hellknight Dedication"
+  ],
+  "text": "Your reckonings have prepared your body for physical punishment. Choose bludgeoning, piercing, or slashing damage, based on the nature of your physical reckonings. You gain resistance to the chosen damage type equal to your number of archetype class feats from the Hellknight archetype.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.hellknightArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitPiercing",
+            "value": "piercing"
+          },
+          {
+            "label": "PF2E.TraitSlashing",
+            "value": "slashing"
+          }
+        ],
+        "flag": "damageType",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.damageType}",
+        "value": "@actor.flags.system.hellknightArchetype.featCount"
+      }
+    }
+  ]
+}

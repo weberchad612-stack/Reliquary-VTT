@@ -1,0 +1,186 @@
+{
+  "kind": "effect",
+  "slug": "effect-devise-a-stratagem",
+  "system": "pf2e",
+  "name": "Effect: Devise a Stratagem",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "badge": {
+    "type": "formula",
+    "value": "1d20"
+  },
+  "text": "Granted by Devise a Stratagem\n\nChoose a creature you can see. Roll a d20, then decide on an attack stratagem or skill stratagem.\n\nAttack Stratagem If you Strike the chosen creature before the start of your next turn, your Strike gains the fortune trait and you must use the result of the d20 roll for your next Strike's attack roll this round instead of rolling. When you make this substitution, you can add your Intelligence modifier to your attack roll instead of your Strength or Dexterity modifier.\n\nSkill Stratagem You gain a +1 circumstance bonus to your next Intelligence-, Wisdom-, or Charisma-based skill check or Perception check involving the target before the start of your next turn. If you would gain your Pursue a Lead investigation bonus to such a check, that bonus increases by 1 instead of you gaining the +1 bonus listed",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "devise-a-stratagem"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "devise-a-stratagem",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Investigator.DeviseAStratagem.Attack",
+            "value": "attack"
+          },
+          {
+            "label": "PF2E.SpecificRule.Investigator.DeviseAStratagem.Skill",
+            "value": "skill"
+          },
+          {
+            "label": "PF2E.SpecificRule.Investigator.DeviseAStratagem.Defensive",
+            "predicate": [
+              "feat:defensive-stratagem"
+            ],
+            "value": "defensive"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "target:mark:devise-a-stratagem",
+          "devise-a-stratagem:attack",
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse",
+              {
+                "nor": [
+                  "item:melee",
+                  "item:thrown"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "fortune"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "SubstituteRoll",
+        "predicate": [
+          "devise-a-stratagem:attack",
+          "target:mark:devise-a-stratagem",
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse",
+              {
+                "nor": [
+                  "item:melee",
+                  "item:thrown"
+                ]
+              }
+            ]
+          }
+        ],
+        "removeAfterRoll": "if-enabled",
+        "required": true,
+        "selector": "strike-attack-roll",
+        "slug": "devise-a-stratagem",
+        "value": "@item.badge.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "SubstituteRoll",
+        "predicate": [
+          "devise-a-stratagem:attack",
+          "feat:athletic-strategist",
+          {
+            "or": [
+              "devise-a-stratagem",
+              "target:mark:devise-a-stratagem"
+            ]
+          },
+          {
+            "or": [
+              "action:disarm",
+              "action:grapple",
+              "action:shove",
+              "action:trip"
+            ]
+          }
+        ],
+        "removeAfterRoll": "if-enabled",
+        "required": true,
+        "selector": "athletics",
+        "slug": "devise-a-strategem",
+        "value": "@item.badge.value"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "perception",
+        "cha-skill-check",
+        "int-skill-check",
+        "wis-skill-check"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "devise-a-stratagem:skill"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "devise-a-stratagem:skill"
+        ],
+        "selectors": [
+          "perception",
+          "cha-skill-check",
+          "int-skill-check",
+          "wis-skill-check"
+        ],
+        "slug": "pursue-a-lead",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "fortitude",
+        "reflex",
+        "will"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "devise-a-stratagem:defensive",
+        "origin:mark:devise-a-stratagem"
+      ]
+    }
+  ]
+}

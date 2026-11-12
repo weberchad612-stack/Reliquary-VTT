@@ -1,0 +1,96 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-untamed-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Untamed Form",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Untamed Form\n\nYou can polymorph into any form listed in pest form, which lasts 10 minutes. All other untamed form shapes last 1 minute. You can add more shapes to your untamed form list with druid feats; your feat might grant you some or all of the shapes from a given polymorph spell.\n\nWhen you transform into a shape granted by a spell, you gain all the effects of the shape you chose from a version of the spell heightened to untamed form's rank. Untamed form allows you to use your own shapeshifting training more easily than most polymorph spells. When you choose to use your own attack modifier while polymorphed instead of the form's default attack modifier, you gain a +2 status bonus to your attack rolls.\n\n---\nHeightened (2nd) You can transform into shapes listed in animal form.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": "flags.system.wildShapeForms",
+        "flag": "formEffect",
+        "key": "ChoiceSet",
+        "predicate": [
+          "feat:untamed-form"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.UntamedForm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "cascade",
+          "granter": "cascade"
+        },
+        "predicate": [
+          "feat:untamed-form"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.formEffect}"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "battle-form",
+        "battle-form:own-attack-modifier",
+        {
+          "not": "self:effect:pest-form"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitPoison",
+            "value": "poison"
+          }
+        ],
+        "flag": "dragonShapeResistance",
+        "key": "ChoiceSet",
+        "predicate": [
+          "feat:dragon-shape",
+          {
+            "not": "self:effect:dragon-form"
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Resistance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "feat:dragon-shape"
+        ],
+        "type": "{item|flags.system.rulesSelections.dragonShapeResistance}",
+        "value": 5
+      }
+    }
+  ]
+}

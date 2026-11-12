@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "nudge-the-scales",
+  "system": "pf2e",
+  "name": "Nudge the Scales",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "cursebound",
+    "divine",
+    "healing",
+    "oracle",
+    "spirit"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "You lay a finger on the scales of life and death to heal a creature, regardless of whether it's living or undead. You restore 2*(1+@actor.level) healing Hit Points to one creature within 30 feet.\n\nIn addition, you can mediate during your daily preparations to place yourself on one side of the scales. Choose life or death. If you align yourself with life, you can be targeted and healed by vitality healing effects, as normal for most living creatures; if you align yourself with death, you gain the void healing ability, and can instead be targeted and healed by void effects and other effects that restore Hit Points to undead creatures..",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "nudge-the-scales",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Oracle.NudgeTheScales.Life",
+            "value": "life"
+          },
+          {
+            "label": "PF2E.SpecificRule.Oracle.NudgeTheScales.Death",
+            "value": "death"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.hp.negativeHealing",
+        "predicate": [
+          "nudge-the-scales:death"
+        ],
+        "priority": 51,
+        "value": true
+      }
+    }
+  ]
+}

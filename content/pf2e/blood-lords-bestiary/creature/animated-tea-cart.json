@@ -1,0 +1,163 @@
+{
+  "kind": "creature",
+  "slug": "animated-tea-cart",
+  "system": "pf2e",
+  "name": "Animated Tea Cart",
+  "source": {
+    "title": "Pathfinder #183: Field of Maidens",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 28,
+    "hp": 120,
+    "perception": 13,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 18,
+      "will": 12
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 6,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 18,
+      "stealth": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(24 when broken), construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dishes",
+      "type": "equipment",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Slam",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dish",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "versatile-p",
+        "versatile-s"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 8)",
+      "category": "offensive",
+      "text": "Like normal objects, an animated tea cart has Hardness. This Hardness reduces any damage the tea cart takes by an amount equal to the Hardness. Once an animated tea cart is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 24.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scald",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The tea cart ejects piping-hot tea in a 15-foot cone that deals 5d6 fire damage (DC 26 basic Reflex save).",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ]
+}

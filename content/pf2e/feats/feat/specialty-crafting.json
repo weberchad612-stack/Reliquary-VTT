@@ -1,0 +1,156 @@
+{
+  "kind": "feat",
+  "slug": "specialty-crafting",
+  "system": "pf2e",
+  "name": "Specialty Crafting",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Crafting"
+  ],
+  "text": "Your training focused on Crafting one particular kind of item. Select one of the specialties listed below; you gain a +1 circumstance bonus to Crafting checks to Craft items of that type. If you are a master in Crafting, this bonus increases to +2. If it's unclear whether the specialty applies, the GM decides. Some specialties might apply only partially. For example, if you were making a morningstar and had specialty in woodworking, the GM might give you half your bonus because the item requires both blacksmithing and woodworking.\n\nSpecialty |\nApplicable Items |\n\nAlchemy* |\nAlchemical items such as elixirs |\n\nArtistry |\nFine art, including jewelry |\n\nBlacksmithing |\nDurable metal goods, including metal armor |\n\nBookmaking |\nBooks and paper |\n\nGlassmaking |\nGlass, including glassware and windows |\n\nLeatherworking |\nLeather goods, including leather armor |\n\nPottery |\nCeramic goods |\n\nShipbuilding |\nShips and boats |\n\nStonemasonry |\nStone goods and structures |\n\nTailoring |\nClothing |\n\nWeaving |\nTextiles, baskets, and rugs |\n\nWoodworking |\nWooden goods and structures |\n\n* You must have the Alchemical Crafting skill feat to Craft alchemical items.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Alchemy",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:alchemy"
+              }
+            ],
+            "value": "alchemy"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Artistry",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:artistry"
+              }
+            ],
+            "value": "artistry"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Blacksmithing",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:blacksmithing"
+              }
+            ],
+            "value": "blacksmithing"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Bookmaking",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:bookmaking"
+              }
+            ],
+            "value": "bookmaking"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Glassmaking",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:glassmaking"
+              }
+            ],
+            "value": "glassmaking"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Leatherworking",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:leatherworking"
+              }
+            ],
+            "value": "leatherworking"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Pottery",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:pottery"
+              }
+            ],
+            "value": "pottery"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Shipbuilding",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:shipbuilding"
+              }
+            ],
+            "value": "shipbuilding"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Stonemasonry",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:stonemasonry"
+              }
+            ],
+            "value": "stonemasonry"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Tailoring",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:tailoring"
+              }
+            ],
+            "value": "tailoring"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Weaving",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:weaving"
+              }
+            ],
+            "value": "weaving"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpecialtyCrafting.Woodworking",
+            "predicate": [
+              {
+                "not": "feat:specialty-crafting:woodworking"
+              }
+            ],
+            "value": "woodworking"
+          }
+        ],
+        "flag": "specialtyCrafting",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.SpecialtyCrafting.Prompt",
+        "rollOption": "feat:specialty-crafting"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:craft",
+          "{item|flags.system.rulesSelections.specialtyCrafting}"
+        ],
+        "selector": "crafting",
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.crafting.rank,3),2,1)"
+      }
+    }
+  ]
+}

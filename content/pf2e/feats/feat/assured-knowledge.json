@@ -1,0 +1,50 @@
+{
+  "kind": "feat",
+  "slug": "assured-knowledge",
+  "system": "pf2e",
+  "name": "Assured Knowledge",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "bard"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "enigma muse"
+  ],
+  "text": "You can procure information with confidence. Whenever you Recall Knowledge using any skill (including Bardic Lore), you can forgo rolling your check to instead receive a result of 10 + your proficiency bonus (don't apply any other bonuses, penalties, or modifiers).\n\nAs long as you are an expert in a skill, you meet the prerequisites for the Automatic Knowledge skill feat in that skill, even if you don't have Assurance in that skill.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "SubstituteRoll",
+        "predicate": [
+          "action:recall-knowledge"
+        ],
+        "selector": "skill-check",
+        "slug": "assured-knowledge",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "predicate": [
+          "action:recall-knowledge",
+          "substitute:assured-knowledge",
+          {
+            "not": "bonus:type:proficiency"
+          }
+        ],
+        "selector": "skill-check",
+        "suppress": true
+      }
+    }
+  ]
+}

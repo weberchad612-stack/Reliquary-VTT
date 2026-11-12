@@ -1,0 +1,220 @@
+{
+  "kind": "creature",
+  "slug": "rigg-gargadilly",
+  "system": "pf2e",
+  "name": "Rigg Gargadilly",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "fey"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 27,
+    "hp": 70,
+    "perception": 15,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 6,
+      "int": 4,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 17,
+      "crafting": 13,
+      "deception": 15,
+      "nature": 13,
+      "stealth": 17,
+      "survival": 15,
+      "thievery": 15
+    },
+    "speeds": {
+      "land": 100
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Shatter",
+          "rank": 4,
+          "ref": "spells:spell/shatter"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Ventriloquism",
+          "rank": 2,
+          "ref": "spells:spell/ventriloquism"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hunting Spider Venom",
+      "ref": "equipment:item/spider-venom",
+      "type": "consumable",
+      "quantity": 3
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "hunting-spider-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Can't Catch Me",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The quickling is targeted by a Strike\n\n---\n\nEffect The quickling darts aside, gaining a +2 circumstance bonus to AC, then Strides up to half their Speed after the Strike resolves.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "cant-catch-me",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "cant-catch-me"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Slow Susceptibility",
+      "category": "defensive",
+      "text": "The quickling takes a -2 status penalty to saving throws against effects that cause the Slowed condition. If the quickling ever becomes slowed, they lose their supernatural speed, can't Fade from View, and become Sickened 1 for the duration of the slow. They also can't reduce this sickened condition for the duration of the slowed effect.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "item:slow"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fade from View",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The quickling used no attack, manipulate, or move actions in the previous round\n\n---\n\nEffect The quickling becomes Invisible until it uses an attack, manipulate, or move action.\n\nThe quickling can't use Fade from View again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Rigg's Strikes deal an extra 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Supernatural Speed",
+      "category": "offensive",
+      "text": "The quickling's speed, combined with nearly instantaneous acceleration and deceleration, enables them to move in astonishing ways. As long as they have a firm surface to travel across, they can Stride their full movement vertically or horizontally. They can even run across unstable surfaces, such as water, in the same way, although dangerous surfaces (acid, lava, etc.) harm them as normal. They must end their movement on a horizontal surface capable of bearing their weight or else they fall."
+    }
+  ],
+  "text": "Few creatures can match a quickling's speed. These malicious fey creatures delight in striking with blinding speed and accuracy, racing in to stab and slash at foes before scampering away for cover with maddening- even frightening-swiftness. Stories of people simply doubling over, bleeding from what appear to be spontaneously opening wounds, are often eyewitness accounts of quickling attacks.\n\nQuicklings actively hate the \"slow-paced dullards\" they encounter every day, delighting in inflicting suffering and pain on creatures they deem too sluggish to matter. While they are related to kinder fey such as brownies and pixies, quicklings care only for their own merriment. They see their own cruel pranks as the height of humor and have full confidence that their speed and invisibility will keep them safe from harm. They occasionally form gangs of up to a dozen individuals, although the group usually devolves very quickly into mayhem, as they inevitably perform increasingly deadly pranks against each other.",
+  "blurb": "Male quickling"
+}

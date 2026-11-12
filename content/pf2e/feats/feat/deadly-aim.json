@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "deadly-aim",
+  "system": "pf2e",
+  "name": "Deadly Aim",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "flourish",
+    "ranger"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "weapon specialization"
+  ],
+  "text": "You aim for your prey's weak spots, making your shot more challenging but dealing more damage if you hit. Make a ranged Strike against your hunted prey at a –2 penalty. You gain a +4 circumstance bonus to damage on that Strike. This bonus increases to +6 at 11th level and +8 at 15th level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "deadly-aim",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "circumstance",
+      "value": -2,
+      "when": [
+        "deadly-aim"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "deadly-aim"
+        ],
+        "selector": "strike-damage",
+        "type": "circumstance",
+        "value": "match(when(btwn(@actor.level, 8, 10), 4), when(btwn(@actor.level, 11, 14), 6), when(gte(@actor.level, 15), 8))"
+      }
+    }
+  ]
+}

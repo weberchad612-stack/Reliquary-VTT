@@ -1,0 +1,342 @@
+{
+  "kind": "creature",
+  "slug": "brine-archdragon",
+  "system": "pf2e",
+  "name": "Brine Archdragon",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "rare",
+  "traits": [
+    "aquatic",
+    "dragon",
+    "elemental",
+    "primal",
+    "water"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 44,
+    "hp": 460,
+    "perception": 36,
+    "saves": {
+      "fortitude": 37,
+      "reflex": 33,
+      "will": 35
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 7,
+      "dex": 6,
+      "int": 6,
+      "str": 11,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 34,
+      "athletics": 40,
+      "deception": 34,
+      "diplomacy": 40,
+      "intimidation": 38,
+      "nature": 34,
+      "society": 34,
+      "stealth": 32,
+      "settlement-lore-one-settlement-the-dragon-controls-lore": 38
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 180,
+      "swim": 180
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "thalassic"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep",
+        "clumsy",
+        "controlled"
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 15
+        },
+        {
+          "type": "force",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. primal",
+      "perception": "(+38 to Sense Motive); aquatic echolocation 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+21",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "benthic-bite"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+21",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 36,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+21",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Caustic Spit",
+      "attack": 36,
+      "traits": [
+        "acid"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "4d12+10",
+          "type": "acid"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Echolocation",
+      "category": "interaction",
+      "text": "A brine dragon can use their hearing as a precise sense at the listed range, but only underwater.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SkillVariant.Underwater",
+            "option": "terrain:underwater",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "acuity": "precise",
+            "key": "Sense",
+            "predicate": [
+              "terrain:underwater"
+            ],
+            "range": 120,
+            "selector": "echolocation"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves Vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Sense Motive",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Decompression Sickness",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal",
+        "water"
+      ],
+      "text": "20 feet. After the dragon uses their Crushing Breath, the pressure of the depths surrounds them for 1 round. Any creature that leaves the aura during this time must succeed at a DC 39 Fortitude save save or become dizzy and unbalanced from the sudden change in pressure, treating all squares as difficult terrain until the end of their next turn. Incorporeal creatures are immune to this aura.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "decompression-sickness",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "decompression-sickness"
+            ],
+            "radius": 20,
+            "traits": [
+              "primal",
+              "water"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regent's Glower",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "primal"
+      ],
+      "text": "Trigger The dragon is critically hit with a melee attack\n\n---\nEffect The dragon focuses their weighty gaze upon their assailant, filling their foe with dread. The triggering creature takes 9d6 mental damage with a DC 42 basic Will save save. Any creature who fails the save also becomes Frightened 1 (Frightened 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Bathygenic Barrage",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The dragon uses Pressurized Pool three times. None of the bursts can overlap.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Benthic Bite",
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "A creature who takes damage from a brine dragon's jaws Strike must succeed at a DC 39 Fortitude save save or be Enfeebled 3 for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Crushing Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The dragon spews a 120-foot line of pressurized water that deals 21d6 bludgeoning damage with a DC 42 basic Reflex save save. A creature that fails the save is also Clumsy 1 (Clumsy 2 on a critical failure) for 1 minute. The dragon can't use Crushing Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "When the dragon scores a critical hit with a Strike, they recharge Crushing Breath.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pressurized Pool",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The dragon expels a 10-foot burst of pressurized water within 120 feet that lasts for 1 minute. A creature other than a brine dragon that enters or begins their turn within a burst must succeed at a DC 42 Fortitude save save or become Encumbered until the beginning of their next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Tidal Surge",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The dragon sweeps their wings, creating a 30-foot cone of buffeting water that deals 14d8 bludgeoning damage with a DC 42 basic Fortitude save save. Each unattended object and each creature that fails the save is also pushed away from the dragon 20 feet (30 feet on a critical failure) and is knocked Prone. The dragon can't use Tidal Surge again for 1d4 rounds."
+    }
+  ]
+}

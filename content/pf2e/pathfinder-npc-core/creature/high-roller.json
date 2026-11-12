@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "high-roller",
+  "system": "pf2e",
+  "name": "High Roller",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 150,
+    "perception": 22,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 24,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 5,
+      "int": 2,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "deception": 24,
+      "intimidation": 22,
+      "society": 21,
+      "thievery": 22,
+      "games-lore": 26
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+26 for Sense Motive)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Playing Cards (54-Card Deck)",
+      "ref": "equipment:item/playing-cards",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Predictable Silver Piece",
+      "ref": "equipment:item/predictable-silver-piece",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 23,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Card",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Card",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Gaming Arsenal",
+      "category": "interaction",
+      "text": "The high roller treats all game tools—such as cards (used in the stat block's Strike entries), dice, coins, and gambling tokens—as melee weapons with a d4 damage die and the agile, finesse and thrown 20 feet traits. The high roller gets a +1 item bonus to attack rolls with them and deals two damage dice. The damage type depends on the item and is determined by the GM."
+    },
+    {
+      "kind": "ability",
+      "name": "+4 to Sense Motive",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tip the Scales",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "fortune"
+      ],
+      "text": "Trigger A creature the high roller is observing critically fails a check\n\n---\nEffect The high roller picks up on luck that others dropped. They roll twice on their next d20 roll before the end of their next turn and take the better result."
+    },
+    {
+      "kind": "ability",
+      "name": "Lucky Momentum",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The high roller's last action was a critical success\n\n---\nEffect The high roller either Strides twice or attempts a Strike that deals an additional 4d6 precision damage and deals half damage on a failure (but not a critical failure).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "lucky-momentum",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "lucky-momentum"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Royal Flush Flurry",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per hour\n\nRequirements The high roller has at least 16 cards in one hand\n\n---\nEffect The high roller unleashes the cards in a 30-foot cone, dealing 16d4 slashing damage to all creatures in the area with a DC 30 basic Reflex save save. This ability expends the full deck of cards held.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    }
+  ],
+  "text": "Those with a particular mastery over luck can make a living through games of chance as professional gamblers.\n\n---\nThese lone wolves have an aura of mystery, bravado, and swagger."
+}

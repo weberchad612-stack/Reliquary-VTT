@@ -1,0 +1,276 @@
+{
+  "kind": "creature",
+  "slug": "sluagh-reaper",
+  "system": "pf2e",
+  "name": "Sluagh Reaper",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fey",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 175,
+    "perception": 21,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 21,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 7,
+      "int": 3,
+      "str": 3,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 21,
+      "intimidation": 16,
+      "stealth": 23,
+      "survival": 21
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 26,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Invisibility",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Ghost Sound",
+          "rank": 1,
+          "ref": "spells:spell/ghost-sound"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "30 feet. DC 26 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Soulscent (Imprecise) 100 feet",
+      "category": "defensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The sluagh is aware of all Doomed creatures, Dying creatures, and creatures that died within the last hour within the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ghostly Swoop",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The sluagh reaper becomes incorporeal until the start of their next turn, and Flies up to their fly Speed. While incorporeal, they are immune to precision damage, and have resistance 10 to all damage (except force, Ghost Touch, or vitality); this resistance is doubled against non-magical damage.\n\nAfter using Ghostly Swoop, the sluagh reaper can't use it again for 1d4 rounds.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "ghostly-swoop",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              "ghostly-swoop"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "ghostly-swoop"
+            ],
+            "type": "precision"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              "ghostly-swoop"
+            ],
+            "type": "all-damage",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The sluagh reaper deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Steal Soul",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The sluagh reaper touches a dying creature or a creature that died within the past 1 hour. If the target is a dying creature, it must attempt a DC 28 Fortitude save save-on a failure, its dying value increases by 1 (2 on a critical failure). If the target is dead, it receives no save and the sluagh imprisons its soul in a small, grimy sack that keeps stolen souls fresh.\n\nThe sack is magically locked. Any sluagh can open it without difficulty, but any others must Pick the Lock (DC 35 Thievery check) or use Dispel Magic (5th rank; counteract DC 32). A creature can Interact to empty an unlocked sack, which frees the souls but doesn't return them to life. While a soul is imprisoned, it can't be brought back to life by any means short of a Wish or Miracle. The sack can hold 12 souls at a time. Sluagh reapers typically attempt to return the souls to a queen so she can devour them."
+    }
+  ],
+  "text": "Most sluagh are reapers: powerful killers subservient to their queen. After they collect souls on a hunt, they dutifully return their plunder to the queen. Though quite clever, they're inscrutable, lacking the whimsy and sociability that characterize many living fey. They do show merriment on occasion though, giggling as their claws draw closer to their quarry's throat.\n\n---\n\nA soul about to leave its physical body gives off a peculiar scent, usually unnoticed by mortal creatures. But the undead fey called sluagh can smell and track down its location with frightening ease. Unlike most fey, sluagh are undead, possessing strong connections to void energy and mortal souls. Sluagh collect the souls of those close to death and bring them to feed their queen.\n\nMost sluagh appear bald-headed, with rounded ears, sharp teeth, glossy black eyes, and scrawny bodies. Their rib cages show through their skin, which is translucent and soft as velvet.\n\nSluagh can become ghostly and incorporeal for brief periods. They use this power to stalk their prey to great effect. Sometimes the glimpse of a sluagh is mistaken for a ghost sighting."
+}

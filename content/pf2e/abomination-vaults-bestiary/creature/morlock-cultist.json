@@ -1,0 +1,242 @@
+{
+  "kind": "creature",
+  "slug": "morlock-cultist",
+  "system": "pf2e",
+  "name": "Morlock Cultist",
+  "source": {
+    "title": "Pathfinder #163: Ruins of Gauntlight",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "morlock"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 58,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 11,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": 5,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": {
+        "value": 11,
+        "special": [
+          {
+            "value": 13,
+            "label": "Climbing",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "crafting": 11,
+      "occultism": 13,
+      "stealth": 11
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "+2 status to all saves vs. disease and poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Mirror Image",
+          "rank": 2,
+          "ref": "spells:spell/mirror-image"
+        },
+        {
+          "name": "Telekinetic Maneuver",
+          "rank": 2,
+          "ref": "spells:spell/telekinetic-maneuver"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Ghost Sound",
+          "rank": 1,
+          "ref": "spells:spell/ghost-sound"
+        },
+        {
+          "name": "Grim Tendrils",
+          "rank": 1,
+          "ref": "spells:spell/grim-tendrils"
+        },
+        {
+          "name": "Phantom Pain",
+          "rank": 2,
+          "ref": "spells:spell/phantom-pain"
+        },
+        {
+          "name": "Ray of Enfeeblement",
+          "rank": 1,
+          "ref": "spells:spell/enfeeble"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 11,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 13,
+      "range": 10,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Disease and Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:disease",
+                "item:trait:poison"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Occult Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock cultist Strides up to half its speed, ignoring difficult terrain caused by natural cavern features like rubble or stalagmites.\n\nAt any point during its movement, the morlock cultist can Cast a Spell that normally takes two actions or fewer to cast."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The morlock deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Morlocks who serve as priests in their conclaves usually dabble in eerie occult magic.\n\n---\n\nMorlocks originate from humans long lost to the surface world. They have an affinity for machinery, scavenging, and strange occult behaviors."
+}

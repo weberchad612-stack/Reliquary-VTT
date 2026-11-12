@@ -1,0 +1,239 @@
+{
+  "kind": "creature",
+  "slug": "nyzuros",
+  "system": "pf2e",
+  "name": "Nyzuros",
+  "source": {
+    "title": "Pathfinder Abomination Vaults Hardcover Compilation",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "drow",
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 16,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 15,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 14,
+      "nature": 14,
+      "stealth": 15,
+      "survival": {
+        "value": 16,
+        "special": [
+          {
+            "value": 18,
+            "label": "to Subsist",
+            "when": [
+              "action:subsist"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "elven",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic, +2 status to all saves vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 23,
+      "attack": 15,
+      "spells": [
+        {
+          "name": "Darkness (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Faerie Fire (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Keys",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 16,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 18,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deft Evasion",
+      "category": "defensive",
+      "text": "When the hunter rolls a success on a Reflex save, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunter's Wound",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nPrerequisites The hunter is wielding a ranged weapon with a reload of 0\n\n---\n\nEffect The hunter makes two ranged Strikes against their prey. If both hit and deal damage, the target takes an additional 1d8 bleed.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Skirmish Strike",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The hunter can Step and then Strike, or Strike and then Step."
+    }
+  ],
+  "text": "Hunters seek out game to keep drow communities fed and functioning.\n\n---\n\nDrow have a reputation for evil due to demon worship in their major settlements. However, like members of any ancestry, drow can have any alignment, especially when removed from the demon lords' sinister influence.",
+  "blurb": "Male Drow Hunter"
+}

@@ -1,0 +1,154 @@
+{
+  "kind": "creature",
+  "slug": "drunken-brawler",
+  "system": "pf2e",
+  "name": "Drunken Brawler",
+  "source": {
+    "title": "Pathfinder #151: The Show Must Go On",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 27,
+    "perception": 4,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 4,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 1,
+      "int": -1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 7,
+      "intimidation": 3,
+      "society": 3
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Improvised Weapon",
+      "attack": 6,
+      "traits": [
+        "versatile-p",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drunken Rage",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "emotion",
+        "mental"
+      ],
+      "text": "Requirements The drunken brawler isn't Fatigued or raging\n\n---\nEffect The drunken brawler begins raging. They gain 4 temporary Hit Points and deal 1 additional damage with fist Strikes. They have a -1 penalty to AC and can't use actions with the concentrate trait unless those actions also have the rage trait. The drunken brawler can still Seek while in a drunken rage. The rage lasts for 1 minute or until the drunken brawler falls Unconscious, whichever comes first. When the drunken rage is over, the drunken brawler is fatigued, loses all temporary Hit Points they received from the rage, and cannot rage again for 1 minute.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "fist-damage",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -1,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Improvised Surprise",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The drunken brawler uses an Interact action to pick up an improvised weapon within reach and then Strikes with it. The drunken brawler has a +2 circumstance bonus to this attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack",
+            "key": "RollOption",
+            "option": "improvised-surprise",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "improvised-surprise"
+          ]
+        }
+      ]
+    }
+  ]
+}

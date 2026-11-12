@@ -1,0 +1,60 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-swampcall",
+  "system": "pf2e",
+  "name": "Spell Effect: Swampcall",
+  "source": {
+    "title": "Pathfinder #171: Hurricane's Howl",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Swampcall\n\nYou take a circumstance penalty to your Speeds (except for your swim Speed, if any) and become off-guard.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": -10
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": -15
+          }
+        ],
+        "flag": "swampcallSpeed",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "burrow-speed",
+          "climb-speed",
+          "fly-speed",
+          "land-speed"
+        ],
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.swampcallSpeed"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    }
+  ]
+}

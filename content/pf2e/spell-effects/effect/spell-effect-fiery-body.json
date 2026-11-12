@@ -1,0 +1,83 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-fiery-body",
+  "system": "pf2e",
+  "name": "Spell Effect: Fiery Body",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Fiery Body\n\nYou gain fire immunity, resistance 10 to precision damage, weakness 5 to cold and to water, and a fly speed of 40 feet. Any creature that touches you or damages you with an unarmed attack or non-reach melee weapon takes 3d6 fire damage.\n\nYour unarmed attacks deal an additional 1d4 fire damage, and your fire spells deal one additional die of fire damage (of the same damage die the spell uses).\n\n---\nHeightened (9th) Creatures touching you take 4d6 fire damage instead of 3d6, your unarmed attacks deal 2d4 additional fire damage, and you have a fly Speed of 60 feet.",
+  "rules": [
+    {
+      "key": "immunity",
+      "type": "fire"
+    },
+    {
+      "key": "resistance",
+      "type": "precision",
+      "value": 10
+    },
+    {
+      "key": "weakness",
+      "type": "cold",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": "ternary(gte(@item.level, 9),2,1)",
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          "unarmed"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "selector": "fly",
+        "value": "ternary(gte(@item.level,9), 60, 40)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "fire"
+        ],
+        "selector": "spell-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "damage-received",
+      "text": "PF2E.SpecificRule.SpellEffectFieryBody.Note",
+      "when": [
+        {
+          "or": [
+            "item:category:unarmed",
+            {
+              "not": "item:trait:reach"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "kind": "effect",
+  "slug": "effect-blood-wake",
+  "system": "pf2e",
+  "name": "Effect: Blood Wake",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "You becomes frightened 2 (frightened 4 on a critical failure) and stunned 1, and you take a –4 status penalty to Athletics checks to Swim.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "blood-wake"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "predicate": [
+          "blood-wake:failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Frightened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 4
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "predicate": [
+          "blood-wake:critical-failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Frightened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stunned"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "athletics",
+      "type": "status",
+      "value": -4,
+      "when": [
+        "action:swim"
+      ]
+    }
+  ]
+}

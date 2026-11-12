@@ -1,0 +1,134 @@
+{
+  "kind": "effect",
+  "slug": "effect-starlit-transformation",
+  "system": "pf2e",
+  "name": "Effect: Starlit Transformation",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Starlit Transformation\n\nYour weapon gains a +1 status bonus to damage rolls. You can fling bolts of starlight from your weapon with a Strike action, using your melee attack modifier with the weapon. These bolts deal 1d4 force damage and have the arcane and force traits.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.StarlitSentinel.StarlitTransformation.BoltsOfStarlight",
+        "option": "bolts-of-starlight",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+      "type": "status",
+      "value": 1
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.weapon}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "starlit-sentinel-weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "bolts-of-starlight"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "{item|flags.system.rulesSelections.weapon}-damage"
+        ],
+        "slug": "base",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "bolts-of-starlight"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "{item|flags.system.rulesSelections.weapon}-damage"
+        ],
+        "slug": "base",
+        "value": "force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "bolts-of-starlight"
+        ],
+        "property": "traits",
+        "value": "arcane"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "bolts-of-starlight"
+        ],
+        "property": "traits",
+        "value": "force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "predicate": [
+          "bolts-of-starlight"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+        "slug": "str",
+        "suppress": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "mitflit",
+  "system": "pf2e",
+  "name": "Mitflit",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "fey",
+    "gremlin"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 14,
+    "hp": 10,
+    "perception": 4,
+    "saves": {
+      "fortitude": 2,
+      "reflex": 7,
+      "will": 4
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 0,
+      "dex": 3,
+      "int": -1,
+      "str": -1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 5,
+      "diplomacy": {
+        "value": 1,
+        "special": [
+          {
+            "value": 7,
+            "label": "vs. arthropods",
+            "when": [
+              "target:tag:arthropod"
+            ]
+          }
+        ]
+      },
+      "nature": 3,
+      "stealth": 5,
+      "thievery": 5
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Speak with Animals (Arthropods Only, At Will)",
+          "rank": 2,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dart",
+      "ref": "equipment:item/dart",
+      "type": "weapon",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6-1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dart",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4-1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Loathing",
+      "category": "interaction",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "A mitflit's self-loathing makes it easy to influence. It takes a -4 penalty to its Will DC against checks to Coerce, Demoralize, Make an Impression, and Request.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "untyped",
+          "value": -4,
+          "when": [
+            {
+              "or": [
+                "action:coerce",
+                "action:demoralize",
+                "action:make-an-impression",
+                "action:request"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Anger",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "As long as it isn't Frightened, a mitflit gains a +2 status bonus to damage rolls against a creature that has previously damaged or tormented it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "vengeful-anger",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "vengeful-anger",
+            {
+              "not": "self:condition:frightened"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Mitflits are self-loathing and pitiful cowards, easily bullied into servitude by other creatures or even slightly more powerful mitflit leaders. They tame insects, spiders, and other small vermin to serve as faithful allies. Mitflits have lost most of their ancestral magic, leaving them to feel incomplete and full of doubt and insecurity. Mitflits find companionship in the other base creatures of the world, and forge strong bonds of friendship with vermin, the only other beings that seem willing to accept them. A social structure, even one in which they are bullied, partially fills the hole within most mitflits' personalities, and they rarely rebel or last out unless their rage hits a breaking point.\n\n---\n\nGremlins are cruel fey tricksters and saboteurs who have fully acclimated to life in the Universe, finding distinct niches for their inventive destructiveness. Nearly all gremlins delight in ruining or breaking things, whether it's something physical like a device or vehicle or something intangible such as an alliance or relationship. A gremlin's greatest joy is watching the collapse of complex creations, preferably after the slightest, carefully targeted nudge from the gremlin. Gremlins tend to denigrate, bully, or even slaughter their lesser kin, particularly mitflits, whom stronger gremlins derisively call \"baggies.\""
+}

@@ -1,0 +1,297 @@
+{
+  "kind": "creature",
+  "slug": "akuzhail",
+  "system": "pf2e",
+  "name": "Akuzhail",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "chaotic",
+    "evil",
+    "mutant"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 29,
+    "hp": 195,
+    "perception": 21,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 17,
+      "will": 19
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 3,
+      "int": -3,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 19,
+      "athletics": 21
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 10
+        },
+        {
+          "type": "poison",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Vulture Beak",
+      "attack": 23,
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d8",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Snake Fangs",
+      "attack": 23,
+      "damage": [
+        {
+          "dice": "2d12+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "bloom-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Centipede Mandibles",
+      "attack": 23,
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "acid"
+        },
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Life Bloom",
+      "category": "defensive",
+      "traits": [
+        "death",
+        "primal"
+      ],
+      "text": "When Akuzhail dies, its body explodes in a riot of seething vegetation and raw life. All living creatures within a 60-foot radius are restored 12d6 healing Hit Points from this energy. A fully grown bloom of Lamashtu emerges from the carcass, but it can take no actions on this round. Next round, this bloom of Lamashtu enters combat at the same point in the turn during which Akuzhail perished on the previous round, but the bloom is Slowed 1. At the end of the bloom's turn, it attempts a DC 11 Flat check; on a success it loses the slowed 1 condition at the start of its next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Of Three Minds",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Akuzhail fails or critically fails a Will save\n\n---\n\nEffect Akuzhail rerolls the Will save with a -4 penalty. If it fails this second save, it may make a third attempt but with a -8 penalty. It cannot make a third attempt if its second attempt was a critical failure.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "will",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalFailure",
+            "failure"
+          ],
+          "when": [
+            {
+              "not": "of-three-minds"
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "of-three-minds",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.Label.SecondAttempt",
+                "value": "second"
+              },
+              {
+                "label": "PF2E.SpecificRule.Label.ThirdAttempt",
+                "value": "third"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "untyped",
+          "value": -4,
+          "slug": "second-mind",
+          "when": [
+            "of-three-minds:second"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "untyped",
+          "value": -8,
+          "slug": "third-mind",
+          "when": [
+            "of-three-minds:third"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Three Headed",
+      "category": "defensive",
+      "text": "Any ability that would sever a chimera's head (such as a critical hit with a Vorpal Weapon) severs one head at random. Losing a head doesn't kill a chimera (as long as it has one head left), but it does prevent it from making Strikes with the lost head or using the head's Breath Weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Triple Opportunity",
+      "category": "defensive",
+      "text": "A chimera gains 2 extra reactions each round that it can use only to make Attacks of Opportunity. It must use a different head for each reaction, and it can't use more than one on the same triggering action. If it loses one of its heads, it also loses one of these extra reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Bloom Venom",
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "primal"
+      ],
+      "text": "Saving Throw DC 29 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 2d6 poison and Enfeebled 1\n\nStage 2 2d6 poison and Enfeebled 2\n\nStage 3 2d10 poison, enfeebled 2, and exposure to Lamashtu's bloom."
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Akuzhail breathes a 60-foot line of venom from its snake mouth that deals 11d6 poison damage (DC 29 basic Fortitude save). Akuzhail can't use Breath Weapon for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Frightening Rattle",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "primal",
+        "sonic"
+      ],
+      "text": "Akuzhail shakes the rattle at the end of its tail to distract and frighten its enemies. Any creature within 30 feet must succeed at a DC 29 Will save save or become Frightened 1 (Frightened 2 on a critical failure). On a critical success, a creature is temporarily immune to Akuzhail's Frightening Rattle for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Lamashtu's Bloom",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "disease",
+        "magical"
+      ],
+      "text": "While some NPCs become afflicted by Lamashtu's bloom curse during Parts 1 and 2 of this chapter, during Part 3 the PCs may be exposed to it as well. While the bloom is itself a curse, it functions mechanically more like a disease, and as such features both of these affliction traits. As long as the curse persists, a creature cannot recover from the disease, and removing the curse does not automatically remove the disease element of the affliction. Both elements must be dealt with individually before a victim suffering from Lamashtu's Bloom is safe. As with all elements of this curse, slaying the bloom of Lamashtu in area C10 automatically removes this affliction.\n\n---\nSaving Throw DC 23 Fortitude save\n\nOnset 1 week\n\nStage 1 no ill effects (1 day)\n\nStage 2 Enfeebled 1 (1 day)\n\nStage 3 enfeebled 1 and 2d6 poison damage (8 hours)\n\nStage 4 Unconscious and 4d6 poison damage (10 minutes)\n\nStage 5 death\n\nSpecial a creature that dies from Lamashtu's bloom explodes in a blast of First World foliage, releasing a monster. This creature is typically a low-intelligence beast or dragon between 7th and 9th level, depending on the GM's whim."
+    },
+    {
+      "kind": "ability",
+      "name": "Three-Headed Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Akuzhail makes a Strike with its vulture beak, snake fangs, and centipede mandibles, each at a -2 penalty and targeting a different creature. These Strikes count as only one attack for its multiple attack penalty, and the penalty doesn't increase until it has made all three attacks.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "three-headed-Strike",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "snake-fangs-attack",
+            "vulture-beak-attack",
+            "centipede-mandibles-attack"
+          ],
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "three-headed-Strike"
+          ]
+        }
+      ]
+    }
+  ],
+  "blurb": "Variant chimera"
+}

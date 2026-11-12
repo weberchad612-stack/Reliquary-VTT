@@ -1,0 +1,64 @@
+{
+  "kind": "feat",
+  "slug": "dodging-roll",
+  "system": "pf2e",
+  "name": "Dodging Roll",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "monk"
+  ],
+  "category": "class",
+  "actions": "reaction",
+  "prerequisites": [
+    "master in Acrobatics"
+  ],
+  "text": "Trigger You take damage from an area effect that allows a Reflex save.\n\n---\n\nYou dodge a blow at the last possible moment.\n\nYou Step and gain resistance to all damage equal to your level against the triggering effect. If your Step moves you out of the triggering effect's area, this resistance is instead equal to your level plus your Dexterity modifier.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "dodging-roll",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Monk.DodgingRoll.StepIn",
+            "value": "in"
+          },
+          {
+            "label": "PF2E.SpecificRule.Monk.DodgingRoll.StepOut",
+            "value": "out"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "dodging-roll:in"
+        ],
+        "type": "all-damage",
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "dodging-roll:out"
+        ],
+        "type": "all-damage",
+        "value": "@actor.level + @actor.abilities.dex.mod"
+      }
+    }
+  ]
+}

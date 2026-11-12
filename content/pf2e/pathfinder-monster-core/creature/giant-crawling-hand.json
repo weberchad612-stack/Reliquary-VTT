@@ -1,0 +1,178 @@
+{
+  "kind": "creature",
+  "slug": "giant-crawling-hand",
+  "system": "pf2e",
+  "name": "Giant Crawling Hand",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": -4,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 13,
+      "stealth": 11,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "lifesense",
+        "range": 30,
+        "acuity": "precise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious",
+        "visual",
+        "bleed"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "(can't speak any language)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 15,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Pus Burst",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The giant crawling hand takes piercing or slashing damage\n\n---\n\nEffect A random creature adjacent to the giant crawling hand is sprayed with vile pus that deals 4d6 void damage. The affected creature must attempt a DC 21 Reflex save save.\n\nCritical Success The creature takes no damage.\n\nSuccess The creature takes half damage and becomes Sickened 1.\n\nFailure The creature takes full damage and becomes Sickened 2.\n\nCritical Failure The creature takes double damage and becomes Sickened 3."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mark Quarry",
+      "category": "offensive",
+      "text": "A crawling hand can be assigned a quarry by anointing the hand with a drop of the intended quarry's blood. If the hand ever has no quarry, it automatically gains the next creature it damages as its quarry. The hand gains a +1 circumstance bonus to Perception checks when it Seeks its quarry, to Survival checks when it Tracks its quarry, and damage rolls when it Strikes its quarry.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mark-quarry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "mark-quarry",
+            "action:seek"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "mark-quarry",
+            "action:track"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "mark-quarry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "A giant crawling hand is the appendage of a very large creature, such as a giant.\n\n---\n\nTypically, crawling hands are formed when severed appendages are endowed with a crude sentience by evil necromantic energies that turn them into tireless killers. Yet crawling hands can also arise spontaneously, usually when a creature loses an appendage in a place rife with necromantic energy or with a connection to the Void."
+}

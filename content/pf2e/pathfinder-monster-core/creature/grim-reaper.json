@@ -1,0 +1,308 @@
+{
+  "kind": "creature",
+  "slug": "grim-reaper",
+  "system": "pf2e",
+  "name": "Grim Reaper",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 21,
+  "rarity": "unique",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 47,
+    "hp": 320,
+    "perception": 41,
+    "saves": {
+      "fortitude": 37,
+      "reflex": 41,
+      "will": 38
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 8,
+      "dex": 10,
+      "int": 5,
+      "str": 8,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 43,
+      "athletics": 38,
+      "deception": 40,
+      "intimidation": 43,
+      "religion": 39,
+      "society": 36,
+      "stealth": 43
+    },
+    "speeds": {
+      "land": 50,
+      "fly": 75
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious",
+        "bleed"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "death's grace, void healing",
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "status sight"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 47,
+      "attack": 37,
+      "spells": [
+        {
+          "name": "Execute",
+          "rank": 10,
+          "ref": "spells:spell/execute",
+          "uses": 4
+        },
+        {
+          "name": "Interplanar Teleport",
+          "rank": 7,
+          "ref": "spells:spell/interplanar-teleport"
+        },
+        {
+          "name": "Truesight (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Haste (Constant)",
+          "rank": 3,
+          "ref": "spells:spell/haste"
+        },
+        {
+          "name": "See the Unseen (Constant)",
+          "rank": 2,
+          "ref": "spells:spell/see-the-unseen"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Scythe",
+      "ref": "equipment:item/scythe",
+      "type": "weapon"
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Effect: Haste",
+      "text": "Granted by Haste\n\nThe target gains the quickened condition and can use the extra action each round only for Strike and Stride actions."
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Effect: See the Unseen",
+      "text": "Granted by See the Unseen\n\nYou can see invisible creatures as though they weren't invisible, although their features are blurred, making them Concealed and difficult to identify. You also gain a +2 status bonus to checks you make to disbelieve illusions."
+    },
+    {
+      "kind": "strike",
+      "name": "Keen Scythe",
+      "attack": 40,
+      "traits": [
+        "agile",
+        "deadly-3d10",
+        "magical",
+        "reach-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+23",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "death-strike",
+        "energy-drain"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Death's Grace",
+      "category": "interaction",
+      "text": "The Grim Reaper can choose whether or not it counts as undead for effects that affect undead differently. Even if it does not count as undead, the Grim Reaper still never counts as a living creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Status Sight",
+      "category": "interaction",
+      "text": "The Grim Reaper automatically knows the Hit Points, conditions, afflictions, and emotions of all creatures it can see."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Misfortune",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "misfortune"
+      ],
+      "text": "20 feet.\n\nLiving creatures in the aura must roll twice on all d20 rolls and use the lower result.\n\nEffect: Aura of Misfortune",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:mode:living"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Misfortune"
+              }
+            ],
+            "key": "Aura",
+            "radius": 20,
+            "slug": "aura-of-misfortune",
+            "traits": [
+              "divine",
+              "misfortune"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lurking Death",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "teleportation"
+      ],
+      "text": "Trigger A creature within 100 feet makes a ranged attack or uses an action that has the concentrate, manipulate, or move trait\n\n---\n\nEffect The Grim Reaper teleports to a square adjacent to the triggering creature and makes a melee Strike against it. If the Strike hits, the Grim Reaper disrupts the triggering action."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "text": "The Grim Reaper can choose whether or not it takes vitality damage.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Death Strike",
+      "category": "offensive",
+      "traits": [
+        "death"
+      ],
+      "text": "A creature critically hit by any of the grim reaper's attacks or that critically fails against any of its spells must succeed at a DC 47 Fortitude save save or die.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Energy Drain",
+      "category": "offensive",
+      "text": "When the Grim Reaper hits and deals damage with its scythe, it regains 20 healing Hit Points, and the target must succeed at a DC 43 Fortitude save save or become Doomed 1. If the target is already doomed, the doomed value increases by 1 (to a maximum of doomed 3)."
+    },
+    {
+      "kind": "ability",
+      "name": "Final Death",
+      "category": "offensive",
+      "text": "A creature killed by the Grim Reaper can't be brought back to life by any means short of divine intervention."
+    },
+    {
+      "kind": "ability",
+      "name": "Infuse Weapon",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Any scythe gains the agile trait, can't be disarmed, and becomes a +3 major striking keen scythe while the Grim Reaper wields it.\n\nIf the Grim Reaper Strikes a creature with a weakness to any specific type of damage, the scythe's damage counts as that type of damage, in addition to slashing.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "scythe-damage",
+          "text": "PF2E.NPCAbility.GrimReaper.InfuseWeapon"
+        }
+      ]
+    }
+  ],
+  "text": "The Grim Reaper is the unflinching personification of death. Silent as the grave and as inevitable as time itself, this legendary being hunts down and finishes creatures that have evaded death for far too long. Sometimes the Grim Reaper comes without warning, while at others it comes to finish the work that other creatures could not. The Grim Reaper serves no god, fiend, or aeon. It is both despised and feared by psychopomps and celestials, but few-if any-dare to stand in its way. Like some eternal plague, it kills those who try to cure the multiverse of its presence. It stands alone and holds only its own council, and the pleading and reasoning of mortals and immortals alike fall on deaf ears once the Grim Reaper closes on its quarry. Its own reasoning is silent to mortal ears and inscrutable to the mortal mind, but no matter the reason, the result is unyielding and final.\n\nWhile some legends hold that the Grim Reaper appears before everyone as they die, the truth is quite a bit more disturbing. Such vigils in fact lie within the providence of the psychopomps, a race of immortals charged with the protection and guidance of mortal souls through the afterlife. The Grim Reaper has little interest in protecting souls or guiding them. It is instead compelled by sinister agendas arising within the nighted realm of Abaddon, where the Horsemen of the Apocalypse rule. Indeed there are many similarities in shape and form between the Grim Reaper and Charon, the Horseman of Death, but no recorded instance exists of these two powerful entities working together. Instead, the Grim Reaper serves as something of a manifestation of Abaddon itself, and in this regard is believed by some to be an incarnation of the mysterious First Horseman. When the Grim Reaper comes to a world, it does so not as an angel of mercy, but as a relentless harvester of life. Those who fall to the Grim Reaper were not destined to die as much as they were selected, hunted, and murdered.\n\nPerhaps the most frightening legends surrounding the Grim Reaper concern its nature as a singular entity, for some believe that more than one grim reaper exists in the Great Beyond. These whispers tell of a cabal of at least nine of these creatures that stalk reality, culling the living as inexplicable servants of true entropy. According to the teaching of some death cults, the final goal of the Grim Reaper is to end the entire cycle of life and death and serve as a silent lord of an empty universe."
+}

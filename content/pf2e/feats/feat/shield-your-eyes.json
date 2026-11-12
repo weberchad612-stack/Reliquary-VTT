@@ -1,0 +1,111 @@
+{
+  "kind": "feat",
+  "slug": "shield-your-eyes",
+  "system": "pf2e",
+  "name": "Shield Your Eyes",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "guardian"
+  ],
+  "category": "class",
+  "text": "You reflexively place your shield between your eyes and visual dangers. While your shield is raised, you gain a +2 circumstance bonus to all defenses against effects with the light or visual trait. If you critically fail your save against such an effect while your shield is raised, you fail instead. Likewise, if such an effect critically succeeds against your DC, it's a success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "fortitude",
+        "reflex",
+        "will"
+      ],
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "self:effect:raise-a-shield",
+        {
+          "or": [
+            "item:trait:light",
+            "item:trait:visual"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "self:effect:raise-a-shield",
+          {
+            "or": [
+              "item:trait:light",
+              "item:trait:visual"
+            ]
+          }
+        ],
+        "selector": "fortitude"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "self:effect:raise-a-shield",
+          {
+            "or": [
+              "item:trait:light",
+              "item:trait:visual"
+            ]
+          }
+        ],
+        "selector": "reflex"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "self:effect:raise-a-shield",
+          {
+            "or": [
+              "item:trait:light",
+              "item:trait:visual"
+            ]
+          }
+        ],
+        "selector": "will"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "key": "EphemeralEffect",
+        "selectors": [
+          "ac",
+          "fortitude-dc",
+          "reflex-dc",
+          "will-dc"
+        ],
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Shield Your Eyes"
+      }
+    }
+  ]
+}

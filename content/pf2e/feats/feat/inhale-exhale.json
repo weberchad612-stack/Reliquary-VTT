@@ -1,0 +1,92 @@
+{
+  "kind": "feat",
+  "slug": "inhale-exhale",
+  "system": "pf2e",
+  "name": "Inhale, Exhale!",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "concentrate",
+    "dragonet"
+  ],
+  "category": "ancestry",
+  "actions": 1,
+  "prerequisites": [
+    "Dragonet Breath"
+  ],
+  "text": "You take an especially deep breath as a prelude to unleashing your dragonet breath on your foes. If your next action is to use your Dragonet Breath, add 5 feet to the length of the cone or line. If your breath deals damage, you also deal one additional die of damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "inhale-exhale",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:dragonet-breath",
+          "inhale-exhale"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "{item|description}"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "heritage:fey-dragonet",
+                  "heritage:house-drake",
+                  "heritage:pearl-dragonet"
+                ]
+              }
+            ],
+            "text": "@Template[cone|distance:20]"
+          },
+          {
+            "predicate": [
+              "heritage:homing-drake"
+            ],
+            "text": "@Template[line|distance:35]"
+          },
+          {
+            "predicate": [
+              "heritage:tidepool-dragonet"
+            ],
+            "text": "@Template[line|distance:20]"
+          },
+          {
+            "predicate": [
+              "heritage:tidepool-dragonet"
+            ],
+            "text": "@Template[cone|distance:25]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "inhale-exhale"
+        ],
+        "selector": "dragonet-breath-inline-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "effect-adaptive-strike",
+  "system": "pf2e",
+  "name": "Effect: Adaptive Strike",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "The creature's melee strikes count either as adamantine, cold iron or silver.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.PreciousMaterialAdamantine",
+            "value": "adamantine"
+          },
+          {
+            "label": "PF2E.PreciousMaterialColdIron",
+            "value": "cold-iron"
+          },
+          {
+            "label": "PF2E.PreciousMaterialSilver",
+            "value": "silver"
+          }
+        ],
+        "flag": "material",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:melee"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "materials",
+        "value": "{item|flags.system.rulesSelections.material}"
+      }
+    }
+  ]
+}

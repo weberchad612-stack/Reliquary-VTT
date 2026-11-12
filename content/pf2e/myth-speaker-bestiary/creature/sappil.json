@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "sappil",
+  "system": "pf2e",
+  "name": "Sappil",
+  "source": {
+    "title": "Pathfinder #216: The Acropolis Pyre",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "unique",
+  "traits": [
+    "humanoid",
+    "vishkanya"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 19,
+    "perception": 3,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 4,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 1,
+      "int": 3,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "arcana": 6,
+      "athletics": 6,
+      "diplomacy": 3,
+      "intimidation": 3,
+      "society": 6,
+      "warfare-lore": 6
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "iblydan",
+      "vishkanyan"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Magus Prepared Spells",
+      "tradition": "arcane",
+      "type": "prepared",
+      "dc": 16,
+      "attack": 6,
+      "spells": [
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Hydraulic Push",
+          "rank": 1,
+          "ref": "spells:spell/hydraulic-push"
+        },
+        {
+          "name": "Ignition",
+          "rank": 1,
+          "ref": "spells:spell/ignition"
+        },
+        {
+          "name": "Needle Darts",
+          "rank": 1,
+          "ref": "spells:spell/needle-darts"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Conflux Spells",
+      "tradition": "arcane",
+      "type": "focus",
+      "dc": 16,
+      "attack": 6,
+      "spells": [
+        {
+          "name": "Thunderous Strike",
+          "rank": 1,
+          "ref": "spells:spell/thunderous-strike"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Greatsword",
+      "ref": "equipment:item/greatsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Spellbook",
+      "ref": "equipment:item/spellbook-blank",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Greatsword",
+      "attack": 6,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+3",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Arcane Cascade",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "Requirements Sappil most recent action this turn was to Cast a Spell or make a Spellstrike\n\n---\nEffect While in this stance, Sappil's melee Strikes deal 1 extra force damage and gain the arcane trait, making them magical. When he enters Arcane Cascade and at the start of each of his turns while in the stance, if he's wielding a melee weapon in two hands, he gains 1 temporary HP.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "all",
+            "key": "RollOption",
+            "option": "arcane-cascade",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "events": {
+              "onTurnStart": true
+            },
+            "key": "TempHP",
+            "predicate": [
+              "arcane-cascade"
+            ],
+            "value": 1
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 1,
+          "slug": "arcane-cascade-extra-damage",
+          "damageType": "{item|flags.system.rulesSelections.stanceArcaneCascade}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "predicate": [
+              "arcane-cascade"
+            ],
+            "property": "traits",
+            "value": "arcane"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Envenom",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per day\n\n---\nEffect Sappil applies vishkanyan venom (either his saliva or blood) to one weapon that he's holding.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Spellstrike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Sappil Casts a Spell that takes 1 or 2 actions to cast and requires a spell attack roll and makes a melee Strike, using the attack roll result to determine the effects of both the Strike and the spell. This counts as two actions for his multiple attack penalty, but he doesn't apply the penalty until after he's completed the Spellstrike. This grants the Strike the arcane and magical traits. After using Spellstrike, Sappil can't do so again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Vishkanyan Venom",
+      "category": "offensive",
+      "traits": [
+        "injury",
+        "poison"
+      ],
+      "text": "Saving Throw DC 15 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage (1 round)\n\nStage 2 1d4 poison damage and Off-Guard (1 round)\n\nStage 3 1d4 poison damage, off-guard, and a –5-foot penalty to Speed (1 round)"
+    }
+  ],
+  "blurb": "Patient male vishkayna mercenary"
+}

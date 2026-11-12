@@ -1,0 +1,87 @@
+{
+  "kind": "effect",
+  "slug": "effect-ghost-slayers-caress",
+  "system": "pf2e",
+  "name": "Effect: Ghost Slayer's Caress",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 5,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Ghost Scarf\n\nA weapon you carry is granted the effects of a ghost touch property rune. If the weapon already bears a ghost touch rune, you instead gain a +1 item bonus to Fortitude saves against effects from incorporeal undead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.WeaponPropertyRune.ghostTouch.Name",
+            "value": "ghost-touch"
+          },
+          {
+            "label": "PF2E.SavesFortitude",
+            "value": "fortitude"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "ghost-scarf"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:equipped",
+            {
+              "not": "item:rune:property:ghost-touch"
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "ghost-scarf:ghost-touch"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "ghost-scarf:ghost-touch"
+        ],
+        "property": "property-runes",
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "fortitude",
+      "type": "item",
+      "value": 1,
+      "when": [
+        "ghost-scarf:fortitude",
+        "origin:trait:incorporeal",
+        "origin:trait:undead"
+      ]
+    }
+  ]
+}

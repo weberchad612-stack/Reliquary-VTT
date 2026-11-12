@@ -1,0 +1,268 @@
+{
+  "kind": "creature",
+  "slug": "razmiri-blade-assassin",
+  "system": "pf2e",
+  "name": "Razmiri Blade Assassin",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 112,
+    "perception": 12,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 17,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 2,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 13,
+      "deception": 14,
+      "intimidation": 14,
+      "stealth": 17,
+      "thievery": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Mask",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Gray Razmir Robes",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Fearflower Nectar",
+      "ref": "equipment:item/fearflower-nectar",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 17,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The blade assassin is targeted with a melee or ranged attack by an attacker they can see\n\n---\nEffect The blade assassin gains a +2 circumstance bonus to AC against the triggering attack",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Otherworldly Will",
+      "category": "defensive",
+      "text": "The blade assassin is driven forward by a singular, otherworldly will, guiding their actions. Whenever the blade assassin attempts a Will saving throw against a mental effect that would control or dictate their actions, the blade assassin treats the result of the saving throw as one category better.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "inflicts:controlled",
+                  "item:slug:command",
+                  "item:slug:suggestion",
+                  "item:slug:dominate"
+                ]
+              }
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unexplained Demise",
+      "actions": "free",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Trigger The assassin is captured alive\n\n---\nEffect Blood pours from the assassin's ears and nose, and they drop dead on the spot. An adjacent PC who witnesses this unexplained death must succeed at a DC 22 Will save save or become Frightened 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Weapon",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The blade assassin is wielding a piercing or slashing weapon and has a free hand\n\n---\nEffect The blade assassin applies a poison to the weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The blade assassin deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the blade assassin.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Human rogue"
+}

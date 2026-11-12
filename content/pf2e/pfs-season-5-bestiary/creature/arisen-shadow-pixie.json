@@ -1,0 +1,185 @@
+{
+  "kind": "creature",
+  "slug": "arisen-shadow-pixie",
+  "system": "pf2e",
+  "name": "Arisen Shadow Pixie",
+  "source": {
+    "title": "Pathfinder Society Quest #15: In the Footsteps of Horror",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "fey",
+    "shadow",
+    "sprite",
+    "undead",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 15,
+    "hp": 26,
+    "perception": 7,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": -3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 8,
+      "deception": 6,
+      "stealth": 8
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "necril",
+      "shadowtongue"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "mental",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 3
+        },
+        {
+          "type": "holy",
+          "value": 2
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4-1",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 9,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d6-1",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shadow Spark",
+      "attack": 9,
+      "maxRange": 20,
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadowed Illumination",
+      "category": "offensive",
+      "traits": [
+        "darkness",
+        "light",
+        "primal"
+      ],
+      "text": "Shadow pixies exude shadow, counteracting all other light and darkness effects their level or lower to leave dim light out to 10 feet (counteract rank 1, counteract bonus +7). The shadow pixie can suppress this effect with a single action, which has the concentrate trait. While the effect is suppressed, the shadow pixie's Strikes don't deal cold damage and they can't use their shadow spark Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shadowed-illumination",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "melee-strike-damage",
+          "type": "untyped",
+          "value": 3,
+          "when": [
+            "shadowed-illumination"
+          ],
+          "damageType": "cold"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "kind": "effect",
+  "slug": "effect-insight-coffee",
+  "system": "pf2e",
+  "name": "Effect: Insight Coffee",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Insight Coffee (Lesser), Insight Coffee (Moderate), Insight Coffee (Greater)\n\nYou use d8s instead of d6s for your extra damage from the Strategic Strike class feature, if you have it. You also gain an item bonus to checks to Recall Knowledge with a skill determined by the blend chosen when the item is crafted.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:insight-coffee-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Insight Coffee (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:insight-coffee-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Insight Coffee (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:insight-coffee-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Insight Coffee (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "insight-coffee"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Skill.Arcana",
+            "value": "arcana"
+          },
+          {
+            "label": "PF2E.Skill.Medicine",
+            "value": "medicine"
+          },
+          {
+            "label": "PF2E.Skill.Nature",
+            "value": "nature"
+          },
+          {
+            "label": "PF2E.Skill.Occultism",
+            "value": "occultism"
+          },
+          {
+            "label": "PF2E.Skill.Religion",
+            "value": "religion"
+          },
+          {
+            "label": "PF2E.Skill.Society",
+            "value": "society"
+          }
+        ],
+        "flag": "insightCoffee",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "dice:slug:strategic-strike"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": 8
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "certain-stratagem"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "inline-damage"
+        ],
+        "value": 8
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.insightCoffee}",
+      "type": "item",
+      "value": 2,
+      "slug": "insight-coffee-bonus",
+      "when": [
+        "action:recall-knowledge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "insight-coffee:insight-coffee-moderate"
+        ],
+        "selector": "{item|flags.system.rulesSelections.insightCoffee}",
+        "slug": "insight-coffee-bonus",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "insight-coffee:insight-coffee-greater"
+        ],
+        "selector": "{item|flags.system.rulesSelections.insightCoffee}",
+        "slug": "insight-coffee-bonus",
+        "value": 4
+      }
+    }
+  ]
+}

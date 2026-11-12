@@ -1,0 +1,266 @@
+{
+  "kind": "effect",
+  "slug": "effect-curse-of-the-heros-burden",
+  "system": "pf2e",
+  "name": "Effect: Curse of the Hero's Burden",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "labels": [
+      "Minor",
+      "Moderate",
+      "Major",
+      "Extreme"
+    ]
+  },
+  "text": "Granted by Battle\n\nCurse of the Hero's Burden\n\nYou thrive while adrenaline flows and your life depends on your might alone, but holding the collective battle prowess of the ages within you leaves your body weakened after a fight. You smell faintly of steel and blood no matter how you try to remove or mask the scent, you appear more muscular than you actually are, and you hear the faint clash and clamor of battle in the distance at all times.\n\nMinor Curse\n\nYour body languishes when you aren't bringing harm to your foes. You take a -2 status penalty to AC and saving throws, but each time you make a Strike, you can suspend these penalties until the start of your next turn.\n\nModerate Curse\n\nThe strain of conflict wears upon your body, even though you gain vitality from it. Making a Strike reduces the penalty from your minor curse to -1 rather than suspending it entirely. You gain a +2 status bonus to weapon and unarmed damage rolls. You also gain fast healing equal to half your level while in a non-trivial combat encounter.\n\nMajor Curse (11th)\n\nYour body proves capable of truly heroic feats, but doing so interferes with your mental focus. Your moderate curse's fast healing is equal to your level, and its damage bonus is +6. You gain a +1 status bonus to weapon and unarmed attack rolls, but you are Stupefied 2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.OracleCurses.Battle.MadeAStrike",
+        "option": "made-a-strike",
+        "predicate": [
+          {
+            "or": [
+              "class:oracle",
+              "feat:first-revelation"
+            ]
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": -2,
+      "slug": "battle-curse-penalty",
+      "when": [
+        {
+          "or": [
+            "class:oracle",
+            "feat:first-revelation"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "class:oracle",
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "battle-curse-damage",
+        "type": "status",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FastHealing",
+        "predicate": [
+          "class:oracle",
+          "parent:badge:value:2",
+          {
+            "gt": [
+              "encounter:threat",
+              0
+            ]
+          }
+        ],
+        "type": "fast-healing",
+        "value": "floor(@actor.level/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FastHealing",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          },
+          {
+            "gt": [
+              "encounter:threat",
+              0
+            ]
+          }
+        ],
+        "type": "fast-healing",
+        "value": "@actor.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "selectors": [
+          "strike-damage"
+        ],
+        "slug": "battle-curse-damage",
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "selector": "attack",
+        "slug": "battle-curse-attack",
+        "type": "status",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "grantee": "restrict"
+        },
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              3
+            ]
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.conditionitems.Item.Stupefied"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:major-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "effect",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:id:{item|id}",
+          {
+            "not": "feature:extreme-curse"
+          }
+        ],
+        "property": "badge-max",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          {
+            "gte": [
+              "parent:badge:value",
+              2
+            ]
+          },
+          "made-a-strike"
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw"
+        ],
+        "slug": "battle-curse-penalty",
+        "value": -1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "override",
+        "predicate": [
+          "parent:badge:value:1",
+          "made-a-strike"
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw"
+        ],
+        "slug": "battle-curse-penalty",
+        "value": 0
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "oracular-curse:stage:{item|badge.value}"
+      }
+    }
+  ]
+}

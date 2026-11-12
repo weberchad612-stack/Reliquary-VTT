@@ -1,0 +1,367 @@
+{
+  "kind": "creature",
+  "slug": "wereant-sentinel",
+  "system": "pf2e",
+  "name": "Wereant Sentinel",
+  "source": {
+    "title": "Pathfinder #174: Shadows of the Ancients",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "rare",
+  "traits": [
+    "beast",
+    "evil",
+    "human",
+    "humanoid",
+    "lawful",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 43,
+    "hp": 400,
+    "perception": 32,
+    "saves": {
+      "fortitude": 35,
+      "reflex": 29,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 5,
+      "dex": 5,
+      "int": 0,
+      "str": 10,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 37,
+      "intimidation": 33,
+      "society": 27
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(45 with shield raised)",
+      "languages": "insect empathy, telepathy 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Khopesh",
+      "ref": "equipment:item/khopesh",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sturdy Shield (Major)",
+      "ref": "equipment:item/sturdy-shield-major",
+      "type": "shield"
+    },
+    {
+      "kind": "strike",
+      "name": "Khopesh",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+20",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Insect Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "The wereant can communicate with insects."
+    },
+    {
+      "kind": "ability",
+      "name": "Gnawing Retort",
+      "category": "defensive",
+      "text": "[reaction] As wereant disciple."
+    },
+    {
+      "kind": "ability",
+      "name": "Hive Mind",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Wereants operate with a shared hive intelligence. While within telepathic range of at least one other wereant, a wereant disciple gains a +2 circumstance bonus to initiative checks, Perception checks, and saving throws against mental effects. If one wereant is aware of a combatant, all members of the hive mind within telepathic range are aware of it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "hive-mind",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind",
+            "mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Retributive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy damages the wereant sentinel's ally, and both are within 15 feet of the wereant sentinel\n\n---\nEffect The ally gains resistance 20 against the triggering damage. If the foe is within reach, the wereant sentinel makes a melee Strike against it."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The wereant changes into their humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true wereant's natural form is their hybrid shape. In humanoid shape, they use their original humanoid size, lose their jaws and claw Strikes, and gain a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by their mandibles. In animal shape, they take the form of a Medium giant ant, gain a climb Speed of 20 feet, gain Grab on their mandibles Strike, and lose their weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 36,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 20
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 36,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 20
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Mandibles",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "mandibles",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "mandibles-damage",
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "mandibles-damage",
+          "when": [
+            "change-shape:hybrid"
+          ]
+        },
+        {
+          "key": "speed",
+          "type": "climb",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Wereant",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids\n\nSaving Throw DC 34 Fortitude save.\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into a wereant until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling Unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "mandibles-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hasty Reposition",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\n\nEffect The wereant sentinel Steps, moving up to 15 feet.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the wereant must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of their mandibles Strike by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Sentinel's Focus",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The wereant sentinel plants its feet in defiance of those who would move it. It gains a +2 circumstance bonus to defenses against being Shoved or Tripped, and its melee Strikes deal an additional 2d8 mental damage. These effects end when it moves from its square using anything other than Hasty Reposition.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sentinels-focus",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "sentinels-focus",
+            {
+              "or": [
+                "action:trip",
+                "action:shove"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "sentinels-focus"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

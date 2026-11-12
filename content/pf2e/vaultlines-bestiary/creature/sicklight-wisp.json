@@ -1,0 +1,236 @@
+{
+  "kind": "creature",
+  "slug": "sicklight-wisp",
+  "system": "pf2e",
+  "name": "Sicklight Wisp",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "aberration"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 36,
+    "hp": 140,
+    "perception": 24,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 26,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 8,
+      "int": 5,
+      "str": -5,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 25,
+      "deception": 21,
+      "intimidation": 21,
+      "stealth": 25
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "radiation"
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "deep sight"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Touch",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "radiation"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+15",
+          "type": "poison"
+        }
+      ],
+      "effects": [
+        "sickening-touch"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Sight",
+      "category": "interaction",
+      "text": "The sicklight wisp can see into and through solid matter within the radius of its sicklight glow. Certain metals (such as lead) block this vision."
+    },
+    {
+      "kind": "ability",
+      "name": "Magic Immunity",
+      "category": "defensive",
+      "text": "A sicklight wisp is immune to all spells except Force Barrage, Quandary, Revealing Light, and vitality spells.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "magic",
+          "except": "PF2E.IWR.Custom.WispVulnerabilities"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scrying Sickness",
+      "category": "defensive",
+      "text": "The wisp automatically tries to counteract all magical detection, revelation, and scrying effects used against any target or location within 50 feet of the wisp, using their Stealth check modifier for the counteract modifier. On a success, the creature that attempted the magical detection is targeted by the Never Mind spell (DC 33 Will save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Feed on Sickness",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Frequency once per round\n\nRequirements An enemy within 15 feet of the sicklight wisp is sickened\n\n---\nEffect The sicklight wisp feeds on the creature's illness. The creature takes 4d10 void damage (DC 33 basic Fortitude save save). The wisp regains 2d10 healing Hit Points, and if the sicklight wisp has Gone Dark, their sicklight glow reactivates.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Go Dark",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The sicklight wisp deactivates their Sicklight Glow, becoming Invisible. They can end this effect with another use of this action. If the wisp makes a radioactive touch Strike while invisible, the tracing of green energy left behind lets any observer determine the wisp's location, making them only Hidden to all observers until the wisp moves.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "go-dark",
+            "selection": "Compendium.pf2e.conditionitems.Item.Invisible",
+            "suboptions": [
+              {
+                "label": "PF2E.ConditionTypeInvisible",
+                "value": "Compendium.pf2e.conditionitems.Item.Invisible"
+              },
+              {
+                "label": "PF2E.ConditionTypeHidden",
+                "value": "Compendium.pf2e.conditionitems.Item.Hidden"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "go-dark"
+            ],
+            "uuid": "{item|flags.system.rulesSelections.goDark}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sickening Touch",
+      "category": "offensive",
+      "text": "A creature hit by the sicklight wisp's radioactive touch Strike or that ends its turn in the wisp's sicklight glow aura must succeed at a DC 33 Fortitude save save or become Sickened 1 (Sickened 2 on a critical failure). If the creature is already sickened, their sickened value instead increases by 1 (by 2 on a critical failure), to a maximum of Sickened 4. If the creature reaches sickened 4, they can't reduce their sickened value until the effect is counteracted by a cleanse affliction spell or similar effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Sicklight Glow",
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "light",
+        "radiation"
+      ],
+      "text": "50 feet. A sicklight wisp, though naturally Invisible, glows with a greenish illumination, casting dim light in the aura and making them visible. A creature that ends its turn within the aura is subjected to the wisp's sickening touch.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              {
+                "not": "go-dark"
+              }
+            ],
+            "radius": 50,
+            "traits": [
+              "light",
+              "radiation"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              {
+                "not": "go-dark"
+              }
+            ],
+            "value": {
+              "animation": {
+                "type": "pulse"
+              },
+              "bright": 0,
+              "color": "#5f9e49",
+              "coloration": 101,
+              "dim": 50
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The greenish pall that sicklight wisps cast over their surroundings causes creatures within it to sicken and die. Whereas the will-o'-wisps typically encountered on the surface feed on fear, sicklight wisps feast on the illness they spread, taking joy in robbing creatures of their vigor and health.\n\nThough most commonly associated with the pit of Mobhad Leigh, sicklight wisps are occasionally encountered elsewhere in the Darklands. Wicked creatures sometimes employ the wisps to foil attempts at scrying on their subterranean lairs, as anyone who uses magic to spy upon a sicklight wisp risks having their mind irrevocably shattered.\nCurse of the Infirm\nIn the Darklands, sicklight wisps are feared by both healers and the sick, because they're drawn to hospitals and other places of healing. Able to travel invisibly and evade scrying, the wisps slip into sickrooms, becoming briefly visible as they drain the remaining life from ailing victims. To protect against the wisps, some long-standing institutions of healing have taken to planting radlight caps around their facilities, since these otherwise dangerous mushrooms turn black in the presence of even an invisible sicklight wisp."
+}

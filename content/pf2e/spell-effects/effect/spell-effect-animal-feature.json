@@ -1,0 +1,172 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-animal-feature",
+  "system": "pf2e",
+  "name": "Spell Effect: Animal Feature",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Animal Feature\n\nYou gain one animalistic feature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectAnimalFeature.CatEyes",
+            "value": "cat-eyes"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "value": "claw"
+          },
+          {
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "value": "jaws"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectAnimalFeature.FishTail",
+            "predicate": [
+              {
+                "gte": [
+                  "{item|level}",
+                  4
+                ]
+              }
+            ],
+            "value": "fish-tail"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectAnimalFeature.OwlEyes",
+            "predicate": [
+              {
+                "gte": [
+                  "{item|level}",
+                  4
+                ]
+              }
+            ],
+            "value": "owl-eyes"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectAnimalFeature.Wings",
+            "predicate": [
+              {
+                "gte": [
+                  "{item|level}",
+                  4
+                ]
+              }
+            ],
+            "value": "wings"
+          }
+        ],
+        "flag": "animalFeature",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Feature",
+        "rollOption": "animal-feature"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "animal-feature:cat-eyes"
+        ],
+        "selector": "low-light-vision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "img": "icons/commodities/claws/claw-bear-brown-grey.webp",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "predicate": [
+          "animal-feature:claw"
+        ],
+        "traits": [
+          "agile",
+          "finesse",
+          "magical",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "jaws",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "piercing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "img": "icons/creatures/abilities/mouth-teeth-long-red.webp",
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.jaws",
+        "predicate": [
+          "animal-feature:jaws"
+        ],
+        "traits": [
+          "magical",
+          "unarmed"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "animal-feature:fish-tail"
+        ],
+        "selector": "swim",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "animal-feature:owl-eyes"
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "animal-feature:wings"
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    }
+  ]
+}

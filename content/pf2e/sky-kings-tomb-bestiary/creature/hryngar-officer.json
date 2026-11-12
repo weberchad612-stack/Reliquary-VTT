@@ -1,0 +1,253 @@
+{
+  "kind": "creature",
+  "slug": "hryngar-officer",
+  "system": "pf2e",
+  "name": "Hryngar Officer",
+  "source": {
+    "title": "Pathfinder #195: Heavy is the Crown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "dwarf",
+    "evil",
+    "hryngar",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 95,
+    "perception": 15,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 0,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 15,
+      "diplomacy": 11,
+      "intimidation": 13,
+      "society": 10,
+      "legal-lore": 12,
+      "warfare-lore": 8
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven",
+      "sakvroth"
+    ],
+    "notes": {
+      "ac": "(26 with shield raised)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Blood Vendetta",
+          "rank": 2,
+          "ref": "spells:spell/blood-vendetta"
+        },
+        {
+          "name": "Paranoia",
+          "rank": 2,
+          "ref": "spells:spell/paranoia"
+        },
+        {
+          "name": "Sigil",
+          "rank": 1,
+          "ref": "spells:spell/sigil"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 18,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 12,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Command",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet. The captain of the guard bolsters lower-level guards under their command, granting them a +1 status bonus to their attack rolls and a +2 status bonus to their Will saves.\n\nEffect: Under Command\n\nEffect: Aura of Command",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "predicate": [
+                  "target:effect:under-command",
+                  {
+                    "lt": [
+                      "target:level",
+                      "self:level"
+                    ]
+                  }
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Command"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "aura-of-command",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When the captain of the guard rolls a success on a Will save against a fear effect, they get a critical success instead. In addition, any time they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:fear"
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Warden",
+      "category": "defensive",
+      "text": "When the captain has their shield raised, they can Shield Block when an attack is made against an adjacent ally. If they do, the shield prevents that ally from taking damage instead of the captain."
+    },
+    {
+      "kind": "ability",
+      "name": "Shielded Advance",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The captain of the guard has their shield raised\n\n---\n\nEffect The captain of the guard presses forward, using their shield to push back foes.\n\nThe captain Strides and Shoves, in either order. The multiple attack penalty doesn't apply to this Shove, though the Shove does count toward the captain's multiple attack penalty."
+    }
+  ],
+  "text": "The captain of the guard leads a troop of soldiers who serve as security forces for a powerful individual, most often a high-ranking noble or very rich merchant, though this stat block could also represent a lower-ranking captain of the guard for the leader of a nation. A formidable opponent in their own right, the captain of the guard skillfully employs their troops to protect the life and health of their ward.\n\n---\n\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. In good-aligned societies, these officials carry out their duties fairly. In neutral and evil ones, these officials can be harsh and cruel (with an altered alignment to reflect this), imposing severe punishments on those who can't pay for mercy.",
+  "blurb": "Variant Captain Of The Guard"
+}

@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "rotting-cultist",
+  "system": "pf2e",
+  "name": "Rotting Cultist",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "fungus",
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 130,
+    "perception": 15,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 18,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 6,
+      "int": 2,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 16,
+      "deception": 16,
+      "intimidation": 14,
+      "religion": 14,
+      "stealth": 18,
+      "thievery": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Mask",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Razmir Robes",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 19,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 19,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Otherworldly Will",
+      "category": "defensive",
+      "text": "The rotting cultist is driven forward by a singular, otherworldly will, guiding their actions. Whenever the rotting cultist attempts a Will saving throw against a mental effect that would control or dictate its actions, the rotting cultist treats the result of the saving throw as one category better.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "inflicts:controlled",
+                  "item:slug:command",
+                  "item:slug:suggestion",
+                  "item:slug:dominate"
+                ]
+              }
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fungal Fervor",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The rotting cultist is reduced to 0 HP\n\n---\nEffect The rotting cultist avoids death and reduces their HP to 1. They are Slowed 1, and each time they use this ability, their slowed value increases by 1, up to a maximum of 3. Each time they use this ability, a bloom of fungus erupts from their flesh as their movements become even more disjointed. This slowed condition is reduced by 1 each day. Note that since this is a reaction, any further damage done to a rotting cultist that reduces them to 0 HP before they regain their reactions kills them."
+    },
+    {
+      "kind": "ability",
+      "name": "Pray to the Rotting God",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per day\n\n---\nEffect The rotting cultist calls out to the Rotting God, offering up their flesh in exchange for power. The rotting cultist is healed 4d6+8 healing HP, gains a +1 status bonus on attack rolls for 1 minute, and they reduce any condition (other than slowed) affecting them by 1 (if they have a numerical value; this has no effect on conditions without values). The rotting cultist becomes Slowed 1 for 10 minutes as a fungal bloom erupts from their flesh.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The rotting cultist deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the rotting cultist.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Fungal-infested human rogue"
+}

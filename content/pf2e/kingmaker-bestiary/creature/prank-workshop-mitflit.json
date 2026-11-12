@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "prank-workshop-mitflit",
+  "system": "pf2e",
+  "name": "Prank Workshop Mitflit",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "fey",
+    "gremlin",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 25,
+    "perception": 5,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 8,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 0,
+      "dex": 3,
+      "int": 1,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 6,
+      "diplomacy": {
+        "value": 2,
+        "special": [
+          {
+            "value": 8,
+            "label": "vs. arthropods",
+            "when": [
+              "target:tag:arthropod"
+            ]
+          }
+        ]
+      },
+      "nature": 6,
+      "stealth": 6,
+      "thievery": 6
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Speak with Animals (At Will) (Arthropods Only)",
+          "rank": 2,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Marbles",
+      "type": "consumable",
+      "quantity": 6
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Loathing",
+      "category": "interaction",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "A mitflit's self-loathing makes it easy to influence. It takes a -4 penalty to its Will DC against checks to Coerce, Demoralize, Make an Impression, and Request.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "untyped",
+          "value": -4,
+          "when": [
+            {
+              "or": [
+                "action:coerce",
+                "action:demoralize",
+                "action:make-an-impression",
+                "action:request"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vermin Empathy",
+      "category": "interaction",
+      "text": "Mitflits can use Diplomacy to make-an-impression on and request things of arthropods (insects, spiders, scorpions, crabs, and similar invertebrate animals). Most arthropods have a starting attitude of Indifferent to mitflits."
+    },
+    {
+      "kind": "ability",
+      "name": "Launch Marbles",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mitflit uses the marble launcher to fire six marbles at a creature. The target must attempt a DC 16 Reflex save save.\n\nSuccess The creature is unaffected.\n\nFailure The creature is distracted by the marbles and is Clumsy 2 until the end of its next turn.\n\nCritical Failure As failure, but one of the marbles hits the creature somewhere sensitive, causing 1d6 nonlethal bludgeoning damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Anger",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "mental"
+      ],
+      "text": "As long as it isn't Frightened, a mitflit gains a +2 status bonus to damage rolls against a creature that has previously damaged or tormented it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "vengeful-anger",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "vengeful-anger",
+            {
+              "not": "self:condition:frightened"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Mitflits, also known as mites, are self-loathing and pitiful cowards, easily bullied into servitude by other creatures or even slightly more powerful mitflit leaders. They tame insects, spiders, and other such creatures to serve as faithful allies. Mitflits have lost most of their ancestral gremlin magic, leaving these incomplete beings full of doubt and insecurity. Mitflits find companionship in the other base creatures of the world, and forge bonds of friendship with vermin, the only other beings that seem willing to accept them. A social structure, even one in which they are bullied, partially fills the hole within mitflits' personalities, and they rarely rebel or rail out unless their rage hits a breaking point.\n\n---\n\nGremlins are cruel fey tricksters and saboteurs who have fully acclimated to life on the Material Plane, finding distinct niches for their inventive destructiveness. All gremlins delight in ruining or breaking things, whether it's something physical like a device or vehicle or something intangible such as an alliance or relationship. A gremlin's greatest joy is watching the collapse of complex creations, preferably after the lightest and slightest, carefully targeted push from the gremlin. Gremlins tend to denigrate, bully, or even slaughter their lesser kin, particularly mitflits, whom gremlins (and many others) derisively call \"mites.\"",
+  "blurb": "Variant mitflit"
+}

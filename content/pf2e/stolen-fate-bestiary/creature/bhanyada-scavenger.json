@@ -1,0 +1,201 @@
+{
+  "kind": "creature",
+  "slug": "bhanyada-scavenger",
+  "system": "pf2e",
+  "name": "Bhanyada Scavenger",
+  "source": {
+    "title": "Pathfinder #190: The Choosing",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "evil"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 26,
+    "hp": 150,
+    "perception": 17,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 18,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 4,
+      "int": -3,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 17,
+      "stealth": 18,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "unarmed",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d10 + 8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Extraneous Flesh",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Frequency three times per day\n\nTrigger A Strike scores a critical hit on the bhanyada scavenger\n\n---\n\nEffect A critical hit might simply sever a component chunk that the bhanyada can lose without much harm. The bhanyada scavenger attempts a DC 11 Flat check. On a success, it doesn't take any extra damage from the critical hit (although it takes other effects normally, such as critical specialization effects).",
+      "frequency": {
+        "max": 3,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extraneous-flesh",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "extraneous-flesh"
+            ],
+            "type": "critical-hits"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Odor of Rot",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "10 feet. Creatures other than aberrations that enter or start their turn in the bhanyada's aura must succeed at a DC 23 Fortitude save save or become Sickened 1 (Sickened 2 on a critical failure). A creature that succeeds at its save is temporarily immune for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "odor-of-rot",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Posture",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The bhanyada changes between a bipedal and quadrupedal stance. In its bipedal stance, the bhanyada can't use Sudden Charge. In its quadrupedal stance, it loses its climb Speed."
+    },
+    {
+      "kind": "ability",
+      "name": "Gnashing Bite",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The bhanyada's teeth shift in its mouth as it bites. The bhanyada makes a jaws Strike. On a hit, the target takes an additional 2d10 bludgeoning damage, and the target is Slowed 1 for 1 round if the Strike dealt bludgeoning damage, or takes 1d8 persistent,bleed damage if the Strike dealt piercing damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "gnashing-bite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 2,
+            "dieSize": "d10",
+            "key": "DamageDice",
+            "predicate": [
+              "gnashing-bite"
+            ],
+            "selector": "jaws-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "gnashing-bite",
+              "item:damage:type:piercing"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The bhanyada Strides twice and makes a jaws Strike at the end of its movement."
+    }
+  ],
+  "text": "Not much larger than dogs, the typical bhanyada scavenger is a warty, misshapen tangle of flesh that walks on stumpy legs, sometimes on two and sometimes on four. Plainly amalgamations of meat and gristle, few of which appear in the same color or texture, bhanyada scavengers have a horrifying mottled appearance. Their bulbous heads split into a maw with blunt teeth that shift about within their mouths to grind food. Bhanyada scavengers prefer living prey and usually hunt in numbers, often following in the wake of bhanyada behemoths to snatch up any scraps left behind.\n\n---\n\nGobbets of flesh left behind from an untidy meal or a surgical procedure typically rot away if left where they lie, but when steeped in areas of powerful lingering magic or eldritch radiation, these bits of loose tissue might achieve some measure of animation, perhaps sprouting thick limbs to move about or tiny, multifaceted eyes to see. Near the magic-suffused Ghantibhu Pits in the caverns located beneath southern Vudra, where ripples of magic are powerful enough to rend the air and transform stone, these tiny, rotting castoffs form into even larger amalgamations called bhanyadas.\n\nTied to Open Bridge\n\nBhanyadas are almost never encountered outside the Open Bridge region in southern Vudra, as the magic of the Ghantibhu Pits beneath that region create them. Bhanyadas taken away from Open Bridge quickly decay into a repulsive slurry, although though it isn't clear whether their demise is due to being too far from the magical energies that animated them or too far from the masses of other bhanyadas that give them cunning and vigor.\n\nBhanyada Familiars\n\nA component of a bhanyada swarm makes a useful, if gruesome, familiar. A character who can take a familiar and who has encountered a bhanyada can choose a bhanyada familiar, which must have the burrower and darkvision abilities. The owner would be wise to anoint the familiar with perfumes or find other solutions to mask the unpleasant smell."
+}

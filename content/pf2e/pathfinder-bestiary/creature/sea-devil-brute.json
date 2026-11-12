@@ -1,0 +1,273 @@
+{
+  "kind": "creature",
+  "slug": "sea-devil-brute",
+  "system": "pf2e",
+  "name": "Sea Devil Brute",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "amphibious",
+    "evil",
+    "humanoid",
+    "lawful",
+    "sea-devil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 7,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": {
+        "value": 12,
+        "special": [
+          {
+            "value": 15,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 9,
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "thalassic"
+    ],
+    "notes": {
+      "languages": "shark commune 150 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 11,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shark Commune 150 feet",
+      "category": "interaction",
+      "traits": [
+        "mental"
+      ],
+      "text": "The sea devil can communicate telepathically with sharks within range. It can communicate only simple concepts like \"come,\" \"guard,\" or \"attack.\""
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Frenzy",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements The sea devil is not Fatigued or already in a frenzy\n\nTrigger The sea devil deals bleed damage to a living creature.\n\n---\nEffect The sea devil flies into a frenzy that lasts 1 minute. While frenzied, the sea devil gains a +1 status bonus to attack rolls with its claws and jaws, gains a +4 status bonus to damage rolls with its claws and jaws, gains 11 temporary HP until the end of the frenzy, and takes a -2 status penalty to AC. The sea devil can't voluntarily stop its frenzy. After its frenzy, the sea devil is Fatigued.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "claw-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "claw-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "flags.system.frenzyMod",
+            "value": 4
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": -2,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "When the sea devil deals piercing or slashing damage, it also deals 1d4 bleed if the target was Off-Guard or if the attack was a critical hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "target:condition:off-guard"
+              },
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unimpeded Throw",
+      "category": "offensive",
+      "text": "A sea devil brute can use thrown ranged weapons underwater with no penalty due to range increment."
+    }
+  ],
+  "text": "Physically imposing sea devils are equipped with some of the best weaponry the community can find, though most are happy to rend their foes using tooth and nail.\n\n---\n\nSea devils are horrid, amphibious humanoids who lurk in Golarion's oceans and crawl ashore to steal away victims beneath the veil of darkness. When an entire fishing village disappears overnight, sea devils are the first suspects.\n\nFar from mindless monstrosities, sea devils are terribly intelligent, with a cunning limited only by their strict adherence to hierarchy. They call themselves \"sahuagin\" but have wholly embraced their enemies' name for their kind as their own. Their cultural militancy enables sea devils to act in concert to perform grand acts of sabotage, marauding, and pillaging, and only the strongest (and most conniving) members of the tribe make it to the top of the social ladder. For all their discipline, however, sea devils are widely known to snap into murderous frenzies at the scent of blood. Even the best-laid plans can fall apart when a sea devil breaks ranks to revel in the spilled blood of their victims, an indulgence that can quickly cause a chain reaction of bloodthirsty ecstasy throughout an entire raiding party. For this reason, sea devils typically capture landborne quarry using nets and ropes, dragging them to the depths of the sea before making even a single incision.\n\nAmong sea devil society, individuals are rewarded based on their performance during hunts and shore excursions, with rebels and outliers quickly culled from the ranks. Every pup is given a fair chance, however, and even the lowest-born sea devil can strive for the rank of commander, general, or perhaps even king or queen. Sea devils in positions of leadership tend to be among the largest, most violent, and most calculating of their kind, and fully realized sea devils are skilled warriors capable of capturing entire villages on their own. The most powerful sea devils are mighty kings and queens who coordinate the activity of lesser sea devils across territories spanning leagues, foiling attempts at their positions via manufactured blood feuds and wars against their numerous enemies ashore and underwater."
+}

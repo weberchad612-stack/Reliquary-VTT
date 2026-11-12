@@ -1,0 +1,110 @@
+{
+  "kind": "effect",
+  "slug": "effect-ghostcallers-planchette-weapon",
+  "system": "pf2e",
+  "name": "Effect: Ghostcaller's Planchette - Weapon",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Ghostcaller's Planchette, Ghostcaller's Planchette (Greater)\n\nThe affixed weapon gains the effects of the ghost touch property rune and the greater disrupting property rune (greater).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:ghostcallers-planchette",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Ghostcaller's Planchette"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:ghostcallers-planchette-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Ghostcaller's Planchette (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "ghostcallers-planchette"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectGhostcallersPlanchetteWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:category:{item|flags.system.rulesSelections.effectGhostcallersPlanchetteWeapon}",
+              "item:id:{item|flags.system.rulesSelections.effectGhostcallersPlanchetteWeapon}"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "property-runes",
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:category:{item|flags.system.rulesSelections.effectGhostcallersPlanchetteWeapon}",
+              "item:id:{item|flags.system.rulesSelections.effectGhostcallersPlanchetteWeapon}"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "ghostcallers-planchette:ghostcallers-planchette-greater"
+        ],
+        "property": "property-runes",
+        "value": "greater-disrupting"
+      }
+    }
+  ]
+}

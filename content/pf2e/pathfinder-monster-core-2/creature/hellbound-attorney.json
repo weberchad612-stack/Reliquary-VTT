@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "hellbound-attorney",
+  "system": "pf2e",
+  "name": "Hellbound Attorney",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "devil",
+    "fiend",
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 2,
+      "int": 4,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 10,
+      "deception": 11,
+      "diplomacy": {
+        "value": 11,
+        "special": [
+          {
+            "value": 13,
+            "label": "to Make an Impression",
+            "when": [
+              "action:make-an-impression"
+            ]
+          }
+        ]
+      },
+      "intimidation": 11,
+      "society": 12,
+      "legal-lore": 14
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 2
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 4
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Breathe Fire",
+          "rank": 1,
+          "ref": "spells:spell/breathe-fire"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Elegant Cane (As Mace)",
+      "ref": "equipment:item/mace",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Legal Ledgers",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Elegant Cane",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "shove",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greater Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Abrogation of Consequences",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The Hellbound attorney rolls a success or critical failure on a saving throw against a linguistic effect.\n\n---\n\nEffect The attorney finds a loophole in the wording of the effect, turning the success into a critical success or a critical failure into a normal failure."
+    },
+    {
+      "kind": "ability",
+      "name": "Opening Statement",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate"
+      ],
+      "text": "Trigger The Hellbound attorney's turn begins.\n\n---\nEffect The attorney enumerates the alleged crimes of a creature they can see and attempts a Legal-lore check check against that creature's Will DC.\n\nOn a success, the attorney's Strikes deal an additional 2d6 precision damage (4d6 precision damage on a critical success) to the creature until the end of the attorney's turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "opening-statement",
+            "suboptions": [
+              {
+                "label": "PF2E.Check.Result.Degree.Check.success",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+                "value": "4"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": "@item.flags.system.rulesSelections.openingStatement",
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "opening-statement"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The Hellbound attorney sought the assistance of a Phistophilus-one of Hell's contract devils-to bolster her legalistic ability on the Universe.\n\n---\nThere are countless legions of lawful fiends in the nine layers of Hell, warring against the celestial planes and scouring the Material Plane for souls to corrupt."
+}

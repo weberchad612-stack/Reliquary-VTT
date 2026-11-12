@@ -1,0 +1,186 @@
+{
+  "kind": "creature",
+  "slug": "weapon-master",
+  "system": "pf2e",
+  "name": "Weapon Master",
+  "source": {
+    "title": "Pathfinder #166: Despair on Danger Island",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 33,
+    "hp": 250,
+    "perception": 23,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 22,
+      "will": 24
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 2,
+      "int": 2,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 23,
+      "athletics": 23,
+      "intimidation": 22,
+      "survival": 24,
+      "warfare-lore": 23
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "taldane",
+      "tien"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Katana",
+      "ref": "equipment:item/katana",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sling",
+      "ref": "equipment:item/sling",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Katana",
+      "attack": 28,
+      "traits": [
+        "deadly-d8",
+        "magical",
+        "two-hand-d10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+11",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sling",
+      "attack": 22,
+      "traits": [
+        "magical",
+        "propulsive",
+        "reload-1"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Dueling Expertise",
+      "category": "offensive",
+      "text": "The weapon master deals an extra 2d10 damage to creatures that are not adjacent to any allies or other foes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "dueling-expertise",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d10",
+            "key": "DamageDice",
+            "predicate": [
+              "dueling-expertise"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Blow",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Requirements The weapon master is not wielding a weapon.\n\n---\n\nEffect The weapon master Interacts to draw a melee weapon without triggering reactions and makes a Strike with that weapon. The target is Off-Guard against this Strike. The weapon master deals an extra 2d8 bleed with the Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "swift-blow",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "swift-blow"
+            ],
+            "selectors": [
+              "melee-strike-attack-roll",
+              "melee-strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "swift-blow"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

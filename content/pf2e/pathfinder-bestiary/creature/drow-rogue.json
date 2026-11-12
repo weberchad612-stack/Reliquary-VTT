@@ -1,0 +1,260 @@
+{
+  "kind": "creature",
+  "slug": "drow-rogue",
+  "system": "pf2e",
+  "name": "Drow Rogue",
+  "source": {
+    "title": "Pathfinder Bestiary",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "chaotic",
+    "drow",
+    "elf",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 26,
+    "perception": 6,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 10,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 8,
+      "deception": 7,
+      "society": 4,
+      "stealth": 10,
+      "thievery": 8
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "elven",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic, +2 status to all saves vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Darkness (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Faerie Fire (At Will)",
+          "rank": 2,
+          "ref": "spells:spell/faerie-fire"
+        },
+        {
+          "name": "Dancing Lights",
+          "rank": 1,
+          "text": "You create up to four floating lights, no two of which are more than 10 feet apart. Each sheds light like a torch. When you Sustain the Spell, you can move any number of lights up to 60 feet. Each light must remain within 120 feet of you and within 10 feet of all others, or it winks out."
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Lethargy Poison",
+      "ref": "equipment:item/lethargy-poison",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 10,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "lethargy-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements A drow rogue can't use this reaction while Encumbered.\n\nTrigger The drow rogue is hit or critically hit by an attack made by a creature the drow rogue can see.\n\n---\n\nEffect The drow rogue gains a +2 circumstance bonus to their Armor Class against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The drow rogue draws a weapon using the Interact action, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The drow rogue deals 1d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Loners at heart, drow rogues trust no one-least of all fellow slayers. Thees drow rely on awareness and adaptation to survive the cutthroat nature of their society.\n\n---\n\nThe first drow were elves who fled into the depths of the world from a devastating cataclysm thousands of years ago. In their journey below, they fell to bickering and in-fighting, drawing the attention of sinister intelligences beyond their own. Whether it was the influence of a specific demon lord, the Rough Beast Rovagug, or some other fell force is unknown, but in that time the elves transformed both spiritually and physically, tainting their hearts with desires for cruelty, sadism, and violence. The hues of their eyes became sinister red or bleached white, and their flesh adopted an unearthly lavender sheen that made the drow instantly recognizable. The drow also developed potent magical abilities and resistances that further empowered them, if at the cost of their souls.\n\nOver the centuries to follow, the drow developed into a powerful, if violently dysfunctional society, influenced by the worship of demon lords and focused on providing power and glory to a relatively small collection of noble houses. Many of these noble houses are matriarchal in nature and all hold allegiance to a specific demon lord patron-but traditions of worship, warfare, and wizardry help to bind the oft-bickering houses together enough that drow society doesn't simply consume itself from within. Fear of earning the wrath of one's superior-be it a teacher, a parent, a commander, or the demon one worships-is the real bond holding drow society together, and this system is held in esteem by the lowliest drow servant and by the most powerful drow priestess alike.\n\nThe drow are infamous throughout the world, but until recently most assumed stories of demon-worshipping, underground-dwelling elves were spooky legends crafted to share around a campfire. Today, the existence of drow is an understood truth, and while their presence in the dark caverns deep below is unsettling, they seem content to leave the surface world alone for now."
+}

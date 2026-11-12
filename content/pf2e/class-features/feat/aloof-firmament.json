@@ -1,0 +1,150 @@
+{
+  "kind": "feat",
+  "slug": "aloof-firmament",
+  "system": "pf2e",
+  "name": "Aloof Firmament",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "magus"
+  ],
+  "category": "classfeature",
+  "text": "You're a philosopher of the sword who codifies your study of qinggong along principles arcane and martial. Your blade teaches morality and immortality, and you illustrate its lessons with an academician's rigor. Through your training, you've learned to move about with grace and create opportunity to strike foes.\n\nYou gain the Cat Fall general feat, though you benefit from it only as long as you aren't using a shield and are wearing light or no armor.\n\nWhile in Arcane Cascade stance, your steps become even lighter, giving you the benefits of the Quick Jump general feat. When you Fly, Leap, High Jump, or Long Jump while in that stance, your movement doesn't trigger reactions. If you take one of these actions, the next Strike you make before the end of your turn with a one-handed weapon in the sword group has greater damage from Arcane Cascade. Increase the extra damage to 4; increase it to 6 if you have weapon specialization, or to 8 if you have greater weapon specialization. You must have your other hand completely free; the extra damage doesn't apply if you have a free-hand weapon or other item in that hand, even if you would normally be able to use the hand for other things.\n\nConflux Spell Sky Laughs at Waves\n\nStudious Spells 7th: Water Walk; 11th: Wall of Wind; 13th: Variable Gravity",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Cat Fall"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "aloof-flew-or-jumped",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:weapon-specialization",
+          "aloof-flew-or-jumped",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:greater-weapon-specialization",
+          "aloof-flew-or-jumped",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 8
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Magus.ArcaneCascade.IncreaseDamage",
+        "option": "aloof-flew-or-jumped",
+        "predicate": [
+          "self:effect:arcane-cascade"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:category:prepared",
+          "spellcasting:tradition:arcane",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:slug:water-walk",
+                  {
+                    "gte": [
+                      "self:level",
+                      7
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:wall-of-wind",
+                  {
+                    "gte": [
+                      "self:level",
+                      11
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:variable-gravity",
+                  {
+                    "gte": [
+                      "self:level",
+                      13
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "studious-spell"
+      }
+    }
+  ]
+}

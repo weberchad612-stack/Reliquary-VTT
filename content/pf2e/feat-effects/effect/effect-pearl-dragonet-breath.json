@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "effect-pearl-dragonet-breath",
+  "system": "pf2e",
+  "name": "Effect: Pearl Dragonet Breath",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dragonet Breath\n\nIf the origin's breath gives good luck, you gain a +1 status bonus to your next attack roll or skill check. If the origin's breath gives bad luck, you take a –1 status penalty to your next attack roll or skill check.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Dragonet.DragonetBreath.PearlDragonet.BadLuck",
+            "value": -1
+          },
+          {
+            "label": "PF2E.SpecificRule.Dragonet.DragonetBreath.PearlDragonet.GoodLuck",
+            "value": 1
+          }
+        ],
+        "flag": "modifier",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "removeAfterRoll": "if-enabled",
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ],
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.modifier"
+      }
+    }
+  ]
+}

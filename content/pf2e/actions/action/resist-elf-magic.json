@@ -1,0 +1,57 @@
+{
+  "kind": "action",
+  "slug": "resist-elf-magic",
+  "system": "pf2e",
+  "name": "Resist Elf Magic",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "actions": "reaction",
+  "category": "defensive",
+  "text": "Trigger You attempt a saving throw against a magical effect but haven't rolled yet\n\n---\n\nYour ancestral resistance to magic protects you. You gain a +1 circumstance bonus to the triggering saving throw. If the triggering effect is arcane, you gain a +2 circumstance bonus instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "resist-elf-magic",
+      "when": [
+        "resist-elf-magic",
+        {
+          "or": [
+            "magical",
+            "divine",
+            "primal",
+            "occult"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "item:trait:arcane"
+        ],
+        "selector": "saving-throw",
+        "slug": "resist-elf-magic",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "saving-throw",
+        "key": "RollOption",
+        "option": "resist-elf-magic",
+        "toggleable": true
+      }
+    }
+  ]
+}

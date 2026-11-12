@@ -1,0 +1,215 @@
+{
+  "kind": "creature",
+  "slug": "acrobat",
+  "system": "pf2e",
+  "name": "Acrobat",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 30,
+    "perception": 6,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 8,
+      "deception": 5,
+      "performance": 9,
+      "stealth": 8,
+      "circus-lore": 5
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Climbing Kit",
+      "ref": "equipment:item/climbing-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Rope",
+      "ref": "equipment:item/rope",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foot",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Acrobatic Specialist",
+      "category": "interaction",
+      "text": "For encounters involving contests of acrobatics and similar activities, the acrobat is a 5th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Steady Balance",
+      "category": "interaction",
+      "text": "When the acrobat rolls a success on an Acrobatics check, they get a critical success instead.\n\nThey aren't Off-Guard when attempting to Balance and can attempt an Acrobatics check instead of a Reflex save to Grab an Edge.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "acrobatics"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cat Fall",
+      "category": "defensive",
+      "text": "The acrobat treats all falls as 25 feet shorter."
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The acrobat is targeted with a melee or ranged attack by an attacker they can see\n\n---\nEffect The acrobat gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The acrobat deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swinging Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The acrobat swings on a rope or trapeze, moving up to double their Speed. At any point during the swing, they can make a melee Strike."
+    }
+  ],
+  "text": "Acrobats perform feats of agility, balance, and strength.\n\n---\nPerformances come in a wide variety of forms, from musical methods like singing and instruments to physical dancing and juggling to simple orating and conversing."
+}

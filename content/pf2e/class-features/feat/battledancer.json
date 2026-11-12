@@ -1,0 +1,76 @@
+{
+  "kind": "feat",
+  "slug": "battledancer",
+  "system": "pf2e",
+  "name": "Battledancer",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "classfeature",
+  "text": "To you, a fight is a kind of performance art, and you command your foes' attention with mesmerizing motions. You are trained in Performance and gain the Fascinating Performance skill feat. When you Perform, the action gains the bravado trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.performance.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "uuid": "Compendium.pf2e.feats-srd.Item.Fascinating Performance"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.ExemplaryFinisher.Battledancer",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "finisher",
+        "feature:exemplary-finisher"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:perform"
+        ],
+        "property": "traits",
+        "value": "bravado"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "item:trait:bravado",
+        "predicate": [
+          "action:perform"
+        ]
+      }
+    }
+  ]
+}

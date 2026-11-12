@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-courageous-anthem",
+  "system": "pf2e",
+  "name": "Spell Effect: Courageous Anthem",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Courageous Anthem\n\nYou gain a +1 status bonus to attack rolls, damage rolls, and saves against fear effects.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "status",
+      "value": 1
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "fear"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "sonic",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "label": "PF2E.SpecificRule.Bard.DiscordantVoice.Label",
+        "predicate": [
+          "parent:origin:discordant-voice",
+          {
+            "not": "parent:origin:signature:{item|parent.signature}"
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "courageous-anthem:origin:signature:{item|origin.signature}"
+      }
+    }
+  ]
+}

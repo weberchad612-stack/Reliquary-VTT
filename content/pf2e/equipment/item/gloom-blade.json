@@ -1,0 +1,96 @@
+{
+  "kind": "weapon",
+  "slug": "gloom-blade",
+  "system": "pf2e",
+  "name": "Gloom Blade",
+  "source": {
+    "title": "Pathfinder GM Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "agile",
+    "finesse",
+    "magical",
+    "versatile-s"
+  ],
+  "text": "As black as coal, this blade grows more potent in darkness. While in bright light, it functions as a +1 shortsword and doesn't appear to radiate a magic aura to Detect Magic or similar spells unless the spells are 4th rank or higher.\n\nIn dim light or darkness, the gloom blade becomes a +2 striking shortsword. Whenever you use the gloom blade to attack a creature you're undetected by, you deal 1d6 additional precision damage.\n\nTo upgrade the gloom blade's fundamental runes, start with the base +1 shortsword, but if you improve it beyond a +2 striking shortsword, the runes apply in dim light or darkness as well.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SkillVariant.DimLightOrDarkness",
+        "option": "lighting:dim-light",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|_id}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              "lighting:dim-light",
+              "lighting:darkness"
+            ]
+          }
+        ],
+        "property": "runes-potency",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|_id}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              "lighting:dim-light",
+              "lighting:darkness"
+            ]
+          }
+        ],
+        "property": "runes-striking",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "self:condition:undetected"
+        ],
+        "selector": "{item|_id}-damage"
+      }
+    }
+  ],
+  "category": "martial",
+  "group": "sword",
+  "damage": {
+    "die": "d6",
+    "type": "piercing"
+  },
+  "hands": "held-in-one-hand",
+  "baseItem": "shortsword",
+  "bulk": 0.1,
+  "price": {
+    "gp": 700
+  },
+  "runes": {
+    "potency": 1,
+    "striking": 0
+  }
+}

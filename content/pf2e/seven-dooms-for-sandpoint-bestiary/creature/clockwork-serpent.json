@@ -1,0 +1,250 @@
+{
+  "kind": "creature",
+  "slug": "clockwork-serpent",
+  "system": "pf2e",
+  "name": "Clockwork Serpent",
+  "source": {
+    "title": "Pathfinder #200: Seven Dooms for Sandpoint",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "rare",
+  "traits": [
+    "clockwork",
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 110,
+    "perception": 18,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 3,
+      "dex": 3,
+      "int": -5,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 18
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "orichalcum",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine, orichalcum"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "clockwork-serpent-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Coils",
+      "attack": 20,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+9",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wind-Up",
+      "category": "interaction",
+      "text": "24 hours, DC 26 Thievery, standby\n\n---\n\nFor a clockwork to act, it must be wound with a unique key by another creature. This takes 1 minute. Once wound, it remains operational for the listed amount of time, usually 24 hours, after which time it becomes unaware of its surroundings and can't act until it's wound again. Some clockworks' abilities require them to spend some of their remaining operational time. They can't spend more than they have and shut down immediately once they have 0 time remaining. If it's unclear when a clockwork was last wound, most clockwork keepers wind all their clockworks at a set time, typically 8 a.m.\n\nA clockwork that lists standby in its wind-up entry can enter standby mode as a 3-action activity. Its operational time doesn't decrease in standby, but it can sense its surroundings (with a -2 penalty to Perception). It can't act, with one exception: when it perceives a creature, it can exit standby as a reaction (rolling initiative if appropriate).\n\nA creature can attempt to Disable a Device to wind a clockwork down (with a DC listed in the wind-up entry). For each success, the clockwork loses 1 hour of operational time. This can be done even if the clockwork is in standby mode."
+    },
+    {
+      "kind": "ability",
+      "name": "Activate Serpent Mode",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The clockwork serpent begins its turn\n\n---\n\nEffect The clockwork serpent transforms into a different mode. Roll 1d3 and consult the options below. If it rolls a mode it can't currently activate, the clockwork serpent becomes Clumsy 1 until the start of its next turn. At the end of its turn, it automatically deactivates its serpent mode.\n\n1 Cobra Mode The clockwork serpent can use Intimidating Hood.\n\n2 Constrictor Mode The clockwork serpent can use its coils Strike and can Constrict.\n\n3 Rattlesnake Mode The clockwork serpent can use Shattering Rattle.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 20,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 9
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.NPCAbility.ClockworkSerpent.Coils",
+            "predicate": [
+              "self:effect:activate-serpent-mode:2"
+            ],
+            "slug": "coils",
+            "traits": [
+              "magical"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "and": [
+                      {
+                        "not": "self:effect:serpent-mode:1"
+                      },
+                      "item:slug:intimidating-hood"
+                    ]
+                  },
+                  {
+                    "and": [
+                      {
+                        "not": "self:effect:serpent-mode:2"
+                      },
+                      "item:slug:constrict"
+                    ]
+                  },
+                  {
+                    "and": [
+                      {
+                        "not": "self:effect:serpent-mode:3"
+                      },
+                      "item:slug:shattering-rattle"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.SpecificRule.Notes.RequirementsNotMet",
+                "title": "PF2E.SpecificRule.Notes.NoteLabel"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Critical Deactivation",
+      "category": "defensive",
+      "text": "If a clockwork serpent takes any precision damage or takes a critical hit and it has a serpent mode active, it must attempt a DC 16 Flat check. On a failure, it takes the damage from the critical hit as normal, is Stunned 1, and its serpent mode deactivates."
+    },
+    {
+      "kind": "ability",
+      "name": "Clockwork Serpent Venom",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "magical",
+        "poison"
+      ],
+      "text": "Saving Throw DC 26 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 2d6 poison damage and Off-Guard (1 round)\n\nStage 2 2d6 poison damage, Enfeebled 1, and off-guard (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "2d10+6 bludgeoning, DC 26 basic Fortitude save\n\nRequirements The clockwork serpent is in constrictor mode\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Hood",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Requirements The clockwork serpent is in cobra mode\n\n---\n\nEffect The clockwork serpent flares out a cobra hood. All creatures within a 15-foot emanation must succeed at a DC 26 Will save save or become Frightened 1 (Frightened 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Shattering Rattle",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "sonic"
+      ],
+      "text": "Requirements The clockwork serpent is in rattlesnake mode\n\n---\n\nEffect The clockwork serpent rattles its tail, then snaps it like a whip to create a devastating blast of sonic energy in a 30-foot cone. Creatures in the area take 9d6 sonic damage (DC 26 basic Fortitude save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "coils-attack-roll",
+          "text": "{item|description}"
+        }
+      ]
+    }
+  ],
+  "text": "Clockwork serpents are often found serving as guardians in serpentfolk laboratories or temples.\n\nExperimental Serpents\n\nEven stranger clockwork serpents are rumored to exist in the heart of serpentfolk enclaves. These constructs supposedly can repair damage to themselves when they change serpent modes, activate additional forms that allow swimming or flight, or even break apart into a seething swarm of smaller clockwork serpents."
+}

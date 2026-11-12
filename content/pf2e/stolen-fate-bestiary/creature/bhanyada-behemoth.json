@@ -1,0 +1,223 @@
+{
+  "kind": "creature",
+  "slug": "bhanyada-behemoth",
+  "system": "pf2e",
+  "name": "Bhanyada Behemoth",
+  "source": {
+    "title": "Pathfinder #190: The Choosing",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "evil"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 31,
+    "hp": 250,
+    "perception": 23,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 20,
+      "will": 23
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 5,
+      "dex": 2,
+      "int": -3,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 23,
+      "survival": 21
+    },
+    "speeds": {
+      "land": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 26,
+      "traits": [
+        "reach-10",
+        "sweep",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12 + 10",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 26,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d6 + 10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Extraneous Flesh",
+      "actions": "free",
+      "category": "defensive",
+      "text": "Frequency three times per day\n\nTrigger A Strike scores a critical hit on the bhanyada behemoth\n\n---\n\nEffect A critical hit might simply sever a component chunk that the bhanyada can lose without much harm. The bhanyada behemoth attempts a DC 11 Flat check. On a success, it doesn't take any extra damage from the critical hit (although it takes other effects normally, such as critical specialization effects).",
+      "frequency": {
+        "max": 3,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "extraneous-flesh",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "extraneous-flesh"
+            ],
+            "type": "critical-hits"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Odor of Rot",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "olfactory"
+      ],
+      "text": "10 feet. Creatures other than aberrations that enter or start their turn in the bhanyada's aura must succeed at a DC 29 Fortitude save save or become Sickened 1 (Sickened 2 on a critical failure). A creature that succeeds at its save is temporarily immune for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 10,
+            "slug": "odor-of-rot",
+            "traits": [
+              "olfactory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lumbering Swings",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The bhanyada behemoth Strides and makes up to four fist Strikes at any point during that movement. Each Strike must target a different creature. The attacks take the normal multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The largest bhanyadas are made up of tens of thousands of component parts, all mashed together into a roughly humanoid shape that walks on stumpy legs. Bhanyada behemoths usually have at least four thick arms ending in meaty fists, although some behemoths have a profusion of hands sprouting from their torsos. A bhanyada behemoth's head is studded with tiny eyes all over its surface that observe the surrounding terrain and give information so the entire amalgamation can move in unison.\n\n---\n\nGobbets of flesh left behind from an untidy meal or a surgical procedure typically rot away if left where they lie, but when steeped in areas of powerful lingering magic or eldritch radiation, these bits of loose tissue might achieve some measure of animation, perhaps sprouting thick limbs to move about or tiny, multifaceted eyes to see. Near the magic-suffused Ghantibhu Pits in the caverns located beneath southern Vudra, where ripples of magic are powerful enough to rend the air and transform stone, these tiny, rotting castoffs form into even larger amalgamations called bhanyadas.\n\nTied to Open Bridge\n\nBhanyadas are almost never encountered outside the Open Bridge region in southern Vudra, as the magic of the Ghantibhu Pits beneath that region create them. Bhanyadas taken away from Open Bridge quickly decay into a repulsive slurry, although though it isn't clear whether their demise is due to being too far from the magical energies that animated them or too far from the masses of other bhanyadas that give them cunning and vigor.\n\nBhanyada Familiars\n\nA component of a bhanyada swarm makes a useful, if gruesome, familiar. A character who can take a familiar and who has encountered a bhanyada can choose a bhanyada familiar, which must have the burrower and darkvision abilities. The owner would be wise to anoint the familiar with perfumes or find other solutions to mask the unpleasant smell."
+}

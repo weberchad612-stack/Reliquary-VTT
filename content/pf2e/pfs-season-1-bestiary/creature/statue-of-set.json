@@ -1,0 +1,194 @@
+{
+  "kind": "creature",
+  "slug": "statue-of-set",
+  "system": "pf2e",
+  "name": "Statue Of Set",
+  "source": {
+    "title": "Pathfinder Society Quest #1: The Sandstone Secret",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "construct",
+    "earth",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 24,
+    "hp": 80,
+    "perception": 13,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 8,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": -1,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 15
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(20 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Stone Fist",
+      "attack": 17,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+4",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flaming Coal",
+      "attack": 17,
+      "traits": [
+        "fire",
+        "magical"
+      ],
+      "range": 80,
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "defensive",
+      "text": "Like normal objects, the statue of Set has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness.\n\nOnce the statue is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 20.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brazier",
+      "category": "offensive",
+      "text": "The statue carries a wide brazier full of hot coals. To make flaming coal Strikes or use Burn Alive, the statue must have the brazier held in one hand or otherwise have it within reach.\n\nInstead of targeting the statue with an attack, a creature can target the brazier directly. The brazier has the same AC and saves as the statue.\n\nDealing 15 cold damage to the brazier or dousing it with at least 2 gallons of water extinguishes the coals. This prevents the statue from using Burn Alive and causes its ranged attacks to no longer deal 2d8 fire damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.GiantAnimatedStatueBrazier",
+            "option": "brazier",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "brazier"
+            ],
+            "selector": "flaming-coal-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Burn Alive",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "fire"
+      ],
+      "text": "The statue grinds a creature it has Grabbed into the red-hot coals of its brazier. The target takes 3d6 fire,1d8 persistent,fire damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

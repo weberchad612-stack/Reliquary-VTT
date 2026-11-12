@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-draw-the-lightning",
+  "system": "pf2e",
+  "name": "Spell Effect: Draw the Lightning",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Draw the Lightning\n\nYour first Strike each round with the weapon you held aloft (or with your unarmed attacks if you held an empty hand aloft) deals additional electricity damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "draw-the-lightning",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "electricity",
+        "diceNumber": "ternary(gte(@item.level,8),2,1)",
+        "dieSize": "d12",
+        "key": "DamageDice",
+        "predicate": [
+          "draw-the-lightning"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "effect",
+  "slug": "effect-ancestral-might",
+  "system": "pf2e",
+  "name": "Effect: Ancestral Might",
+  "source": {
+    "title": "Pathfinder Hero Point Deck",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Ancestral Might\n\nYou gain a +2 status bonus to checks based on the attributes that are boosted by your ancestry (ignoring free boosts). If your ancestry only grants free boosts, select one attribute to gain the bonus to instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "abilities"
+        },
+        "flag": "firstBoost",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.HeroPointDeck.AncestralMight.FirstBoostPrompt",
+        "rollOption": "ancestral-might:first-boost"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "allowNoSelection": true,
+        "choices": {
+          "config": "abilities",
+          "predicate": [
+            {
+              "not": "ancestral-might:first-boost:{choice|value}"
+            }
+          ]
+        },
+        "flag": "secondBoost",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.HeroPointDeck.AncestralMight.SecondBoostPrompt"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.firstBoost}-based",
+      "type": "status",
+      "value": 2,
+      "slug": "ancestral-might-first"
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|flags.system.rulesSelections.secondBoost}-based",
+      "type": "status",
+      "value": 2,
+      "slug": "ancestral-might-second"
+    }
+  ]
+}

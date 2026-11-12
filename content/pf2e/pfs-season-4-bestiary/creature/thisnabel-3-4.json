@@ -1,0 +1,142 @@
+{
+  "kind": "creature",
+  "slug": "thisnabel-3-4",
+  "system": "pf2e",
+  "name": "Thisnabel (3-4)",
+  "source": {
+    "title": "Pathfinder Society Quest #14: The Swordlord's Challenge",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "gnome",
+    "good",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 32,
+    "perception": 8,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 7,
+      "deception": 6,
+      "stealth": 7,
+      "dueling-lore": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Aldori Dueling Sword",
+      "ref": "equipment:item/aldori-dueling-sword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Aldori Dueling Sword",
+      "attack": 9,
+      "traits": [
+        "finesse",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aldori Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Thisnabel gains a +2 circumstance bonus to AC until the start of their next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "aldori-parry",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "aldori-parry"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Thisnabel deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

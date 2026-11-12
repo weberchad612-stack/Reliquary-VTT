@@ -1,0 +1,102 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-element-embodied-water",
+  "system": "pf2e",
+  "name": "Spell Effect: Element Embodied (Water)",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Element Embodied\n\nYou transform into a Gargantuan elemental battle form. While in this form, you gain the elemental trait and the water trait. You gain the following statistics and abilities regardless of which battle form you choose:\n- AC = 25 + your level. Ignore your armor's check penalty and Speed reduction.\n\n- 30 temporary Hit Points.\n\n- Darkvision.\n\n- One or more attacks specific to the battle form you choose, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +34, and your damage bonus is +15. These attacks are Dexterity based if you choose an air, fire, or metal elemental, or Strength based if you choose an earth, water, or wood elemental. (This distinction doesn't change the statistics but matters for the enfeebled and clumsy conditions, for example). If your unarmed attack modifier is higher, you can use it instead.\n\n- Acrobatics modifier of +36 for air, fire, or metal elemental, or Athletics modifier of +36 for earth, water, or wood elemental, unless your own modifier is higher.\n\nYou also gain specific abilities based on the type of elemental you choose:\n- Water Elemental Speed 40 feet, swim 80 feet; resistance 10 to fire\n- Vortex (aura, water) 30 feet. Water within the aura that is part of the same body of water you occupy is difficult terrain for Swimming creatures that don't have the water trait\n\n- Melee 1 wave (reach 25 feet), Damage 3d12 bludgeoning plus Push or Pull 10 feet (Monster Core 359)\n\n- Ranged 1 water spout (range increment 60 feet), Damage 3d8 bludgeoning.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hasHands": true,
+        "key": "BattleForm",
+        "overrides": {
+          "armorClass": {
+            "modifier": "25 + @actor.level"
+          },
+          "resistances": [
+            {
+              "type": "fire",
+              "value": 10
+            }
+          ],
+          "size": "grg",
+          "skills": {
+            "athletics": {
+              "modifier": 23
+            }
+          },
+          "speeds": {
+            "land": 40,
+            "swim": 80
+          },
+          "strikes": {
+            "water-spout": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d8",
+                "modifier": 15
+              },
+              "modifier": 34,
+              "range": {
+                "increment": 60
+              }
+            },
+            "wave": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d12",
+                "modifier": 15
+              },
+              "img": "systems/pf2e/icons/unarmed-attacks/water-spout.webp",
+              "modifier": 34,
+              "traits": [
+                "unarmed",
+                "reach-25"
+              ]
+            }
+          },
+          "tempHP": 30,
+          "traits": [
+            "elemental",
+            "water"
+          ]
+        }
+      }
+    },
+    {
+      "key": "note",
+      "selector": "wave-damage",
+      "text": "PF2E.BattleForm.ElementEmbodied.WaterPushPullNote"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Aura",
+        "radius": 30,
+        "slug": "vortex",
+        "traits": [
+          "water"
+        ]
+      }
+    }
+  ]
+}

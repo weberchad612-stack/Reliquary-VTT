@@ -1,0 +1,319 @@
+{
+  "kind": "creature",
+  "slug": "weremoose",
+  "system": "pf2e",
+  "name": "Weremoose",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 60,
+    "perception": 6,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 1,
+      "int": -1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "to Swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 8
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "deer empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 11,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deer Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A weremoose can communicate with deer, including moose."
+    },
+    {
+      "kind": "ability",
+      "name": "Cold Adaptation",
+      "category": "defensive",
+      "text": "The weremoose treats environmental cold effects as if they were one step less extreme."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Medium human with fist +11 for 1d4+6 bludgeoning,\n\nor\n\nLarge moose with antler and hoof +11 for 1d8+6 bludgeoning.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 6
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Fist",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 6
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Hoof",
+            "predicate": [
+              "change-shape:animal"
+            ],
+            "slug": "hoof",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 11,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 6
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Antler",
+            "predicate": [
+              {
+                "or": [
+                  "change-shape:animal",
+                  "change-shape:hybrid"
+                ]
+              }
+            ],
+            "slug": "antler",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Weremoose",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 17 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "antler-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its antlers by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Thundering Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The weremoose Strides twice and then makes an antler Strike. A Medium or smaller creature damaged by this attack must succeed at a DC 17 Fortitude save save or be Stunned 1."
+    }
+  ],
+  "text": "Werecreatures are humanoids who transform into animals and animal-humanoid hybrids under the light of the full moon. The fate of these shapechanging creatures derives from an ancient primal curse that they can, in turn, transmit through their own bites. The stat blocks in this section reflect werecreatures in their hybrid forms.\n\n---\nA weremoose's tendencies toward stubbornness and a grumpy attitude make it difficult for them to get along with others. Most often, they live as hunters or hermits, taking in the peace of their natural surroundings. If their territory is invaded, they don't hide or retreat but are unlikely to attack. If someone else starts the fight, though, a weremoose retaliates without mercy."
+}

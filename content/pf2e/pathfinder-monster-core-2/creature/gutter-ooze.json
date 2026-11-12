@@ -1,0 +1,161 @@
+{
+  "kind": "creature",
+  "slug": "gutter-ooze",
+  "system": "pf2e",
+  "name": "Gutter Ooze",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "mindless",
+    "ooze"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 7,
+    "hp": 20,
+    "perception": 2,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 3,
+      "will": 5
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 3,
+      "int": -5,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 5,
+      "stealth": {
+        "value": 2,
+        "special": [
+          {
+            "value": 4,
+            "label": "in urban environments",
+            "when": [
+              "environment:urban"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 10,
+      "swim": 10
+    },
+    "senses": [
+      {
+        "type": "motion-sense",
+        "range": 30,
+        "acuity": "precise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "bleed",
+        "critical-hits",
+        "mental",
+        "precision",
+        "unconscious",
+        "visual"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Pseudopod",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1",
+          "type": "acid"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Motion Sense",
+      "category": "interaction",
+      "text": "A gutter ooze can sense nearby creatures through vibration and air or water movement."
+    },
+    {
+      "kind": "ability",
+      "name": "Slip Up",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An adjacent creature damages the gutter ooze with a melee Strike\n\n---\nEffect Some of the gutter ooze's watery protoplasm gushes out beneath the triggering creature's feet. They must succeed at a DC 15 Reflex save save or fall Prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Detritus",
+      "category": "offensive",
+      "text": "Due to all the random trash that collects in a city's gutters, whenever a gutter ooze makes a pseudopod Strike, the type of damage is chosen randomly between bludgeoning, slashing, and piercing.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "detritus",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitBludgeoning",
+                "value": "bludgeoning"
+              },
+              {
+                "label": "PF2E.TraitPiercing",
+                "value": "piercing"
+              },
+              {
+                "label": "PF2E.TraitSlashing",
+                "value": "slashing"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "damage:type:bludgeoning"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "pseudopod-damage"
+            ],
+            "value": "{item|flags.system.rulesSelections.detritus}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Weak Acid",
+      "category": "offensive",
+      "text": "A gutter ooze's acid damages only organic material—not metal, stone, or other inorganic substances."
+    }
+  ],
+  "text": "These small masses of protoplasm are considered the lesser \"cousins\" to sewer oozes, emerging from the drainage culverts beneath a city after a rainfall to feed on bits of organic matter that collect in streetside gutters. As they collect just about everything—pebbles, bits of broken glass, and other trash—some cities consider them to be more helpful than detrimental."
+}

@@ -1,0 +1,100 @@
+{
+  "kind": "effect",
+  "slug": "effect-resonance",
+  "system": "pf2e",
+  "name": "Effect: Resonance",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "You gain a +1 status bonus to attack and damage rolls for effects with the selected trait; a creature with the elemental and selected traits gains this bonus to all attack and damage rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "predicate": [
+              "parent:trait:air"
+            ],
+            "value": "air"
+          },
+          {
+            "label": "PF2E.TraitEarth",
+            "predicate": [
+              "parent:trait:earth"
+            ],
+            "value": "earth"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              "parent:trait:fire"
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "predicate": [
+              "parent:trait:metal"
+            ],
+            "value": "metal"
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "predicate": [
+              "parent:trait:water"
+            ],
+            "value": "water"
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "predicate": [
+              "parent:trait:wood"
+            ],
+            "value": "wood"
+          }
+        ],
+        "flag": "element",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "resonance-attack-1",
+      "when": [
+        "{item|flags.system.rulesSelections.element}"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "resonance-attack-2",
+      "when": [
+        "self:trait:{item|flags.system.rulesSelections.element}",
+        "self:trait:elemental",
+        {
+          "not": "{item|flags.system.rulesSelections.element}"
+        }
+      ]
+    }
+  ]
+}

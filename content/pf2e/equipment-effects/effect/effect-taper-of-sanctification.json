@@ -1,0 +1,67 @@
+{
+  "kind": "effect",
+  "slug": "effect-taper-of-sanctification",
+  "system": "pf2e",
+  "name": "Effect: Taper of Sanctification",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Taper of Sanctification\n\nYour Strikes gain the holy or unholy trait (as appropriate for the candle).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitHoly",
+            "value": "holy"
+          },
+          {
+            "label": "PF2E.TraitUnholy",
+            "value": "unholy"
+          }
+        ],
+        "flag": "sanctification",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Sanctification",
+        "rollOption": "taper-of-sanctification"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "nor": [
+              {
+                "and": [
+                  "taper-of-sanctification:holy",
+                  "self:trait:unholy"
+                ]
+              },
+              {
+                "and": [
+                  "taper-of-sanctification:unholy",
+                  "self:trait:holy"
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.sanctification}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "kind": "creature",
+  "slug": "meleeka-sanvara-3-4",
+  "system": "pf2e",
+  "name": "Meleeka Sanvara (3-4)",
+  "source": {
+    "title": "Pathfinder Society Quest #2: Unforgiving Fire",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 8,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 14,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 12,
+      "stealth": 8,
+      "survival": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "+1 Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 12
+    },
+    {
+      "kind": "gear",
+      "name": "Small Pouch of Fine Sand",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fire Talon",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "fire",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "fire"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "reload-0"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blazing-Talon Surge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Meleeka is in Mastered Rain of Embers Stance\n\n---\n\nEffect Meleeka Strides twice. If she ends her movement within melee reach of at least one enemy, she can make a fire talon Strike against that enemy that deals an additional 1d4 fire damage. If she hits the target enemy, she can immediately Grab them as a free action.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "blazing-talon-surge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "blazing-talon-surge",
+              "rain-of-embers"
+            ],
+            "selector": "fire-talon-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "fire-talon-attack",
+          "text": "PF2E.NPC.Abilities.Glossary.ImprovedGrab",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "blazing-talon-surge",
+            "rain-of-embers"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Explosive Deathdrop",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements Meleeka is in Mastered Rain of Embers Stance and has a creature Grabbed or Restrained\n\n---\n\nEffect Meleeka lifts the creature high into the air and then slams it downward, causing a fiery explosion on impact. Meleeka attempts an Athletics check check against the creature's Fortitude DC. She takes a -2 circumstance penalty to her check if the target is one size larger than her and a -4 circumstance penalty if it's larger than that. She gains a +2 circumstance bonus to her check if the target is one size smaller than her and a +4 circumstance bonus if it's smaller than that.\n\n---\n\nCritical Success As success, but the creature also takes 2 persistent,fire damage.\n\nSuccess The creature takes 1d6 bludgeoning damage plus 1d6 fire damage and falls and lands Prone in an unoccupied square adjacent to her (Meleeka's choice).\n\nUpon landing, the creature is no longer grabbed.\n\nFailure The creature is no longer grabbed.\n\nCritical Failure As failure, but Meleeka falls prone."
+    },
+    {
+      "kind": "ability",
+      "name": "Mastered Rain of Embers Stance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "Requirements Meleeka is unarmored\n\n---\n\nEffect Meleeka enters the stance of an enraged phoenix, channeling her pain into resolve and holding her fingers as rigid as deadly talons while moving with quick, flickering gestures that resemble dancing flames. Meleeka gains a +1 status bonus to AC and saving throws and fire resistance 2, though if her current Hit Points are not equal to her maximum number of Hit Points, this status bonus increases to +3 and the fire resistance to 3. The only Strikes Meleeka can make are fire talon Strikes.\n\nThese deal 1d4 fire damage; are in the brawling group; and have the agile, finesse, nonlethal, and unarmed traits.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "rain-of-embers",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "status",
+          "value": 1,
+          "when": [
+            "rain-of-embers"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "rain-of-embers",
+              {
+                "lt": [
+                  "hp-percent",
+                  100
+                ]
+              }
+            ],
+            "selector": [
+              "ac",
+              "saving-throw"
+            ],
+            "slug": "rain-of-embers-not-max-hp",
+            "type": "status",
+            "value": 3
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "rain-of-embers"
+            ],
+            "type": "fire",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "rain-of-embers",
+              {
+                "lt": [
+                  "hp-percent",
+                  100
+                ]
+              }
+            ],
+            "type": "fire",
+            "value": 3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

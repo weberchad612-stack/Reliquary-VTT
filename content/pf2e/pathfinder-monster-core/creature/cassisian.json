@@ -1,0 +1,325 @@
+{
+  "kind": "creature",
+  "slug": "cassisian",
+  "system": "pf2e",
+  "name": "Cassisian",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "angel",
+    "celestial",
+    "holy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 6,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 1,
+      "int": -1,
+      "str": -1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 6,
+      "diplomacy": 6,
+      "religion": 6,
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 3
+        }
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 3
+        },
+        {
+          "type": "fire",
+          "value": 3
+        }
+      ]
+    },
+    "notes": {
+      "ac": "+1 status vs. unholy creatures",
+      "saves": "+1 status to all saves vs. unholy creatures"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 16,
+      "attack": 8,
+      "spells": [
+        {
+          "name": "Read Omens",
+          "rank": 4,
+          "ref": "spells:spell/read-omens"
+        },
+        {
+          "name": "Heal",
+          "rank": 1,
+          "ref": "spells:spell/heal"
+        },
+        {
+          "name": "Know the Way",
+          "rank": 1,
+          "ref": "spells:spell/know-the-way"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Headbutt",
+      "attack": 6,
+      "traits": [
+        "agile",
+        "finesse",
+        "holy",
+        "magical",
+        "reach-0"
+      ],
+      "damage": [
+        {
+          "dice": "1d6-1",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Unholy Creatures",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "origin:trait:unholy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to AC vs. Unholy Creatures",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "origin:trait:unholy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Transfer Protection",
+      "category": "defensive",
+      "traits": [
+        "holy"
+      ],
+      "text": "A creature can wear a willing cassisian as a helmet. While it does, the cassisian can't act, but the cassisian extends their +1 status bonus to AC and saves against unholy creatures to their wearer. At any time, the cassisian can detach themself from their wearer as a single action.\n\nEffect: Transfer Protection"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "A cassisian can take the appearance of a dove, a winged humanoid, a dog, or a fish. Normally, this doesn't change their Speed or the attack and damage bonuses for their Strikes, but it might change the damage type Strikes deal (typically to bludgeoning). Any further changes for specific forms are noted below.\n- Dog\n- Size Small;\n- Scent (Imprecise) 30 feet,\n- Speed 40 feet;\n- Skills Athletics +6;\n- Melee 1 jaws +7, Damage 1d6+2 piercing plus Knockdown\n\n- Fish\n- Speed Swim 30 feet\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "cassisian",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Angel.Cassisian",
+                "value": "cassisian"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Dog",
+                "value": "dog"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Dove",
+                "value": "dove"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Fish",
+                "value": "fish"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Winged",
+                "value": "winged-humanoid"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 7,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 2
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              "change-shape:dog"
+            ],
+            "slug": "jaws"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "GrantItem",
+            "predicate": [
+              "change-shape:dog"
+            ],
+            "reevaluateOnUpdate": true,
+            "uuid": "Compendium.pf2e.bestiary-ability-glossary-srd.Item.Knockdown"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage"
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 40
+        },
+        {
+          "key": "speed",
+          "type": "swim",
+          "value": 30
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "acuity": "imprecise",
+            "key": "Sense",
+            "predicate": [
+              "change-shape:dog"
+            ],
+            "range": 30,
+            "selector": "scent"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:dog"
+            ],
+            "value": "small"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:headbutt",
+              "change-shape:dog"
+            ],
+            "property": "traits",
+            "value": "reach-0"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eye Beams",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "holy"
+      ],
+      "text": "The cassisian releases beams of heat or cold from their eyes, dealing 2d6 cold or fire damage (DC 17 basic Reflex save save) to all creatures in a 15-foot line. They can't use Eye Beams again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Repository of Lore",
+      "category": "offensive",
+      "text": "While the cassisian isn't particularly intelligent, they have perfect memory and can remember everything they see or hear. This allows them to attempt Lore checks on any topic, provided (at the GM's discretion) they've encountered the topic in question before. The cassisian's limited intellect often prevents them from acting upon their knowledge, making them a better resource than agent in using information."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The weakest of angels, cassisians usually serve as lackey messengers for more powerful angels or as spiritual guides for mortals. Despite their limited intellect, cassisians have a knack for precise recollection, particularly with scripture. Most cassisians are formed from the souls of trustworthy mortals, but some arise from fragments of greater angels destroyed in service to the celestial realms.\n\n---\n\nThe celestial hosts of angels are messengers and warriors, divided into choirs based on their abilities and purviews. Angels were one of the first creations of the gods, and many still assist their righteous creators throughout the cosmos. Most angels in modern times are not direct creations of the divine, however, instead consisting of ascended mortal souls drawn from the celestial planes.\n\nThe majority of unaffiliated angels live in Nirvana, the plane of virtue and enlightenment. Angels who are affiliated with deities dwell in those deities' domains or other areas where that god holds influence. Regardless of residence or service, angels remain benevolent messengers possessed with magical auras to aid their allies."
+}

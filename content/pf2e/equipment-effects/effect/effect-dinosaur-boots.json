@@ -1,0 +1,152 @@
+{
+  "kind": "effect",
+  "slug": "effect-dinosaur-boots",
+  "system": "pf2e",
+  "name": "Effect: Dinosaur Boots",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dinosaur Boots, Dinosaur Boots (Greater)\n\nYou gain the effects of enlarge (4th rank for greater). You gain a foot unarmed attack.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dinosaur-boots",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dinosaur Boots"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:dinosaur-boots-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Dinosaur Boots (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "dinosaur-boots"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "dinosaur-boots:dinosaur-boots"
+        ],
+        "reach": {
+          "override": "10"
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "dinosaur-boots:dinosaur-boots-greater"
+        ],
+        "reach": {
+          "override": "15"
+        },
+        "resizeEquipment": true,
+        "value": "huge"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-damage",
+      "type": "status",
+      "value": 2,
+      "slug": "dinosaur-boots-bonus"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "dinosaur-boots:dinosaur-boots-greater"
+        ],
+        "selector": "melee-damage",
+        "slug": "dinosaur-boots-bonus",
+        "value": 4
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "bludgeoning",
+            "dice": 1,
+            "die": "d6"
+          }
+        },
+        "group": "brawling",
+        "img": "systems/pf2e/icons/unarmed-attacks/foot.webp",
+        "key": "Strike",
+        "label": "PF2E.BattleForm.Attack.Foot",
+        "slug": "dinosaur-boots-foot-attack",
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed",
+          "nonlethal"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "dinosaur-boots:dinosaur-boots-greater"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "dinosaur-boots-foot-attack-damage"
+        ],
+        "value": 8
+      }
+    }
+  ]
+}

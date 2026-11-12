@@ -1,0 +1,243 @@
+{
+  "kind": "creature",
+  "slug": "troll-warleader",
+  "system": "pf2e",
+  "name": "Troll Warleader",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "giant",
+    "humanoid",
+    "troll",
+    "wood"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 29,
+    "hp": 240,
+    "perception": 19,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 17,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 7,
+      "dex": 3,
+      "int": -1,
+      "str": 7,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 21,
+      "crafting": 15,
+      "intimidation": 22,
+      "nature": 17,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "jotun"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 10
+        },
+        {
+          "type": "electricity",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(26 plus all-around vision after Shed Armor)",
+      "hp": "regeneration 30 (deactivated by acid or fire)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 23,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 24,
+      "traits": [
+        "magical",
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Easily Misled",
+      "category": "interaction",
+      "text": "The forest troll gets a –4 circumstance penalty to their Perception DC against Deception checks.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception-dc",
+          "type": "circumstance",
+          "value": -4,
+          "when": [
+            "check:statistic:deception"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 20 (Deactivated by Electricity or Fire)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "electricity",
+              "fire"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Furious Roar",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The troll warleader takes electricity or fire damage\n\n---\n\nEffect The warleader uses their Primordial Roar and, if they're aware of the damage's source, can Stride toward it. If the warleader has persistent fire damage, they attempt a DC 15 Flat check to remove it."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Primordial Roar",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "The troll warleader unleashes a bestial roar. Each non-troll creature in a 100-foot emanation must attempt a DC 29 Will save save. The creature is then temporarily immune for 10 minutes.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is Frightened 2.\n\nCritical Failure The creature is Frightened 3."
+    },
+    {
+      "kind": "ability",
+      "name": "Shed Armor",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The warleader cuts their armor loose from their flesh. They immediately heal 60 Hit Points in a surge of regeneration as they grow twisted limbs and malformed faces.\n\nWithout their armor, the warleader's AC drops to 26 but they gain All-Around Vision from the new faces.\n\nPutting the armor back on takes 10 minutes, and this ability can't be used again until 1 hour has passed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shed-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -3,
+          "when": [
+            "shed-armor"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "GrantItem",
+            "predicate": [
+              "shed-armor"
+            ],
+            "uuid": "Compendium.pf2e.bestiary-ability-glossary-srd.Item.All-Around Vision"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sweeping Axes",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements The troll warleader is wielding two battle axes\n\n---\n\nEffect The warleader makes a battle axe Strike against each creature in their reach and the bonus from sweep applies to each attack. These attacks count against their multiple attack penalty, but the multiple attack penalty doesn't increase until after all the attacks."
+    }
+  ],
+  "text": "Long-lived trolls sometimes force their way through the twin distractions of hunger and pain to learn more about the world around them. To manage their regeneration, they learn to cover themselves in crude armor that slowly becomes integrated with the top layer of their flesh. Marked by this armor and aided by their superior wits, these warleaders gather a variety of trolls to serve them in raiding parties.\n\nThe warleader presented here is a forest troll, but warleaders can be other types of trolls as well. Many of them are adapted to battle tactics that are best suited to their home environments.\n\n---\n\nSlavering, cruel, invincible brutes: this is the villager's stock description for the dread monsters known as trolls. The roots of these stories are undoubtedly true. Trolls' flesh endlessly regrows, going so far as to sprout aberrant limbs or additional heads if not pruned, and a bottomless hunger is required to feed such unfettered growth. Even in the process of glutting themselves, however, trolls find opportunities to taunt their prey and inflict petty cruelties.\n\nA troll's ability to survive is so strong that they believe even the smallest scrap of flesh will slowly regenerate into a new form, suffering as all the powers of the land are gathered to revive them. Despite the pain, trolls speak of this unassailable vitality as a blessing from their creator. Few trolls have heard the laughter of demons who claim that creator cursed the trolls and cast them down from lofty heights, binding them so they could never rise again.\n\nTrolls prefer to remain solitary, keeping every scrap of food for themselves. In rare instances, an old and powerful troll comes to lead groups of trolls. Such warleaders possess enough cunning to lead their hordes in devastating raids and massacres, and their presence permanently alters the surrounding ecosystem. This link to their environment is an often misunderstood aspect of trollkind, and grows more acute with a troll's age and power. That's not to say trolls are valorous protectors of nature. They're vicious and territorial, and will blight their own territory forever if it means more to eat for a day."
+}

@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "bleachling-survivor",
+  "system": "pf2e",
+  "name": "Bleachling Survivor",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "gnome",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 34,
+    "perception": 8,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 8,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 1,
+      "int": 1,
+      "str": 1,
+      "wis": 3
+    },
+    "skills": {
+      "intimidation": 7,
+      "medicine": 8,
+      "occultism": 7,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "gnomish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Longbow",
+      "ref": "equipment:item/longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Longbow",
+      "attack": 9,
+      "traits": [
+        "deadly-d10",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unflappable",
+      "category": "interaction",
+      "text": "When the bleachling survivor rolls a critical failure on a check with the emotion trait, they get a failure instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "to-failure"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:emotion"
+            ],
+            "selector": "saving-throw"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "to-failure"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:emotion"
+            ],
+            "selector": "skill-check"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flinch Back",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy moves into an adjacent space\n\n---\nEffect The bleachling survivor Steps up to 10 feet. They must end this movement in a space that is not adjacent to an enemy."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The bleachling survivor deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "It is almost unheard of for gnomes to survive the horrendous sickness known as the Bleaching, but those few who do are permanently altered. Having lived through the worst disease known to their kind, bleachling survivors often emerge jaded and reckless, traveling to seek out mind-bending experiences and heady thrills that will awaken something in them again. Though their experiences may toughen them, they are not unfriendly. Most try to help others they meet during their travels who might not be as unshakable.\n\n---\nBecause their ancestors came from the First World, gnomes are intrinsically linked to the realm of the fey and crave the mystical and unpredictable. They seek to create daring works of art, voyage to new places, and have experiences they've never had before. Otherwise, they could fall victim to the terrible gnomish illness known as the Bleaching, which not only drains them of their color but of their spirits as well."
+}

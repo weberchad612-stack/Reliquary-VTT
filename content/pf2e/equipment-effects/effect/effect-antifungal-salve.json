@@ -1,0 +1,137 @@
+{
+  "kind": "effect",
+  "slug": "effect-antifungal-salve",
+  "system": "pf2e",
+  "name": "Effect: Antifungal Salve",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 6,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Antifungal Salve (Lesser), Antifungal Salve (Moderate), Antifungal Salve (Greater), Antifungal Salve (Major)\n\nYou gain an item bonus to saves against fungal afflictions.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:antifungal-salve-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Antifungal Salve (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:antifungal-salve-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Antifungal Salve (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:antifungal-salve-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Antifungal Salve (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:antifungal-salve-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Antifungal Salve (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "antifungal"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 2,
+      "slug": "antifungal-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:curse",
+            "item:trait:poison",
+            "item:trait:disease"
+          ]
+        },
+        {
+          "or": [
+            "item:trait:fungus",
+            "origin:trait:fungus"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "antifungal:antifungal-salve-moderate"
+        ],
+        "selector": "saving-throw",
+        "slug": "antifungal-bonus",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "or": [
+              "antifungal:antifungal-salve-greater",
+              "antifungal:antifungal-salve-major"
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "slug": "antifungal-bonus",
+        "value": 4
+      }
+    }
+  ]
+}

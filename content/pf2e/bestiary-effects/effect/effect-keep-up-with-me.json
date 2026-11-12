@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-keep-up-with-me",
+  "system": "pf2e",
+  "name": "Effect: Keep Up With Me!",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "You gain a +3 status bonus to your attack roll on the next Strike you make, or to the DC of your next offensive ability if you're a troop.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": 3,
+      "slug": "keep-up-with-me-attack",
+      "when": [
+        {
+          "not": "self:trait:troop"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.NPCAbility.KeepUpWithMe.RollOptionLabel",
+        "option": "keep-up-with-me-dc",
+        "phase": "beforeDerived",
+        "predicate": [
+          "self:trait:troop"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "inline-dc",
+      "type": "status",
+      "value": 3,
+      "when": [
+        "self:trait:troop",
+        "keep-up-with-me-dc"
+      ]
+    }
+  ]
+}

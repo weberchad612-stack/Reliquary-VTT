@@ -1,0 +1,305 @@
+{
+  "kind": "creature",
+  "slug": "kalakaigh",
+  "system": "pf2e",
+  "name": "Kalakaigh",
+  "source": {
+    "title": "Pathfinder #214: The Broken Palace",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "demon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 130,
+    "perception": 14,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 5,
+      "int": 1,
+      "str": 2,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 12,
+      "intimidation": 15,
+      "occultism": 11,
+      "stealth": 14,
+      "thievery": 12
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        },
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 to all saves vs. magic",
+      "perception": "fear scent (precise) 30 feet",
+      "languages": "telepathy 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 4,
+          "ref": "spells:spell/translocate",
+          "uses": 3
+        },
+        {
+          "name": "Dream Message",
+          "rank": 3,
+          "ref": "spells:spell/dream-message"
+        },
+        {
+          "name": "Paralyze",
+          "rank": 3,
+          "ref": "spells:spell/paralyze"
+        },
+        {
+          "name": "See the Unseen",
+          "rank": 2,
+          "ref": "spells:spell/see-the-unseen"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Fear (At Will)",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Sigil",
+          "rank": 1,
+          "ref": "spells:spell/sigil"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 15,
+      "traits": [
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fear Scent",
+      "category": "interaction",
+      "text": "A kalakaigh can sense creatures that are frightened or under a fear effect."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mercy Vulnerability",
+      "category": "defensive",
+      "text": "Kalakaighs delight in the sight of fresh wounds, and when one is healed, they recoil in pain. When a creature heals from damage that the kalakaigh dealt on their last turn, the demon takes 4d6 mental damage. The kalakaigh can take this damage only once per round."
+    },
+    {
+      "kind": "ability",
+      "name": "Bloody Attack",
+      "category": "offensive",
+      "text": "A kalakaigh deals 1d6 extra precision damage and 1d6 extra persistent bleed damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The kalakaigh can take on the appearance of any Medium humanoid, but when they do so, they always appear to be wearing dark clothing, black gloves, and some sort of obscuring cover over their face or head. These \"clothes\" are in fact part of the demon's new body. Their new form doesn't change their Speed or their weapon attack and damage modifiers with their Strikes, but it does prevent them from making horn Strikes."
+    },
+    {
+      "kind": "ability",
+      "name": "Shocking Reveal",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "visual"
+      ],
+      "text": "Trigger The kalakaigh damages a creature with a melee Strike while in its humanoid form\n\n---\nEffect The kalakaigh reverts to its true form, and all creatures within 30 feet who witness the transformation must make a DC 21 Will save save or become Frightened 1 (Frightened 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Signature Slaughter",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The kalakaigh attacks with a recognizable flourish or in a specific way that links all its murders together. The kalakaigh makes a melee Strike with its kukri. This counts as two attacks when calculating the demon's multiple attack penalty. If this strike hits, the kalakaigh deals an additional 2d6 persistent bleed damage, and the target is Frightened 2.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "signature-slaughter",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "signature-slaughter"
+            ],
+            "selector": "kukri-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "spell",
+      "name": "Demonic Pact",
+      "rank": 1,
+      "ref": "spells:spell/demonic-pact"
+    }
+  ],
+  "text": "A kalakaigh is above all else a killer—a fiendish incarnation of the sin of murder. They typically form from the souls of mortals who, in life, pursued murder as an obsession, killing simply for the thrill of killing.\nServants of Slaughter\nKalakaighs often serve the demon lords Shax and Zura, but some remain stubbornly devoted to Nocticula, a legacy from her time spent as a patron of assassins. These demons cling to the hope that Nocticula will return as their queen, if only they can murder enough innocents in her name."
+}

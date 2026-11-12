@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "chalice",
+  "system": "pf2e",
+  "name": "Chalice",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "Chalice implements are vessels that fill with liquid, associating them with healing, nourishment, and life. Your chalice might be a traditional cup or goblet, but it could also be a small amphora, a polished gourd, or even a hollowed-out skull. Chalice implements are associated with the astrological signs of the mother and the newlyweds, as well as the sea dragon.\nInitiate Benefit\n\nAdept Benefit\n\nIntensify Vulnerability\nYour reinforced chalice can collect a creature's life force from a distance to become empowered. While you're within 30 feet of the target of your Exploit Vulnerability, you increase the effect if someone Drinks from the Chalice. Add additional temporary Hit Points equal to your level if the drinker sips, or add twice your level to the Hit Points regained if the drinker drains the chalice.\nParagon Benefit",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Chalice Implement"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.thaumaturge.initiateBenefit",
+        "predicate": [
+          "feat:thaumaturge-dedication"
+        ],
+        "value": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Chalice)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "uuid": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Chalice)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.thaumaturge.adeptChoices",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "priority": 20,
+        "value": {
+          "label": "{item|name}",
+          "predicate": [
+            {
+              "not": "feature:adept-benefit-chalice"
+            }
+          ],
+          "value": "Compendium.pf2e.classfeatures.Item.Adept Benefit (Chalice)"
+        }
+      }
+    }
+  ]
+}

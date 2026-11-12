@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-aura-of-protection-solar",
+  "system": "pf2e",
+  "name": "Effect: Aura of Protection (Solar)",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Allies in the solar's aura gain a +2 status bonus to AC against evil creatures and a +2 status bonus to saves against effects from evil creatures. The bonus increases to +4 against control by evil creatures and attacks by evil summoned creatures.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 2,
+      "when": [
+        "origin:trait:evil"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 4,
+      "slug": "more-protection",
+      "when": [
+        "origin:trait:evil",
+        {
+          "or": [
+            "inflicts:controlled",
+            {
+              "and": [
+                "attack",
+                "origin:trait:summoned"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

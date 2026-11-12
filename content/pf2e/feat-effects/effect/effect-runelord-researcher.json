@@ -1,0 +1,195 @@
+{
+  "kind": "effect",
+  "slug": "effect-runelord-researcher",
+  "system": "pf2e",
+  "name": "Effect: Runelord Researcher",
+  "source": {
+    "title": "Pathfinder Revenge of the Runelords Player's Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 8,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Runelord Researcher\n\nYou gain a +1 status bonus to saving throws against the chosen effect.\n- Envy any effect that has the incapacitation trait (against foes who are higher level than you, the status bonus increases to +2)\n- Gluttony death effects and void\n- Greed polymorph and effects that can cause the following conditions: enfeebled, clumsy, or petrified\n- Lust emotion\n- Pride illusion\n- Sloth effects that cause paralysis, slow, stun, or that grant penalties to your Speed\n- Wrath effects that cause acid, cold, electricity, fire, or sonic damage (choose one)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Envy",
+            "value": "envy"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Gluttony",
+            "value": "gluttony"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Greed",
+            "value": "greed"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Lust",
+            "value": "lust"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Pride",
+            "value": "pride"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Sloth",
+            "value": "sloth"
+          },
+          {
+            "label": "PF2E.SpecificRule.Runelord.School.Wrath",
+            "value": "wrath"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Runelord.School.Prompt",
+        "rollOption": "thassilonian-school"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "predicate": [
+              "thassilonian-school:wrath"
+            ],
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "predicate": [
+              "thassilonian-school:wrath"
+            ],
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              "thassilonian-school:wrath"
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "predicate": [
+              "thassilonian-school:wrath"
+            ],
+            "value": "sonic"
+          }
+        ],
+        "flag": "damageType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "slug": "runelord-scholar",
+      "when": [
+        {
+          "or": [
+            {
+              "and": [
+                "thassilonian-school:envy",
+                "item:trait:incapacitation"
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:gluttony",
+                {
+                  "or": [
+                    "item:trait:death",
+                    "item:trait:void"
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:greed",
+                {
+                  "or": [
+                    "item:trait:polymorph",
+                    "inflicts:enfeebled",
+                    "inflicts:clumsy",
+                    "inflicts:petrified"
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:lust",
+                "item:trait:emotion"
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:pride",
+                "item:trait:illusion"
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:sloth",
+                {
+                  "or": [
+                    "inflicts:paralyzed",
+                    "inflicts:slowed",
+                    "inflicts:stunned",
+                    "inflicts:speed-penalty"
+                  ]
+                }
+              ]
+            },
+            {
+              "and": [
+                "thassilonian-school:wrath",
+                "item:damage:type:{item|flags.system.rulesSelections.damageType}"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "thassilonian-school:envy",
+          {
+            "gte": [
+              "origin:level",
+              "self:level"
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "slug": "runelord-scholar",
+        "value": 2
+      }
+    }
+  ]
+}

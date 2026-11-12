@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "saddleback-bunyip",
+  "system": "pf2e",
+  "name": "Saddleback Bunyip",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-06: The Crashing Wave",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "animal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 6
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 11,
+      "stealth": 10,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 10,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "notes": {
+      "perception": "blood scent"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 11,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 11,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Scent",
+      "category": "interaction",
+      "text": "The bunyip can smell blood in the water from up to 1 mile away."
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Opportunity",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "As Attack of Opportunity, but both the bunyip and the triggering creature must be in water."
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Frenzy",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Requirements The bunyip is not Fatigued or already in a frenzy.\n\nTrigger The bunyip deals bleed damage to a living creature.\n\n---\nEffect The bunyip flies into a frenzy that lasts 1 minute. While frenzied, the bunyip gains a +4 status bonus to damage rolls with its jaws, gains 8 temporary HP that go away at the end of the frenzy, and takes a -2 penalty to AC.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "flags.system.frenzyMod",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Roar",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "emotion",
+        "fear",
+        "mental",
+        "primal"
+      ],
+      "text": "The bunyip lets out a loud and horrifying roar. Other creatures within 100 feet must succeed at a DC 21 Will save save or become Frightened 2 (Frightened 3 on a critical failure, Frightened 1 on a success, or unaffected on a critical success). No matter the result, the creature is temporarily immune to the effect for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Shift Form",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "morph",
+        "primal"
+      ],
+      "text": "A bunyip can alter its form slightly to gain an advantage and make it harder to recognize. When it does, its teeth shrink and its Jaws Strike doesn't deal the 1d6 persistent bleed damage. It can choose to gain either a long snake tail, granting its tail Strike reach 10 feet and Grab, or squat crocodile legs, increasing its land Speed to 20 feet. If it uses Shift Form again, the bunyip can return to normal or switch between a long tail or crocodile legs.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shift-form",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.Bunyip.SnakeTail",
+                "value": "snake-tail"
+              },
+              {
+                "label": "PF2E.NPCAbility.Bunyip.CrocodileLegs",
+                "value": "crocodile-legs"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "label": "PF2E.Weapon.Base.jaws",
+            "predicate": [
+              {
+                "not": "shift-form"
+              }
+            ],
+            "selector": "jaws-damage"
+          }
+        },
+        {
+          "key": "speed",
+          "type": "land-speed",
+          "value": 20
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "shift-form:snake-tail",
+              "item:slug:tail"
+            ],
+            "property": "traits",
+            "value": "reach"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "tail-attack",
+          "text": "1  ({item|name})",
+          "when": [
+            "shift-form:snake-tail"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Bunyips are dangerous aquatic predators that resemble a cross between a shark and a seal. Found in freshwater inlets or saltwater coves worldwide, bunyips hunt where prey is plentiful, often to the consternation of coastal residents and fisherfolk.\n\nDespite their outlandish appearance and tendency to defend their territory with loud, bellowing roars that echo for great distances, bunyips are very rarely sighted by humanoids, leaving many to question their existence. For hundreds of years, bunyips were widely regarded as nothing more than folk tales, and even now that their existence as a species has been proven, the existence of any particular bunyip in a local area is often met with heavy skepticism. While their limited shapechanging abilities are no doubt a significant part of the reason for this air of mystery, another major factor is that the aquatic creatures rarely hunt humanoids, preferring to eat smaller animals. Most bunyips avoid human contact, except when one wanders too close to their den or favorite hunting spot, at which point the territorial bunyip attacks with swift and terrible ferocity. Many scholars agree that a large number of unexplained disappearances near coastal areas are the result of unreported bunyip aggression.\n\nIn some ports, bunyips have learned that delicious prizes can be had from the chum and garbage discarded by fishing boats and merchant vessels. They lurk close to the shore and carefully choose their victims, plucking them off docks and small boats. These bunyips are particularly careful to keep their true forms hidden, but this does little to dull rumors of monster-infested waters."
+}

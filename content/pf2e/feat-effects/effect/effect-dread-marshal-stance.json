@@ -1,0 +1,47 @@
+{
+  "kind": "effect",
+  "slug": "effect-dread-marshal-stance",
+  "system": "pf2e",
+  "name": "Effect: Dread Marshal Stance",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": -1,
+    "unit": "encounter",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dread Marshal Stance\n\nYou gain a +1 status bonus to damage rolls. When the marshal or an ally in the aura critically hit an enemy with a Strike, that enemy is Frightened 1. If the marshal is wielding a weapon that has more than one damage die (typically due to a striking rune), you can have the status bonus equal the weapon's number of damage dice instead of +1.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "item:trait:fear"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "damage",
+        "type": "status",
+        "value": "@item.origin.flags.system.highestWeaponDamageDice"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.SpecificRule.Marshal.DreadMarshalStance.Note",
+      "outcome": [
+        "criticalSuccess"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "smokesight-stalker-wight",
+  "system": "pf2e",
+  "name": "Smokesight Stalker Wight",
+  "source": {
+    "title": "Pathfinder Society Scenario #4-15: In Glorious Battle",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "lawful",
+    "undead",
+    "unholy",
+    "wight"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 15,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 17,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 15,
+      "deception": {
+        "value": 15,
+        "special": [
+          {
+            "value": 17,
+            "label": "to feint",
+            "when": [
+              "action:feint"
+            ]
+          }
+        ]
+      },
+      "stealth": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+4",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smoke Vision",
+      "category": "interaction",
+      "text": "The stalker wight ignores the Concealed condition from smoke."
+    },
+    {
+      "kind": "ability",
+      "name": "Final Spite",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The stalker wight is reduced to 0 Hit Points\n\n---\n\nEffect The stalker wight makes a Strike before being destroyed. They don't gain any temporary HP from drain life on this Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the stalker wight damages a living creature using an unarmed attack or their bound weapon, they gain 7 temporary Hit Points, and the creature must succeed at a DC 22 Fortitude save save or become Drained 1. Further damage dealt by the stalker wight's unarmed and bound weapon attacks increases the value of the drained condition by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Feign Death",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The stalker wight quenches the telltale red glow in their eye sockets, falls Prone, and lies completely still. Until the next time they act, the prowler wight appears to be an ordinary corpse. They have an automatic result of 35 on Deception checks and DCs to pass as an ordinary corpse."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The stalker wight deals an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spawn Stalker Wight",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A living humanoid killed by a stalker wight's weapon or claw Strike rises as a stalker wight spawn after 1d4 rounds. This spawn is under the command of the stalker wight that killed them. They don't have drain life or spawn stalker wight and are Clumsy 2 for as long as they're a stalker wight spawn. If the creator of the stalker wight spawn dies, the stalker wight spawn becomes a fully autonomous stalker wight; they regain their free will, gain drain life and spawn stalker wight, and are no longer clumsy"
+    }
+  ],
+  "text": "Often found lurking in the dark, prowler wights wield subterfuge as their greatest weapon. They frequently feign death in old sewers, graveyards, and mausoleums, waiting for hapless victims to pass by before striking.\n\n---\n\nWights are undead beings of spite who primarily stalk places related to death.",
+  "blurb": "Variant prowler wight"
+}

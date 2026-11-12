@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "bounty-hunter-dedication",
+  "system": "pf2e",
+  "name": "Bounty Hunter Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "trained in Survival"
+  ],
+  "text": "When focused on finding your quarry, you're relentless. You gain the Hunt Prey action. You can use Hunt Prey to designate a creature that you've observed, heard about, or learned about through some other means, such as a bounty board or wanted poster. In addition to the other benefits of Hunt Prey, you can designate a target as your prey while Gathering Information about them, in addition to designating them as your prey when Tracking them as normal. If you have already identified your target and selected them as your prey, you gain a +2 circumstance bonus to checks to Gather Information about them.\n\nIf you already have Hunt Prey, you gain the Monster Hunter feat in addition to the other benefits of this feat.\n\nBounty Hunter",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          "feature:hunt-prey"
+        ],
+        "uuid": "Compendium.pf2e.feats-srd.Item.Monster Hunter"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Hunt Prey"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "count": true,
+        "key": "RollOption",
+        "option": "grants-hunt-prey",
+        "priority": 99
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "diplomacy",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:gather-information",
+        "target:mark:hunted-prey"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.survival.rank",
+        "predicate": [
+          {
+            "gt": [
+              "grants-hunt-prey",
+              1
+            ]
+          }
+        ],
+        "value": 2
+      }
+    }
+  ]
+}

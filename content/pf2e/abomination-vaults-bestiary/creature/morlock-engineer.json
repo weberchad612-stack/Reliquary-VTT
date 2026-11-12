@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "morlock-engineer",
+  "system": "pf2e",
+  "name": "Morlock Engineer",
+  "source": {
+    "title": "Pathfinder #163: Ruins of Gauntlight",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "morlock"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 46,
+    "perception": 8,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 12,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": 1,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "Climbing",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "crafting": 10,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "+2 status to all saves vs. disease and poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Warhammer",
+      "ref": "equipment:item/warhammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Projectile Launcher",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Handful of Junk",
+      "type": "equipment",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Warhammer",
+      "attack": 11,
+      "traits": [
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Projectile Launcher",
+      "attack": 10,
+      "traits": [
+        "deadly-d8",
+        "versatile-p"
+      ],
+      "range": 50,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Disease and Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:disease",
+                "item:trait:poison"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Improvised Projectile",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The morlock engineer quickly crafts an improvised projectile from objects it carries or that are readily accessible in adjacent squares. Where unusual materials are available, an improvised projectile might deal damage other than bludgeoning or piercing—for example, a morlock engineer by a campfire could build a projectile that deals fire damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The morlock deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Stance",
+      "category": "offensive",
+      "text": "A morlock can share the same space as another morlock, but no more than two morlocks can occupy the same space. When morlocks share the same space, they gain a +1 circumstance bonus to attack rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "swarming-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "swarming-stance"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Uncanny Tinker",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock engineer tinkers with an adjacent construct or mechanical hazard. They attempt a Crafting check check against the construct's or hazard's Fortitude DC. The morlock can't get an outcome better than failure if the target's level is more than double the morlock's.\n\nThis ability reflects hasty battlefield repairs; once a construct or hazard regains Hit Points from this ability, it can't do so again until it's been Repaired.\n\n---\n\nCritical Success The target regains 8d6 healing Hit Points and a +1 circumstance bonus to attack rolls for 1 minute. Alternately, the morlock can deal 8d6 untyped damage (bludgeoning, piercing, or slashing, as chosen by the morlock engineer) to the construct or hazard.\n\nSuccess As critical success, but the target regains 4d6 healing Hit Points or the morlock deals 4d6 untyped damage.\n\nCritical Failure The morlock injures themself, taking 3d6 untyped damage (typically bludgeoning, piercing, or slashing, but potentially a different type at the GM's discretion).\n\nEffect: Uncanny Tinker"
+    }
+  ],
+  "text": "Most morlocks have little talent for crafting, but a rare few have an uncanny knack for tinkering.\n\n---\n\nMorlocks originate from humans long lost to the surface world. They have an affinity for machinery, scavenging, and strange occult behaviors."
+}

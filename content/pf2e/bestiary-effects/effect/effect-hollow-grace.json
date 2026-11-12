@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "effect-hollow-grace",
+  "system": "pf2e",
+  "name": "Effect: Hollow Grace",
+  "source": {
+    "title": "Pathfinder Feybound",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Living creatures in the emanation take a –1 status penalty to saving throws against emotion and void effects. Undead creatures in the emanation gain a +1 status bonus to attack and damage rolls and gain resistance 5 to vitality damage.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": -1,
+      "slug": "hollow-grace-living-penalty",
+      "when": [
+        "self:mode:living",
+        {
+          "or": [
+            "item:trait:emotion",
+            "item:trait:void"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "attack-roll",
+        "damage"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "hollow-grace-undead-bonus",
+      "when": [
+        "self:mode:undead"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:mode:undead"
+        ],
+        "type": "vitality",
+        "value": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "kind": "creature",
+  "slug": "drowned-mummy",
+  "system": "pf2e",
+  "name": "Drowned Mummy",
+  "source": {
+    "title": "Pathfinder #186: Ghost King's Rage",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "rare",
+  "traits": [
+    "amphibious",
+    "evil",
+    "lawful",
+    "mummy",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 38,
+    "hp": 330,
+    "perception": 30,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 28,
+      "will": 32
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 6,
+      "dex": 5,
+      "int": 3,
+      "str": 9,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 30,
+      "athletics": 32,
+      "intimidation": 28,
+      "nature": 30,
+      "stealth": {
+        "value": 30,
+        "special": [
+          {
+            "value": 32,
+            "label": "While Underwater",
+            "when": [
+              "terrain:underwater"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "echolocation",
+        "range": 120,
+        "acuity": "precise"
+      },
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "necril",
+      "thalassic"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 33,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "aquatic-advantage"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+15",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "aquatic-advantage",
+        "rancid-bloat"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 31,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "aquatic-advantage"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Echolocation (Precise) 120 feet",
+      "category": "interaction",
+      "text": "A drowned mummy can use its hearing as a precise sense at the listed range but only underwater."
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Water Pressure",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "30 feet. A creature that begins its turn within the aura feels overburdened by the weight of the water around it and must succeed at a DC 35 Fortitude save save or become Encumbered for as long as it remains in the area. A creature that succeeds is temporarily immune to water pressure for 24 hours. Water pressure only functions while the drowned mummy is underwater and can only affect creatures that are in contact with the same body of water.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "water-pressure",
+            "traits": [
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Advantage",
+      "category": "offensive",
+      "text": "A drowned mummy's Strikes deal an additional 2d6 damage against creatures in the same body of water as the drowned mummy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-advantage",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "aquatic-advantage"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aquatic Ambush",
+      "actions": 1,
+      "category": "offensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aquatic-ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "aquatic-ambush"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rancid Bloat",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "disease",
+        "divine"
+      ],
+      "text": "This disease and damage from it can't be healed unless this curse is removed. A creature killed by rancid bloat rots away to waterlogged pieces of flesh and can't be resurrected except by an 8th-rank Resurrect ritual or similar magic.\n\nSaving Throw DC 38 Fortitude save\n\nStage 1 carrier with no ill effect (1 minute)\n\nStage 2 12d6 void damage, Clumsy 2, and Enfeebled 2 (1 day)\n\nStage 3 16d6 void damage, Clumsy 4, and Enfeebled 4 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Whirlpool",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal",
+        "water"
+      ],
+      "text": "Requirements The drowned mummy is underwater\n\n---\n\nEffect The drowned mummy commands the water to churn, creating a powerful whirlpool centered on itself. Each creature within a 30-foot emanation centered on the drowned mummy takes 14d8 bludgeoning damage (DC 38 basic Reflex save) as the powerful current batters them around. A creature that fails this save is pushed 20 feet away from the mummy and also falls Prone on a critical failure. The drowned mummy can't use Whirlpool again for 1d4 rounds."
+    }
+  ],
+  "text": "Rarely artificially created, drowned mummies are miserable, dripping undead that have adapted to exist in an aquatic environment, usually over centuries, after their tomb or lair becomes flooded."
+}

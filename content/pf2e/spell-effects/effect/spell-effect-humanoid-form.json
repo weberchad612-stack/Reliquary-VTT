@@ -1,0 +1,193 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-humanoid-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Humanoid Form",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Humanoid Form\n\nYou transform your appearance to that of a Small or Medium humanoid. You gain the humanoid trait. If this transformation reduces your size, it reduces your reach accordingly (typically to 5 feet). You gain a +4 status bonus to Deception checks to pass as a generic member of the chosen ancestry, and you add your level even if you're untrained, but you can't make yourself look like a specific person.\n\nHeightened (3rd) You gain darkvision or low-light vision if the form you assume has that ability.\n\nHeightened (5th) You can take on the appearance of a Large humanoid. If this increases your size, you gain the effects of the enlarge spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Small",
+            "value": "small"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Medium",
+            "value": "medium"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Large",
+            "predicate": [
+              {
+                "gte": [
+                  "parent:origin:item:level",
+                  5
+                ]
+              }
+            ],
+            "value": "large"
+          }
+        ],
+        "flag": "humanoidForm",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "humanoid-form"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Item.Ability.Category.None",
+            "value": "none"
+          },
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.LowLightVision",
+            "value": "low-light-vision"
+          },
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.Darkvision",
+            "value": "darkvision"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "gte": [
+              "parent:origin:item:level",
+              3
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Sense",
+        "rollOption": "vision-type"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          {
+            "not": "humanoid-form:large"
+          }
+        ],
+        "reach": {
+          "override": 5
+        },
+        "resizeEquipment": true,
+        "value": "{item|flags.system.rulesSelections.humanoidForm}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "humanoid-form:large"
+        ],
+        "reach": {
+          "override": 10
+        },
+        "resizeEquipment": true,
+        "value": "{item|flags.system.rulesSelections.humanoidForm}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "humanoid-form:large"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "humanoid"
+        ],
+        "key": "ActorTraits"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "vision-type:darkvision"
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "vision-type:low-light-vision"
+        ],
+        "selector": "low-light-vision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.HumanoidForm.RollOptionLabel",
+        "option": "pass-as-humanoid",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "deception",
+      "type": "status",
+      "value": 4,
+      "slug": "humanoid-form-status-bonus",
+      "when": [
+        "pass-as-humanoid"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "deception",
+      "type": "proficiency",
+      "value": "@level",
+      "slug": "humanoid-form-proficiency-bonus",
+      "when": [
+        "pass-as-humanoid",
+        "proficiency:untrained"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "melee-damage",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "humanoid-form:large"
+      ]
+    }
+  ]
+}

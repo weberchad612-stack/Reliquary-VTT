@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "sanguine-tenacity",
+  "system": "pf2e",
+  "name": "Sanguine Tenacity",
+  "source": {
+    "title": "Pathfinder #213: Thirst for Blood",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "uncommon",
+  "category": "general",
+  "prerequisites": [
+    "Constitution +4"
+  ],
+  "text": "Your blood carries permanent regenerative properties. The penalties from Enfeebled and the penalties and lost HP from Drained both affect you as if the condition values were 1 lower than they actually are. You also gain resistance 5 to persistent bleed damage and reduce the DC of checks to recover from persistent bleed damage to 11, or 6 if you have particularly effective assistance.",
+  "rules": [
+    {
+      "key": "resistance",
+      "type": "bleed",
+      "value": 5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:damage:type:bleed"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 11
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "penalty:slug:drained",
+              "penalty:slug:enfeebled"
+            ]
+          }
+        ],
+        "selectors": [
+          "con-based",
+          "str-based",
+          "str-damage"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "hp",
+      "type": "untyped",
+      "value": "@level",
+      "when": [
+        "self:condition:drained"
+      ]
+    }
+  ]
+}

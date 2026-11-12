@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-champions-extra-damage",
+  "system": "pf2e",
+  "name": "Effect: Champion's Extra Damage",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Destructive Vengeance, Iron Command, Selfish Shield\n\nYour strikes against the triggering creature deal extra spirit damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "champions-extra-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "key": "FlatModifier",
+        "predicate": [
+          "target:mark:champions-extra-damage"
+        ],
+        "selector": "strike-damage",
+        "slug": "champions-extra-damage",
+        "value": "ternary(gte(@actor.level,16),3,ternary(gte(@actor.level,9),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "multiply",
+        "predicate": [
+          "feature:iniquity"
+        ],
+        "selector": "strike-damage",
+        "slug": "champions-extra-damage",
+        "value": 2
+      }
+    }
+  ]
+}

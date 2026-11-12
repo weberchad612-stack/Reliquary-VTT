@@ -1,0 +1,169 @@
+{
+  "kind": "creature",
+  "slug": "tormented-hero",
+  "system": "pf2e",
+  "name": "Tormented Hero",
+  "source": {
+    "title": "Pathfinder #221: Into the Apocalypse Archive",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 42,
+    "hp": 340,
+    "perception": 33,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 30,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 9,
+      "con": 6,
+      "dex": 6,
+      "int": -1,
+      "str": 9,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 32,
+      "athletics": 35,
+      "intimidation": 35
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 30 (deactivated by bludgeoning), void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Painful Touch",
+      "attack": 35,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+17",
+          "type": "mental"
+        },
+        {
+          "dice": "2d6",
+          "type": "mental",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 30 (Deactivated by Bludgeoning)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "bludgeoning"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 30
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tortured Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "illusion",
+        "mental"
+      ],
+      "text": "30 feet, or 60 feet if the tormented hero is at 170 HP or lower. The psychic agony of the tormented hero spills into the world around them, inflicting murderous hallucinations of being trampled by the Oliphaunt or crushed beneath Spindlehorn. A non-undead creature that ends its turn in the aura must succeed at a DC 37 Will save save or take 5d8 bludgeoning damage and be knocked Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": "ternary(lte(@actor.hitPoints.value, 170), 60, 30)",
+            "slug": "tortured-gaze",
+            "traits": [
+              "divine",
+              "illusion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scream in Agony",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "mental"
+      ],
+      "text": "Each creature in the tormented hero's tortured gaze aura takes 18d6 mental damage (DC 40 basic Will save save). A creature that fails is also Sickened 1 (Sickened 2 on a critical failure). The tormented can't Scream in Agony again for 1d4 rounds but recharges the ability whenever they take damage from an attacker's critical hit or their own critical failure on a saving throw."
+    }
+  ],
+  "blurb": "Variant tormented"
+}

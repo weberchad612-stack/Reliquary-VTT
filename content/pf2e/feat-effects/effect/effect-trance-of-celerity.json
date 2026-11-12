@@ -1,0 +1,46 @@
+{
+  "kind": "effect",
+  "slug": "effect-trance-of-celerity",
+  "system": "pf2e",
+  "name": "Effect: Trance of Celerity",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Trance of Celerity\n\nIf you are cursebound 2 at any point, the bonus increases to a +10-foot status bonus. If you are cursebound 3, this bonus increases to +15-foot status bonus instead. Finally, if you are cursebound 4 at any point during this duration, this bonus increases to a +20-foot status bonus.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": 5,
+      "slug": "trance-of-celerity"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "self:condition:cursebound",
+              2
+            ]
+          }
+        ],
+        "selector": "all-speeds",
+        "slug": "trance-of-celerity",
+        "value": "5*@actor.conditions.cursebound.value"
+      }
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "kind": "creature",
+  "slug": "villamor-koth",
+  "system": "pf2e",
+  "name": "Villamor Koth",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 350,
+    "perception": 27,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 23,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 30,
+      "intimidation": 26,
+      "nature": 27,
+      "survival": 27,
+      "warfare-lore": 25
+    },
+    "speeds": {
+      "land": 35
+    },
+    "languages": [
+      "common",
+      "hallit"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Lance",
+      "ref": "equipment:item/lance",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hide Armor",
+      "ref": "equipment:item/hide-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 30,
+      "traits": [
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Lance",
+      "attack": 28,
+      "traits": [
+        "deadly-d8",
+        "jousting-d6",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+12",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Villamor Koth's foes struggle to pass his defenses. He isn't Off-Guard to Hidden, Undetected, or flanking creatures of his level or lower, or to creatures of his level or lower using surprise attack. However, these creatures can still help their allies flank.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": "@actor.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Raging Resistance",
+      "category": "defensive",
+      "text": "While raging, Villamor Koth gains resistance 7 to physical weapon damage (but not physical damage from other sources, such as unarmed attacks).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              "damage:category:physical",
+              {
+                "or": [
+                  "item:type:melee",
+                  "item:type:weapon"
+                ]
+              },
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "Resistance",
+            "label": "PF2E.IWR.Custom.PhysicalWeaponsOnly",
+            "predicate": [
+              "self:effect:rage"
+            ],
+            "type": "custom",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Axe Specialization",
+      "category": "offensive",
+      "text": "Villamor Koth gains the critical specialization effects for all axes he wields.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:group:axe"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Furious Finish",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Desperate to finish the fight, Villamor Koth pours all his rage into one final blow. He makes a Strike. If it hits, he gains a circumstance bonus to damage equal to the number of rounds remaining in his Rage (maximum 10). After this Strike, his Rage immediately ends and he is Fatigued until he rests for at least 10 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Giant's Lunge",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "rage"
+      ],
+      "text": "Villamor Koth extends his body and prepares to attack foes outside his normal reach. Until his rage ends, all his melee weapons and unarmed attacks gain reach 10. This doesn't increase the reach of any weapon or unarmed attack that already has the reach trait, but it does combine with abilities that increase his reach due to increased size.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "self:effect:rage"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "option": "giants-lunge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "giants-lunge",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "reach-10"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockback",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements Villamor Koth's last action was a successful Strike.\n\n---\n\nEffect Villamor Koth pushes his foe back 5 feet, with the effects of a successful Shove. He can follow the foe as normal for a successful shove."
+    },
+    {
+      "kind": "ability",
+      "name": "Rage",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Villamor begins raging. He gains 19 temporary Hit Points. This frenzy lasts for 1 minute, until there are no enemies he can perceive, or until he falls Unconscious, whichever comes first. He can't voluntarily stop raging. While he is raging, he deals 12 additional Damage with melee weapons and unarmed attacks. This additional damage is halved if his weapon or unarmed attack is agile. While raging, Villamor Koth's AC is 33.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 12,
+          "when": [
+            "self:effect:rage"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "self:effect:rage"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "kind": "creature",
+  "slug": "gancanagh",
+  "system": "pf2e",
+  "name": "Gancanagh",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "azata",
+    "celestial",
+    "holy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 13,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 3,
+      "dex": 5,
+      "int": 2,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 9,
+      "deception": 13,
+      "diplomacy": 13,
+      "performance": 14,
+      "religion": 9,
+      "stealth": 11
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        },
+        {
+          "type": "unholy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 23,
+      "attack": 15,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Suggestion",
+          "rank": 4,
+          "ref": "spells:spell/suggestion"
+        },
+        {
+          "name": "Heroism",
+          "rank": 3,
+          "ref": "spells:spell/heroism"
+        },
+        {
+          "name": "Sure Footing",
+          "rank": 2,
+          "ref": "spells:spell/sure-footing"
+        },
+        {
+          "name": "Charm (At Will)",
+          "rank": 1,
+          "ref": "spells:spell/charm"
+        },
+        {
+          "name": "Heal",
+          "rank": 2,
+          "ref": "spells:spell/heal"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Silver Virtuoso Flute",
+      "ref": "equipment:item/virtuoso-silver-flute",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Silver Rapier",
+      "attack": 13,
+      "traits": [
+        "deadly-d10",
+        "disarm",
+        "finesse",
+        "holy",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "At-Will Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Smoke",
+      "category": "defensive",
+      "text": "A gancanagh's lungs can't tolerate smoke. They take a -2 circumstance penalty to saving throws against effects that create some form of smoke.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "saving-throw",
+            "key": "RollOption",
+            "option": "vulnerable-to-smoke",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "vulnerable-to-smoke"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The gancanagh can take on the appearance of any Small or Medium humanoid. This doesn't change their Speed or their attack and damage bonuses with their Strikes but might change the damage type their Strikes deal (typically to bludgeoning).\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "gancanagh",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Azata.Gancanagh",
+                "value": "gancanagh"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "bludgeoning"
+            },
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Invigorating Passion",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "mental"
+      ],
+      "text": "The gancanagh embraces or kisses a willing creature adjacent to them, infusing that creature with their invigorating passion. For 10 minutes, the creature gains a +1 status bonus to attack rolls and 10 temporary Hit Points. After that time, the target becomes Fatigued for 10 minutes unless it succeeds at a DC 21 Fortitude save save.\n\nEffect: Invigorating Passion"
+    }
+  ],
+  "text": "Gancanaghs are lovers, revelers, and dashing duelists of Elysium. Embodiments of free love, they eagerly throw themselves into courting targets for brief but earnest flings until their quicksilver passions change their desires. They serve Cayden Cailean as well as other bacchanalian deities and empyreal lords of Elysium who understand their desires for love and parties. Gancanaghs hate evil beings that profane the spirit of romance and passion, as such creatures (especially the demonic tempters known as succubi) reinforce stigmas against open and free love. One can give no greater insult to a gancanagh than to mistake them for such a creature, and more than one hotheaded gancanagh has challenged a misinformed champion to a duel over such a slight. While they enjoy drinking and carousing, gancanaghs can't stand smoke. Nonetheless, many gancanaghs carry whimsical-looking smoking pipes because they think it makes them look dapper. They cherish their silver flutes, for they enjoy the beauty of flutes' music and its ability to sway the heart.\n\nThe majority of gancanaghs present themselves as male, but the concept of gender to a creature like a gancanagh, who can change their shape freely, is much more fluid and open to interpretation than for many mortals. Gancanaghs enjoy using this flexibility to confront and test mortals' convictions when faced with fear or prejudice, but when encountering mortals who themselves are open-minded about sexuality or gender identity, they can become lifelong allies. For those who are persecuted for such reasons, gancanaghs are tireless defenders and eager supporters, quick to provide safety and to punish those who would attempt to impose narrower beliefs upon a world that deserves more diversity than it often gets. If possible, a gancanagh seeks to educate and redeem those who hold destructive beliefs or prejudices, resorting to combat only to defend themself or an endangered mortal, or when no other option seems tenable—yet even then, they fight with sadness.\n\n---\n\nAzatas are manifestations of freedom and unrestrained joy—kindly celestials with a penchant for curious exploration, spontaneous revelry, and whimsical quests. Born of good dreams and heartfelt wishes for a better world, they reside in the untamable wilds of Elysium. Azatas are passionate and mercurial, as beautiful and bright as a child's fantasy, but also fiercely loyal to those they hold dear. They act quickly and directly against fiendish and foul influences, but they tend to avoid guiding mortal affairs otherwise, allowing people to choose their own destiny without the meddling of otherworldly forces.\n\nAzatas reject the dual chains of both duty and tyranny, but also the heavy chains of despair that reality so often inflicts upon those who live in it. This can give them a dubious reputation with other celestials, who consider azatas to be flighty and unreliable, but azatas know that unrelenting self-sacrifice can be just as destructive to the soul as evil. Azatas refuse to compromise the beauty of the world with such banality, instead living without regret and savoring every triumph and agony they encounter upon the way."
+}

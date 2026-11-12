@@ -1,0 +1,175 @@
+{
+  "kind": "creature",
+  "slug": "bill-band",
+  "system": "pf2e",
+  "name": "Bill-Band",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "halfling",
+    "humanoid",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 20,
+    "hp": 90,
+    "perception": 10,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 12,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 13,
+      "intimidation": 13,
+      "sports-lore": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "halfling"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 5
+        },
+        {
+          "type": "splash-damage",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments); Thresholds 60 (3 segments), 30 (2 segments)",
+      "saves": "+3 status vs. Intimidation checks",
+      "perception": "keen eyes",
+      "speed": "overwhelming scrum, troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Keen Eyes",
+      "category": "interaction",
+      "text": "The halfling gains a +2 circumstance bonus when using the Seek action to find Hidden or Undetected creatures within 30 feet of them. Whenever the halfling targets a creature that is Concealed or hidden from them, reduce the DC of the flat check to DC 3 Flat check for a concealed target or DC 9 Flat check for a hidden one.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "action:seek",
+              {
+                "lte": [
+                  "target:distance",
+                  30
+                ]
+              },
+              {
+                "or": [
+                  "target:condition:hidden",
+                  "target:condition:undetected"
+                ]
+              }
+            ],
+            "selector": "perception",
+            "type": "circumstance",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+3 Status vs. Intimidation Checks",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 3,
+          "when": [
+            {
+              "or": [
+                "action:demoralize",
+                "check:statistic:intimidation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "Thresholds 60 (3 segments), 30 (2 segments)\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive",
+      "text": "Whenever a troop moves, you move one of its segments and the other segments follow behind it. At the end of the movement, you can group the other segments adjacent to the one you moved as you see fit, provided none of them moves farther than the moving segment. If you choose not to move the troop any distance, you can instead reshape the position of all the segments as long as one stays in place."
+    },
+    {
+      "kind": "ability",
+      "name": "Down to Our Level",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The bill-band deliberately gets under the feet of their opponents, proving they are greater than the sum of their parts. The bill-band attempts to trip all creatures in or adjacent to their space. They roll one Athletics check and compare the result to the Reflex DC of each target.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Firecracker Salvo",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The bill-band launches a barrage of lit firecrackers that, upon impact, burst into light and sound. Each creature in a 10-foot burst within 60 feet takes 1d12 sonic damage with a DC 19 basic Reflex save save. A creature that fails its save is also Dazzled for 1 round. When the bill-band is reduced to 2 or fewer segments, this area decreases to a 5-foot burst.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Overwhelming Scrum",
+      "category": "offensive",
+      "text": "The bill-band swarms in and around other creatures. They can move into other creatures' spaces, and other creatures can move into their spaces. The bill-band's spaces are difficult terrain to other creatures."
+    },
+    {
+      "kind": "ability",
+      "name": "Stick It to 'Em!",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The bill-band swings barely coordinated fists and feet at each enemy in their space and in a 5-foot emanation, with a DC 19 basic Reflex save save. The damage depends on the number of actions.\n\n1 1d6 bludgeoning damage\n\n2 2d6+4 bludgeoning damage\n\n3 3d6+6 bludgeoning damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "Boisterous collectives of thrill-seeking halflings join in bill-bands to engage in spirited competitions and lively sports. They foster a sense of camaraderie among their members while leaving a trail of chaos in their wake.\n\n---\nHalflings thrive on simple pleasures—having a pint at the pub or warming their feet by the hearth."
+}

@@ -1,0 +1,152 @@
+{
+  "kind": "effect",
+  "slug": "effect-emblazon-energy",
+  "system": "pf2e",
+  "name": "Effect: Emblazon Energy",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Emblazon Energy\n- Shield Choose acid, cold, electricity, fire, or sonic. You gain the shield's circumstance bonus to saving throws against that damage type.\n- Weapon Choose acid, cold, electricity, fire, or sonic. The weapon deals an extra 1d4 damage of that type. Increase this extra damage to 1d6 if you have a domain spell with a trait matching that type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "TYPES.Item.shield",
+            "value": "shield"
+          },
+          {
+            "label": "TYPES.Item.weapon",
+            "value": "weapon"
+          }
+        ],
+        "flag": "item",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.ShieldOrWeapon",
+        "rollOption": "emblazon-energy:item"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "damage",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": "d6"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": "d4"
+          }
+        ],
+        "flag": "dieSize",
+        "key": "ChoiceSet",
+        "predicate": [
+          "emblazon-energy:item:weapon"
+        ],
+        "prompt": "PF2E.SpecificRule.Cleric.EmblazonEnergy.MatchingDomainPrompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "shield"
+          ]
+        },
+        "flag": "shield",
+        "key": "ChoiceSet",
+        "predicate": [
+          "emblazon-energy:item:shield"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Shield"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "predicate": [
+          "emblazon-energy:item:weapon"
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "emblazon-energy:item:shield",
+          "item:damage:type:{item|flags.system.rulesSelections.damage}"
+        ],
+        "selector": "saving-throw",
+        "type": "circumstance",
+        "value": "@actor.heldShield.acBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{item|flags.system.rulesSelections.damage}",
+        "diceNumber": 1,
+        "dieSize": "{item|flags.system.rulesSelections.dieSize}",
+        "key": "DamageDice",
+        "predicate": [
+          "emblazon-energy:item:weapon"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    }
+  ]
+}

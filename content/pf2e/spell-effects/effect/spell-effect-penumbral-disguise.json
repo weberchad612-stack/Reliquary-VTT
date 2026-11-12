@@ -1,0 +1,39 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-penumbral-disguise",
+  "system": "pf2e",
+  "name": "Spell Effect: Penumbral Disguise",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Penumbral Disguise\n\nYou gain a status bonus to Stealth checks to Hide while in dim light or darkness.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:hide",
+          {
+            "or": [
+              "lighting:darkness",
+              "lighting:dim-light"
+            ]
+          }
+        ],
+        "selector": "stealth",
+        "type": "status",
+        "value": "ternary(gte(@item.level,8),4,ternary(gte(@item.level,6),3,ternary(gte(@item.level,4),2,1)))"
+      }
+    }
+  ]
+}

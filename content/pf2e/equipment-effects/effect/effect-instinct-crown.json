@@ -1,0 +1,381 @@
+{
+  "kind": "effect",
+  "slug": "effect-instinct-crown",
+  "system": "pf2e",
+  "name": "Effect: Instinct Crown",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Instinct Crown (Animal), Instinct Crown (Dragon), Instinct Crown (Giant), Instinct Crown (Spirit), Instinct Crown (Superstition)\n\nYou gain a benefit depending on the instinct the crown is tied to\n- Animal You gain 10 additional temporary Hit Points. You deal 3 additional damage with your animal's unarmed attacks, and those unarmed attacks gain the deadly d8 trait.\n- Fury You become Quickened. You can use the extra action only to Stride or Strike.\n- Giant You become Large and your equipment grows with you. Increase your reach by 5 feet (or by 10 feet if you were Tiny). You deal 2 additional damage when using your larger weapon.\n- Spirit Your raging resistance applies to all physical damage and poison damage. This resistance is halved against magical attacks.\n- Superstition When you attempt a saving throw against magic, roll twice and take the higher result. Also, your raging resistance applies to all magic traditions.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:instinct-crown-animal",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Animal Instinct"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:instinct-crown-fury",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Fury Instinct"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:instinct-crown-giant",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Giant Instinct"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:instinct-crown-spirit",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Spirit Instinct"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:instinct-crown-superstition",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.classfeatures.Item.Superstition Instinct"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Barbarian.Instinct.Prompt",
+        "rollOption": "instinct-crown-boon"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "unarmed-damage",
+      "type": "untyped",
+      "value": 3,
+      "slug": "instinct-crown-animal",
+      "when": [
+        "item:tag:instinct-unarmed-strike",
+        "instinct-crown-boon:animal-instinct",
+        "feature:animal-instinct"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:instinct-unarmed-strike",
+          "instinct-crown-boon:animal-instinct",
+          "feature:animal-instinct"
+        ],
+        "priority": 121,
+        "property": "traits",
+        "value": "deadly-d8"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "feature:animal-instinct",
+          "instinct-crown-boon:animal-instinct",
+          "self:effect:rage"
+        ],
+        "value": "10 + @actor.system.attributes.hp.temp"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "instinct-crown-boon:fury-instinct",
+          "feature:fury-instinct",
+          "self:effect:rage"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.ActorSizeTiny",
+            "predicate": [
+              "self:size:tiny"
+            ],
+            "value": "tiny"
+          },
+          {
+            "label": "PF2E.ActorSizeSmall",
+            "predicate": [
+              {
+                "or": [
+                  "self:size:medium",
+                  "self:size:small"
+                ]
+              }
+            ],
+            "value": "medium-or-small"
+          },
+          {
+            "label": "PF2E.ActorSizeLarge",
+            "predicate": [
+              {
+                "gt": [
+                  "self:size",
+                  3
+                ]
+              }
+            ],
+            "value": "large-or-larger"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "feature:giant-instinct",
+          "instinct-crown-boon:giant-instinct",
+          "self:effect:rage"
+        ],
+        "rollOption": "instinct-crown-boon:giant-instinct:initial-size"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "instinct-crown-boon:giant-instinct:initial-size:tiny"
+        ],
+        "reach": {
+          "add": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "instinct-crown-boon:giant-instinct:initial-size:medium-or-small"
+        ],
+        "reach": {
+          "add": 5
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "weapon-damage",
+      "type": "untyped",
+      "value": 2,
+      "slug": "instinct-crown-giant",
+      "when": [
+        "item:oversized",
+        "self:effect:rage",
+        "feature:giant-instinct",
+        "instinct-crown-boon:giant-instinct"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "exceptions": [
+          "magical"
+        ],
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "instinct-crown-boon:spirit-instinct",
+          "feature:raging-resistance",
+          "feature:spirit-instinct"
+        ],
+        "type": [
+          "physical",
+          "poison"
+        ],
+        "value": "@actor.abilities.con.mod + 3"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "exceptions": [
+          "magical"
+        ],
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "feat:unstoppable-juggernaut",
+          "instinct-crown-boon:spirit-instinct",
+          "feature:raging-resistance",
+          "feature:spirit-instinct"
+        ],
+        "type": [
+          "physical",
+          "poison"
+        ],
+        "value": "@actor.abilities.con.mod + 8"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "instinct-crown-boon:spirit-instinct",
+          "feature:raging-resistance",
+          "feature:spirit-instinct"
+        ],
+        "type": [
+          "physical",
+          "poison"
+        ],
+        "value": "floor((@actor.abilities.con.mod + 3)/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "self:effect:rage",
+          "feat:unstoppable-juggernaut",
+          "instinct-crown-boon:spirit-instinct",
+          "feature:raging-resistance",
+          "feature:spirit-instinct"
+        ],
+        "type": [
+          "physical",
+          "poison"
+        ],
+        "value": "floor((@actor.abilities.con.mod + 8)/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "feature:superstition-instinct",
+          "instinct-crown-boon:superstition-instinct",
+          "item:magical",
+          "self:effect:rage"
+        ],
+        "removeAfterRoll": false,
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:type:spell",
+          {
+            "or": [
+              "item:trait:arcane",
+              "item:trait:divine",
+              "item:trait:occult",
+              "item:trait:primal"
+            ]
+          }
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.SpellsFromAllTraditions",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance",
+          "feature:superstition-instinct",
+          "instinct-crown-boon:superstition-instinct"
+        ],
+        "type": "custom",
+        "value": "3 + @actor.abilities.con.mod"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:type:spell",
+          {
+            "or": [
+              "item:trait:arcane",
+              "item:trait:divine",
+              "item:trait:occult",
+              "item:trait:primal"
+            ]
+          }
+        ],
+        "key": "Resistance",
+        "label": "PF2E.IWR.Custom.SpellsFromAllTraditions",
+        "predicate": [
+          "self:effect:rage",
+          "feature:raging-resistance",
+          "feature:superstition-instinct",
+          "feat:unstoppable-juggernaut",
+          "instinct-crown-boon:superstition-instinct"
+        ],
+        "type": "custom",
+        "value": "8 + @actor.abilities.con.mod"
+      }
+    }
+  ]
+}

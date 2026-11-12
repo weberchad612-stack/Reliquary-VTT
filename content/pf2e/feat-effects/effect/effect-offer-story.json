@@ -1,0 +1,110 @@
+{
+  "kind": "effect",
+  "slug": "effect-offer-story",
+  "system": "pf2e",
+  "name": "Effect: Offer Story",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Offer Story\n\nYou gain a +1 status bonus to AC and Will saves.\n\nIf the origin has Illuminating Stories, then you can choose to gain a status bonus on skill checks to Recall Knowledge instead.\n\nIf the origin has Raging Stories, you can choose to deal additional fire damage with your melee Strikes instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.CampfireChronicler.OfferStory.ChoiceLabels.BaseBenefit",
+            "value": "ac-will"
+          },
+          {
+            "label": "PF2E.SpecificRule.CampfireChronicler.OfferStory.ChoiceLabels.RagingStories",
+            "predicate": [
+              "parent:origin:item:tag:raging-stories"
+            ],
+            "value": "raging-stories"
+          },
+          {
+            "label": "PF2E.SpecificRule.CampfireChronicler.OfferStory.ChoiceLabels.IlluminatingStories",
+            "predicate": [
+              "parent:origin:item:tag:illuminating-stories"
+            ],
+            "value": "illuminating-stories"
+          },
+          {
+            "label": "PF2E.SpecificRule.CampfireChronicler.OfferStory.ChoiceLabels.FlickeringStories",
+            "predicate": [
+              "parent:origin:item:tag:flickering-stories"
+            ],
+            "value": "flickering-stories"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Benefit",
+        "rollOption": "offer-story"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "will"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "offer-story-ac-will",
+      "when": [
+        "offer-story:ac-will"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "offer-story:illuminating-stories"
+        ],
+        "selector": "skill-check",
+        "slug": "offer-story-illuminating-stories",
+        "type": "status",
+        "value": "ternary(gte(@item.origin.system.skills.religion.rank,4),3,ternary(gte(@item.origin.system.skills.religion.rank,3),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          "offer-story:raging-stories"
+        ],
+        "selector": [
+          "melee-strike-damage"
+        ],
+        "slug": "offer-story-raging-stories",
+        "value": "ternary(gte(@item.origin.system.skills.religion.rank,4),6,ternary(gte(@item.origin.system.skills.religion.rank,3),4,2))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "offer-story:flickering-stories"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Concealed"
+      }
+    }
+  ]
+}

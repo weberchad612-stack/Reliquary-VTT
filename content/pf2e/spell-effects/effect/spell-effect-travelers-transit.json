@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-travelers-transit",
+  "system": "pf2e",
+  "name": "Spell Effect: Traveler's Transit",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 5,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Traveler's Transit\n\nYou gain either a climb Speed or a swim Speed. The Speed is equal to your land Speed.\n\n---\n\nHeightened (5th) You can choose to gain a fly Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Type.Climb",
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Swim",
+            "value": "swim"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Fly",
+            "predicate": [
+              {
+                "gte": [
+                  "{item|level}",
+                  5
+                ]
+              }
+            ],
+            "value": "fly"
+          }
+        ],
+        "flag": "traveler",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "selector": "{item|flags.system.rulesSelections.traveler}",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    }
+  ]
+}

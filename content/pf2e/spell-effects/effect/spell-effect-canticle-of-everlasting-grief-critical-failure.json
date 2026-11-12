@@ -1,0 +1,80 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-canticle-of-everlasting-grief-critical-failure",
+  "system": "pf2e",
+  "name": "Spell Effect: Canticle of Everlasting Grief (Critical Failure)",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Canticle of Everlasting Grief\n\nYou can't benefit from circumstance or status bonuses, and are frightened 4. Your allies are also affected by the curse while within 15 feet of you.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "predicate": [
+          {
+            "or": [
+              "bonus:type:circumstance",
+              "bonus:type:status"
+            ]
+          }
+        ],
+        "selector": "all",
+        "suppress": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 4
+          }
+        ],
+        "key": "GrantItem",
+        "onDeleteActions": {
+          "granter": "detach"
+        },
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Frightened"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "includesSelf": false,
+            "uuid": "Compendium.pf2e.spell-effects.Item.Spell Effect: Canticle of Everlasting Grief (Critical Failure)"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "self:signature:{item|origin.signature}"
+        ],
+        "radius": 15,
+        "slug": "canticle-of-everlasting-grief",
+        "traits": [
+          "auditory",
+          "curse",
+          "emotion",
+          "fear",
+          "mental"
+        ]
+      }
+    }
+  ]
+}

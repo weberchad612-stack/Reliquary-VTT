@@ -1,0 +1,46 @@
+{
+  "kind": "effect",
+  "slug": "effect-energetic-meltdown",
+  "system": "pf2e",
+  "name": "Effect: Energetic Meltdown",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "labels": [
+      "Mild",
+      "Moderate",
+      "Severe"
+    ]
+  },
+  "text": "Granted by Energetic Meltdown\n\nMild Backlash You take damage equal to your level as energy scours your body.\n\nModerate Backlash After taking the damage, you gain weakness to the energy type of your backlash until your next daily preparations. The weakness is equal to one-third of your level. You also lose immunity to the energy type if you had it, until your next daily preparations.\n\nSevere Backlash You deal 1d6 damage per level to all creatures in a 30-foot emanation with a basic Fortitude save save. You automatically take full damage without attempting a save.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "or": [
+              "self:effect:energetic-meltdown:2",
+              "self:effect:energetic-meltdown:3"
+            ]
+          }
+        ],
+        "type": "{actor|flags.system.deviantAbilities.dragon.damageType}",
+        "value": "floor(@actor.level/3)"
+      }
+    }
+  ]
+}

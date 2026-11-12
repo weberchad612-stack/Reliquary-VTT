@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "tengu-sneak",
+  "system": "pf2e",
+  "name": "Tengu Sneak",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "humanoid",
+    "tengu"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 27,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 10,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 6,
+      "deception": 7,
+      "diplomacy": 5,
+      "society": 5,
+      "stealth": 8,
+      "thievery": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "tengu"
+    ],
+    "notes": {
+      "languages": "plus two others"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Wakizashi",
+      "ref": "equipment:item/wakizashi",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Tengu Feather Fan",
+      "ref": "equipment:item/tengu-feather-fan",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 30
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 10,
+      "traits": [
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wakizashi",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "deadly-d8",
+        "finesse",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 10,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Eat Fortune",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "concentrate",
+        "divine"
+      ],
+      "text": "Frequency once per day\n\nTrigger A creature within 60 feet uses a fortune or misfortune effect\n\n---\n\nEffect The tengu negates the attempt to manipulate fate and fortune. Eat Fortune gains the opposing trait, and the triggering effect is disrupted.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Feather Fan Dustup",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "air",
+        "divine"
+      ],
+      "text": "Frequency once per 10 minutes;\n\n---\n\nEffect The tengu waves their feather fan, summoning a small magical breeze that kicks up dust in a 5-foot burst centered on a corner of their space, which lasts for 1d4 rounds. All creatures within that area are Concealed, and all other creatures are concealed to them.",
+      "frequency": {
+        "max": 1,
+        "per": "PT10M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The tengu deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attacker",
+      "category": "offensive",
+      "text": "On the first round of combat, creatures that haven't acted yet are Off-Guard to the tengu.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Tengu are an adaptable people originally from the continent of Tian Xia, but whose travels have taken them across all of Golarion. As a people in diaspora, tengu are almost always found within larger kingdoms and communities of other peoples, with the exception of their home nation of Kwanlai. As a result, tengu tend to gather in close-knit social groups both with other tengu as well as with other peoples of non-majority ancestries, collecting words and customs from other cultures the way a bird collects trinkets for its nest.\n\nAlthough humanoid, tengu have very distinct, birdlike features, and many would say that they resemble crows more than they do humans. They have strong, thick beaks, as well as sharp talons at the ends of their arms and legs. Most of a tengu's body is covered in small feathers that range in color from dark brown and midnight blue to glossy black, with lighter colors being rare but not unheard of. Like many avian creatures, tengu have hollow bones, making them much lighter than other humanoids of their size, and some tengu even possess wings that allow them to fly.\n\nTengu have a strong cultural focus on the sky, considering tall mountaintops sacred places and worshipping gods associated with nature and storms, like Gozreh or Hei Feng. They have a long and proud tradition of both martial arts and smithing, and many aspiring Tian heroes have sought out a tengu mentor or swordsmith. Tengu magic revolves around using tengu feathers, bound into a fan, as a medium to command wind and lightning, and some tengu even have the power to \"eat\" misfortune—skills that only help tengu as they continue expanding across Golarion to new lands."
+}

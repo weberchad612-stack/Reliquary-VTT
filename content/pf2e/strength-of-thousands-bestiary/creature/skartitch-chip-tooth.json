@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "skartitch-chip-tooth",
+  "system": "pf2e",
+  "name": "Skartitch Chip-Tooth",
+  "source": {
+    "title": "Pathfinder #173: Doorway to the Red Star",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "humanoid",
+    "lawful",
+    "ratfolk"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 39,
+    "hp": 290,
+    "perception": 28,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 29,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 2,
+      "dex": 5,
+      "int": 3,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 29,
+      "athletics": 26,
+      "deception": 31,
+      "diplomacy": 29,
+      "intimidation": 31,
+      "occultism": 25,
+      "society": 27,
+      "stealth": 29,
+      "thievery": 31,
+      "engineering-lore": 27,
+      "underworld-lore": 29
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 15
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "akitonian",
+      "shobhad"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "+2 Striking Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Disintegration Bolt",
+      "ref": "equipment:item/disintegration-bolt",
+      "type": "ammo",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 31,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+13",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 31,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "3d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements Skartitch can't use this reaction while encumbered\n\nTrigger Skartitch is hit or critically hit by an attack made by a creature she can see\n\n---\n\nEffect Skartitch gains a +2 circumstance bonus to her Armor Class against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cunning Discernment",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Skartitch attempts a Recall Knowledge check against an opponent using the standard DC for a creature of that level. On a success, that opponent is Off-Guard against Skartitch's attacks until the start of her next turn; on a critical success, the opponent is off-guard against Skartitch's attacks for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Deadly Deception",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Skartitch attempts a Deception check to Feint against an opponent she can see. On a success, Skartitch can immediately Strike with one unarmed attack and one ranged weapon attack against the target. The ranged attack does not trigger reactions from the target of the Feint.\n\nBoth of these attacks count toward her multiple attack penalty, but do not apply the penalty until both attacks are completed."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Skartitch deals an extra 4d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 4,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female ratfolk crime lord"
+}

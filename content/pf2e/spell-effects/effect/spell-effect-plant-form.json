@@ -1,0 +1,260 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-plant-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Plant Form",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Plant Form\n\nYou transform into a Large plant battle form. When you Cast this Spell, choose a listed battle form. You can substitute a similar specific plant to turn into (such as a pitcher plant instead of a flytrap), but this has no effect on the form's Size or statistics. While in this form, you gain the plant trait. You can Dismiss the spell.\n\nYou gain the following statistics and abilities regardless of which battle form you choose:\n- AC = 19 + your level. Ignore your armor's check penalty and Speed reduction.\n\n- 12 temporary Hit Points.\n\n- Resistance 10 to poison.\n\n- Low-light vision.\n\n- One or more unarmed melee attacks specific to the battle form you choose, which are the only attacks you can Strike with. You're trained with them. Your attack modifier is +17, and your damage bonus is +11. These attacks are Strength based (for the purpose of the Enfeebled condition, for example). If your unarmed attack modifier is higher, you can use it instead.\n\n- Athletics modifier of +19, unless your own modifier is higher.\n\nYou also gain specific abilities based on the type of plant you choose:\n- Arboreal\n- Speed 30 feet;\n\n- Melee 1 branch (reach 15 feet), Damage 2d10 bludgeoning;\n\n- Melee 1 foot, Damage 2d8 bludgeoning;\n\n- You can speak in this form.\n\n- Flytrap\n- Speed 15 feet;\n\n- Resistance 10 to acid;\n\n- Melee 1 leaf (reach 10 feet), Damage 2d8 piercing, and you can spend an action after a hit to Grab the target.\n\n---\nHeightened (6th) Your battle form is Huge, and the reach of your attacks increases by 5 feet. You instead gain AC = 22 + your level, 24 temporary HP, attack modifier +21, damage bonus +16, and Athletics +22.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.BattleForm.PlantForm.ChoiceSet.Arboreal",
+            "value": "arboreal"
+          },
+          {
+            "label": "PF2E.BattleForm.PlantForm.ChoiceSet.Flytrap",
+            "value": "flytrap"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "plant-form"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 5,
+            "value": {
+              "armorClass": {
+                "modifier": "19 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 19
+                }
+              },
+              "strikes": {
+                "branch": {
+                  "damage": {
+                    "modifier": 11
+                  },
+                  "modifier": 17
+                },
+                "foot": {
+                  "damage": {
+                    "modifier": 11
+                  },
+                  "modifier": 17
+                }
+              },
+              "tempHP": 12
+            }
+          },
+          {
+            "start": 6,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 22
+                }
+              },
+              "strikes": {
+                "branch": {
+                  "damage": {
+                    "modifier": 16
+                  },
+                  "modifier": 21,
+                  "traits": [
+                    "unarmed",
+                    "reach-20"
+                  ]
+                },
+                "foot": {
+                  "damage": {
+                    "modifier": 16
+                  },
+                  "modifier": 21,
+                  "traits": [
+                    "unarmed",
+                    "reach-5"
+                  ]
+                }
+              },
+              "tempHP": 24
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "resistances": [
+            {
+              "type": "poison",
+              "value": 10
+            }
+          ],
+          "speeds": {
+            "land": 30
+          },
+          "strikes": {
+            "branch": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d10"
+              },
+              "img": "icons/magic/nature/root-vine-hand-strike.webp",
+              "traits": [
+                "unarmed",
+                "reach-15"
+              ]
+            },
+            "foot": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "bludgeoning",
+                "dice": 2,
+                "die": "d8"
+              },
+              "img": "icons/commodities/biological/foot-black-grey.webp",
+              "traits": [
+                "unarmed"
+              ]
+            }
+          },
+          "traits": [
+            "plant"
+          ]
+        },
+        "predicate": [
+          "plant-form:arboreal"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "brackets": [
+          {
+            "start": 5,
+            "value": {
+              "armorClass": {
+                "modifier": "19 + @actor.level"
+              },
+              "size": "lg",
+              "skills": {
+                "athletics": {
+                  "modifier": 19
+                }
+              },
+              "strikes": {
+                "leaf": {
+                  "damage": {
+                    "modifier": 11
+                  },
+                  "modifier": 17
+                }
+              },
+              "tempHP": 12
+            }
+          },
+          {
+            "start": 6,
+            "value": {
+              "armorClass": {
+                "modifier": "22 + @actor.level"
+              },
+              "size": "huge",
+              "skills": {
+                "athletics": {
+                  "modifier": 22
+                }
+              },
+              "strikes": {
+                "leaf": {
+                  "damage": {
+                    "modifier": 16
+                  },
+                  "modifier": 21,
+                  "traits": [
+                    "unarmed",
+                    "reach-15"
+                  ]
+                }
+              },
+              "tempHP": 24
+            }
+          }
+        ],
+        "key": "BattleForm",
+        "overrides": {
+          "resistances": [
+            {
+              "type": [
+                "acid",
+                "poison"
+              ],
+              "value": 10
+            }
+          ],
+          "speeds": {
+            "land": 15
+          },
+          "strikes": {
+            "leaf": {
+              "ability": "str",
+              "category": "unarmed",
+              "damage": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8"
+              },
+              "traits": [
+                "unarmed",
+                "reach-10"
+              ]
+            }
+          },
+          "traits": [
+            "plant"
+          ]
+        },
+        "predicate": [
+          "plant-form:flytrap"
+        ]
+      }
+    },
+    {
+      "key": "note",
+      "selector": "leaf-damage",
+      "text": "PF2E.BattleForm.Note.Grab",
+      "when": [
+        "plant-form:flytrap"
+      ]
+    }
+  ]
+}

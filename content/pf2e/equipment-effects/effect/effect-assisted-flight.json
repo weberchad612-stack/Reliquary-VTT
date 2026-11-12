@@ -1,0 +1,133 @@
+{
+  "kind": "effect",
+  "slug": "effect-assisted-flight",
+  "system": "pf2e",
+  "name": "Effect: Assisted Flight",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Golden Wings, Golden Wings (Greater), Golden Wings (Major), Golden Wings (True)\n\nYou emit a bright light in a 20-foot radius and dim light for the next 20 feet. You take a –2 item penalty to Stealth checks to Hide and Sneak.\n\nWhen you activate major golden wings, you also gain a fly Speed of 20 feet.\n\nWhen you activate true golden wings, you also gain a fly Speed equal to your Speed or 25 feet, whichever is greater.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:golden-wings",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Golden Wings"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:golden-wings-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Golden Wings (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:golden-wings-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Golden Wings (Major)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:golden-wings-true",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Golden Wings (True)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "golden-wings"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "value": {
+          "alpha": 0.15,
+          "animation": {
+            "intensity": 4,
+            "speed": 1,
+            "type": "torch"
+          },
+          "bright": 20,
+          "color": "#975335",
+          "coloration": 101,
+          "dim": 40,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "stealth",
+      "type": "item",
+      "value": -2,
+      "when": [
+        {
+          "or": [
+            "action:hide",
+            "action:sneak"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "speed",
+      "type": "fly",
+      "value": 20
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "golden-wings:golden-wings-true"
+        ],
+        "selector": "fly",
+        "value": "max(25,@actor.system.movement.speeds.land.value)"
+      }
+    }
+  ]
+}

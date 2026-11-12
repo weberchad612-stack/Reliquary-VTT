@@ -1,0 +1,176 @@
+{
+  "kind": "creature",
+  "slug": "cursed-guardian",
+  "system": "pf2e",
+  "name": "Cursed Guardian",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "chaotic"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 58,
+    "perception": 8,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 3,
+      "int": -3,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 12,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "notes": {
+      "hp": "Deadeye's Shame",
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deadeye's Shame",
+      "category": "defensive",
+      "text": "The cursed guardian has weakness 5 to all damage inflicted upon it by a worshipper of Erastil, and it takes a -2 circumstance penalty to all saving throws to resist effects caused by worshippers of Erastil. If it ever suffers a critical hit from or critically fails a save against an effect caused by a worshipper of Erastil, the cursed guardian is Stunned 1.",
+      "rules": [
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 5
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": -2,
+          "when": [
+            "origin:deity:slug:erastil"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "The cursed guardian gains a +2 circumstance bonus to damage rolls against creatures it Grabs.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "mauler"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Target is grabbed by Cursed Guardian",
+            "option": "mauler",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rush",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The cursed guardian Strides and makes a Strike at the end of that movement. During the Stride, it gains a +10-foot circumstance bonus to its Speed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "rush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "rush"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

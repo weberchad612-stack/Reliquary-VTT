@@ -1,0 +1,181 @@
+{
+  "kind": "creature",
+  "slug": "ygrik",
+  "system": "pf2e",
+  "name": "Ygrik",
+  "source": {
+    "title": "Pathfinder Adventure: Crown of the Kobold King",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "humanoid",
+    "kobold",
+    "lawful"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 30,
+    "perception": 7,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 10,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 7,
+      "crafting": {
+        "value": 6,
+        "special": [
+          {
+            "value": 8,
+            "label": "traps",
+            "when": [
+              "action:craft:trap"
+            ]
+          }
+        ]
+      },
+      "intimidation": 8,
+      "stealth": 7,
+      "survival": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Flying Talon",
+      "ref": "equipment:item/flying-talon",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Keys",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Flying Talon",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "ranged-trip",
+        "tethered",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flying Talon",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "ranged-trip",
+        "tethered",
+        "thrown-10",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Retreat",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Ygrik is adjacent to at least one enemy and at least one ally;\n\nEffect Ygrik commands an adjacent ally to fight harder and threatens dire punishment if the ally fails to obey; that ally gains a +1 circumstance bonus to its next melee Strike attack roll, as long as that attack is made before the start of Ygrik's next turn. Ygrik then Strides up to his Speed and gains a +2 circumstance bonus to AC against reactions triggered by this movement. He must end this movement in a space that isn't adjacent to any enemy.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "intimidating-retreat",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "intimidating-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Ygrik deals an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male kobold jailer"
+}

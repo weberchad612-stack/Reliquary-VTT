@@ -1,0 +1,62 @@
+{
+  "kind": "effect",
+  "slug": "effect-metallic-skin",
+  "system": "pf2e",
+  "name": "Effect: Metallic Skin",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Metallic Skin\n\nYou gain a +2 status bonus to AC and resistance 10 to physical damage (except adamantine), but you take a –10-foot penalty to Speed. If you take fire damage while this ability is active, until the end of your next turn, you deal an additional 2d6 fire damage with all your unarmed melee Strikes.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "status",
+      "value": 2
+    },
+    {
+      "key": "modifier",
+      "selector": "speed",
+      "type": "untyped",
+      "value": -10
+    },
+    {
+      "key": "resistance",
+      "type": "physical",
+      "value": 10,
+      "except": "adamantine"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "metallic-skin-fire",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "item:category:unarmed",
+          "metallic-skin-fire"
+        ],
+        "selector": "melee-strike-damage"
+      }
+    }
+  ]
+}

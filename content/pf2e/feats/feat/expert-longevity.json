@@ -1,0 +1,50 @@
+{
+  "kind": "feat",
+  "slug": "expert-longevity",
+  "system": "pf2e",
+  "name": "Expert Longevity",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "elf"
+  ],
+  "category": "ancestry",
+  "prerequisites": [
+    "Ancestral Longevity"
+  ],
+  "text": "You've continued to refine the knowledge and skills you've gained through your life. When you choose a skill in which to become trained with Ancestral Longevity, you can also choose a skill in which you are already trained and become an expert in that skill. This lasts until your Ancestral Longevity expires.\n\nWhen the effects of Ancestral Longevity and Expert Longevity expire, you can retrain one of your skill increases. The skill increase you gain from this retraining must either make you trained in the skill you chose with Ancestral Longevity or make you an expert in the skill you chose with Expert Longevity.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "option": "expert-longevity",
+        "phase": "beforeDerived",
+        "suboptions": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:1"
+          ]
+        },
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.expertLongevity}.rank",
+        "phase": "beforeDerived",
+        "priority": 60,
+        "value": 2
+      }
+    }
+  ]
+}

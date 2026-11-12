@@ -1,0 +1,182 @@
+{
+  "kind": "creature",
+  "slug": "tidewater-guard",
+  "system": "pf2e",
+  "name": "Tidewater Guard",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "humanoid",
+    "lizardfolk"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 10,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 11,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": -1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 12,
+      "nature": 10,
+      "stealth": {
+        "value": 11,
+        "special": [
+          {
+            "value": 12,
+            "label": "while underwater",
+            "when": [
+              "underwater"
+            ]
+          }
+        ]
+      },
+      "survival": 10
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "languages": [
+      "common",
+      "iruxi"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident with 50 feet of line",
+      "ref": "equipment:item/trident",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 14,
+      "traits": [
+        "tethered"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 13,
+      "traits": [
+        "tethered",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "interaction",
+      "text": "A tidewater guard can hold their breath for 20 minutes."
+    },
+    {
+      "kind": "ability",
+      "name": "Tethered Tridents",
+      "category": "interaction",
+      "text": "The tidewater guard's tridents are specially prepared to be aquadynamic and tethered by ropes. They have the tethered trait, meaning that a wielder who has a free hand can Interact to pull the weapon back into their grasp after they have thrown it as a ranged attack or after it has been disarmed (unless it is being held by another creature)."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Reel In",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The tidewater guard makes a ranged Strike with their trident. If the Strike hits, the guard can haul on the attached line, moving the target up to 30 feet in a straight line toward the iruxi."
+    },
+    {
+      "kind": "ability",
+      "name": "Terrain Advantage",
+      "category": "offensive",
+      "text": "Non-lizardfolk creatures that are in difficult terrain or are in water and lack a swim Speed are Off-Guard to the tidewater guard.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "terrain-advantage",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "terrain-advantage",
+              {
+                "not": "target:trait:lizardfolk"
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Iruxi tidewater guards are capable fighters skilled at amphibious attacks and overpowering vessels along any shore. Because lizardfolk settlements are typically constructed partially underwater and partially above, they have need of defenders who can guard from attacks in both environments.\n\nThe special spaulders tidewater guards wear set them apart from other lizardfolk warriors. These protect their shoulders from cutlass and axe strikes, and might be constructed of dragon scales, turtle or giant chiton shells, lacquered wood, or even sea urchin tests. The recipe for the special resin iruxi armorers apply to harden these spaulders is a closely guarded secret, and each iruxi community's supply of the resin is small, precious, and closely guarded.\n\n---\nLizardfolk culture has flowered in recent years. With that revival has come a new generation of iruxis (as they call themselves) more willing to engage with the wider world, bringing with them their society's reverence for the past, facility with nature, and willingness to defend itself."
+}

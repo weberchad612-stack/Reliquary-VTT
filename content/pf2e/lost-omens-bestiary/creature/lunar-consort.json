@@ -1,0 +1,230 @@
+{
+  "kind": "creature",
+  "slug": "lunar-consort",
+  "system": "pf2e",
+  "name": "Lunar Consort",
+  "source": {
+    "title": "Pathfinder Lost Omens High Seas",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "amphibious",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 30,
+    "perception": 6,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 8,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 2,
+      "int": 1,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 8,
+      "deception": 8,
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 15,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Skin Tatter",
+      "attack": 9,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ectoplasmic Gown",
+      "category": "interaction",
+      "text": "When a lunar consort is underwater, their skin floats around them, appearing as the clothing of a drowned person. This grants the lunar consort a +4 circumstance bonus to Deception checks to impersonate options=impersonate-dead-body a dead body and to Stealth checks to hide.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "action:impersonate",
+            "impersonate-dead-body",
+            "terrain:underwater"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "stealth",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "action:hide",
+            "terrain:underwater"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Skin",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The lunar consort is targeted by a ranged attack from a weapon\n\n---\nEffect The lunar consort attempts to deflect the attack using the hanging shreds of their skin, gaining a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "defensive-skin",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "defensive-skin",
+            "item:ranged"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ectoplasmic Veil",
+      "category": "defensive",
+      "text": "The lunar consort's skin grants it Concealment while underwater.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SkillVariant.Underwater",
+            "option": "terrain:underwater",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "terrain:underwater"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Concealed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1d6+3 bludgeoning, DC 18 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Moonlight Waltz",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "manipulate",
+        "mental",
+        "visual"
+      ],
+      "text": "Requirements The lunar consort is underwater\n\n---\nEffect The lunar consort spins in an elegant motion, causing their gossamer skin to shed a ghostly and beautiful glow that hypnotizes those who can see them. Each creature within 30 feet of the lunar consort must attempt a DC 18 Will save save. On a failure, the creature is Fascinated for 1 minute, and it must spend at least 1 of its actions each turn to move closer to the lunar consort for as long as it is fascinated. On a critical failure, the creature also can't use reactions. Regardless of the result, a creature is temporarily immune to Moonlight Waltz for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Under the pale glow of moonlight, a lunar consort is a creature that reflects the pure beauty of nature. They take the form of a tall, slender humanoid in a flowing pearlescent gown that shimmers as it reflects moonbeams back to the sky. But as attractive as the moon makes them appear, a lunar consort's power shouldn't be underestimated. These restless spirits are uncommon, created when a mortal drowns under the light of a full moon. As the creature's skin begins to slough away from extended submersion, a combination of ethereal moonlight and void energy transforms that skin into gossamer ectoplasm, which the undead wraps around their body like a shimmering garment.\n\nTrue to their name, lunar consorts enjoy the company of their victims before indulging in their feast. They flirt with their unfortunate prey either with flattery or sharing secrets of their previous life, trying to empathize with their victims so that they lower their defenses before attacking them to feed. Those who captivate the lunar consorts are rewarded by becoming their companions after death. The consorts drain them of all their body fluids, then preserve their desiccated bodies. Lunar consorts sometimes keep these remains for companionship, hidden away in secluded grottoes and other lairs where pockets of air have been trapped.\n\nWhile these undead return to their hideaways on moonless nights, they prefer to stay underwater the rest of the time. They propel through the water by waving their layers of skin like jellyfish. When hungry, they swim to the surface next to coastal settlements or boats, leaving part of their skin floating like a silky gown, and move to draw the attention of their victims. Lunar consorts then use their flesh to grab those who come near and drown them."
+}

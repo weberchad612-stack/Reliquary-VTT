@@ -1,0 +1,117 @@
+{
+  "kind": "effect",
+  "slug": "effect-thurible-of-revelation",
+  "system": "pf2e",
+  "name": "Effect: Thurible of Revelation",
+  "source": {
+    "title": "Pathfinder GM Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Thurible of Revelation (Lesser), Thurible of Revelation (Moderate), Thurible of Revelation (Greater)\n\nYou gain an item bonus to Religion checks and any critical failure you roll when you Decipher Writing of a religious nature is a failure instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thurible-of-revelation-lesser",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thurible of Revelation (Lesser)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thurible-of-revelation-moderate",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thurible of Revelation (Moderate)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:thurible-of-revelation-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Thurible of Revelation (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "thurible-of-revelation"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "religion",
+      "type": "item",
+      "value": 1,
+      "slug": "thurible-of-revelation-bonus"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:decipher-writing"
+        ],
+        "selector": "religion"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "thurible-of-revelation:thurible-of-revelation-moderate"
+        ],
+        "selector": "religion",
+        "slug": "thurible-of-revelation-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "thurible-of-revelation:thurible-of-revelation-greater"
+        ],
+        "selector": "religion",
+        "slug": "thurible-of-revelation-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

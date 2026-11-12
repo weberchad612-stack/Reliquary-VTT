@@ -1,0 +1,206 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-evolution-surge",
+  "system": "pf2e",
+  "name": "Spell Effect: Evolution Surge",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Evolution Surge\n\nChoose one of the following effects:\n- You gain low-light vision and darkvision.\n- You gain scent as an imprecise sense up to 30 feet.\n- You can breathe underwater and gain a swim Speed equal to your land Speed or 30 feet, whichever is less. If you are aquatic, you can breathe air and gain a land Speed equal your swim Speed or 30 feet, whichever is less. You gain the amphibious trait.\n- You gain a +20-foot status bonus to your Speed.\n\n---\nHeightened (3rd)\n- You become Large, instead of your previous size. This increases your reach to 10 feet but doesn't change any other statistics.\n- You gain a climb Speed equal to your land Speed.\n\n---\nHeightened (5th)\n- You become Huge, instead of your previous size. This has the same effects as the 3rd-rank option to become Large, except your reach increases to 15 feet.\n- You gain a fly Speed equal to your Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Sight",
+            "value": "sight"
+          },
+          {
+            "label": "PF2E.SpecificRule.Beastkin.Senses.Scent",
+            "value": "scent"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Amphibious",
+            "value": "amphibious"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Speed",
+            "value": "speed"
+          },
+          {
+            "label": "PF2E.ActorSizeLarge",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  5
+                ]
+              }
+            ],
+            "value": "large"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Climb",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  5
+                ]
+              }
+            ],
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.ActorSizeHuge",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  9
+                ]
+              }
+            ],
+            "value": "huge"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Fly",
+            "predicate": [
+              {
+                "gte": [
+                  "self:level",
+                  9
+                ]
+              }
+            ],
+            "value": "fly"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.SpellEffectEvolutionSurge.Prompt",
+        "rollOption": "evolution-surge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "evolution-surge:sight"
+        ],
+        "selector": "low-light-vision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "evolution-surge:sight"
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "acuity": "imprecise",
+        "key": "Sense",
+        "predicate": [
+          "evolution-surge:scent"
+        ],
+        "range": 30,
+        "selector": "scent"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "amphibious"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          "evolution-surge:amphibious"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "status",
+      "value": 20,
+      "when": [
+        "evolution-surge:speed"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "evolution-surge:large"
+        ],
+        "reach": {
+          "upgrade": 10
+        },
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "evolution-surge:climb"
+        ],
+        "selector": "climb",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "evolution-surge:huge"
+        ],
+        "reach": {
+          "upgrade": 15
+        },
+        "value": "huge"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "evolution-surge:fly"
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "evolution-surge:amphibious"
+        ],
+        "selector": "swim",
+        "value": "min(@actor.system.movement.speeds.land.value, 30)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-resist-energy",
+  "system": "pf2e",
+  "name": "Spell Effect: Resist Energy",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Resist Energy\n\nChoose acid, cold, electricity, fire, or sonic damage. You gain resistance against the damage type you chose.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "resistEnergyType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "type": "{item|flags.system.rulesSelections.resistEnergyType}",
+        "value": "ternary(gte(@item.level,7),15,ternary(gte(@item.level,4),10,5))"
+      }
+    }
+  ]
+}

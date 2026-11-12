@@ -1,0 +1,201 @@
+{
+  "kind": "creature",
+  "slug": "counteflora",
+  "system": "pf2e",
+  "name": "Counteflora",
+  "source": {
+    "title": "Pathfinder #153: Life's Long Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "plant"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 29,
+    "hp": 220,
+    "perception": 18,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 20,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 6,
+      "dex": 6,
+      "int": -4,
+      "str": 5,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 23,
+      "stealth": {
+        "value": 20,
+        "special": [
+          {
+            "value": 24,
+            "label": "in jungles and flower fields",
+            "when": [
+              {
+                "or": [
+                  "terrain:jungle",
+                  "terrain:flower-field"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "poison"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 10
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Vines",
+      "attack": 21,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Frost Susceptibility",
+      "category": "defensive",
+      "text": "Whenever the counteflora takes cold damage, it takes a –10-foot circumstance penalty to Speed for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Tighten Bracts",
+      "actions": 2,
+      "category": "defensive",
+      "text": "The counteflora stiffens the specialized leaves around its flower head, protecting its sensitive seedpods. While its bracts are tightened, a counteflora gains a +2 circumstance bonus to AC and can use its head Strike and Furious Swing abilities, but it cannot use its Black Seed Cloud ability and it loses its sense of sight (so it must rely on its imprecise tremorsense when targeting other creatures). The counteflora can't use its head Strike of Furious Swing ability unless its bracts are tightened. The counteflora can loosen its bracts as a free action. Against plants and fungi, the seeds burrow into the creatures' flesh rather than infiltrate their lungs.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "tighten-bracts",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "tighten-bracts"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 3,
+                "die": "d10"
+              }
+            },
+            "group": "brawling",
+            "key": "Strike",
+            "label": "Head",
+            "predicate": [
+              "tighten-bracts"
+            ],
+            "traits": [
+              "reach-10",
+              "sweep"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "head-damage",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "tighten-bracts"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "tighten-bracts",
+            "item:head"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Black Seed Cloud",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements the Counteflora's bracts are not tightened.\n\n---\n\nThe counteflora releases a cloud of black seedpods in a 15-foot-radius emanation. Non-counteflora creatures in the area must succeed at a Fortitude save or breathe in the toxic seeds. (Against plants and fungi, the seeds burrow into the creatures' flesh rather than infiltrate their lungs.)"
+    },
+    {
+      "kind": "ability",
+      "name": "Counteflora Toxin",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 30 Fortitude save (DC 32 Fortitude save for plants and fungi)\n\nMaximum Duration 6 rounds\n\nStage 1 4d6 poison damage and Enfeebled 1 (1 round)\n\nStage 2 6d6 poison damage, enfeebled 1, and Fascinated (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Furious Swing",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Requirements The counteflora's bracts are tightened\n\n---\n\nEffect The counteflora makes up to four headbutt Strikes (see Flower Headbutt), each against a different creature within reach."
+    }
+  ],
+  "text": "The counteflora resembles an oversized dandelion with black flowers and sinister patterns on its bracts, which it can contract for additional protection and to turn its flower head into a deadly bashing weapon. Unlike dandelions, countefloras do not have separate flowering and seeding stages, and can release their intoxicating seedpods as long as their bracts are open.\n\nCountefloras exhibit a strange intellect and communicate with one another by releasing invisible pheromones into the air. Alone, a desperate counteflora may ally with another creature if it is offered water or fertile soil. Contrary to popular belief, countefloras absorb sunlight for sustenance; they do not attack other creatures to feast upon them. Rather, the reason countefloras go to such lengths to kill their opponents is to fertilize the surrounding soil and create a nutrient-rich environment for their seedpods."
+}

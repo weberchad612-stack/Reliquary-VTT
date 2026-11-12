@@ -1,0 +1,260 @@
+{
+  "kind": "creature",
+  "slug": "green-monkey",
+  "system": "pf2e",
+  "name": "Green Monkey",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "beast",
+    "incorporeal",
+    "spirit"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 19,
+    "hp": 50,
+    "perception": 12,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 12,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "stealth": 10,
+      "survival": 9,
+      "thievery": 10
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "notes": {
+      "languages": "tongues"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 20,
+      "attack": 12,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Gecko Grip",
+          "rank": 2,
+          "ref": "spells:spell/gecko-grip"
+        },
+        {
+          "name": "Tailwind",
+          "rank": 1,
+          "ref": "spells:spell/tailwind"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "force"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Good Cheer",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet. The green monkey's affable demeanor is contagious. Allies within the aura gain a +1 status bonus to Will saves against emotion effects.\n\nEffect: Aura of Good Cheer",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Aura of Good Cheer"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "aura-of-good-cheer",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The green monkey is targeted with a melee or ranged attack by an attacker it can see\n\n---\n\nEffect The green monkey gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bond with Mortal",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The spirit guide forms a bond with a mortal creature. While the bond exists, the spirit guide's current and maximum Hit Points increase by 10, the spirit guide gains a +2 status bonus to attack and damage rolls, and the spirit guide and bonded mortal can communicate telepathically as long as they're on the same plane. The spirit guide can be bonded with only one mortal at a time, and can take this action again to end the bond or to form a new bond (which also ends the old bond). The bond ends if the spirit guide or the mortal dies.\n\nThis bond strengthens the spirit guide's connection to the Material Plane. While bonded, the spirit guide loses the incorporeal and spirit traits, loses their immunities and resistances, and changes their Strikes to deal the appropriate physical damage (typically piercing or slashing) instead of force damage.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bond-with-mortal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hp",
+          "type": "untyped",
+          "value": 10,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "damage",
+            "attack-roll"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "spirit"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": "all-damage",
+            "value": 4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": [
+              "disease",
+              "paralyzed",
+              "poison",
+              "precision"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The spirit guide is currently Bonded with a Mortal\n\n---\n\nEffect The spirit guide makes a jaws Strike. If this attack hits, the bonded mortal can spend their reaction to Strike the same target."
+    }
+  ],
+  "text": "Nimble spirit guides are small and discreet, using their diminutive size and natural agility to dart from hiding place to hiding place. They tend to be much shyer than other spirit guides, at least initially, preferring to watch nearby mortals from a distance before deciding whether to trust them. When their trust is so earned, nimble spirit guides are often playful and contagiously exuberant. These spirit guides can often be found entertaining lost children with antics until they are rescued or freeing prisoners by stealing keys and picking locks.\n\nThe green monkey is a nimble spirit guide who takes the appearance of a tiny primate with green fur that, on closer inspection, turns out to be fine blades of grass.\n\n---\nSpirit guides are ghostly creatures that manifest as primordial animals in the Universe. Many Sarkorian cultures believe that spirit guides came into being as the first mortal hunting bands began to form. In this time before time, spirit guides adopted the most elemental shapes of animals, and they taught humanoid communities about important aspects of nature, such as where to find fresh water, which plants were safe to eat, and how to live in harmony with their environment. As they imparted their wisdom, spirit guides took more physical forms, eventually becoming the wild animals that exist today. Though spirit guides bestowed most of their gifts unto mortals in ancient times, a rare few continue to lurk in forgotten or as-of-yet-undiscovered corners of the physical world.\nSpirit Guide Companions\nOne way to gain the aid of a spirit guide is to take the scion of Domora archetype. This archetype allows character to choose a spirit guide to accompany them on their adventures—provided they first prove themselves worthy of the honor.\nThe Sarkoris Scar\nSome spirit guides encountered in the haunted badlands now known as the Sarkoris Scar are remnants of god calling, an ancient tradition practiced by many Sarkorian cultures. Severed from their callers by the demonic war that devastated the land for over a century, such gods now roam the blasted landscape, occasionally helping those they find worthy."
+}

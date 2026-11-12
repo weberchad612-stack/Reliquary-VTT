@@ -1,0 +1,233 @@
+{
+  "kind": "creature",
+  "slug": "flytrap-leshy",
+  "system": "pf2e",
+  "name": "Flytrap Leshy",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "leshy",
+    "plant"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 20,
+    "hp": 72,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 12,
+      "nature": 10,
+      "stealth": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey",
+      "wildsong"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "speak with plants (carnivorous plants only)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 21,
+      "attack": 11,
+      "spells": [
+        {
+          "name": "Speak with Plants",
+          "rank": 4,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Pass Without Trace",
+          "rank": 2,
+          "ref": "spells:spell/vanishing-tracks"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flytrap Mouth",
+      "attack": 13,
+      "traits": [
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "flytrap-toxin"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flytrap Hand",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "flytrap-toxin"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spittle",
+      "attack": 11,
+      "traits": [
+        "acid"
+      ],
+      "range": 10,
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "acid"
+        }
+      ],
+      "effects": [
+        "flytrap-toxin"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Verdant Burst",
+      "category": "defensive",
+      "traits": [
+        "healing",
+        "plant"
+      ],
+      "text": "When a flytrap leshy dies, a burst of primal energy explodes from its body, restoring 3d6 healing Hit Points to each plant creature in a 30-foot emanation.\n\nThis area immediately fills with flytraps, becoming difficult terrain. If the terrain is not a viable environment for these flytraps, they wither after 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Amalgam",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "A flytrap leshy can combine itself with an adjacent and willing flytrap leshy that is not currently affected by Amalgam. The leshy using Amalgam physically merges with the target, restoring 3d8 healing Hit Points to the target.\n\nThe leshy can Sustain a Spell to continue Amalgam, but once they stop, the target leshy takes 3d8 untyped damage. If the target leshy dies, Amalgam ends at once and the original leshy gains the Dying condition or increases their dying condition value by 1 if they were already dying.\n\nAs long as Amalgam is sustained, the target leshy gains a +1 status bonus to attack rolls and saving throws, its AC increases to 21, and it gains an additional reaction at the start of each turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "amalgam",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "amalgam"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "amalgam"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "amalgam"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The flytrap leshy transforms into a Small flytrap. This ability otherwise uses the effects of One with Plants.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Flytrap Toxin",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 19 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 Sickened 1 (1 round),\n\nStage 2 Sickened 2 (1 round)"
+    }
+  ],
+  "text": "While often seen as unfriendly by non-leshys, flytrap leshys get along well with other leshys. Nonetheless, they're among the most aggressive leshys, often guarding the most vulnerable places in the natural world with their flytrap mouths and hands.\n\nWhen a large threat emerges, pairs of flytrap leshys band together to create amalgams capable of driving back powerful foes. This unusual form of communal defense suffuses flytrap leshy society, and they often form relationships between multiple individuals that would confuse or even scandalize more uptight humanoids-to a flytrap leshy, though, there's nothing strange about sharing your innermost secrets with people you literally merged together with to defend your home from an enemy."
+}

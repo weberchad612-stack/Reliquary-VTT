@@ -1,0 +1,61 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-extract-poison",
+  "system": "pf2e",
+  "name": "Spell Effect: Extract Poison",
+  "source": {
+    "title": "Pathfinder Secrets of Magic",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Extract Poison\n\nYou add 1d6 poison damage per level of the poison you counteracted to the chosen weapon's Strike damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            {
+              "gte": [
+                "item:hands-held",
+                1
+              ]
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "levels"
+        },
+        "flag": "level",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "poison",
+        "diceNumber": "@item.flags.system.rulesSelections.level",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "hurl-at-the-horizon",
+  "system": "pf2e",
+  "name": "Hurl at the Horizon",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a thrown or melee weapon ikon\n\n---\nYour weapon flies from your hand as if propelled under its own power. The imbued ikon gains the following ability.\n\nImmanence Your weapon gains the thrown 15 feet trait, or increases its thrown distance by 10 feet if it already has the thrown trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}",
+          "divine-spark:{item|flags.system.rulesSelections.ikon}",
+          {
+            "not": "item:trait:thrown"
+          }
+        ],
+        "property": "other-tags",
+        "value": "thrown-from-hurl-at-the-horizon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:thrown-from-hurl-at-the-horizon"
+        ],
+        "property": "traits",
+        "value": "thrown-15"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:thrown",
+          "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}",
+          {
+            "not": "item:tag:thrown-from-hurl-at-the-horizon"
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "divine-spark:{item|flags.system.rulesSelections.ikon}"
+        ],
+        "property": "range-increment",
+        "value": 10
+      }
+    }
+  ]
+}

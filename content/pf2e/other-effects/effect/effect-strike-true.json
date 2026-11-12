@@ -1,0 +1,69 @@
+{
+  "kind": "effect",
+  "slug": "effect-strike-true",
+  "system": "pf2e",
+  "name": "Effect: Strike True",
+  "source": {
+    "title": "Pathfinder Hero Point Deck",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Strike True\n\nYou roll twice and take the higher result on your Strike. This Strike deals an extra die of damage on a hit if the attacker has fewer than half their maximum Hit Points, or two extra dice if they have fewer than one quarter their maximum Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "removeAfterRoll": false,
+        "selector": "strike-attack-roll"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "gte": [
+              "hp-percent",
+              25
+            ]
+          },
+          {
+            "lt": [
+              "hp-percent",
+              50
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 2,
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "lt": [
+              "hp-percent",
+              25
+            ]
+          }
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

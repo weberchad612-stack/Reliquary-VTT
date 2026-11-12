@@ -1,0 +1,259 @@
+{
+  "kind": "creature",
+  "slug": "saint-fang",
+  "system": "pf2e",
+  "name": "Saint Fang",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "unique",
+  "traits": [
+    "divine",
+    "dragon"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 42,
+    "hp": 365,
+    "perception": 31,
+    "saves": {
+      "fortitude": 33,
+      "reflex": 28,
+      "will": 29
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 7,
+      "dex": 4,
+      "int": 4,
+      "str": 9,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 30,
+      "athletics": 35,
+      "diplomacy": 32,
+      "intimidation": 32,
+      "medicine": 29,
+      "religion": 29,
+      "society": 28,
+      "warfare-lore": 30
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 130
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "dwarven",
+      "jotun"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "forge vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 35,
+      "traits": [
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 35,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6",
+          "type": "bleed",
+          "category": "persistent"
+        },
+        {
+          "dice": "3d6+17",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 33,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+17",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Forge Vision",
+      "category": "interaction",
+      "text": "Saint Fang ignores the Concealed condition from smoke and fire."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Buck",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "DC 37 Reflex save"
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 37 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spiked Scales",
+      "category": "defensive",
+      "text": "A creature that critically fails to Strike Saint Fang in melee takes 6d6 piercing damage (DC 40 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Wing Deflection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Saint Fang is targeted with an attack\n\n---\nEffect Saint Fang raises a wing, gaining a +2 circumstance bonus to AC against the triggering attack. If he is flying, he descends 10 feet after the attack is complete.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "wing-deflection",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "wing-deflection"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Saint Fang makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "When Saint Fang scores a critical hit with a Strike, he recharges his Dragon Breath.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dragon Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane"
+      ],
+      "text": "Saint Fang breathes in one of two ways. He can't use Dragon Breath again for 1d4 rounds.\n\nBlade Breath (arcane) He breathes a 100-foot line of sharp blades that deals 19d6 slashing damage (DC 40 basic Reflex save save). The blades created by this breath vanish at the end of the round.\n\nForge Breath (arcane) He breathes a blast of embers and smoke, as if from an immense forge. Each creature within a 40-foot cone takes 6d6 fire damage and 12d6 poison damage (DC 40 basic Reflex save save). Smoke lingers in the area until the end of Saint Fang's next turn; all creatures within the smoke become Concealed, and all creatures outside the smoke become concealed to creatures within."
+    }
+  ],
+  "text": "This dragon is haughty and proud, often coming across as self-righteous. As the very embodiment of just wars, he feels he can't possibly be wrong. His polished steel scales make the distinctive sound of blade scraping against blade as he moves, and his needle-like spines clink against each other with every mighty flap of his broad wings. Saint Fang is war given a dragon's form, with the temperament of a master strategist.\n\nOf late, more and more of Gorum's followers have declared war for the sake of battle. They revel in causing bloodshed for any excuse, calling on Gorum's servants for aid, but Saint Fang doesn't answer those calls. He is more likely to appear for a group of villagers who band together to unseat a local bandit king or for a native population defending their homes against colonizers. He believes that war is inevitable as long as the greedy and bloodthirsty are given weapons, and he seeks to aid those whose justification for war is because they've run out of peaceful options.\n\nSaint Fang rarely takes a rider, but he obeys the commands of his Lord in Iron, Gorum. The god occasionally commands Saint Fang to take one of his faithful into battle, and he obeys him to the letter of his command, often unseating riders he finds unworthy once they reach the battlefield.\nSaint Fang's Past\nMany theological scholars on Golarion have sought the truth behind Saint Fang's origins. The most likely (and widely believed) explanation is that he once flew the skies above Golarion, looking to protect innocent mortals from the ravages of war, but became so jaded over time, that he eventually changed into a perfect weapon for Gorum.\nServitor Of The Divine\nAll deities maintain favored agents to work their will among mortals. Heralds are among the most well-known of these agents—unique entities who serve as the deity's mouthpiece and messenger and are often sent in response to a mortal spellcaster requesting aid in the form of a planar servitor ritual. But a deity's herald isn't the only agent permitted to walk among worshippers or smite enemies of the faith. Those called servitors are unique, powerful, and stand among the deity's most devoted adherents.\n\nServitors are quite powerful, yet they're not truly immortal. Any servitor of the divine may be slain in battle or through misadventure. In some cases, a slain servitor's body vanishes and is replaced by a powerful treasure. In others, the body itself simply crumples to the ground as a corpse. Servitors can be restored to life at a deity's whim, yet in many cases their deity won't immediately grant this resurrection and may simply seek to create or elevate an entirely different servitor. Should the unthinkable happen and a deity themselves perish, their existing servitors do not die but are immediately aware of the fact that their creator has ceased to be. Some myths tell of servitors who have then gone on to ascend in power and replace their creator as a demigod or even a deity themselves, while in other stories, a desperate servitor may seek out a new god or goddess to devote themselves to.\n\nWhile servitors are all unique creatures, in most cases they were once mortal worshippers—be they humanoid or otherwise—who have particularly pleased their deity. The resulting powers and abilities granted to the servitor vary wildly, but it's almost unheard of for a servitor of any deity to be less powerful than 15th level, or at least a few levels above what they possessed in their previous life. While there are not limits to the number of servitors a deity might keep, most gods traditionally keep no more than three.\n\nIn Gorum's case, his three most well-known servitors are comprised of a demon, dragon, and an elemental, creatures who either embody the chaos of battle or the raw spirit of the forge. In each case, these unique servitors' worldview and philosophy closely match that of their Lord in Iron, leaving them outcasts or even pariahs among others of their kind. Yet to Bloody Hands, Saint Fang, and Temperbrand, there is no greater comfort in life than service to the god of war."
+}

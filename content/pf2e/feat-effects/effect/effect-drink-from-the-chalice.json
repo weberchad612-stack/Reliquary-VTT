@@ -1,0 +1,62 @@
+{
+  "kind": "effect",
+  "slug": "effect-drink-from-the-chalice",
+  "system": "pf2e",
+  "name": "Effect: Drink from the Chalice",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Drink from the Chalice\n\nYou gain temporary Hit Points equal to the origin's level (minimum 3). If the origin is under the effects of the chalice's adept benefit, these temporary Hit Points increase to twice their level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "predicate": [
+              "parent:origin:item:tag:chalice-adept-benefit"
+            ],
+            "value": "adept"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": "initiate"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Thaumaturge.Implement.Chalice.Adept.Prompt",
+        "rollOption": "drink-from-the-chalice-temp-hp"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "drink-from-the-chalice-temp-hp:initiate"
+        ],
+        "value": "max(3,@item.origin.level)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "drink-from-the-chalice-temp-hp:adept"
+        ],
+        "value": "2*@item.origin.level"
+      }
+    }
+  ]
+}

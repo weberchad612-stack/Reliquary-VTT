@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-sweet-dream",
+  "system": "pf2e",
+  "name": "Spell Effect: Sweet Dream",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "hours",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sweet Dream\n\n- Dream of Insight status bonus to Intelligence-based skill checks\n\n- Dream of Glamor status bonus to Charisma-based skill checks\n\n- Dream of Voyaging +5-foot status bonus to Speed",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.SpellEffectSweetDream.Insight",
+            "value": "insight"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectSweetDream.Glamor",
+            "value": "glamor"
+          },
+          {
+            "label": "PF2E.SpecificRule.SpellEffectSweetDream.Voyaging",
+            "value": "voyaging"
+          }
+        ],
+        "flag": "sweetDream",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.SpellEffectSweetDream.Prompt",
+        "rollOption": "sweet-dream"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "sweet-dream:insight"
+        ],
+        "selector": "int-skill-check",
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "sweet-dream:glamor"
+        ],
+        "selector": "cha-skill-check",
+        "type": "status",
+        "value": "ternary(gte(@item.level,7),3,ternary(gte(@item.level,4),2,1))"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "status",
+      "value": 5,
+      "when": [
+        "sweet-dream:voyaging"
+      ]
+    }
+  ]
+}

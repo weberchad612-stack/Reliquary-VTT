@@ -1,0 +1,255 @@
+{
+  "kind": "creature",
+  "slug": "ambrost-mugland",
+  "system": "pf2e",
+  "name": "Ambrost Mugland",
+  "source": {
+    "title": "Pathfinder #179: Cradle of Quartz",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "halfling",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 26,
+    "hp": 140,
+    "perception": 14,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 19,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 4,
+      "int": 2,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 16,
+      "athletics": 14,
+      "deception": 18,
+      "intimidation": 18,
+      "society": 18,
+      "stealth": 18,
+      "thievery": 18,
+      "alkenstar-lore": 16,
+      "underworld-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "halfling",
+      "osiriani"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Cane Pistol",
+      "ref": "equipment:item/cane-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dueling Pistol",
+      "ref": "equipment:item/dueling-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Cane Pistol)",
+      "ref": "equipment:item/rounds-cane-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Eroding Bullet",
+      "ref": "equipment:item/eroding-bullet",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Cane Pistol",
+      "attack": 15,
+      "traits": [
+        "critical-fusion",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dueling Pistol",
+      "attack": 19,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Cane Pistol",
+      "attack": 18,
+      "traits": [
+        "combination",
+        "concussive",
+        "fatal-d8",
+        "reload-1"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Mugland isn't Off-Guard to creatures of 8th level or lower that are Hidden, Undetected, flanking, or using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When Mugland rolls a success on a Reflex save, he gets a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Exploit Blunder",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 30 feet rolls a critical failure to Strike Mugland\n\n---\n\nEffect With a sneer, Mugland takes advantage of the opening. He makes a ranged dueling pistol or cane pistol Strike against the triggering creature. The creature is Off-Guard to Mugland's attacks (including this one) until the beginning of its next turn. This attack doesn't count toward Mugland's multiple attack penalty, and his multiple attack penalty doesn't apply to this attack."
+    },
+    {
+      "kind": "ability",
+      "name": "Slippery Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger Mugland is hit by a Strike, but wouldn't be hit with a +2 circumstance bonus to AC\n\n---\n\nEffect Mugland gains a +2 circumstance bonus to AC against the triggering attack and the attack misses.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Mugland Interacts to draw a weapon, then Strikes with that weapon."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Mugland deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male halfling criminal mogul"
+}

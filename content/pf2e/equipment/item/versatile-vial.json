@@ -1,0 +1,77 @@
+{
+  "kind": "weapon",
+  "slug": "versatile-vial",
+  "system": "pf2e",
+  "name": "Versatile Vial",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "acid",
+    "alchemical",
+    "bomb",
+    "consumable",
+    "infused",
+    "splash"
+  ],
+  "text": "This tiny glass flask contains volatile chemicals that can be used offensively in a pinch. The bomb deals acid damage and acid splash damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "gte": [
+              "parent:level",
+              4
+            ]
+          }
+        ],
+        "selector": "{item|id}-attack",
+        "type": "item",
+        "value": "ternary(gte(@item.level,18),3,ternary(gte(@item.level,12),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "property": "dice-number",
+        "selectors": [
+          "{item|id}-damage"
+        ],
+        "slug": "base",
+        "value": "ternary(gte(@item.level,18),4,ternary(gte(@item.level,12),3,ternary(gte(@item.level,4),2,1)))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "selector": "{item|id}-damage",
+        "slug": "splash",
+        "value": "ternary(gte(@item.level,18),4,ternary(gte(@item.level,12),3,ternary(gte(@item.level,4),2,1)))"
+      }
+    }
+  ],
+  "category": "martial",
+  "group": "bomb",
+  "damage": {
+    "die": "d6",
+    "type": "acid"
+  },
+  "range": 20,
+  "reload": "-",
+  "hands": "held-in-one-hand",
+  "splash": 1,
+  "baseItem": "alchemical-bomb",
+  "bulk": 0
+}

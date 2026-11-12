@@ -1,0 +1,67 @@
+{
+  "kind": "feat",
+  "slug": "gildedsoul",
+  "system": "pf2e",
+  "name": "Gildedsoul",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "lineage",
+    "talos"
+  ],
+  "category": "ancestry",
+  "text": "Your elemental lineage manifests in the polished gleam of precious metals, such as silver and gold, or even rare and valuable skymetals like adamantine or orichalcum. This natural luster enhances your charm; you become trained in your choice of Diplomacy or Society. If you would automatically become trained in both these skills (from your background or class, for example), you instead become trained in a skill of your choice. If you're trained in Society, you also gain the Courtly Graces skill feat.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Skill.Diplomacy",
+            "value": "system.skills.diplomacy.rank"
+          },
+          {
+            "label": "PF2E.Skill.Society",
+            "value": "system.skills.society.rank"
+          }
+        ],
+        "flag": "gildedsoul",
+        "key": "ChoiceSet",
+        "priority": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "{item|flags.system.rulesSelections.gildedsoul}",
+        "priority": 2,
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "skill:society:rank",
+              1
+            ]
+          }
+        ],
+        "priority": 99,
+        "uuid": "Compendium.pf2e.feats-srd.Item.Courtly Graces"
+      }
+    }
+  ]
+}

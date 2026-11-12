@@ -1,0 +1,70 @@
+{
+  "kind": "feat",
+  "slug": "advantageous-assault",
+  "system": "pf2e",
+  "name": "Advantageous Assault",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "fighter",
+    "press"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "After compromising your enemy's movement, you deliver a more deadly blow. Make a Strike against a creature that is Grabbed, Prone, or Restrained. You gain a circumstance bonus to damage on this Strike equal to the number of weapon damage dice, or that number + 2 if you're wielding the weapon in two hands. The Strike gains the following failure effect.\n\nFailure You deal damage to the target equal to the number of weapon damage dice, or that number + 2 if you're wielding the weapon in two hands. This damage has the same damage type as the weapon.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "strike-damage",
+        "key": "RollOption",
+        "option": "advantageous-assault",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "advantageous-assault",
+          {
+            "or": [
+              "target:condition:grabbed",
+              "target:condition:prone",
+              "target:condition:restrained"
+            ]
+          },
+          {
+            "gt": [
+              "map:increases",
+              0
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "advantageous-assault",
+        "type": "circumstance",
+        "value": "@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "item:hands-held:2"
+        ],
+        "selector": "strike-damage",
+        "slug": "advantageous-assault",
+        "value": 2
+      }
+    }
+  ]
+}

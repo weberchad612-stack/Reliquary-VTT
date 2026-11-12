@@ -1,0 +1,167 @@
+{
+  "kind": "creature",
+  "slug": "ice-golem",
+  "system": "pf2e",
+  "name": "Ice Golem",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "cold",
+    "construct",
+    "golem",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 80,
+    "perception": 9,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 5,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 15
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "cold",
+        "electricity",
+        "magic"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "adamantine, bludgeoning"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "unarmed",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Golem Antimagic",
+      "category": "defensive",
+      "text": "Harmed by fire (4d6 untyped, 1d10 untyped from areas or persistent damage); healed by cold (area 1d6 healing HP); slowed by water\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Icy Demise",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "cold"
+      ],
+      "text": "When an ice golem is destroyed, its body explodes in a blast of frigid air and razor-sharp ice, dealing 2d6 slashing damage and 2d6 cold damage to creatures in a 20-foot emanation, with a DC 19 basic Reflex save save."
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Endure Elements",
+      "category": "defensive",
+      "text": "An ice golem can be targeted with Environmental Endurance even if it's not willing. If it is targeted, for 1 round it can't use Breath Weapon or benefit from creeping cold, and its fist attack doesn't deal cold damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "vulnerable-to-endure-elements",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "cold"
+      ],
+      "text": "The ice golem exhales a blast of freezing mist that deals 6d6 cold damage in a 30-foot cone (DC 22 basic Reflex save save).\n\nIt can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Creeping Cold",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "cold"
+      ],
+      "text": "When the ice golem gets a critical hit with a fist Strike, the target also takes 2d6 persistent cold damage and is Slowed 1 for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "persistent",
+            "critical": true,
+            "damageType": "cold",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "vulnerable-to-endure-elements"
+              }
+            ],
+            "selector": "fist-damage"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "fist-attack",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            {
+              "not": "vulnerable-to-endure-elements"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Ice golems are either carved from massive blocks of ice, or pieced together from individual components that are then fused together through heat and refreezing. In most cases, the resulting shape is little more than a crude approximation of a humanoid form, but given the right talent, an ice golem could be an exquisitely carved statue of a mythical creature, famous persona, or even a deity.\n\nWhile ice golems most frequently serve as guardians in freezing climates, the magic that holds an ice golem together keeps it from melting in warmer temperatures. This, combined with the fact that ice golems lie on the lower end of the scale as far as cost and difficulty to create, gives these constructs unusual features that puts them in great demand. The rich and powerful in hot, arid regions often commission ice golems not only as guardians for their estates and vaults, but for comfort-the presence of an ice golem standing quietly sentinel in the corner of a room can help to keep the chamber at a comfortable temperature. The truly decadent use ice golems as servants to keep drinks cold."
+}

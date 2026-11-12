@@ -1,0 +1,208 @@
+{
+  "kind": "creature",
+  "slug": "kieragan-skross",
+  "system": "pf2e",
+  "name": "Kieragan Skross",
+  "source": {
+    "title": "Pathfinder Adventure: Crown of the Kobold King",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 135,
+    "perception": 16,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 2,
+      "int": 0,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 18,
+      "deception": 16,
+      "intimidation": 18,
+      "religion": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Prepared Spells",
+      "tradition": "divine",
+      "type": "prepared",
+      "dc": 26,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Harm",
+          "rank": 1,
+          "ref": "spells:spell/harm"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Cleric Domain Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 20,
+      "attack": 10,
+      "spells": [
+        {
+          "name": "Commanding Lash",
+          "rank": 4,
+          "ref": "spells:spell/commanding-lash"
+        },
+        {
+          "name": "Touch of Obedience",
+          "rank": 1,
+          "ref": "spells:spell/touch-of-obedience"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Light Hammer",
+      "ref": "equipment:item/light-hammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Defiled Religious Symbol of Droskar",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Light Hammer",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Light Hammer",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Final Blasphemy",
+      "category": "defensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "When the herexen is destroyed, it explodes in a wave of void energy with the effects of a 3-action 4th-rank Harm spell (DC 26 basic Fortitude save).\n\nThe herexen is destroyed, so it doesn't gain any Hit Points from this use of harm, and it doesn't need to have any harm spells remaining to use this ability."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heretic's Smite",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "While wielding the favored weapon of its former deity (such as a dagger for an ex-Pharasmin herexen), the herexen's Strikes deal an additional 2d6 spirit damage against creatures that can cast divine spells.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "heretics-smite",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "spirit",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "heretics-smite"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Greater herexen"
+}

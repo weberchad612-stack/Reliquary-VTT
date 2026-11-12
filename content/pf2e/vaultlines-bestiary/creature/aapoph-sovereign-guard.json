@@ -1,0 +1,226 @@
+{
+  "kind": "creature",
+  "slug": "aapoph-sovereign-guard",
+  "system": "pf2e",
+  "name": "Aapoph Sovereign Guard",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "humanoid",
+    "mutant",
+    "serpentfolk"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 32,
+    "hp": 270,
+    "perception": 24,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 19,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 4,
+      "int": 5,
+      "str": 7,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 25,
+      "intimidation": 20,
+      "society": 18,
+      "stealth": 18
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "poison",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "reach-15",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 25,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "serpentfolk-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 25,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Halberd Block",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The guard is wielding a halberd\n\n---\nEffect The guard gains a +2 circumstance bonus to AC until the beginning of their next turn. The guard can extend this bonus to allies they can see within 10 feet. This effect ends early if the guard is unable to take actions."
+    },
+    {
+      "kind": "ability",
+      "name": "Serpentfolk Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 34 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage and Enfeebled 1 (1 round)\n\nStage 2 2d4 poison damage and enfeebled 1 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Shaft Slam",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The sovereign guard slams a foe with the shaft of their halberd. The guard makes a halberd Strike against a creature within reach. On a hit, the attack deals bludgeoning damage instead of piercing damage, plus an extra 2d6 bludgeoning damage if the target is Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shaft-slam",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "shaft-slam"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "halberd-damage"
+            ],
+            "slug": "base",
+            "value": "bludgeoning"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 2,
+            "key": "DamageDice",
+            "predicate": [
+              "shaft-slam",
+              "target:condition:prone"
+            ],
+            "selector": "halberd-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spinning Halberd",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The sovereign guard makes a halberd Strike and compares the attack roll result to the AC of up to two foes, each of whom must be within the guard's reach. The guard rolls damage only once and applies it to each creature hit. The guard's multiple attack penalty doesn't increase until they have made both Strikes."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Physically, aapoph sovereign guards tower over other aapophs, but their hulking stature and unquestioning obedience belie an intelligence unique even among the zyss. Despite their cunning, sovereign guards are rarely treacherous or self-serving; rather, each guard is expected to devote their existence solely to the advancement of their superiors. Even when beset on all sides by treacherous political machinations, zyss monarchs implicitly trust their sovereign guards, whose powerful bulk, keen senses, and whirling halberds are more dependable than any shield.\n\n---\nSerpentfolk society is riddled with secret organizations, many of which preserve long-lost traditions from the height of the ancient sekmin empire. Exclusive orders of aapoph sovereign guards and zyss assassins, among others, trace their origins back millennia, training in the same techniques they employed in the days when mammalian humanoids were nothing but servants or prey.\nAapoph Training\nThe towering aapophs employed as sovereign guards aren't born larger than their siblings. Rather, zyss trainers select certain aapoph hatchlings to be raised as guards. These young aapophs are reared in isolated nurseries where they're trained in advanced weaponcraft. According to rumor, the secret of a sovereign guard's increased cunning and stature lies in a diet regarded as blasphemous even by other sekmins."
+}

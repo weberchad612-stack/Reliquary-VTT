@@ -1,0 +1,100 @@
+{
+  "kind": "feat",
+  "slug": "tactical-excellence",
+  "system": "pf2e",
+  "name": "Tactical Excellence",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Commander Dedication"
+  ],
+  "maxTakable": 2,
+  "text": "You add two new mobility or offensive tactics to your folio and increase your maximum number of tactics prepared by 1.\n\n---\nSpecial You can select this feat a second time at 8th level; when you do, you may choose your new tactics from either mobility or offensive tactics you do not already know or from any of the expert tactics you have access to.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "count": true,
+        "key": "RollOption",
+        "option": "tactical-excellence"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:trait:tactic",
+            {
+              "or": [
+                "item:tag:commander-mobility-tactic",
+                "item:tag:commander-offensive-tactic",
+                {
+                  "and": [
+                    "item:tag:commander-expert-tactic",
+                    "tactical-excellence:2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "itemType": "action"
+        },
+        "flag": "firstTactic",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Commander.Tactics.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.firstTactic}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:trait:tactic",
+            {
+              "or": [
+                "item:tag:commander-mobility-tactic",
+                "item:tag:commander-offensive-tactic",
+                {
+                  "and": [
+                    "item:tag:commander-expert-tactic",
+                    "tactical-excellence:2"
+                  ]
+                }
+              ]
+            }
+          ],
+          "itemType": "action"
+        },
+        "flag": "secondTactic",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Commander.Tactics.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.secondTactic}"
+      }
+    }
+  ]
+}

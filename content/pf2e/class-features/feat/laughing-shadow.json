@@ -1,0 +1,163 @@
+{
+  "kind": "feat",
+  "slug": "laughing-shadow",
+  "system": "pf2e",
+  "name": "Laughing Shadow",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "magus"
+  ],
+  "category": "classfeature",
+  "text": "Magic is freeing, a means to your ends, and you can use it to go where you want, do as you please, and avoid the consequences. You are a laughing shadow of spell and blade, always one step ahead of your foes, always with a trick up your sleeve.\n\nWhile in Arcane Cascade stance, you gain a +5-foot status bonus to your Speeds, or a +10-foot bonus if you're unarmored. If you Strike an Off-Guard creature while you're in the stance and have a free hand, that Strike's extra damage from Arcane Cascade is increased to 3. The increased extra damage is 5 if you have weapon specialization, or 7 if you have greater weapon specialization. You must have your other hand completely free; the extra damage doesn't apply if you have a free-hand weapon or other item in that hand, even if you would normally be able to use the hand for other things.\n\nConflux Spell Dimensional Assault\n\nStudious Spells 7th: Blur; 11th: Ghostly Weapon; 13th: Translocate",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "speed",
+      "type": "status",
+      "value": 5,
+      "slug": "laughing-shadow-armored-movement",
+      "when": [
+        "self:armored",
+        "self:effect:arcane-cascade"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "speed",
+      "type": "status",
+      "value": 10,
+      "slug": "laughing-shadow-unarmored-movement",
+      "when": [
+        "self:effect:arcane-cascade",
+        {
+          "not": "self:armored"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "target:condition:off-guard",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:weapon-specialization",
+          "target:condition:off-guard",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feature:greater-weapon-specialization",
+          "target:condition:off-guard",
+          {
+            "gte": [
+              "hands-free:but-really",
+              1
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "slug": "arcane-cascade-extra-damage",
+        "value": 7
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+        "option": "target:condition:off-guard",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:category:prepared",
+          "spellcasting:tradition:arcane",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:slug:blur",
+                  {
+                    "gte": [
+                      "self:level",
+                      7
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:ghostly-weapon",
+                  {
+                    "gte": [
+                      "self:level",
+                      11
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:translocate",
+                  {
+                    "gte": [
+                      "self:level",
+                      13
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "studious-spell"
+      }
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "kind": "creature",
+  "slug": "animated-wine-vessel",
+  "system": "pf2e",
+  "name": "Animated Wine Vessel",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia World Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 19,
+    "hp": 45,
+    "perception": 9,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 7,
+      "will": 7
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 0,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 17
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "17 when broken; construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 11,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 4)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated wine vessel has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an animated wine vessel is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 17.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spit Wine",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "water"
+      ],
+      "text": "The wine vessel opens its mouth and blows a stream of wine in a 15-foot line, dealing 2d8 bludgeoning damage (DC 19 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 2d8+4 bludgeoning plus Wine-Soaked, Rupture 10\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Wine-Soaked",
+      "category": "offensive",
+      "text": "When a creature ends its turn Swallowed Whole by the animated wine vessel, it must succeed at a DC 19 Fortitude save save or become Sickened 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "A beautiful wine vessel presents a mark of status among drinkers, to say nothing of an animated one that pours the wine on its own. Although normally harmless servants, these vessels will just as quickly follow instructions to swallow intruders and drown them in strong wine."
+}

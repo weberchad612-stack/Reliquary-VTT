@@ -1,0 +1,231 @@
+{
+  "kind": "creature",
+  "slug": "sarcovalt",
+  "system": "pf2e",
+  "name": "Sarcovalt",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "fiend",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 13,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 15,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 5,
+      "int": 0,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 12,
+      "intimidation": 12,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 20,
+      "climb": 20,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "poison",
+        "sickened"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "acid",
+          "value": 5
+        },
+        {
+          "type": "cold",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. death effects",
+      "languages": "telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Acid Grip",
+          "rank": 2,
+          "ref": "spells:spell/acid-grip"
+        },
+        {
+          "name": "Vomit Swarm",
+          "rank": 3,
+          "ref": "spells:spell/vomit-swarm"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Enfeeble",
+          "rank": 1,
+          "ref": "spells:spell/enfeeble"
+        },
+        {
+          "name": "Goblin Pox",
+          "rank": 1,
+          "ref": "spells:spell/goblin-pox"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 15,
+      "traits": [
+        "finesse",
+        "magical",
+        "reach"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "3",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Death Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "death"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Blight",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "disease"
+      ],
+      "text": "15 feet. The sarcovalt is surrounded by a miasma of infection. An enemy that enters or ends their turn in the aura must attempt a DC 19 Fortitude save save.\n\n---\nSuccess The creature is unaffected and becomes temporarily immune to the aura for 1 minute.\n\nFailure Until the end of its next turn, the creature takes a –1 circumstance penalty to saves against disease effects.\n\nCritical Failure Until the end of its next turn, the creature takes a –2 circumstance bonus against disease effects and is Enfeebled 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 15,
+            "traits": [
+              "disease"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Befouled Body",
+      "category": "defensive",
+      "text": "Any water the sarcovalt touches becomes diseased with filth fever.\n\n---\nFilth Fever (disease)\n\nSaving Throw DC 23 Fortitude save\n\nOnset 1d4 days\n\nStage 1 Sickened 1 (1 day)\n\nStage 2 Drained 1 (1 day)\n\nStage 3 Drained 2 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Detach",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The sarcovalt takes slashing damage from a creature while they have another creature Grabbed or Restrained\n\n---\nEffect The sarcovalt uses Detach Head. Their head keeps the other creature grabbed or restrained, and their body Steps. The sarcovalt gains resistance 5 to the triggering slashing damage.\n\nEffect: Reactive Detach"
+    },
+    {
+      "kind": "ability",
+      "name": "Return to Sender",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature escapes from being Grabbed or Restrained by the sarcovalt's detached head\n\n---\nEffect The sarcovalt's head returns to their body via the shortest possible path. Any creature in a straight line between the head and the body must succeed at a DC 21 Reflex save save or become Clumsy 1 for 1 round (Clumsy 2 on a critical failure). The sarcovalt Dismisses Detach Head."
+    },
+    {
+      "kind": "ability",
+      "name": "Detach Head",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Trigger The sarcovalt takes damage from a critical hit with a slashing weapon or has their head removed (such as by a vorpal weapon)\n\n---\nEffect The sarcovalt can survive decapitation and isn't killed if an effect that removes their head would kill them. Instead, the sarcovalt's head becomes detached from their body. The detached head has the same statistics as the body (except for the aura of blight) and gains the minion trait. The sarcovalt's body can issue a verbal command to the detached head as a single action, giving the head 2 actions. The detached head and body share the same pool of Hit Points.\n\nWhile their head is detached, the sarcovalt's body can't make beak Strikes or use Malodorous Shriek. The detached head can only Climb, Fly, Stride, make beak Strikes, or use Malodorous Shriek."
+    },
+    {
+      "kind": "ability",
+      "name": "Malodorous Shriek",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "occult",
+        "olfactory",
+        "poison",
+        "sonic"
+      ],
+      "text": "The sarcovalt screeches through their skull (detached or not), spraying whatever festering viscera remains in their head in a 20-foot cone. Each creature in the area takes 3d6 sonic,3d6 poison damage (DC 21 basic Reflex save save). The sarcovalt can't use this ability again for 1d4 rounds."
+    }
+  ],
+  "text": "Individual sarcovalts have almost no personal identities and incredibly short-term memories.\n\n---\nThere are few creatures throughout the multiverse more bizarrely revolting than the sarcovalt, a fiend with the body of a fly and the head of a fleshless vulture skull. While a creature barely 2 feet long might not seem threatening, sarcovalt swarms can overwhelm entire villages. Sarcovalts' heads almost seem to be wholly separate entities from their bodies and will vomit up whatever they capture in their beaks hours later as putrid, coagulated sludge."
+}

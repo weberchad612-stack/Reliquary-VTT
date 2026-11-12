@@ -1,0 +1,195 @@
+{
+  "kind": "creature",
+  "slug": "geist",
+  "system": "pf2e",
+  "name": "Geist",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "chaotic",
+    "evil",
+    "incorporeal",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 120,
+    "perception": 17,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 20,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 5,
+      "int": 2,
+      "str": -5,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 20,
+      "deception": 18,
+      "intimidation": 20,
+      "religion": 17,
+      "stealth": 20
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Bite",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Power of the Haunt",
+      "category": "defensive",
+      "text": "If a geist is within 100 feet of a haunt that isn't disabled or destroyed, they gain a +2 status bonus to AC and saving throws and deal an additional 1d6 void damage with bite Strikes. A creature that succeeds at a DC 20 Perception check check to Seek or Recall Knowledge about the geist sees that the tendrils from the geist's cloak grow thicker and more agitated the closer it gets to the haunt.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "power-of-the-haunt"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "void",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "power-of-the-haunt"
+            ],
+            "selector": "bite-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "power-of-the-haunt",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Terrifying Laugh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "Frequency once per minute\n\n---\n\nEffect The geist unleashes soul-piercing laughter in a 20-foot emanation, lasting until the beginning of their next turn. Any creature in the area or entering it must succeed at a DC 26 Will save save or be overcome with panicked laughter, becoming Frightened 2 (or Frightened 3 on a critical failure). A creature attempts only one save per Terrifying Laugh, and a creature that succeeds on its saving throw is temporarily immune for 24 hours.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1M"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Wrath of the Haunt",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Frequency once per round\n\nRequirements The geist is within 100 feet of an active haunt\n\n---\n\nEffect The haunt feeds necromantic power into the geist, becoming inactive until the end of the geist's next turn and deactivating the power of the haunt aura until the haunt becomes active again. The edges of the geist's cloak transform into whip-like tendrils that lash out at nearby creatures. Any living creature within 10 feet of the geist takes 4d10 slashing damage plus 4d6 void damage (DC 28 basic Reflex save save).",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "A geist is an ever-shifting mass of black sack cloth, teeth, and mouths, folding in and out of itself and cackling like a thousand frenzied and doomed souls. Created when a haunt kills an evil person, a geist rises from a soul trapped on the plane of their demise, now connected to the dark energy radiating from haunts everywhere. They wander the world, looking for solace and never finding it. In frustration, they turn their malice back onto the living, antagonizing any nearby creatures, hoping to fatally lure their victims into the clutches of a haunt to be turned into another geist and share the torment.\n\nGeists are occasionally mistaken for other incorporeal undead, such as wraiths and ghosts, but their proximity to haunts is one of the surest ways to determine the nature of the undead being encountered."
+}

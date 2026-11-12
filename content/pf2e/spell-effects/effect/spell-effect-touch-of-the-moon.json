@@ -1,0 +1,93 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-touch-of-the-moon",
+  "system": "pf2e",
+  "name": "Spell Effect: Touch of the Moon",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1,
+    "labels": [
+      "New",
+      "Waxing",
+      "Full",
+      "Waning"
+    ]
+  },
+  "text": "Granted by Touch of the Moon\n\nYou glow with dim light in a 20-foot radius. You also get a benefit based on a phase of the moon, starting with the new moon and changing to the next phase at the end of each of your turns.\n- New Moon You receive no benefit.\n- Waxing Moon You gain a +1 status bonus to attack rolls and a +4 status bonus to damage rolls.\n- Full Moon You gain a +1 status bonus to attack rolls, AC, and saves, and a +4 status bonus to damage.\n- Waning Moon You gain a +1 status bonus to AC and saving throws. After this phase, return to the new moon.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "value": {
+          "animation": {
+            "intensity": 1,
+            "speed": 1,
+            "type": "pulse"
+          },
+          "color": "#343434",
+          "coloration": 101,
+          "dim": 20,
+          "shadows": 0.2
+        }
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "self:effect:touch-of-the-moon:2",
+            "self:effect:touch-of-the-moon:3"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "damage",
+      "type": "status",
+      "value": 4,
+      "when": [
+        {
+          "or": [
+            "self:effect:touch-of-the-moon:2",
+            "self:effect:touch-of-the-moon:3"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "status",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "self:effect:touch-of-the-moon:3",
+            "self:effect:touch-of-the-moon:4"
+          ]
+        }
+      ]
+    }
+  ]
+}

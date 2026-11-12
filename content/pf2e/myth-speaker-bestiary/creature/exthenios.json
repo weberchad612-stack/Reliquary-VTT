@@ -1,0 +1,281 @@
+{
+  "kind": "creature",
+  "slug": "exthenios",
+  "system": "pf2e",
+  "name": "Exthenios",
+  "source": {
+    "title": "Pathfinder #218: Titanbane",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "mythic",
+    "skeleton",
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 115,
+    "perception": 21,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 21,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 4,
+      "dex": 5,
+      "int": 2,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 23,
+      "athletics": 18,
+      "intimidation": 18,
+      "sailing-lore": 20
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "paralyzed",
+        "poison",
+        "disease",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 10
+        },
+        {
+          "type": "electricity",
+          "value": 10
+        },
+        {
+          "type": "fire",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Aerekostes",
+      "ref": "equipment:item/aerekostes",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Buckler",
+      "ref": "equipment:item/buckler",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Aerekostes",
+      "attack": 21,
+      "traits": [
+        "fatal-d12",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Void Bolt",
+      "attack": 21,
+      "traits": [
+        "magical"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Death Grip",
+      "category": "defensive",
+      "text": "Exthenios clutches Aerekostes with a literal death grip. Attempts to Disarm him of the weapon are treated as one degree of success lower."
+    },
+    {
+      "kind": "ability",
+      "name": "My Fight!",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature other than the target of Engaging Duel takes a hostile action against Exthenios or uses a spell or ability that affects the target of Engaging Duel\n\nRequirements Exthenios has a creature under the effects of Engaging Duel\n\n---\nEffect Exthenios makes a melee Strike against the triggering creature, or a void bolt Strike if the creature isn't within his reach. If the Strike is a success, the creature must attempt a DC 7 Flat check (or a DC 12 Flat check if Exthenios's Strike was a critical success). On a failure, the triggering action is disrupted."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Resilience (Reflex and Will)",
+      "category": "defensive",
+      "text": "The creature treats its saving throws with the associated save as one degree of success better than it rolled. This is not cumulative with other effects that change their degree of success, like the incapacitation trait (except for rolling a natural 1 or 20). Each time the monster gains mythic resilience, choose one save. The ability should apply to the creature's highest saves first.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Engaging Duel",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Exthenios singles out a creature he can see, calling them to face him directly. Exthenios gains a +1 circumstance bonus to Strikes and DCs against the targeted creature. If the creature takes an action that affects anyone other than themselves or Exthenios, this bonus increases to +2 until the end of Exthenios's next turn. Exthenios takes a –1 circumstance penalty to all checks and DCs against any creature other than the target of the Engaging Duel. These effects last until Exthenios uses Engaging Duel again.\n\nEffect: Engaging Duel (Unengaged Target)"
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Power",
+      "category": "offensive",
+      "text": "The creature has a pool of 3 Mythic Points, and can spend those Mythic Points for any of the actions it has."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Skill (Acrobatics)",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Cost 1 Mythic Point\n\n---\nEffect The creature attempts its next skill check with a +4 bonus and is considered to have mythic proficiency for that check. This applies to one skill when this ability is gained and a second skill if the creature is 12th level or higher.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mythic-skill",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "acrobatics",
+          "type": "untyped",
+          "value": 4,
+          "slug": "mythic-skill-bonus",
+          "when": [
+            "mythic-skill"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Precise Duelist",
+      "category": "offensive",
+      "text": "Exthenios deals an extra 1d6 precision damage to the target of his Engaging Duel.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:mark:engaging-duel"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unimpeded",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Cost 1 Mythic Point\n\n---\nEffect Exthenios automatically ends one effect that would give him a circumstance penalty to Speed. When he attempts to Escape an effect that has him Immobilized, Grabbed, or Restrained, he automatically succeeds."
+    }
+  ],
+  "blurb": "Male human skeleton pirate captain"
+}

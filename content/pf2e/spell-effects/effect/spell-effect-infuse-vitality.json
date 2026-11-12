@@ -1,0 +1,43 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-infuse-vitality",
+  "system": "pf2e",
+  "name": "Spell Effect: Infuse Vitality",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Infuse Vitality\n\nYour unarmed and weapon Strikes deal extra vitality damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "vitality",
+        "diceNumber": "ternary(gte(@item.level,5),3,ternary(gte(@item.level,3),2,1))",
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "parent:origin:trait:holy"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    }
+  ]
+}

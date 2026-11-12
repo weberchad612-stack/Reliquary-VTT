@@ -1,0 +1,219 @@
+{
+  "kind": "creature",
+  "slug": "chelaxian-assassin",
+  "system": "pf2e",
+  "name": "Chelaxian Assassin",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-07: A God Falls Where Magic Fails",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 110,
+    "perception": 18,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 0,
+      "dex": 4,
+      "int": 2,
+      "str": 0,
+      "wis": 3
+    },
+    "skills": {
+      "deception": 19,
+      "diplomacy": 17,
+      "performance": 17,
+      "society": 18,
+      "stealth": {
+        "value": 18,
+        "special": [
+          {
+            "value": 19,
+            "label": "in dungeons while wearing camouflage suit",
+            "when": [
+              "terrain:dungeon",
+              "camouflage-suit"
+            ]
+          }
+        ]
+      },
+      "thievery": 16,
+      "underworld-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "dwarven",
+      "elven",
+      "gnomish",
+      "halfling"
+    ],
+    "notes": {
+      "perception": "+20 to detect snares and hazards"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Camouflage Suit",
+      "ref": "equipment:item/camouflage-suit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "+1 Striking Thrower's Bandolier",
+      "ref": "equipment:item/throwers-bandolier",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Lesser)",
+      "ref": "equipment:item/elixir-of-life-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unnoticeable Guile",
+      "category": "interaction",
+      "text": "The Chelaxian assassin is an expert at maintaining perfect stillness and blending into their surroundings. Each non-ally creature who has not been targeted by or subject to an attack or effect made by the Chelaxian assassin must, at the start of their turn, succeed at a DC 27 Will save save (DC 28 Will save in dungeon environments while the Chelaxian assassin is wearing their camouflage suit) or the Chelaxian assassin becomes Hidden to them. This effect ends if the Chelaxian assassin moves without Sneaking or takes any hostile action against the non-ally creature. This does not prevent a creature from making Perception checks to Seek, making the assassin Observed as normal on a success."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Perception to Detect Snares and Hazards",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "origin:trait:hazard",
+                "item:trait:snare"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Devilish Feint",
+      "category": "offensive",
+      "text": "When the Chelaxian assassin successfully Feints, the target is Off-Guard against the Chelaxian assassin's weapon attacks until the end of the Chelaxian assassin's next turn. On a critical success, the target is off-guard against all weapon attacks for that time, not just the Chelaxian assassin's."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The Chelaxian assassin deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Strike of Terror",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The Chelaxian assassin is Hidden from the target of this ability\n\n---\nEffect The Chelaxian assassin makes a Strike with a dagger. If they hit and deal damage, the damaged creature is Frightened 1 (or Frightened 2 on a critical hit)."
+    }
+  ]
+}

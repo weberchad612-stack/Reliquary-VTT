@@ -1,0 +1,275 @@
+{
+  "kind": "creature",
+  "slug": "mindmoppet",
+  "system": "pf2e",
+  "name": "Mindmoppet",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "lawful",
+    "ooze"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 12,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 5,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 13,
+      "crafting": 14,
+      "deception": 11,
+      "intimidation": 11,
+      "medicine": 10,
+      "occultism": 14,
+      "society": 14,
+      "stealth": 13,
+      "thievery": 13
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "critical-hits",
+        "piercing",
+        "precision",
+        "unconscious",
+        "visual"
+      ],
+      "weaknesses": [
+        {
+          "type": "electricity",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "slashing",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "mindsense (precise) 120 feet",
+      "languages": "one other language; telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Telekinetic Maneuver",
+          "rank": 2,
+          "ref": "spells:spell/telekinetic-maneuver",
+          "uses": 2
+        },
+        {
+          "name": "Command",
+          "rank": 1,
+          "ref": "spells:spell/command"
+        },
+        {
+          "name": "Mending",
+          "rank": 1,
+          "ref": "spells:spell/mending",
+          "uses": 3
+        },
+        {
+          "name": "Mindlink (Constant)",
+          "rank": 1,
+          "ref": "spells:spell/mindlink"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shell (Porcelain Doll)",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Telekinetic Slam",
+      "attack": 15,
+      "traits": [
+        "force",
+        "occult"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d12",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "improved-push"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mindsense (Precise) 120 feet",
+      "category": "interaction",
+      "text": "The mindmoppet senses the thoughts of intelligent creatures and builds a perception of reality from this information, allowing the mindmoppet to \"see\" as a precise sense. Invisible intelligent creatures are visible to it."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Prognosticate",
+      "category": "defensive",
+      "text": "When the mindmoppet uses a reaction, it can Step before or after taking the reaction."
+    },
+    {
+      "kind": "ability",
+      "name": "Shell",
+      "category": "defensive",
+      "text": "The mindmoppet believes its shell is an important part of itself. Breaking the mindmoppet's shell (AC 25, Hardness 1, HP 6, BT 3) causes it to become Fascinated with its shell. This condition ends when its shell is repaired.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Mindmoppet.BrokenShell",
+            "option": "broken-shell",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Synapse Glow",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "light"
+      ],
+      "text": "5 feet. The firing of the mindmoppet's synapses create dim light. The range increases to 10 feet if its shell is destroyed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              {
+                "not": "broken-shell"
+              }
+            ],
+            "value": {
+              "color": "#00f799",
+              "coloration": "0.4",
+              "dim": 5
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "broken-shell"
+            ],
+            "value": {
+              "color": "#00f799",
+              "coloration": "0.4",
+              "dim": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Anticipate",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The mindmoppet attempts to anticipate its opponent's actions. Until the end of its next turn, the mindmoppet gains one reaction."
+    },
+    {
+      "kind": "ability",
+      "name": "Redirect Attack",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "mental"
+      ],
+      "text": "Trigger The mindmoppet is targeted by a melee or ranged Strike\n\n---\n\nEffect The mindmoppet attempts a Reflex saving throw, using the attack roll as the DC for the check. On a success, it redirects the attack at another target within the attacker's range. On a failure, the attack resolves as normal."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Push",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Mindmoppets are the result of laboratory experimentation that sought to harness telepathic energy within a liquid alchemical concoction. Mindmoppets feed on the latent telepathic energy of creatures. Even those with no apparent gift but with an active mind can sustain a mindmoppet for days. Such feeding is not invasive, and mindmoppets continually \"graze\" even while inactive.\n\nMindmoppets are willing servants to anyone who concerns themselves with strenuous mental exercise. Their creator is usually an obvious first choice, and they serve them dutifully. However, they have only an academic understanding of good and evil, of ethics, or mortal limitations. They see service to their master's science as the ultimate standard by which they judge their actions or those of others. This can lead to conflict between them and their creator, especially if the master appears lax in their efforts to further their studies. To a mindmoppet, continuous learning is imperative.\n\nMindmoppets appear to have some ability to see a short distance into the future, though this might only be that their innate interest for thought and cognition gives them a knack for anticipating the actions of others.\n\nScavenged Shell\n\nBeing amorphous, mindmoppets are resilient, but they still cling to their shells for protection. You can represent a shell of different material by replacing the Hardness, Hit Points, and Broken Threshold of the porcelain shell listed here with those listed in the Materials section of the Pathfinder Core Rulebook."
+}

@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "quietus-strikes",
+  "system": "pf2e",
+  "name": "Quietus Strikes",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "duskwalker"
+  ],
+  "category": "ancestry",
+  "text": "Your connection to the Boneyard empowers you to bring death to all forms of life and unlife, exploiting their weaknesses. All your weapon and unarmed Strikes are magical and deal 1 additional void damage to living creatures and 1 additional vitality damage to undead. The extra damage increases to 2 if the Strike has a +3 potency rune.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "vitality",
+        "key": "FlatModifier",
+        "predicate": [
+          "target:mode:undead"
+        ],
+        "selector": "strike-damage",
+        "slug": "spirit-strikes-undead",
+        "value": "ternary(gte(@weapon.system.runes.potency,3),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "void",
+        "key": "FlatModifier",
+        "predicate": [
+          "target:mode:living"
+        ],
+        "selector": "strike-damage",
+        "slug": "spirit-strikes-living",
+        "value": "ternary(gte(@weapon.system.runes.potency,3),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "traits",
+        "value": "magical"
+      }
+    }
+  ]
+}

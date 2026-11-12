@@ -1,0 +1,203 @@
+{
+  "kind": "creature",
+  "slug": "stony-goat",
+  "system": "pf2e",
+  "name": "Stony Goat",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "animal"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 28,
+    "perception": 11,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": -4,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": {
+        "value": 8,
+        "special": [
+          {
+            "value": 10,
+            "label": "to Escape",
+            "when": [
+              "action:escape"
+            ]
+          }
+        ]
+      },
+      "athletics": {
+        "value": 8,
+        "special": [
+          {
+            "value": 11,
+            "label": "to Climb",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "survival": 6
+    },
+    "speeds": {
+      "land": 40
+    },
+    "notes": {
+      "perception": "all-around vision"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Cud",
+      "type": "treasure"
+    },
+    {
+      "kind": "strike",
+      "name": "Head",
+      "attack": 8,
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cliff Climber",
+      "category": "interaction",
+      "text": "A stony goat can trot across the steepest cliffs. It doesn't need to attempt Climb checks to scale inclines, and it isn't Off-Guard while Climbing an incline. It ignores difficult terrain caused by rocks, rubble, and uneven ground made of earth and stone."
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Petrify",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "polymorph"
+      ],
+      "text": "Trigger The stony goat gains the Frightened condition or takes more than 8 damage in a single hit\n\n---\n\nEffect The stony goat turns to stone in self-defense. It gains the Petrified condition for 1d4 rounds. If the goat is damaged while it's petrified, it immediately heals by that amount by absorbing minerals from its cud, causing its cud to lose value equal to the amount of Hit Points restored (for instance, losing 5 gp worth of value to restore 5 Hit Points); if the goat's cud is reduced to 0 gp, it has the minerals fully drained from it, and the goat won't form more cud until it has eaten a sufficient quantity of rock and slept.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "self-petrify",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "self-petrify"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Petrified"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Overhead Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The stony goat Leaps up to 12 feet vertically and 20 feet horizontally; this movement doesn't trigger reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Shove and Run",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The stony goat attempts to Shove the nearest creature and then Strides with a +20-foot circumstance bonus to Speed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shove-and-run",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 20,
+          "when": [
+            "shove-and-run"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stone Bolt",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The stony goat loses the Petrified condition\n\n---\n\nEffect The stony goat's first instinct is to escape. It Strides with a +20 circumstance bonus to its Speed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "stone-bolt",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 20,
+          "when": [
+            "stone-bolt"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Stony goats diverge from their common cousins via their rock-like horns and unique appetites. These meek creatures love to eat mineral ores, using teeth tougher than diamonds to grind down rocks and metals. The indigestible components, such as refined chunks of metal and precious stones, coagulate into a cud the goat regurgitates to further ruminate on. In emergency situations, stony goats can even drain nutrition from their cud. These properties might make stony goats excellent companions for miners and metalworkers; however, the beasts are quite rare and famously difficult to train.\n\nStony goats are jumpy creatures with a prey animal's wide field of view and a strong survival instinct. They also have a unique defense mechanism: when startled, stony goats temporarily petrify into solid stone, dissuading predators through inedibility. This combination of weak nerves and tremendous climbing ability often leads to travelers discovering what appears to be a lone statue of a goat in an otherwise unoccupied mountainous area.\n\nKeen observers can discern a stony goat's recent diet via the mineral flakes that form in the goat's horns, such as light silver streaks indicating a meal of dawnsilver ore. Collectors often hunt stony goats and display horns with rare properties. If a stony goat destroys its cud for emergency nutrition, its horns appear as solid chunks of the minerals it consumed for about an hour before reverting to their rock-like norm."
+}

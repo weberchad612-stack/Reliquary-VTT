@@ -1,0 +1,49 @@
+{
+  "kind": "feat",
+  "slug": "on-borrowed-time",
+  "system": "pf2e",
+  "name": "On Borrowed Time",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "cursebound",
+    "divine",
+    "oracle"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "time mystery"
+  ],
+  "text": "You accelerate a foe's personal timestream, which causes them to experience time at a faster rate, putting a terrible strain on their mind and body. A creature you target within 30 feet takes 3d6 persistent,mental damage with a basic Will save save. At the end of the subject's turn, they take this persistent damage after all other persistent damage. Before they roll their flat check to end the persistent damage, an additional round passes for them; this affects the duration of all beneficial effects, negative effects, afflictions, conditions, and other persistent damage. The subject attempts saving throws, flat checks, and any other rolls and takes damage as if the time had passed. They don't take the persistent mental damage from On Borrowed Time more than once per round.\n\nIf you are Cursebound 2 when you use On Borrowed Time, the persistent damage increases to 4d6. If you are Cursebound 3 when you use On Borrowed Time, the persistent damage increases to 5d6.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "self:condition:cursebound",
+              2
+            ]
+          },
+          "damage:category:persistent",
+          "damage:type:mental"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "slug": "base",
+        "value": "clamp(2+@actor.conditions.cursebound.value,4,5)"
+      }
+    }
+  ]
+}

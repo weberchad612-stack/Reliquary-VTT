@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "risky-surgery",
+  "system": "pf2e",
+  "name": "Risky Surgery",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Medicine"
+  ],
+  "text": "Your surgery can bring a patient back from the brink of death, but might push them over the edge. When you treat-wounds, you can deal 1d8 slashing damage to your patient just before applying the effects of Treat Wounds.\n\nIf you do, you gain a +2 circumstance bonus to your Medicine check to Treat Wounds, and if you roll a success, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "medicine",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:treat-wounds",
+        "risky-surgery"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "medicine",
+      "text": "PF2E.SpecificRule.Feat.RiskySurgery.Note",
+      "when": [
+        "action:treat-wounds",
+        "risky-surgery"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "risky-surgery",
+          "action:treat-wounds"
+        ],
+        "selector": "medicine"
+      }
+    }
+  ]
+}

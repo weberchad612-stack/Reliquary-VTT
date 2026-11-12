@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "cultist-of-torment",
+  "system": "pf2e",
+  "name": "Cultist of Torment",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 170,
+    "perception": 18,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 19,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 3,
+      "int": 5,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 17,
+      "medicine": 17,
+      "occultism": 19,
+      "stealth": 19,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 20,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "alghollthu",
+      "azlanti",
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 23,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "amplify-torment"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "amplify-torment"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Psychic Shock",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "mental",
+        "spirit"
+      ],
+      "maxRange": 40,
+      "damage": [
+        {
+          "dice": "2d8",
+          "type": "mental"
+        },
+        {
+          "dice": "2d8",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "amplify-torment"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alleviation Vulnerability",
+      "category": "defensive",
+      "text": "Whenever an effect restores at least one foe within 30 feet of the cultist to the target's full Hit Points, the cultist takes 2d8 mental damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Amplify Torment",
+      "category": "offensive",
+      "text": "The cultist's Strikes deal an additional 1d8 mental damage to creatures that are injured. This additional damage increases to 1d12 mental if the target has fewer than half its HP remaining.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "all",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.CultistOfTorment.AmplifyTorment.Label",
+            "option": "amplify-torment",
+            "selection": "100",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.CultistOfTorment.AmplifyTorment.UnderFull",
+                "value": "100"
+              },
+              {
+                "label": "PF2E.NPCAbility.CultistOfTorment.AmplifyTorment.UnderHalf",
+                "value": "50"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "amplify-torment"
+            ],
+            "selector": "strike-damage",
+            "slug": "amplify-torment"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "upgrade",
+            "predicate": [
+              "amplify-torment:50"
+            ],
+            "property": "dice-faces",
+            "selectors": [
+              "strike-damage"
+            ],
+            "slug": "amplify-torment",
+            "value": 12
+          }
+        }
+      ]
+    }
+  ]
+}

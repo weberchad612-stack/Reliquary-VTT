@@ -1,0 +1,132 @@
+{
+  "kind": "effect",
+  "slug": "effect-beastmasters-sigil-ranged-weapon",
+  "system": "pf2e",
+  "name": "Effect: Beastmaster's Sigil - Ranged Weapon",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Beastmaster's Sigil, Beastmaster's Sigil (Greater), Beastmaster's Sigil (Major)\n\nIf you critically hit with the affixed weapon, and the target is adjacent to a creature summoned with the sigil, the target takes 1d6 persistent bleed damage (or 2d6 persistent bleed damage with a major sigil).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:beastmasters-sigil-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Beastmaster's Sigil (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "beastmasters-sigil"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Spellheart.BeastmastersSigil.AdjacentLabel",
+        "option": "adjacent-sigil-summon",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:ranged"
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectBeastmastersSigilRangedWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "critical": true,
+        "damageType": "bleed",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "adjacent-sigil-summon",
+          {
+            "or": [
+              "beastmasters-sigil:beastmasters-sigil",
+              "beastmasters-sigil:beastmasters-sigil-greater"
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectBeastmastersSigilRangedWeapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "critical": true,
+        "damageType": "bleed",
+        "diceNumber": 2,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "adjacent-sigil-summon",
+          "beastmasters-sigil:beastmasters-sigil-major"
+        ],
+        "selector": "{item|flags.system.rulesSelections.effectBeastmastersSigilRangedWeapon}-damage"
+      }
+    }
+  ]
+}

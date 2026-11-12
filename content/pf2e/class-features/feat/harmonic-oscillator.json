@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "harmonic-oscillator",
+  "system": "pf2e",
+  "name": "Harmonic Oscillator",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "You designed your armor to inaudibly thrum at just the right frequency to create interference against force and sound waves. You gain resistance equal to 3 + half your level to force and sonic damage. When under the effects of Overdrive, the resistance increases by 2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armor:id:{actor|flags.system.innovationId}"
+        ],
+        "type": [
+          "force",
+          "sonic"
+        ],
+        "value": "3 + floor(@actor.level / 2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armor:id:{actor|flags.system.innovationId}",
+          {
+            "or": [
+              "self:effect:overdrive-success",
+              "self:effect:overdrive-critical-success"
+            ]
+          }
+        ],
+        "type": [
+          "force",
+          "sonic"
+        ],
+        "value": "5 + floor(@actor.level / 2)"
+      }
+    }
+  ]
+}

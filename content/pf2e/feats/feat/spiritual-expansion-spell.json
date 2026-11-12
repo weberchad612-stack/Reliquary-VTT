@@ -1,0 +1,113 @@
+{
+  "kind": "feat",
+  "slug": "spiritual-expansion-spell",
+  "system": "pf2e",
+  "name": "Spiritual Expansion Spell",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "animist",
+    "apparition",
+    "concentrate",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "text": "Your apparitions manifest to scatter the energy of your spell. If the next action you use is to Cast a Spell that has an area of a burst, cone, or line and does not have a duration, increase the area of that spell. Add 5 feet to the radius of a burst that normally has a radius of at least 10 feet (a burst with a smaller radius is not affected). Add 5 feet to the length of a cone or line that is normally 15 feet long or smaller, and add 10 feet to the length of a larger cone or line.\n\nYou can also use this feat to increase the radius of an emanation spell with a duration by 5 feet by dedicating your primary apparition to maintaining the spellshape; dedicating the apparition to the spell prevents you from using the apparition's vessel spell, apparition skills, or Avatar form for the duration of the modified spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "spiritual-expansion-spell"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:duration:0",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:area:type:burst",
+                  {
+                    "gte": [
+                      "item:area:size",
+                      10
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "or": [
+                      "item:area:type:cone",
+                      "item:area:type:line"
+                    ]
+                  },
+                  {
+                    "lte": [
+                      "item:area:size",
+                      15
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "spellshape:spiritual-expansion-spell"
+        ],
+        "property": "area-size",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:duration:0",
+          {
+            "or": [
+              "item:area:type:line",
+              "item:area:type:cone"
+            ]
+          },
+          {
+            "gt": [
+              "item:area:size",
+              15
+            ]
+          },
+          "spellshape:spiritual-expansion-spell"
+        ],
+        "priority": 119,
+        "property": "area-size",
+        "value": 10
+      }
+    }
+  ]
+}

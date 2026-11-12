@@ -1,0 +1,141 @@
+{
+  "kind": "creature",
+  "slug": "knight-reclaimant",
+  "system": "pf2e",
+  "name": "Knight Reclaimant",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "uncommon",
+  "traits": [
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 27,
+    "hp": 135,
+    "perception": 16,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 3,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 12,
+      "medicine": 12,
+      "nature": 12,
+      "religion": 14,
+      "stealth": 14,
+      "survival": 14,
+      "gravelands-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Bastard Sword",
+      "ref": "equipment:item/bastard-sword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Half Plate",
+      "ref": "equipment:item/half-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Bastard Sword",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "two-hand-d12"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Resilience",
+      "category": "defensive",
+      "text": "The knight reclaimant's convictions steel their mind against outside influences and help their allies remain strong. The knight and their allies within 30 feet have a +1 circumstance bonus to saves against mental effects, which increases to +2 against mental effects originating from undead.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "slug": "deep-resilience-bonus",
+          "when": [
+            "item:trait:mental"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "origin:trait:undead"
+            ],
+            "selector": "saving-throw",
+            "slug": "deep-resilience-bonus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Raise a Shield",
+      "actions": 1,
+      "category": "defensive",
+      "text": "Requirements You are wielding a shield.\n\n---\n\nYou position your shield to protect yourself. When you have Raised a Shield, you gain its listed circumstance bonus to AC. Your shield remains raised until the start of your next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Charge",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per turn\n\n---\nEffect The knight Strides twice. If they end their movement within melee reach of at least one enemy, the knight can make a melee Strike against that enemy.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    }
+  ]
+}

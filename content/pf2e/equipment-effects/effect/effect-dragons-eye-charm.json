@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragons-eye-charm",
+  "system": "pf2e",
+  "name": "Effect: Dragon's Eye Charm",
+  "source": {
+    "title": "Pathfinder #146: Cult of Cinders",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Dragon's Eye Charm\n\nYou gain one of the following benefits: Darkvision, speak and understand Draconic, or fire resistance 5.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.Darkvision",
+            "value": "darkvision"
+          },
+          {
+            "label": "PF2E.Actor.Creature.Language.draconic",
+            "value": "draconic"
+          },
+          {
+            "label": "PF2E.RuleElement.Resistance",
+            "value": "resistance"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "dragon-charm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "dragon-charm:darkvision"
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.build.languages.granted",
+        "predicate": [
+          "dragon-charm:draconic"
+        ],
+        "value": {
+          "slug": "draconic",
+          "source": "{item|name}"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "dragon-charm:resistance"
+        ],
+        "type": "fire",
+        "value": 5
+      }
+    }
+  ]
+}

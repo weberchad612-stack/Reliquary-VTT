@@ -1,0 +1,152 @@
+{
+  "kind": "feat",
+  "slug": "inventor-dedication",
+  "system": "pf2e",
+  "name": "Inventor Dedication",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "dedication",
+    "multiclass"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Intelligence +2"
+  ],
+  "text": "You become trained in Crafting and inventor class DC. You gain the Inventor skill feat, even if you don't meet the skill feat's requirements. Choose an innovation. You gain that innovation, though you don't gain any other abilities that modify or use that innovation, such as modifications or Explode.\n\nInventor",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.crafting.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Inventor"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:inventor-innovation",
+            {
+              "not": "item:tag:class-archetype"
+            }
+          ]
+        },
+        "flag": "innovation",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Inventor.Innovation.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.innovation}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.inventor.explode",
+        "priority": 49,
+        "value": "fire"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.Inventor.Unstable.Note",
+      "when": [
+        "self:action:trait:unstable"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": [
+        "flat-check"
+      ],
+      "text": "PF2E.SpecificRule.Inventor.Unstable.FlatCheck.Failure",
+      "outcome": [
+        "failure"
+      ],
+      "when": [
+        "unstable-check"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": [
+        "flat-check"
+      ],
+      "text": "PF2E.SpecificRule.Inventor.Unstable.FlatCheck.CriticalFailure",
+      "outcome": [
+        "criticalFailure"
+      ],
+      "when": [
+        "unstable-check"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.TraitUnstable",
+        "mode": "add",
+        "predicate": [
+          "item:trait:unstable",
+          {
+            "not": "self:effect:unstable-check-failure"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Inventor.Unstable.Note"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "label": "PF2E.TraitUnstable",
+        "mode": "add",
+        "predicate": [
+          "item:trait:unstable",
+          {
+            "not": "self:effect:unstable-check-failure"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Inventor.Unstable.Note"
+          }
+        ]
+      }
+    }
+  ]
+}

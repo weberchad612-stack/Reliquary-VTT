@@ -1,0 +1,73 @@
+{
+  "kind": "effect",
+  "slug": "effect-one-with-the-spirits",
+  "system": "pf2e",
+  "name": "Effect: One with the Spirits",
+  "source": {
+    "title": "Pathfinder Lost Omens Divine Mysteries",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by One with the Spirits\n\nYou gain fast healing 5 and you become concealed. Your Strikes gain the benefits of a ghost touch property rune. Whenever you deal damage with a Strike, you can choose to have that Strike deal spirit damage, rather than its usual damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FastHealing",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Concealed"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "property-runes",
+        "selectors": [
+          "strike-attack-roll",
+          "strike-damage"
+        ],
+        "value": "ghost-touch"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.RivethunInvoker.OneWithTheSpirits.Label",
+        "option": "one-with-the-spirits-damage",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "one-with-the-spirits-damage"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": "spirit"
+      }
+    }
+  ]
+}

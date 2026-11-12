@@ -1,0 +1,224 @@
+{
+  "kind": "creature",
+  "slug": "myroga",
+  "system": "pf2e",
+  "name": "Myroga",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "rare",
+  "traits": [
+    "dragon"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 24,
+    "hp": 120,
+    "perception": 17,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 15,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 4,
+      "dex": 3,
+      "int": 2,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 14,
+      "intimidation": 15,
+      "occultism": 14
+    },
+    "speeds": {
+      "land": 20,
+      "fly": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "draconic"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "perception": "ley line sense (imprecise) 1 mile"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 23,
+      "attack": 15,
+      "spells": [
+        {
+          "name": "Grim Tendrils",
+          "rank": 3,
+          "ref": "spells:spell/grim-tendrils",
+          "uses": 2
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fangs",
+      "attack": 16,
+      "traits": [
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 16,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ley Line Sense (Imprecise)",
+      "category": "interaction",
+      "text": "The myroga can sense the presence, direction, and strength of any ley line within 1 mile."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Fangs Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Resistance 5 to Physical Near a Ley Line",
+      "category": "defensive",
+      "text": "The myroga has resistance to physical 5 while within 500 feet of a ley line.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SkillVariant.LeyLine",
+            "option": "terrain:ley-line",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "terrain:ley-line"
+            ],
+            "type": "physical",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The myroga makes two talon Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Ley Line Empowerment",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "force",
+        "occult"
+      ],
+      "text": "Requirements The myroga is within 500 feet of a ley line\n\n---\nEffect The myroga wreathes itself in raw destructive energy converted from the ley line's ambient magic. The myroga deals an additional 2d6 force with each of its next successful fangs, tail, and talon Strike. Once its dealt damage with one of these Strikes, the energy is discharged from that body part, but not the others.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "ley-line-empowerment",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "force",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "ley-line-empowerment"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ley Line Rupture",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "force",
+        "occult"
+      ],
+      "text": "Requirements The myroga is within 500 feet of a ley line\n\n---\nEffect The myroga diverts some of the ley line's magic into a deadly and distant explosion. The myroga creates a detonation of force in a 5-foot square within a mile of its ley line and that it can see, dealing 5d6 force to creatures (DC 24 basic Reflex save). A myroga can will the detonation into existence anywhere within a mile of the ley line, possibly allowing it to ignore cover the target might have from, for example, an obstacle between itself and the myroga."
+    }
+  ],
+  "text": "Myrogas are avaricious, simple-minded dragons with supernatural occult powers. They draw their amazing abilities from ley lines—loci of intense magical energy often associated with psychic phenomena.\n\nA myroga encountered away from a ley line is far less dangerous, a fact which myrogas recognize and take great pains to mitigate. Upon discovering an unoccupied ley line, a myroga is apt to roost nearby and guard the site ferociously. All the while, it sups on the ley line's nearly inexhaustible ambient magic to grow stronger and expand its repertoire of brutal powers."
+}

@@ -1,0 +1,71 @@
+{
+  "kind": "effect",
+  "slug": "effect-crash-against-me",
+  "system": "pf2e",
+  "name": "Effect: Crash Against Me",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Crash Against Me\n\nYou have resistance equal to your level to the chosen damage type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitBludgeoning",
+            "predicate": [
+              "skin-hard-as-horn:bludgeoning"
+            ],
+            "value": "bludgeoning"
+          },
+          {
+            "label": "PF2E.TraitPiercing",
+            "predicate": [
+              "skin-hard-as-horn:piercing"
+            ],
+            "value": "piercing"
+          },
+          {
+            "label": "PF2E.TraitSlashing",
+            "predicate": [
+              "skin-hard-as-horn:slashing"
+            ],
+            "value": "slashing"
+          }
+        ],
+        "flag": "resistance",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "{item|flags.system.rulesSelections.resistance}",
+      "value": "@level"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "key": "EphemeralEffect",
+        "predicate": [
+          "item:damage:type:{item|flags.system.rulesSelections.resistance}"
+        ],
+        "selectors": [
+          "strike-attack-roll",
+          "strike-damage"
+        ],
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Crash Against Me (Note)"
+      }
+    }
+  ]
+}

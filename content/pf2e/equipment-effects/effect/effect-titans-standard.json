@@ -1,0 +1,86 @@
+{
+  "kind": "effect",
+  "slug": "effect-titans-standard",
+  "system": "pf2e",
+  "name": "Effect: Titan's Standard",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Titan's Standard\n\nYou become Large and your equipment grows with you. While Large, you are clumsy 1, and your reach increases by 5 feet (or by 10 feet if you started out Tiny).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.ActorSizeTiny",
+            "predicate": [
+              "self:size:tiny"
+            ],
+            "value": "tiny"
+          },
+          {
+            "label": "PF2E.ActorSizeSmall",
+            "predicate": [
+              {
+                "or": [
+                  "self:size:medium",
+                  "self:size:small"
+                ]
+              }
+            ],
+            "value": "medium-or-small"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "titans-standard-initial-size"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "titans-standard-initial-size:tiny"
+        ],
+        "reach": {
+          "add": 10
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CreatureSize",
+        "predicate": [
+          "titans-standard-initial-size:medium-or-small"
+        ],
+        "reach": {
+          "add": 5
+        },
+        "resizeEquipment": true,
+        "value": "large"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.conditionitems.Item.Clumsy"
+      }
+    }
+  ]
+}

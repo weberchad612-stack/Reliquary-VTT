@@ -1,0 +1,99 @@
+{
+  "kind": "feat",
+  "slug": "tengu-weapon-familiarity",
+  "system": "pf2e",
+  "name": "Tengu Weapon Familiarity",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "tengu"
+  ],
+  "category": "ancestry",
+  "text": "You gain access to all uncommon weapons with the tengu trait plus the katana, khakkara, temple sword, and wakizashi. You have familiarity with these weapons—for the purpose of proficiency, you treat any of these that are martial weapons as simple weapons and any that are advanced weapons as martial weapons.\n\nDuring your daily preparations, you can practice with a weapon from the sword group that's in your possession. You gain familiarity with that weapon as well. This lasts until you practice with a different sword in the same way.\n\nAt 5th level, whenever you get a critical hit with one of these weapons, you get its critical specialization effect.\n\nEffect: Sword Practice",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.tenguFamiliarSword",
+        "predicate": [
+          {
+            "not": "self:effect:sword-practice"
+          }
+        ],
+        "priority": 8,
+        "value": "none"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:advanced",
+          {
+            "or": [
+              "item:trait:tengu",
+              "item:id:{actor|flags.system.tenguFamiliarSword}"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.AdvancedTenguWeapons",
+        "sameAs": "martial",
+        "slug": "advanced-tengu-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:martial",
+          {
+            "or": [
+              "item:trait:tengu",
+              "item:base:katana",
+              "item:base:khakkara",
+              "item:base:temple-sword",
+              "item:base:wakazashi",
+              "item:id:{actor|flags.system.tenguFamiliarSword}"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.MartialTenguWeapons",
+        "sameAs": "simple",
+        "slug": "martial-tengu-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          },
+          {
+            "or": [
+              "item:trait:tengu",
+              "item:base:katana",
+              "item:base:khakkara",
+              "item:base:temple-sword",
+              "item:base:wakazashi",
+              "item:id:{actor|flags.system.tenguFamiliarSword}"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "effect",
+  "slug": "effect-memory-of-skill",
+  "system": "pf2e",
+  "name": "Effect: Memory of Skill",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Memory of Skill\n\nYou temporarily increase your proficiency rank with that skill by one step.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            {
+              "lte": [
+                "skill:{choice|value}:rank",
+                2
+              ]
+            }
+          ]
+        },
+        "flag": "skill",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.skills.{item|flags.system.rulesSelections.skill}.rank",
+        "value": 1
+      }
+    }
+  ]
+}

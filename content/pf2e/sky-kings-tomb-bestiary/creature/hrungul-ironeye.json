@@ -1,0 +1,202 @@
+{
+  "kind": "creature",
+  "slug": "hrungul-ironeye",
+  "system": "pf2e",
+  "name": "Hrungul Ironeye",
+  "source": {
+    "title": "Pathfinder #195: Heavy is the Crown",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "dwarf",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 140,
+    "perception": 16,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 14,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 2,
+      "int": 1,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 16,
+      "deception": 15,
+      "survival": 14,
+      "warfare-lore": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Light Hammer",
+      "ref": "equipment:item/light-hammer",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shield Boss",
+      "ref": "equipment:item/shield-boss",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sturdy Shield (Minor)",
+      "ref": "equipment:item/sturdy-shield-minor",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 20,
+      "traits": [
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shield Boss",
+      "attack": 20,
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Light Hammer",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When the Hrungul rolls a success on a Will save against a fear effect, he gets a critical success instead. In addition, any time he gains the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:fear"
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Double Slice",
+      "category": "offensive",
+      "text": "Hrungul makes a longsword Strike, followed by a shield boss Strike against the same target at a –2 penalty, each using his current multiple attack penalty. If both attacks hit, he combines their damage and applies resistances and weaknesses only once. This counts as two attacks when calculating his multiple attack penalty.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "double-slice"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "double-slice",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grim Efficiency",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "visual"
+      ],
+      "text": "Frequency once per round\n\nTrigger A foe within 30 feet critically fails a Strike against Hrungul or targets Hrungul with an effect against which he critically succeeds at the saving throw\n\n---\n\nEffect Hrungul's defense displays his effortless military skill, unsettling the triggering foe. He attempts to Demoralize the foe, using his Warfare Lore skill modifier in place of his Intimidation skill.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Block",
+      "category": "offensive",
+      "text": "At the start of his turn, Hrungul gains an additional reaction that he can use only to Shield Block."
+    }
+  ]
+}

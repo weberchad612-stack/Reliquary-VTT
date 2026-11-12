@@ -1,0 +1,291 @@
+{
+  "kind": "creature",
+  "slug": "baron-utomo-5-6",
+  "system": "pf2e",
+  "name": "Baron Utomo (5-6)",
+  "source": {
+    "title": "Pathfinder Society Scenario #2-06: The Crashing Wave",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "amphibious",
+    "evil",
+    "humanoid",
+    "lawful",
+    "mutant",
+    "sea-devil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 95,
+    "perception": 13,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 14,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": {
+        "value": 15,
+        "special": [
+          {
+            "value": 18,
+            "label": "to swim",
+            "when": [
+              "action:swim"
+            ]
+          }
+        ]
+      },
+      "intimidation": 12,
+      "stealth": 12,
+      "survival": 11
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "wavesense",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "thalassic"
+    ],
+    "notes": {
+      "languages": "shark commune 150 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Lance",
+      "ref": "equipment:item/lance",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Spear",
+      "ref": "equipment:item/spear",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Lance",
+      "attack": 17,
+      "traits": [
+        "deadly-d8",
+        "jousting-d6",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 17,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Spear",
+      "attack": 17,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shark Commune 150 feet",
+      "category": "interaction",
+      "traits": [
+        "mental"
+      ],
+      "text": "The sea devil can communicate telepathically with sharks within range. It can communicate only simple concepts like \"come,\" \"guard,\" or \"attack.\""
+    },
+    {
+      "kind": "ability",
+      "name": "Wavesense 30 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Frenzy",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements The sea devil is not Fatigued or already in a frenzy\n\nTrigger The sea devil deals bleed damage to a living creature.\n\n---\nEffect The sea devil flies into a frenzy that lasts 1 minute. While frenzied, the sea devil gains a +1 status bonus to attack rolls with its claws and jaws, gains a +4 status bonus to damage rolls with its claws and jaws, gains 15 temporary HP until the end of the frenzy, and takes a -2 status penalty to AC. The sea devil can't voluntarily stop its frenzy. After its frenzy, the sea devil is Fatigued.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "claw-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-attack",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "claw-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "flags.system.frenzyMod",
+            "value": 5
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "status",
+          "value": -2,
+          "when": [
+            "self:effect:blood-frenzy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bloodletting",
+      "category": "offensive",
+      "text": "When the sea devil deals piercing or slashing damage, it also deals 1d4 bleed if the target was Off-Guard or if the attack was a critical hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": true,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "not": "target:condition:off-guard"
+              },
+              {
+                "or": [
+                  "item:damage:type:piercing",
+                  "item:damage:type:slashing"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hateful Tide",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "rage"
+      ],
+      "text": "Requirements The sea devil baron is in a blood frenzy.\n\n---\n\nEffect The sea devil baron unleashes a whirlwind of attacks against its foes, making a single melee Strike with its claws or jaws against each opponent within reach."
+    }
+  ]
+}

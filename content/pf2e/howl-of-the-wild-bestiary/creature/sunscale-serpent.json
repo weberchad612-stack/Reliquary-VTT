@@ -1,0 +1,310 @@
+{
+  "kind": "creature",
+  "slug": "sunscale-serpent",
+  "system": "pf2e",
+  "name": "Sunscale Serpent",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "uncommon",
+  "traits": [
+    "beast"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 36,
+    "hp": 251,
+    "perception": 25,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 26,
+      "will": 28
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 4,
+      "int": 1,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 25,
+      "stealth": 33,
+      "survival": 28
+    },
+    "speeds": {
+      "land": 40,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 14,
+          "except": "force, ghost-touch, spirit, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 31,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+11",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+11",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "push"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Tail Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Bond with Mortal",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The spirit guide spends 10 minutes to form a bond with a mortal creature. While the bond exists, the spirit guide increases their current and maximum Hit Points by 28, gains a +2 status bonus to their attack and damage rolls, and can communicate telepathically with the bonded mortal as long as the two beings are on the same plane. The spirit guide can only be bonded with one mortal at a time, and they can take this action again to end the bond or to form a new bond (which also ends the old bond). The bond also ends if the spirit guide or the mortal dies.\n\nThis bond strengthens the spirit guide's connection to the Universe. While bonded, the spirit guide loses the incorporeal and spirit traits, loses their immunity to disease, paralysis, and poison, along with their resistance to all damage, and changes their Strikes to deal the appropriate amount of physical damage (typically piercing or slashing) instead of force damage.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bond-with-mortal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hp",
+          "type": "untyped",
+          "value": 28,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal",
+              "spirit"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "remove",
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "type": [
+              "disease",
+              "paralyzed",
+              "poison"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "mode": "remove",
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "type": "all-damage",
+            "value": 0
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "piercing"
+            },
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "selector": "jaws-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "slashing"
+            },
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "selector": "tail-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The sunscale serpent is currently Bonded with a Mortal\n\n---\n\nEffect The sunscale serpent makes a jaws Strike. If this attack hits, the bonded mortal can spend their reaction to Strike the same target."
+    },
+    {
+      "kind": "ability",
+      "name": "Sun's Heat",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The sunscale serpent Flies up to its fly Speed. All creatures directly below the spaces it moves through must succeed at a DC 31 Fortitude save save or be exposed to sun's touch poison. The serpent cannot fly further than 60 feet above the target or the poison becomes too dispersed in the fall to take effect."
+    },
+    {
+      "kind": "ability",
+      "name": "Sun's Touch",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 34 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 6d8 poison damage and Clumsy 1 (1 round)\n\nStage 2 8d6 poison damage and Clumsy 2 (1 round)\n\nStage 3 6d10 poison damage and Fatigued (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Large, 2d10+9 force and 2d10 fire, Rupture 32\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Unleash the Sun",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Requirements The sunscale serpent is flying\n\n---\n\nEffect The sunscale serpent Flies up to its fly Speed, then crashes to the ground, releasing a wave of heat dealing 5d10 fire damage to all creatures within a 60-foot burst and searing their eyes with the erupting glory of its scales. Each creature in the area must attempt a DC 31 Reflex save save.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and is Dazzled for 1 round.\n\nCritical Failure The creature takes full damage, is Blinded for 1 round, and dazzled for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Push",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

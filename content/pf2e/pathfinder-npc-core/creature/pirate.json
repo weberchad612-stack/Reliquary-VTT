@@ -1,0 +1,193 @@
+{
+  "kind": "creature",
+  "slug": "pirate",
+  "system": "pf2e",
+  "name": "Pirate",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 32,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 8,
+      "deception": 6,
+      "intimidation": 6,
+      "sailing-lore": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Cutlass (Functions as a Scimitar)",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Padded Armor",
+      "ref": "equipment:item/padded-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Cutlass",
+      "attack": 10,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bravery",
+      "category": "defensive",
+      "text": "When the pirate rolls a success on a Will save against a fear effect, they get a critical success instead. In addition, any time they gain the Frightened condition, reduce its value by 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "item:trait:fear"
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Boarding Action",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The pirate swings on a rope or Strides, moving up to double their Speed. If the pirate boarded or disembarked a boat during this movement, they can make a melee Strike at the end of their movement that deals one extra damage die on a hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "boarding-action",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "add",
+            "predicate": [
+              "boarding-action"
+            ],
+            "property": "dice-number",
+            "selectors": [
+              "melee-strike-damage"
+            ],
+            "value": 1
+          }
+        }
+      ]
+    }
+  ],
+  "text": "These scourges are a threat to anyone who spends time away from land.\n\n---\nAdventurers may need passage on a swift vessel, or they might face danger from raiders at sea or in coastal settlements."
+}

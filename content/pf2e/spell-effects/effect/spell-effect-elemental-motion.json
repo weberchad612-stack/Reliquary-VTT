@@ -1,0 +1,167 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-elemental-motion",
+  "system": "pf2e",
+  "name": "Spell Effect: Elemental Motion",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Elemental Motion\n\nYou call upon your element to propel you, improving your Speed depending on your element.\n- Air You gain a fly Speed.\n- Earth You gain a burrow Speed.\n- Fire You gain a fly Speed.\n- Metal You gain a burrow Speed.\n- Water You gain a swim Speed.\n- Wood You gain a climb Speed.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:air",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "air"
+          },
+          {
+            "label": "PF2E.TraitEarth",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:earth",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "earth"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:fire",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:metal",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "metal"
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:water",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "water"
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "predicate": [
+              {
+                "or": [
+                  "feature:bloodline:elemental:wood",
+                  {
+                    "not": "feature:bloodline-elemental"
+                  }
+                ]
+              }
+            ],
+            "value": "wood"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element",
+        "rollOption": "elemental-motion"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          {
+            "or": [
+              "elemental-motion:air",
+              "elemental-motion:fire"
+            ]
+          }
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "speed",
+      "type": "burrow",
+      "value": 10
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "elemental-motion:water"
+        ],
+        "selector": "swim",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "elemental-motion:wood"
+        ],
+        "selector": "climb",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "all-speeds",
+        "type": "status",
+        "value": "ternary(gte(@item.level,9),20,ternary(gte(@item.level,6),10,0))"
+      }
+    }
+  ]
+}

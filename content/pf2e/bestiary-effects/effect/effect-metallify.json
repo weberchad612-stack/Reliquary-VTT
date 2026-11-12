@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "effect-metallify",
+  "system": "pf2e",
+  "name": "Effect: Metallify",
+  "source": {
+    "title": "Pathfinder #158: Sixty Feet Under",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "The ooze gains resistance 5 to physical damage (except adamantine), it has a –5-foot penalty to its Speed, and its pseudopod Strikes gain the versatile S or P weapon trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitVersatileS",
+            "value": "versatile-s"
+          },
+          {
+            "label": "PF2E.TraitVersatileP",
+            "value": "versatile-p"
+          }
+        ],
+        "flag": "versatileTrait",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.VersatileTrait"
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "physical",
+      "value": 5,
+      "except": "adamantine"
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "untyped",
+      "value": -5
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:pseudopod"
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.versatileTrait}"
+      }
+    }
+  ]
+}

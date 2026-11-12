@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "shobhad-hunter-7-8",
+  "system": "pf2e",
+  "name": "Shobhad Hunter (7-8)",
+  "source": {
+    "title": "Pathfinder Society Special #3-99: Fate in the Future",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "rare",
+  "traits": [
+    "humanoid",
+    "shobhad"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 115,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 12,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 2,
+      "int": 0,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 15,
+      "intimidation": 10,
+      "nature": 14,
+      "stealth": 12,
+      "survival": 14
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "akitonian",
+      "shobhad"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Falchion",
+      "ref": "equipment:item/falchion",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Falchion",
+      "attack": 17,
+      "traits": [
+        "forceful",
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d10 + 9",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 14,
+      "traits": [
+        "thrown"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "1d6 + 9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cold Adaptation",
+      "category": "interaction",
+      "text": "Shobhads reduce the effects they suffers from cold environments by one step."
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Determined Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The shobhad hunter Strides, ignoring non-magical difficult terrain and uneven ground. If the shobhad ends their movement within melee reach of at least one enemy, they can make a melee Strike against that enemy."
+    },
+    {
+      "kind": "ability",
+      "name": "Four-Armed",
+      "category": "offensive",
+      "text": "Shobhads have four arms, which allows them to wield and hold up to four hands' worth of weapons and equipment. While this increases the number of items they can have at the ready, it doesn't increase the number of actions shobhads can take during combat."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The shobhad hunter designates a single creature they can see and hear, or one they're Tracking, as their prey. The shobhad hunter gains a +2 circumstance bonus to Perception checks to Seek the prey and to Survival checks to Track the prey. This effect lasts until the shobhad hunter uses Hunt Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.HuntPrey.TargetHuntedPrey",
+            "option": "hunted-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "hunted-prey"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Precision Edge",
+      "category": "offensive",
+      "text": "The first time the shobhad hunter hits their hunted prey in a round, they deal an additional 1d8 precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.Ranger.HuntersEdge.FirstAttack",
+            "option": "first-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "first-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

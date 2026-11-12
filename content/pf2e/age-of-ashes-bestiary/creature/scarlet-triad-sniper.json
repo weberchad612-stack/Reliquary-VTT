@@ -1,0 +1,200 @@
+{
+  "kind": "creature",
+  "slug": "scarlet-triad-sniper",
+  "system": "pf2e",
+  "name": "Scarlet Triad Sniper",
+  "source": {
+    "title": "Pathfinder #147: Tomorrow Must Burn",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "rare",
+  "traits": [
+    "elf",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 195,
+    "perception": 23,
+    "saves": {
+      "fortitude": 20,
+      "reflex": 22,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 3,
+      "dex": 5,
+      "int": 1,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 19,
+      "stealth": 23,
+      "thievery": 21
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ],
+    "notes": {
+      "speed": "swiftness"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Pick",
+      "ref": "equipment:item/pick",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Good)",
+      "ref": "equipment:item/manacles-good",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Keys to Manacles",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 40
+    },
+    {
+      "kind": "strike",
+      "name": "Pick",
+      "attack": 22,
+      "traits": [
+        "fatal-d10",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 23,
+      "traits": [
+        "deadly-d10",
+        "magical",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Backshot",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature the sniper can see misses it with a ranged weapon Strike.\n\n---\n\nEffect The sniper attempts a ranged Strike against the triggering creature with a -2 penalty.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "backshot",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "backshot"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rain of Arrows",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The sniper fires one arrow at each creature they choose within a 15-foot burst. The center of the burst must be within 100 feet of the sniper, but can't be within 30 feet. The sniper makes each attack roll separately. All attacks count toward the sniper's multiple attack penalty, but the penalty increases only after all the attacks are made."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The scarlet triad sniper deals an additional 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swiftness",
+      "category": "offensive",
+      "text": "The sniper's movement doesn't trigger reactions."
+    }
+  ]
+}

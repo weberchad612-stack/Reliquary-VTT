@@ -1,0 +1,179 @@
+{
+  "kind": "creature",
+  "slug": "divoynik",
+  "system": "pf2e",
+  "name": "Divoynik",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 45,
+    "perception": 7,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 10,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 3,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 8,
+      "deception": 11,
+      "diplomacy": 9,
+      "intimidation": 9,
+      "society": 8,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "polymorph"
+      ]
+    },
+    "notes": {
+      "languages": "Two other languages, Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 20,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Mind Reading (At Will)",
+          "rank": 3,
+          "ref": "spells:spell/mind-reading"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cracked Mirror",
+      "category": "defensive",
+      "text": "A divoynik has weakness 3 to physical attacks made by a creature whose form they're mimicking, and the mimicked creature gains weakness 3 to physical attacks made by the divoynik."
+    },
+    {
+      "kind": "ability",
+      "name": "Savor Anguish",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "concentrate",
+        "mental"
+      ],
+      "text": "Trigger A creature within 30 feet of the divoynik fails a saving throw against an emotion effect\n\n---\nEffect The divoynik feeds on their victim's mental distress, gaining 5 temporary Hit Points for up to 1 minute. They can feed on a given creature's emotions only once every 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Sudden Betrayal",
+      "category": "defensive",
+      "text": "A divoynik can always use Deception when rolling initiative, as long as at least one enemy doesn't know their true nature. On the first round of combat, if the divoynik rolled Deception for initiative, creatures that haven't acted are Off-Guard to the divoynik.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              "self:participant:initiative:stat:deception"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult",
+        "polymorph"
+      ],
+      "text": "The divoynik can take on the specific appearance of any Small or Medium animal or humanoid they've seen. This doesn't change their Speed or their attack and damage bonuses with their Strikes, but it might change the damage type their Strikes deal (such as to slashing with a claw).\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Window to the Soul",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "occult",
+        "visual"
+      ],
+      "text": "The divoynik meets the gaze of a creature within 60 feet whose form they've taken with their Change Shape ability. The target must attempt a DC 20 Will save saving throw.\n\n---\nCritical Success The target is unaffected and immune for 24 hours.\n\nSuccess The target is unaffected.\n\nFailure The target is Fascinated for 1 minute. Hostile actions do not end this fascination, but if the divoynik Changes Shape, moves out of range, or is no longer visible to the target, the fascination immediately ends. While fascinated, the target takes a –1 circumstance penalty to Will saves against the divoynik's spells and abilities.\n\nCritical Failure As failure, and the divoynik can spend a free action to telepathically extract the answer to one question from the target. The target can attempt a DC 20 Deception check check to attempt to evade the query and give misleading information."
+    }
+  ],
+  "text": "A close-knit settlement is rocked to its core when a beloved pillar of the community is accused of a heinous crime. The accused protest their innocence, but overwhelming evidence leaves no room for doubt. As justice is served, the community is irreversibly changed, its neighborly atmosphere giving way to lingering paranoia—the favored fare of the divoynik.\n\nDivoyniks are malevolent shapeshifters, capable not only of mimicking the physical appearance of other creatures but also of plucking thoughts and memories from their victims' minds. A divoynik retains their most recently assumed guise even after death. Spells like ring of truth help see through a divoynik, and truesight reveals its shapeshifted nature, making clear otherwise imperceptible markings similar to an animal's stripes on a divoynik's body. Beyond magic, people who encounter a divoynik can always rely on one other method of identification. Although identical to their mimicked form in all other respects, a divoynik's body contains neither blood nor a heart."
+}

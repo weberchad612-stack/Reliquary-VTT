@@ -1,0 +1,57 @@
+{
+  "kind": "effect",
+  "slug": "effect-called-foe",
+  "system": "pf2e",
+  "name": "Effect: Called Foe",
+  "source": {
+    "title": "Pathfinder Hero Point Deck",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Called Foe\n\nDesignate a foe. You gain a +2 status bonus to attack rolls made against that foe, but you take a –4 status penalty to attack rolls made against any other creature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "called-foe"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "status",
+      "value": -4
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "target:mark:called-foe"
+        ],
+        "selector": "attack-roll",
+        "slug": "called-foe",
+        "value": 2
+      }
+    },
+    {
+      "key": "note",
+      "selector": "attack-roll",
+      "text": "PF2E.SpecificRule.HeroPointDeck.CalledFoe.Note",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "target:mark:called-foe"
+      ]
+    }
+  ]
+}

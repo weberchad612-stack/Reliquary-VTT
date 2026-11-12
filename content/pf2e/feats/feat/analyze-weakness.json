@@ -1,0 +1,46 @@
+{
+  "kind": "feat",
+  "slug": "analyze-weakness",
+  "system": "pf2e",
+  "name": "Analyze Weakness",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "rogue"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "sneak attack 2d6"
+  ],
+  "text": "Requirements You have identified a creature with Recall Knowledge.\n\n---\n\nYour knowledge of a creature's physiology helps you attack with pinpoint accuracy. You carefully study a creature that you've identified to scope out particularly weak points in its positioning or physical form. The next time you deal sneak attack damage to the chosen creature with a Strike before the end of your turn, add an additional 2d6 precision damage.\n\nAt 11th level, the additional damage becomes 3d6, and at 17th level it becomes 4d6.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "analyze-weakness",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "match(when(lte(@actor.level, 10), 2), when(btwn(@actor.level, 11, 16), 3), when(gte(@actor.level, 17), 4))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "predicate": [
+          "analyze-weakness"
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

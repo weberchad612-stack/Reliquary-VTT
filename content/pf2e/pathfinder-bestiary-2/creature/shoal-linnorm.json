@@ -1,0 +1,248 @@
+{
+  "kind": "creature",
+  "slug": "shoal-linnorm",
+  "system": "pf2e",
+  "name": "Shoal Linnorm",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "uncommon",
+  "traits": [
+    "amphibious",
+    "chaotic",
+    "dragon",
+    "evil"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 38,
+    "hp": 295,
+    "perception": 27,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 25,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 7,
+      "dex": 5,
+      "int": -3,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 28,
+      "athletics": 31,
+      "stealth": 28
+    },
+    "speeds": {
+      "land": 35,
+      "fly": 100,
+      "swim": 100
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "draconic",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "curse",
+        "fire",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "regeneration 10 (deactivated by cold iron)",
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 36,
+      "attack": 26,
+      "spells": [
+        {
+          "name": "Freedom of Movement (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/unfettered-movement"
+        },
+        {
+          "name": "True Seeing (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 31,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+16",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "shoal-linnorm-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 31,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+16",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 31,
+      "traits": [
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "4d6+16",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 10 (Deactivated by Cold Iron)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold-iron"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Tail Only)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Tail only.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of Drowning",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "primal",
+        "water"
+      ],
+      "text": "When a creature slays a shoal linnorm, it must succeed at a DC 38 Will save save or become cursed. As long as the curse of drowning persists, the character must spend 3 actions when drinking any liquid. Attempting to drink liquid faster causes the victim to begin drowning, immediately running out of air and falling unconscious."
+    },
+    {
+      "kind": "ability",
+      "name": "Breath Weapon",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal",
+        "water"
+      ],
+      "text": "The shoal linnorm exhales scalding steam that deals 12d8 fire damage in a 60-foot cone (DC 36 basic Reflex save save). The steam lingers until the end of the linnorm's next turn; anyone who enters the area or begins their turn in the area takes 6d8 fire damage (DC 36 Reflex save save negates). During this time, the steam is so thick that it impedes movement as well as sight, turning the area into difficult terrain. All creatures in the steam become Concealed, and all creatures outside the steam become concealed to creatures within it.\n\nThe shoal linnorm can't use Breath Weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Shoal Linnorm Venom",
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "poison"
+      ],
+      "text": "Saving Throw DC 36 Fortitude save\n\nMaximum Duration 10 rounds\n\nStage 1 4d6 fire damage and Enfeebled 1 (1 round)\n\nStage 2 6d6 fire damage and Enfeebled 2 (1 round)."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Shoal linnorms occupy rocky shoreline shallows and slither along lonely coastlines. While they do not intentionally seek out large settlements, these linnorms nonetheless beleaguer fishers headed out from small coastal towns, and they may even follow skiffs back to their home port to appraise the town's defenses and plan a raid. Shoal linnorms tend to hunt large prey, both underwater and on land. Their preferred quarries includes giant squid and grizzly bears-meals rich in fat, which the linnorms metabolize into the fiery steam that courses through their veins."
+}

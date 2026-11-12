@@ -1,0 +1,245 @@
+{
+  "kind": "creature",
+  "slug": "adiutor",
+  "system": "pf2e",
+  "name": "Adiutor",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hellbreakers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "devil",
+    "fiend",
+    "human",
+    "humanoid",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 72,
+    "perception": 13,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 14,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 12,
+      "intimidation": {
+        "value": 14,
+        "special": [
+          {
+            "value": 16,
+            "label": "when Coercing",
+            "when": [
+              "action:coerce"
+            ]
+          }
+        ]
+      },
+      "society": 12,
+      "stealth": 15,
+      "survival": {
+        "value": 12,
+        "special": [
+          {
+            "value": 14,
+            "label": "when Tracking",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 4
+        }
+      ],
+      "resistances": [
+        {
+          "type": "fire",
+          "value": 8
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Crisis of Faith",
+          "rank": 3,
+          "ref": "spells:spell/crisis-of-faith"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 2,
+          "ref": "spells:spell/dispel-magic",
+          "uses": 2
+        },
+        {
+          "name": "Revealing Light",
+          "rank": 2,
+          "ref": "spells:spell/revealing-light"
+        },
+        {
+          "name": "Alarm",
+          "rank": 3,
+          "ref": "spells:spell/alarm"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane",
+          "uses": 3
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Flintlock Musket",
+      "ref": "equipment:item/flintlock-musket",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Uniform",
+      "ref": "equipment:item/explorers-clothing",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Flintlock Musket",
+      "attack": 14,
+      "traits": [
+        "concussive",
+        "fatal-d10",
+        "reload-1",
+        "unholy"
+      ],
+      "range": 70,
+      "damage": [
+        {
+          "dice": "1d6+3",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Bayonet",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Avernian Armskote",
+      "category": "offensive",
+      "text": "An adiutor reloads by magically conjuring hellfire rounds crafted in the Fools' Citadels of Avernus. Their Strikes with their flintlock muskets are magical and deal an additional 2d6 fire damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "item:slug:flintlock-musket"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:flintlock-musket"
+            ],
+            "property": "traits",
+            "value": "magical"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fiendish Reload",
+      "category": "offensive",
+      "text": "When the adiutor reloads their musket, they can cast Shield as part of the same action."
+    },
+    {
+      "kind": "ability",
+      "name": "Punish the Wayward",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "emotion",
+        "fear",
+        "flourish",
+        "mental"
+      ],
+      "text": "The adiutor makes a melee or ranged Strike. If this Strike succeeds, the targeted creature takes the normal damage and must additionally attempt a DC 22 Will save save.\n\n---\nCritical Success The creature suffers no additional effects.\n\nSuccess The creature is Frightened 1.\n\nFailure The creature is frightened 1. While it can see the adiutor, it can't reduce its frightened condition.\n\nCritical Failure As failure, but the creature is also Off-Guard to the adiutor while frightened."
+    }
+  ],
+  "text": "Adiutors, while nicknamed auxiliary devils, are not truly devils, but mortals invested with infernal power. These mortals gain a taste of Hell's might as rewards for their loyalty to the cause of tyranny and oppression. Hungry for power, an adiutor ruthlessly enforces Hell's will at any cost in hopes of fulfilling their fiendish ambitions. They're most commonly found in Cheliax and its territories due to the nation's relationship with the forces of Hell, serving as spies and informants for both the Thrunes and powerful devils invested in meddling with mortals.\n\nWhile some adiutors climb the ranks of mortal society to become Hellknights and other supporters of tyranny, most have higher ambitions and desire to become devils themselves. To this end, they seek to serve more powerful devils and make deals that will benefit them so that they can ensure their transformation. There's nothing an adiutor despises more than their own mortality—a sign of weakness, when beings like devils walk the Universe in their perfect Hellish vision.\n\nAlthough they're most likely to be found in places or near people with existing links to Hell, adiutors can be found anywhere, quietly plotting to gain power and status so they can become the lieutenants of Hell they desire to be."
+}

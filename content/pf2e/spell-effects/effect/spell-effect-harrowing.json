@@ -1,0 +1,96 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-harrowing",
+  "system": "pf2e",
+  "name": "Spell Effect: Harrowing",
+  "source": {
+    "title": "Pathfinder Stolen Fate Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 30,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Harrowing\n\nRandomly determine a harrow suit. The creature can reroll any associated check they just made, gaining a +4 status bonus to the reroll if the ritual was a critical success. If the ritual was a failure, it gets a –4 status penalty.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 4
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": 0
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": -4
+          }
+        ],
+        "flag": "degreeOfSuccess",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Books",
+            "value": "skill-check"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Crowns",
+            "value": "perception"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Hammers",
+            "value": "strike-attack-roll"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Keys",
+            "value": "reflex"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Shields",
+            "value": "fortitude"
+          },
+          {
+            "label": "PF2E.SpecificRule.HarrowDeck.HarrowSuits.Stars",
+            "value": "will"
+          }
+        ],
+        "flag": "suit",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "harrowing-reroll"
+        ],
+        "removeAfterRoll": "if-enabled",
+        "selector": "{item|flags.system.rulesSelections.suit}",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.degreeOfSuccess"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Harrowing.RerollLabel",
+        "option": "harrowing-reroll",
+        "toggleable": true
+      }
+    }
+  ]
+}

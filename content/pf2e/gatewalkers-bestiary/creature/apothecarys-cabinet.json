@@ -1,0 +1,152 @@
+{
+  "kind": "creature",
+  "slug": "apothecarys-cabinet",
+  "system": "pf2e",
+  "name": "Apothecary's Cabinet",
+  "source": {
+    "title": "Pathfinder Adventure Path: Gatewalkers",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 24,
+    "hp": 80,
+    "perception": 11,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 11,
+      "will": 11
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": -3,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 15
+    },
+    "speeds": {
+      "land": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(20 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Drawer",
+      "attack": 17,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Poison Bottle",
+      "attack": 14,
+      "traits": [
+        "magical",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+3",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "poison-stock"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "interaction",
+      "text": "Like normal objects, an apothecary's cabinet has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once an apothecary's cabinet is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks and its Armor Class is reduced to 20.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Stock",
+      "category": "offensive",
+      "text": "When the cabinet hits a creature with its poison bottle Strike, roll 1d4 to determine what kind of poison splashes onto the struck creature:\n\n- nerve poison (Clumsy 1)\n\n- weakening poison (Enfeebled 1)\n\n- noxious poison (Sickened 1)\n\n- clouded mind poison (Stupefied 1).\n\nThe target must attempt a DC 24 Fortitude save save.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 1d6 poison.\n\nFailure The creature takes 2d6 poison and is afflicted with the rolled poison's associated condition until the end of its next turn.\n\nCritical Failure The creature takes 2d6 poison and is afflicted with the rolled poison's associated condition for 1d4+1 rounds."
+    }
+  ]
+}

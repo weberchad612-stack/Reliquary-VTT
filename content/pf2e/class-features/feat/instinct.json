@@ -1,0 +1,63 @@
+{
+  "kind": "feat",
+  "slug": "instinct",
+  "system": "pf2e",
+  "name": "Instinct",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "barbarian"
+  ],
+  "category": "classfeature",
+  "text": "Your rage wells up from a dominant instinct—one you learned from a tradition or that comes naturally to you. Your instinct gives you an ability, requires you to avoid certain behaviors, grants you increased damage and resistances at higher levels, and allows you to select feats tied to your instinct.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:barbarian-instinct"
+          ]
+        },
+        "flag": "instinct",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Barbarian.Instinct.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.instinct}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.ragingResistance",
+        "value": "3 + @actor.abilities.con.mod"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.ragingResistance",
+        "predicate": [
+          "feat:unstoppable-juggernaut"
+        ],
+        "priority": 55,
+        "value": "8 + @actor.abilities.con.mod"
+      }
+    }
+  ]
+}

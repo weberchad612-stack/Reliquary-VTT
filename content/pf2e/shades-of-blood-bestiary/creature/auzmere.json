@@ -1,0 +1,228 @@
+{
+  "kind": "creature",
+  "slug": "auzmere",
+  "system": "pf2e",
+  "name": "Auzmere",
+  "source": {
+    "title": "Pathfinder #214: The Broken Palace",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "unique",
+  "traits": [
+    "dero",
+    "humanoid"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 21,
+    "hp": 55,
+    "perception": 7,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 13,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 5,
+      "int": 2,
+      "str": 3,
+      "wis": -1
+    },
+    "skills": {
+      "athletics": 11,
+      "deception": 12,
+      "intimidation": 12,
+      "medicine": 7,
+      "occultism": 10,
+      "stealth": 11,
+      "thievery": 11
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "azlanti",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "confused"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 18,
+      "attack": 10,
+      "spells": [
+        {
+          "name": "Vampiric Feast",
+          "rank": 3,
+          "ref": "spells:spell/vampiric-feast"
+        },
+        {
+          "name": "Darkness",
+          "rank": 2,
+          "ref": "spells:spell/darkness"
+        },
+        {
+          "name": "Revealing Light",
+          "rank": 2,
+          "ref": "spells:spell/revealing-light"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Ranseur",
+      "ref": "equipment:item/ranseur",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rope",
+      "ref": "equipment:item/rope",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Cytillesh Toolkit",
+      "ref": "equipment:item/healers-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Ancient Iron Key Ring",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Lethargy Poison",
+      "ref": "equipment:item/lethargy-poison",
+      "type": "consumable",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Ranseur",
+      "attack": 12,
+      "traits": [
+        "disarm",
+        "magical",
+        "reach"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 14,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "lethargy-poison"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vulnerable to Sunlight",
+      "category": "defensive",
+      "text": "Auzmere takes 9 untyped damage for every hour they're exposed to sunlight."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Auzmere deals 1d6 extra precision damage to creatures who are Off-Guard.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Twist Blade",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements Auzmere damaged a creature with her ranseur during her previous action\n\n---\nEffect Auzmere twists her grip on her ranseur, digging in before she rips the weapon free. The creature takes 2d6 piercing damage and must make a DC 21 Reflex save save.\n\n---\nCritical Success The creature takes no damage.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and becomes Sickened 1 from the pain caused by the cruel twist.\n\nCritical Failure The creature takes full damage, becomes Sickened 2 from the pain, and takes 1d6 persistent,bleed damage."
+    }
+  ],
+  "text": "Dero stranglers specialize in capturing living victims, and they are often called upon to aid in abductions.\n\n---\n\nDeros are short, wiry humanoids with milky white eyes, gray-blue skin, and wild shocks of off-white or gray hair. The descendants of a mysterious type of fey abandoned in the deepest, darkest caverns of Golarion, deros are the subject of fearful legends and folk tales to most of the world's surface races. They skulk beneath major metropolitan areas, performing cruel and twisted experiments on unwilling subjects.\n\nDeros, particularly the leading magisters, are fixated with curing their allergy to sunlight. To understand how the surface dwellers can withstand the light of the sun, deros conduct late-night raids on surface cities, abducting victims and performing terrible experiments on them. Those who survive are often returned with much of their memory erased and their bodies bearing mysterious scars.\n\nThe largest dero settlements are built around esoteric machines of floating crystals. As these crystals grind against each other and hum with sickening blue energy, crystal flakes and powdery residue collect beneath the machinery. Dero magisters gather these products, creating tools and repurposing the crystals to power magical items.",
+  "blurb": "Female variant dero"
+}

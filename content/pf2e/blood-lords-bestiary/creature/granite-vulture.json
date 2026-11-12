@@ -1,0 +1,242 @@
+{
+  "kind": "creature",
+  "slug": "granite-vulture",
+  "system": "pf2e",
+  "name": "Granite Vulture",
+  "source": {
+    "title": "Pathfinder #181: Zombie Feast",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "fiend",
+    "lawful",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 18,
+    "hp": 28,
+    "perception": 10,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 8,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 0,
+      "dex": 4,
+      "int": 1,
+      "str": 2,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 6,
+      "religion": 8
+    },
+    "speeds": {
+      "land": 20,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "paralyzed",
+        "petrified",
+        "poison"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. good",
+      "languages": "telepathy 60 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 10,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Anchored Soul",
+      "category": "interaction",
+      "text": "A granite vulture is mystically bonded to a vulture-shaped stone vessel. It must remain within 60 feet of it."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Good",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "good"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Vessel",
+      "category": "defensive",
+      "text": "The condition of a granite vulture's primary vessel dictates the vulture's maximum Hit Point value. Undamaged, the vulture-shaped vessel is an object with 28 Hit Points (BT 14). While the vulture is in spirit form, damaging them doesn't hurt the vessel, but damaging the vessel deals an equal amount of damage to the vulture. While the vulture Inhabits their vessel, they're a single target, and damage reduces the Hit Points of both the vulture and the vessel. If the vessel is broken, the vulture can still fight normally while inhabiting the vessel and suffers no ill effect; if the vessel is destroyed, the vulture is instantly incorporated into its secondary vessel."
+    },
+    {
+      "kind": "ability",
+      "name": "Reconstitution",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the vulture reaches 0 Hit Points, their spirit dissipates. If their vessel remains intact, the vulture re-forms within it after 2d4 days, fully healed. If the vessel is broken, their receptacle reconstitutes the vessel in 2d4 days, and the vulture re-forms within it in another 2d4 days. In the meantime, the vulture's consciousness inhabits their spirit receptacle. If both their vessel and receptacle are destroyed, the vulture is instantly slain and can't reconstitute."
+    },
+    {
+      "kind": "ability",
+      "name": "Spirit Receptacle",
+      "category": "defensive",
+      "text": "If the granite vulture's bonded vessel is destroyed, their spirit inhabits an inanimate skull-shaped receptacle. In this state, they're petrified and can take no actions other than to speak telepathically until they are Reconstituted. The spirit receptacle has 56 Hit Points (BT 14, Hardness 7)."
+    },
+    {
+      "kind": "ability",
+      "name": "Inhabit Vessel",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The vulture touches and melds with their bonded vessel, bringing the statue to life. They can cease Inhabiting their Vessel by spending a single action, which has the concentrate trait. While Inhabiting the Vessel, they gain Immunities healing, nonlethal; Resistances physical 3 (except bludgeoning); and the following Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "inhabit-vessel",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "inhabit-vessel"
+            ],
+            "type": [
+              "healing",
+              "nonlethal-attacks"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "bludgeoning"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              "inhabit-vessel"
+            ],
+            "type": "physical",
+            "value": 3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spirit Body",
+      "category": "offensive",
+      "text": "When not Inhabiting their vessel or receptacle, the vulture is incorporeal, is Slowed 1, and gains resistance 3 to all damage (except force damage and damage from Strikes with the Ghost Touch property rune; double resistance against non-magical).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "inhabit-vessel"
+              }
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              {
+                "not": "inhabit-vessel"
+              }
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "inhabit-vessel"
+              }
+            ],
+            "type": "all-damage",
+            "value": 3
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "LE variant guardian beast"
+}

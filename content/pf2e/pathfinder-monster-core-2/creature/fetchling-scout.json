@@ -1,0 +1,188 @@
+{
+  "kind": "creature",
+  "slug": "fetchling-scout",
+  "system": "pf2e",
+  "name": "Fetchling Scout",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "fetchling",
+    "humanoid",
+    "shadow"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 5,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 9,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": 4,
+      "deception": 5,
+      "diplomacy": 5,
+      "society": 3,
+      "stealth": 7,
+      "thievery": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "shadowtongue"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 15,
+      "attack": 7,
+      "spells": [
+        {
+          "name": "Illusory Disguise",
+          "rank": 1,
+          "ref": "spells:spell/illusory-disguise"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Blending",
+      "category": "defensive",
+      "text": "When the fetchling scout is Concealed as a result of dim light, the flat check to target them has a DC of 7, not 5."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Stride",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "Requirements The fetchling is in dim light\n\n---\n\nEffect The fetchling Strides. They have a +10-foot status bonus to their Speed during this Stride. The DC from shadow blending increases to DC 11 Flat check during this Stride, and the fetchling remains Concealed by dim light until the end of the movement, even if they leave dim light during the Stride.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shadow-stride",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "status",
+          "value": 10,
+          "when": [
+            "shadow-stride"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The fetchling scout's Strikes deal an additional 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Fetchling scouts patrol the outskirts of their communities, looking for any possible threats.\n\n---\nThe people known today as fetchlings are a distinct ancestry descended from generations of humans who became trapped ages ago on the Netherworld. No longer human at all, these people, who call themselves kayals, have become monochromatic in coloration, with flesh tones and hair colors varying between white, black, and all shades of gray. Their limbs are lithe and willowy, and their eyes are generally solid yellow, yellow-green, or white, though a rare few have a purple or blue glow.\n\nFetchlings have developed their own complex societies in the Netherworld, often under the tolerance of or in servitude to the strange, malignant creatures there, such as sinister velstracs or enigmatic d'ziriaks. While individual fetchlings have their own morals and codes, they are all survivors in a harsh environment, which leads to a tendency toward pragmatism. Fetchling clothing mimics the regions they dwell in, with drab colors tending toward darker shades. When they trade with humans or other societies in the Universe, they often wear masks or concealing clothing to hide their appearance.\n\nTypical fetchling communities are insular and swiftly close ranks in the event of an intruder. Though individual fetchlings don't mind traveling to and blending in with other societies to facilitate trade, they often hide or even react defensively if they have their own visitors. When one considers the nature of the other denizens of the Netherworld, however, this tendency to assume the worst of interlopers might make sense. Fetchling communities in the Universe are rare, but do exist in small pockets. These communities tend to be somewhat more open than those in the Netherworld. Many fetchling adventurers originate from these enclaves, as the curiosity to see the world beyond the shadows is often a difficult one to sate."
+}

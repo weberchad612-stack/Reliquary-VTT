@@ -1,0 +1,182 @@
+{
+  "kind": "creature",
+  "slug": "animated-colossus",
+  "system": "pf2e",
+  "name": "Animated Colossus",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 39,
+    "hp": 245,
+    "perception": 23,
+    "saves": {
+      "fortitude": 31,
+      "reflex": 21,
+      "will": 19
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 8,
+      "dex": 2,
+      "int": -5,
+      "str": 9,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 27
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(35 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 32,
+      "traits": [
+        "magical",
+        "reach-30",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+17",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foot",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+17",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 15)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated colossus has Hardness. This Hardness reduces any damage the colossus takes by an amount equal to the Hardness. Once an animated colossus is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 35.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Enormous",
+      "category": "defensive",
+      "text": "An animated colossus takes up a space of 6 squares by 6 squares (30 feet by 30 feet) and is 100 feet tall."
+    },
+    {
+      "kind": "ability",
+      "name": "Colossus's Grasp",
+      "category": "offensive",
+      "text": "The colossus can Grab a creature using only one hand.\n\nIt can move normally with a creature Grabbed or Restrained in its fist, carrying the creature along. If it has two creatures grabbed in this way, it can't use its fist Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "3d12+11 bludgeoning, DC 36 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Huge or smaller, foot, DC 36 basic Reflex save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Animating a 100-foot-tall statue is worth the cost for spellcasters guarding immense dungeons.\n\n---\n\nMany animated objects have useful functions but become dangerous when left uncontrolled."
+}

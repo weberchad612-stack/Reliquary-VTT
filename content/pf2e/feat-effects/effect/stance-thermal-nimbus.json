@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "stance-thermal-nimbus",
+  "system": "pf2e",
+  "name": "Stance: Thermal Nimbus",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": -1,
+    "unit": "encounter",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Thermal Nimbus\n\nChoose cold or fire. You and allies in your kinetic aura gain resistance equal to your level to damage of that type.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          }
+        ],
+        "flag": "thermalNimbus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.kineticist.thermalNimbus",
+        "value": "{item|flags.system.rulesSelections.thermalNimbus}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "effects": [
+          {
+            "affects": "allies",
+            "includesSelf": true,
+            "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Thermal Nimbus"
+          }
+        ],
+        "key": "Aura",
+        "predicate": [
+          "self:effect:kinetic-aura"
+        ],
+        "radius": "@actor.flags.system.kineticist.auraRadius",
+        "slug": "kinetic-aura",
+        "traits": [
+          "primal",
+          "fire"
+        ]
+      }
+    }
+  ]
+}

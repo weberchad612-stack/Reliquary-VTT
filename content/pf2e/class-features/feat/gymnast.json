@@ -1,0 +1,92 @@
+{
+  "kind": "feat",
+  "slug": "gymnast",
+  "system": "pf2e",
+  "name": "Gymnast",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "classfeature",
+  "text": "You reposition, maneuver, and bewilder your foes with daring feats of physical prowess. You are trained in Athletics. When you Grapple, Reposition, Shove, or Trip, the action gains the bravado trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.athletics.rank",
+        "predicate": [
+          "class:swashbuckler"
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "hideIfDisabled": true,
+        "key": "FlatModifier",
+        "label": "PF2E.SpecificRule.ExemplaryFinisher.Name",
+        "predicate": [
+          "finisher",
+          "feature:exemplary-finisher",
+          {
+            "or": [
+              "target:condition:grabbed",
+              "target:condition:restrained",
+              "target:condition:prone"
+            ]
+          }
+        ],
+        "selector": "strike-damage",
+        "type": "circumstance",
+        "value": "2* @weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:grapple",
+              "item:slug:reposition",
+              "item:slug:shove",
+              "item:slug:trip"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "bravado"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "skill-check",
+        "key": "RollOption",
+        "option": "item:trait:bravado",
+        "predicate": [
+          {
+            "or": [
+              "action:grapple",
+              "action:reposition",
+              "action:shove",
+              "action:trip"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

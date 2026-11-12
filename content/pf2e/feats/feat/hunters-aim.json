@@ -1,0 +1,68 @@
+{
+  "kind": "feat",
+  "slug": "hunters-aim",
+  "system": "pf2e",
+  "name": "Hunter's Aim",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "concentrate",
+    "ranger"
+  ],
+  "category": "class",
+  "actions": 2,
+  "text": "When you focus on aiming, your attack becomes particularly accurate. Make a ranged weapon Strike against your hunted prey. On this Strike, you gain a +2 circumstance bonus to the attack roll and ignore your prey's Concealed condition and any lesser cover.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-strike-attack-roll",
+        "key": "RollOption",
+        "option": "hunters-aim",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ranged-strike-attack-roll",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "hunters-aim",
+        "target:mark:hunted-prey"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "ranged-strike-attack-roll",
+      "text": "{item|description}",
+      "when": [
+        "hunters-aim",
+        "target:mark:hunted-prey",
+        {
+          "or": [
+            "target:condition:concealed",
+            "target:cover-level:lesser"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "EphemeralEffect",
+        "predicate": [
+          "target:cover-level:lesser",
+          "targer:mark:hunted-prey"
+        ],
+        "selectors": "ranged-strike-attack-roll",
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Hunter's Aim"
+      }
+    }
+  ]
+}

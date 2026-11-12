@@ -1,0 +1,217 @@
+{
+  "kind": "creature",
+  "slug": "tough-ghostknife-infiltrator",
+  "system": "pf2e",
+  "name": "Tough Ghostknife Infiltrator",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-14: Poisonous Council",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "rare",
+  "traits": [
+    "humanoid",
+    "vishkanya"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 14,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 5,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 10,
+      "deception": 14,
+      "diplomacy": 12,
+      "society": 10,
+      "stealth": 14,
+      "thievery": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "vishkanyan"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kukri",
+      "ref": "equipment:item/kukri",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Disguise Kit",
+      "ref": "equipment:item/disguise-kit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Kukri",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "monk",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Fortitude Saves vs. Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "poison"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Envenom",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per day\n\n---\n\nEffect Using either saliva or blood, the infiltrator applies vishkanyan venom to one weapon they're holding. To use their blood, they must be injured, or they can deal themselves 1 slashing damage as part of the action.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Flexible",
+      "category": "offensive",
+      "text": "The infiltrator is adept at dealing with tight situations. They have a +1 circumstance bonus to checks to Escape.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "acrobatics",
+            "athletics"
+          ],
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "action:escape"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Proficient Poisoner",
+      "category": "offensive",
+      "text": "The infiltrator doesn't lose the poison on a weapon due to a critically failed Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The infiltrator deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Vishkanyan Venom",
+      "category": "offensive",
+      "traits": [
+        "injury",
+        "poison"
+      ],
+      "text": "Saving Throw DC 20 Fortitude save\n\nMaximum Duration 6 rounds\n\nStage 1 1d6 poison damage (1 round)\n\nStage 2 1d6 poison damage and Off-Guard (1 round)\n\nStage 3 2d6 poison damage, off-guard, and a –5-foot penalty to Speed (1 round)"
+    }
+  ]
+}

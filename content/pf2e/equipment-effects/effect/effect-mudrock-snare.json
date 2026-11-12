@@ -1,0 +1,74 @@
+{
+  "kind": "effect",
+  "slug": "effect-mudrock-snare",
+  "system": "pf2e",
+  "name": "Effect: Mudrock Snare",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Mudrock Snare\n\nSuccess You take a –5-foot circumstance penalty to your Speed.\n\nFailure You take a –10-foot circumstance penalty to your Speed.\n\nCritical Failure You are are immobilized.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "mudrock-snare"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "circumstance",
+      "value": -5,
+      "slug": "mudrock-snare-success",
+      "when": [
+        "mudrock-snare:success"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "circumstance",
+      "value": -10,
+      "slug": "mudrock-snare-failure",
+      "when": [
+        "mudrock-snare:failure"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "mudrock-snare:critical-failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    }
+  ]
+}

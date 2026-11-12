@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "effect-do-no-harm",
+  "system": "pf2e",
+  "name": "Effect: Do No Harm",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Medic's Armband, Medic's Armband (Greater)\n\nYou take a status penalty to damage rolls.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:medics-armband"
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Medic's Armband"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  {
+                    "not": "parent:origin:item"
+                  },
+                  "parent:origin:item:slug:medics-armband-greater"
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Medic's Armband (Greater)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "medics-armband"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "damage",
+      "type": "status",
+      "value": -4,
+      "slug": "medics-armband"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "predicate": [
+          "medics-armband:medics-armband-greater"
+        ],
+        "selector": "damage",
+        "slug": "medics-armband",
+        "value": -8
+      }
+    }
+  ]
+}

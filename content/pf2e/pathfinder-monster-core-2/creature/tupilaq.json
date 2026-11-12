@@ -1,0 +1,165 @@
+{
+  "kind": "creature",
+  "slug": "tupilaq",
+  "system": "pf2e",
+  "name": "Tupilaq",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "construct"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 26,
+    "hp": 90,
+    "perception": 16,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 15,
+      "will": 12
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 4,
+      "dex": 6,
+      "int": -5,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 15
+    },
+    "speeds": {
+      "land": 40,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "mental"
+      ]
+    },
+    "notes": {
+      "ac": "(22 when broken)"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Fireball",
+          "rank": 3,
+          "ref": "spells:spell/fireball",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 8)",
+      "category": "defensive",
+      "text": "Like normal objects, a tupilaq has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness.\n\nOnce a tupilaq is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, it loses its Hardness, and its Armor Class is reduced to 22.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Carver's Curse",
+      "category": "offensive",
+      "text": "When a tupilaq is created, the curse imparted by its creator manifests in the form of a single 3rd-rank primal spell the tupilaq can cast three times per day. The particular spell is a reflection of the creator's wish for vengeance. By default, and for a found or summoned tupilaq, this spell is Fireball."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "A tupilaq is an artistically crafted construct carved from animal bones (typically whale or walrus) and imbued with the express purpose of eviscerating its creator's enemies. A tupilaq manifests from hateful magic—such a thing can only be created by someone who believes they were grievously wronged. When a terrible, unforgivable crime is committed against someone with great skill at carving and who has knowledge of the proper ritual, the aggrieved can channel their grief and hate through whispered incantations to bring a tupilaq to life.\n\nSadly, the same emotions used to create a tupilaq often lead to even greater tragedies. Functionally immortal but built for vengeance, a tupilaq lacks the reason or discernment to do anything other than pursue the goal imbued by its creator. A wish to utterly destroy an enemy can lead a tupilaq to slaughter an entire settlement, killing until it has slain everyone even remotely related to the original offender. Many stories describe how a tupilaq ends up causing more tragedy for its creator than the crime that precipitated its creation. The most common tales feature the tupilaq eventually murdering its creator's spouse or family members due to a distant relationship to the original target that no one knew about.\n\nA tupilaq's animating energies aren't tied to its original functions, and the creature typically long outlasts its creator, its victims, and often any who recall the reason for its creation. It might fall into a sort of hibernation once it has achieved immediate vengeance, but in many cases, the constructs reawaken to continue their rampage against unsuspecting targets ignorant of their involvement.\n\nSpellcasters might occasionally summon these constructs. A summoned tupilaq, hauled unceremoniously from its vengeance, becomes a near-frenzied combatant, unleashing every offensive ability in its arsenal to break free. These reactions aren't strategic or considered, but an instinctual, almost programmed need to return to its true purpose. Conjurers should be wary about a tupilaq employing spells that might be turned against its summoner, such as a fireball \"accidentally\" placed such that the spell incinerates the spellcaster and returns the creatures from whence it came."
+}

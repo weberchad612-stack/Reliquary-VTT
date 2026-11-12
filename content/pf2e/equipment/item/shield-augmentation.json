@@ -1,0 +1,175 @@
+{
+  "kind": "equipment",
+  "slug": "shield-augmentation",
+  "system": "pf2e",
+  "name": "Shield Augmentation",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "rarity": "uncommon",
+  "traits": [
+    "adjustment"
+  ],
+  "text": "There are numerous methods to modify shields-snarling rods to catch weapons, bladed edges, padding for nonlethal strikes, and so on-but all share basic functionality. A shield augmentation can be etched with weapon runes, much like a shield boss or shield spikes, but doesn't otherwise alter your shield's statistics. A shield bearing an augmentation can't be combined with an attached weapon, like shield spikes.\n\nA shield augmentation grants your shield one or more weapon traits, chosen when the augmentation is created. You can either choose to add the backswing or forceful trait, or you can choose two of the following weapon traits: disarm, nonlethal, shove, thrown 10 feet, trip, or versatile S.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitBackswing",
+            "value": "backswing"
+          },
+          {
+            "label": "PF2E.TraitDisarm",
+            "value": "disarm"
+          },
+          {
+            "label": "PF2E.TraitForceful",
+            "value": "forceful"
+          },
+          {
+            "label": "PF2E.TraitNonlethal",
+            "value": "nonlethal"
+          },
+          {
+            "label": "PF2E.TraitShove",
+            "value": "shove"
+          },
+          {
+            "label": "PF2E.TraitThrown",
+            "value": "thrown"
+          },
+          {
+            "label": "PF2E.TraitTrip",
+            "value": "trip"
+          },
+          {
+            "label": "PF2E.TraitVersatileS",
+            "value": "versatile-s"
+          }
+        ],
+        "flag": "traitOne",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Trait",
+        "rollOption": "shield-augmentation"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitDisarm",
+            "predicate": [
+              {
+                "not": "shield-augmentation:disarm"
+              }
+            ],
+            "value": "disarm"
+          },
+          {
+            "label": "PF2E.TraitNonlethal",
+            "predicate": [
+              {
+                "not": "shield-augmentation:nonlethal"
+              }
+            ],
+            "value": "nonlethal"
+          },
+          {
+            "label": "PF2E.TraitShove",
+            "predicate": [
+              {
+                "not": "shield-augmentation:shove"
+              }
+            ],
+            "value": "shove"
+          },
+          {
+            "label": "PF2E.TraitThrown",
+            "predicate": [
+              {
+                "not": "shield-augmentation:thrown"
+              }
+            ],
+            "value": "thrown"
+          },
+          {
+            "label": "PF2E.TraitTrip",
+            "predicate": [
+              {
+                "not": "shield-augmentation:trip"
+              }
+            ],
+            "value": "trip"
+          },
+          {
+            "label": "PF2E.TraitVersatileS",
+            "predicate": [
+              {
+                "not": "shield-augmentation:versatile-s"
+              }
+            ],
+            "value": "versatile-s"
+          }
+        ],
+        "flag": "traitTwo",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "nor": [
+              "shield-augmentation:backswing",
+              "shield-augmentation:forceful"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Trait",
+        "rollOption": "shield-augmentation"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:group:shield"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "weapon-traits",
+        "value": "{item|flags.system.rulesSelections.traitOne}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:group:shield"
+        ],
+        "itemType": "weapon",
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "nor": [
+              "shield-augmentation:backswing",
+              "shield-augmentation:forceful"
+            ]
+          }
+        ],
+        "property": "weapon-traits",
+        "value": "{item|flags.system.rulesSelections.traitTwo}"
+      }
+    }
+  ],
+  "usage": "applied-to-shield",
+  "bulk": 0,
+  "price": {
+    "sp": 8
+  }
+}

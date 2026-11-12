@@ -1,0 +1,210 @@
+{
+  "kind": "creature",
+  "slug": "lizardfolk-scout",
+  "system": "pf2e",
+  "name": "Lizardfolk Scout",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "humanoid",
+    "lizardfolk"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 17,
+    "perception": 8,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 3,
+      "int": -1,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": 5,
+      "diplomacy": 4,
+      "nature": 6,
+      "stealth": 6,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 20
+    },
+    "languages": [
+      "common",
+      "draconic",
+      "iruxi"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Blowgun",
+      "ref": "equipment:item/blowgun",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Blowgun Darts",
+      "ref": "equipment:item/blowgun-darts",
+      "type": "ammo",
+      "quantity": 9
+    },
+    {
+      "kind": "gear",
+      "name": "Blowgun Darts (Giant Centipede Venom)",
+      "ref": "equipment:item/blowgun-darts",
+      "type": "ammo"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Blowgun",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "reload-1"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "giant-centipede-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deep Breath",
+      "category": "offensive",
+      "text": "A lizardfolk scout can hold their breath for 150 rounds (15 minutes)."
+    },
+    {
+      "kind": "ability",
+      "name": "Giant Centipede Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 14 Fortitude save\n\n---\n\nMaximum Duration 6 rounds\n\nStage 1 1d4 poison damage (1 round)\n\nStage 2 1d4 poison damage and Off-Guard (1 round)\n\nStage 3 1d4 poison damage, Clumsy 1, and Fatigued (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Hidden Movement",
+      "category": "offensive",
+      "text": "If the lizardfolk scout starts its turn Hidden from or undetected by a creature, that creature is Off-Guard against the scout's attacks until the end of the turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The lizardfolk scout deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Terrain Advantage",
+      "category": "offensive",
+      "text": "Non-lizardfolk creatures that are in difficult terrain or are in water and lack a swim Speed are Off-Guard to the lizardfolk defender.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "terrain-advantage",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "terrain-advantage",
+              {
+                "not": "target:trait:lizardfolk"
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Iruxi scouts are the lizardfolk most often encountered by adventurers, for these unsentimental explorers and hunters spend most of their lives on the move, constantly patrolling the territories held by their enclave. If intruders are driven off, it is the responsibility of iruxi scouts to track them, observe them, and learn their ways and weaknesses so as to report back to the community and aid in the defense against potential reprisals.\n\n---\n\nCapable and adaptable predators, the reptilian beings known as lizardfolk are heirs to truly ancient civilizations. Their oral traditions cover thousands of years, and they revere the bones of their ancestors. Fossilized lizardfolk are even built into the walls of lizardfolk's stone and glass cities, to allow these predecessors to watch over their kin. Lizardfolk likewise have longstanding traditions of religious worship and astrology, with eyes on the past, the future, and the stars whenever they make a large decision. Their long history has taught them to be patient in all things, though this has seen them losing ground to hastier peoples in modern times.\n\nLizardfolk refer to themselves as \"iruxi,\" though they have taken their common moniker among other peoples in stride. Most of their settlements are entirely communal, with hatchlings raised by anyone with the time and temperament for such a role. Iruxis dwell and thrive in all tropical and temperate biomes, but they are most at home in swamplands, coastal regions, and river lands. They are talented swimmers, and many of their major cities are partially submerged to take advantage of this fact, causing them to often be overlooked by others. Fish and aquatic plants make up a large part of their preferred diets."
+}

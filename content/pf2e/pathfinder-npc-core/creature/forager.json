@@ -1,0 +1,218 @@
+{
+  "kind": "creature",
+  "slug": "forager",
+  "system": "pf2e",
+  "name": "Forager",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 20,
+    "perception": 7,
+    "saves": {
+      "fortitude": 5,
+      "reflex": 8,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 1,
+      "wis": 4
+    },
+    "skills": {
+      "medicine": 6,
+      "nature": 10,
+      "stealth": 3,
+      "survival": 10,
+      "local-lore": 5
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Pouches",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Wicker Baskets",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fruit or Vegetable",
+      "attack": 7,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+4 to Notice Flora and Fauna",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "flora-or-fauna"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Expert Subsistence",
+      "category": "interaction",
+      "text": "While using Survival to subsist statistic=survival, if the forager rolls any result worse than a success, they get a success. On a success, they can provide subsistence living for themselves and four additional creatures, and on a critical success, they can take care of twice as many creatures as on a success.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "to-success",
+              "failure": "to-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:subsist"
+            ],
+            "selector": "survival"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "survival",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "action:subsist"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Natural Specialist",
+      "category": "interaction",
+      "text": "For encounters involving Nature or Survival, the forager is a 3rd-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Local Poison",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "The forager coats their dagger in a diluted, locally sourced poison. Until the end of their turn, Strikes with their dagger deal an additional 2 persistent poison damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "local-poison",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "dagger-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "local-poison"
+          ],
+          "damageType": "poison"
+        }
+      ]
+    }
+  ],
+  "text": "Foragers know the areas they live and work in like no other. They can tell you exactly where to find a rare medicinal fern, when to harvest it, and how to use it; just don't expect them to be up-to-date on the latest town gossip. They spend as much time in the wilderness as they can, filling their baskets with a variety of useful plants.\n\n---\nExplorers are often well-equipped and well-trained for any type of hazard and are eager to lead others into the wild."
+}

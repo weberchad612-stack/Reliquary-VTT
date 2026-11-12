@@ -1,0 +1,215 @@
+{
+  "kind": "creature",
+  "slug": "vogorond",
+  "system": "pf2e",
+  "name": "Vogorond",
+  "source": {
+    "title": "Pathfinder #220: Crypt of Runes",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "construct"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 40,
+    "hp": 340,
+    "perception": 31,
+    "saves": {
+      "fortitude": 34,
+      "reflex": 26,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 8,
+      "dex": 2,
+      "int": 5,
+      "str": 8,
+      "wis": 7
+    },
+    "skills": {
+      "athletics": 34,
+      "vogorond-lore": 31
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "requian"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 10
+        },
+        {
+          "type": "piercing",
+          "value": 20
+        },
+        {
+          "type": "slashing",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Plus one or more dead languages spoken on their home world"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 40,
+      "attack": 32,
+      "spells": [
+        {
+          "name": "Retrocognition",
+          "rank": 9,
+          "ref": "spells:spell/retrocognition"
+        },
+        {
+          "name": "Hypercognition",
+          "rank": 9,
+          "ref": "spells:spell/hypercognition",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dreams of the Past",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "incapacitation",
+        "mental",
+        "occult"
+      ],
+      "text": "When a sleeping or Unconscious creature wakes up within 20 feet of a vogorond, its memories are overwritten by those of an inhabitant of the vogorond's home world. The target is affected by a 9th-rank Never Mind spell (DC 40 Will save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Ruinous Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "occult"
+      ],
+      "text": "10 feet. The air surrounding the vogorond is filled with floating rubble and debris. This area is difficult terrain for creatures other than the vogorond. Each time the vogorond is subjected to a critical hit while their aura is active, the aura's radius increases by 10 feet. If the vogorond's ruinous aura would ever extend to more than 30 feet, the vogorond crumbles apart and is destroyed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "self:ruinous-aura",
+            "suboptions": [
+              {
+                "label": "PF2E.Foot.Preformatted.10",
+                "value": "10"
+              },
+              {
+                "label": "PF2E.Foot.Preformatted.20",
+                "value": "20"
+              },
+              {
+                "label": "PF2E.Foot.Preformatted.30",
+                "value": "30"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "self:ruinous-aura"
+            ],
+            "radius": "@item.flags.system.rulesSelections.selfruinousAura",
+            "traits": [
+              "occult"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "self:ruinous-aura"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Activate Aura",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "The vogorond's ruinous aura activates, extending to a range of 10 feet, and the vogorond can Fly once. The vogorond can Activate Aura as a free action when they roll initiative.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Debris Storm",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Each enemy in the vogorond's ruinous aura takes 8d6 bludgeoning damage (DC 40 basic Reflex save save)."
+    },
+    {
+      "kind": "ability",
+      "name": "Launch Rubble",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The vogorond's ruinous aura is active\n\n---\nEffect The vogorond launches a piece of rubble up to 100 feet. Upon impact, the rubble explodes in a 20-foot burst. Any creatures in the area take 15d8 bludgeoning damage (DC 40 basic Reflex save save). The radius of the vogorond's aura then decreases by 10 feet. The vogorond can't Launch Rubble again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Monument",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The vogorond deactivates their ruinous aura. Until the next time they act, the vogorond appears to be an inanimate statue, altar, or fragment of architecture. They have an automatic result of 45 on Deception checks and DCs to pass as such an object."
+    },
+    {
+      "kind": "ability",
+      "name": "Vogorond Lore",
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "A vogorond serves as a repository of the memories of the inhabitants of their home world. This gives them the Vogorond Lore skill, which they use when casting Hypercognition and sifting through the combined memories of their countless shattered minds."
+    }
+  ],
+  "text": "Vogoronds are the remains of destroyed worlds imbued with the beliefs, hopes, and memories of that world's people. Their physical bodies often take the shape of monuments held dear by their worlds' former inhabitants, such as a statue of a beloved monarch. Vogoronds are intelligent and often seek to see their destroyed worlds reborn. Because their consciousnesses are formed from millions or even billions of individuals, however, they rarely possess the reasoning needed to pursue their desires to an end.\nReasoning With the Ruined Past\nWhile a vogorond's memories aren't flawless, it knows more about its former world than any scholar could ever hope to learn. Often, a vogorond is the only remaining source of knowledge about the land it once inhabited. Theoretically, heroes from a world on the brink of destruction could travel forward in time to speak with a vogorond and learn what must be done to avert the apocalypse—an act which, paradoxically, would prevent the vogorond from being created in the first place."
+}

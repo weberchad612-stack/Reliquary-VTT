@@ -1,0 +1,143 @@
+{
+  "kind": "effect",
+  "slug": "effect-clay-sphere-armor",
+  "system": "pf2e",
+  "name": "Effect: Clay Sphere - Armor",
+  "source": {
+    "title": "Pathfinder #202: Severed at the Root",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Clay Sphere, Clay Sphere (Greater), Clay Sphere (Major)\n\nYou gain resistance to precision damage and an item bonus to saving throws against effects with the morph or polymorph traits.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clay-sphere",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clay Sphere"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clay-sphere-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clay Sphere (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:clay-sphere-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Clay Sphere (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "clay-sphere"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "clay-sphere:clay-sphere"
+        ],
+        "type": "precision",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "clay-sphere:clay-sphere-greater"
+        ],
+        "type": "precision",
+        "value": 5
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "clay-sphere:clay-sphere-major"
+        ],
+        "type": "precision",
+        "value": 10
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "item",
+      "value": 1,
+      "slug": "clay-sphere-bonus",
+      "when": [
+        {
+          "or": [
+            "item:trait:morph",
+            "item:trait:polymorph"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "clay-sphere:clay-sphere-greater"
+        ],
+        "selector": "saving-throw",
+        "slug": "clay-sphere-bonus",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "clay-sphere:clay-sphere-major"
+        ],
+        "selector": "saving-throw",
+        "slug": "clay-sphere-bonus",
+        "value": 3
+      }
+    }
+  ]
+}

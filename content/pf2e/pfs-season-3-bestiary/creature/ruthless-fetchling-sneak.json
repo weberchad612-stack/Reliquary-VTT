@@ -1,0 +1,232 @@
+{
+  "kind": "creature",
+  "slug": "ruthless-fetchling-sneak",
+  "system": "pf2e",
+  "name": "Ruthless Fetchling Sneak",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-06: Struck by Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "fetchling",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 75,
+    "perception": 13,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 15,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 5,
+      "int": 3,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 9,
+      "deception": 10,
+      "diplomacy": 8,
+      "intimidation": 10,
+      "occultism": 10,
+      "society": 10,
+      "stealth": 13,
+      "survival": 9,
+      "thievery": 13,
+      "shadow-plane-lore": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril",
+      "sakvroth",
+      "shadowtongue"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon",
+      "quantity": 4
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Minor)",
+      "ref": "equipment:item/elixir-of-life-minor",
+      "type": "consumable",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Smokestick (Lesser)",
+      "ref": "equipment:item/smoke-ball-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature targets the ruthless fetchling sneak with an attack and they can see the attacker.\n\nRequirements The sneak is not encumbered\n\n---\n\nThe ruthless fetchling sneak deftly dodges out of the way, gaining a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shadow Slink",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The fetchling sneak is in an area of dim light or darkness\n\n---\n\nEffect The fetchling sneak sticks to the shadows as it moves to ambush an enemy. The fetchling sneak Strides up to half their Speed and makes a Strike. The sneak's target is Off-Guard against this attack. The fetchling sneak can choose to Stride up to their full speed, but doing causes the sneak to take a -2 penalty to their Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Shadow Slink (stride at full speed)",
+            "option": "shadow-slink",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "shadow-slink"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The ruthless fetchling sneak deals an extra 2d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ]
+}

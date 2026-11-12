@@ -1,0 +1,196 @@
+{
+  "kind": "creature",
+  "slug": "minotaur-hunter",
+  "system": "pf2e",
+  "name": "Minotaur Hunter",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "beast",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 70,
+    "perception": 12,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 8,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 0,
+      "int": -2,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 14,
+      "intimidation": 9,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "jotun",
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 14,
+      "traits": [
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Perfect Orienteering",
+      "category": "interaction",
+      "text": "A minotaur automatically critically succeeds at Survival checks to Sense Direction or Track.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "survival",
+          "text": "{item|system.description.value}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "to-critical-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "action:track",
+                  "action:sense-direction"
+                ]
+              }
+            ],
+            "selector": "survival"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Axe Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The minotaur swings their axe in a wide arc, making greataxe Strikes against any two foes who are adjacent to each other and within the minotaur's reach. The multiple attack penalty does not increase until after both attacks are resolved."
+    },
+    {
+      "kind": "ability",
+      "name": "Hunted Fear",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The minotaur snorts and clomps as they hunt their prey, inspiring terror. The minotaur makes an Intimidation check to Demoralize all living creatures within 60 feet that can hear the minotaur but not see them. Roll once and apply the result to all creatures.\n\nIf the targets are in a maze or similarly difficult-to-navigate structure, the minotaur gains a +4 circumstance bonus to this check. Creatures that become frightened as a result also take a –2 circumstance penalty to Survival checks to avoid getting lost for 1 minute. Each target is temporarily immune for 1 minute.\n\nEffect: Hunted Fear",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.MinotaurHuntedFear.Demoralize",
+            "option": "hunted-fear",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "hunted-fear",
+            "action:demoralize"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The minotaur Strides twice, then makes a horn Strike. If they moved at least 20 feet from their starting position, the Strike's damage is increased to 2d8+10.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "powerful-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "powerful-charge"
+            ],
+            "selector": "horn-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "horn-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "powerful-charge"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "A minotaur is a large humanoid with bovine features such as horns, hooves, and a layer of hair that covers their entire body. Their head also resembles that of a bull or cow, though with eyes that brim with curiosity or fury, depending on the minotaur's temperament. Though often mistaken for aggressive brutes due to their size and reputation, many minotaurs are skilled artisans who spend much of their lives perfecting their craft. Minotaur communities tend to be insular and are found at the heart of a cunning labyrinth or within a tangle of underground caverns.\n\nThe myth many minotaurs like to tell of their origin involves a stonemason living in ancient Iblydos. After accidentally insulting a hero-god, he was cursed to become the first minotaur. He then retreated into a series of caves beneath a temple he had built, but continued his work, sculpting stone statues for any who dared to brave the subterranean passages.\n\nSometimes, a lone minotaur is compelled, exiled, or chooses to live alone within a maze, a warren, or old ruins. This solitude drives them to become a monstrous tormentor who delights in hunting any who stumble across their lair. They slowly close in on their prey, thrilling in the terror of the hunted becoming lost within corridors the minotaur knows all too well. Only then does the minotaur charge in for the kill, cutting foes down with powerful strikes or impaling them on their sharp horns. Unfortunately, the world tends to judge all minotaurs by the stories of these lone, vicious hunters."
+}

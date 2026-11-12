@@ -1,0 +1,202 @@
+{
+  "kind": "creature",
+  "slug": "orc-agriculturist",
+  "system": "pf2e",
+  "name": "Orc Agriculturist",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "humanoid",
+    "orc"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 25,
+    "perception": 7,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 6,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 1,
+      "int": 0,
+      "str": 2,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 5,
+      "crafting": 3,
+      "nature": 11,
+      "survival": 7,
+      "farming-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "orcish"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Blowgun",
+      "ref": "equipment:item/blowgun",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Pitchfork (as longspear)",
+      "ref": "equipment:item/longspear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sickle",
+      "ref": "equipment:item/sickle",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Poisonous Herb",
+      "type": "consumable",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Blowgun Darts",
+      "ref": "equipment:item/blowgun-darts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Pitchfork",
+      "attack": 7,
+      "traits": [
+        "reach"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Sickle",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Blowgun",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "reload-1"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Farming Specialist",
+      "category": "interaction",
+      "text": "For encounters involving farming, harvesting, or identifying plants, the agriculturalist is a 5th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Herbal Poison",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate",
+        "poison"
+      ],
+      "text": "The agriculturalist quickly turns some of their supplies of poisonous herbs into an herbal poison, then applies it to a melee weapon or piece of ammunition in their possession. The next successful attack with a weapon poisoned this way deals an additional 1d6 poison damage. The applied poison fades after its damage is applied to an attack or 1 minute passes, whichever happens first.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "herbal-poison",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "herbal-poison",
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Poison Detector",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The orc agriculturalist attempts a Farming-lore check or Nature check check to determine whether an object is poison or has been poisoned. The DC is the poison's DC (if any), or the standard DC of the poison's level. On a critical success, they also learn the number and types of poison involved."
+    }
+  ],
+  "text": "In the severe lands orcs occupy, there are no lush fields blooming with crops. An orc farmer must be tough and just as adept at foraging as planting and harvesting.\n\n---\nOrcs have a strict moral code encompassing valor and accomplishment, and they cast out those unwilling to follow it. For the last few generations, orcs have been trying to erase the narratives around their culture as being solely focused on war and violence. They invite other races and adventuring parties inside their holds so they may experience the truth of who the orcs are."
+}

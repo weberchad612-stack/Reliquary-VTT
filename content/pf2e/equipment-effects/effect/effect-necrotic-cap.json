@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "effect-necrotic-cap",
+  "system": "pf2e",
+  "name": "Effect: Necrotic Cap",
+  "source": {
+    "title": "Pathfinder #202: Severed at the Root",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Necrotic Cap (Lesser), Necrotic Cap (Moderate), Necrotic Cap (Greater), Necrotic Cap (Major)\n\nYour acid grip spell loses the acid trait, gains the fungus trait, and all acid damage the spell deals becomes void damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:slug:acid-grip"
+        ],
+        "property": "traits",
+        "value": "acid"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:acid-grip"
+        ],
+        "property": "traits",
+        "value": "fungus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          "damage:type:acid",
+          "item:slug:acid-grip"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage",
+          "inline-damage"
+        ],
+        "value": "void"
+      }
+    }
+  ]
+}

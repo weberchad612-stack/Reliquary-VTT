@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "tormented-starvation",
+  "system": "pf2e",
+  "name": "Tormented (Starvation)",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "chaotic",
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 250,
+    "perception": 27,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 26,
+      "will": 27
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 4,
+      "dex": 4,
+      "int": -1,
+      "str": 6,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": 26,
+      "intimidation": 28,
+      "stealth": 24
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing, regeneration 10 (deactivated by cold)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Painful Touch",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "4d6+14",
+          "type": "mental"
+        },
+        {
+          "dice": "2d6",
+          "type": "mental",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 10 (Deactivated by Cold)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Endless Suffering",
+      "category": "defensive",
+      "text": "The tormented starved to death, denied food until the end."
+    },
+    {
+      "kind": "ability",
+      "name": "Tortured Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine",
+        "illusion",
+        "mental"
+      ],
+      "text": "30 foot or 60 foot if the tormented is at 125 HP or lower.\n\nThe psychic agony of a tormented spills into the world around them, inflicting murderous hallucinations replicating the tormented's last moments. A non-undead creature that ends its turn in the aura must succeed at a DC 32 Will save save or for 1 minute, the creature is Enfeebled 2 and Fatigued. While it has a condition from Tortured Gaze, a creature can't gain a new condition from the aura but can take damage from it again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": "ternary(lte(@actor.hitPoints.value, 125), 60, 30)",
+            "slug": "tortured-gaze",
+            "traits": [
+              "divine",
+              "illusion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scream in Agony",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "mental"
+      ],
+      "text": "Each creature in the tormented's Tortured Gaze aura takes 14d6 mental damage (DC 34 basic Will save). A creature that fails is also Sickened 1 (or Sickened 2 on a critical failure).\n\nThe tormented can't Scream in Agony again for 1d4 rounds, but recharges the ability whenever they take damage from an attacker's critical hit or their own critical failure on a saving throw."
+    }
+  ],
+  "text": "Twisted caricatures of living beings, tormented arise from the remains of those who've been tortured to death. They appear as the mortals they were in life, horribly disfigured by acts of cruelty. Unable to rest, they haunt the sites of their deaths, doomed to relive their last moments of agony. The toxic psychic residue of their death is so great it spills over, afflicting anyone who meets the tormented's haunted gaze."
+}

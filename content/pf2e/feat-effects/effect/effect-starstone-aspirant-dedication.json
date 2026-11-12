@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "effect-starstone-aspirant-dedication",
+  "system": "pf2e",
+  "name": "Effect: Starstone Aspirant Dedication",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Starstone Aspirant Dedication\n\nYou can choose a skill you're untrained in. You can attempt skill actions that normally require you to be trained in that skill, and you gain a circumstance bonus to checks with that skill.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            {
+              "lte": [
+                "skill:{choice|value}:rank",
+                0
+              ]
+            }
+          ]
+        },
+        "flag": "starstoneAspirant",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": [
+          "{item|flags.system.rulesSelections.starstoneAspirant}"
+        ],
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.level,15),3,ternary(gte(@actor.level,8),2,1))"
+      }
+    }
+  ]
+}

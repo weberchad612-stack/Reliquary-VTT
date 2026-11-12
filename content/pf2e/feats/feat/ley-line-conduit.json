@@ -1,0 +1,72 @@
+{
+  "kind": "feat",
+  "slug": "ley-line-conduit",
+  "system": "pf2e",
+  "name": "Ley Line Conduit",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "traits": [
+    "concentrate",
+    "druid",
+    "manipulate",
+    "spellshape"
+  ],
+  "category": "class",
+  "actions": 1,
+  "frequency": {
+    "max": 1,
+    "per": "PT1M"
+  },
+  "text": "Frequency once per minute\n\n---\n\nYou can draw magic from the ley lines of the world. If your next action is to Cast a Spell of 5th rank or lower that has no duration, you don't expend the prepared spell as you cast it.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellshape:ley-line-conduit",
+          "item:duration:0",
+          {
+            "lte": [
+              "item:rank",
+              5
+            ]
+          },
+          {
+            "not": "cantrip"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Spellshape.LeyLineConduit"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.TraitSpellshape",
+        "mergeable": true,
+        "option": "spellshape",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "{item|name}",
+            "value": "ley-line-conduit"
+          }
+        ],
+        "toggleable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "kind": "creature",
+  "slug": "street-musician",
+  "system": "pf2e",
+  "name": "Street Musician",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 32,
+    "perception": 9,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 8,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 2,
+      "dex": 1,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "athletics": 6,
+      "crafting": 5,
+      "deception": 8,
+      "diplomacy": 8,
+      "performance": {
+        "value": 8,
+        "special": [
+          {
+            "value": 11,
+            "label": "when playing an instrument"
+          }
+        ]
+      },
+      "society": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Spontaneous Spells",
+      "tradition": "occult",
+      "type": "spontaneous",
+      "dc": 18,
+      "attack": 10,
+      "spells": [
+        {
+          "name": "Charm",
+          "rank": 1,
+          "ref": "spells:spell/charm"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Figment",
+          "rank": 1,
+          "ref": "spells:spell/figment"
+        },
+        {
+          "name": "Force Barrage",
+          "rank": 1,
+          "ref": "spells:spell/force-barrage"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        },
+        {
+          "name": "Summon Instrument",
+          "rank": 1,
+          "ref": "spells:spell/summon-instrument"
+        },
+        {
+          "name": "Ventriloquism",
+          "rank": 1,
+          "ref": "spells:spell/ventriloquism"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Musical Instrument (Handheld)",
+      "ref": "equipment:item/musical-instrument-handheld",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Distracting Drone",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The street musician is playing their instrument\n\n---\nEffect The street musician attempts a Performance check check compared to the Will DC of an observer within 30 feet. On a success, the target is Fascinated by the street musician and Off-Guard for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The street musician deals an additional 1d4 precision damage to Off-Guard creatures. This increases to 1d6 against creatures off-guard due to the street musician's Feint or distracting drone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "not": "off-guard-feint-distracting-drone"
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              "off-guard-feint-distracting-drone"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.StreetMusician.SneakAttackFeintDistractingDrone",
+            "option": "off-guard-feint-distracting-drone",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Many musicians make their living off stage by playing at markets, fairs, or crossroads. While their fame may not be as widespread as theatrical performers, they are nonetheless staples of many communities.\n\n---\nPerformances come in a wide variety of forms, from musical methods like singing and instruments to physical dancing and juggling to simple orating and conversing."
+}

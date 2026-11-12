@@ -1,0 +1,336 @@
+{
+  "kind": "creature",
+  "slug": "oath-dragon-ancient",
+  "system": "pf2e",
+  "name": "Oath Dragon (Ancient)",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "uncommon",
+  "traits": [
+    "divine",
+    "dragon"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 43,
+    "hp": 375,
+    "perception": 35,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 29,
+      "will": 37
+    },
+    "attributes": {
+      "cha": 10,
+      "con": 8,
+      "dex": 4,
+      "int": 5,
+      "str": 8,
+      "wis": 8
+    },
+    "skills": {
+      "acrobatics": 31,
+      "athletics": 33,
+      "diplomacy": 37,
+      "religion": 33,
+      "society": 37
+    },
+    "speeds": {
+      "land": 60,
+      "fly": 180
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic",
+      "draconic",
+      "empyrean",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. emotion"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 38,
+      "attack": 30,
+      "spells": [
+        {
+          "name": "Weapon of Judgment",
+          "rank": 9,
+          "ref": "spells:spell/weapon-of-judgment"
+        },
+        {
+          "name": "Scintillating Safeguard",
+          "rank": 7,
+          "ref": "spells:spell/scintillating-safeguard"
+        },
+        {
+          "name": "Spiritual Guardian",
+          "rank": 5,
+          "ref": "spells:spell/spiritual-guardian"
+        },
+        {
+          "name": "Ring of Truth (at will)",
+          "rank": 3,
+          "ref": "spells:spell/ring-of-truth"
+        },
+        {
+          "name": "Share Life (at will)",
+          "rank": 2,
+          "ref": "spells:spell/share-life"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 34,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+18",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+18",
+          "type": "slashing"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "pull"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 32,
+      "traits": [
+        "magical",
+        "reach-25"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+18",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "push-20-feet"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Binding Oath",
+      "category": "interaction",
+      "traits": [
+        "divine",
+        "linguistic",
+        "mental"
+      ],
+      "text": "The dragon forges a bond with a willing creature over an hour-long ceremony, making them a bonded companion. The dragon can always sense their distance from the companion and if they're moving closer or farther away. A bonded companion automatically critically succeeds on basic saving throws against the oath dragon's abilities and spells. This link is permanent and neither can form a new link until one member dies. If the dragon or the bonded companion dies, the survivor learns the identity of the killer, but the shock leaves the survivor Stupefied 2 for 24 hours and prevents forming a new link for 1 month.\n\nEffect: Binding Oath"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Emotion",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:emotion"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Heartening Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "50 feet. All allies in the aura gain a +2 status bonus to attack and damage rolls. The dragon's bonded companion also gains fast healing 15.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.hearteningAuraAttackDamage",
+            "value": 2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.hearteningAuraFastHealing",
+            "value": 15
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Heartening Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 50,
+            "slug": "heartening-aura",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shielding Wing",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The oath dragon or a bonded companion within 15 feet is targeted with an attack\n\n---\nEffect The dragon raises its wing to protect itself or the bonded companion, providing a +2 circumstance bonus to AC against the triggering attack. If the dragon is flying, it descends 10 feet after the attack is complete.\n\nEffect: Shielding Wing"
+    },
+    {
+      "kind": "ability",
+      "name": "Castigating Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "spirit"
+      ],
+      "text": "The dragon unleashes a pronouncement that strikes at the soul of its enemies, dealing 13d10 spirit damage in a 50-foot cone (DC 41 basic Will save save). The dragon can't use Castigating Breath for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "Whenever they score a critical hit with a Strike, the dragon recharges their Castigating Breath.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Inspiring Word",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "divine",
+        "emotion",
+        "mental"
+      ],
+      "text": "All allies within the dragon's heartening aura become Quickened for 1 round. Allies can use this extra action to Raise a Shield, Step, Stride, or Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Oathbreaker's Curse",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "death",
+        "divine"
+      ],
+      "text": "If a bonded companion willingly breaks their oath, they retain the benefit of being a bonded companion but are immediately cursed with no initial saving throw. The cursed creature can attempt saving throws as noted to prevent the curse from worsening.\n\nSaving Throw DC 45 Will save\n\n---\nEffect The cursed creature is Doomed 1 and can't reduce their doomed value below 1 while they're cursed. The first time the cursed creature encounters the oath dragon each day, they must attempt a saving throw. In addition, each time the creature critically fails a Strike or spell attack against the oath dragon, they must attempt a saving throw. On a failure, their doomed value increases by 1, 2 on a critical failure, to a maximum of Doomed 3."
+    },
+    {
+      "kind": "ability",
+      "name": "Pull 10 feet",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Push 20 feet",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "spell",
+      "name": "Geas (willing targets only)",
+      "rank": 3,
+      "ref": "spells:spell/geas"
+    }
+  ],
+  "text": "Oath dragons are the embodiment of a cause that they pursue with unerring determination. They draw their power not from mere words, but from the meaning and ideals that those words carry. Their dedication has led to the widespread imagery of oath dragons fighting alongside noble champions trying to bring goodness where only corruption is thought to dwell. Yet, there is nothing more terrifying than the power of an oath dragon who swears to a violent cause or who is dragged into damnation by their loyalty.\n\nWhile an oath dragon can theoretically be dedicated to multiple ideals, they usually choose a single cause that they pursue with incredible devotion. They provide aid to those who share their dedication and fight fiercely against those who oppose it, all to uphold their ideals. Regardless of the causes they embrace, these dragons do so wholeheartedly. This unwavering determination gives them an intensity that is rarely matched by other creatures, spurring even the most reluctant ally to action."
+}

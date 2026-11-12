@@ -1,0 +1,63 @@
+{
+  "kind": "feat",
+  "slug": "peculiar-anatomy",
+  "system": "pf2e",
+  "name": "Peculiar Anatomy",
+  "source": {
+    "title": "Pathfinder Adventure: The Slithering",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Disturbing Defense"
+  ],
+  "text": "Your circulatory system contains viscous protoplasmic fluid instead of ordinary blood. You gain a +2 circumstance bonus to saving throws against disease and poison, and resistance to poison damage equal to half your level.\n\nIn addition, your resistance to precision damage from Disturbing Defense increases to an amount equal to 7 + your number of class feats from the oozemorph archetype, and the DC of your flat checks to recover from persistent bleed damage is 8 rather than 13.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.oozemorphDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        {
+          "or": [
+            "poison",
+            "disease"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "condition",
+        "key": "ItemAlteration",
+        "mode": "downgrade",
+        "predicate": [
+          "item:damage:type:bleed"
+        ],
+        "property": "pd-recovery-dc",
+        "value": 8
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "poison",
+      "value": "max(1,floor(@level/2))"
+    }
+  ]
+}

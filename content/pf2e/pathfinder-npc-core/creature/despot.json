@@ -1,0 +1,270 @@
+{
+  "kind": "creature",
+  "slug": "despot",
+  "system": "pf2e",
+  "name": "Despot",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 60,
+    "perception": 11,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 9,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 2,
+      "int": 4,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 11,
+      "deception": 13,
+      "diplomacy": 11,
+      "intimidation": 13,
+      "performance": 13,
+      "religion": 11,
+      "society": 13,
+      "warfare-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "diabolic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Spontaneous Spells",
+      "tradition": "divine",
+      "type": "spontaneous",
+      "dc": 23,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Chilling Darkness",
+          "rank": 3,
+          "ref": "spells:spell/chilling-darkness"
+        },
+        {
+          "name": "Enthrall",
+          "rank": 3,
+          "ref": "spells:spell/enthrall"
+        },
+        {
+          "name": "Blood Vendetta",
+          "rank": 2,
+          "ref": "spells:spell/blood-vendetta"
+        },
+        {
+          "name": "Calm",
+          "rank": 2,
+          "ref": "spells:spell/calm"
+        },
+        {
+          "name": "Floating Flame",
+          "rank": 2,
+          "ref": "spells:spell/floating-flame"
+        },
+        {
+          "name": "See the Unseen",
+          "rank": 2,
+          "ref": "spells:spell/see-the-unseen"
+        },
+        {
+          "name": "Bane",
+          "rank": 1,
+          "ref": "spells:spell/bane"
+        },
+        {
+          "name": "Command",
+          "rank": 1,
+          "ref": "spells:spell/command"
+        },
+        {
+          "name": "Daze",
+          "rank": 1,
+          "ref": "spells:spell/daze"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Harm",
+          "rank": 3,
+          "ref": "spells:spell/harm"
+        },
+        {
+          "name": "Ignition",
+          "rank": 1,
+          "ref": "spells:spell/ignition"
+        },
+        {
+          "name": "Message",
+          "rank": 1,
+          "ref": "spells:spell/message"
+        },
+        {
+          "name": "Sanctuary",
+          "rank": 1,
+          "ref": "spells:spell/sanctuary"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Void Warp",
+          "rank": 1,
+          "ref": "spells:spell/void-warp"
+        }
+      ]
+    },
+    {
+      "kind": "spellcasting",
+      "name": "Sorcerer Bloodline Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 22,
+      "attack": 14,
+      "spells": [
+        {
+          "name": "Diabolic Edict",
+          "rank": 1,
+          "ref": "spells:spell/diabolic-edict"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Spiked Gauntlet",
+      "ref": "equipment:item/spiked-gauntlet",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Darkvision Elixir (Lesser)",
+      "ref": "equipment:item/darkvision-elixir-lesser",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Lesser)",
+      "ref": "equipment:item/healing-potion-lesser",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Spiked Gauntlet",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "free-hand"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Persistent Lies",
+      "category": "interaction",
+      "text": "Any creature deceived by the despot's Deception skill believes the deception more readily on the next day. Any later Perception checks attempted against the despot's Deception DC take a –2 circumstance penalty, as do other creatures' attempts to convince the creature otherwise, such as through Diplomacy or further Deception."
+    },
+    {
+      "kind": "ability",
+      "name": "Sorcerous Potency",
+      "category": "offensive",
+      "text": "When the despot Casts a Spell from a spell slot that deals damage, they gain a status bonus to the spell's initial damage equal to the spell's rank.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sorcerous-potency",
+            "placement": "spellcasting",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "phase": "afterDerived",
+            "predicate": [
+              "item:spell-slot",
+              "sorcerous-potency"
+            ],
+            "selector": [
+              "spell-damage",
+              "spell-healing"
+            ],
+            "type": "status",
+            "value": "@spell.level"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tongue of Flame",
+      "category": "offensive",
+      "text": "When the despot casts Charm, Diabolic Edict, Enthrall, or Floating Flame, either a target takes 1 fire damage per spell rank, or the despot gains a +2 status bonus to Deception checks for 1 round.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "or": [
+                  "item:slug:charm",
+                  "item:slug:diabolic-edict",
+                  "item:slug:enthrall",
+                  "item:slug:floating-flame"
+                ]
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.TongueOfFlame.DescriptionAddendum"
+              },
+              {
+                "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Diabolic Blood Magic (Self)]{Effect: Tongue of Flame}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Despots live to amass and exploit power over others.\n\n---\nVillains pursue selfish and cruel goals, trampling over anyone in their way."
+}

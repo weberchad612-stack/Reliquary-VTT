@@ -1,0 +1,224 @@
+{
+  "kind": "creature",
+  "slug": "ameon-trask",
+  "system": "pf2e",
+  "name": "Ameon Trask",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "unique",
+  "traits": [
+    "evil",
+    "human",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 175,
+    "perception": 16,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 5,
+      "int": 0,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 21,
+      "athletics": 19,
+      "deception": 20,
+      "intimidation": 20,
+      "warfare-lore": 16
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "skald"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Invisibility Potion",
+      "ref": "equipment:item/invisibility-potion",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Moderate)",
+      "ref": "equipment:item/healing-potion-moderate",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "gear",
+      "name": "Gold Pieces",
+      "ref": "equipment:item/gold-pieces",
+      "type": "treasure",
+      "quantity": 50
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 23,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Cold Iron Shortsword",
+      "attack": 22,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 22,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Ameon Trask deals 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Feint",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Ameon Trask makes a series of attacks with both short swords, using the first attack to throw his foe off guard against a second attack at a different angle. He makes one Strike with each of his short swords, both against the same target. The target is automatically off-guard against the second attack. Apply Ameon Trask's multiple attack penalty to the Strikes normally."
+    },
+    {
+      "kind": "ability",
+      "name": "Twin Parry",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Ameon uses his two short swords to parry attacks. He gains a +2 circumstance bonus to AC until the start of his next turn, but loses this bonus if he no longer wields a weapon in each hand.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "twin-parry"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "twin-parry",
+            "toggleable": true
+          }
+        }
+      ]
+    }
+  ]
+}

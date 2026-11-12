@@ -1,0 +1,53 @@
+{
+  "kind": "feat",
+  "slug": "burn-it",
+  "system": "pf2e",
+  "name": "Burn It!",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "goblin"
+  ],
+  "category": "ancestry",
+  "text": "Fire fascinates you. Your spells and alchemical items that deal fire damage gain a status bonus to damage equal to half the spell's rank or one-quarter the item's level (minimum bonus +1). You also gain a +1 status bonus to any persistent fire damage you deal.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "key": "FlatModifier",
+        "predicate": [
+          "item:trait:alchemical"
+        ],
+        "selector": "strike-damage",
+        "slug": "burn-it-strike",
+        "type": "status",
+        "value": "max(floor(@weapon.level/4), 1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "fire",
+        "key": "FlatModifier",
+        "selector": "spell-damage",
+        "slug": "burn-it-spell",
+        "type": "status",
+        "value": "max(floor(@spell.level/2), 1)"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "damage",
+      "type": "status",
+      "value": 1,
+      "slug": "burn-it-persistent",
+      "damageType": "fire"
+    }
+  ]
+}

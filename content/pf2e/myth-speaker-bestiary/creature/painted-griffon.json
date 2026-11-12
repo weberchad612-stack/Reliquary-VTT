@@ -1,0 +1,183 @@
+{
+  "kind": "creature",
+  "slug": "painted-griffon",
+  "system": "pf2e",
+  "name": "Painted Griffon",
+  "source": {
+    "title": "Pathfinder #218: Titanbane",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 23,
+    "hp": 60,
+    "perception": 14,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 14,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 3,
+      "int": -5,
+      "str": 4,
+      "wis": -1
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 13,
+      "intimidation": 11,
+      "stealth": 12,
+      "survival": 10
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 60
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 15,
+      "traits": [
+        "deadly-d10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Wing",
+      "attack": 15,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 4)",
+      "category": "defensive",
+      "text": "Like normal objects, a painted griffon has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once a painted griffon is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 19.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "all",
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flying Strafe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The painted griffon Flies up to its fly Speed and makes two talon Strikes at any point during that movement. Each Strike must target a different creature. The attacks take the normal multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The painted griffon Strides and makes a talon Strike at the end of that movement. If the griffon began this action Hidden, it remains hidden until after the attack."
+    }
+  ],
+  "text": "This mindless construct takes the form of a two-dimensional portrait given life or an illustration painted in three dimensions with magical pigments.\nPainted Treasure\nA painted creature's gear is part of the creature and is also made of magical paint. Such gear can't be disarmed. If the painted creature drops any gear, the item melts into a glob of paint a moment later—after dealing damage, for thrown and projectile weapons. Painted gear (including ammunition) is restored to a painted creature automatically 24 hours after it's lost. At the GM's discretion, a talented PC artist might rescue a painted item by immediately and successfully Repairing it, using a hard DC of the painted creature's level. This might allow PCs to recover a unique (even magical) item that existed only in the original artist's imagination.\nPainted Behavior\nPainted creatures typically adopt the behaviors of whatever they resemble. This results in creatures like a painted sheep bleating worriedly and grazing, even though any grasses consumed sit inertly inside its improvised belly before eventually seeping though its body and plopping on the ground.\n\nIntelligent creatures animated in this way sometimes develop a limited vocabulary. However, the construct remains mindless, their utterances follow only the most simplistic logic, and their words fall short of anything that could be considered conversation. With careful instruction, such constructs can perform mundane chores.",
+  "blurb": "Variant painted creature"
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-bosuns-command",
+  "system": "pf2e",
+  "name": "Effect: Bosun's Command",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "You gain a +2 status bonus to your attack rolls or a +10 status bonus to your Speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.AttackLabel",
+            "value": {
+              "modifier": 2,
+              "selector": "attack-roll"
+            }
+          },
+          {
+            "label": "PF2E.Actor.Speed.Label",
+            "value": {
+              "modifier": 10,
+              "selector": "all-speeds"
+            }
+          }
+        ],
+        "flag": "bosunsCommand",
+        "key": "ChoiceSet",
+        "label": "PF2E.SpecificRule.Prompt.Benefit"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "{item|flags.system.rulesSelections.bosunsCommand.selector}",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.bosunsCommand.modifier"
+      }
+    }
+  ]
+}

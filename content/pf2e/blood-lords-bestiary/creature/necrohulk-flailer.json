@@ -1,0 +1,204 @@
+{
+  "kind": "creature",
+  "slug": "necrohulk-flailer",
+  "system": "pf2e",
+  "name": "Necrohulk Flailer",
+  "source": {
+    "title": "Pathfinder #185: A Taste of Ashes",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "evil",
+    "mutant",
+    "undead",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 32,
+    "hp": 295,
+    "perception": 23,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 26,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 8,
+      "int": -4,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 26
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "slashing",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing, regeneration 15 (deactivated by acid)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 26,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Cartridge",
+      "category": "interaction",
+      "traits": [
+        "alchemical"
+      ],
+      "text": "Critical hits rupture the necrohulk's alchemical cartridge. The first time the necrohulk takes a critical hit, it loses its regeneration. The second time it takes a critical hit, it takes 15 damage that it can't heal unless the cartridge is stitched back into place.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Necrohulk.AlchemicalCartridgeRuptured",
+            "option": "alchemical-cartridge-ruptured",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 15 (Deactivated by Acid)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "acid"
+            ],
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "not": "alchemical-cartridge-ruptured"
+              }
+            ],
+            "type": "regeneration",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Amplification",
+      "actions": "free",
+      "category": "offensive",
+      "traits": [
+        "alchemical"
+      ],
+      "text": "Frequency once per hour\n\n---\n\nEffect The necrohulk draws upon alchemical stores to push its body into overdrive. It becomes Quickened for 1d4 rounds. It can use this extra action to Step, Stride, or Strike.",
+      "frequency": {
+        "max": 1,
+        "per": "PT1H"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "6d6 bludgeoning, DC 32 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Tentacle Storm",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The necrohulk flailer makes up to four tentacle Strikes, each against a different target. These attacks count toward its multiple attack penalty, but the penalty doesn't increase until after the necrohulk makes all of these attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Additional limbs, failing tentacles, and rubbery bodies are common among Mana Wastes mutants, and aspiring necrohulk creators like to combine flesh from more than one of these kinds of mutants to create gangly but powerful warriors.\n\n---\n\nThe strange, terrible energies swirling about on the winds and embedded in the earth of the Mana Wastes have led to unexpected changes and mutations in the bodies of those who dwell there. These mutants usually have little chance to escape their hardscrabble existence, as they're ostracized by other societies. People in the kingdom of Nex to the north look on such folk with suspicion, as do the dwarves of Alkenstar to the west. Surprisingly, the undead nation of Geb to the south is often the best hope for a future among people with unusual appearances.\n\nThose who flee to Geb or are convinced to make it their home frequently find their welcome to be a false promise, however. Necromancers who long ago tired of animating the same humanoids find new potential in mutated flesh, and mutants who aren't careful might find themselves led into laboratories or crypts for experimentation.\n\nEnterprising twilight sages of Yled's Mortuarium have innovated bizarre combinations of alchemy and necromancy that boost their victims' mutations to persist even after reanimation. Although these necrohulks are virtually mindless and require a constant influx of chemicals to retain their might, they're more than powerful enough to make the extremely difficult process worth the effort. The cartridge containing the alchemical formulation that sustains them is perhaps the trickiest part of necrohulk animation, and it's easiest to simply stitch the cartridge right into the necrohulk's flesh.\n\nYled's armies contain a growing number of necrohulks. This isn't solely because these juggernauts are frightening effective combatants on the field of battle; leveraging the instinctive revulsion that mutants create carries some strategic advantage. Although the occasional necrohulks do run amok in Yled, addled on the chemical cocktails that sustain them, military necromancers generally keep them under control."
+}

@@ -1,0 +1,246 @@
+{
+  "kind": "creature",
+  "slug": "taiga-giant",
+  "system": "pf2e",
+  "name": "Taiga Giant",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "chaotic",
+    "giant",
+    "humanoid"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 32,
+    "hp": 230,
+    "perception": 23,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 20,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 5,
+      "dex": 1,
+      "int": 1,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 22,
+      "religion": 20,
+      "stealth": {
+        "value": 10,
+        "special": [
+          {
+            "value": 22,
+            "label": "in undergrowth",
+            "when": [
+              "terrain:undergrowth"
+            ]
+          }
+        ]
+      },
+      "survival": 25,
+      "genealogy-lore": 16
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "common",
+      "jotun"
+    ],
+    "iwr": {
+      "immunities": [
+        "controlled"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. enchantment and illusion effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Longspear",
+      "ref": "equipment:item/longspear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sack of Rocks",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Longspear",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "reach-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+15",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+15",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 25,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d10+15",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "See Invisibility",
+      "category": "interaction",
+      "text": "A taiga giant can see invisible creatures and objects as translucent shapes, and they are Concealed to the taiga giant."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status Bonus on Saves vs. Enchantment and Illusion Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "enchantment",
+                "illusion"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guardian Spirit",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The taiga giant has Ancestral Guardian active and would take energy or mental damage\n\n---\n\nEffect The taiga giant's ancestral spirits intervene and protect the giant from taking up to 20 energy damage or 30 mental damage. The giant takes any remaining damage; if it does, the spirits depart and the giant is no longer protected by the ancestors."
+    },
+    {
+      "kind": "ability",
+      "name": "Ancestral Guardian",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Requirements The taiga giant must be protected by the ancestors\n\n---\n\nEffect The taiga giant calls upon their ancestors' spirits to rise up and protect them, causing a cloak of spectral faces to shimmer and swirl around them. The taiga giant's AC increases to 34 until the start of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "ancestral-guardian",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "ancestral-guardian"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Protected by the Ancestors",
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine"
+      ],
+      "text": "A taiga giant's prayers to their ancestors grant them spiritual protection. If a taiga giant loses this protection (such as by taking too much damage when using Guardian Spirit, or if the ancestors are counteracted by Dispel Magic), it loses its immunity to the Controlled condition and its status bonus to saving throws against enchantment and illusion effects. A taiga giant can once again be Protected by the Ancestors by performing a 10-minute prayer as an activity that has the concentrate trait."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Taiga giants prefer a nomadic lifestyle, both to keep from depleting any one area's resources while satiating their massive appetites and to satisfy a constant wanderlust. They are deeply spiritual and frequently commune with their ancestors' spirits for guidance and knowledge. Taiga giants are happiest when they are left alone to live out their traditional lives, and their impressive size and strength are enough to persuade all but the most dangerous foes to do so.\n\nTaiga giants subsist on migratory herds of aurochs, mammoths, and elk. They occasionally raid humanoid villages, but such cases are opportunistic rather than malicious, with a focus on stealing away livestock for food rather than people. Nevertheless, the arrival of a group of taiga giants is a potentially devastating event to any town or village, so many communities attempt to placate the giants by creating a yearly offering at those times when they know the giants are scheduled to come close.\n\nMost taiga giants venerate their ancestors and seek to honor their works in everything they do. This deep connection makes them ferociously proud of those legacies, and little can compel taiga giants to go to war more swiftly than insulting their ancestors. Merely mentioning the false rumors that ancient taiga giant spellcasters were responsible for the creation of the first rune giants is a surefire way to earn a taiga giant's unending wrath.\n\nA taiga giant stands 20 feet tall and weighs 10,000 pounds."
+}

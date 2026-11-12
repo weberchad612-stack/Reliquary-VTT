@@ -1,0 +1,66 @@
+{
+  "kind": "feat",
+  "slug": "oozemorph-dedication",
+  "system": "pf2e",
+  "name": "Oozemorph Dedication",
+  "source": {
+    "title": "Pathfinder Adventure: The Slithering",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "text": "You are plagued by sporadic anatomical rearrangements, which grant you insights into other creatures with unusual anatomies. You become trained in Occultism and Ooze Lore; if you were already trained, you become an expert instead. You gain a +2 circumstance bonus to Reflex saves to avoid being Engulfed by creatures, and to checks to Escape after being Engulfed.\n\nAs you develop more abilities based on your amorphous affliction, you become increasingly off-putting to mundane creatures. You take a penalty to Diplomacy checks against animals and humanoids. This penalty is equal to your number of class feats from the oozemorph archetype, to a maximum of -4 for four or more feats.\n\nOozemorph",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:engulf"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.occultism.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.oozemorphDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "label": "Oozemorph: vs. Animals or Humanoids",
+        "predicate": [
+          {
+            "or": [
+              "target:trait:animal",
+              "target:trait:humanoid"
+            ]
+          }
+        ],
+        "selector": "diplomacy",
+        "type": "circumstance",
+        "value": "max(-1 * @actor.flags.system.oozemorphDedicationCount, -4)"
+      }
+    }
+  ]
+}

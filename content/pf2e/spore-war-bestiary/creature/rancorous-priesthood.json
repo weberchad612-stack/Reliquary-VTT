@@ -1,0 +1,234 @@
+{
+  "kind": "creature",
+  "slug": "rancorous-priesthood",
+  "system": "pf2e",
+  "name": "Rancorous Priesthood",
+  "source": {
+    "title": "Pathfinder #211: The Secret of Deathstalk Tower",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 31,
+    "hp": 195,
+    "perception": 21,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 17,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 2,
+      "int": 2,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 21,
+      "religion": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "chthonian",
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 15
+        },
+        {
+          "type": "splash-damage",
+          "value": 8
+        }
+      ]
+    },
+    "notes": {
+      "hp": "troop defenses",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Spontaneous Spells",
+      "tradition": "divine",
+      "type": "spontaneous",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Divine Wrath",
+          "rank": 5,
+          "ref": "spells:spell/divine-wrath"
+        },
+        {
+          "name": "Crisis of Faith",
+          "rank": 5,
+          "ref": "spells:spell/crisis-of-faith"
+        },
+        {
+          "name": "Vampiric Feast",
+          "rank": 6,
+          "ref": "spells:spell/vampiric-feast"
+        },
+        {
+          "name": "Divine Lance",
+          "rank": 1,
+          "ref": "spells:spell/divine-lance"
+        },
+        {
+          "name": "Grim Tendrils",
+          "rank": 5,
+          "ref": "spells:spell/grim-tendrils"
+        },
+        {
+          "name": "Harm",
+          "rank": 6,
+          "ref": "spells:spell/harm"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Void Warp",
+          "rank": 1,
+          "ref": "spells:spell/void-warp"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Form Up",
+      "actions": 1,
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "Thresholds 130 (3 segments), 65 (2 segments)\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "offensive",
+      "text": "Whenever the troop Strides, they first Form Up as a free action to condense into a 20-foot-by-20-foot area (minus any missing squares), then moves up to their Speed. This works just like a Gargantuan creature moving; for instance, if any square of the troop enters difficult terrain, the extra movement cost applies to the whole troop."
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Spellcasting",
+      "category": "offensive",
+      "text": "When the rancorous priesthood Casts a Spell, their constituent members combine their efforts into casting a more powerful version of the spell than any one member could achieve alone.\n\nWhen Casting a Spell that has an area of a burst, cone, or line and doesn't have a duration, increase the area of that spell. Add 5 feet to the radius of a burst that normally has a radius of at least 10 feet (a burst with a smaller radius is not affected). Add 5 feet to the length of a cone or line that is normally 15 feet long or smaller, and add 10 feet to the length of a larger cone or line.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:area:type:burst",
+              "item:duration:0",
+              {
+                "gte": [
+                  "item:area:size",
+                  10
+                ]
+              }
+            ],
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "lte": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 110,
+            "property": "area-size",
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "spell",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:duration:0",
+              {
+                "or": [
+                  "item:area:type:cone",
+                  "item:area:type:line"
+                ]
+              },
+              {
+                "gt": [
+                  "item:area:size",
+                  15
+                ]
+              }
+            ],
+            "priority": 100,
+            "property": "area-size",
+            "value": 10
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wild Swing",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\n\nEffect The members of the mob wildly swing their weapons-primarily greataxes-in a chaotic attack at each enemy adjacent to the troop (DC 27 basic Reflex save save). The damage depends on the number of actions.\n\n1 1d12+2 slashing damage\n\n2 2d12+9 slashing damage\n\n3 3d12+9 slashing damage",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "spell",
+      "name": "Blight (Doesn't Require Secondary Casters)",
+      "rank": 4,
+      "ref": "spells:spell/blight"
+    }
+  ],
+  "text": "Followers of Rovagug must usually conceal their devotion to the Rough Beast, hiding in remote cave complexes or abandoned ruins; but they emerge from these strongholds when they sense weakness, gathering together into a destructive, homicidal mob to hunt down high-ranking priests of rival deities or slaughter entire towns. Alternatively, if their hidden bolthole is compromised, a mob of Rovagug's faithful might emerge-not hoping to save themselves, but intent only on taking their enemies with them as they die."
+}

@@ -1,0 +1,96 @@
+{
+  "kind": "feat",
+  "slug": "five-gods-ram",
+  "system": "pf2e",
+  "name": "Five-Gods Ram",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "monk"
+  ],
+  "category": "class",
+  "actions": 3,
+  "prerequisites": [
+    "Rushing Goat Stance"
+  ],
+  "text": "Requirements You're in Rushing Goat Stance.\n\n---\nYou attack in an unceasing flurry of charging headbutts. Stride or Climb and then make a ramming horn Strike. If the Strike is successful, you immediately push the target back 10 feet, then Stride or Climb and make a second ramming horn Strike against them. If the second Strike is successful, you immediately knock the target Prone, but if the second Strike is a failure or if you're unable to complete all the required actions, you become Stunned 1.\n\nBoth Strikes count toward your multiple attack penalty, but the penalty doesn't increase until you've made both of them.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:effect:rushing-goat-stance"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Monk.FiveGodsRam.RollOptionLabel",
+        "option": "five-gods-ram",
+        "suboptions": [
+          {
+            "label": "PF2E.GenericLabel.StrikeCount.First",
+            "value": "first-strike"
+          },
+          {
+            "label": "PF2E.GenericLabel.StrikeCount.Second",
+            "value": "second-strike"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "note",
+      "selector": [
+        "ramming-horn-attack-roll"
+      ],
+      "text": "PF2E.SpecificRule.Monk.FiveGodsRam.FirstStrike.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "five-gods-ram:first-strike"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": [
+        "ramming-horn-attack-roll"
+      ],
+      "text": "PF2E.SpecificRule.Monk.FiveGodsRam.SecondStrike.Note",
+      "outcome": [
+        "success",
+        "criticalSuccess"
+      ],
+      "when": [
+        "five-gods-ram:second-strike"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": [
+        "ramming-horn-attack-roll"
+      ],
+      "text": "PF2E.SpecificRule.Monk.FiveGodsRam.FailureNote",
+      "outcome": [
+        "failure",
+        "criticalFailure"
+      ],
+      "when": [
+        {
+          "or": [
+            "five-gods-ram:first-strike",
+            "five-gods-ram:second-strike"
+          ]
+        }
+      ]
+    }
+  ]
+}

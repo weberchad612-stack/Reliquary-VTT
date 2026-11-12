@@ -1,0 +1,93 @@
+{
+  "kind": "feat",
+  "slug": "sneak-attack",
+  "system": "pf2e",
+  "name": "Sneak Attack",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "rogue"
+  ],
+  "category": "classfeature",
+  "text": "When your enemy can't properly defend itself, you take advantage to deal extra damage. If you Strike a creature that has the Off-Guard condition with an agile or finesse melee weapon, an agile or finesse unarmed attack, a ranged weapon attack, or a ranged unarmed attack, you deal an extra 1d6 precision damage. For a ranged attack with a thrown melee weapon, that weapon must also be agile or finesse.\n\nAs your level increases, so does the number of damage dice for your sneak attack. Increase the number of dice by one at 5th, 11th, and 17th levels.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.sneakAttackDamage.number",
+        "predicate": [
+          "class:rogue"
+        ],
+        "value": "ternary(lt(@actor.level, 5), 1, ternary(lt(@actor.level, 11), 2, ternary(lt(@actor.level, 17), 3, 4)))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.sneakAttackDamage.faces",
+        "predicate": [
+          "class:rogue"
+        ],
+        "value": 6
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+        "option": "target:condition:off-guard",
+        "toggleable": "totm"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:trait:agile",
+              "item:trait:finesse",
+              {
+                "and": [
+                  "item:ranged",
+                  {
+                    "not": "item:thrown-melee"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "sneak-attack"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "precision",
+        "diceNumber": "@actor.flags.system.sneakAttackDamage.number",
+        "dieSize": "d{actor|flags.system.sneakAttackDamage.faces}",
+        "key": "DamageDice",
+        "predicate": [
+          "item:tag:sneak-attack",
+          "target:condition:off-guard"
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

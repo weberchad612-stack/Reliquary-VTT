@@ -1,0 +1,293 @@
+{
+  "kind": "creature",
+  "slug": "calikang",
+  "system": "pf2e",
+  "name": "Calikang",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "uncommon",
+  "traits": [
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 31,
+    "hp": 235,
+    "perception": 22,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 22,
+      "will": 20
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 4,
+      "int": -2,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 25,
+      "intimidation": 24
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "truesight",
+        "range": 60,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "jotun"
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 28,
+      "attack": 20,
+      "spells": [
+        {
+          "name": "Chain Lightning",
+          "rank": 6,
+          "ref": "spells:spell/chain-lightning"
+        },
+        {
+          "name": "Truesight (Constant)",
+          "rank": 6,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Runic Weapon (At Will)",
+          "rank": 1,
+          "ref": "spells:spell/runic-weapon"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 28,
+      "traits": [
+        "magical",
+        "reach-10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+15",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Suspended Animation",
+      "category": "interaction",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "By concentrating for 5 minutes, the calikang can enter a state of suspended animation, freezing in place and becoming motionless but remaining aware of their surroundings.\n\nWhile in this state, the calikang gains a +4 status bonus to Fortitude saves; doesn't age; and is immune to disease, inhaled toxins, poison, starvation, and thirst.\n\nThe calikang can exit suspended animation as a free action. If they exit this state to attack, the calikang gains a +2 circumstance bonus to their initiative roll.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "suspended-animation",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.Label.Enter",
+                "value": "enter"
+              },
+              {
+                "label": "PF2E.SpecificRule.Label.Exit",
+                "value": "exit"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "fortitude",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "suspended-animation:enter"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "suspended-animation:enter"
+            ],
+            "type": [
+              "disease",
+              "poison"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "suspended-animation:exit"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Energy Conversion",
+      "category": "defensive",
+      "traits": [
+        "arcane"
+      ],
+      "text": "Whenever the calikang is hit by an electricity spell's attack roll or rolls a successful save against a spell that deals electricity damage, they absorb the energy.\n\nThis heals the calikang for an amount of HP equal to quadruple the spell's rank and recharges their Breath Weapon. A calikang can't absorb their own spells this way."
+    },
+    {
+      "kind": "ability",
+      "name": "Energy Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane"
+      ],
+      "text": "Frequency once per day.\n\n---\nEffect The calikang breathes a blast of energy that deals 13d6 @item.flags.system.rulesSelections.breathWeapon damage to creatures in a 60-foot line (DC 28 basic Reflex save save). The calikang can choose the damage type each time: acid, cold, electricity, fire, or sonic.\n\nIncrease the die size to d8 if the calikang chooses electricity.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "energy-breath",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "upgrade",
+            "predicate": [
+              "item:slug:energy-breath",
+              "energy-breath:electricity"
+            ],
+            "property": "dice-faces",
+            "selectors": [
+              "inline-damage"
+            ],
+            "value": 8
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sixfold Flurry",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The calikang makes up to two longsword Strikes and up to four fist Strikes. Each Strike must be against a different target.\n\nThese attacks count toward the calikang's multiple attack penalty, which doesn't increase until after all the attacks are complete.\n\nFor 1 round, the calikang gains a circumstance bonus to their AC equal to the number of Strikes they choose not to take, to a maximum of +4 for taking only two Strikes.\n\nEffect: Sixfold Flurry"
+    }
+  ],
+  "text": "Calikangs are giant, blue-skinned, six-armed guardians of ancient tombs and treasuries. They each feel a deep, inherent drive to protect and guard, making them highly sought after as wardens and bodyguards. Because most serve as solitary guardians, few calikang societies exist.\n\nCalikangs' unique physiologies enable them to absorb and manipulate electrical magic as well as other energies. They can live for 200 years-though they can further extend their lives via suspended animation. For this reason, many are chosen to guard tombs or other sealed sites where living guardians would perish and constructs would deteriorate."
+}

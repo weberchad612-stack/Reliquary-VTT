@@ -1,0 +1,216 @@
+{
+  "kind": "creature",
+  "slug": "jitterbone-contortionist",
+  "system": "pf2e",
+  "name": "Jitterbone Contortionist",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "halfling",
+    "humanoid",
+    "mortic"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 20,
+    "hp": 56,
+    "perception": 10,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 14,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 3,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 12,
+      "athletics": 10,
+      "deception": 9,
+      "stealth": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "halfling",
+      "necril"
+    ],
+    "notes": {
+      "hp": "void healing",
+      "speed": "compression"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consecration Vulnerability",
+      "category": "defensive",
+      "text": "A jitterbone in a place of worship dedicated to a non-evil deity or on sacred ground, such as an area blessed by Anointed Ground, is Slowed 1."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Compression",
+      "category": "offensive",
+      "text": "The jitterbone can move through a gap at least 6 inches wide without Squeezing and can Squeeze through a gap at least 2 inches wide.When the jitterbone successfully Squeezes, they move through the tight space at full Speed. Narrow confines aren't difficult terrain for a jitterbone."
+    },
+    {
+      "kind": "ability",
+      "name": "Death Gasp",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The jitterbone draws in a deep breath and holds it, temporarily suspending their biological processes and becoming undead. The jitterbone gains the undead trait and becomes immune to bleed, death effects, disease, Paralyzed, poison, and sleep. Any such effects the jitterbone is currently inflicted with are suspended but take effect again once they take a breath.\n\nDeath Gasp lasts as long as the jitterbone holds their breath (up to 8 rounds).\n\nEffect: Death Gasp"
+    },
+    {
+      "kind": "ability",
+      "name": "Osseous Defense",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The jitterbone elongates their bones, causing jagged bone spikes to protrude from their skin. While Osseous Defense is active, the jitterbone can make bone spike and bone dart Strikes and gains resistance 5 to piercing damage and slashing damage. The jitterbone loses Compression while their Osseous Defense is active. The jitterbone can end Osseous Defense as a single action, retracting their bones back into their body.\n\nMelee 1 bone spike +14 (finesse), Damage 2d8+2 piercing plus 1d6 persistent bleed\n\nRanged 1 bone dart +14 (agile, thrown 20 feet), Damage 2d6+2 piercing",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "osseous-defense",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "osseous-defense"
+            ],
+            "type": [
+              "piercing",
+              "slashing"
+            ],
+            "value": 5
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 2
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.BoneSpike",
+            "predicate": [
+              "osseous-defense"
+            ],
+            "slug": "bone-spike",
+            "traits": [
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "osseous-defense"
+            ],
+            "selector": "bone-spike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 2
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.BoneDart",
+            "predicate": [
+              "osseous-defense"
+            ],
+            "range": {
+              "increment": 20
+            },
+            "slug": "bone-dart",
+            "traits": [
+              "agile",
+              "thrown"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Aptly named jitterbones, halfling mortics are capable of controlling the density and rigidity of their skeletal structure. When relaxed, they have elongated, rubbery limbs. When they harden their bones, they become difficult to harm and bony spikes jut from their flesh.\n\n---\n\nMortics are humanoids overwhelmed by void energy who tenaciously cling to life, straddling the line between living and dead."
+}

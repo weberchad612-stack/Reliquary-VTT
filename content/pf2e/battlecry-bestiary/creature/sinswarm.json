@@ -1,0 +1,175 @@
+{
+  "kind": "creature",
+  "slug": "sinswarm",
+  "system": "pf2e",
+  "name": "Sinswarm",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "aberration",
+    "troop"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 27,
+    "hp": 150,
+    "perception": 19,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 18,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": 1,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 20,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "thassilonian"
+    ],
+    "iwr": {
+      "immunities": [
+        "controlled"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "(4 segments); Thresholds 100 (3 segments), 50 (2 segments)",
+      "perception": "sin scent (imprecise) 30 feet",
+      "speed": "troop movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Sin Scent",
+      "category": "interaction",
+      "text": "A sinswarm can smell creatures reflecting any one of the seven primary sins as the scent ability. The GM determines which creatures are appropriately sinful."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Attack",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within a 5-foot emanation of the sinswarm uses a manipulate action or a move action, makes a ranged attack, or leaves a square during a move action it's using\n\n---\nEffect The sinswarm lashes out at the triggering creature, dealing 2d8+9 piercing damage (DC 25 basic Reflex save save). If the creature critically fails the save and the trigger was a manipulate action, that action is disrupted."
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Defenses",
+      "category": "defensive",
+      "text": "HP 150 (4 segments); Thresholds 100 (3 segments), 50 (2 segments)"
+    },
+    {
+      "kind": "ability",
+      "name": "Troop Movement",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Sinful Assault",
+      "actions": 1,
+      "category": "offensive",
+      "text": "1 to 3\n\nFrequency once per round\n\n---\nEffect The sinswarm makes a coordinated attack against each enemy in a 5-foot emanation, with a DC 25 basic Reflex save save. The damage depends on the number of actions.\n\n1 1d8+2 piercing damage\n\n2 2d8+9 piercing damage plus sinful bite\n\n3 3d8+11 piercing damage plus sinful bite",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "sinful-assault",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitPiercing",
+                "value": "piercing"
+              },
+              {
+                "label": "PF2E.TraitSlashing",
+                "value": "slashing"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "damage:type:piercing"
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "{item|id}-inline-damage"
+            ],
+            "value": "{item|flags.system.rulesSelections.sinfulAssault}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sinful Bite",
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "emotion",
+        "mental"
+      ],
+      "text": "A creature bitten by a sinspawn must attempt a DC 28 Will save save as it is assailed by sinful thoughts. The sinswarm can't inflict the same sin effect on multiple targets in the same round until it has inflicted all seven sins at least once.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature is Sickened 1.\n\nFailure The creature is Sickened 2.\n\nCritical Failure The creature is sickened 2 and takes one of the following additional effects, chosen by the GM:\n- Enfeebled 2 for 1 minute (envy)\n\n- Drained 1 (gluttony)\n\n- Clumsy 2 for 1 minute (greed)\n\n- Stupefied 2 for 1 minute (lust)\n\n- Clumsy 1 and Enfeebled 1 for 1 minute (pride)\n\n- –10-foot status penalty to all Speeds for 1 minute (sloth) Effect: Sinful Bite\n\n- drained 1 and enfeebled 1 for 1 minute (wrath)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "sinful-assault-inline-damage",
+          "text": "{item|description}",
+          "when": [
+            "sinful-bite"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Sinspawn, monstrosities of twisted humanoid flesh, were created ages ago by the runelord Alaznist to serve as shock troops. Hateful even toward their own kind, sinspawn usually band together only in small, isolated cults, although powerful beings are occasionally able to coerce greater numbers of these slavering horrors to join forces as uniquely bloodthirsty and destructive mobs."
+}

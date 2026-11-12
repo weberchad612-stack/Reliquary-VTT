@@ -1,0 +1,189 @@
+{
+  "kind": "creature",
+  "slug": "echopsyvne",
+  "system": "pf2e",
+  "name": "Echopsyvne",
+  "source": {
+    "title": "Pathfinder #206: Bring the House Down",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "incorporeal",
+    "palinthanos",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 39,
+    "hp": 255,
+    "perception": 31,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 33,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 0,
+      "dex": 9,
+      "int": 6,
+      "str": -5,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 35,
+      "deception": 32
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 15,
+          "except": "force, ghost-touch, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 40,
+      "attack": 32,
+      "spells": [
+        {
+          "name": "Possession",
+          "rank": 9,
+          "ref": "spells:spell/possession",
+          "uses": 3
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 33,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d6",
+          "type": "spirit"
+        },
+        {
+          "dice": "3d6+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Backward Speakers",
+      "category": "interaction",
+      "text": "When a palinthanos vocalizes, the sounds it creates are reversed. For the egarhowl, this only results in unnerving backwards sounds of angry roars and bestial noises, but for those who can speak, it makes understanding them difficult. A palinthanos has no difficulty understanding any language it can speak, but when it speaks, listeners must succeed at a DC 30 Perception check check made as a free action with the concentrate trait each round to quickly decipher the reversed conversation. This prevents a palinthanos from being able to easily utilize linguistic actions."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Distort Perception",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "mental",
+        "occult"
+      ],
+      "text": "Frequency once per round\n\n---\nEffect The echopsyvne targets a creature it can see within 30 feet and alters its perception of time. The target must attempt a DC 40 Will save save. Regardless of success or failure, the creature then becomes temporarily immune to this ability for 24 hours.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature perceives time to flow backward briefly and becomes Slowed 1 for 1 round.\n\nFailure Time flows backward for the creature, leaving them unable to interact with the world around them. The creature is Stunned 3, after which it is slowed 1 for 1 round.\n\nCritical Failure The creature's mind becomes stuck in a time loop, and it becomes Paralyzed by the disorienting sight for 1 minute. At the end of each of its turns, it can attempt a new Will save to reduce the remaining duration by 1 round or end it entirely on a critical success.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Predestined Defeat",
+      "actions": "reaction",
+      "category": "offensive",
+      "traits": [
+        "occult"
+      ],
+      "text": "Trigger The echopsyvne rolls initiative\n\nFrequency once per day\n\n---\nEffect At the start of combat, an inverted, reversed explosion of spiritual and void energy implodes in a 30-foot emanation centered on the echopsyvne—a reversal of the creature's spiritually explosive death. All creatures in the area take 15d8 spirit damage (DC 37 basic Fortitude save save); creatures that fail this save are also Slowed 1 for 1 round as time seems to distort around them.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "note",
+          "selector": "initiative",
+          "text": "{item|system.description.value}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reaction Reversal",
+      "category": "offensive",
+      "text": "Since an echopsyvne appears to move backwards in time and the results of its actions manifest slightly out of sync, its manipulate or move actions and Strikes don't trigger reactions normally. Whenever a reaction would be triggered by an echopsyvne in this way, the reacting creature must attempt a DC 11 Flat check. On a failure, their reaction does not trigger."
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Possession",
+      "category": "offensive",
+      "text": "When the echopsyvne casts possession on a creature, that creature experiences time backward. When the echopsyvne controls the target, they function normally, but when the target takes their own actions while the echopsyvne is in partial control or riding along in their body, they become Clumsy 3 and take a –10-foot status penalty to all of their Speeds. When the echopsyvne stops possessing the target, willingly or otherwise, the target must succeed at a DC 37 Will save save or be Stunned 1 as they readjust to a more familiar flow of time."
+    }
+  ],
+  "text": "Palinthanos formed from intelligent creatures tend to be scheming and envious opportunists who seek to possess mortal bodies. They appear as vortexes of twisted, misty faces from which ghostly limbs emerge, regardless of their appearance in life.\n\n---\nWhen a cosmic event like Godsrain disturbs all that exists, the River of Souls sometimes flows backward for a brief moment, literally, from the shockwave. Unwilling and confused souls that are forced back far enough can have the agonizing experience of enduring death in reversed time. Some of these souls manage to re-enter the river once the flow returns to normal, but those who are stranded on the metaphorical shores of the living can become palinthanos: powerful undead born from their reversed demise who struggle futilely until their predestined banishment back to the River.\nBackward Time\nPalinthanos movements often feel counterintuitive to the senses, as if there is some invisible force from the unseen future acting upon them. For example, wounds created by palinthanos attacks tend to appear on bodies out of sync with the inflicting strike, manifesting a fraction of a section before the attack lands. Wherever they appear, it's as though two streams of time collide and flow opposite of one another, which the Universe does its best to make sense of."
+}

@@ -1,0 +1,211 @@
+{
+  "kind": "creature",
+  "slug": "niallana",
+  "system": "pf2e",
+  "name": "Niallana",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "unique",
+  "traits": [
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 275,
+    "perception": 26,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 28,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 3,
+      "dex": 5,
+      "int": 0,
+      "str": 8,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 31,
+      "performance": 29,
+      "stealth": 28
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 15,
+          "except": "slashing"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "sense murderer",
+      "languages": "Can't Speak"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+16",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Loathing",
+      "category": "defensive",
+      "text": "If a silent stalker sees their own reflection or any object important to them in life, they must attempt a DC 40 Will save save.\n\n---\nCritical Success The pale stranger is unaffected and can no longer be affected by that reflection or object in this way.\n\nSuccess The silent stalker is distracted by self-loathing and is Slowed 1 for 1 round.\n\nFailure The silent stalker becomes Fascinated by the source of their self-loathing and does everything they can to destroy it until the end of their next turn.\n\nCritical Failure The silent stalker becomes Immobilized as long as the source of their self-loathing is apparent, until they're attacked, or until they see their murderer."
+    },
+    {
+      "kind": "ability",
+      "name": "Sense Murderer",
+      "category": "defensive",
+      "traits": [
+        "detection",
+        "occult"
+      ],
+      "text": "A silent stalker knows the direction of their murderer (as long as both are on the same plane), but not the distance."
+    },
+    {
+      "kind": "ability",
+      "name": "Silent Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "illusion",
+        "occult"
+      ],
+      "text": "10 feet. A silent stalker makes no sound, preventing creatures from noticing them using hearing or a similar sense alone. This silence stops all sound within it or passing through. The silent stalker and all creatures in the aura can't use sonic attacks or actions that have the auditory trait; this prevents creatures from casting spells with verbal components or activating items with command components.\n\nEffect: Silent Aura",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "all",
+                "events": [
+                  "enter"
+                ],
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Silent Aura"
+              }
+            ],
+            "key": "Aura",
+            "radius": 10,
+            "slug": "silent-aura",
+            "traits": [
+              "illusion",
+              "occult"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Undying Vendetta",
+      "category": "defensive",
+      "text": "If the silent stalker's murderer dies, the pale stranger is immediately destroyed. A pale stranger that can't sense their murderer must attempt a DC 11 Flat check once every 24 hours to avoid becoming Immobilized and Prone; they immediately rise again once they can sense their murderer. A murderer who becomes undead does not trigger the silent stalker's destruction until the murderer is finally destroyed. The silent stalker gains a +2 status bonus to checks and DCs against their murderer.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "undying-vendetta",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "all",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "undying-vendetta"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "3d8+8 bludgeoning, DC 36 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Siphon Voice",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "occult"
+      ],
+      "text": "Niallana attempts to steal the voice of a living creature within 30 feet. The target must attempt a DC 36 Fortitude save save. As long as a creature is voiceless due to this effect, Niallana's silent aura is suppressed, and she can speak in the voice of the affected creature.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The target becomes voiceless until the end of Niallana's next turn. A voiceless creature can't speak, create vocal sounds, or take auditory actions (including supplying verbal or command components).\n\nFailure As success, but the duration is 1 minute.\n\nCritical Failure As success, but the curse duration is permanent."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "When a person is betrayed and killed in a way that their voice was silenced (such as through strangulation by a lover or close confidante), they might come back as a silent stalker. A silent stalker is a horrifying, twisted likeness of the person they were in life, with one obvious difference: the silent stalker has no mouth, simply a smooth patch of flesh where a mouth should be. Sound is suppressed in an area around a silent stalker, but once someone notices the quiet, it's often too late.\n\n---\n\nA revenant is a vengeful undead who stalks the one who killed them in life. They're relentless in the pursuit of their murderer, seeking a final justice.",
+  "blurb": "Variant silent stalker"
+}

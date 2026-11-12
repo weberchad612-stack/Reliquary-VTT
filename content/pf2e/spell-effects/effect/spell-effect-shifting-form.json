@@ -1,0 +1,134 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shifting-form",
+  "system": "pf2e",
+  "name": "Spell Effect: Shifting Form",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Shifting Form\n\nYou gain one of the following abilities of your choice.\n\n- You gain a 20-foot status bonus to your Speed.\n\n- You gain a climb or swim Speed equal to half your Speed.\n\n- You gain darkvision.\n\n- You gain a pair of claws. These are agile finesse unarmed attacks that deal 1d8 slashing damage.\n\n- You gain scent 60 feet (imprecise).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Actor.Speed.Label",
+            "value": "speed"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Climb",
+            "value": "climb"
+          },
+          {
+            "label": "PF2E.Actor.Speed.Type.Swim",
+            "value": "swim"
+          },
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.Darkvision",
+            "value": "darkvision"
+          },
+          {
+            "label": "PF2E.Weapon.Base.claw",
+            "value": "claw"
+          },
+          {
+            "label": "PF2E.Actor.Creature.Sense.Type.Scent",
+            "value": "scent"
+          }
+        ],
+        "flag": "shiftingForm",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Form",
+        "rollOption": "shifting-form"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "status",
+      "value": 20,
+      "when": [
+        "shifting-form:speed"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "shifting-form:climb"
+        ],
+        "selector": "climb",
+        "value": "floor(@actor.system.movement.speeds.land.value/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "shifting-form:swim"
+        ],
+        "selector": "swim",
+        "value": "floor(@actor.system.movement.speeds.land.value/2)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Sense",
+        "predicate": [
+          "shifting-form:darkvision"
+        ],
+        "selector": "darkvision"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "baseType": "claw",
+        "category": "unarmed",
+        "damage": {
+          "base": {
+            "damageType": "slashing",
+            "dice": 1,
+            "die": "d8"
+          }
+        },
+        "key": "Strike",
+        "label": "PF2E.Weapon.Base.claw",
+        "predicate": [
+          "shifting-form:claw"
+        ],
+        "traits": [
+          "agile",
+          "finesse",
+          "unarmed",
+          "magical"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "acuity": "imprecise",
+        "key": "Sense",
+        "predicate": [
+          "shifting-form:scent"
+        ],
+        "range": 60,
+        "selector": "scent"
+      }
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "agile-warrior-nightmares",
+  "system": "pf2e",
+  "name": "Agile Warrior (Nightmares)",
+  "source": {
+    "title": "Pathfinder #166: Despair on Danger Island",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "uncommon",
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 35,
+    "hp": 180,
+    "perception": 25,
+    "saves": {
+      "fortitude": 22,
+      "reflex": 26,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 5,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 28,
+      "athletics": 22,
+      "deception": 24,
+      "stealth": 26,
+      "any-one-terrain-lore": 22
+    },
+    "speeds": {
+      "land": 35
+    },
+    "languages": [
+      "taldane",
+      "tien"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Sai",
+      "ref": "equipment:item/sai",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 5
+    },
+    {
+      "kind": "gear",
+      "name": "Halberd",
+      "ref": "equipment:item/halberd",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Sai",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "disarm",
+        "finesse",
+        "magical",
+        "monk",
+        "versatile-b"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Halberd",
+      "attack": 27,
+      "traits": [
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "magical",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The agile warrior is targeted with a melee or ranged attack by an attacker they can see.\n\n---\n\nEffect The agile warrior gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "nimble-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "nimble-dodge"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deadly Disarm",
+      "category": "offensive",
+      "text": "The agile warrior deals 2d6 precision untyped precision damage to a creature on a successful disarm attempt.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "skill-check",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The agile warrior's Strikes deal an additional 2d6 extra precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tumbling Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The agile warrior Strides up to their Speed. During this movement, they can move through the space of one creature without triggering reactions. When the agile warrior moves through a creature's space in this way, that creature becomes Off-Guard until the end of the agile warrior's turn. If the agile warrior ends their movement within melee reach of at least one enemy, they can make a melee Strike against that enemy."
+    }
+  ]
+}

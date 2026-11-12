@@ -1,0 +1,207 @@
+{
+  "kind": "creature",
+  "slug": "chimpanzee-visitant",
+  "system": "pf2e",
+  "name": "Chimpanzee Visitant",
+  "source": {
+    "title": "Pathfinder #152: Legacy of the Lost God",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "animal",
+    "evil",
+    "undead",
+    "unholy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 18,
+    "hp": 55,
+    "perception": 9,
+    "saves": {
+      "fortitude": 8,
+      "reflex": 11,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 4,
+      "int": -4,
+      "str": 3,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "lifesense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "vitality",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "rabies"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+3",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lifesense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Vengeful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "20 feet. A creature that starts its turn within the visitant's aura must succeed at a DC 16 Will save save or be overcome with a thirst for vengeance.\n\nFor 1d4 rounds (1 minute on a critical failure), if the affected creature was attacked within the last round (whether or not the attack hit), the creature must use at least 1 action per round to Strike or use a hostile action toward its last attacker as long as the attacker is still alive. Failure to do so deals the affected creature 1d6 mental damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "slug": "vengeful-presence",
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Whip Vulnerability",
+      "category": "defensive",
+      "text": "A chimpanzee visitant takes 5 additional damage from whips."
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "The visitant gains a +2 circumstance bonus to damage rolls against a creature it has Grabbed.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "mauler"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "label": "Target is Grabbed by the Visitant",
+            "option": "mauler",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rabies",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Visitants can be carriers of diseases, even if they are immune to their effects.\n\nSaving Throw DC 16 Fortitude save.\n\nStage 1 Sickened 1 (1 day)\n\nStage 2 Sickened 2 (1 day)\n\nStage 3 Confusion (1 day)\n\nStage 4 dead"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Common circus animals viewed as expendable by their caretakers are perhaps the most likely to rise as visitants. Animals that die en masse-such as in a tent fire or other disaster-can even form packs of roving undead.\n\n---\n\nAlthough the wild creatures seen at traveling circuses can entertain and amaze, the lives of such animals and beasts are sometimes sad and cruel. Circus owners who mistreat their animals through harsh discipline or overtraining see little wrong with their mercilessness, even going so far as to slaughter their entertainers-supposedly \"by accident\"-via neglect or abuse. The victims of such cruelty who cannot move onto the afterlife-either because they somehow become infused with void energy or their spirits cannot rest without first enacting revenge on their assailants-occasionally rise from the dead as visitants.\n\nThese undead monsters haunt the sites of their demise and search out the masters who made their lives so hellish with only one goal in mind: vengeance. When they can't locate their particular abuser, or if they are still unable to rest even after confronting their aggressor, visitants seek out similarly evil harmers of animals, becoming torturers of torturers. However, visitants are for the most part unable to distinguish between individual members of a species; thus, if a visitant was abused by a human trainer, any human that crosses its path may become a target of its rage.\n\nA visitant resembles a zombified animal, but it retains a spark of the animal intelligence it had in life, making it all the more dangerous as a result. Visitants' bodies are marred by the horrors of their brutal existences: Their mouths are furrowed in a constant snarl, with a black ichor dripping from their cracked, rotten lips. Whip scars from their hours of \"training\" glow with an unnatural purple light. And perhaps above all, their eyes mark them as touched by undeath-sunken horribly deep into their skull, leaking blood or other fluid, and glowing with an aura of dread and palpable anger."
+}

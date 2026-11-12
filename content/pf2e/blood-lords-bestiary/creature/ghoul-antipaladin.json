@@ -1,0 +1,299 @@
+{
+  "kind": "creature",
+  "slug": "ghoul-antipaladin",
+  "system": "pf2e",
+  "name": "Ghoul Antipaladin",
+  "source": {
+    "title": "Pathfinder #184: The Ghouls Hunger",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "evil",
+    "ghoul",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 29,
+    "hp": 155,
+    "perception": 15,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 15,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 4,
+      "int": 1,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 18,
+      "athletics": 20,
+      "intimidation": 20,
+      "religion": 18,
+      "survival": 18,
+      "kabriri-lore": 18
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "ac": "31 with shield raised",
+      "hp": "void healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Focus Spells",
+      "tradition": "divine",
+      "type": "focus",
+      "dc": 25,
+      "attack": 17,
+      "spells": [
+        {
+          "name": "Touch of Corruption",
+          "rank": 1,
+          "ref": "spells:spell/touch-of-the-void"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Flail",
+      "ref": "equipment:item/flail",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Heavy Crossbow",
+      "ref": "equipment:item/heavy-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 19,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "ghoul-ghoul-fever",
+        "ghoul-paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 19,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+9",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "ghoul-paralysis"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flail",
+      "attack": 19,
+      "traits": [
+        "disarm",
+        "sweep",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+13",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Heavy Crossbow",
+      "attack": 19,
+      "traits": [
+        "reload-2"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d8+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Destructive Vengeance",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "unholy"
+      ],
+      "text": "Trigger The ghoul antipaladin takes damage from an enemy within 15 feet\n\n---\n\nEffect The ghoul antipaladin increases the amount of damage they take by 3d6, and they deal 3d6 damage to the triggering enemy, choosing 3d6 spirit or 3d6 void damage to deal to the enemy each time the antipaladin uses this reaction. In addition, the antipaladin deals 4 extra damage of the chosen type with their Strikes against the triggering creature until the end of the antipaladin's turn. An enemy damaged from the ghoul antipaladin's Destructive Vengeance also takes 4 persistent,spirit damage; this applies only to the damage the reaction itself deals to the triggering creature, not the damage the antipaladin deals with subsequent Strikes.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "destructive-vengeance",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitSpirit",
+                "value": "spirit"
+              },
+              {
+                "label": "PF2E.TraitVoid",
+                "value": "void"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "untyped",
+          "value": 4,
+          "when": [
+            "destructive-vengeance"
+          ],
+          "damageType": "{item|flags.system.rulesSelections.destructiveVengeance}"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "traits",
+            "value": "unholy"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Consume Flesh",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "manipulate"
+      ],
+      "text": "Requirements The ghoul antipaladin is adjacent to the corpse of a creature that died within the last hour\n\n---\n\nEffect The ghoul antipaladin devours a chunk of the corpse and regains 4d6 healing Hit Points. It can regain Hit Points from any given corpse only once."
+    },
+    {
+      "kind": "ability",
+      "name": "Ghoul Fever",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 27 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 day)\n\nStage 2 2d6 void damage and regains half as many Hit Points from all healing (1 day)\n\nStage 3 as stage 2 (1 day)\n\nStage 4 2d6 void damage and gains no benefit from healing (1 day)\n\nStage 5 as stage 4 (1 day)\n\nStage 6 dead, and rises as a Ghoul the next midnight."
+    },
+    {
+      "kind": "ability",
+      "name": "Paralysis",
+      "category": "offensive",
+      "traits": [
+        "incapacitation",
+        "occult"
+      ],
+      "text": "Any living, non-elf creature hit by a ghoul antipaladin's attack must succeed at a DC 25 Fortitude save save or become Paralyzed. The creature can attempt a new save at the end of each of its turns, and the DC cumulatively decreases by 1 on each such save."
+    },
+    {
+      "kind": "ability",
+      "name": "Swift Leap",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "move"
+      ],
+      "text": "The ghoul antipaladin jumps up to half its Speed. This movement doesn't trigger reactions."
+    }
+  ],
+  "text": "The church of Kabriri selects only the most devoted and deadly ghouls to protect their libraries of secret-filled tomes."
+}

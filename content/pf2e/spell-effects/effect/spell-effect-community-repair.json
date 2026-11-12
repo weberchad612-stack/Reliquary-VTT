@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-community-repair",
+  "system": "pf2e",
+  "name": "Spell Effect: Community Repair",
+  "source": {
+    "title": "Pathfinder #170: Spoken on the Song Wind",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 7,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Community Repair\n\nOn a critical success, you receive a +1 status bonus to Will saves against emotion effects and a +10-foot status bonus to your Speeds.\n\nOn a critical failure, you take a –10-foot status penalty to your Speeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": 10
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": -10
+          }
+        ],
+        "flag": "outcome",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "community-repair-speed"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "terrain:community-repair"
+        ],
+        "selector": "speed",
+        "type": "status",
+        "value": "@item.flags.system.rulesSelections.outcome"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "terrain:community-repair",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "will",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "item:trait:emotion",
+        "terrain:community-repair",
+        "community-repair-speed:10"
+      ]
+    }
+  ]
+}

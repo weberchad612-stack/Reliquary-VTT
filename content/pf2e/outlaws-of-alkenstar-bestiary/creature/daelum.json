@@ -1,0 +1,218 @@
+{
+  "kind": "creature",
+  "slug": "daelum",
+  "system": "pf2e",
+  "name": "Daelum",
+  "source": {
+    "title": "Pathfinder #179: Cradle of Quartz",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "rare",
+  "traits": [
+    "construct"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 76,
+    "perception": 11,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 5,
+      "dex": 3,
+      "int": 2,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 11,
+      "survival": 11,
+      "mining-lore": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "kelish",
+      "osiriani"
+    ],
+    "iwr": {
+      "immunities": [
+        "mental"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Pick",
+      "ref": "equipment:item/pick",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 13,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+7",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Belly Hatch",
+      "category": "offensive",
+      "text": "The daelum can Interact to stow or remove an item from their belly hatch, which can hold up to 10 Bulk."
+    },
+    {
+      "kind": "ability",
+      "name": "Gallop",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The daelum is in quadruped form\n\n---\n\nEffect The daelum Strides twice. They have a +10-foot circumstance bonus to their Speed during these Strides.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "shift-form"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "option": "gallop",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "gallop"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shift Form",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The daelum transforms into a quadruped. While in this form, their Speed increases by 10 feet and they don't count the contents of their belly hatch against the total amount they can carry. The daelum can make hoof Strikes in quadruped form, but not pick or claw Strikes. Using this ability again returns the daelum to their bipedal form.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "shift-form",
+            "priority": 40,
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 10,
+          "when": [
+            "shift-form"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "category": "martial",
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Weapon.Base.pick",
+            "predicate": [
+              {
+                "not": "shift-form"
+              }
+            ],
+            "slug": "pick",
+            "traits": [
+              "fatal-d10",
+              "reach-10"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "baseType": "claw",
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "shift-form"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "reach-10"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Smog Cloud",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "poison"
+      ],
+      "text": "The daelum unleashes a cloud of smog in a 10-foot emanation. The cloud persists for 3 rounds, but doesn't move with the daelum. All creatures within the cloud are Concealed. A creature that begins its turn in the smog cloud must attempt a DC 18 Fortitude save save (creatures that must breathe and don't hold their breath take a -2 circumstance penalty on their save).\n\n---\n\nCritical Success No effect and temporarily immune for 1 hour.\n\nSuccess The creature is Sickened 1.\n\nFailure The creature is Sickened 2.\n\nCritical Failure The creature is sickened 2 and Slowed 1."
+    }
+  ],
+  "text": "During the height of the legendary war between Nex and Geb, Nex's agents grew increasingly creative in their \"recruiting\" methods for their armies. One such effort involved the construction of mechanical soldiers powered by arcane engines but directed by transplanted minds. While the process generally involved willing donors who were eager to give up dying bodies to \"live on\" in constructed frames, rumors persist that Nex harvested the minds of prisoners of war and criminals for these creations.\n\nToday, thousands of years after those wars ended, hundreds of daelums still live. Their intellects have, in large part, fully embraced their new \"lives,\" and very few remember their previous existences today. Daelums can be found throughout the Mana Wastes serving as guides, porters, mine workers, and mercenaries."
+}

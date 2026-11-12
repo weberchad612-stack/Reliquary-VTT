@@ -1,0 +1,47 @@
+{
+  "kind": "feat",
+  "slug": "adept-benefit-shield",
+  "system": "pf2e",
+  "name": "Adept Benefit (Shield)",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "When you have your shield implement raised, you gain a status bonus to your saves against spells and other magic effects equal to your circumstance bonus to AC from your shield. In addition, damage you take as a result of a spell or magical effect while your Shield is Raised can trigger your Shield Block reaction, even if the damage isn't physical.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.thaumaturge.paragonChoices",
+        "priority": 20,
+        "value": {
+          "label": "PF2E.SpecificRule.Thaumaturge.Implement.Shield.Label",
+          "value": "Compendium.pf2e.classfeatures.Item.Paragon Benefit (Shield)"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "item:magical",
+          "shield-implement:equipped",
+          "self:shield:raised"
+        ],
+        "selector": "saving-throw",
+        "type": "status",
+        "value": "@actor.system.attributes.shield.ac"
+      }
+    }
+  ]
+}

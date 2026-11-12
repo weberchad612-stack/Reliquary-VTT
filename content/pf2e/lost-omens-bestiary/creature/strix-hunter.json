@@ -1,0 +1,220 @@
+{
+  "kind": "creature",
+  "slug": "strix-hunter",
+  "system": "pf2e",
+  "name": "Strix Hunter",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "uncommon",
+  "traits": [
+    "humanoid",
+    "strix"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 80,
+    "perception": 17,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 13
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 5,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 13,
+      "diplomacy": 10,
+      "intimidation": 13,
+      "nature": 13,
+      "performance": 10,
+      "survival": 15
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 17,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Talon",
+      "attack": 16,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Darting Swap",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The strix hunter Strides or Flies once, then Interacts to swap weapons."
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Dive",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The strix hunter Flies downward up to twice their Speed and then makes a Strike. If the Strike hits and the hunter moved at least 20 feet downward, the hunter attempts to demoralize the target."
+    },
+    {
+      "kind": "ability",
+      "name": "Singing Shot",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory"
+      ],
+      "text": "Requirements The hunter is holding a ranged weapon and their prey is within their first range increment\n\n---\nEffect The strix hunter sings out, calling for a tandem attack. The strix hunter makes a ranged Strike against their prey, and a single ally within 30 feet can use their reaction to make a Strike against the same target. If both attacks hit, the target is Off-Guard until the start of the hunter's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Stalk Prey",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "The strix hunter designates a single creature they can see and hear, or one they're Tracking, as their prey. The hunter gains a +2 circumstance bonus to Perception checks to seek the prey and to Survival checks to track the prey. The first time the hunter hits their prey in a round, they deal an additional 1d8 precision damage. These effects last until the hunter uses Stalk Prey again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "self:effect:stalk-prey"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "label": "First hit against prey",
+            "option": "stalk-prey",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "stalk-prey"
+            ],
+            "selector": [
+              "strike-damage"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "target:mark:stalk-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "target:mark:stalk-prey"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Where there is one strix hunter, more likely lie in wait. Strix hunters rely on practiced coordination with their kin, spending many hours training until their maneuvers seamlessly link together. This allows hunters to unleash a barrage of attacks while staying on the move and rapidly trading positions in battle. While strix hunters might train in groups of a dozen or more, a hunting party on the prowl is typically made up of no more than six individuals. These hunters interchange roles and have no set leader, with each member calling the shots in a loose rotation. This communal decision-making style shines when facing intelligent foes, baffling opponents who might normally rely on targeting a leader to break formation and morale.\n\nWhether they fight together or alone, strix hunters rely on their ability to swoop in and out of melee while quickly changing weapons to disorient their enemies and keep them from finding any one tactic to fight back. The coordinated flurry of arrows, blades, and talons a strix hunting party can deliver is usually devastating to their prey. If the victim should live through it, they are left reeling.\n\nStrix hunters rarely take trophies from their kills, as they consider the use of their martial skills to be practical elements of survival—whether they are hunting for food or driving off unwanted intruders."
+}

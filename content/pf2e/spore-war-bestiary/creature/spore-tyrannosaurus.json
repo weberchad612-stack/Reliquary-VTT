@@ -1,0 +1,241 @@
+{
+  "kind": "creature",
+  "slug": "spore-tyrannosaurus",
+  "system": "pf2e",
+  "name": "Spore Tyrannosaurus",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "rarity": "rare",
+  "traits": [
+    "animal",
+    "dinosaur",
+    "fungus"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 32,
+    "hp": 280,
+    "perception": 23,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 22,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 6,
+      "dex": 3,
+      "int": -4,
+      "str": 8,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 22,
+      "athletics": 27
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects",
+        "disease",
+        "poison",
+        "paralyzed"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "perception": "fungalsense (imprecise) 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 27,
+      "traits": [
+        "deadly-d12",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+15",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Foot",
+      "attack": 27,
+      "traits": [
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+15",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fungalsense",
+      "category": "interaction",
+      "text": "A spore tyrannosaur in contact with fungal corruption can sense the nearby motion of anything touching the same patch of fungal corruption."
+    },
+    {
+      "kind": "ability",
+      "name": "Aura of Spores",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fungus",
+        "primal"
+      ],
+      "text": "30 feet. Creatures that start their turn in the spore tyrannosaurus's aura are in danger of inhaling the toxic spores that it constantly exudes. Creatures without the fungus or plant trait take 4d6 poison damage (DC 30 basic Fortitude save save) upon entering the aura or starting their turn in the aura. Those who fail are also Sickened 1 by the spores.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "fungus",
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fungal Empowerment",
+      "category": "defensive",
+      "text": "While the spore tyrannosaurus is touching fungal corruption, it gains fast healing 10 and is Quickened; it can use the extra action to Stride or Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "fungal-empowerment",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              "fungal-empowerment"
+            ],
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "fungal-empowerment"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fling",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements A creature is Grabbed in the tyrannosaurus's jaws\n\n---\nEffect The tyrannosaurus flings the creature into the air up to 10 feet up from its mouth and 20 feet away. The creature falls 25 feet (assuming the tyrannosaurus flings it as high as it can) and takes falling damage accordingly. If the flung creature lands on another creature, the creature it lands on takes the same amount of bludgeoning damage. The creature being landed on can attempt a DC 33 basic Reflex save save."
+    },
+    {
+      "kind": "ability",
+      "name": "Pin Prey",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The tyrannosaurus critically hits a Large or smaller foe with its foot\n\n---\n\nEffect The creature struck by the foot is knocked Prone and held in place. As long as the tyrannosaurus doesn't move from its position, the pinned creature is Grabbed.\n\nA tyrannosaurus gains a +2 circumstance bonus to attack a creature it has pinned in this manner but can only Swallow Whole if that creature is grabbed with its jaws.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "pin-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "pin-prey",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spore Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fungus",
+        "poison",
+        "primal"
+      ],
+      "text": "The spore tyrannosaurus unleashes a 60-foot cone of highly toxic spores from its maw. Creatures in the area take 14d6 poison damage (DC 33 basic Fortitude save save). Those who fail are also Sickened 1 (or Sickened 2 on a critical failure). The fungal tyrannosaurus can't use the spore breath weapon again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 3d6 bludgeoning,3d6 poison damage, Rupture 32\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Trample",
+      "actions": 3,
+      "category": "offensive",
+      "text": "Huge or smaller, foot, DC 30 basic Reflex save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Widely regarded as the king of the dinosaurs, the tyrannosaurus is a massive predator with a wide mouth filled with viciously sharp teeth. Some tribes of giants have even trained tyrannosauruses as mounts or beasts of war.\n\n---\n\nRemnants from the world's primeval era, these enormous reptilian animals still exist in large numbers in remote wildernesses or underground in magical Darklands caverns. Lizardfolk, orcs, giants, and other humanoids who live near dinosaurs use the animals as mounts, guards, or hunting beasts. Occasionally, rich nobles will collect dinosaurs to display them in menageries, which almost inevitably leads to cast-offs being nursed back to health by druids and other champions of nature. When dinosaurs establish themselves in regions outside their normal habitats, it's often the result of a large collection being released.",
+  "blurb": "Variant tyrannosaurus"
+}

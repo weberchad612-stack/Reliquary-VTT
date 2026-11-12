@@ -1,0 +1,121 @@
+{
+  "kind": "feat",
+  "slug": "scaly-hide",
+  "system": "pf2e",
+  "name": "Scaly Hide",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "dragonblood"
+  ],
+  "category": "ancestry",
+  "text": "You were born with a layer of scales across your entire body that resemble those of your draconic progenitor. When you're unarmored, the scales give you a +1 item bonus to AC with a Dexterity cap of +3. The item bonus to AC increases to +2 at 5th level. The item bonus to AC from these scales is cumulative with armor potency runes on your explorer's clothing, the Mystic Armor spell, or Bands of Force.\n\n---\nSpecial You can select this feat only at 1st level, and you can't retrain into or out of this feat.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DexterityModifierCap",
+        "predicate": [
+          {
+            "not": "self:armored"
+          }
+        ],
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.scalyHideBonus",
+        "predicate": [
+          {
+            "not": "feat:scales-of-the-dragon"
+          }
+        ],
+        "priority": 19,
+        "value": "ternary(gte(@actor.level,5),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "not": "feat:scales-of-the-dragon"
+          },
+          {
+            "not": "self:armored"
+          }
+        ],
+        "selector": "ac",
+        "type": "item",
+        "value": "@actor.flags.system.scalyHideBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "feat:scales-of-the-dragon"
+          },
+          {
+            "not": "self:armored"
+          }
+        ],
+        "relabel": "PF2E.SpecificRule.Dragonblood.ScalyHide.BandsOfForce",
+        "selector": "ac",
+        "slug": "bands-of-force",
+        "value": "@actor.flags.system.scalyHideBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "feat:scales-of-the-dragon"
+          },
+          {
+            "not": "self:armored"
+          }
+        ],
+        "relabel": "PF2E.SpecificRule.Dragonblood.ScalyHide.ExplorersClothing",
+        "selector": "ac",
+        "slug": "explorers-clothing",
+        "value": "@actor.flags.system.scalyHideBonus"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "feat:scales-of-the-dragon"
+          },
+          {
+            "not": "self:armored"
+          }
+        ],
+        "relabel": "PF2E.SpecificRule.Dragonblood.ScalyHide.MageArmor",
+        "selector": "ac",
+        "slug": "mage-armor",
+        "value": "@actor.flags.system.scalyHideBonus"
+      }
+    }
+  ]
+}

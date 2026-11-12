@@ -1,0 +1,153 @@
+{
+  "kind": "action",
+  "slug": "change-formation",
+  "system": "pf2e",
+  "name": "Change Formation",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "concentrate",
+    "move"
+  ],
+  "actions": 2,
+  "category": "interaction",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "change-formation",
+        "suboptions": [
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.Loose.Label",
+            "value": "loose"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.MarchingColumn.Label",
+            "value": "marching-column"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.TurtleShell.Label",
+            "value": "turtle-shell"
+          },
+          {
+            "label": "PF2E.NPCAbility.ChangeFormation.Wedge.Label",
+            "value": "wedge"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "change-formation:loose",
+          {
+            "not": "item:slug:change-formation"
+          }
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.NPCAbility.ChangeFormation.Loose.Drawback"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "mode": "remove",
+        "predicate": [
+          "change-formation:loose"
+        ],
+        "type": [
+          "area-damage",
+          "splash-damage"
+        ],
+        "value": 0
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "circumstance",
+      "value": 10,
+      "slug": "marching-column-speed-bonus",
+      "when": [
+        "change-formation:marching-column"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "change-formation:marching-column"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "untyped",
+      "value": -2,
+      "slug": "marching-column-reflex-penalty",
+      "when": [
+        "change-formation:marching-column"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "turtle-shell-ac-bonus",
+      "when": [
+        "item:ranged",
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "reflex",
+      "type": "circumstance",
+      "value": 2,
+      "slug": "turtle-shell-reflex-bonus",
+      "when": [
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "untyped",
+      "value": -10,
+      "when": [
+        "change-formation:turtle-shell"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "change-formation:wedge"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "kind": "feat",
+  "slug": "crystal-luminescence",
+  "system": "pf2e",
+  "name": "Crystal Luminescence",
+  "source": {
+    "title": "Pathfinder Lost Omens Impossible Lands",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "concentrate",
+    "kashrishi",
+    "light"
+  ],
+  "category": "ancestry",
+  "actions": 1,
+  "maxTakable": 2,
+  "text": "Your horn glows with bioluminescent color, casting bright light in a 20-foot emanation (and dim light for the next 20 feet). This light can be any color. The most common colors are blue and purple, except for trogloshi, who normally shed white light. The light shuts off when you take this action again or fall Unconscious.\n\nIf a spell or ability would activate your glowing horn while Crystal Luminescence is active, it instead increases the radius of the bright light and dim light by 10 feet each until the start of your next turn. This isn't cumulative, so using another such ability doesn't increase the radius again.\n\nEffect: Crystal Luminescence\n\nSpecial If you have the trogloshi heritage, you can select this feat a second time (in addition to gaining it automatically from your heritage). If you do, you increase the area to a 40-foot emanation (and dim light for the next 40 feet). In addition, you can use Crystal Luminescence as a free action the first time you use it on each of your turns.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenLight",
+        "predicate": [
+          "crystal-luminescence"
+        ],
+        "value": {
+          "animation": {
+            "type": "torch"
+          },
+          "bright": "@actor.flags.system.crystalLuminescence.dimRadius",
+          "color": "{item|flags.system.rulesSelections.color}",
+          "coloration": 101,
+          "dim": "@actor.flags.system.crystalLuminescence.brightRadius"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "crystal-luminescence",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.crystalLuminescence.brightRadius",
+        "value": 20
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.crystalLuminescence.dimRadius",
+        "value": 40
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Color.Blue",
+            "value": "#0000FF"
+          },
+          {
+            "label": "PF2E.Color.Cyan",
+            "value": "#43D6D6"
+          },
+          {
+            "label": "PF2E.Color.Green",
+            "value": "#00FF00"
+          },
+          {
+            "label": "PF2E.Color.Indigo",
+            "value": "#4B0082"
+          },
+          {
+            "label": "PF2E.Color.Magenta",
+            "value": "#FF00FF"
+          },
+          {
+            "label": "PF2E.Color.Orange",
+            "value": "#FFA400"
+          },
+          {
+            "label": "PF2E.Color.Red",
+            "value": "#FF0000"
+          },
+          {
+            "label": "PF2E.Color.Violet",
+            "value": "#9400D3"
+          },
+          {
+            "label": "PF2E.Color.White",
+            "value": "#AAAAAA"
+          },
+          {
+            "label": "PF2E.Color.Yellow",
+            "value": "#FAFA00"
+          }
+        ],
+        "flag": "color",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Color"
+      }
+    }
+  ]
+}

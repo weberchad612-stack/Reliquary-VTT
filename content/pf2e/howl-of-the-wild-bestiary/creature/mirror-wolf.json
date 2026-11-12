@@ -1,0 +1,288 @@
+{
+  "kind": "creature",
+  "slug": "mirror-wolf",
+  "system": "pf2e",
+  "name": "Mirror Wolf",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "beast"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 117,
+    "perception": 18,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 19,
+      "will": 15
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 2,
+      "dex": 6,
+      "int": 1,
+      "str": 3,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 15,
+      "athletics": 12,
+      "intimidation": 11,
+      "stealth": 19,
+      "survival": 17
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 7,
+          "except": "force, ghost-touch, spirit, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 22,
+      "attack": 0,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Revealing Light",
+          "rank": 3,
+          "ref": "spells:spell/revealing-light"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 17,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Visage Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature adjacent to the mirror wolf's visages damages mirror wolf's ally\n\n---\n\nEffect The mirror wolf teleports to the visage's spot, destroying the visage, and makes a jaws Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Bond with Mortal",
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The spirit guide spends 10 minutes to form a bond with a mortal creature. While the bond exists, the spirit guide increases their current and maximum Hit Points by 14, gains a +2 status bonus to their attack and damage rolls, and can communicate telepathically with the bonded mortal as long as the two beings are on the same plane. The spirit guide can only be bonded with one mortal at a time, and they can take this action again to end the bond or to form a new bond (which also ends the old bond). The bond also ends if the spirit guide or the mortal dies.\n\nThis bond strengthens the spirit guide's connection to the Universe. While bonded, the spirit guide loses the incorporeal and spirit traits, loses their immunity to disease, paralysis, and poison, along with their resistance to all damage, and changes their Strikes to deal the appropriate amount of physical damage (typically piercing or slashing) instead of force damage.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bond-with-mortal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hp",
+          "type": "untyped",
+          "value": 14,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal",
+              "spirit"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "remove",
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "type": [
+              "disease",
+              "paralyzed",
+              "poison"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "mode": "remove",
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "type": "all-damage",
+            "value": 0
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "piercing"
+            },
+            "predicate": [
+              "bond-with-mortal"
+            ],
+            "selector": "jaws-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The mirror wolf is currently Bonded with a Mortal\n\n---\n\nEffect The mirror wolf makes a jaws Strike. If this attack hits, the bonded mortal can spend their reaction to Strike the same target."
+    },
+    {
+      "kind": "ability",
+      "name": "Lingering Assailant",
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "visual"
+      ],
+      "text": "The mirror wolf attacks with such speed it leaves a visage of itself behind. When the mirror wolf Strikes, they leave behind a visage in an adjacent square. The visage is treated as an ally for effects such as flanking and pack attack. A visage has AC 10 and 1 HP and lasts for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The mirror wolf's Strikes deal 1d8 extra damage to creatures within reach of at least two of the mirror wolf's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Strafing Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mirror wolf makes a jaws Strike against a creature within range. The mirror wolf can then Stride and make a second jaws Strike against the same creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

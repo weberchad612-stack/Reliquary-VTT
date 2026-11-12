@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "stance-cenotaph-stance",
+  "system": "pf2e",
+  "name": "Stance: Cenotaph Stance",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "duration": {
+    "value": -1,
+    "unit": "encounter"
+  },
+  "text": "Granted by Cenotaph Stance\n\nAt the beginning of each of your turns, you gain 10 temporary Hit Points. You're treated as always having your shield raised.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "events": {
+          "onCreate": true,
+          "onTurnStart": true
+        },
+        "key": "TempHP",
+        "value": 10
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.shield.raised",
+        "predicate": [
+          "self:shield:equipped",
+          {
+            "nor": [
+              "self:shield:broken",
+              "self:shield:destroyed"
+            ]
+          }
+        ],
+        "value": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenEffectIcon",
+        "value": "systems/pf2e/icons/actions/raise-a-shield.webp"
+      }
+    }
+  ]
+}

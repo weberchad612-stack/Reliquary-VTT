@@ -1,0 +1,240 @@
+{
+  "kind": "creature",
+  "slug": "cephalophix",
+  "system": "pf2e",
+  "name": "Cephalophix",
+  "source": {
+    "title": "Pathfinder Lost Omens Cheliax, Infernal Inheritance",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "devil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 95,
+    "perception": 9,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 9,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 2,
+      "int": 4,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 9,
+      "arcana": 13,
+      "athletics": 12,
+      "intimidation": 9,
+      "nature": 13,
+      "occultism": 13,
+      "religion": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "echolocation",
+        "range": 40,
+        "acuity": "precise"
+      },
+      {
+        "type": "magicsense",
+        "range": 100,
+        "acuity": "precise"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "immunities": [
+        "visual"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "silver"
+        },
+        {
+          "type": "poison",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 19,
+      "attack": 11,
+      "spells": [
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 15,
+      "traits": [
+        "magical",
+        "unholy",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "tar-vomit"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Vomit",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "spirit",
+        "unholy"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "2d10+5",
+          "type": "spirit"
+        }
+      ],
+      "effects": [
+        "tar-vomit"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Echolocation",
+      "category": "interaction",
+      "text": "A cephalophix can use their hearing as a precise sense at the listed range."
+    },
+    {
+      "kind": "ability",
+      "name": "Magic Sense",
+      "category": "interaction",
+      "text": "A cephalophix can detect the source of any magic within range as a precise sense."
+    },
+    {
+      "kind": "ability",
+      "name": "Hateful Counteract",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Frequency once per day\n\nTrigger A creature the cephalophix perceives with a precise sense Casts a Spell\n\n---\nEffect The cephalophix attempts to counteract the triggering spell. Their counteract rank is 3, and their counteract modifier is +13. If they succeed, the triggering creature takes mental damage equal to twice the counteracted spell's rank.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Resistance",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The cephalophix takes acid, cold, electricity, fire, sonic, or spirit damage\n\n---\nEffect The cephalophix loses any resistances they have to acid, cold, electricity, fire, sonic, or spirit damage, then gains resistance 5 to the triggering damage type. This resistance applies to the triggering damage and lasts until they use Reactive Resistance again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "reactive-resistance",
+            "selection": "fire",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              },
+              {
+                "label": "PF2E.TraitSpirit",
+                "value": "spirit"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "resistance",
+          "type": "{item|flags.system.rulesSelections.reactiveResistance}",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tar Vomit",
+      "category": "offensive",
+      "traits": [
+        "unholy"
+      ],
+      "text": "Creatures hit by a cephalophix's Strikes are covered in black tar suffused with unholy energy. They take a –5-foot status penalty to their Speeds until the end of their next turn (or a –10-foot status penalty on a critical hit), and they must succeed at a DC 22 Will save save or be Stupefied 1 for the same duration (Stupefied 2 on a critical failure).\n\nEffect: Tar Vomit (Speed Penalty)"
+    },
+    {
+      "kind": "ability",
+      "name": "Tortured Shriek",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "sonic"
+      ],
+      "text": "The cephalophix unleashes a deafening shriek, dealing 2d10 sonic damage to all creatures in a 30-foot cone with a DC 19 basic Fortitude save save. Creatures that fail are also Deafened until the start of the cephalophix's next turn, or for 1 minute on a critical failure."
+    }
+  ],
+  "text": "The striking image of the cephalophix's head resting in their hands is enough to give any mortal pause, but the horrifying shrieks and splattering black tar that spray from their mouths is disturbing to even other devils. Cephalophixes hate all magic with passion and fury, and they especially loathe divine magic, believing it to be the gods' unfair finger on the scales of planar conflict. The irony that they require magic to combat it isn't lost on them, but they aren't above any method that leads to the death of another magic user. Their hatred of all magic makes it difficult for other devils to work with cephalophixes, and more powerful devils usually keep them in soundproof cages until they're needed. Cephalophixes prefer this arrangement as well, meditating in solitude far from the magic and its users that they despise."
+}

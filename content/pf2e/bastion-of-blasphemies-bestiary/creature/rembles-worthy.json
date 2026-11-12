@@ -1,0 +1,261 @@
+{
+  "kind": "creature",
+  "slug": "rembles-worthy",
+  "system": "pf2e",
+  "name": "Rembles Worthy",
+  "source": {
+    "title": "Pathfinder Adventure Path: Bastion of Blasphemies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 115,
+    "perception": 14,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 12,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 2,
+      "int": 2,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 15,
+      "deception": 12,
+      "diplomacy": 9,
+      "intimidation": 14,
+      "stealth": 12,
+      "survival": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "cold-iron"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 24,
+      "attack": 16,
+      "spells": [
+        {
+          "name": "Invisibility",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Mist",
+          "rank": 2,
+          "ref": "spells:spell/mist"
+        },
+        {
+          "name": "Fear",
+          "rank": 3,
+          "ref": "spells:spell/fear"
+        },
+        {
+          "name": "Figment",
+          "rank": 1,
+          "ref": "spells:spell/figment"
+        },
+        {
+          "name": "Frostbite",
+          "rank": 1,
+          "ref": "spells:spell/frostbite"
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+5",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "unhealing-wound"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Primal Hunt",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "primal",
+        "teleportation"
+      ],
+      "text": "Trigger A creature within the barghest's reach takes a move or teleportation action\n\n---\n\nEffect After the triggering action, the barghest can teleport up to 60 feet to a space adjacent to that creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The barghest takes on the shape of a humanoid, a dog, or its true form. Their size changes to match the new form. When the barghest is a humanoid, their claw Strike deals bludgeoning damage and they lose their jaws Strike. When the barghest is a dog, their Speed changes to 35 feet. Each individual barghest has only one humanoid form and one dog form.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "barghest",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Barghest",
+                "value": "barghest"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Dog",
+                "value": "dog"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 13,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 5
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "traits": "unholy"
+          }
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage"
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 35
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "bludgeoning"
+            },
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "selector": "claw-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Isolating Howl",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "incapacitation",
+        "mental",
+        "primal"
+      ],
+      "text": "Rembles lets loose an unearthly howl filled with utter despair. All creatures other than barghests within a 60 foot emanation who hear the howl become filled with the sense that they're all alone in the world, and that an impossible distance spans between themselves and anything remotely connected to companionship. Affected creatures must attempt a DC 24 Will save save with the following effects.\n\nRembles can't use Isolating Howl again for 1d4 rounds.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess Convictions of loneliness fill the target's mind, and they cannot target allies or take the Aid action for 1 round.\n\nFailure As success, but the weight of being so alone crushes down on the creature, causing them to become Slowed 1 for 1 minute as well.\n\nCritical Failure There's no reason to try. The creature is Paralyzed from ennui and despair for 1 minute, but can attempt a DC 24 Will save save at the end of each of their turns to break free from this despair—on a success, they're no longer paralyzed but become slowed 1 for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Unhealing Wound",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "A creature damaged by the barghest's claws must succeed at a DC 24 Fortitude save save or be cursed. The cursed creature can't regain Hit Points except via magic until it returns to maximum Hit Points. The creature can attempt a new saving throw against the curse every 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Barghests are canine beasts that take great joy in the hunt, often lurking near humanoid settlements to find prey that can provide a suitable challenge. Even in the deepest wilderness, barghests choose the most clever or difficult prey, searching endlessly for challenges like giants, nymphs, and unicorns.\n\nMore than victory or even the possibility of a meal at the end, barghests enjoy the thrill of the chase and the fear they create within their prey. Particularly terrified targets of a hunting barghest might even be allowed to escape, spreading the terror and enticing hunters who can become the barghest's next victims. A handful of barghests resort to learning magical methods of causing fear directly, though they find such fear hollow and unsatisfying.\n\nAlthough they rarely tolerate the competition of another barghest's presence, these hunters will happily work with anyone who helps them find prey to torment and kill. This often involves enforcing the will of hags or particularly cruel fey, but a bored barghest might also force a family of weaker humanoids to work as scouts and bait.\n\nTypical barghests often make use of their shapechanging abilities to hide in plain sight, only taking their true forms to frighten their prey and exult in the hunt. However, they are often still exposed by their trail of victims or the curiously unhealing wounds they inflict, even in humanoid form. Tales of powerful barghests with invisible heads are sometimes told in remote and dwindling villages. These barghests generally dispense with hiding as a humanoid or dog, instead terrifying entire communities and openly hunting increasingly dangerous prey. Some also extend this pride to their intellect, insisting on matching wits with their prey or even with those who believe they're hunting the barghest.",
+  "blurb": "Variant male barghest"
+}

@@ -1,0 +1,195 @@
+{
+  "kind": "feat",
+  "slug": "champion-dedication",
+  "system": "pf2e",
+  "name": "Champion Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication",
+    "multiclass"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Strength +2",
+    "Charisma +2"
+  ],
+  "text": "Choose a deity. You are bound by your deity's anathema and gain the champion's aura and sanctification as described in the champion class. Choose a cause as you would if you were a champion, with the same options a champion must abide by. You gain its edicts and anathema but don't gain the other abilities.\n\nYou become trained in Religion and your deity's associated skill; for each of these skills in which you were already trained, you instead become trained in a skill of your choice. You become trained in champion class DC. If you later gain a devotion spell, you become trained in spell attack modifier and spell DC.\n\nYou become trained in light armor and medium armor. If you already were trained in light armor and medium armor, you gain training in heavy armor as well. Whenever you gain a class feature that grants you expert or greater proficiency in any type of armor (but not unarmored defense), you also gain that proficiency in the armor types granted to you by this feat. If you have a class feature that grants you expert proficiency in unarmored defense and you're 13th level or higher, you also become an expert in the armor types granted to you by this feat.\n\nChampion",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.LightShort",
+            "predicate": [
+              {
+                "or": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "light-and-medium"
+          },
+          {
+            "label": "PF2E.Actor.Character.Proficiency.Defense.HeavyShort",
+            "predicate": [
+              {
+                "nor": [
+                  "defense:light:rank:0",
+                  "defense:medium:rank:0"
+                ]
+              }
+            ],
+            "value": "heavy"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "champion-dedication"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.AbilityStr",
+            "value": "str"
+          },
+          {
+            "label": "PF2E.AbilityDex",
+            "value": "dex"
+          }
+        ],
+        "flag": "attribute",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.ClassDCAbilityScore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.religion.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.championDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.classfeatures.Item.Deity (Champion)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:champion-cause",
+            {
+              "or": [
+                {
+                  "and": [
+                    "item:tag:holy",
+                    "sanctification:holy"
+                  ]
+                },
+                {
+                  "and": [
+                    "item:tag:unholy",
+                    "sanctification:unholy"
+                  ]
+                },
+                {
+                  "nor": [
+                    "item:tag:holy",
+                    "item:tag:unholy"
+                  ]
+                }
+              ]
+            },
+            {
+              "not": "item:tag:class-archetype"
+            }
+          ]
+        },
+        "flag": "cause",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.DeityAndCause.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.cause}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.proficiencies.classDCs.champion.attribute",
+        "value": "{item|flags.system.rulesSelections.attribute}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.light.rank",
+        "predicate": [
+          "champion-dedication:light-and-medium"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.medium.rank",
+        "predicate": [
+          "champion-dedication:light-and-medium"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.proficiencies.defenses.heavy.rank",
+        "predicate": [
+          "champion-dedication:heavy"
+        ],
+        "value": "max(@actor.system.proficiencies.defenses.light.rank,@actor.system.proficiencies.defenses.medium.rank,ternary(gte(@actor.level,13),min(@actor.system.proficiencies.defenses.unarmored.rank,2),1))"
+      }
+    }
+  ]
+}

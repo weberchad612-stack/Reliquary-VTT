@@ -1,0 +1,354 @@
+{
+  "kind": "creature",
+  "slug": "ochiastis",
+  "system": "pf2e",
+  "name": "Ochiastis",
+  "source": {
+    "title": "Pathfinder Adventure Path: Hell's Destiny",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "uncommon",
+  "traits": [
+    "devil",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 37,
+    "hp": 245,
+    "perception": 29,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 29,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 5,
+      "dex": 8,
+      "int": 5,
+      "str": 4,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 25,
+      "deception": 30,
+      "society": 26,
+      "stealth": 33,
+      "survival": 25,
+      "thievery": 27
+    },
+    "speeds": {
+      "land": 35,
+      "climb": 25
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "diabolic"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 12
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 12,
+          "except": "silver"
+        },
+        {
+          "type": "poison",
+          "value": 12
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 33,
+      "attack": 25,
+      "spells": [
+        {
+          "name": "Mislead",
+          "rank": 6,
+          "ref": "spells:spell/mislead"
+        },
+        {
+          "name": "Teleport",
+          "rank": 8,
+          "ref": "spells:spell/teleport"
+        },
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 8,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "Noise Blast",
+          "rank": 6,
+          "ref": "spells:spell/noise-blast"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 30,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "3d8+12",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "ochiastis-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Quill",
+      "attack": 30,
+      "traits": [
+        "propulsive"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "3d6+10",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Assassin's Pursuit",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The ochiastis's hunted prey is within their reach and attempts to move away from them\n\n---\nEffect The ochiastis Climbs or Strides up to their Speed, following their hunted prey and keeping it in reach throughout its movement until it stops moving or the ochiastis has moved their full Speed."
+    },
+    {
+      "kind": "ability",
+      "name": "Faceless Escape",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "move"
+      ],
+      "text": "Trigger The ochiastis takes damage\n\nRequirements The ochiastis is in or adjacent to a crowd of at least 10 people\n\n---\nEffect The ochiastis attempts to hide by blending into the crowd, even if the devil lacks cover or concealment. The ochiastis can then sneak. Each time the ochiastis becomes hidden from a creature in this way, that creature gains a cumulative +2 circumstance bonus to its Perception DC for 1 hour against the ochiastis's Stealth checks when using Faceless Escape."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "The ochiastis can take the appearance of any Small or Medium humanoid creature. This doesn't change the ochiastis's Speed or their attack and damage bonuses with their claw Strike but might change the damage type this Strike deals (typically to bludgeoning). They lose their quill Strike. Creatures that grapple the ochiastis or otherwise touch their back gain a +4 circumstance bonus to see through their disguise.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "ochiastis",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Devil.Ochiastis",
+                "value": "ochiastis"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Small",
+                "value": "humanoid-small"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Medium",
+                "value": "humanoid-medium"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid-small"
+            ],
+            "value": "small"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "bludgeoning"
+            },
+            "predicate": [
+              {
+                "or": [
+                  "change-shape:humanoid-small",
+                  "change-shape:humanoid-medium",
+                  "change-shape:humanoid-large"
+                ]
+              }
+            ],
+            "selector": "damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hunt Prey",
+      "actions": 1,
+      "category": "offensive",
+      "text": "You designate a single creature as your prey and focus your attacks against that creature. You must be able to see or hear the prey, or you must be tracking the prey during exploration.\n\nYou gain a +2 circumstance bonus to Perception checks when you Seek your prey and a +2 circumstance bonus to Survival checks when you Track your prey. You also ignore the penalty for making ranged attacks within your second range increment against the prey you're hunting.\n\nYou can have only one creature designated as your prey at a time. If you use Hunt Prey against a creature when you already have a creature designated, the prior creature loses the designation and the new prey gains the designation. Your designation lasts until your next daily preparations.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:seek",
+            "target:mark:hunted-prey"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "survival",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:track",
+            "target:mark:hunted-prey"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ranged-attack-roll",
+            "key": "RollOption",
+            "option": "ignore-range-penalty:2",
+            "predicate": [
+              "target:mark:hunted-prey"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ochiastis Venom",
+      "category": "offensive",
+      "traits": [
+        "poison",
+        "virulent"
+      ],
+      "text": "Saving Throw DC 36 Fortitude save\n\n---\nMaximum Duration 6 rounds\n\nStage 1 Enfeebled 1 and Off-Guard (1 round)\n\nStage 2 Enfeebled 2 and off-guard (1 round)\n\nStage 3 enfeebled 2, off-guard, and Slowed 1 (1 round)\n\nStage 4 Enfeebled 3 and Paralyzed (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The creature's Strikes deal an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "While Hell prefers to subjugate mortals by force, cow them with majesty, or bind them through contracts, even the most principled archdevil sometimes needs an assassin. In their natural form, an ochiastis resembles a nephilim with a narrow mane of venomous quills running from the top of their head to the small of their back. This fiend is a capable shapeshifter, yet their quills remain no matter the shape they take—a drawback an ochiastis tries to keep hidden by wearing a cloak or other bulky clothing. When not on missions, an ochiastis often lurks in urban areas, familiarizing themself with local behaviors and shortcuts."
+}

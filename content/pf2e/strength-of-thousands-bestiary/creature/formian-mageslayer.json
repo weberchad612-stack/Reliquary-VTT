@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "formian-mageslayer",
+  "system": "pf2e",
+  "name": "Formian Mageslayer",
+  "source": {
+    "title": "Pathfinder #173: Doorway to the Red Star",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "rare",
+  "traits": [
+    "formian",
+    "lawful",
+    "mutant"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 38,
+    "hp": 240,
+    "perception": 31,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 28,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 8,
+      "int": 9,
+      "str": 5,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 28,
+      "arcana": 32,
+      "nature": 30,
+      "occultism": 32,
+      "religion": 30,
+      "stealth": 28,
+      "survival": 28
+    },
+    "speeds": {
+      "land": 30,
+      "fly": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "akitonian",
+      "formian"
+    ],
+    "iwr": {
+      "immunities": [
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "sonic",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "languages": "telepathy 120 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 32,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+13",
+          "type": "slashing"
+        },
+        {
+          "dice": "3d6",
+          "type": "mental",
+          "category": "persistent"
+        }
+      ],
+      "effects": [
+        "stupefying-touch"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Acid Spit",
+      "attack": 32,
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "3d6+8",
+          "type": "acid"
+        },
+        {
+          "dice": "3d6",
+          "type": "acid",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 120 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hive Mind",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "Formians operate from a shared hive intelligence that allows them to communicate nearly instantaneously. While within telepathic range of at least one other formian from the same hive mind, a formian worker gains a +2 circumstance bonus to initiative checks, Perception checks, and saving throws against mental effects. If one formian is aware of a combatant, all members of the hive mind within range are aware of it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "Within Telepathic Range of Another Formian",
+            "option": "hive-mind",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "hive-mind",
+            "mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disrupting Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "30 feet. Formian mageslayers are surrounded by an aura of disruptive energy that disperses magical energy and makes spellcasting difficult for their enemies.\n\nWhenever an enemy creature within the aura attempts to Cast a Spell or Activate a magic item, they must roll a DC 5 Flat check; on a failed check, the spell or activation is lost and the action is wasted. Free action activations disrupted by this aura can't be attempted again until the start of the activating creature's next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "disrupting-aura",
+            "traits": [
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shred Spell",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Trigger A creature within the formian mageslayer's disrupting aura that the formian mageslayer can see succeeds at a DC 5 Flat check to Cast the Spell in the aura\n\n---\n\nEffect The mageslayer attempts to unravel the spell's magic and attempts to counteract the spell. They use their Arcana modifier as their counteract modifier with a counteract rank of 8.\n\nIf the formian mageslayer succeeds, they counter the spell and use the dispersed energy to gain a number of temporary Hit Points equal to twice the spell's rank for 1 minute. If the formian mageslayer critically fails this counteract check, their disrupting aura deactivates for 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Spell Resistance",
+      "category": "defensive",
+      "text": "A formian mageslayer takes 15 fewer damage from any arcane or primal spell that causes damage, and 10 less damage from any divine or occult spell that causes damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Stupefying Touch",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "A creature damaged by a mageslayer's claw Strike must succeed at a DC 37 Will save save. The creature becomes Stupefied 2 for 1 round on a failure. On a critical failure, the creature is stupefied 2 for 1 hour."
+    }
+  ],
+  "text": "Grim, twisted formians forced into existence through the machinations of the King of Biting Ants, formian mageslayers are created for the express purpose of neutralizing and destroying enemy spellcasters. Wired to never sleep, mageslayers are tortured hunters and guardians whose only relief is found in tearing apart the magic and flesh of spellcasters who oppose the King of Biting Ants. Formian mageslayers have wings resembling those of dragonflies and longer, sleeker bodies than most formians.\n\n---\n\nFormians resemble unusually large ants with an insectile humanoid's upper torso. More powerful or influential formians are physically larger; common formian workers are roughly the height of a gnome, while the largest formians, such as taskmasters and queens, rival a giant in size.\n\nFormian society is a strict matriarchy. Though each hive's queen is theoretically independent and her rule absolute, allegiances are common, and less powerful hives often (grudgingly) defer to more powerful matriarchs."
+}

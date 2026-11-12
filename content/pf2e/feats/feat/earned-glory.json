@@ -1,0 +1,60 @@
+{
+  "kind": "feat",
+  "slug": "earned-glory",
+  "system": "pf2e",
+  "name": "Earned Glory",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "aiuvarin"
+  ],
+  "category": "ancestry",
+  "text": "Elves often struggle with underestimating aiuvarins, and you are experienced at telling stories of your accomplishments to gain their respect. You are trained in Performance. If you would automatically become trained in Performance (from your background or class, for example), you instead become trained in a skill of your choice.\n\nYou gain the Impressive Performance feat. When you attempt a Performance check to Make an Impression on an elf, if you roll a critical failure, you get a failure instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Impressive Performance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.performance.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "note",
+      "selector": "performance",
+      "text": "PF2E.SpecificRule.HalfElf.EarnedGlory.Note",
+      "when": [
+        "action:make-an-impression",
+        "target:trait:elf"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:make-an-impression",
+          "target:trait:elf"
+        ],
+        "selector": "performance",
+        "type": "skill"
+      }
+    }
+  ]
+}

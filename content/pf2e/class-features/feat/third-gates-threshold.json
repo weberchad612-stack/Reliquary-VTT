@@ -1,0 +1,169 @@
+{
+  "kind": "feat",
+  "slug": "third-gates-threshold",
+  "system": "pf2e",
+  "name": "Third Gate's Threshold",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "kineticist"
+  ],
+  "category": "classfeature",
+  "text": "You reach a new milestone in your odyssey to become in tune with your kinetic gate and must decide how to expand the gate's power. At 5th level and every 4 levels thereafter, you choose to either expand the portal or fork the path.\n\n- Expand the Portal: Your gate attunes more precisely to one of your elements. Gain an impulse feat of your level or lower for one of your kinetic elements; if you have more than one element, you can choose a composite impulse. You also gain a gate junction for one of your kinetic elements. If you have no valid options for the feat-typically because you have one kinetic element and devoted your class feats to gaining that element's impulses-you can instead select any kineticist class feat of your level or lower for which you meet the prerequisites.\n\n- Fork the Path: Your gate reaches to another elemental plane. Add a new element of your choice to your kinetic elements. Gain an impulse feat of your level or lower with the trait of that element. You can't select a composite impulse feat with this feat selection.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Kineticist.KineticGate.ExpandThePortal.Label",
+            "value": "expand"
+          },
+          {
+            "label": "PF2E.SpecificRule.Kineticist.KineticGate.ForkThePath.Label",
+            "value": "fork"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.Threshold",
+        "rollOption": "kinetic-gate:third-threshold"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": "PF2E.SpecificRule.Kineticist.KineticGate.ExpandThePortal.Rename",
+        "choices": "flags.system.kineticist.elements",
+        "flag": "element",
+        "key": "ChoiceSet",
+        "predicate": [
+          "kinetic-gate:third-threshold:expand"
+        ],
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.ExpandElement"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "kinetic-gate:third-threshold:expand"
+        ],
+        "preselectChoices": {
+          "element": "{item|flags.system.rulesSelections.element}"
+        },
+        "uuid": "Compendium.pf2e.classfeatures.Item.Gate Junction"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": "PF2E.SpecificRule.Kineticist.KineticGate.ForkThePath.Rename",
+        "choices": {
+          "filter": [
+            "item:tag:kineticist-kinetic-gate"
+          ]
+        },
+        "flag": "elementFork",
+        "key": "ChoiceSet",
+        "predicate": [
+          "kinetic-gate:third-threshold:fork"
+        ],
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.Element"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.elementFork}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:rarity:common",
+            "item:trait:impulse",
+            {
+              "lte": [
+                "item:level",
+                13
+              ]
+            },
+            {
+              "or": [
+                {
+                  "and": [
+                    {
+                      "or": [
+                        "item:trait:{actor|flags.system.kineticist.gate.one}",
+                        "item:trait:{actor|flags.system.kineticist.gate.two}",
+                        "item:trait:{actor|flags.system.kineticist.gate.three}",
+                        "item:trait:{actor|flags.system.kineticist.gate.four}",
+                        "item:trait:{actor|flags.system.kineticist.gate.five}",
+                        "item:trait:{actor|flags.system.kineticist.gate.six}"
+                      ]
+                    },
+                    {
+                      "not": "item:trait:composite"
+                    }
+                  ]
+                },
+                {
+                  "and": [
+                    {
+                      "not": {
+                        "xor": [
+                          "item:trait:{actor|flags.system.kineticist.gate.one}",
+                          "item:trait:{actor|flags.system.kineticist.gate.two}",
+                          "item:trait:{actor|flags.system.kineticist.gate.three}",
+                          "item:trait:{actor|flags.system.kineticist.gate.four}",
+                          "item:trait:{actor|flags.system.kineticist.gate.five}",
+                          "item:trait:{actor|flags.system.kineticist.gate.six}"
+                        ]
+                      }
+                    },
+                    {
+                      "or": [
+                        "item:trait:{actor|flags.system.kineticist.gate.one}",
+                        "item:trait:{actor|flags.system.kineticist.gate.two}",
+                        "item:trait:{actor|flags.system.kineticist.gate.three}",
+                        "item:trait:{actor|flags.system.kineticist.gate.four}",
+                        "item:trait:{actor|flags.system.kineticist.gate.five}",
+                        "item:trait:{actor|flags.system.kineticist.gate.six}"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "itemType": "feat"
+        },
+        "flag": "impulseExpand",
+        "key": "ChoiceSet",
+        "predicate": [
+          "kinetic-gate:third-threshold:expand"
+        ],
+        "prompt": "PF2E.SpecificRule.Kineticist.KineticGate.Prompt.Impulse"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.impulseExpand}"
+      }
+    }
+  ]
+}

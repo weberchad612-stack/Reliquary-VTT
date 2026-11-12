@@ -1,0 +1,341 @@
+{
+  "kind": "creature",
+  "slug": "feathered-bear",
+  "system": "pf2e",
+  "name": "Feathered Bear",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "beast",
+    "incorporeal",
+    "spirit"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 29,
+    "hp": 160,
+    "perception": 18,
+    "saves": {
+      "fortitude": 21,
+      "reflex": 16,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 2,
+      "int": 0,
+      "str": 7,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 22,
+      "intimidation": 20,
+      "survival": 16
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, spirit",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Truespeech"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 27,
+      "attack": 19,
+      "spells": [
+        {
+          "name": "Truespeech (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        },
+        {
+          "name": "Haste",
+          "rank": 3,
+          "ref": "spells:spell/haste"
+        },
+        {
+          "name": "Environmental Endurance",
+          "rank": 3,
+          "ref": "spells:spell/environmental-endurance"
+        },
+        {
+          "name": "Oaken Resilience",
+          "rank": 3,
+          "ref": "spells:spell/oaken-resilience"
+        },
+        {
+          "name": "Jump",
+          "rank": 3,
+          "ref": "spells:spell/jump"
+        },
+        {
+          "name": "Know the Way",
+          "rank": 1,
+          "ref": "spells:spell/know-the-way"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+9",
+          "type": "force"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+9",
+          "type": "force"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bond with Mortal",
+      "actions": 2,
+      "category": "interaction",
+      "traits": [
+        "mental",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The spirit guide forms a bond with a mortal creature. While the bond exists, the spirit guide increases their current and maximum Hit Points by 20, gains a +2 status bonus to their attack and damage rolls, and can communicate telepathically with the bonded mortal as long as the two beings are on the same plane.\n\nThe spirit guide can only be bonded with one mortal at a time, and they can take this action again to end the bond or to form a new bond (which also ends the old bond). The bond also ends if the spirit guide or the mortal dies.\n\nThis bond strengthens the spirit guide's connection to the Universe. While bonded, the spirit guide loses the incorporeal and spirit traits, loses their immunities and resistances, and changes their Strikes to deal the appropriate physical damage (typically piercing or slashing) instead of force damage.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "bond-with-mortal",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": [
+              "disease",
+              "paralyzed",
+              "poison",
+              "precision"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "vitality"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ],
+            "type": "all-damage",
+            "value": 10
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "hp",
+          "type": "untyped",
+          "value": 20,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "attack-roll",
+            "damage"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "bond-with-mortal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "incorporeal",
+              "spirit"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              {
+                "not": "bond-with-mortal"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Avenging Claws",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within 10 feet damages the feathered bear's ally with a melee attack\n\n---\nEffect The feathered bear immediately Steps toward the triggering attacker and makes a claws Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Guardian's Aegis",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "30 feet. All allies within 30 feet of the feathered bear gain a +1 status bonus to saves against magical effects. The bonus increases to +2 if the effect originated from a fiend.\n\nEffect: Guardian's Aegis",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "events": [
+                  "enter"
+                ],
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Guardian's Aegis"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "slug": "guardians-aegis",
+            "traits": [
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bonded Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The spirit guide is currently Bonded with a Mortal\n\n---\n\nEffect The spirit guide makes a jaws Strike. If this attack hits, the bonded mortal can spend their reaction to Strike the same target."
+    },
+    {
+      "kind": "ability",
+      "name": "Feathered Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The feathered bear Strides and makes a Strike at the end of that movement. During the Stride, the feathered bear ignores difficult terrain and greater difficult terrain, and they can move across air as easily as solid ground. If the feathered bear doesn't end their movement on solid ground, they fall as soon as the Strike is completed."
+    },
+    {
+      "kind": "ability",
+      "name": "Mauler",
+      "category": "offensive",
+      "text": "The feathered bear gains a +4 circumstance bonus to damage rolls against creatures they have Grabbed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "mauler",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "strike-damage",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "mauler"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

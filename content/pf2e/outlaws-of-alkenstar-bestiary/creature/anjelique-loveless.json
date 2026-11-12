@@ -1,0 +1,281 @@
+{
+  "kind": "creature",
+  "slug": "anjelique-loveless",
+  "system": "pf2e",
+  "name": "Anjelique Loveless",
+  "source": {
+    "title": "Pathfinder #180: The Smoking Gun",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 11,
+  "rarity": "unique",
+  "traits": [
+    "changeling",
+    "elf",
+    "evil",
+    "humanoid",
+    "lawful"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 200,
+    "perception": 24,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 26,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 3,
+      "dex": 7,
+      "int": 0,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 26,
+      "crafting": 21,
+      "intimidation": 23,
+      "thievery": 21,
+      "legal-lore": 19
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Redeemer's Pistol",
+      "ref": "equipment:item/redeemers-pistol",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hex Blaster",
+      "ref": "equipment:item/hex-blaster",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Breastplate",
+      "ref": "equipment:item/breastplate",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Blazons of Shared Power (attached to pistol and reinforced stock)",
+      "ref": "equipment:item/blazons-of-shared-power",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Infused Pyronite Charge",
+      "type": "consumable",
+      "quantity": 6
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Dueling Pistol)",
+      "ref": "equipment:item/rounds-dueling-pistol",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Rounds (Arquebus)",
+      "ref": "equipment:item/rounds-arquebus",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Reinforced Stock",
+      "attack": 24,
+      "traits": [
+        "finesse",
+        "magical",
+        "two-hand-d6"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+6",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "plant-pyronite-charge"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Redeemer's Pistol",
+      "attack": 24,
+      "traits": [
+        "concealable",
+        "concussive",
+        "fatal-d10",
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hex Blaster",
+      "attack": 24,
+      "traits": [
+        "concussive",
+        "fatal-d12",
+        "kickback",
+        "magical",
+        "reload-1"
+      ],
+      "range": 150,
+      "damage": [
+        {
+          "dice": "2d8+6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stubborn Resolve",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Frequency once per day\n\nTrigger Anjelique fails or critically fails a saving throw\n\n---\n\nEffect Anjelique treats a critical failure as a failure, or a failure as a success.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Firearms Critical Specialization",
+      "category": "offensive",
+      "text": "When Anjelique makes a critical hit with a firearm, the target must succeed a DC 34 Fortitude save save or be Stunned 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CriticalSpecialization",
+            "predicate": [
+              "item:group:firearm"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.classDC.value",
+            "value": 34
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lawbringer's Pursuit",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Anjelique Strides and then either Interacts to reload her gun or makes an Intimidation check to Demoralize a foe."
+    },
+    {
+      "kind": "ability",
+      "name": "Mentor's Curse",
+      "category": "offensive",
+      "text": "The grace of Anjelique's champion mentor inhabits the redeemer's pistol she carries, passing judgment on her actions. If she attempts to make a redeemer's pistol Strike against a good-aligned creature, she must succeed at a DC 5 Flat check or the gun misfires.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "redeemers-pistol-attack",
+          "text": "{item|system.description.value}",
+          "when": [
+            "target:trait:good"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Parting Shot",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger Anjelique would die or gain the dying condition\n\n---\n\nEffect Anjelique reloads her currently wielded firearm if necessary and makes a ranged Strike against an enemy, treating a successful attack as a critical hit. Whether successful or not, after making this attack, Anjelique dies."
+    },
+    {
+      "kind": "ability",
+      "name": "Plant Pyronite Charge",
+      "category": "offensive",
+      "text": "After making a successful melee Strike against a creature, Anjelique makes a Thievery check check against the target's Perception DC. On a success, she activates and secretly plants a specially formulated sticky pyronite charge on the creature. This charge detonates after 3 rounds, dealing 4d8 fire damage to all creatures within a 10-foot radius (DC 34 basic Reflex save) and detonating any other pyronite charges within the area. After making a successful ranged Strike against a creature stuck with a planted charge, Anjelique can choose to shoot a bullet through the charge, dealing normal damage and detonating the charge immediately. A creature can use an Interact action to find and remove a planted charge from itself or an adjacent creature. These pyronite charges have the infused trait and are inert until activated by Anjelique."
+    },
+    {
+      "kind": "ability",
+      "name": "Tormenting Shot",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Anjelique makes a ranged Strike and deals an additional 2d8 piercing damage on a hit. If the target is frightened, it also takes 2d6 bleed on a hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "tormenting-shot",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "piercing",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "tormenting-shot"
+            ],
+            "selector": "ranged-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:frightened",
+              "tormenting-shot"
+            ],
+            "selector": "ranged-strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Female elf changeling shieldmarshal deputy"
+}

@@ -1,0 +1,439 @@
+{
+  "kind": "creature",
+  "slug": "cacodaemon",
+  "system": "pf2e",
+  "name": "Cacodaemon",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "daemon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 22,
+    "perception": 6,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 8,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 3,
+      "int": -1,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 8,
+      "deception": 5,
+      "religion": 6,
+      "stealth": 8
+    },
+    "speeds": {
+      "land": 5,
+      "fly": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "daemonic"
+    ],
+    "iwr": {
+      "immunities": [
+        "death-effects"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 3
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Read Omens",
+          "rank": 4,
+          "ref": "spells:spell/read-omens"
+        },
+        {
+          "name": "Invisibility (At Will) (Self Only)",
+          "rank": 2,
+          "ref": "spells:spell/invisibility"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Fear",
+          "rank": 1,
+          "ref": "spells:spell/fear"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "disease",
+        "finesse",
+        "magical",
+        "reach-0",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "cacodaemonia"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 100 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "At-Will Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Cacodaemonia",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "The cacodaemon can telepathically communicate with the afflicted creature at any distance on the same plane.\n\nSaving Throw DC 17 Fortitude save\n\n---\n\nStage 1 carrier (1 day)\n\nStage 2 Stupefied 1 (1 day)\n\nStage 3 Stupefied 2 (1 day)"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "divine",
+        "polymorph"
+      ],
+      "text": "- Lizard\n- Speed 20 feet\n- Melee jaws +8 (agile, finesse), Damage 1d8+1 piercing\n\n- Octopus\n- Size Small\n- Speed 20 feet, swim 30 feet\n- Skills Athletics +6\n- Melee tentacle +8 (finesse), Damage 1d8+1 bludgeoning plus Grab\n- Melee beak +8 (agile, finesse), Damage 1d6 piercing plus 2 poison\n\n- Scorpion\n- Size Small\n- Speed 30 feet\n- Skills Athletics +6\n- Melee pincer +8 (agile, finesse), Damage 1d6+1 bludgeoning plus Grab\n- Melee stinger +8 (agile, finesse), Damage 1d6+1 piercing plus 1d4 poison\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "cacodaemon",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Daemon.Cacodaemon",
+                "value": "cacodaemon"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Lizard",
+                "value": "lizard"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Octopus",
+                "value": "octopus"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Scorpion",
+                "value": "scorpion"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "allowDuplicate": false,
+            "key": "GrantItem",
+            "predicate": [
+              {
+                "or": [
+                  "change-shape:octopus",
+                  "change-shape:scorpion"
+                ]
+              }
+            ],
+            "reevaluateOnUpdate": true,
+            "uuid": "Compendium.pf2e.bestiary-ability-glossary-srd.Item.Grab"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              {
+                "or": [
+                  "change-shape:octopus",
+                  "change-shape:scorpion"
+                ]
+              }
+            ],
+            "value": "small"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 8,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d8",
+                "modifier": 1
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Tentacle",
+            "predicate": [
+              "change-shape:octopus"
+            ],
+            "traits": [
+              "agile",
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "tentacle-damage"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 8,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d6"
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Beak",
+            "predicate": [
+              "change-shape:octopus"
+            ],
+            "traits": [
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "beak-damage",
+          "type": "untyped",
+          "value": 2,
+          "damageType": "poison"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 8,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 1
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Pincer",
+            "predicate": [
+              "change-shape:scorpion"
+            ],
+            "traits": [
+              "agile",
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "pincer-damage"
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 8,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d6",
+                "modifier": 1
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Stinger",
+            "predicate": [
+              "change-shape:scorpion"
+            ],
+            "traits": [
+              "agile",
+              "finesse"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "poison",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "change-shape:scorpion"
+            ],
+            "selector": "stinger-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:jaws",
+              "change-shape:lizard"
+            ],
+            "property": "traits",
+            "value": "disease"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:jaws",
+              "change-shape:lizard"
+            ],
+            "property": "traits",
+            "value": "magical"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:jaws",
+              "change-shape:lizard"
+            ],
+            "property": "traits",
+            "value": "reach-0"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "remove",
+            "predicate": [
+              "item:slug:jaws",
+              "change-shape:lizard"
+            ],
+            "property": "traits",
+            "value": "unholy"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "change-shape:lizard"
+          ],
+          "damageType": "piercing"
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 20
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 30
+        },
+        {
+          "key": "speed",
+          "type": "swim",
+          "value": 30
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Soul Lock",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "death",
+        "divine"
+      ],
+      "text": "Frequency once per day\n\n---\n\nEffect The cacodaemon ingests the soul of a sentient creature within 30 feet that died within the last minute. When they do, the cacodaemon grows a fist-sized soul gem (Hardness 2, HP 8) in their gut and can regurgitate it at any time as an Interact action. Destroying the gem frees the soul within but doesn't return the deceased creature to life. If a caster attempts to return to life a creature whose soul is trapped within a soul gem, they fail unless they succeed at a DC 30 Religion check check. A success causes the soul gem to shatter so the creature is returned to life as normal for the spell.\n\nA fiend can Interact to ingest a soul gem it is holding, condemning the soul to the fiend's home plane. The fiend gains fast healing 5 for 1 minute.\n\nEffect: Soul Lock (Healing)",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    }
+  ],
+  "text": "These twisted embodiments of violence and spite are spawned from eddies of angry and warped souls amid Abaddon's mists. Cacodaemons constantly hunger for mortal souls and yearn to create suffering. As gnashing spheres of teeth, fins, and spines, they are the weakest of daemonkind, an amalgam of various petty forms of death without the strength that comes from focusing on a single cause of demise.\n\n---\n\nDenizens of the bleak and terrible plane of Abaddon, daemons are shaped by and devoted to the destruction of life in all its forms. They seek the death of every mortal being by the most painful and horrible means possible, in service to the Apocalypse Riders. Each kind of daemon represents a different way to die, and their powers are nearly always aimed at spreading that particular form of death. Through the use of these powers, they seek to drag all existence down into a pit of hopelessness and despair, and to commit all souls to oblivion.\n\nWhile mortals who summon daemons usually seek to use the creatures' destructive and corrupting powers for their own ends, daemons always look for ways to spread fear, doubt, and despair wherever they go. Often, daemons disguise their plots as the workings of other fiends, knowing that such confusion compounds mortals' fear and keeps those mortals from bringing the most effective weapons. As a result, learned mortals sometimes refer to daemons as \"riders\" after their leaders or \"soul mongers\" after their largest industry.\n\nWhile many fiends seek to tempt mortals into lives of nihilistic evil to increase their own numbers and power on their native planes, daemons are further driven by a supernatural hunger for mortal souls and use a variety of methods—not least of which is the cacodaemons' soul gems—to entrap them. On Abaddon and in other forbidding places across the multiverse, souls are simultaneously a delicacy, a trade good, and a source of magical power, and the daemons are among the greatest gluttons, merchants, and abusers of this spiritual \"resource.\""
+}

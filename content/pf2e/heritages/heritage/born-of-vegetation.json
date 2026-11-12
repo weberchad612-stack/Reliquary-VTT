@@ -1,0 +1,70 @@
+{
+  "kind": "heritage",
+  "slug": "born-of-vegetation",
+  "system": "pf2e",
+  "name": "Born of Vegetation",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "traits": [
+    "yaoguai"
+  ],
+  "ancestry": {
+    "name": "Yaoguai",
+    "ref": "ancestries:ancestry/yaoguai"
+  },
+  "text": "You were a plant or fungi until the rain gifted you a mind. You gain your choice of the plant or fungus trait.\n- Humanoid Form With fresh vegetation, you can better aid those in need. You gain a +1 circumstance bonus to Medicine checks to Administer First Aid.\n- Yaoguai Form When anyone uses the Medicine skill to Treat your Wounds, add your level to the Hit Points you regain from that treatment. Additionally, the creature attempting the check gains a +1 circumstance bonus if you have the plant trait and are in bright light, or the fungus trait and are in darkness.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitFungus",
+            "value": "fungus"
+          },
+          {
+            "label": "PF2E.TraitPlant",
+            "value": "plant"
+          }
+        ],
+        "flag": "trait",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Trait"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "{item|flags.system.rulesSelections.trait}"
+        ],
+        "key": "ActorTraits"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "medicine",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "action:administer-first-aid",
+        "change-shape:humanoid"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "healing-received",
+      "type": "untyped",
+      "value": "@level",
+      "when": [
+        "action:treat-wounds",
+        "change-shape:yaoguai",
+        "check:statistic:medicine"
+      ]
+    }
+  ]
+}

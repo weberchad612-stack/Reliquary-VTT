@@ -1,0 +1,117 @@
+{
+  "kind": "feat",
+  "slug": "officers-education",
+  "system": "pf2e",
+  "name": "Officer's Education",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "commander"
+  ],
+  "category": "class",
+  "maxTakable": 2,
+  "text": "You know that a broad knowledge base is critical for a competent commander. You become trained in two skills you are not already trained in, become an expert in one skill you are currently trained in, learn one common language you do not already know, and gain any one general feat that you meet the prerequisites for.\n\n---\nSpecial You can take this feat twice, gaining its benefits each time.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:0"
+          ]
+        },
+        "flag": "firstTrainedSkill",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.firstTrainedSkill}",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:0"
+          ]
+        },
+        "flag": "secondTrainedSkill",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.secondTrainedSkill}.rank",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "skills",
+          "predicate": [
+            "skill:{choice|value}:rank:1"
+          ]
+        },
+        "flag": "expertSkill",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.{item|flags.system.rulesSelections.expertSkill}.rank",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            {
+              "gte": [
+                "self:level",
+                "item:level"
+              ]
+            },
+            "item:trait:general"
+          ]
+        },
+        "flag": "feat",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Feat"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.feat}"
+      }
+    }
+  ]
+}

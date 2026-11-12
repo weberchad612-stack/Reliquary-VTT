@@ -1,0 +1,180 @@
+{
+  "kind": "creature",
+  "slug": "leaping-thief",
+  "system": "pf2e",
+  "name": "Leaping Thief",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "catfolk",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 38,
+    "perception": 10,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 11,
+      "will": 7
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 0,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 7,
+      "deception": 10,
+      "society": 9,
+      "stealth": 11,
+      "thievery": 9
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "amurrun",
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Claw Blade",
+      "ref": "equipment:item/claw-blade",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Thieves' Toolkit",
+      "ref": "equipment:item/thieves-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Claw Blade",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coiled Leap",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The leaping thief Leaps up to 10 feet vertically or 30 feet horizontally."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The leaping thief deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stealthy Pad",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\n---\nEffect The leaping thief Steps, then Hides or Sneaks, ignoring difficult terrain for this movement.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Unexpected Angle",
+      "category": "offensive",
+      "text": "When the leaping thief successfully Tumbles Through a foe's space or Leaps to a position higher than a foe, the foe is Off-Guard against the next attack the leaping thief makes before the end of their turn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "acrobatics",
+          "text": "{item|description}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "action:tumble-through"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Some catfolk take advantage of their natural agility to steal from those too slow to catch them. They usually target notorious misers and others who obviously have money to spare—sometimes to help the needy, sometimes for simple profit.\n\n---\nCatfolk can be found traveling almost anywhere, and they are quick to settle down for a chat when they encounter fellow travelers. Some trade stories, act as guides, or operate at the fringes of polite society."
+}

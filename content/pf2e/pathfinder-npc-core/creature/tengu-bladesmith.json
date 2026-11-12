@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "tengu-bladesmith",
+  "system": "pf2e",
+  "name": "Tengu Bladesmith",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "humanoid",
+    "tengu"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 100,
+    "perception": 14,
+    "saves": {
+      "fortitude": 15,
+      "reflex": 16,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 2,
+      "dex": 3,
+      "int": 1,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 14,
+      "athletics": 16,
+      "crafting": {
+        "value": 16,
+        "special": [
+          {
+            "value": 18,
+            "label": "for blacksmithing",
+            "when": [
+              "blacksmithing"
+            ]
+          }
+        ]
+      },
+      "deception": 14,
+      "intimidation": 16,
+      "tengu-lore": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "tengu"
+    ],
+    "notes": {
+      "languages": "plus two others"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Wakizashi",
+      "ref": "equipment:item/wakizashi",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Katana",
+      "ref": "equipment:item/katana",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Cold Iron Wakizashi",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "deadly-d8",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+7",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Katana",
+      "attack": 17,
+      "traits": [
+        "deadly-d8",
+        "magical",
+        "two-hand-d10",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "slashing"
+        },
+        {
+          "dice": "1d4",
+          "type": "bleed",
+          "category": "persistent"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Beak",
+      "attack": 15,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Feinting Failure",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirements The tengu bladesmith's previous action this turn was a Strike that failed or critically failed\n\n---\nEffect The tengu bladesmith Strikes the same target, who is Off-Guard against this attack. On a hit, the bladesmith deals 1d6 additional precision damage.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "feinting-failure",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "feinting-failure"
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "strike-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "feinting-failure"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swirling Blade",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The tengu bladesmith Interacts to draw a weapon in the sword group, then attempts to disarm a weapon held by a foe within reach. The weapon the tengu bladesmith draws gains the disarm trait for this attempt."
+    }
+  ],
+  "text": "With the tengu diaspora spreading across much of Golarion, their knowledge and tradition of blade crafting has been passed through the generations to those who show interest and aptitude. Many tengu bladesmiths have experience as warriors; others learn their sword craft to improve their knowledge and understanding of the weapons they produce.\n\n---\nOriginally hailing from the continent of Tian Xia, tengu have spread across the globe. Though some staunchly uphold traditions, gazing at the sky from the tallest mountaintops, other tengu remain on the ground, adapting and blending into the societies in which they settle."
+}

@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-entropic-wheel",
+  "system": "pf2e",
+  "name": "Spell Effect: Entropic Wheel",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "badge": {
+    "type": "counter",
+    "value": 1
+  },
+  "text": "Granted by Entropic Wheel\n\nWhen you Cast a Spell that deals fire damage, the target also takes cold damage equal to the number of motes in the entropic wheel. When you Cast a Spell that deals cold damage, the target also takes fire damage equal to the number of motes in the entropic wheel. This applies only to the initial damage of the spell, not to any persistent damage or ongoing effects.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "spell-damage",
+      "type": "untyped",
+      "value": "@value",
+      "slug": "entropic-wheel-fire",
+      "when": [
+        "item:damage:type:cold",
+        {
+          "not": "item:damage:type:persistent"
+        }
+      ],
+      "damageType": "fire"
+    },
+    {
+      "key": "modifier",
+      "selector": "spell-damage",
+      "type": "untyped",
+      "value": "@value",
+      "slug": "entropic-wheel-cold",
+      "when": [
+        "item:damage:type:fire",
+        {
+          "not": "item:damage:type:persistent"
+        }
+      ],
+      "damageType": "cold"
+    }
+  ]
+}

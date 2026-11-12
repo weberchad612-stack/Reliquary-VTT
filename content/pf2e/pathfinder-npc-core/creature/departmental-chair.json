@@ -1,0 +1,230 @@
+{
+  "kind": "creature",
+  "slug": "departmental-chair",
+  "system": "pf2e",
+  "name": "Departmental Chair",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 115,
+    "perception": 16,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 14,
+      "will": 18
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 0,
+      "dex": 1,
+      "int": 5,
+      "str": 0,
+      "wis": 5
+    },
+    "skills": {
+      "arcana": 22,
+      "diplomacy": 15,
+      "occultism": 22,
+      "society": 17,
+      "academia-lore": 25,
+      "one-additional-lore": 22
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "languages": "up to 4 additional languages"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Prepared Spells",
+      "tradition": "arcane",
+      "type": "prepared",
+      "dc": 25,
+      "attack": 17,
+      "spells": [
+        {
+          "name": "Mountain Resilience",
+          "rank": 4,
+          "ref": "spells:spell/mountain-resilience"
+        },
+        {
+          "name": "Wall of Fire",
+          "rank": 4,
+          "ref": "spells:spell/wall-of-fire"
+        },
+        {
+          "name": "Fireball",
+          "rank": 3,
+          "ref": "spells:spell/fireball"
+        },
+        {
+          "name": "Haste",
+          "rank": 3,
+          "ref": "spells:spell/haste"
+        },
+        {
+          "name": "Lightning Bolt",
+          "rank": 3,
+          "ref": "spells:spell/lightning-bolt"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Ignition",
+          "rank": 1,
+          "ref": "spells:spell/ignition"
+        },
+        {
+          "name": "Prestidigitation",
+          "rank": 1,
+          "ref": "spells:spell/prestidigitation"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Staff",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Spellbook",
+      "ref": "equipment:item/spellbook-blank",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Writing Set",
+      "ref": "equipment:item/writing-set",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Staff",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Veteran Researcher",
+      "category": "interaction",
+      "text": "On the rare occasions the departmental chair still deals with their research, they are a 10th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Paper Pusher",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "concentrate",
+        "spellshape"
+      ],
+      "text": "The departmental chair has spent so much time dealing with bureaucracy recently that papers and forms have worked their way into the chair's spellcasting. If the departmental chair's next action is to Cast a Spell that deals energy damage, the spell conjures a burst of sharp-edged paper instead. Change the damage type to slashing, and the spell deals an additional 1d6 persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "paper-pusher",
+            "placement": "spellcasting",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "predicate": [
+              "paper-pusher",
+              "item:damage:category:energy",
+              "item:type:spell",
+              {
+                "not": "dice:slug:paper-pusher-bleed"
+              }
+            ],
+            "property": "damage-type",
+            "selectors": [
+              "spell-damage",
+              "inline-damage"
+            ],
+            "value": "slashing"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "paper-pusher",
+              "item:damage:category:energy",
+              "item:type:spell"
+            ],
+            "selector": [
+              "spell-damage",
+              "inline-damage"
+            ],
+            "slug": "paper-pusher-bleed"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "All the departmental chair really wants is a chance to quietly do their research. Instead, they've been roped into dealing with every emergency—political, supernatural, or emotional—in the university. They are not thrilled about this.\n\n---\nTrue power comes from knowledge—the power to shape the growth of kingdoms by mere whispers, stay three steps ahead of adversaries, or even know which flora is best for creating untraceable poisons."
+}

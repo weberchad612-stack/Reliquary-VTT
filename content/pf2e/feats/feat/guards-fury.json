@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "guards-fury",
+  "system": "pf2e",
+  "name": "Guard's Fury",
+  "source": {
+    "title": "Pathfinder Lost Omens Shining Kingdoms",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Ulfen Guard Dedication",
+    "you can't already use the Rage action"
+  ],
+  "text": "Some Ulfen Guards tap into a well of fury to protect their charges. You can use the Rage action. While raging, you take a –1 penalty to AC. If you're adjacent to your designated ally while raging, increase the additional damage from Rage from 2 to 4.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Rage"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "untyped",
+      "value": -1,
+      "when": [
+        "self:effect:rage"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.UlfenGuard.GuardsFury.ToggleLabel",
+        "option": "guards-fury-adjacent",
+        "predicate": [
+          "self:effect:rage"
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "guards-fury-adjacent"
+        ],
+        "selector": "strike-damage",
+        "slug": "rage",
+        "value": 4
+      }
+    }
+  ]
+}

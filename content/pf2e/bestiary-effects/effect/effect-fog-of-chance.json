@@ -1,0 +1,68 @@
+{
+  "kind": "effect",
+  "slug": "effect-fog-of-chance",
+  "system": "pf2e",
+  "name": "Effect: Fog of Chance",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "- Fortune The first time you attempt an attack roll or skill check, you roll twice and use the better result.\n\n- Misfortune The first time you attempt an attack roll or skill check, you must roll twice and use the worse result.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitFortune",
+            "value": "fortune"
+          },
+          {
+            "label": "PF2E.TraitMisfortune",
+            "value": "misfortune"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "fog-of-chance"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "fog-of-chance:fortune"
+        ],
+        "removeAfterRoll": true,
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "lower",
+        "key": "RollTwice",
+        "predicate": [
+          "fog-of-chance:misfortune"
+        ],
+        "removeAfterRoll": true,
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ]
+      }
+    }
+  ]
+}

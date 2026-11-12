@@ -1,0 +1,250 @@
+{
+  "kind": "creature",
+  "slug": "siegebreaker",
+  "system": "pf2e",
+  "name": "Siegebreaker",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 34,
+    "hp": 300,
+    "perception": 24,
+    "saves": {
+      "fortitude": 25,
+      "reflex": 28,
+      "will": 23
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 4,
+      "dex": 5,
+      "int": 5,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 25,
+      "athletics": 23,
+      "crafting": {
+        "value": 27,
+        "special": [
+          {
+            "value": 31,
+            "label": "to Craft alchemical items",
+            "when": [
+              "item:trait:alchemical"
+            ]
+          }
+        ]
+      },
+      "stealth": 25,
+      "thievery": 23,
+      "engineering-lore": 29,
+      "siege-lore": 29
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Light Mace",
+      "ref": "equipment:item/light-mace",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Alchemist's Toolkit",
+      "ref": "equipment:item/alchemists-toolkit",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Formula Book",
+      "ref": "equipment:item/formula-book-blank",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Light Mace",
+      "attack": 27,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "shove"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+18",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 25,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+18",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Alchemical Grenade",
+      "attack": 27,
+      "traits": [
+        "splash"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "3d6",
+          "type": "untyped"
+        },
+        {
+          "dice": "10",
+          "type": "untyped",
+          "category": "persistent"
+        },
+        {
+          "dice": "10",
+          "type": "untyped",
+          "category": "splash"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Alchemical Grenades",
+      "category": "interaction",
+      "text": "A siegebreaker carries 15 alchemical grenades that deal either acid, cold, or fire damage plus 10 persistent damage and 10 splash damage of the same type (typically five of each damage type). They replenish these grenades each day.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "alchemical-grenades",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "property": "damage-type",
+            "selectors": [
+              "alchemical-grenade-damage"
+            ],
+            "slug": "base",
+            "value": "{item|flags.system.rulesSelections.alchemicalGrenades}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Explosive Compounds",
+      "category": "defensive",
+      "text": "When an attacker scores a critical hit against the siegebreaker, one of the siegebreaker's alchemical grenades bursts. The GM determines the grenade randomly. The siegebreaker takes damage from the grenade as though they were hit by the grenade (applying their resistance normally), and any creature in a 10-foot emanation takes the splash damage.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "damage-received",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Resistance 10 to Alchemical Items",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "resistance",
+          "type": "custom",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Expanded Splash",
+      "category": "offensive",
+      "text": "The siegebreaker's grenades deal splash damage in a 10-foot radius.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "alchemical-grenade-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Grenadier",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The siegebreaker Interacts to draw a grenade, then Strikes with it."
+    },
+    {
+      "kind": "ability",
+      "name": "The Wall Must Fall",
+      "category": "offensive",
+      "traits": [
+        "exploration"
+      ],
+      "text": "Requirements The siegebreaker is at the base of a fortified wall\n\n---\nEffect The siegebreaker has studied for years to gain exact knowledge of how to combine the alchemical ingredients in their grenades to exponentially multiply their power, creating a terrifying siege-ender bomb that can break open a city wall. The siegebreaker spends 10 minutes combining the ingredients from 9 different alchemical grenades of their choice. The siegebreaker then sets a fuse timer up to 1 minute long. When time's up, the bomb explodes in a concentrated 20-foot burst, dealing 20d6 acid, cold, or fire damage that ignores up to 10 Hardness of structures. Any creature in the area can reduce the damage they take with a DC 37 basic Reflex save save."
+    }
+  ],
+  "text": "When a well-constructed or magically warded fortification repels every assault, a siegebreaker is called in. These masters of alchemical destruction find that the bigger and more protected the wall, the more satisfying it is to break it.\n\n---\nWhether they're hired to wage war, protect a caravan, or infiltrate an impenetrable fortress, there's ample work for mercenaries all over Golarion."
+}

@@ -1,0 +1,78 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-song-of-silver",
+  "system": "pf2e",
+  "name": "Spell Effect: Song of Silver",
+  "source": {
+    "title": "Pathfinder #205: Singer, Stalker, Skinsaw Man",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 7,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Song of Silver\n\nYou gain a +2 status bonus to all saving throws against mental effects; this bonus doubles to a +4 status bonus against all fear effects. On a critical success all weapons you wield are treated as silver.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "value": "critical-success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "rollOption": "song-of-silver"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "item:trait:mental"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "item:trait:fear"
+        ],
+        "selector": "saving-throw",
+        "slug": "song-of-silver",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "not": "item:unarmed"
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "song-of-silver:critical-success"
+        ],
+        "property": "materials",
+        "value": "silver"
+      }
+    }
+  ]
+}

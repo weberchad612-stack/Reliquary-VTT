@@ -1,0 +1,65 @@
+{
+  "kind": "feat",
+  "slug": "intimidating-prowess",
+  "system": "pf2e",
+  "name": "Intimidating Prowess",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "Strength +3",
+    "expert in Intimidation"
+  ],
+  "text": "In situations where you can physically menace the target when you Coerce or Demoralize, you gain a +1 circumstance bonus to your Intimidation check and you ignore the penalty for not sharing a language. If your Strength modifier is +5 or higher and you are a master in Intimidation, this bonus increases to +2.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "intimidation",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "intimidating-prowess",
+      "when": [
+        "target:physically-menaced",
+        {
+          "or": [
+            "action:coerce",
+            "action:demoralize"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "attribute:str:mod",
+              5
+            ]
+          },
+          {
+            "gte": [
+              "skill:intimidation:rank",
+              3
+            ]
+          }
+        ],
+        "selector": "intimidation",
+        "slug": "intimidating-prowess",
+        "value": 2
+      }
+    }
+  ]
+}

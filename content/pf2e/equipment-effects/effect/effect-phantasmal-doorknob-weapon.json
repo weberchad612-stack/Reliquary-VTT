@@ -1,0 +1,111 @@
+{
+  "kind": "effect",
+  "slug": "effect-phantasmal-doorknob-weapon",
+  "system": "pf2e",
+  "name": "Effect: Phantasmal Doorknob - Weapon",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Phantasmal Doorknob\n\nIf you critically succeed at a Strike with the weapon, the target is dazzled until the end of its next turn.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:phantasmal-doorknob",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Phantasmal Doorknob"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:phantasmal-doorknob-greater",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Phantasmal Doorknob (Greater)"
+          },
+          {
+            "predicate": [
+              {
+                "or": [
+                  "parent:origin:item:slug:phantasmal-doorknob-major",
+                  {
+                    "not": "parent:origin:item"
+                  }
+                ]
+              }
+            ],
+            "value": "Compendium.pf2e.equipment-srd.Item.Phantasmal Doorknob (Major)"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EquipmentVariety",
+        "rollOption": "phantasmal-doorknob"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectPhantasmalDoorknobWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "{item|flags.system.rulesSelections.effectPhantasmalDoorknobWeapon}-damage",
+      "text": "PF2E.SpecificRule.Spellheart.PhantasmalDoorknob.CriticalHitNote.Weapon",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "phantasmal-doorknob:phantasmal-doorknob"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "{item|flags.system.rulesSelections.effectPhantasmalDoorknobWeapon}-damage",
+      "text": "PF2E.SpecificRule.Spellheart.PhantasmalDoorknob.CriticalHitNote.GreaterOrMajor",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        {
+          "or": [
+            "phantasmal-doorknob:phantasmal-doorknob-greater",
+            "phantasmal-doorknob:phantasmal-doorknob-major"
+          ]
+        }
+      ]
+    }
+  ]
+}

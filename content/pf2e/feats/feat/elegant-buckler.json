@@ -1,0 +1,62 @@
+{
+  "kind": "feat",
+  "slug": "elegant-buckler",
+  "system": "pf2e",
+  "name": "Elegant Buckler",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "swashbuckler"
+  ],
+  "category": "class",
+  "text": "You've learned a flexible way to position your Buckler to provide more protection. When you Raise a Shield to gain a circumstance bonus to AC from a buckler, increase the bonus from +1 to +2.\n\nWhile you have a buckler raised, if a creature critically misses you with a Strike, you gain panache until the end of your next turn.\n\nEffect: Panache (Temporary)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Swashbuckler.ElegantBuckler.RollOptionLabel",
+        "option": "elegant-buckler",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "elegant-buckler"
+        ],
+        "selector": "ac",
+        "slug": "raised-shield",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "affects": "origin",
+        "alterations": [
+          {
+            "mode": "add",
+            "property": "other-tags",
+            "value": "critical-failure-note"
+          }
+        ],
+        "key": "EphemeralEffect",
+        "predicate": [
+          "elegant-buckler",
+          "self:shield:raised"
+        ],
+        "selectors": "strike-attack-roll",
+        "uuid": "Compendium.pf2e.feat-effects.Item.Effect: Panache (Ephemeral Note)"
+      }
+    }
+  ]
+}

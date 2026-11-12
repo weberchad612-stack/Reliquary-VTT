@@ -1,0 +1,222 @@
+{
+  "kind": "creature",
+  "slug": "glacial-worm",
+  "system": "pf2e",
+  "name": "Glacial Worm",
+  "source": {
+    "title": "Pathfinder #194: Cult of the Cave Worm",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 16,
+  "rarity": "uncommon",
+  "traits": [
+    "amphibious",
+    "animal"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 36,
+    "hp": 370,
+    "perception": 22,
+    "saves": {
+      "fortitude": 30,
+      "reflex": 22,
+      "will": 22
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 8,
+      "dex": 0,
+      "int": -5,
+      "str": 10,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 34
+    },
+    "speeds": {
+      "land": 40,
+      "burrow": 40,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "cold"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "hp": "cold healing"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 32,
+      "traits": [
+        "deadly-2d12",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d12+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Body",
+      "attack": 30,
+      "traits": [
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "1d6",
+          "type": "cold"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (imprecise) 100 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Cold Healing",
+      "category": "defensive",
+      "text": "When a glacial worm is in extreme cold or surrounded by ice, it gains fast healing 10. When struck by a magical cold effect, a glacial worm regains Hit Points equal to half the cold damage the effect would otherwise deal.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FastHealing",
+            "predicate": [
+              {
+                "or": [
+                  "cold-healing",
+                  "environment:extreme-cold",
+                  "terrain:ice"
+                ]
+              }
+            ],
+            "type": "fast-healing",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "cold-healing",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Inexorable",
+      "category": "defensive",
+      "text": "The glacial worm recovers from the Paralyzed, Slowed, and Stunned conditions at the end of its turn. It's also immune to penalties to its Speeds and the Immobilized condition, and it ignores difficult terrain and greater difficult terrain.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "immobilized"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Leech Heat",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "cold"
+      ],
+      "text": "30 feet. A glacial worm's intense cold absorbs heat. Creatures that start their turn within the area take 3d6 cold damage (DC 34 basic Fortitude save save).",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 30,
+            "slug": "leech-heat",
+            "traits": [
+              "cold"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Shake It Off",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Frequency once per day\n\nTrigger The glacial worm would be affected by a condition or adverse effect (such as baleful polymorph)\n\n---\nEffect The glacial worm negates the triggering condition or effect. Effects from artifacts, deities, or a similarly powerful source can't be avoided in this way.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Fast Swallow",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The worm Grabs a creature\n\n---\n\nEffect The worm uses Swallow Whole."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Huge, 3d8+12 bludgeoning,2d6 cold, Rupture 28\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Thrash",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The worm makes a Strike once against each creature in its reach. It can Strike up to once with its jaws and any number of times with its body. Each attack counts toward the worm's multiple attack penalty, but the multiple attack penalty doesn't increase until after it makes all the attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Cave worm eggs that lie dormant for a long period may experience significant climactic shift. If the temperature falls below freezing, the worms may hatch as glacial worms, also called white worms. These creatures immediately migrate as far north as possible, seeking the glaciers or icebergs that will nourish and house them. Glacial worms lack stingers, as liquid venom is less effective in cold temperatures. Occasionally, such creatures are carried far south on icebergs that have carved off the main ice sheets of the polar regions."
+}

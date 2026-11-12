@@ -1,0 +1,283 @@
+{
+  "kind": "creature",
+  "slug": "tarn-linnorm",
+  "system": "pf2e",
+  "name": "Tarn Linnorm",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 20,
+  "rarity": "uncommon",
+  "traits": [
+    "acid",
+    "amphibious",
+    "dragon"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 46,
+    "hp": 400,
+    "perception": 35,
+    "saves": {
+      "fortitude": 36,
+      "reflex": 32,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 8,
+      "dex": 6,
+      "int": -1,
+      "str": 10,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 32,
+      "athletics": 38,
+      "stealth": 34
+    },
+    "speeds": {
+      "land": 35,
+      "fly": 100,
+      "swim": 80
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "draconic",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "curse",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "ac": "all-around vision",
+      "hp": "regeneration 15 (deactivated by cold iron)",
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "unfettered movement"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 42,
+      "attack": 34,
+      "spells": [
+        {
+          "name": "Truesight (Constant)",
+          "rank": 8,
+          "ref": "spells:spell/truesight"
+        },
+        {
+          "name": "Unfettered Movement (Constant)",
+          "rank": 9,
+          "ref": "spells:spell/unfettered-movement"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-30",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+18",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "tarn-linnorm-venom"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-30",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+18",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 38,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-30"
+      ],
+      "damage": [
+        {
+          "dice": "4d6+18",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "All-Around Vision",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.flankable",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Regeneration 15 (Deactivated by Cold Iron)",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "deactivatedBy": [
+              "cold-iron"
+            ],
+            "key": "FastHealing",
+            "type": "regeneration",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of Death",
+      "category": "defensive",
+      "traits": [
+        "curse",
+        "death",
+        "primal"
+      ],
+      "text": "When a creature slays the tarn linnorm, it must succeed at a DC 46 Will save save or it can no longer recover Hit Points via any means, such as healing spells, the Medicine skill, or natural healing from rest. This has an unlimited duration."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike (Tail Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "3d6+18 bludgeoning, DC 44 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Corrosive Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "acid",
+        "poison",
+        "primal"
+      ],
+      "text": "The tarn linnorm can expel either a 120-foot line or a 60-foot cone of acid, dealing 20d6 acid damage to creatures within the area (DC 44 basic Reflex save save).\n\nThe linnorm can't use Corrosive Breath or Double Breath again for 1d4 rounds.\n\nThe acid creates toxic fumes. At the beginning of the linnorm's next turn, those who failed the breath weapon's Reflex save must succeed at a DC 42 Fortitude save or gain Sickened 4 from the poisonous fumes."
+    },
+    {
+      "kind": "ability",
+      "name": "Double Bite",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The tarn linnorm Strides and then makes a jaws Strike with each of their heads, each against a different target. Both attacks count toward the tarn linnorm's multiple attack penalty, but the multiple attack penalty doesn't increase until after the tarn linnorm makes all of these attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Double Breath",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The tarn linnorm uses Corrosive Breath twice. A creature attempts only one save and can take damage only once.\n\nThe linnorm can't use Corrosive Breath or Double Breath again for 2d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Tarn Linnorm Venom",
+      "category": "offensive",
+      "traits": [
+        "acid",
+        "injury",
+        "poison"
+      ],
+      "text": "Saving Throw DC 44 Fortitude save\n\n---\n\nMaximum Duration 10 rounds\n\nStage 1 7d6 acid damage and Drained 1 (1 round)\n\nStage 2 11d6 acid damage and Drained 2 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Improved Grab",
+      "actions": "free",
+      "category": "offensive"
+    }
+  ],
+  "text": "Although more powerful linnorms exist, the multi-headed tarn linnorm can wreak an awe-inspiring amount of devastation.\n\n---\n\nImmense, primeval dragons of the northern reaches of the world, linnorms hate those they deem to be lesser creatures and seek to inflict as much suffering as possible upon their unfortunate victims. While these serpentine monstrosities might not be the powerful winged dragons most imagine, they nonetheless possess incredible strength and deadly powers that often rival more notorious dragons' brutality."
+}

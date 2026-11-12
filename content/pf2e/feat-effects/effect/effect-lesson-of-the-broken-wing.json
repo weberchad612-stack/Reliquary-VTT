@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "effect-lesson-of-the-broken-wing",
+  "system": "pf2e",
+  "name": "Effect: Lesson of the Broken Wing",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Lesson of the Broken Wing\n\nIf you're the origin, you take a –1 penalty to your AC against the marked creature's Strikes. Otherwise, you gain a +1 circumstance bonus to your Strikes against the creature.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "lesson-of-the-broken-wing"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": -1,
+      "slug": "lesson-of-the-broken-wing-penalty",
+      "when": [
+        "origin:mark:lesson-of-the-broken-wing",
+        "origin:action:slug:strike",
+        "self:signature:{item|origin.signature}"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-attack-roll",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "lesson-of-the-broken-wing-bonus",
+      "when": [
+        "target:mark:lesson-of-the-broken-wing",
+        {
+          "not": "self:signature:{item|origin.signature}"
+        }
+      ]
+    }
+  ]
+}

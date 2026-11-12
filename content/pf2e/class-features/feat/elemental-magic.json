@@ -1,0 +1,272 @@
+{
+  "kind": "feat",
+  "slug": "elemental-magic",
+  "system": "pf2e",
+  "name": "Elemental Magic",
+  "source": {
+    "title": "Pathfinder Rage of Elements",
+    "license": "OGL",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "category": "classfeature",
+  "prerequisites": [
+    "You must have a spellcasting class feature that chooses spells from the arcane or primal spell list"
+  ],
+  "text": "You're a spellcaster who specializes in harnessing the elements. Though you might feel a kinship for one element over the others, you're capable of shaping many of them. Due to your specialization in elemental magic, you have a smaller, more focused spell list than other spellcasters, though your magic is drawn from multiple traditions. If you choose this class archetype, you must select the Elementalist Dedication as your 2nd-level class feat.\n\nElementalist Adjustments: Replace your spell list with the elemental spell list. Your actual magical tradition is unchanged, but you choose your spells from the elemental list instead. You must choose an elemental philosophy (detailed below), which determines which spells and other elemental magic you can use.\n\nDruid Elementalist Adjustments: If you're a druid of the storm order and air is in your elemental philosophy, you can choose to replace your starting order spell, Tempest Surge, with Updraft.\n\nElemental Sorcerer Adjustments: If you're a sorcerer with the elemental bloodline, you can replace your initial bloodline spell with an initial elemental focus spell, and your advanced bloodline spell with an advanced elemental focus spell. The initial and advanced elemental focus spells you select must have the same trait as your elemental bloodline.\n\nWizard Elementalist Adjustments: If you're a wizard, you can either choose to be a School of Unified Magical Theory or to follow an arcane school dedicated to one element from your elemental philosophy. If you choose an elemental school, your curriculum spells can be any spells that you have access to and that have your chosen element's trait. Your school spells are the elemental focus spells of your chosen element, with the 1st-rank spell as your initial school spell and the 3rd- rank spell as the advanced school spell.\nElemental Philosophy\nChoose an elemental philosophy, which determines which elements you can use. The options available are as follows.\n- Elemental Cycle: Earth, fire, metal, water, wood\n- Inner Sea Elementalism: Air, earth, fire, water\nEvery elementalist has the spells from the universal elemental spells list. Your choice of elemental philosophy affects your other spells. Your personal list also contains any spell that shares one or more traits with those in your elemental philosophy, and doesn't have any traits that aren't in your elemental philosophy. For example, an elemental cycle elementalist could choose a spell with both the earth and fire traits, but not one with the air and fire traits, while an inner sea elementalist could choose either of those, but not a spell with metal and fire traits.\n\nYou can't take elementalist feats or use elementalist abilities for an element you're unable to attune to. For example, an Inner Sea elementalist couldn't select the Reverberating Spell feat, use Redirect Elements against a metal or wood spell, or choose a metal or wood ability for their Elemental Familiar.\n\n---\nElementalist Focus Spells\nAir initial: Updraft; advanced: Powerful Inhalation\n\nEarth initial: Crushing Ground; advanced: Stone Lance\n\nFire initial: Wildfire; advanced: Combustion\n\nMetal initial: Serrate; advanced: Repel Metal\n\nWater initial: Rising Surf; advanced: Pulverizing Cascade\n\nWood initial: Arms of Nature; advanced: Wood Walk",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Elementalist.Philosophy.ElementalCycle",
+            "value": "elemental-cycle"
+          },
+          {
+            "label": "PF2E.SpecificRule.Elementalist.Philosophy.InnerSea",
+            "value": "inner-sea-elementalism"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Elementalist.Philosophy.Prompt",
+        "rollOption": "elementalist"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "elementalistDedication",
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              2
+            ]
+          }
+        ],
+        "reevaluateOnUpdate": true,
+        "uuid": "Compendium.pf2e.feats-srd.Item.Elementalist Dedication"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:wizard-elemental-school"
+          ]
+        },
+        "flag": "wizardElmentalistSchool",
+        "key": "ChoiceSet",
+        "predicate": [
+          "class:wizard"
+        ],
+        "prompt": "PF2E.SpecificRule.Wizard.ArcaneSchool.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:wizard"
+        ],
+        "uuid": "{item|flags.system.rulesSelections.wizardElmentalistSchool}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": "yes"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": "no"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "class:sorcerer",
+          "feature:bloodline-elemental"
+        ],
+        "prompt": "PF2E.SpecificRule.Elementalist.Sorcerer.ElementalFocusPrompt.Initial",
+        "rollOption": "elemental-focus-initial"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "elemental-focus-initial:yes",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:slug:serrate",
+                  "elementalist:elemental-cycle",
+                  "feature:bloodline:elemental:metal"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:arms-of-nature",
+                  "elementalist:elemental-cycle",
+                  "feature:bloodline:elemental:wood"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:updraft",
+                  "elementalist:inner-sea-elementalism",
+                  "feature:bloodline:elemental:air"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:crushing-ground",
+                  "feature:bloodline:elemental:earth"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:wildfire",
+                  "feature:bloodline:elemental:fire"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:rising-surf",
+                  "feature:bloodline:elemental:water"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "elemental-focus-initial:yes",
+          "item:slug:elemental-toss"
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.YesLabel",
+            "value": "yes"
+          },
+          {
+            "label": "PF2E.UI.RuleElements.ChoiceSet.NoLabel",
+            "value": "no"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          "class:sorcerer",
+          "feature:bloodline-elemental"
+        ],
+        "prompt": "PF2E.SpecificRule.Elementalist.Sorcerer.ElementalFocusPrompt.Advanced",
+        "rollOption": "elemental-focus-advanced"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "elemental-focus-initial:yes",
+          {
+            "or": [
+              {
+                "and": [
+                  "item:slug:repel-metal",
+                  "elementalist:elemental-cycle",
+                  "feature:bloodline:elemental:metal"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:wood-walk",
+                  "elementalist:elemental-cycle",
+                  "feature:bloodline:elemental:wood"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:powerful-inhalation",
+                  "elementalist:inner-sea-elementalism",
+                  "feature:bloodline:elemental:air"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:stone-lance",
+                  "feature:bloodline:elemental:earth"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:combustion",
+                  "feature:bloodline:elemental:fire"
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:pulverizing-cascade",
+                  "feature:bloodline:elemental:water"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "elemental-focus-advanced:yes",
+          "item:slug:elemental-motion"
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    }
+  ]
+}

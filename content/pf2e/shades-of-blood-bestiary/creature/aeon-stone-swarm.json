@@ -1,0 +1,328 @@
+{
+  "kind": "creature",
+  "slug": "aeon-stone-swarm",
+  "system": "pf2e",
+  "name": "Aeon Stone Swarm",
+  "source": {
+    "title": "Pathfinder #215: To Blot Out the Sun",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "construct",
+    "swarm"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 25,
+    "hp": 110,
+    "perception": 15,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 21,
+      "will": 16
+    },
+    "attributes": {
+      "cha": -2,
+      "con": 3,
+      "dex": 6,
+      "int": -2,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 19,
+      "arcana": 11,
+      "athletics": 17,
+      "stealth": 19
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 40
+    },
+    "languages": [
+      "azlanti"
+    ],
+    "iwr": {
+      "immunities": [
+        "swarm-mind",
+        "precision"
+      ],
+      "weaknesses": [
+        {
+          "type": "area-damage",
+          "value": 10
+        },
+        {
+          "type": "splash-damage",
+          "value": 10
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "can't speak any language"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Launched Aeon Stone",
+      "attack": 19,
+      "traits": [
+        "magical"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "4d6",
+          "type": "bludgeoning"
+        },
+        {
+          "dice": "2d6",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarm Mind",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Aeon Interference",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "aura"
+      ],
+      "text": "20 feet. An aeon stone swarm is surrounded by a pall of magical interference, which hampers spellcasting in the area. Whenever a creature in the aura attempts to Cast a Spell, they must succeed at a DC 5 Flat check or the spell is disrupted.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "traits": [
+              "arcane"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Stone Shatter",
+      "category": "defensive",
+      "text": "When an aeon stone swarm is reduced to 0 Hit Points, it explodes in a burst of gem shards, dealing 3d12 piercing damage (DC 28 basic Reflex save save) in a 30-foot emanation."
+    },
+    {
+      "kind": "ability",
+      "name": "Aeon Resonance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "magical"
+      ],
+      "text": "The aeon stone swarm reconfigures the aeon stones in its body, gaining a unique resonant power. This resonant power remains active until the aeon stone swarm activates a different resonant power. The aeon stone swarm can select from the following resonant powers.\n- Defensive Resonance The aeon stone swarm gains resistance 10 to one of the following damage types of its choice: acid, cold, electricity, fire, sonic.\n- Illumination Resonance The aeon stone swarm glows, shedding bright light in a 20-foot radius (and dim light for the next 20 feet) in a color of its choice.\n- Sensory Resonance The aeon stone swarm gains the benefits of See the Unseen.\n- Subterfuge Resonance The aeon stone swarm gains a +2 item bonus to Perception checks, and to Stealth checks to Hide and Sneak.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "aeon-resonance",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.Defensive",
+                "value": "defensive"
+              },
+              {
+                "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.Illumination",
+                "value": "illumination"
+              },
+              {
+                "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.Sensory",
+                "value": "sensory"
+              },
+              {
+                "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.Subterfuge",
+                "value": "subterfuge"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.DefensiveResistance",
+            "option": "defensive-resonance",
+            "predicate": [
+              "aeon-resonance:defensive"
+            ],
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "aeon-resonance:defensive"
+            ],
+            "type": "{item|flags.system.rulesSelections.defensiveResonance}",
+            "value": 10
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.AeonStoneSwarm.AeonResonance.IlluminationColor",
+            "option": "illumination",
+            "predicate": [
+              "aeon-resonance:illumination"
+            ],
+            "suboptions": [
+              {
+                "label": "PF2E.Color.Blue",
+                "value": "#0000FF"
+              },
+              {
+                "label": "PF2E.Color.Cyan",
+                "value": "#43D6D6"
+              },
+              {
+                "label": "PF2E.Color.Green",
+                "value": "#00FF00"
+              },
+              {
+                "label": "PF2E.Color.Indigo",
+                "value": "#4B0082"
+              },
+              {
+                "label": "PF2E.Color.Magenta",
+                "value": "#FF00FF"
+              },
+              {
+                "label": "PF2E.Color.Orange",
+                "value": "#FFA400"
+              },
+              {
+                "label": "PF2E.Color.Red",
+                "value": "#FF0000"
+              },
+              {
+                "label": "PF2E.Color.Violet",
+                "value": "#9400D3"
+              },
+              {
+                "label": "PF2E.Color.White",
+                "value": "#AAAAAA"
+              },
+              {
+                "label": "PF2E.Color.Yellow",
+                "value": "#FAFA00"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "aeon-resonance:illumination"
+            ],
+            "value": {
+              "alpha": 0.1,
+              "bright": 20,
+              "color": "{item|flags.system.rulesSelections.illumination}",
+              "dim": 40,
+              "luminosity": 0.15
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Sense",
+            "predicate": [
+              "aeon-resistance:sensory"
+            ],
+            "selector": "see-invisibility"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "perception",
+            "stealth"
+          ],
+          "type": "item",
+          "value": 2,
+          "when": [
+            "aeon-resistance:sensory",
+            {
+              "or": [
+                "check:statistic:perception",
+                "action:hide",
+                "action:sneak"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Battering Orbit",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "magical"
+      ],
+      "text": "Each enemy in the aeon stone swarm's space takes 5d6 bludgeoning damage (DC 28 basic Reflex save save)."
+    }
+  ],
+  "text": "Aeon stone swarms are constructs composed of hundreds of magical gems called aeon stones that orbit around a central point in a tumultuous, ever-shifting mass. Each swarm is imbued with intelligence and composed of a collection of aeon stones, which can arrange themselves in a variety of configurations to activate unique resonant powers. While most aeon stone swarms adopt similar configurations, it's possible to create swarms with experimental structures, resulting in different or additional resonant powers.\n\nMany aeon stone swarms are created to protect a particular location clandestinely, with the swarm using its subterfuge resonance to disguise itself as a mosaic of precious stones or a pile of gemstones lying in an open chest. Unfortunately for would-be thieves, nearly all the aeon stones composing an aeon stone swarm shatter when the swarm is destroyed.\nAeon Stones\nWhen an aeon stone swarm is destroyed, most of the aeon stones composing its body shatter and explode, but a few remain whole. Adventurers willing to sift through mounds of sharp aeon stone shards are usually rewarded with a consumed aeon stone, a preserving aeon stone, or a sprouting aeon stone—perhaps even a nourishing aeon stone or smoothing aeon stone for the particularly lucky!"
+}

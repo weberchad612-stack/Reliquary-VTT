@@ -1,0 +1,64 @@
+{
+  "kind": "feat",
+  "slug": "cause",
+  "system": "pf2e",
+  "name": "Cause",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "champion"
+  ],
+  "category": "classfeature",
+  "text": "You devote yourself to a specific cause in your deity's name. Some are limited to sanctification, as noted in parentheses. Your cause adds to your edicts and anathema and grants you a special reaction called your champion's reaction, which appears after the divider, along with its upgrades if you gain the relentless reaction and exalted reaction class features at higher levels.\n\nDesecration (Unholy): You selfishly corrupt and destroy.\n\nGrandeur (Holy): You exemplify the glory and splendor of the celestial realms.\n\nIniquity (Unholy): You destroy, take advantage, and act with dishonor.\n\nJustice: You follow laws and mete out just punishment.\n\nLiberation: You oppose tyranny and fight for freedom.\n\nObedience: You enforce hierarchies and order.\n\nRedemption (Holy): You try to redeem those who commit wicked deeds.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "filter": [
+            "item:tag:champion-cause",
+            {
+              "or": [
+                {
+                  "and": [
+                    "item:tag:holy",
+                    "sanctification:holy"
+                  ]
+                },
+                {
+                  "and": [
+                    "item:tag:unholy",
+                    "sanctification:unholy"
+                  ]
+                },
+                {
+                  "nor": [
+                    "item:tag:holy",
+                    "item:tag:unholy"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "cause",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.DeityAndCause.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "{item|flags.system.rulesSelections.cause}"
+      }
+    }
+  ]
+}

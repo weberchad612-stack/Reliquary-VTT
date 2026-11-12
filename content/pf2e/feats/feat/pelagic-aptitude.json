@@ -1,0 +1,61 @@
+{
+  "kind": "feat",
+  "slug": "pelagic-aptitude",
+  "system": "pf2e",
+  "name": "Pelagic Aptitude",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "azarketi"
+  ],
+  "category": "ancestry",
+  "text": "You've learned special tricks to survive underwater. You gain the trained proficiency rank in Survival.\n\nWhen in an aquatic environment, if you roll a critical failure on a Survival skill check to Sense Direction or Subsist, you get a failure instead.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": "survival",
+      "text": "When in an aquatic environment, if you roll a critical failure on a Survival skill check to Sense Direction or Subsist, you get a failure instead.",
+      "when": [
+        "terrain:aquatic",
+        {
+          "or": [
+            "action:sense-direction",
+            "action:subsist"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "terrain:aquatic",
+          {
+            "or": [
+              "action:sense-direction",
+              "action:subsist"
+            ]
+          }
+        ],
+        "selector": "survival"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.survival.rank",
+        "value": 1
+      }
+    }
+  ]
+}

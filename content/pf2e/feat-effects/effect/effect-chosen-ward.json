@@ -1,0 +1,70 @@
+{
+  "kind": "effect",
+  "slug": "effect-chosen-ward",
+  "system": "pf2e",
+  "name": "Effect: Chosen Ward",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Chosen Ward\n\nWhile either the origin or their united companion are adjacent to you, you gain a +1 circumstance bonus to your AC and Reflex saves.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.BeastLord.ChosenWard.DefenseToggle",
+        "option": "chosen-ward",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "chosen-ward"
+          }
+        ],
+        "disabledValue": false,
+        "domain": "reflex",
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.BeastLord.ChosenWard.FortuneToggle",
+        "option": "chosen-ward-fortune",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "reflex"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "chosen-ward"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "chosen-ward-fortune"
+        ],
+        "removeAfterRoll": false,
+        "selector": "reflex"
+      }
+    }
+  ]
+}

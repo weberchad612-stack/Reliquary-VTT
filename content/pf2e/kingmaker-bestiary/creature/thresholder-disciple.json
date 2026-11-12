@@ -1,0 +1,332 @@
+{
+  "kind": "creature",
+  "slug": "thresholder-disciple",
+  "system": "pf2e",
+  "name": "Thresholder Disciple",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 255,
+    "perception": 26,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 28,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 5,
+      "int": 0,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 27,
+      "athletics": 28,
+      "intimidation": {
+        "value": 26,
+        "special": [
+          {
+            "value": 28,
+            "label": "to Demoralize",
+            "when": [
+              "action:demoralize"
+            ]
+          }
+        ]
+      },
+      "religion": 25,
+      "stealth": 25,
+      "yog-sothoth-lore": 24
+    },
+    "speeds": {
+      "land": 40
+    },
+    "languages": [
+      "aklo",
+      "hallit"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "mental",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "saves": "evasion",
+      "perception": "unseen sight"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Handwraps of Mighty Blows",
+      "ref": "equipment:item/handwraps-of-mighty-blows",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shuriken",
+      "ref": "equipment:item/shuriken",
+      "type": "weapon",
+      "quantity": 10
+    },
+    {
+      "kind": "gear",
+      "name": "Robes",
+      "ref": "equipment:item/clothing-ordinary",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Yog-Sothoth",
+      "ref": "equipment:item/religious-symbol-wooden",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Elixir of Life (Major)",
+      "ref": "equipment:item/elixir-of-life-major",
+      "type": "consumable"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shuriken",
+      "attack": 28,
+      "traits": [
+        "agile",
+        "reload-0",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Unseen Sight",
+      "category": "interaction",
+      "text": "The removal of the eyes symbolized a Thresholder's abandonment of all they had seen before, and with the ritual's completion they gain something greater than mere vision: they gain the Unseen Sight. This is a precise sense that mimics darkvision yet functions even if the eye sockets themselves are covered. More importantly, the unseen sight allows a Thresholder to see the truth of the world, granting them the ability to see things as they actually are as if they were under the effects of Truesight, provided they are located within a region under the influence of Yog- Sothoth."
+    },
+    {
+      "kind": "ability",
+      "name": "Evasion",
+      "category": "defensive",
+      "text": "When the disciple rolls a success on a Reflex save, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "reflex",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "success"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Guarded Movement",
+      "category": "defensive",
+      "text": "The disciple gains a +4 circumstance bonus to AC against reactions triggered by their movement.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "guarded-movement"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "guarded-movement",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Outside of Time",
+      "category": "defensive",
+      "text": "The Thresholder Disciple exists outside of time; they don't age, don't need food or drink to survive, and can't be Quickened or Slowed unless they choose to be."
+    },
+    {
+      "kind": "ability",
+      "name": "Flurry of Blows",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "flourish"
+      ],
+      "text": "Frequency Once per turn\n\n---\n\nEffect The disciple makes two unarmed Strikes. If both hit the same creature, combine their damages for the purposes of resistances and weaknesses. The disciple's multiple attack penalty applies normally to these Strikes.",
+      "frequency": {
+        "max": 1,
+        "per": "turn"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Lurker Stance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "stance"
+      ],
+      "text": "The disciple takes the stance of the Lurker at the Threshold, full of menace and danger. The disciple can make lurker claw unarmed attacks. These deal 1d12 slashing damage; are in the brawling group; and have the parry, forceful, and unarmed traits. While in this stance, if the disciple succeeds or critically succeeds at a check to demoralize a target, the target must succeed at a DC 34 Will save saving throw or be Stupefied 1 (Stupefied 3 on a critical failure) for 1 minute.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "lurker-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 29,
+            "category": "unarmed",
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 11
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.LurkerClaw",
+            "predicate": [
+              "lurker-stance"
+            ],
+            "slug": "lurker-claw",
+            "traits": [
+              "forceful",
+              "magical",
+              "parry",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "intimidation",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess",
+            "success"
+          ],
+          "when": [
+            "action:demoralize",
+            "lurker-stance"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ominous Mien",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The disciple is in Lurker Stance\n\n---\nEffect The disciple gains a +2 circumstance bonus to Intimidation checks and their demoralize attempts don't take a penalty for not speaking the target's language and don't cause the target to become temporarily immune. These effects last until the end of the disciple's next turn.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "intimidation",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "ominous-mien",
+            "action:demoralize"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "disabledIf": [
+              {
+                "not": "lurker-stance"
+              }
+            ],
+            "disabledValue": false,
+            "key": "RollOption",
+            "option": "ominous-mien",
+            "priority": 51,
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Temporal Strikes",
+      "category": "offensive",
+      "text": "The disciple's Strikes force the creature hit to endure a deluge of unfamiliar memories from a combination of past lives and parallel existences, causing an additional 3d6 mental damage with a successful hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Human cultist"
+}

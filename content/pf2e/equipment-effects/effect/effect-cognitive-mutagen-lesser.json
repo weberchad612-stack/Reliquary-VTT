@@ -1,0 +1,87 @@
+{
+  "kind": "effect",
+  "slug": "effect-cognitive-mutagen-lesser",
+  "system": "pf2e",
+  "name": "Effect: Cognitive Mutagen (Lesser)",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Cognitive Mutagen (Lesser)\n\nBenefit You gain a +1 item bonus to Arcana, Crafting, Lore, Occultism, and Society checks and all checks to Recall Knowledge. Your critical failures on Recall Knowledge checks become failures instead.\n\nDrawback You take a –2 penalty to weapon and unarmed attack rolls, Athletics checks, and Acrobatics checks. You can carry 2 less Bulk than normal before becoming encumbered, and the maximum Bulk you can carry is reduced by 4.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "arcana",
+        "crafting",
+        "lore-skill-check",
+        "occultism",
+        "society"
+      ],
+      "type": "item",
+      "value": 1,
+      "slug": "cognitive-mutagen-bonus"
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "acrobatics",
+        "athletics",
+        "strike-attack-roll"
+      ],
+      "type": "untyped",
+      "value": -2,
+      "slug": "cognitive-mutagen-drawback"
+    },
+    {
+      "key": "modifier",
+      "selector": "skill-check",
+      "type": "item",
+      "value": 1,
+      "slug": "cognitive-mutagen-recall-knowledge-bonus",
+      "when": [
+        "action:recall-knowledge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "criticalFailure": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "action:recall-knowledge"
+        ],
+        "selector": "skill-check",
+        "type": "skill"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "subtract",
+        "path": "inventory.bulk.encumberedAfterAddend",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "subtract",
+        "path": "inventory.bulk.maxAddend",
+        "value": 4
+      }
+    }
+  ]
+}

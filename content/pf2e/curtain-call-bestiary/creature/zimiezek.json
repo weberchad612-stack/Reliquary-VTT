@@ -1,0 +1,224 @@
+{
+  "kind": "creature",
+  "slug": "zimiezek",
+  "system": "pf2e",
+  "name": "Zimiezek",
+  "source": {
+    "title": "Pathfinder #206: Bring the House Down",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "rarity": "rare",
+  "traits": [
+    "aberration",
+    "fiend",
+    "unholy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 41,
+    "hp": 335,
+    "perception": 33,
+    "saves": {
+      "fortitude": 28,
+      "reflex": 31,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 6,
+      "dex": 7,
+      "int": 5,
+      "str": 6,
+      "wis": 9
+    },
+    "skills": {
+      "acrobatics": 35,
+      "athletics": 32,
+      "deception": 34,
+      "society": 31,
+      "stealth": 35,
+      "survival": 33,
+      "duskfathom-lore": 31
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 40
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "daemonic",
+      "diabolic",
+      "utopian"
+    ],
+    "iwr": {
+      "immunities": [
+        "poison"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 37,
+      "attack": 29,
+      "spells": [
+        {
+          "name": "Translocate",
+          "rank": 5,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Translocate (At Will)",
+          "rank": 4,
+          "ref": "spells:spell/translocate"
+        },
+        {
+          "name": "Web",
+          "rank": 9,
+          "ref": "spells:spell/web",
+          "uses": 3
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 35,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical",
+        "reach-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Bite",
+      "attack": 33,
+      "traits": [
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "3d6",
+          "type": "poison"
+        },
+        {
+          "dice": "3d10+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "zimiezek-infection"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Web",
+      "attack": 33,
+      "maxRange": 60,
+      "effects": [
+        "web-restraints"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Darting Legs",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The zimiezek is targeted with an attack\n\n---\nEffect The Zimiezek gains a +2 circumstance bonus to AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "darting-legs",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "darting-legs"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "The zimiezek gains two extra reactions on their turn that they can only use to make Reactive Strikes.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Web Restraints",
+      "category": "offensive",
+      "text": "A creature hit by the zimiezek's web Strike is Restrained either to a surface or tethered to the zimiezek until it Escapes. The zimiezek gains a +2 circumstance bonus to trip options=web-restraints a tethered target and can Interact with the tether to pull a target 15 feet toward them.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "skill-check",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "action:trip",
+            "web-restraints"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Zimiezek Infection",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "virulent"
+      ],
+      "text": "Anadis are immune\n\nSaving Throw DC 37 Fortitude save\n\nStage 1 Clumsy 1 (1 day)\n\nStage 2 Clumsy 2 (eight spider legs start to grow out of your back; 1 day)\n\nStage 3 clumsy 2, Drained 1 (venomous fangs grow from your mouth, 1 day)\n\nStage 4 clumsy 2, drained 1, Slowed 1 (sticky webbing exudes from your flesh, 1 day)\n\nStage 5 Unconscious (you become cocooned in webbing, during which you have no need for food and water, 1 week)\n\nStage 6 death (and a brand new zimiezek emerges from your cocooned body)"
+    }
+  ],
+  "text": "The zimiezeks, also known as those-that-weave-secrets, are one of many creatures native to Duskfathom. They resemble large spiders with humanoid hands instead of spidery feet and possess vaguely humanoid heads with multiple eyes and spider fangs for jaws. Their faces are often shrouded by a veil, mask, or webbing to both hide their identity and as a gesture of peace, for a zimiezek's bite can turn other humanoids into them.\n\nUnlike the karumzeks, Norgorber's more common divine servitors, zimiezeks almost never leave Duskfathom. Most are average citizens who revere Norgorber as both deity and prince. Only a few serve the god of secrets directly as the city's security and elite strike force.\nUncertain Origins\nThe zimiezeks believe the first of them arose from souls who were once Norgorber's allies in life who stumbled upon the god's greatest secret and were slain to conceal his identity. Some doubt this claim, given Norgorber's anathema on showing mercy. Nevertheless, a connection exists between Norgorber and both zimiezeks and karumzeks that lets the god automatically know the creatures' names and identities."
+}

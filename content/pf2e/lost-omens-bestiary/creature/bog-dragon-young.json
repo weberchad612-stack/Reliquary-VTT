@@ -1,0 +1,280 @@
+{
+  "kind": "creature",
+  "slug": "bog-dragon-young",
+  "system": "pf2e",
+  "name": "Bog Dragon (Young)",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "amphibious",
+    "dragon",
+    "primal"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 24,
+    "hp": 115,
+    "perception": 16,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 13,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 2,
+      "int": 2,
+      "str": 6,
+      "wis": 4
+    },
+    "skills": {
+      "arcana": 15,
+      "athletics": 17,
+      "intimidation": 17,
+      "nature": 15,
+      "society": 15,
+      "stealth": 17,
+      "survival": 15
+    },
+    "speeds": {
+      "land": 25,
+      "burrow": 20,
+      "fly": 60,
+      "swim": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "acid",
+        "paralyzed",
+        "sleep"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. primal",
+      "speed": "swamp passage"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 18,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "bog-rot",
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 18,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d4+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 16,
+      "traits": [
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 25 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tail Lash",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within reach of the dragon's tail makes a Strike or attempts a skill check as part of an attack action\n\n---\nEffect The dragon Strikes with their tail at the triggering creature with a –2 penalty. If the Strike hits, the creature takes a –2 circumstance penalty to the triggering roll.\n\nEffect: Tail Lash",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "tail-lash",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "tail-attack",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "tail-lash"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bog Rot",
+      "category": "offensive",
+      "traits": [
+        "acid",
+        "disease",
+        "primal"
+      ],
+      "text": "Saving Throw DC 22 Fortitude save\n\nStage 1 carrier with no ill effect (1 minute)\n\nStage 2 3d6 acid damage and Clumsy 1 (1 day)\n\nStage 3 4d6 acid damage, clumsy 1, and a –5-foot status penalty to Speed (1 day)\n\nStage 4 5d6 acid damage, Clumsy 2, and a –10-foot status penalty to Speed (1 day)\n\nStage 5 death"
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one tail Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Nidorous Breath whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nidorous Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The dragon belches a boiling spray of fermenting stomach acid that deals 6d8 acid damage in a 30-foot cone (DC 25 basic Reflex save save). They can't use Nidorous Breath again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Medium, 2d10+6 acid plus Bog Rot, Rupture 20\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Swamp Passage",
+      "category": "offensive",
+      "text": "The bog dragon ignores difficult terrain caused by swamp terrain features."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "The bogs of Golarion are timeless places, unyielding against the encroachment of civilization and greedily hoarding the dead of epochs long past within the murky depths of the morass. Thus, it doesn't take a bard to note that a bog dragon represents the most primal embodiment of their namesake. These dragons are as calm as the brackish waters, as perfectly patient as any crocodile mistaken for debris, and as ancient as any fear held of the realms they dwell within. To the many cultures they've stalked since the first humanoids dared to build their dwellings near brackish fens, a bog dragon is a terror consigned to the nebulous realm of monster and abomination. Though most have been relegated to the stuff of legends and the mythic nightmares of river valley city-states, bog dragons are still out there, lurking beneath the loam.\n\nBog dragons haunt the parables of old, their primal characteristics a raw expression of a primeval world that rebukes the tyranny of time's progression. Their bodies are those of a belly-dragging thing, corpulent and richly shielded by a scabrous hide of spurs and spines. Their claws, much like their wings, are feeble things, vestiges of a more graceful draconic concept that only the eldest bog archdragon might attain. Their faces are masks of terror; their lips curl back in a snarl to expose brutish grins of dagger-like fangs, pock-marked by vicious stomach acids that give their latent breath the malodorous turpitude that stings the senses almost unto dizziness. They're every inch a night-going monstrosity, a harrowing horror that would drive terror into any who behold them, the pinnacle of marsh-born predators."
+}

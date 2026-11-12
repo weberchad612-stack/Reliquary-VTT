@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "effect-exalt-the-little-ones",
+  "system": "pf2e",
+  "name": "Effect: Exalt the Little Ones",
+  "source": {
+    "title": "Pathfinder #201: Pactbreaker",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Creatures with the animal trait gain a +1 status bonus to attack rolls, damage rolls, and saving throws. If the animals have the swarm trait, the saving throw DCs to resist their damaging actions gain a +1 status bonus. This bonus increases to +2 for allies whose level is 2 or lower.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:trait:animal"
+        ],
+        "selector": [
+          "attack",
+          "damage",
+          "saving-throw"
+        ],
+        "type": "status",
+        "value": "ternary(lte(@actor.level,2),2,1)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:trait:animal",
+          "self:trait:swarm",
+          "damaging-effect"
+        ],
+        "selector": "inline-dc",
+        "type": "status",
+        "value": "ternary(lte(@actor.level,2),2,1)"
+      }
+    }
+  ]
+}

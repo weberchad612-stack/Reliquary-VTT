@@ -1,0 +1,171 @@
+{
+  "kind": "creature",
+  "slug": "greater-gargarthezul",
+  "system": "pf2e",
+  "name": "Greater Gargarthezul",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-00: Salt of the Ocean",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "rarity": "uncommon",
+  "traits": [
+    "demon",
+    "fiend",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 19,
+    "hp": 48,
+    "perception": 9,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 12,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 1,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": 10,
+      "deception": 9,
+      "intimidation": 10,
+      "stealth": 8
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 5
+        },
+        {
+          "type": "holy",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Tentacle",
+      "attack": 10,
+      "traits": [
+        "magical",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy (100 feet)",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bravado Aversion",
+      "category": "interaction",
+      "text": "A gargarthezul can't stand to be shown up. The first time each round a creature successfully Demoralizes, Shoves, or Trips a gargarthezul, it takes 1d6 mental damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "affects": "origin",
+            "key": "EphemeralEffect",
+            "predicate": [
+              {
+                "or": [
+                  "action:trip",
+                  "action:shove",
+                  "action:demoralize"
+                ]
+              }
+            ],
+            "selectors": [
+              "intimidation",
+              "athletics"
+            ],
+            "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Bravado Aversion"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bully",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The gargarthezul Shoves a creature, and Strides after it into the nearest adjacent square if successful. It then makes a tentacle Strike against the creature, using the same multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Halyard Swing",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The gargarthezul is on the deck of a ship.\n\n---\nEffect The gargarthezul swings from a nearby rope, moving up to twice its Speed and ignoring any terrain or lack of surface beneath it. It can make a tentacle Strike at any point during this movement."
+    },
+    {
+      "kind": "ability",
+      "name": "Mark of Avarice",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The gargarthezul's last action was a successful tentacle Strike.\n\n---\nEffect The gargarthezul places a brand on the creature it hit that fills the creature's mind with overwhelming urges towards piracy. The creature doesn't treat anyone as their ally and can't Delay or Ready. They must use all of their actions to attempt to Disarm, or Demoralize, targeting a creature randomly determined by the GM (they may use actions to facilitate their attempts, such as to move to the target or to drop an item so they have a free hand). The duration is based on a DC 20 Will save save. If the creature successfully Disarms or Demoralizes their target, they can attempt a DC 11 Flat check check to recover from Mark of Avarice. The gargarthezul may only have one mark of avarice in effect at any given time. An additional mark placed causes the previous one to fade.\n\n---\nCritical Success The creature becomes temporarily immune for 1 minute.\n\nSuccess The creature is unaffected.\n\nFailure The mark lasts for 1 round.\n\nCritical Failure The mark lasts for 1 minute.\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Vicious Bluster",
+      "category": "offensive",
+      "text": "When a gargarthezul successfully Demoralizes a foe, it gains 1d6 temporary Hit Points (2d6 on a critical success) that last for 1 minute.\n\n---\nEffect: Vicious Bluster\n\nEffect: Vicious Bluster (Critical Success)",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "intimidation",
+          "text": "{item|description}",
+          "outcome": [
+            "success",
+            "criticalSuccess"
+          ],
+          "when": [
+            "action:demoralize"
+          ]
+        }
+      ]
+    }
+  ]
+}

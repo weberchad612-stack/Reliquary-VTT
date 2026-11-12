@@ -1,0 +1,140 @@
+{
+  "kind": "creature",
+  "slug": "animated-blade",
+  "system": "pf2e",
+  "name": "Animated Blade",
+  "source": {
+    "title": "Pathfinder #175: Broken Tusk Moon",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 16,
+    "hp": 4,
+    "perception": 3,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 6,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 0,
+      "dex": 1,
+      "int": -5,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 6
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 15
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(14 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Rusty Blade",
+      "attack": 6,
+      "traits": [
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "tetanus"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 4)",
+      "category": "defensive",
+      "text": "Like normal objects, an animated blade has Hardness. This Hardness reduces any damage the blade takes by an amount equal to the Hardness. Once an animated blade is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, and its Armor Class is reduced to 14.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -2
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tetanus",
+      "category": "offensive",
+      "traits": [
+        "disease"
+      ],
+      "text": "Saving Throw DC 15 Fortitude save\n\nOnset 1 week\n\nStage 1 Clumsy 1 (1 week)\n\nStage 2 Clumsy 2 and can't speak (1 day)\n\nStage 3 Paralyzed (1 day)\n\nStage 4 death"
+    }
+  ]
+}

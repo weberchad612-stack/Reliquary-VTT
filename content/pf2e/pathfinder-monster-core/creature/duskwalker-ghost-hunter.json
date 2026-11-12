@@ -1,0 +1,283 @@
+{
+  "kind": "creature",
+  "slug": "duskwalker-ghost-hunter",
+  "system": "pf2e",
+  "name": "Duskwalker Ghost Hunter",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "duskwalker",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 21,
+    "hp": 56,
+    "perception": 10,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 8,
+      "deception": 6,
+      "intimidation": 6,
+      "nature": 8,
+      "stealth": 12,
+      "survival": 8
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "void",
+          "value": 2
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(22 against prey; see Spirit Hunter)",
+      "saves": "+1 status to all saves vs. death effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Longbow",
+      "ref": "equipment:item/composite-longbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Hatchet",
+      "ref": "equipment:item/hatchet",
+      "type": "weapon",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hatchet",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "sweep",
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Longbow",
+      "attack": 14,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0",
+        "volley-30"
+      ],
+      "range": 100,
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Death Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "death"
+          ]
+        },
+        {
+          "key": "immunity",
+          "type": "custom"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ghost Dodge",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The duskwalker is targeted by a Strike or spell\n\n---\n\nEffect The duskwalker gains a +2 circumstance bonus to AC, resistance 5 to spirit damage, and increases their resistance to void damage to 5, all against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "ghost-dodge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "ghost-dodge"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "ghost-dodge"
+            ],
+            "type": [
+              "spirit",
+              "void"
+            ],
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ghost Hunter",
+      "category": "offensive",
+      "text": "The duskwalker's weapons have the benefits of the Ghost Touch property rune on attacks against incorporeal undead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "definition": [
+              {
+                "not": "item:category:unarmed"
+              }
+            ],
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spirit Hunter",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The duskwalker designates a single creature they can observe as their prey.\n\nThe duskwalker gains a +2 circumstance bonus to Deception checks, Intimidation checks, and Stealth checks against their prey and to any check to Recall Knowledge about it, and deal an additional 2 spirit damage with all weapon Strikes against their prey.\n\nThese effects last until the duskwalker uses Spirit Hunter again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.PlanarScion.Duskwalker.SpiritHunter",
+            "option": "spirit-hunter",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "deception",
+            "intimidation",
+            "stealth"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "spirit-hunter"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "spirit-hunter"
+          ],
+          "damageType": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spirit Shot",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Frequency once per round\n\nRequirements The duskwalker has designated a creature as their prey using Spirit Hunter\n\n---\n\nEffect The duskwalker makes two ranged Strikes against their prey. If both Strikes hit, combine their damage for the purpose of resistances and weaknesses.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    }
+  ],
+  "text": "Duskwalkers are infused with the same energies as psychopomps. These ashen scions are reborn in the mortal Universe to guard the cycle of life and death.\n\n---\n\nMany immortals dwell upon the other planes of the Great Beyond. Some are benevolent and kind, like angels. Others are cruel and destructive, like demons. And some fit roles outside of morality, like psychopomps. It's far from unheard of for mortals and immortals alike to become entangled romantically, and the children of such engagements carry a supernatural element in their bloodlines for generations to follow. After the first generation, this otherworldly influence usually lies dormant, but now and then, the influence can manifest strongly in descendants many years later. These inheritors of extraplanar legacies are known collectively as planar scions."
+}

@@ -1,0 +1,60 @@
+{
+  "kind": "heritage",
+  "slug": "tsukumogami-poppet",
+  "system": "pf2e",
+  "name": "Tsukumogami Poppet",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "rarity": "uncommon",
+  "traits": [
+    "poppet"
+  ],
+  "ancestry": {
+    "name": "Poppet",
+    "ref": "ancestries:ancestry/poppet"
+  },
+  "text": "You have the form and memories of a common tool. Choose one Lore skill related to what kind of tool you were; for instance, Cooking Lore for a kitchen knife or spoon. You're trained in this skill, and you gain a +2 circumstance bonus to checks to Aid with this skill. If you take the Helpful Poppet feat, the bonus increases to +3.\n\nWhile most poppets are made of stuffing, cloth, or soft metals, some tsukumogami are made of other materials, changing the poppet weakness to fire. If your body is primarily wood or cloth, you have the normal poppet weakness to fire. If your body is primarily metal, you're instead weak to electricity; if its primarily ceramic, you're instead weak to cold.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Poppet.Tsukumogami.Cloth",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.SpecificRule.Poppet.Tsukumogami.Ceramic",
+            "value": "cold"
+          }
+        ],
+        "flag": "weakness",
+        "key": "ChoiceSet",
+        "label": "PF2E.SpecificRule.Prompt.Material",
+        "rollOption": "tsukumogami-poppet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Weakness",
+        "predicate": [
+          {
+            "not": "feat:insulated-poppet"
+          }
+        ],
+        "type": "{item|flags.system.rulesSelections.weakness}",
+        "value": "max(1,floor(@actor.level/3))"
+      }
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "kind": "effect",
+  "slug": "effect-azarim",
+  "system": "pf2e",
+  "name": "Effect: Azarim",
+  "source": {
+    "title": "Pathfinder Adventure: Crown of the Kobold King",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Azarim\n\nAzarim gains the effects of an anarchic weapon rune for 1 minute. When wielded by a character who's at least 11th level, Azarim becomes a +2 striking anarchic shifting rapier, and instead this activation can be applied to another weapon that's in physical contact with Azarim.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "effectAzarim",
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              11
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:slug:azarim"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "lt": [
+              "self:level",
+              11
+            ]
+          }
+        ],
+        "property": "property-runes",
+        "value": "anarchic"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.effectAzarim}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              11
+            ]
+          }
+        ],
+        "property": "property-runes",
+        "value": "anarchic"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.rulesSelections.effectAzarim}",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          {
+            "gte": [
+              "self:level",
+              11
+            ]
+          }
+        ],
+        "property": "runes-potency",
+        "value": 2
+      }
+    }
+  ]
+}

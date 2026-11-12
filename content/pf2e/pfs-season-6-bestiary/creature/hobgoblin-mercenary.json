@@ -1,0 +1,222 @@
+{
+  "kind": "creature",
+  "slug": "hobgoblin-mercenary",
+  "system": "pf2e",
+  "name": "Hobgoblin Mercenary",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-11: The Godsrain and the Dragon",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "hobgoblin",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 45,
+    "perception": 10,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 12,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 2,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 8,
+      "athletics": 8,
+      "stealth": 10
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "goblin",
+      "tien"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Crossbow",
+      "ref": "equipment:item/crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Scale Mail",
+      "ref": "equipment:item/scale-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Crossbow",
+      "attack": 14,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "1d8+2",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "crossbow-precision"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Formation",
+      "category": "defensive",
+      "text": "When it's adjacent to at least two other allies, the hobgoblin archer gains a +1 circumstance bonus to AC and saving throws. This bonus increases to +2 to Reflex saves against area effects.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "formation",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "formation",
+            "area-effect"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "formation"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Crossbow Precision",
+      "category": "offensive",
+      "text": "The first time the archer hits with a crossbow attack in a round, it deals 1d8 extra precision damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "crossbow-precision",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "crossbow-precision"
+            ],
+            "selector": "crossbow-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Perfect Aim",
+      "category": "offensive",
+      "text": "The hobgoblin archer ignores the Concealed condition.\n\nTheir targets don't benefit from lesser cover, and they reduce the AC bonus from standard cover by 2 against the hobgoblin archer's attack.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "attack",
+          "text": "PF2E.AttackEffects.IgnoreConcealed",
+          "when": [
+            "target:condition:concealed"
+          ]
+        },
+        {
+          "key": "note",
+          "selector": "attack",
+          "text": "PF2E.AttackEffects.IgnoreCover",
+          "when": [
+            "target:effect:cover"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running Reload",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The archer Strides, Steps, or Sneaks, then Interacts to reload."
+    }
+  ],
+  "text": "Bands of hobgoblin soldiers typically have at least one archer among their ranks. In smaller groups, the hobgoblin archer also serves as that band's captain.\n\n---\n\nHobgoblins may appear to outsiders to be the most civilized of goblinkind, but their civilization is hardly one of kindness and equality-instead, they revel in all that is militaristic, tyrannical, cruel, and destructive. Hobgoblins are singularly devoted to war, and their entire culture is built upon fostering and maintaining conflict while simultaneously proving their superiority in battle. Hobgoblins are highly organized, and they work efficiently and effectively in groups, whether that group is a small raiding party, a roving war band, or a fully regimented army. Hobgoblin rulers require little provocation before declaring war, and more often than not, such wars are waged to gain slaves or territory. Physically, hobgoblins stand about as tall as humans and have gray, ashen skin.\n\nHobgoblin society is organized along military lines, and every hobgoblin is effectively a member of the army. Each hobgoblin in a community has a rank in the military hierarchy, and individuals are naturally ambitious and obsessed with advancement. Hobgoblins are constantly expected to prove that they're fearless, ruthless, cunning, and strong. Demonstrating such aptitudes is an individual hobgoblin's best hope for promotion through the ranks, but failure leads only to cruel exploitation at the hands of their superiors. Though brutal, hobgoblin society is a true meritocracy, and all hobgoblins, regardless of age, gender, or birth, wield authority and earn respect from their peers based on their skill in battle. Even those individuals who serve in non-combat roles in hobgoblin society-blacksmiths, builders, cooks, messengers, quartermasters, and the like-know that they perform vital jobs that support the larger hobgoblin army, though they rarely rise above the rank of common soldier. Everyone contributes to the larger whole, ensuring that hobgoblin society is the strongest and most efficient it can be, and anyone who fails to do so is culled from the army and this hobgoblin society as dead weight. Hobgoblins don't usually engage in trade with other races, or even with other hobgoblin tribes, preferring to take what they want by force.",
+  "blurb": "Variant Weak Hobgoblin Archer"
+}

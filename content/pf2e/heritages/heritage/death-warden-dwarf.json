@@ -1,0 +1,55 @@
+{
+  "kind": "heritage",
+  "slug": "death-warden-dwarf",
+  "system": "pf2e",
+  "name": "Death Warden Dwarf",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "ancestry": {
+    "name": "Dwarf",
+    "ref": "ancestries:ancestry/dwarf"
+  },
+  "text": "Your ancestors were tomb guardians, and their power to ward off death passed on to you. If you roll a success on a saving throw against an effect that has the void trait or was created by an undead creature, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "note",
+      "selector": "saving-throw",
+      "text": "PF2E.SpecificRule.Dwarf.DeathWardenDwarf.Note",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        {
+          "or": [
+            "origin:trait:undead",
+            "void"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "origin:trait:undead",
+              "void"
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "type": "save"
+      }
+    }
+  ]
+}

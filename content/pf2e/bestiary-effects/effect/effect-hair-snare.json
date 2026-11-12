@@ -1,0 +1,56 @@
+{
+  "kind": "effect",
+  "slug": "effect-hair-snare",
+  "system": "pf2e",
+  "name": "Effect: Hair Snare",
+  "source": {
+    "title": "Pathfinder Bestiary 2",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Failure You take a –10‐foot circumstance penalty to all of your Speeds.\n\nCritical Failure You are immobilized.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "hair-snare"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "all-speeds",
+      "type": "circumstance",
+      "value": -10,
+      "when": [
+        "hair-snare:failure"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "hair-snare:critical-failure"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    }
+  ]
+}

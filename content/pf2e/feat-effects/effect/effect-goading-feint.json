@@ -1,0 +1,92 @@
+{
+  "kind": "effect",
+  "slug": "effect-goading-feint",
+  "system": "pf2e",
+  "name": "Effect: Goading Feint",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Goading Feint\n\nYou take a –2 circumstance penalty to attack rolls against the opponent.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:2",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "success"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "parent:context:check:outcome:3",
+                  {
+                    "not": {
+                      "gte": [
+                        "parent:context:check:outcome",
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "value": "critical-success"
+          }
+        ],
+        "flag": "outcome",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "goading-feint"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "circumstance",
+      "value": -2,
+      "slug": "goading-feint-success",
+      "when": [
+        "goading-feint:success",
+        "target:signature:{item|origin.signature}"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "attack-roll",
+      "type": "circumstance",
+      "value": -2,
+      "slug": "goading-feint-critical",
+      "when": [
+        "goading-feint:critical-success",
+        "target:signature:{item|origin.signature}"
+      ]
+    }
+  ]
+}

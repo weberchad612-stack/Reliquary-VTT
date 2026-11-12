@@ -1,0 +1,114 @@
+{
+  "kind": "effect",
+  "slug": "effect-conduct-energy",
+  "system": "pf2e",
+  "name": "Effect: Conduct Energy",
+  "source": {
+    "title": "Pathfinder Lost Omens Ancestry Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Conduct Energy\n\nThe weapon deals 1 additional damage per weapon damage die. This damage type matches the trait of the triggering action or spell.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitAcid",
+            "value": "acid"
+          },
+          {
+            "label": "PF2E.TraitCold",
+            "value": "cold"
+          },
+          {
+            "label": "PF2E.TraitElectricity",
+            "value": "electricity"
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": "fire"
+          },
+          {
+            "label": "PF2E.TraitSonic",
+            "value": "sonic"
+          }
+        ],
+        "flag": "damageType",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.EnergyType"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "includeHandwraps": true,
+          "ownedItems": true,
+          "predicate": [
+            "item:equipped",
+            {
+              "or": [
+                "item:rune:property:conducting",
+                "item:trait:resonant"
+              ]
+            }
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{item|flags.system.rulesSelections.damageType}",
+        "key": "FlatModifier",
+        "predicate": [
+          "item:trait:resonant"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage",
+        "value": "@weapon.system.damage.dice"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "{item|flags.system.rulesSelections.damageType}",
+        "diceNumber": 1,
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "item:rune:property:conducting"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "category": "persistent",
+        "critical": true,
+        "damageType": "{item|flags.system.rulesSelections.damageType}",
+        "diceNumber": 1,
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "item:rune:property:conducting"
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    }
+  ]
+}

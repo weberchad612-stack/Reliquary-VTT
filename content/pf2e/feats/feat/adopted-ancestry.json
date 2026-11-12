@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "adopted-ancestry",
+  "system": "pf2e",
+  "name": "Adopted Ancestry",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general"
+  ],
+  "category": "general",
+  "text": "You're fully immersed in another ancestry's culture and traditions, whether born into them, earned through rite of passage, or bonded through a deep friendship or romance. Choose a common ancestry or another ancestry to which you have access. You can select ancestry feats from the ancestry you chose, in addition to your character's own ancestry, as long as the ancestry feats don't require any physiological feature that you lack, as determined by the GM.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "filter": [
+            {
+              "not": "item:slug:{actor|system.details.ancestry.trait}"
+            }
+          ],
+          "itemType": "ancestry",
+          "slugsAsValues": true
+        },
+        "flag": "ancestry",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.AdoptedAncestry.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.details.ancestry.adopted",
+        "value": "{item|flags.system.rulesSelections.ancestry}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.details.ancestry.countsAs",
+        "value": "{item|flags.system.rulesSelections.ancestry}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "kind": "creature",
+  "slug": "noppera-bo-trickster",
+  "system": "pf2e",
+  "name": "Noppera-bo Trickster",
+  "source": {
+    "title": "Pathfinder Season of Ghosts Hardcover Compilation",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "chaotic",
+    "evil"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 5,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 8,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 2,
+      "dex": 3,
+      "int": 1,
+      "str": 1,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 6,
+      "athletics": 4,
+      "deception": 8,
+      "stealth": 6
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "inhaled",
+        "olfactory",
+        "visual"
+      ]
+    },
+    "notes": {
+      "perception": "no face",
+      "languages": "telepathy 30 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Shortbow",
+      "ref": "equipment:item/shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Shortsword",
+      "ref": "equipment:item/shortsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Shortsword",
+      "attack": 8,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shortbow",
+      "attack": 8,
+      "traits": [
+        "deadly-d10",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Telepathy 30 feet",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical",
+        "mental"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "No Face",
+      "category": "interaction",
+      "text": "Noppera-bos have no sense of vision, but their sense of hearing is precise. They don't breathe and are immune to effects that require breathing. They gain sustenance by absorbing fluids through their skin—traditionally by immersing their hands or faceless head into the fluid to \"drink\" through osmosis; they can also benefit from consumables, such as potions or elixirs, in this way."
+    },
+    {
+      "kind": "ability",
+      "name": "Sensitive Hearing",
+      "category": "defensive",
+      "text": "As long as a noppera-bo is Deafened, they are Slowed 1.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "self:condition:deafened"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        },
+        {
+          "key": "weakness",
+          "type": "custom",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Impersonate Shape",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "occult",
+        "polymorph"
+      ],
+      "text": "The noppera-bo changes into a version of a Small or Medium humanoid they've touched during the last 24 hours, and gains the target creature's face and voice. While transformed, the noppera-bo gains a +2 circumstance bonus to impersonate that creature and loses its no face ability and listed immunities. The noppera-bo can change back by using this ability again.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "impersonate-shape",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "deception",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "impersonate-shape",
+            "action:impersonate"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "mode": "remove",
+            "predicate": [
+              "impersonate-shape"
+            ],
+            "type": [
+              "inhaled",
+              "olfactory",
+              "visual"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.perception.vision",
+            "predicate": [
+              "impersonate-shape"
+            ],
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Remove Face",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "emotion",
+        "fear",
+        "mental",
+        "occult",
+        "visual"
+      ],
+      "text": "Requirements The noppera-bo trickster is Impersonating a creature with a face\n\n---\n\nEffect The noppera-bo trickster's facial features melt into nothingness, and they menace a creature within 30 feet. The creature becomes Frightened 1 on a failed DC 17 Will save save (Frightened 2 on a critical failure)."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The noppera-bo trickster deals an additional 1d4 precision damage to creatures that are Off-Guard.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "These noppera-bos have mastered the art of disguise.\n\n---\nNoppera-bos appear to be regular humans from behind, and might even resemble someone you know, until they turn to reveal a featureless face.\nConsummate Professionals\nWhile the typical noppera-bo is cruel and revels in the act of frightening or tormenting humanoid creatures, not all of them wallow in evil. Some noppera-bos prefer roles as pranksters and use their abilities to trick and tease, while even rarer noppera-bos use their abilities to honor and idolize those they admire while focusing their own time on developing their skills at art or crafting tools of peace.\nNoppera-bo Origins\nThere are many theories on the origins of noppera-bos—from tanuki whose Change Shape ability went wrong, to humanoids who were warped by curses, to naturally spawning yokai. Some even theorize this condition was once a transmissible curse like lycanthropy. Most noppera-bos don't recall their origins and are often more interested in pretending to be someone else entirely."
+}

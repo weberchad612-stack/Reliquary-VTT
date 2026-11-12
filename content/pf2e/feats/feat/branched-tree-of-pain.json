@@ -1,0 +1,69 @@
+{
+  "kind": "feat",
+  "slug": "branched-tree-of-pain",
+  "system": "pf2e",
+  "name": "Branched Tree of Pain",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 18,
+  "traits": [
+    "exemplar",
+    "ikon"
+  ],
+  "category": "class",
+  "text": "Usage imbued into a weapon ikon that deals piercing or slashing damage\n\n---\nThe blade of your ikon takes one or more notches, capable of dealing mortal pain to your foes.\n\nImmanence When you Strike with the ikon, you critically succeed if you roll a 19 on the die as long as that result would be a success. This has no effect on a 19 if the result would be a failure.\n\nTranscendence—Plant Thirty Barbs 1 (death, transcendence)",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": "flags.system.exemplar.ikons",
+        "flag": "ikon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Exemplar.Ikon.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Plant Thirty Barbs"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "other-tags",
+        "value": "chosen-ikon:{item|flags.system.rulesSelections.ikon}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "to-critical-success"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          "check:roll:total:natural:19",
+          "check:outcome:success",
+          "item:tag:physical-ikon:{item|flags.system.rulesSelections.ikon}",
+          "divine-spark:{item|flags.system.rulesSelections.ikon}",
+          {
+            "or": [
+              "item:damage:type:piercing",
+              "item:damage:type:slashing"
+            ]
+          }
+        ],
+        "selector": "strike-attack-roll"
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "kind": "effect",
+  "slug": "effect-aid",
+  "system": "pf2e",
+  "name": "Effect: Aid",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Aid\n\nYou gain a circumstance bonus to the aided check based on the result of your ally's Aid check.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.NegativeOne",
+            "value": -1
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusOne",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusTwo",
+            "value": 2
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusThree",
+            "value": 3
+          },
+          {
+            "label": "PF2E.SpecificRule.BonusLabel.PlusFour",
+            "value": 4
+          }
+        ],
+        "flag": "aidBonus",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Aid.Prompt"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "removeAfterRoll": true,
+        "selector": [
+          "attack-roll",
+          "skill-check"
+        ],
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.aidBonus"
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "kind": "weapon",
+  "slug": "glacier-hammer",
+  "system": "pf2e",
+  "name": "Glacier Hammer",
+  "source": {
+    "title": "Pathfinder Beginner Box: Secrets of the Unlit Star",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "shove"
+  ],
+  "text": "Frost covers the head of this +1 magic maul. Any hit with this maul deals 1 extra cold damage. You can use a special action to transform the frost into giant icicles.\n\n---\nActivate—Grow Icicles 1 (concentrate)\n\nEffect Until the end of your turn, the maul deals 1d6 extra cold damage instead of just 1. After you activate the glacier hammer, you can't activate it again for 10 minutes.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Equipment.GlacierHammer.ToggleLabel",
+        "option": "grow-icicles",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "{item|id}-damage",
+      "type": "untyped",
+      "value": 1,
+      "slug": "glacier-hammer-flat",
+      "when": [
+        {
+          "not": "grow-icicles"
+        }
+      ],
+      "damageType": "cold"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "cold",
+        "diceNumber": 1,
+        "dieSize": "d6",
+        "hideIfDisabled": true,
+        "key": "DamageDice",
+        "predicate": [
+          "grow-icicles"
+        ],
+        "selector": "{item|id}-damage"
+      }
+    }
+  ],
+  "category": "martial",
+  "group": "hammer",
+  "damage": {
+    "die": "d12",
+    "type": "bludgeoning"
+  },
+  "hands": "held-in-two-hands",
+  "baseItem": "maul",
+  "bulk": 2,
+  "price": {
+    "gp": 60
+  },
+  "runes": {
+    "potency": 1,
+    "striking": 0
+  }
+}

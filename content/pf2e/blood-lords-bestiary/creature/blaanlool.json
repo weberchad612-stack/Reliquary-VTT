@@ -1,0 +1,238 @@
+{
+  "kind": "creature",
+  "slug": "blaanlool",
+  "system": "pf2e",
+  "name": "Blaanlool",
+  "source": {
+    "title": "Pathfinder #182: Graveclaw",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "rarity": "unique",
+  "traits": [
+    "amphibious",
+    "chaotic",
+    "evil",
+    "giant",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 27,
+    "hp": 150,
+    "perception": 16,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 13,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": 0,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 18,
+      "intimidation": 15,
+      "religion": 17
+    },
+    "speeds": {
+      "land": 35,
+      "swim": 20
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "common",
+      "jotun"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "cold",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Innate Spells",
+      "tradition": "occult",
+      "type": "innate",
+      "dc": 23,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Mariner's Curse",
+          "rank": 5,
+          "ref": "spells:spell/mariners-curse"
+        },
+        {
+          "name": "Augury",
+          "rank": 2,
+          "ref": "spells:spell/augury"
+        },
+        {
+          "name": "Obscuring Mist",
+          "rank": 2,
+          "ref": "spells:spell/mist"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Gaff",
+      "ref": "equipment:item/gaff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Religious Symbol of Dagon",
+      "ref": "equipment:item/religious-symbol-silver",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Ring of Energy Resistance (Cold)",
+      "ref": "equipment:item/charm-of-resistance",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Sack of 5 Rocks",
+      "type": "ammo",
+      "quantity": 5
+    },
+    {
+      "kind": "strike",
+      "name": "Gaff",
+      "attack": 20,
+      "traits": [
+        "magical",
+        "reach-10",
+        "trip",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 20,
+      "traits": [
+        "agile",
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Rock",
+      "attack": 20,
+      "traits": [
+        "brutal"
+      ],
+      "range": 120,
+      "damage": [
+        {
+          "dice": "2d6+14",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Catch Rock",
+      "actions": "reaction",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "catch-rock",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "ac",
+            "saving-throw"
+          ],
+          "type": "circumstance",
+          "value": 4,
+          "when": [
+            "catch-rock"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hook Shake",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements A creature adjacent to the marsh giant is Prone in water at least 1 foot deep\n\n---\n\nEffect The marsh giant uses its gaff to shake the creature back and forth and hold it underwater. The giant attempts an Athletics check check against the target's Fortitude DC.\n\n---\n\nCritical Success The target takes 6d6+14 piercing damage and loses 5 rounds' worth of air if they were holding their breath.\n\nSuccess The target takes 3d6+14 piercing damage and loses 3 rounds' worth of air if they were holding their breath.\n\nFailure The target is unaffected.\n\nCritical Failure As failure, but the giant drops its gaff as well."
+    },
+    {
+      "kind": "ability",
+      "name": "Throw Rock",
+      "actions": 1,
+      "category": "offensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Twist the Hook",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The marsh giant makes a melee Strike with its gaff. If it hits, it twists and yanks the gaff to create an awful wound, dealing 3d6 persistent bleed damage to the creature.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "twist-the-hook",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bleed",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "twist-the-hook"
+            ],
+            "selector": "gaff-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Dwellers of brackish coastal salt marshes and fetid bogs and swamps, marsh giants are hideous in appearance indeed, with fishlike mouths, slimy gray-green skin, and dark, beady eyes. They prefer to eat the flesh of those they slay in battle, but many are also cannibals. It is perhaps this vicious behavior that keeps the creatures in check, for if a fellow marsh giant becomes too dangerous and powerful, it runs the risk of being ambushed and consumed by its clan.\n\nMarsh giants are insular and mysterious, dedicating much of their lives to zealous worship of sea-dwelling deities or stranger entities. While there is no central religion followed by all marsh giants, many are known to venerate the demon lord Dagon, while others worship even more powerful monstrosities from the Elder Mythos, such as distant, dreaming Cthulhu.\n\nOnly rarely do more than a dozen marsh giants settle together in a location, but when they do it is often for a religious purpose. Whatever call from the deep draws them together also tugs at nearby creatures such as boggards or skum, who look upon marsh giants in fear and reverence. The grim, terrifying chants and screams coming from such an encampment are a sure sign of terror to come for any other residents of the area.\n\nBarely topping 11 feet tall and 1,000 pounds, marsh giants are small for giants but make up for their relatively diminutive stature with their zealotry."
+}

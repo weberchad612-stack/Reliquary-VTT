@@ -1,0 +1,59 @@
+{
+  "kind": "action",
+  "slug": "holy-light",
+  "system": "pf2e",
+  "name": "Holy Light",
+  "source": {
+    "title": "Pathfinder Gamemastery Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "actions": 2,
+  "category": "offensive",
+  "text": "Aspect celestial\n\nActivate 2 command, Interact\n\n---\n\nEffect Your relic shines with holy light. This creates bright light in a 30-foot emanation around the item. Evil creatures in the area are Frightened 1, and can't lower their frightened value below 1 as long as they remain in the light. Fiends in the area increase any weakness to holy they have by 5. You can Sustain this Activation for up to 1 minute.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "divine-retribution",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": 1,
+        "key": "DamageDice",
+        "predicate": [
+          "divine-retribution"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.SpecificRule.RelicGift.DivineRetribution.CriticalSuccess",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "target:trait:evil",
+        "divine-retribution"
+      ]
+    },
+    {
+      "key": "note",
+      "selector": "strike-damage",
+      "text": "PF2E.SpecificRule.RelicGift.DivineRetribution.Success",
+      "outcome": [
+        "success"
+      ],
+      "when": [
+        "target:trait:evil",
+        "divine-retribution"
+      ]
+    }
+  ]
+}

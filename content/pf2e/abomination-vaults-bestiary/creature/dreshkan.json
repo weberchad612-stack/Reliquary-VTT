@@ -1,0 +1,196 @@
+{
+  "kind": "creature",
+  "slug": "dreshkan",
+  "system": "pf2e",
+  "name": "Dreshkan",
+  "source": {
+    "title": "Pathfinder #164: Hands of the Devil",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "aberration",
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 20,
+    "hp": 72,
+    "perception": 11,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 13,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 2,
+      "dex": 5,
+      "int": -2,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": {
+        "value": 12,
+        "special": [
+          {
+            "value": 14,
+            "label": "to Climb",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "intimidation": 10,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "electricity"
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. bleed, death effects, disease, doomed, fatigued, paralyzed, poison, and sickened"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 13,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+4",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Needle",
+      "attack": 13,
+      "range": 30,
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "piercing"
+        },
+        {
+          "dice": "2d8",
+          "type": "electricity"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Bleed, Death Effects, Disease, Doomed, Fatigued, Paralyzed, Poison, Sickened",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:death",
+                "item:trait:disease",
+                "inflicts:doomed",
+                "inflicts:fatigued",
+                "inflicts:paralyzed",
+                "inflicts:persistent-damage:bleed",
+                "inflicts:sickened",
+                "item:trait:poison"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "immunity",
+          "type": "bleed"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Needle",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature critically fails a melee Strike against the dreshkan\n\n---\n\nEffect The dreshkan makes a needle Strike against that creature."
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Partially Technological",
+      "category": "defensive",
+      "text": "A dreshkan is partially technological. Vitality healing effects only heal a dreshkan half as much as normal.",
+      "rules": [
+        {
+          "key": "immunity",
+          "type": "healing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Needle Spray",
+      "actions": 3,
+      "category": "offensive",
+      "text": "The dreshkan braces itself on all four limbs and sprays needles at as many creatures as it would like in a 30-foot cone, dealing 2d4 piercing damage plus 2d8 electricity damage. Each targeted creature in the area must attempt a DC 21 basic Reflex save."
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Stance",
+      "category": "offensive",
+      "text": "A dreshkan can share the same space as a morlock or another dreshkan, but no more than two such creatures can occupy the same space. When these creatures share the same space, they gain a +1 circumstance bonus to attack rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "swarming-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "swarming-stance"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Because morlocks are descended from distant human ancestors, clumsily or hastily fleshwarping a morlock simply produces a Grothlut. Skilled fleshwarpers, however, can tease out a morlock's genetic differences to make an entirely different creature. Creating a dreshkan involves replacing the morlock's bones with a metal skeleton. This new skeleton is often heavily augmented, such as with spiderlike limbs protruding from the spine or magazines of tiny, deadly needles. Arcane electricity courses through the dreshkan thereafter, making it jumpy and irritable.\n\nMorlocks view dreshkans as impressive fusions of flesh and technology and gladly fight alongside these creatures, whom they view as paragons of morlock potential.\n\n---\nAlthough twisting victims into horrid shapes is a well-known pastime of evil drow, other subterranean monsters have stolen these practices or developed them independently. The worm-like seugathis sometimes warp other creatures whose territories abut their lightless lands; the fleshwarps below result from morlocks and urdefhans, respectively."
+}

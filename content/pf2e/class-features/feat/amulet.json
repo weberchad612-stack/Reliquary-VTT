@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "amulet",
+  "system": "pf2e",
+  "name": "Amulet",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "Amulets are items carried for good luck and protection. Your amulet might be a magical diagram, a religious symbol, a preserved body part such as a rabbit's foot, or a lucky coin. Amulet implements are associated with the harrow suit of shields and the astrological signs of the bridge and the ogre.\nInitiate Benefit\n\nAdept Benefit\n\nIntensify Vulnerability\nYour amulet repels the creature's attempts to harm you. You gain a +2 status bonus to AC and saves against the target of your Exploit Vulnerability.\nParagon Benefit",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "allowDuplicate": false,
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.equipment-srd.Item.Amulet Implement"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.thaumaturge.initiateBenefit",
+        "predicate": [
+          "feat:thaumaturge-dedication"
+        ],
+        "value": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Amulet)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "uuid": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Amulet)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.thaumaturge.adeptChoices",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "priority": 20,
+        "value": {
+          "label": "{item|name}",
+          "predicate": [
+            {
+              "not": "feature:adept-benefit-amulet"
+            }
+          ],
+          "value": "Compendium.pf2e.classfeatures.Item.Adept Benefit (Amulet)"
+        }
+      }
+    }
+  ]
+}

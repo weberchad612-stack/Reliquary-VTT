@@ -1,0 +1,71 @@
+{
+  "kind": "feat",
+  "slug": "snarecrafter-dedication",
+  "system": "pf2e",
+  "name": "Snarecrafter Dedication",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "trained in Crafting",
+    "Snare Crafting"
+  ],
+  "text": "You have studied the art of crafting snares and laying traps, and few have shown more talent in these arts than you. You gain the Snare Crafting feat. When you set a snare, the DC of any saving throw it requires uses the higher of your class DC or the snare's DC. If a snare normally takes 1 minute to Craft, you can Craft it with 3 Interact actions instead.\n\nEach day during your daily preparations, you can prepare four snares from your formula book for quick deployment (increasing to six snares if you're a master in Crafting and eight if you're legendary). Snares prepared in this way don't cost you any resources to Craft.\n\nWhen you increase your proficiency rank in Crafting to expert, master, or legendary, add three additional snare formulas to your formula book. The snares must be of your level or lower.\n\n---\nSpecial Rangers can adapt snare crafting techniques to create snares from natural materials. If you are a ranger, you can use Survival instead of Crafting for all prerequisites and functions of feats from this archetype. (This includes using Survival to Craft a snare.)\n\nSnarecrafter",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "craftableItems": [
+          "item:trait:snare"
+        ],
+        "isPrepared": true,
+        "key": "CraftingAbility",
+        "label": "PF2E.SpecificRule.DedicationCraftingEntry.Snarecrafter",
+        "maxSlots": "max(4,2*@actor.system.skills.crafting.rank)",
+        "priority": 60,
+        "slug": "snarecrafter"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Snare Crafting"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.crafting.entries.snarecrafter.maxSlots",
+        "phase": "beforeDerived",
+        "predicate": [
+          "class:ranger"
+        ],
+        "value": "max(4,2*@actor.system.skills.survival.rank)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "item:category:snare"
+        ],
+        "selector": "inline-dc",
+        "value": "@actor.system.attributes.classDC.totalModifier"
+      }
+    }
+  ]
+}

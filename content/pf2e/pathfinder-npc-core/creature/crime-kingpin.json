@@ -1,0 +1,300 @@
+{
+  "kind": "creature",
+  "slug": "crime-kingpin",
+  "system": "pf2e",
+  "name": "Crime Kingpin",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 250,
+    "perception": 22,
+    "saves": {
+      "fortitude": 23,
+      "reflex": 23,
+      "will": 22
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 3,
+      "dex": 5,
+      "int": 2,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 25,
+      "deception": 24,
+      "diplomacy": 22,
+      "intimidation": 28,
+      "society": 24,
+      "stealth": 23,
+      "thievery": 24,
+      "underworld-lore": 24
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ],
+    "notes": {
+      "perception": "(+24 to Sense Motive)"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Potion of Flying (Standard)",
+      "ref": "equipment:item/potion-of-flying-standard",
+      "type": "consumable"
+    },
+    {
+      "kind": "gear",
+      "name": "Healing Potion (Moderate)",
+      "ref": "equipment:item/healing-potion-moderate",
+      "type": "consumable",
+      "quantity": 2
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 26,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+11",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+11",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 26,
+      "traits": [
+        "magical",
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Sense Motive",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "perception",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "action:sense-motive"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "The crime kingpin isn't Off-Guard to creatures of 12th level or lower that are Hidden, Undetected, flanking, or using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 12
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Kingpin's Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "mental"
+      ],
+      "text": "30 feet.\n\nAllies in the aura gain a +2 status bonus to saving throws against mental effects.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Kingpin's Presence"
+              }
+            ],
+            "key": "Aura",
+            "radius": 30,
+            "traits": [
+              "emotion",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "You'll Pay for That",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "emotion",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Trigger An enemy damages the kingpin\n\n---\nEffect The kingpin issues a vendetta against the enemy. Each of the kingpin's allies who hears the command gains a +5 status bonus to their next damage roll against that enemy.\n\n---\nEffect: You'll Pay for That"
+    },
+    {
+      "kind": "ability",
+      "name": "Fencing Brawl",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The kingpin attempts a rapier Strike followed by a disarm or grapple attempt against the same enemy. These count as one attack for the kingpin's multiple attack penalty, and the penalty doesn't increase until after both attacks."
+    },
+    {
+      "kind": "ability",
+      "name": "Kick Away",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Trigger The kingpin knocks an item out of a creature's grasp using Disarm\n\n---\nEffect The kingpin kicks the weapon up to 20 feet in any direction. If the kingpin kicks the weapon into an ally's square, that ally can catch the weapon as a free action, Releasing anything else they're holding if necessary.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "athletics",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ],
+          "when": [
+            "action:disarm"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Kingpin's Command",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "linguistic",
+        "mental"
+      ],
+      "text": "The crime kingpin shouts a command to an ally of their choice. That ally can spend a reaction to Stride and Strike. The ally becomes immune to Kingpin's Command for 24 hours."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The crime kingpin deals an additional 3d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 3,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Kingpins build empires from the shadows, ruling their territory ruthlessly and keeping their business private. Most forge connections with the rich and powerful, doing dirty work for politicians and minor nobles in return for influence and favors that can be called in at any time.\n\n---\nIn the underbelly of society, the lawless reign supreme."
+}

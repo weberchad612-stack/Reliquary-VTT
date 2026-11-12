@@ -1,0 +1,213 @@
+{
+  "kind": "creature",
+  "slug": "morlock-scavenger",
+  "system": "pf2e",
+  "name": "Morlock Scavenger",
+  "source": {
+    "title": "Pathfinder #163: Ruins of Gauntlight",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "chaotic",
+    "evil",
+    "humanoid",
+    "morlock"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 6,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": -2,
+      "str": 2,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": {
+        "value": 5,
+        "special": [
+          {
+            "value": 7,
+            "label": "Climbing",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "stealth": 7
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "+2 status to all saves vs. disease and poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Dagger",
+      "ref": "equipment:item/dagger",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "finesse",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Dagger",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "thrown-10",
+        "versatile-s"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Disease and Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "item:trait:disease",
+                "item:trait:poison"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Scuttling Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock scavenger Strides twice, ignoring difficult terrain caused by natural cavern features like rubble or stalagmites. At any point during its movement, the morlock can make a melee Strike against an enemy in its reach."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "The morlock deals an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Stance",
+      "category": "offensive",
+      "text": "A morlock can share the same space as another morlock, but no more than two morlocks can occupy the same space. When morlocks share the same space, they gain a +1 circumstance bonus to attack rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "swarming-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "swarming-stance"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "The morlock scavenger is a lankier, smaller version of a typical morlock. Their stature allows them to wriggle into areas other morlocks can't access.\n\n---\n\nMorlocks originate from humans long lost to the surface world. They have an affinity for machinery, scavenging, and strange occult behaviors."
+}

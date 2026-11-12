@@ -1,0 +1,49 @@
+{
+  "kind": "feat",
+  "slug": "arcane-propulsion",
+  "system": "pf2e",
+  "name": "Arcane Propulsion",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "traits": [
+    "arcane",
+    "automaton"
+  ],
+  "category": "ancestry",
+  "actions": 2,
+  "frequency": {
+    "max": 1,
+    "per": "day"
+  },
+  "text": "Frequency once per day\n\n---\nYou redirect energy from your core to ports on your back or feet, allowing you to fly for a short time. You can maintain this redirected energy for 5 minutes. You gain a fly Speed equal to your Speed while redirecting the energy.\n\nEnhancement You can maintain your flight for longer. You can redirect your energy at all times, allowing you to fly whenever you want, rather than just once per day for 5 minutes.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "predicate": [
+          "enhancement:arcane-propulsion"
+        ],
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.automaton.enhancements.greater",
+        "value": {
+          "label": "PF2E.SpecificRule.Automaton.EnhanceableFeats.ArcanePropulsion",
+          "value": "arcane-propulsion"
+        }
+      }
+    }
+  ]
+}

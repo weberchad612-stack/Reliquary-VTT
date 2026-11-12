@@ -1,0 +1,75 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-cinder-gaze",
+  "system": "pf2e",
+  "name": "Spell Effect: Cinder Gaze",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 10,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "badge": {
+    "type": "formula",
+    "value": "1d4",
+    "labels": [
+      "Terrible Danger",
+      "New Life",
+      "Vivid Insight",
+      "Good Fortune"
+    ]
+  },
+  "text": "Granted by Cinder Gaze\n- Terrible Danger You gain a +2 status bonus to your next initiative roll.\n- New Life The next time you take damage, just before taking the damage, you gain temporary Hit Points.\n- Vivid Insight (fortune) The next time you attempt a check to Recall Knowledge, roll twice and take the higher result.\n- Good Fortune (fortune) The next time you attempt a saving throw, roll twice and take the better result.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "initiative",
+      "type": "status",
+      "value": 2,
+      "when": [
+        "parent:badge:value:1"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "parent:badge:value:4"
+        ],
+        "removeAfterRoll": "if-enabled",
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "action:recall-knowledge",
+          "parent:badge:value:3"
+        ],
+        "removeAfterRoll": "if-enabled",
+        "selector": "skill-check"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "parent:badge:value:2"
+        ],
+        "value": "2*(@item.level + 2)"
+      }
+    }
+  ]
+}

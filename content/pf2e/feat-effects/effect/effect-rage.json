@@ -1,0 +1,63 @@
+{
+  "kind": "effect",
+  "slug": "effect-rage",
+  "system": "pf2e",
+  "name": "Effect: Rage",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Rage\n\nYou gain a number of temporary Hit Points equal to your level plus your Constitution modifier.\n\nYou deal additional damage on melee Strikes. This additional damage is halved if your weapon or unarmed attack is agile.\n\nWhen you stop raging, you lose any remaining temporary Hit Points from Rage, and can't gain temporary Hit Points from using the Rage action again for 1 minute.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.rageTempHP",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "flags.system.rageTempHP",
+        "phase": "beforeDerived",
+        "predicate": [
+          {
+            "nor": [
+              "self:type:familiar",
+              "self:type:hazard",
+              "self:type:vehicle"
+            ]
+          }
+        ],
+        "value": "@actor.level + @actor.abilities.con.mod"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "value": "@actor.flags.system.rageTempHP"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "rage"
+      }
+    }
+  ]
+}

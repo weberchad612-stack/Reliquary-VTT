@@ -1,0 +1,77 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-fey-disappearance",
+  "system": "pf2e",
+  "name": "Spell Effect: Fey Disappearance",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Fey Disappearance\n\nYou become invisible and ignore natural difficult terrain (such as underbrush).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SkillVariant.Natural",
+        "option": "terrain:natural",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.movement.terrain.difficult.ignored",
+        "phase": "afterDerived",
+        "predicate": [
+          "terrain:natural"
+        ],
+        "value": {
+          "environment": "all",
+          "feature": "all"
+        }
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "lt": [
+              "{item|level}",
+              5
+            ]
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Invisible"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "gte": [
+              "{item|level}",
+              5
+            ]
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Invisible"
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "kind": "feat",
+  "slug": "psi-development",
+  "system": "pf2e",
+  "name": "Psi Development",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Psychic Dedication"
+  ],
+  "text": "You've found a new mental form. You gain another psi cantrip from your conscious mind: either the standard cantrip you didn't take with Psychic Dedication, or the unique surface psi cantrip. You gain the psychic benefits for this second psi cantrip. You gain the ability to amp your psi cantrips. If you don't have one, you gain a focus pool of 1 Focus Point, which you can use to amp your psi cantrips, and you can Refocus by meditating on your new powers.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "system.resources.focus.max",
+        "priority": 10,
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": "flags.system.psychic.dedication.psiCantrips",
+        "flag": "dedicationCantrip",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.PsiCantrip",
+        "rollOption": "selected-psi-cantrip"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "feat:psychic-dedication",
+          "spellcasting:tradition:occult",
+          "item:slug:{item|flags.system.rulesSelections.dedicationCantrip}"
+        ],
+        "priority": 19,
+        "property": "other-tags",
+        "value": "psi-cantrip"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Psychic.Amp.Toggle",
+        "option": "amp-spell",
+        "placement": "spellcasting",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "amp-spell",
+          "item:tag:psi-cantrip"
+        ],
+        "property": "other-tags",
+        "value": "amped"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:amped"
+        ],
+        "property": "focus-point-cost",
+        "value": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "kind": "feat",
+  "slug": "warrior-of-legend-dedication",
+  "system": "pf2e",
+  "name": "Warrior of Legend Dedication",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "class",
+    "dedication"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "warrior of legend"
+  ],
+  "text": "You have been given a powerful blessing of battle that is also your cursed doom. As long as you aren't wearing heavy armor or wielding a shield, spears and polearms you wield gain the parry trait. If the weapon already has the parry trait, increase the bonus when parrying to +2. In addition, you deal an additional amount of damage equal to your Doomed value with weapons in the spear and polearm groups. This damage is the same type as the required weapon.\n\nWarrior of Legend",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:group:polearm",
+              "item:group:spear"
+            ]
+          },
+          {
+            "nor": [
+              "armor:category:heavy",
+              "self:shield:equipped"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "parry"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "self:condition:doomed",
+          {
+            "nor": [
+              "armor:category:heavy",
+              "self:shield:equipped"
+            ]
+          }
+        ],
+        "selector": [
+          "polearm-weapon-group-damage",
+          "spear-weapon-group-damage"
+        ],
+        "value": "@actor.conditions.doomed.badge.value"
+      }
+    }
+  ]
+}

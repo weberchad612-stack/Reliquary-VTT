@@ -1,0 +1,308 @@
+{
+  "kind": "creature",
+  "slug": "weretiger",
+  "system": "pf2e",
+  "name": "Weretiger",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 11,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 13,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 11,
+      "athletics": 12,
+      "deception": 7,
+      "society": 10,
+      "stealth": 11
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "languages": "Tiger Empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Tiger Empathy",
+      "category": "interaction",
+      "text": "The weretiger can communicate with felines.\n\n---\n\nThe werecreature can ask questions of, receive answers from, and use the Diplomacy skill with animals of its general kind."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "- Human- Melee fist +14 Damage 1d4+7\n\n- Animal- Speed 30 feet\n- Wrestle\n\n---\nThe werecreature changes into its humanoid, hybrid, or animal shape. Each shape has a specific, persistent appearance. A true werecreature's natural form is its hybrid shape.\n\nIn humanoid shape, the werecreature uses its original humanoid size, loses its jaws and claws Strikes, and gains a melee fist Strike that deals bludgeoning damage equal to the slashing damage dealt by its claw.\n\nIn animal shape, its Speed and size change to that of the animal, it gains any special Strike effects of the animal that it didn't already have (such as Grab), and it loses its weapon Strikes.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d6",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 5,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:wrestle",
+              {
+                "not": "change-shape:animal"
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.ChangeShape.AlterationNotes.Unusable"
+              }
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "when": [
+            {
+              "or": [
+                "change-shape:animal",
+                "change-shape:hybrid"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "item:slug:rend",
+              "change-shape:humanoid"
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.ChangeShape.AlterationNotes.Unusable"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Weretiger",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 21 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    },
+    {
+      "kind": "ability",
+      "name": "Pounce",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The weretiger Strides and makes a Strike at the end of that movement. If the weretiger began this action Hidden, they remain hidden until after this ability's Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Rend",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Claw\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Wrestle",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The weretiger makes a claw Strike against a creature it is Grabbing. If the attack hits, that creature is knocked Prone."
+    }
+  ],
+  "text": "These ferocious werecreatures stalk prey with the cunning and skill of a true apex predator. Weretigers typically view all life as a potential meal. Powerful nocturnal hunters with excellent senses that help them ambush prey, weretigers are adaptable to an extreme range of environments. However, weretigers living in densely populated cities (potentially as courtesans, assassins, or guild leaders) often struggle to suppress their killer instincts, becoming overwhelmed by the urge to hunt.\n\n---\n\nWerecreatures are humanoids doomed to transform into animals and animalhumanoid hybrids under the light of the full moon. These shapechanging creatures are the result of an ancient primal curse that they can, in turn, transmit through their own bites. Their ability to lurk unseen in the wilds as well as among people, combined with the contagiousness of their condition, makes werecreatures a perennial cause of panicked suspicion."
+}

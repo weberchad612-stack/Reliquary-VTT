@@ -1,0 +1,100 @@
+{
+  "kind": "feat",
+  "slug": "samsaran-weapon-memory",
+  "system": "pf2e",
+  "name": "Samsaran Weapon Memory",
+  "source": {
+    "title": "Pathfinder Lost Omens Tian Xia Character Guide",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "samsaran"
+  ],
+  "category": "ancestry",
+  "text": "The training of your past lives and even of those of samsarans who came before is deep-seated and guides your movements in combat. Choose two weapons with an ancestry trait from two different common humanoid ancestries, or other ancestries you have access to. You gain access to your chosen weapons. You have familiarity with these weapons—for the purposes of proficiency, you treat any of these that are martial weapons as simple weapons and any that are advanced weapons as martial weapons.\n\nAt 5th level, whenever you get a critical hit with one of these weapons, you get its critical specialization effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "baseWeaponTypes"
+        },
+        "flag": "weaponOne",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": {
+          "config": "baseWeaponTypes"
+        },
+        "flag": "weaponTwo",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:martial",
+          {
+            "or": [
+              "item:base:{item|flags.system.rulesSelections.weaponOne}",
+              "item:base:{item|flags.system.rulesSelections.weaponTwo}"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.MartialSamsaranWeapons",
+        "sameAs": "simple",
+        "slug": "martial-samsaran-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:category:advanced",
+          {
+            "or": [
+              "item:base:{item|flags.system.rulesSelections.weaponOne}",
+              "item:base:{item|flags.system.rulesSelections.weaponTwo}"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "PF2E.SpecificRule.MartialProficiency.AdvancedSamsaranWeapons",
+        "sameAs": "martial",
+        "slug": "advanced-samsaran-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "CriticalSpecialization",
+        "predicate": [
+          {
+            "or": [
+              "item:base:{item|flags.system.rulesSelections.weaponOne}",
+              "item:base:{item|flags.system.rulesSelections.weaponTwo}"
+            ]
+          },
+          {
+            "gte": [
+              "self:level",
+              5
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

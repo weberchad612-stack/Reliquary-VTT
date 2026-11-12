@@ -1,0 +1,174 @@
+{
+  "kind": "creature",
+  "slug": "giant-moray-eel",
+  "system": "pf2e",
+  "name": "Giant Moray Eel",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "animal",
+    "aquatic"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 65,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 13,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 2,
+      "int": -4,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": 13,
+      "stealth": 13
+    },
+    "speeds": {
+      "land": 10,
+      "swim": 40
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "bludgeoning",
+          "value": 5
+        },
+        {
+          "type": "piercing",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 15,
+      "traits": [
+        "reach-10",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+8",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ambush",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A target creature passes within 20 feet of the giant moray eel's hiding place and has not detected the giant moray eel\n\n---\n\nEffect The giant moray eel lunges out of its hiding place, Swims directly toward the triggering creature, and makes a jaws Strike against it. The target creature is Off-Guard to this attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "ambush",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "ambush"
+            ],
+            "selectors": [
+              "jaws-attack-roll",
+              "jaws-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pharyngeal Jaws",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The giant moray eel has a creature Grabbed in its jaws\n\n---\nEffect The giant moray eel uses its second set of jaws to pull the prey into its gullet. The eel deals 1d6+4 piercing damage to the grabbed creature and gains a +2 circumstance bonus to its Swallow Whole attempts and to the DC for the creature to escape. This effect ends if the target Escapes or the giant moray eel Swallows it Whole.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "pharyngeal-jaws",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "pharyngeal-jaws-swallow-whole",
+          "when": [
+            "action:swallow-whole",
+            "pharyngeal-jaws"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "athletics-dc",
+          "type": "circumstance",
+          "value": 2,
+          "slug": "pharyngeal-jaws-escape",
+          "when": [
+            "action:escape",
+            "pharyngeal-jaws"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swallow Whole",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack"
+      ],
+      "text": "Small, 1d6+6 bludgeoning, Rupture 12\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Giant moray eels dwell in warm, tropical waters and build lairs in narrow, twisting caves made of coral. Their size, speed, and powerful bite make them dangerous to divers and fishers. Giant moray eels have rubbery hides that secrete a layer of mucus, making them difficult to harm with some weapons.\n\n---\n\nAlthough these long, narrow fish share similarities in appearance, eels are a diverse group of creatures."
+}

@@ -1,0 +1,87 @@
+{
+  "kind": "effect",
+  "slug": "effect-share-hunters-edge-vindication",
+  "system": "pf2e",
+  "name": "Effect: Share Hunter's Edge (Vindication)",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Animal Companion (Ranger), Shared Prey, Triple Threat, Warden's Boon\n\nYou gain a +1 status bonus to your spell attack rolls against the marked creature, and they take a –1 status penalty to their saving throws against divine spells you cast.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "share-hunters-edge"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:seek",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "survival",
+      "type": "circumstance",
+      "value": 2,
+      "when": [
+        "action:track",
+        "target:mark:share-hunters-edge"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "ranged-attack-roll",
+        "key": "RollOption",
+        "option": "ignore-range-penalty:2",
+        "predicate": [
+          "target:mark:share-hunters-edge"
+        ]
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "spell-attack",
+      "type": "status",
+      "value": 1,
+      "when": [
+        "target:mark:share-hunters-edge",
+        "spellcasting:tradition:divine"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:tradition:divine"
+        ],
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Ranger.Vindicator.SpellPenaltyAddendum"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Vindication Edge]"
+          }
+        ]
+      }
+    }
+  ]
+}

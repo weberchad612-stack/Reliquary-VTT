@@ -1,0 +1,50 @@
+{
+  "kind": "effect",
+  "slug": "effect-weapon-siphon",
+  "system": "pf2e",
+  "name": "Effect: Weapon Siphon",
+  "source": {
+    "title": "Pathfinder Treasure Vault (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Weapon Siphon\n\nThe multiple attack penalty with the weapon is one greater than usual.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "actorFlag": true,
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:melee"
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weaponSiphonWeapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "subtract",
+        "predicate": [
+          "item:id:{actor|flags.system.weaponSiphonWeapon}"
+        ],
+        "selector": "strike-attack-roll",
+        "slug": "multiple-attack-penalty",
+        "value": 1
+      }
+    }
+  ]
+}

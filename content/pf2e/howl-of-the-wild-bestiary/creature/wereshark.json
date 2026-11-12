@@ -1,0 +1,340 @@
+{
+  "kind": "creature",
+  "slug": "wereshark",
+  "system": "pf2e",
+  "name": "Wereshark",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "beast",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 75,
+    "perception": 10,
+    "saves": {
+      "fortitude": 12,
+      "reflex": 11,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 4,
+      "dex": 3,
+      "int": -1,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 12,
+      "stealth": {
+        "value": 9,
+        "special": [
+          {
+            "value": 11,
+            "label": "in water",
+            "when": [
+              "terrain:water"
+            ]
+          }
+        ]
+      },
+      "survival": 8
+    },
+    "speeds": {
+      "land": 0
+    },
+    "senses": [
+      {
+        "type": "scent",
+        "range": 100,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "perception": "blood scent",
+      "languages": "shark empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Studded Leather Armor",
+      "ref": "equipment:item/studded-leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 14,
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "fish-fork"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 13,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blood Scent",
+      "category": "interaction",
+      "text": "The wereshark can smell blood in the water from up to 1 mile away."
+    },
+    {
+      "kind": "ability",
+      "name": "Shark Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "A wereshark can communicate with sharks."
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Medium human with fist +14 for 1d4+7 bludgeoning,\n\nor Large shark with jaws +14 for 1d12+7 piercing, no land Speed, and swim Speed 40 feet.\n\nThe wereshark doesn't have the amphibious trait in human or shark form and has the aquatic trait in shark form.\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "CreatureSize",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "value": "medium"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "amphibious"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              "change-shape:hybrid"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "aquatic"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              "change-shape:animal"
+            ]
+          }
+        },
+        {
+          "key": "speed",
+          "type": "land",
+          "value": 25
+        },
+        {
+          "key": "speed",
+          "type": "swim",
+          "value": 40
+        },
+        {
+          "key": "speed",
+          "type": "swim",
+          "value": 25
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Fist",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 14,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 1,
+                "die": "d12",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Wereshark",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\n---\n\nSaving Throw DC 18 Fortitude save\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into the same kind of werecreature until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fish Fork",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The wereshark critically hit with a trident Strike on their most recent action this turn\n\n---\nEffect The wereshark digs their trident deep within their target, skewering it before taking a massive bite. The target of the Strike becomes Grabbed (escape dc=18) and takes 1d4 bleed damage, and the wereshark attempts a jaws Strike against it. The wereshark can't use their trident while they have a creature grabbed with it, but they can pull the trident free with a single action that has the manipulate trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "critical": false,
+            "damageType": "bleed",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "hideIfDisabled": true,
+            "key": "DamageDice",
+            "predicate": [
+              "fish-fork",
+              "check:outcome:critical-success"
+            ],
+            "selector": "trident-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "fish-fork",
+            "toggleable": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "When a full moon appears in the night sky, the werecreature must enter hybrid form, can't Change Shape thereafter, becomes one size larger, increases its reach by 5 feet, and increases the damage of its jaws by 2.\n\nWhen the moon sets or the sun rises, the werecreature returns to humanoid form and is Fatigued for 2d4 hours.\n\nEffect: Moon Frenzy"
+    }
+  ],
+  "text": "Werecreatures are humanoids who transform into animals and animal-humanoid hybrids under the light of the full moon. The fate of these shapechanging creatures derives from an ancient primal curse that they can, in turn, transmit through their own bites. The stat blocks in this section reflect werecreatures in their hybrid forms.\n\n---\nThe curse of the wereshark in stills a crude and bloodthirsty attitude, along with an urge to travel the sea. They often become pirates or military sailors who quickly gain a reputation for capricious violence. The shark within makes weresharks born survivors. They will swiftly retreat if they're truly in danger and consider obeying a sense of honor utterly ridiculous."
+}

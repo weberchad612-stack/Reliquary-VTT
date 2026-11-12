@@ -1,0 +1,55 @@
+{
+  "kind": "feat",
+  "slug": "perfections-path",
+  "system": "pf2e",
+  "name": "Perfection's Path",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Monk Dedication",
+    "expert in at least one saving throw"
+  ],
+  "text": "Choose one saving throw (Fortitude, Reflex, or Will) in which you are an expert. Your proficiency rank in the chosen saving throw increases to master.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.monkDedicationCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "config": "saves",
+          "predicate": [
+            "save:{choice|value}:rank:2"
+          ]
+        },
+        "flag": "save",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.saves.{item|flags.system.rulesSelections.save}.rank",
+        "value": 3
+      }
+    }
+  ]
+}

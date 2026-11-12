@@ -1,0 +1,85 @@
+{
+  "kind": "feat",
+  "slug": "hellknight-preferment",
+  "system": "pf2e",
+  "name": "Hellknight Preferment",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Hellknight Dedication",
+    "passed the Hellknight Test",
+    "trained in Hellknight plate"
+  ],
+  "text": "You've forged your body to be able to stand toe-to-toe with a devil, and your mind has been shaped by the strictures of the Measure and the Chain. You've become a true Hellknight. You gain expert proficiency rank in Intimidation (or in another skill in which you're trained of your choice, if you were already an expert in Intimidation). You gain the armor specialization effects of Hellknight breastplate, Hellknight half plate, and Hellknight plate, and your resistance from that armor specialization is 1 higher than normal. In addition, you gain a +1 circumstance bonus to Intimidation checks while wearing any Hellknight armor.\n\n---\nSpecial You can't take both this feat and Hellknight-Errant or Hellknight Signifer Preferment.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.hellknightArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "value": 2
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "intimidation",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "or": [
+            "armor:slug:hellknight-plate",
+            "armor:slug:hellknight-breastplate",
+            "armor:slug:hellknight-half-plate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          {
+            "or": [
+              "armor:slug:hellknight-plate",
+              "armor:slug:hellknight-half-plate"
+            ]
+          }
+        ],
+        "type": "slashing",
+        "value": "3 + @armor.system.runes.potency"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "armor:slug:hellknight-breastplate"
+        ],
+        "type": "slashing",
+        "value": "2 + @armor.system.runes.potency"
+      }
+    }
+  ]
+}

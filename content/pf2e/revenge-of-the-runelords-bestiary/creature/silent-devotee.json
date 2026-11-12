@@ -1,0 +1,236 @@
+{
+  "kind": "creature",
+  "slug": "silent-devotee",
+  "system": "pf2e",
+  "name": "Silent Devotee",
+  "source": {
+    "title": "Pathfinder #220: Crypt of Runes",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "rare",
+  "traits": [
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 255,
+    "perception": 26,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 28,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 5,
+      "dex": 8,
+      "int": 6,
+      "str": 5,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 28,
+      "arcana": 26,
+      "athletics": 25,
+      "society": 26,
+      "stealth": 28
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "thassilonian",
+      "varisian"
+    ],
+    "iwr": {
+      "immunities": [
+        "fatigued",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "sonic",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+2 status to all saves vs. auditory",
+      "languages": "can't speak any language, Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 34,
+      "attack": 26,
+      "spells": [
+        {
+          "name": "Truesight (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/truesight"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 29,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+13",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Untouched by Time",
+      "category": "interaction",
+      "text": "Though not undead, silent devotees don't age as most mortal creatures do. They don't eat, drink, sleep, or breathe."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves Vs. Auditory",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "item:trait:auditory"
+          ]
+        },
+        {
+          "key": "immunity",
+          "type": "custom"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pall of Silence",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "aura",
+        "illusion"
+      ],
+      "text": "10 feet. The silent devotee is surrounded by an aura that suppresses sound, granting the silent devotee resistance to sonic energy and a bonus to all saves against auditory effects. Creatures within the aura can't use sonic attacks, use auditory actions, or Cast a Spell without the subtle trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "includesSelf": false,
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Pall of Silence"
+              }
+            ],
+            "key": "Aura",
+            "radius": 10,
+            "traits": [
+              "arcane",
+              "illusion"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Reactive Strike",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Cruel Sneak Attack",
+      "category": "offensive",
+      "text": "A silent devotee's Strikes deal and additional 2d6 precision damage to creatures that are Off-Guard or are taking persistent bleed damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              {
+                "or": [
+                  "target:condition:off-guard",
+                  "target:condition:persistent-damage:bleed"
+                ]
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quieting Rune",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "concentrate",
+        "illusion",
+        "manipulate"
+      ],
+      "text": "The silent devotee marks a creature within 60 feet they can see with a rune of magical silence. The creature must succeed at a DC 34 Will save saving throw or be affected as if by a 7th-rank Silence spell. The rune lasts for 1 minute or until the devotee dies. A creature can be marked with only one Quieting Rune at a time. If the devotee uses this ability again, any previous Quieting Rune they've created ends."
+    },
+    {
+      "kind": "ability",
+      "name": "Transdimensional Step",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "teleportation"
+      ],
+      "text": "The silent devotee teleports to an unoccupied space within 30 feet."
+    }
+  ],
+  "text": "When the runelords first created the Emerald Chambers, an order of martial spellcasters was established to protect Xin's tomb. Known as the Silent Devotees, members of this order cut out their own eyes and tongues in a gesture intended both to prove their devotion and to ensure that knowledge of the Emerald Chambers would never spread beyond the order. After an initial surge of volunteers, interest in the order waned once the duplicitous nature of the runelords (and rumors of their involvement in Xin's assassination) came to light. Today, only a few dozen silent devotees remain.\n\nThe devotees expanded the scope of their mission after the runelords claimed portions of the Emerald Chambers for their personal use. These devotees fitted their empty eye sockets with emeralds magically imbued with the site plans for the Chambers, allowing them to patrol the extradimensional space in its entirety. Combined with the raw magic flowing through the Chambers, the emeralds turned the skin of the devotees a pallid green but also gifted them with a sort of immortality, such that the remaining devotees seem immune to the ravages of time. Today, the Silent Devotees are something more than the humans they once were.\nXin-Hndoros\nThe most devoted member of the Silent Devotees was surely Xin-Undoros, a loyal champion of Xin and one of the order's first volunteers. Though he predicted Earthfall, Xin-Undoros failed to warn the runelords of the catastrophe, blaming them for the death of his beloved emperor. As punishment for this treachery, Xin-Undoros became a graveknight shortly after the end came. While this transformation returned Xin-Undoros's ability to speak, he still refuses to do so, regarding such an act as a violation of his eternal oath."
+}

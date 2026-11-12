@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "effect-iron-command-extra-damage",
+  "system": "pf2e",
+  "name": "Effect: Iron Command (Extra Damage)",
+  "source": {
+    "title": "Pathfinder Claws of the Tyrant",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Seldeg's Strikes against the triggering creature deal an additional 3 damage until the end of his next turn. Seldeg chooses whether the additional damage is spirit or void each time he uses this reaction.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "iron-command-extra-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitSpirit",
+            "value": "spirit"
+          },
+          {
+            "label": "PF2E.TraitVoid",
+            "value": "void"
+          }
+        ],
+        "flag": "ironCommandDamage",
+        "key": "ChoiceSet",
+        "label": "PF2E.SpecificRule.Prompt.DamageType"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "strike-damage",
+      "type": "untyped",
+      "value": 3,
+      "slug": "champions-extra-damage",
+      "when": [
+        "target:mark:iron-command-extra-damage"
+      ],
+      "damageType": "{item|flags.system.rulesSelections.ironCommandDamage}"
+    }
+  ]
+}

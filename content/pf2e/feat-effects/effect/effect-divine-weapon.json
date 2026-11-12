@@ -1,0 +1,124 @@
+{
+  "kind": "effect",
+  "slug": "effect-divine-weapon",
+  "system": "pf2e",
+  "name": "Effect: Divine Weapon",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "duration": {
+    "value": 0,
+    "unit": "rounds",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Divine Weapon\n\nThe weapon deals an additional 1d4 spirit damage. If you are holy or unholy, Strikes with the weapon also gain that trait, and the additional damage increases to 2d4 against creatures of the opposing trait.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "predicate": [
+            "item:equipped"
+          ],
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 1,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "nor": [
+              {
+                "and": [
+                  "self:trait:holy",
+                  "target:trait:unholy"
+                ]
+              },
+              {
+                "and": [
+                  "self:trait:unholy",
+                  "target:trait:holy"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": 2,
+        "dieSize": "d4",
+        "key": "DamageDice",
+        "predicate": [
+          {
+            "or": [
+              {
+                "and": [
+                  "self:trait:holy",
+                  "target:trait:unholy"
+                ]
+              },
+              {
+                "and": [
+                  "self:trait:unholy",
+                  "target:trait:holy"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.weapon}-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "self:trait:holy"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:id:{item|flags.system.rulesSelections.weapon}"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "self:trait:unholy"
+        ],
+        "property": "traits",
+        "value": "unholy"
+      }
+    }
+  ]
+}

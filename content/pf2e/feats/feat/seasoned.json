@@ -1,0 +1,54 @@
+{
+  "kind": "feat",
+  "slug": "seasoned",
+  "system": "pf2e",
+  "name": "Seasoned",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "trained in Alcohol Lore, Cooking Lore, or Crafting"
+  ],
+  "text": "You've mastered the preparation of many types of food and drink. You gain a +1 circumstance bonus to checks to Craft food and drink, including elixirs if you have Alchemical Crafting and potions if you have Magical Crafting. If you are a master in one of the prerequisite skills, this bonus increases to +2.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          "action:craft",
+          {
+            "or": [
+              "item:tag:food",
+              "item:tag:drink",
+              {
+                "and": [
+                  "feat:magical-crafting",
+                  "item:trait:potion"
+                ]
+              },
+              {
+                "and": [
+                  "feat:alchemical-crafting",
+                  "item:trait:elixir"
+                ]
+              }
+            ]
+          }
+        ],
+        "selector": "crafting",
+        "type": "circumstance",
+        "value": "ternary(gte(@actor.system.skills.crafting.rank,3),2,1)"
+      }
+    }
+  ]
+}

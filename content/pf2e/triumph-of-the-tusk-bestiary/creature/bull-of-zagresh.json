@@ -1,0 +1,152 @@
+{
+  "kind": "creature",
+  "slug": "bull-of-zagresh",
+  "system": "pf2e",
+  "name": "Bull of Zagresh",
+  "source": {
+    "title": "Pathfinder #209: Destroyer's Doom",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "animal"
+  ],
+  "size": "huge",
+  "stats": {
+    "ac": 23,
+    "hp": 140,
+    "perception": 15,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 6,
+      "dex": 2,
+      "int": -5,
+      "str": 7,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 20,
+      "intimidation": 13,
+      "survival": 15
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 18,
+      "damage": [
+        {
+          "dice": "2d8+8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 18,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d10+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Running of the Bulls",
+      "category": "interaction",
+      "text": "When a bull of Zagresh starts its turn adjacent to another bull of Zagresh, it gains a +10-foot circumstance bonus to its Speed.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "running-of-the-bulls",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "circumstance",
+          "value": 10,
+          "when": [
+            "running-of-the-bulls"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk",
+      "category": "defensive",
+      "text": "If the bull has 40 or fewer HP at the start of its turn, it must succeed at a DC 5 Flat check or go berserk. A berserk bull of Zagresh wildly attacks the nearest living creature, or the nearest object if no creatures are nearby."
+    },
+    {
+      "kind": "ability",
+      "name": "Buck",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "DC 25 Reflex save"
+    },
+    {
+      "kind": "ability",
+      "name": "Berserk Stampede",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirements The bull of Zagresh is berserk\n\n---\nEffect The bull of Zagresh Strides up to double its Speed and makes a horn Strike against up to three creatures with a –1 circumstance penalty. If it hits, it deals 1d6 extra damage and knocks the target Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "berserk-stampede",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "horn-attack-roll",
+          "type": "circumstance",
+          "value": -1,
+          "when": [
+            "berserk-stampede"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "berserk-stampede"
+            ],
+            "selector": "horn-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "The fierce bull of Zagresh is an enormous, easily riled bovine with sharp horns like a stag's. The bulls are bred and raised for sport as well as war.\n\n---\nBelkzen's megafauna husbandry is a source of orc pride, with many species bred for everyday life. In battle, they provide an edge against foes."
+}

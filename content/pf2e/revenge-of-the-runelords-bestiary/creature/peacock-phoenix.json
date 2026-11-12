@@ -1,0 +1,419 @@
+{
+  "kind": "creature",
+  "slug": "peacock-phoenix",
+  "system": "pf2e",
+  "name": "Peacock Phoenix",
+  "source": {
+    "title": "Pathfinder #220: Crypt of Runes",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 17,
+  "rarity": "unique",
+  "traits": [
+    "incorporeal",
+    "mythic",
+    "spirit"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 39,
+    "hp": 240,
+    "perception": 31,
+    "saves": {
+      "fortitude": 26,
+      "reflex": 33,
+      "will": 30
+    },
+    "attributes": {
+      "cha": 7,
+      "con": 5,
+      "dex": 8,
+      "int": 8,
+      "str": -5,
+      "wis": 7
+    },
+    "skills": {
+      "acrobatics": 33,
+      "arcana": 33,
+      "athletics": 30,
+      "intimidation": 32
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 70
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "aklo",
+      "thassilonian"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "mythic",
+          "value": 17
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "perception": "detect magic",
+      "languages": "Telepathy 100 feet"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Arcane Innate Spells",
+      "tradition": "arcane",
+      "type": "innate",
+      "dc": 42,
+      "attack": 34,
+      "spells": [
+        {
+          "name": "Phantasmagoria",
+          "rank": 9,
+          "ref": "spells:spell/phantasmagoria"
+        },
+        {
+          "name": "Hallucination",
+          "rank": 8,
+          "ref": "spells:spell/hallucination"
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 8,
+          "ref": "spells:spell/dispel-magic",
+          "uses": 3
+        },
+        {
+          "name": "See the Unseen (Constant)",
+          "rank": 4,
+          "ref": "spells:spell/see-the-unseen"
+        },
+        {
+          "name": "Detect Magic (Constant)",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Remove a Condition",
+      "actions": 1,
+      "category": "interaction",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Cost 1 Mythic Point\n\n---\nEffect The creature ends one condition affecting it."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Resilience (Reflex)",
+      "category": "defensive",
+      "text": "The creature treats its saving throws with the associated save as one degree of success better than it rolled. This is not cumulative with other effects that change their degree of success, like the incapacitation trait (except for rolling a natural 1 or 20). Each time the monster gains mythic resilience, choose one save. The ability should apply to the creature's highest saves first.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "selector": "reflex"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Radiant Panoply",
+      "category": "defensive",
+      "traits": [
+        "arcane",
+        "aura",
+        "light",
+        "visual"
+      ],
+      "text": "20 feet. The peacock phoenix is surrounded by an aura of iridescence. An adjacent creature that starts its turn in the aura must attempt a DC 35 Will save save. On a failure, the creature becomes Dazzled until the start of its next turn.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 20,
+            "traits": [
+              "arcane",
+              "light",
+              "visual"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rebirth",
+      "category": "defensive",
+      "traits": [
+        "mythic"
+      ],
+      "text": "When the peacock phoenix dies while incorporeal, they return to life at the start of their next turn with full Hit Points. They are no longer incorporeal, lose the spirit trait, gain the beast trait, and lose their immunities and resistances (except for mythic resistance) and radiant panoply. Their Strength modifier becomes +7. They lose their radiant wing Strike and gain a beak and talon Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "rebirth",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "add": [
+              "beast"
+            ],
+            "key": "ActorTraits",
+            "predicate": [
+              "rebirth"
+            ],
+            "remove": [
+              "incorporeal",
+              "spirit"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              {
+                "not": "rebirth"
+              }
+            ],
+            "type": [
+              "bleed",
+              "death-effects",
+              "disease",
+              "doomed",
+              "drained",
+              "fatigued",
+              "healing",
+              "nonlethal-attacks",
+              "paralyzed",
+              "poison",
+              "precision",
+              "sickened",
+              "unconscious",
+              "vitality",
+              "void"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "doubleVs": [
+              "non-magical"
+            ],
+            "exceptions": [
+              "force",
+              "ghost-touch",
+              "spirit"
+            ],
+            "key": "Resistance",
+            "predicate": [
+              {
+                "not": "rebirth"
+              }
+            ],
+            "type": "all-damage",
+            "value": 15
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 32,
+            "damage": {
+              "base": {
+                "damageType": "mental",
+                "dice": 4,
+                "die": "d10",
+                "modifier": 15
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.NPCAbility.PeacockPhoenix.RadiantWing",
+            "predicate": [
+              {
+                "not": "rebirth"
+              }
+            ],
+            "slug": "radiant-wind",
+            "traits": [
+              "magical",
+              "reach-20"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 32,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 3,
+                "die": "d10",
+                "modifier": 15
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Beak",
+            "predicate": [
+              "rebirth"
+            ],
+            "slug": "beak",
+            "traits": [
+              "magical",
+              "reach-20"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 32,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 3,
+                "die": "d6",
+                "modifier": 15
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Talon",
+            "predicate": [
+              "rebirth"
+            ],
+            "slug": "talon",
+            "traits": [
+              "agile",
+              "magical",
+              "reach-20"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "mental",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "rebirth"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.abilities.str.mod",
+            "predicate": [
+              "rebirth"
+            ],
+            "value": 12
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Power",
+      "category": "offensive",
+      "text": "The creature has a pool of 3 Mythic Points, and can spend those Mythic Points for any of the actions it has."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Skill",
+      "actions": "free",
+      "category": "offensive",
+      "text": "Cost 1 Mythic Point\n\n---\nEffect The phoenix attempts their next Athletics or Stealth skill check with a +4 bonus and has mythic proficiency for that check.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "mythic-skill",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "athletics",
+            "stealth"
+          ],
+          "type": "untyped",
+          "value": 4,
+          "slug": "mythic-skill-bonus",
+          "when": [
+            "mythic-skill"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Radiant Beam",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "arcane",
+        "force",
+        "light"
+      ],
+      "text": "The phoenix emits a 100-foot line of radiance from their eyes. Creatures in the area take 10d12 force damage (DC 38 basic Reflex save save). The phoenix peacock can't use Radiant Beam again for 1d4 rounds."
+    }
+  ],
+  "text": "Unlike its namesake, the peacock phoenix is a being of pure magic, a unique manifestation of Xanderghul's alter ego as the Peacock Spirit.\nOther Mythic Phoenixes\nBecause it's tied so intrinsically to Runelord Xanderghul and his alter ego, the Peacock Spirit, once the peacock phoenix is destroyed, it's doubtful Golarion will ever see its like again. Whether different kinds of mythic phoenixes, born from similar confluences of magical and psychic energy, could ever exist remains uncertain."
+}

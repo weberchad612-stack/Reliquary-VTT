@@ -1,0 +1,79 @@
+{
+  "kind": "feat",
+  "slug": "electrify-armor",
+  "system": "pf2e",
+  "name": "Electrify Armor",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "traits": [
+    "inventor",
+    "manipulate"
+  ],
+  "category": "class",
+  "actions": 1,
+  "prerequisites": [
+    "armor innovation"
+  ],
+  "text": "Requirements You are wearing your armor innovation.\n\n---\nYou electrify your armor to punish foes who dare to attack you. For 1 round, any creature that touches you, or that hits you with a melee unarmed attack or a non-reach melee weapon attack, takes 1d4 electricity damage. The effect ends if you cease wearing your armor innovation.\n\nIf you have the revolutionary innovation class feature, the damage increases to 2d4.\n\nUnstable Function You create an unstable chain reaction, sending countless sparks dancing across your armor. Add the unstable trait to Electrify Armor. The effects last for 1 minute instead of 1 round, and the damage dice increase from d4s to d12s.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Inventor.Unstable.UnstableFunction.Label",
+        "option": "unstable-state",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "unstable-state"
+        ],
+        "property": "traits",
+        "value": "unstable"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "add",
+        "predicate": [
+          "feature:revolutionary-innovation"
+        ],
+        "property": "dice-number",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "slug": "base",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "predicate": [
+          "unstable-state"
+        ],
+        "property": "dice-faces",
+        "selectors": [
+          "{item|id}-inline-damage"
+        ],
+        "slug": "base",
+        "value": 12
+      }
+    }
+  ]
+}

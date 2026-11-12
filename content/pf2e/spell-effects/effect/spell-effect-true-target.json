@@ -1,0 +1,51 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-true-target",
+  "system": "pf2e",
+  "name": "Spell Effect: True Target",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by True Target\n\nFor your next attack roll against the marked creature, roll twice and use the better result. You ignore circumstance penalties to the attack roll.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TokenMark",
+        "slug": "true-target"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "higher",
+        "key": "RollTwice",
+        "predicate": [
+          "target:mark:true-target"
+        ],
+        "selector": "attack-roll"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "predicate": [
+          "penalty:type:circumstance",
+          "target:mark:true-target"
+        ],
+        "selector": "attack-roll",
+        "suppress": true
+      }
+    }
+  ]
+}

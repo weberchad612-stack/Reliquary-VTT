@@ -1,0 +1,350 @@
+{
+  "kind": "creature",
+  "slug": "magma-archdragon",
+  "system": "pf2e",
+  "name": "Magma Archdragon",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 21,
+  "rarity": "rare",
+  "traits": [
+    "dragon",
+    "fire",
+    "primal"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 46,
+    "hp": 450,
+    "perception": 38,
+    "saves": {
+      "fortitude": 39,
+      "reflex": 32,
+      "will": 35
+    },
+    "attributes": {
+      "cha": 8,
+      "con": 8,
+      "dex": 6,
+      "int": 6,
+      "str": 10,
+      "wis": 6
+    },
+    "skills": {
+      "acrobatics": 34,
+      "athletics": 43,
+      "deception": 34,
+      "intimidation": 40,
+      "nature": 34,
+      "stealth": 34,
+      "survival": 36
+    },
+    "speeds": {
+      "land": 50,
+      "burrow": 50,
+      "fly": 200
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "draconic",
+      "petran",
+      "pyric",
+      "sakvroth"
+    ],
+    "iwr": {
+      "immunities": [
+        "fire",
+        "paralyzed",
+        "sleep"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 status to all saves vs. magic",
+      "speed": "magma burrow"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 44,
+      "attack": 36,
+      "spells": [
+        {
+          "name": "Wall of Fire (At Will)",
+          "rank": 9,
+          "ref": "spells:spell/wall-of-fire",
+          "uses": 99
+        },
+        {
+          "name": "Fireball",
+          "rank": 9,
+          "ref": "spells:spell/fireball"
+        },
+        {
+          "name": "Breathe Fire (At Will)",
+          "rank": 9,
+          "ref": "spells:spell/breathe-fire",
+          "uses": 99
+        },
+        {
+          "name": "Ignition",
+          "rank": 1,
+          "ref": "spells:spell/ignition"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 40,
+      "traits": [
+        "fire",
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+20",
+          "type": "piercing"
+        },
+        {
+          "dice": "3d6",
+          "type": "fire"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 40,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+20",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Tail",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-25",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+20",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 38,
+      "traits": [
+        "magical",
+        "reach-20",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+20",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+1 Status to All Saves vs. Magic",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 1,
+          "when": [
+            "item:magical"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Frightful Presence",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "emotion",
+        "fear",
+        "mental"
+      ],
+      "text": "90 feet. DC 44 Will save\n\n---",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "radius": 90,
+            "slug": "frightful-presence",
+            "traits": [
+              "emotion",
+              "fear",
+              "mental"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wing Deflection",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The dragon is targeted with an attack\n\n---\nEffect The dragon raises a wing, gaining a +2 circumstance bonus to AC against the triggering attack. If the dragon is Flying, they descend 10 feet after the attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "wing-deflection",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "wing-deflection"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cataclysm",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "fire",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\n---\nEffect The magma archdragon releases its primal fury in full. Magma rips from the ground in a 30-foot burst within 240 feet. Each creature in the area takes 14d6 fire,4d12 bludgeoning damage, with a DC 44 basic Reflex save save.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "The dragon takes on the appearance of a Medium humanoid. This does not change their Speed or their attack and damage bonuses with their Strikes but might change the damage type their Strikes deal (typically to bludgeoning).\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Frenzy",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The dragon makes two claw Strikes and one horn Strike in any order."
+    },
+    {
+      "kind": "ability",
+      "name": "Draconic Momentum",
+      "category": "offensive",
+      "text": "The dragon recharges their Pyroclastic Blast whenever they score a critical hit with a Strike.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "strike-attack-roll",
+          "text": "{item|description}",
+          "outcome": [
+            "criticalSuccess"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Magma Burrow",
+      "category": "offensive",
+      "text": "A magma dragon's burrow Speed functions only when the dragon is Burrowing through magma or molten lava."
+    },
+    {
+      "kind": "ability",
+      "name": "Magma Tomb",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal"
+      ],
+      "text": "The dragon spits a molten boulder at a target within 120 feet. This deals 14d6 fire,6d12 bludgeoning damage, with a DC 44 basic Reflex save save. If the creature fails its save, it's encased in magma that instantly cools and has Hardness 12, HP 50, and BT 25. The encased creature can't breathe and is Restrained (escape dc=44).",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Pyroclastic Breath",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "fire",
+        "primal"
+      ],
+      "text": "The dragon breathes a blast of magma that deals 11d6 fire,6d12 bludgeoning in a 60-foot cone (DC 44 basic Reflex save). They can't use Pyroclastic Breath again for 1d4 rounds"
+    },
+    {
+      "kind": "ability",
+      "name": "Volcanic Purge",
+      "actions": 1,
+      "category": "offensive",
+      "text": "If the next action the dragon uses is Pyroclastic Breath, the magma clings to those it damages. Each creature that fails its save against Pyroclastic Breath takes 6d6 persistent,fire damage, and as long as it has this persistent fire damage, it also takes a –10-foot status penalty to its Speeds.\n\nEffect: Volcanic Purge"
+    }
+  ],
+  "text": "Magma dragons represent a brash and volatile aspect of dragonkind. Territorial and unpredictable, magma dragons are known for protecting their hunting grounds with a fierce and proud demeanor that brooks no challengers. Passionate in the extreme, magma dragons in their draconic forms can often seem utterly bestial, impulsively jumping at threats and challenges with a wild abandon, but this belies an intellect that many underestimate.\n\nFor many magma dragons, they begin life in small clutches and struggle immediately for dominance. These fights can be brutal and are sometimes fatal, but magma dragon parents understand that to survive in this world, one must be strong and powerful, and thus make allowances for this. There are few among magma dragons where an impassioned killing does not appear somewhere in their history, but were one to get close enough to get reasons out of a magma dragon, many often can explain exactly why the kill needed to happen and how there was no alternative.\n\nTo say that \"might makes right\" among magma dragons is a gross oversimplification of their ethos as a society. They believe that the strongest should, in fact, rule—that much is true—but also, they very specifically believe that claims of rulership must be backed by not only strength and aggression, but also a careful cultivation of resources, protection of chosen communities, and an overall appreciation of the lands they call their own. To do anything less is considered an affront by other magma dragons, and many a battle has begun due to one magma dragon stumbling on the domain of another and assuming it's unkept, or unkempt in some way, and attempting to claim it. This battle for dominance and stewardship often leads magma dragons to believe that their way is better, for they're stronger and assumed wiser through their use of fine battle tactics and skill at arms."
+}

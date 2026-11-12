@@ -1,0 +1,165 @@
+{
+  "kind": "creature",
+  "slug": "hermit-rat",
+  "system": "pf2e",
+  "name": "Hermit Rat",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-04: Necessary Introductions",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "animal"
+  ],
+  "size": "tiny",
+  "stats": {
+    "ac": 15,
+    "hp": 8,
+    "perception": 5,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 7,
+      "will": 3
+    },
+    "attributes": {
+      "cha": -3,
+      "con": 2,
+      "dex": 3,
+      "int": -4,
+      "str": 1,
+      "wis": 1
+    },
+    "skills": {
+      "stealth": {
+        "value": 5,
+        "special": [
+          {
+            "value": 7,
+            "label": "while inside its jar",
+            "when": [
+              "terrain:jar"
+            ]
+          }
+        ]
+      },
+      "survival": 5
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 10
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "notes": {
+      "ac": "kimchi jar shell"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Kimchi Jar",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 7,
+      "traits": [
+        "agile",
+        "finesse",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+1",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Flee",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The hermit rat's jar is destroyed\n\n---\n\nEffect The hermit rat Strides up to its Speed without triggering reactions."
+    },
+    {
+      "kind": "ability",
+      "name": "Kimchi Jar Shell",
+      "category": "defensive",
+      "text": "The hermit rat's kimchi jar shell has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once hermit rat is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its kimchi jar shell breaks and its Armor Class is reduced to 12.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.Shell.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "label": "PF2E.NPCAbility.Shell.BrokenShell",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -3
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "nor": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ram",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The hermit rat rolls in its vessel up to its full movement, ramming into a target in its path and dealing 1d6 bludgeoning damage (DC 16 basic Reflex save save)."
+    }
+  ]
+}

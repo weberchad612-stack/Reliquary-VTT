@@ -1,0 +1,62 @@
+{
+  "kind": "feat",
+  "slug": "tiger-slash",
+  "system": "pf2e",
+  "name": "Tiger Slash",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "monk"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Tiger Stance"
+  ],
+  "text": "Requirements You are in Tiger Stance\n\n---\n\nYou make a fierce swipe with both hands. Make a tiger claw Strike. It deals two extra weapon damage dice (three extra dice if you're 14th level or higher), and you can push the target 5 feet away as if you had successfully Shoved them.\n\nIf the attack is a critical success and deals damage, add your Strength modifier to the persistent bleed damage from your tiger claw.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "disabledIf": [
+          {
+            "not": "self:effect:tiger-stance"
+          }
+        ],
+        "disabledValue": false,
+        "key": "RollOption",
+        "option": "tiger-slash",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "match(when(lte(@actor.level, 13), 2), when(gte(@actor.level, 14), 3))",
+        "key": "DamageDice",
+        "predicate": [
+          "tiger-slash"
+        ],
+        "selector": "tiger-claw-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "critical": true,
+        "damageType": "bleed",
+        "key": "FlatModifier",
+        "predicate": [
+          "tiger-slash"
+        ],
+        "selector": "tiger-claw-damage",
+        "value": "@actor.abilities.str.mod"
+      }
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "kind": "feat",
+  "slug": "weapon",
+  "system": "pf2e",
+  "name": "Weapon",
+  "source": {
+    "title": "Pathfinder Dark Archive (Remastered)",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "thaumaturge"
+  ],
+  "category": "classfeature",
+  "text": "Weapon implements are the most direct and confrontational, representing battle, struggle, and potentially violence. You can choose only a one-handed weapon as an implement, which allows you to channel energies into your weapon as well as hold your other implements once you gain them. Weapon implements are associated with the harrow suit of hammers and the astrological signs of the rider and the swordswoman.\nInitiate Benefit\n\nAdept Benefit\n\nIntensify Vulnerability\nYour weapon is drawn to your enemy's vital spots, almost of its own accord. You gain a +2 status bonus to attack rolls against the target of your Exploit Vulnerability.\nParagon Benefit",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "allowedDrops": {
+          "label": "PF2E.SpecificRule.AllowedDrops.OneHandedWeapon",
+          "predicate": [
+            "item:usage:hands:1",
+            {
+              "not": "item:trait:consumable"
+            }
+          ]
+        },
+        "choices": {
+          "filter": [
+            "item:usage:hands:1",
+            {
+              "nor": [
+                "item:magical",
+                "item:trait:consumable"
+              ]
+            }
+          ],
+          "itemType": "weapon"
+        },
+        "flag": "weaponImplement",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "flag": "weaponImplement",
+        "key": "GrantItem",
+        "track": true,
+        "uuid": "{item|flags.system.rulesSelections.weaponImplement}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.thaumaturge.weaponImplement",
+        "priority": 5,
+        "value": "{item|flags.system.itemGrants.weaponImplement.id}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "implement-held",
+        "predicate": [
+          "weapon-implement:equipped"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "implement:weapon:equipped",
+        "predicate": [
+          "weapon-implement:equipped"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|flags.system.itemGrants.weaponImplement.id}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "description",
+        "value": [
+          {
+            "divider": true,
+            "text": "@Embed[Compendium.pf2e.classfeatures.Item.YiDkrwaxiF7Gao7y inline]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "flags.system.thaumaturge.initiateBenefit",
+        "predicate": [
+          "feat:thaumaturge-dedication"
+        ],
+        "value": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Weapon)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "uuid": "Compendium.pf2e.classfeatures.Item.Initiate Benefit (Weapon)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.thaumaturge.adeptChoices",
+        "predicate": [
+          "class:thaumaturge"
+        ],
+        "priority": 20,
+        "value": {
+          "label": "{item|name}",
+          "predicate": [
+            {
+              "not": "feature:adept-benefit-weapon"
+            }
+          ],
+          "value": "Compendium.pf2e.classfeatures.Item.Adept Benefit (Weapon)"
+        }
+      }
+    }
+  ]
+}

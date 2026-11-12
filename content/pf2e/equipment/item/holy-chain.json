@@ -1,0 +1,78 @@
+{
+  "kind": "armor",
+  "slug": "holy-chain",
+  "system": "pf2e",
+  "name": "Holy Chain",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 13,
+  "traits": [
+    "divine",
+    "holy",
+    "invested",
+    "noisy"
+  ],
+  "text": "This suit of +2 resilient chain mail is made of fine white links of a strange and slightly translucent pale metal, and the sleeves and skirt are fashioned into smaller trails that resemble feathers. Unlike normal chain mail, holy chain has no Speed reduction, its armor check penalty is 0, and its Bulk is 1.\n\nYou gain a +1 circumstance bonus to AC and saving throws against fiends. You appear radiant while you wear the armor, giving you a +2 item bonus to Diplomacy checks against all creatures except fiends.\n\nIf you're unholy, you're Drained 2 while wearing holy chain. You can't recover from this condition while wearing the armor.\n\n---\nActivate—Celestial Flight 1 (concentrate)\n\nFrequency once per day\n\nEffect The armor sprouts glowing wings that grant you a fly Speed of 30 feet. The wings shed bright light in a 40-foot radius (and dim light to the next 40 feet). The wings fade away after 10 minutes.\n\nEffect: Holy Chain\n\n---\nCraft Requirements You're holy.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "saving-throw"
+      ],
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        "origin:trait:fiend"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": "diplomacy",
+      "type": "item",
+      "value": 2,
+      "when": [
+        {
+          "not": "target:trait:fiend"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alterations": [
+          {
+            "mode": "override",
+            "property": "badge-value",
+            "value": 2
+          }
+        ],
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          "self:trait:unholy"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Drained"
+      }
+    }
+  ],
+  "category": "medium",
+  "group": "chain",
+  "acBonus": 4,
+  "dexCap": 1,
+  "checkPenalty": 0,
+  "speedPenalty": 0,
+  "strength": 3,
+  "bulk": 1,
+  "price": {
+    "gp": 2500
+  },
+  "runes": {
+    "potency": 2,
+    "resilient": 1
+  }
+}

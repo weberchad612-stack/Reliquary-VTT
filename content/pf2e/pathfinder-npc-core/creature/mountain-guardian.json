@@ -1,0 +1,250 @@
+{
+  "kind": "creature",
+  "slug": "mountain-guardian",
+  "system": "pf2e",
+  "name": "Mountain Guardian",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 100,
+    "perception": 9,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 11,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 1,
+      "int": 0,
+      "str": 4,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 9,
+      "athletics": 15,
+      "intimidation": 13,
+      "nature": 11,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "tremorsense",
+        "range": 10,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "petran"
+    ],
+    "iwr": {
+      "resistances": [
+        {
+          "type": "earth",
+          "value": 6
+        },
+        {
+          "type": "poison",
+          "value": 6
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+13 Reflex vs. damaging effects"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Elemental Blast",
+      "attack": 16,
+      "traits": [
+        "concentrate",
+        "earth",
+        "impulse",
+        "primal",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 14,
+      "traits": [
+        "agile",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Elemental Blast",
+      "attack": 16,
+      "traits": [
+        "concentrate",
+        "earth",
+        "impulse",
+        "primal",
+        "versatile-p"
+      ],
+      "range": 30,
+      "damage": [
+        {
+          "dice": "2d8",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Reflex vs. Damaging Effects",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "reflex",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "damaging-effect"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Kinetic Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "earth",
+        "primal"
+      ],
+      "text": "10 feet. Pieces of rock and earth float in the aura. The aura must be active for the guardian to use impulse actions, and deactivates if the guardian uses an overflow impulse, is knocked out, or Dismisses it. The guardian can Channel Elements to reactivate it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "kinetic-aura",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "kinetic-earth"
+            ],
+            "radius": 10,
+            "traits": [
+              "primal",
+              "earth"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Weight of Stone",
+      "actions": 3,
+      "category": "defensive",
+      "traits": [
+        "concentrate",
+        "earth",
+        "impulse",
+        "overflow",
+        "primal"
+      ],
+      "text": "The mountain guardian calls down boulders in a cylinder 20 feet in diameter and 80 feet high within 120 feet. Each creature in the area takes 4d8 bludgeoning damage with a DC 24 basic Reflex save save. A creature that fails is also pushed downward 40 feet (80 feet on a critical failure) without taking falling damage and can't leave the ground for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Base Kinesis",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mountain guardian generates, moves, or suppresses up to 1 Bulk of naturally occurring earthen matter within 15 feet. Generating creates earthen matter, moving moves existing matter up to 20 feet into any direction, and suppressing destroys a piece of that element (which can't be a durable crafted good, only natural forms of the element)."
+    },
+    {
+      "kind": "ability",
+      "name": "Channel Elements",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The mountain guardian reactivates their kinetic aura and can make an elemental blast Strike."
+    },
+    {
+      "kind": "ability",
+      "name": "Empowered Blast",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The mountain guardian makes a melee or ranged elemental blast Strike with a +4 status bonus to damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "empowered-blast",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "elemental-blast-damage",
+          "type": "status",
+          "value": 4,
+          "when": [
+            "empowered-blast"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremor",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "earth",
+        "impulse",
+        "overflow",
+        "primal"
+      ],
+      "text": "The mountain guardian stomps on natural earth or stone, causing a localized tremor. All creatures in a 10-foot burst within 30 feet take 3d10 bludgeoning damage with a DC 24 basic Fortitude save save. A creature that critically fails is knocked Prone. Earth and stone in the area is difficult terrain until the start of the mountain guardian's next turn."
+    }
+  ],
+  "text": "Those who have unlocked the secrets of opening a kinetic gate to an elemental plane within themselves wield immense power over that element. Practitioners who specialize in elemental earth are hardy and defense-minded. The mountain guardian is surrounded by heavy armor made of stone held together with elemental magic.\n\n---\nA primalist is a wielder of primal energies and magic, sometimes taught by forces of primal power, including powerful elementals or fey of the First World. Primalists protect the natural world, offering strong medicine to those in need while facing suspicion from those who don't understand their ways.\n\nA great many primalists belong to druidic circles, and even those who aren't members tend to be familiar with the most prominent ones in their homeland."
+}

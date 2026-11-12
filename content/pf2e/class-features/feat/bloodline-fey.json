@@ -1,0 +1,222 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-fey",
+  "system": "pf2e",
+  "name": "Bloodline: Fey",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "sorcerer"
+  ],
+  "category": "classfeature",
+  "text": "Fey whimsy or a tryst in a moonlit grove put the bewitching magic of the First World into your family's bloodline.\n\nTradition primal\n\nBloodline Skills Deception, Nature\n\nSorcerous Gifts cantrip Figment, 1st: Charm, 2nd: Laughing Fit, 3rd: Enthrall, 4th: Suggestion, 5th: Hallucination, 6th: Mislead, 7th: Visions of Danger, 8th: Uncontrollable Dance, 9th: Metamorphosis\n\nBloodline Spells initial: Faerie Dust, advanced: Fey Disappearance, greater: Fey Glamour\n\nBlood Magic—Cloak of Ribbons Colorful fey ribbons dance around you. Either you gain a +2 status bonus to Performance checks for 1 round, or you can become Concealed for 1 round. Such obvious concealment can't be used to Hide\n\nEffect: Fey Blood Magic",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.deception.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.nature.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:sorcerer"
+                ]
+              },
+              {
+                "and": [
+                  "item:spell-slot",
+                  "spellcasting:category:spontaneous",
+                  "spellcasting:tradition:primal",
+                  {
+                    "or": [
+                      "item:slug:charm",
+                      "item:slug:laughing-fit",
+                      "item:slug:enthrall",
+                      "item:slug:suggestion",
+                      "item:slug:hallucination",
+                      "item:slug:mislead",
+                      "item:slug:visions-of-danger",
+                      "item:slug:uncontrollable-dance",
+                      "item:slug:resplendent-mansion"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mergeable": true,
+        "option": "blood-magic",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Fey",
+            "predicate": [
+              "class:sorcerer"
+            ],
+            "value": "fey"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.SecondBloodMagic",
+        "mergeable": true,
+        "option": "second-blood-magic",
+        "placement": "spellcasting",
+        "predicate": [
+          {
+            "or": [
+              "feat:blood-ascendancy",
+              "feat:blood-sovereignty"
+            ]
+          }
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Fey",
+            "value": "fey"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:tag:blood-magic-spell",
+          {
+            "or": [
+              "blood-magic:fey",
+              {
+                "and": [
+                  "second-blood-magic:fey",
+                  "feat:blood-sovereignty"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Fey",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Fey"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Fey Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:slug:blood-rising",
+          {
+            "or": [
+              "blood-magic:fey",
+              {
+                "and": [
+                  "second-blood-magic:fey",
+                  "feat:blood-ascendancy"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Fey",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Fey"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Fey Blood Magic]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:tradition:primal",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "kind": "creature",
+  "slug": "dragonfire-fly",
+  "system": "pf2e",
+  "name": "Dragonfire Fly",
+  "source": {
+    "title": "Pathfinder Adventure Path #225: Vaultlines",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 19,
+  "rarity": "rare",
+  "traits": [
+    "elemental",
+    "fire"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 42,
+    "hp": 360,
+    "perception": 35,
+    "saves": {
+      "fortitude": 32,
+      "reflex": 35,
+      "will": 31
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 7,
+      "dex": 10,
+      "int": -4,
+      "str": 8,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": {
+        "value": 35,
+        "special": [
+          {
+            "value": 37,
+            "label": "to Maneuver in Flight",
+            "when": [
+              "action:maneuver-in-flight"
+            ]
+          }
+        ]
+      },
+      "athletics": 33
+    },
+    "speeds": {
+      "land": 25,
+      "climb": 25,
+      "fly": 100
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Mandibles",
+      "attack": 34,
+      "traits": [
+        "agile",
+        "finesse"
+      ],
+      "damage": [
+        {
+          "dice": "4d8+13",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Eye Beam",
+      "attack": 34,
+      "traits": [
+        "magical"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "3d8+13",
+          "type": "untyped"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Barrel Roll",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger While Flying, the dragonfire fly is hit by a ranged Strike that deals physical damage\n\n---\nEffect The fly spins in flight, deflecting some of the force of the attack. The fly gains resistance 15 to physical damage from the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "barrel-roll",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Resistance",
+            "predicate": [
+              "barrel-roll"
+            ],
+            "type": "physical",
+            "value": 15
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fire Wings",
+      "category": "defensive",
+      "text": "When the fly is first encountered, the fly's wings burn with red flame. When the fly takes acid, cold, electricity, fire, sonic, or void damage, the fly's wing flame color changes depending on the type of damage dealt. If an attack or effect deals more than one of these damage types, the fly chooses which damage type affects their fire wings color. The fly gains resistance 15 to the damage type associated with its new fire wings color, and its eye beam ranged Strike deals that damage type. After 1 minute, the fly's fire wings revert to red flame. The damage type, fire color, and other effects of each fire wings color are:\n\nAcid: Green fire. A creature that starts their turn in the fly's firelight aura takes 3d6 persistent,acid damage.\n\nCold: White fire. A creature that starts their turn in the fly's firelight aura takes a –15-foot status penalty to its Speeds for 1 round.\n\nElectricity: Yellow fire. A creature that starts their turn in the fly's firelight aura is Clumsy 1 for 1 round.\n\nFire: Red fire. A creature that starts their turn in the fly's firelight aura takes 6d6 fire damage with a DC 32 basic Reflex save save.\n\nSonic: Purple fire. The fly emits a loud buzz. A creature is Deafened while in the fly's firelight aura.\n\nVoid: Black fire. The fly becomes Concealed and loses its firelight aura until its Fire Wings change to a different color.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "fire-wings",
+            "selection": "fire",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAcid",
+                "value": "acid"
+              },
+              {
+                "label": "PF2E.TraitCold",
+                "value": "cold"
+              },
+              {
+                "label": "PF2E.TraitElectricity",
+                "value": "electricity"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitSonic",
+                "value": "sonic"
+              },
+              {
+                "label": "PF2E.TraitVoid",
+                "value": "void"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "resistance",
+          "type": "{item|flags.system.rulesSelections.fireWings}",
+          "value": 15
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageAlteration",
+            "mode": "override",
+            "property": "damage-type",
+            "selectors": [
+              "eye-beam-damage"
+            ],
+            "slug": "base",
+            "value": "{item|flags.system.rulesSelections.fireWings}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Firelight",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "light"
+      ],
+      "text": "30 feet. The aura sheds dim light of the same color as the fly's current fire wings color.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              {
+                "not": "fire-wings:void"
+              }
+            ],
+            "radius": 30
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "fire-wings:acid"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 3,
+                "speed": 2,
+                "type": "flame"
+              },
+              "bright": 0,
+              "color": "#00ff40",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "fire-wings:cold"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 3,
+                "speed": 2,
+                "type": "flame"
+              },
+              "bright": 0,
+              "color": "#ebfeff",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "fire-wings:electricity"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 3,
+                "speed": 2,
+                "type": "flame"
+              },
+              "bright": 0,
+              "color": "#ffd91a",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "fire-wings:fire"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 3,
+                "speed": 2,
+                "type": "flame"
+              },
+              "bright": 0,
+              "color": "#ffa200",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "TokenLight",
+            "predicate": [
+              "fire-wings:sonic"
+            ],
+            "value": {
+              "animation": {
+                "intensity": 3,
+                "speed": 2,
+                "type": "flame"
+              },
+              "bright": 0,
+              "color": "#bb00ff",
+              "coloration": 101,
+              "dim": 30
+            }
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "fire-wings:void"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Concealed"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Carry",
+      "category": "offensive",
+      "text": "The fly can Fly at half Speed while it has a creature Grabbed or Restrained in its mandibles, carrying that creature along with it."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "A dragonfire fly is an immense dragonfly with wings veined in delicate traceries of red fire. Its faceted eyes are huge gemstones that blaze with internal luminescence. While on the hunt, the dragonfire fly zips through subterranean labyrinths or clings silently to cavern walls, lancing prey with solid jets of flame cast from its eyes.\n\nAlthough dragonfire flies most often use fire to catch their food, they adapt readily to their enemies' weapons and defenses. When magic harms a dragonfire fly, the fly's eyes and the flames across its wings change color, burning with white frost, yellow electricity, or whatever other energy it was exposed to. This same energy burns in the dragonfire fly's eye rays.\nOpal Eyes\nIf a dragonfire fly’s eyes resemble gems, it’s because they are! Both of a dragonfire fly’s multifaceted eyes are immense, translucent opals as large as a human head. The gems change hue when the fly’s flame takes on a new color, and they retain this color when the dragonfire fly dies. Each of the fly’s eyes is worth at least 10,000 gold—if a buyer for such a large single stone can be found."
+}

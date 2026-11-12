@@ -1,0 +1,73 @@
+{
+  "kind": "feat",
+  "slug": "deadly-strike",
+  "system": "pf2e",
+  "name": "Deadly Strike",
+  "source": {
+    "title": "Pathfinder Guns & Gears",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "traits": [
+    "inventor"
+  ],
+  "category": "classfeature",
+  "text": "Through precise calculation, you've found the perfect way for your weapon to deal damage on a well-placed strike. Your innovation gains the deadly d8 trait. If your innovation was already deadly, increase the die by up to two die sizes (d6 to d10, d8 to d12), to a maximum of deadly d12.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitDeadlyD8",
+            "predicate": [
+              {
+                "or": [
+                  "weapon-innovation:trait:deadly-d4",
+                  {
+                    "not": "weapon-innovation:trait:deadly"
+                  }
+                ]
+              }
+            ],
+            "value": "deadly-d8"
+          },
+          {
+            "label": "PF2E.TraitDeadlyD10",
+            "predicate": [
+              "weapon-innovation:trait:deadly-d6"
+            ],
+            "value": "deadly-d10"
+          },
+          {
+            "label": "PF2E.TraitDeadlyD12",
+            "predicate": [
+              {
+                "or": [
+                  "weapon-innovation:trait:deadly-d8",
+                  "weapon-innovation:trait:deadly-d10"
+                ]
+              }
+            ],
+            "value": "deadly-d12"
+          }
+        ],
+        "flag": "trait",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{actor|flags.system.trackedItems.weaponInnovation}",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.trait}"
+      }
+    }
+  ]
+}

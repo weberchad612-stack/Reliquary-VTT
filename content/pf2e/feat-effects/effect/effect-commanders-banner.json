@@ -1,0 +1,66 @@
+{
+  "kind": "effect",
+  "slug": "effect-commanders-banner",
+  "system": "pf2e",
+  "name": "Effect: Commander's Banner",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "unit": "unlimited"
+  },
+  "text": "Granted by Commander's Banner\n\nYou gain a +1 status bonus to Will saves and DCs against fear effects. If the origin has the Glorious Banner feat, this bonus increases to +2, and you gain a +1 status bonus to AC, Fortitude saves, and Reflex saves.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": [
+        "ac",
+        "fortitude-dc",
+        "reflex-dc",
+        "will"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "commanders-banner-fear",
+      "when": [
+        "item:trait:fear"
+      ]
+    },
+    {
+      "key": "modifier",
+      "selector": [
+        "reflex",
+        "fortitude",
+        "ac"
+      ],
+      "type": "status",
+      "value": 1,
+      "slug": "commanders-banner-glorious-banner",
+      "when": [
+        "parent:tag:glorious-banner"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "parent:tag:glorious-banner"
+        ],
+        "selectors": [
+          "ac",
+          "fortitude-dc",
+          "reflex-dc",
+          "will"
+        ],
+        "slug": "commanders-banner-fear",
+        "value": 2
+      }
+    }
+  ]
+}

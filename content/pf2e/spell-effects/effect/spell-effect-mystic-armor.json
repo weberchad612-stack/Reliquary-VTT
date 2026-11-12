@@ -1,0 +1,58 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-mystic-armor",
+  "system": "pf2e",
+  "name": "Spell Effect: Mystic Armor",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "days",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Mystic Armor\n\nYou gain an item bonus to AC and a maximum Dexterity modifier of +5. At 4th rank or higher, you gain an item bonus to saving throws.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "key": "FlatModifier",
+        "selector": "ac",
+        "slug": "mage-armor",
+        "type": "item",
+        "value": "ternary(gte(@item.level,10),3,ternary(gte(@item.level,6),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fromEquipment": false,
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "gte": [
+              "parent:level",
+              4
+            ]
+          }
+        ],
+        "selector": "saving-throw",
+        "slug": "mage-armor",
+        "type": "item",
+        "value": "ternary(gte(@item.level,10),3,ternary(gte(@item.level,8),2,1))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DexterityModifierCap",
+        "value": 5
+      }
+    }
+  ]
+}

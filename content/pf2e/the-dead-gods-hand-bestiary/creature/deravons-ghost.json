@@ -1,0 +1,269 @@
+{
+  "kind": "creature",
+  "slug": "deravons-ghost",
+  "system": "pf2e",
+  "name": "Deravon's Ghost",
+  "source": {
+    "title": "The Dead God's Hand",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "unique",
+  "traits": [
+    "ghost",
+    "incorporeal",
+    "spirit",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 115,
+    "perception": 18,
+    "saves": {
+      "fortitude": 19,
+      "reflex": 17,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 6,
+      "con": 4,
+      "dex": 4,
+      "int": 3,
+      "str": -5,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 19,
+      "intimidation": {
+        "value": 19,
+        "special": [
+          {
+            "value": 20,
+            "label": "to Demoralize",
+            "when": [
+              "action:demoralize"
+            ]
+          }
+        ]
+      },
+      "religion": 16,
+      "aroden-lore": 18
+    },
+    "speeds": {
+      "land": 0,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "azlanti",
+      "common",
+      "empyrean",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "precision",
+        "unconscious"
+      ],
+      "resistances": [
+        {
+          "type": "all-damage",
+          "value": 10,
+          "except": "force, ghost-touch, spirit, vitality",
+          "doubleVs": "non-magical"
+        }
+      ]
+    },
+    "notes": {
+      "perception": "darkvision"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Deravon's Helm",
+      "ref": "equipment:item/deravons-helm",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Ghostly Sword",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+10",
+          "type": "void"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Helm Dependent",
+      "category": "defensive",
+      "text": "Deravon is incorporeal, but the magical helm he wears is physical, perched atop his head as securely as if he were a physical creature. He cannot pass through solid objects while wearing his helm, but without it he is weakened. A PC can remove his helm with a DC 27 Athletics check check to disarm, and if Deravon's ghost critically fails a Reflex save, he must immediately attempt a second Reflex save against the same DC. On a failure, his helm topples from his head. While he can move through solid objects while his helm is off, he can't use Aeon Stars or Bow Before Me, and is Slowed 1 as long as he remains without his helm.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "item:slug:deravons-helm",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Immunity",
+            "predicate": [
+              "item:slug:deravons-helm"
+            ],
+            "type": "spirit"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              {
+                "not": "item:slug:deravons-helm"
+              }
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Slowed"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "not": "item:slug:deravons-helm"
+              },
+              {
+                "or": [
+                  "item:slug:aeon-stars-curse",
+                  "item:slug:bow-before-me"
+                ]
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.NPCAbility.Deravon.HelmDependent.Note"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rejuvenation",
+      "category": "defensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "Destroying Deravon's link to the world—his magical helm—prevents him from rejuvenating and allows him to move on to the afterlife once he is destroyed.\n\n---\nWhen a ghost is destroyed, it re-forms after 2d4 days within the location it's bound to, fully healed. A ghost can be permanently destroyed only if someone determines the reason for its existence and sets right whatever prevents the spirit from resting.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemId": "{item|id}",
+            "key": "ItemAlteration",
+            "mode": "override",
+            "property": "name",
+            "value": "PF2E.NPCAbility.Ghost.Rejuvenation.Name"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Site Bound",
+      "category": "defensive",
+      "text": "Deravon's ghost can travel anywhere in the Sanctum of Aroden (areas B29–B34) but not beyond."
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Aeon Star's Curse",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "divine",
+        "emotion",
+        "mental"
+      ],
+      "text": "Deravon's ghost has four tiny motes of darkness that constantly orbit the glowing helm atop his head. When he activates the Aeon Star's Curse, one of these motes of darkness fires from its orbit to strike a living creature within 120 feet. That creature takes 5d6 spirit damage and must attempt a DC 28 Will save save. An expended Aeon Star returns to its orbit around Deravon's head automatically after 1 hour has passed, but if no Aeon Stars orbit his head, Deravon's ghost can't activate Aeon Star's Curse, and the Athletics check to disarm his helm drops to DC 23.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes 2d6 spirit damage.\n\nFailure The creature takes 4d6 spirit damage and becomes Stupefied 1 with an unlimited duration.\n\nCritical Failure The creature takes 8d6 spirit damage and becomes Stupefied 2 with an unlimited duration. In addition, they suffer from an overwhelming conviction that, at any moment, the Aeon Star might appear in the sky above, portending the end of all things. As long as they remain outdoors during the day or indoors or underground at any time of day, the cursed character is Off-Guard from this constant distraction. While outdoors at night, the cursed character is also Slowed 1 from this spiritual conviction."
+    },
+    {
+      "kind": "ability",
+      "name": "Bow Before Me",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "divine",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Frequency once per round\n\n---\nEffect Deravon's ghost can use the \"Bow Before Aroden\" activation of his helm at will as a single action once per round rather than once per day as a two-action activity, as long as the command he issues is to bow before him and not before Aroden.",
+      "frequency": {
+        "max": 1,
+        "per": "round"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Slice of Death",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "void"
+      ],
+      "text": "Deravon's ghost swings his ghostly longsword in an arc before him, unleashing a 30-foot cone of void energy. Creatures in the area take 8d6 void damage and must make a DC 28 Fortitude save save against the following additional effects. Deravon's ghost can't use Slice Of Death for 1d4 rounds.\n\n---\nCritical Success The creature takes no damage and is unaffected.\n\nSuccess The creature takes half damage.\n\nFailure The creature takes full damage and an additional 2d6 persistent,void damage as their flesh begins to rot away.\n\nCritical Failure The creature takes double damage, 2d6 persistent,void damage, and becomes Slowed 1 as long as they continue taking the persistent void damage as their body begins to stiffen up as if from rigor mortis."
+    }
+  ],
+  "blurb": "Male human ghost"
+}

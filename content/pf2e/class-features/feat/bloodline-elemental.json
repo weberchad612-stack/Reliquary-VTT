@@ -1,0 +1,391 @@
+{
+  "kind": "feat",
+  "slug": "bloodline-elemental",
+  "system": "pf2e",
+  "name": "Bloodline: Elemental",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "sorcerer"
+  ],
+  "category": "classfeature",
+  "text": "An elemental influence has imbued your blood with primal fury. You are granted different sorcerous gift spells and damage type from blood magic depending on which element affected your bloodline (see Elemental Influences below).\n\nTradition primal\n\nBloodline Skills Intimidation, Nature\n\nSorcerous Gifts cantrip: see Elemental Influences below; 1st: see Elemental Influences below; 2nd: Resist Energy; 3rd: see Elemental Influences below; 4th: Unfettered Movement; 5th: Elemental Form (elemental influence only); 6th :see Elemental Influences below; 7th: Energy Aegis; 8th: Earthquake; 9th: Wrathful Storm\n\nBloodline Spells initial: Elemental Toss; advanced: Elemental Motion; greater: Elemental Blast\n\nBlood Magic—Elemental Fury Elemental energy wreathes your form and infuses your magic. Either you gain a +2 status bonus to Intimidation checks for 1 round, or a target takes 1 damage per spell rank; this damage type is listed under your elemental influence. If the spell already deals that type of damage, combine it with the spell's initial damage before determining weaknesses and resistances.\nElemental Influences\nAt 1st level, choose the type of elemental that influenced your bloodline: air, earth, fire, metal, water, or wood. You can't change this later. You are granted different spells at certain ranks according to this influence.\n- Air—Sorcerous Gifts cantrip: Gale Blast; 1st: Tailwind; 3rd: Wall of Wind; 6th: Chain Lightning; Blood Magic Damage slashing\n- Earth—Sorcerous Gifts cantrip: Scatter Scree; 1st: Pummeling Rubble; 3rd: Earthbind; 6th: Petrify; Blood Magic Damage bludgeoning\n- Fire—Sorcerous Gifts cantrip: Ignition, 1st: Breathe Fire; 3rd: Fireball; 6th: Tree of Seasons (all pods are summer); Blood Magic Damage fire\n- Metal—Sorcerous Gifts cantrip Electric Arc; 1st: Thunderstrike; 3rd: Lightning Bolt; 6th: Chain Lightning; Blood Magic Damage piercing\n- Water—Sorcerous Gifts cantrip: Frostbite; 1st: Hydraulic Push; 3rd: Aqueous Orb; 6th: Scintillating Safeguard; Blood Magic Damage bludgeoning\n- Wood—Sorcerous Gifts cantrip: Tangle Vine; 1st: Cleanse Cuisine; 3rd: Wall of Thorns; 6th: Tangling Creepers; Blood Magic Damage bludgeoning",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.intimidation.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "upgrade",
+        "path": "system.skills.nature.rank",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ],
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "actorFlag": true,
+        "choices": [
+          {
+            "label": "PF2E.TraitAir",
+            "value": {
+              "damageType": "slashing",
+              "slug": "air"
+            }
+          },
+          {
+            "label": "PF2E.TraitEarth",
+            "value": {
+              "damageType": "bludgeoning",
+              "slug": "earth"
+            }
+          },
+          {
+            "label": "PF2E.TraitFire",
+            "value": {
+              "damageType": "fire",
+              "slug": "fire"
+            }
+          },
+          {
+            "label": "PF2E.TraitMetal",
+            "value": {
+              "damageType": "piercing",
+              "slug": "metal"
+            }
+          },
+          {
+            "label": "PF2E.TraitWater",
+            "value": {
+              "damageType": "bludgeoning",
+              "slug": "water"
+            }
+          },
+          {
+            "label": "PF2E.TraitWood",
+            "value": {
+              "damageType": "bludgeoning",
+              "slug": "wood"
+            }
+          }
+        ],
+        "flag": "elementalBloodline",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Element"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:elemental:{item|flags.system.rulesSelections.elementalBloodline.slug}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          },
+          {
+            "or": [
+              {
+                "and": [
+                  "item:trait:focus",
+                  "item:trait:sorcerer"
+                ]
+              },
+              {
+                "and": [
+                  "item:spell-slot",
+                  "spellcasting:category:spontaneous",
+                  "spellcasting:tradition:primal",
+                  {
+                    "or": [
+                      "item:slug:resist-energy",
+                      "item:slug:unfettered-movement",
+                      "item:slug:elemental-form",
+                      "item:slug:energy-aegis",
+                      "item:slug:earthquake",
+                      "item:slug:wrathful-storm",
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:air",
+                          {
+                            "or": [
+                              "item:slug:tailwind",
+                              "item:slug:wall-of-wind",
+                              "item:slug:chain-lightning"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:earth",
+                          {
+                            "or": [
+                              "item:slug:pummeling-rubble",
+                              "item:slug:earthbind",
+                              "item:slug:petrify"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:fire",
+                          {
+                            "or": [
+                              "item:slug:breathe-fire",
+                              "item:slug:fireball",
+                              "item:slug:tree-of-seasons"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:metal",
+                          {
+                            "or": [
+                              "item:slug:thunderstrike",
+                              "item:slug:lightning-bolt",
+                              "item:slug:chain-lightning"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:water",
+                          {
+                            "or": [
+                              "item:slug:hydraulic-push",
+                              "item:slug:aqueous-orb",
+                              "item:slug:scintillating-safeguard"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "and": [
+                          "feature:bloodline:elemental:wood",
+                          {
+                            "or": [
+                              "item:slug:cleanse-cuisine",
+                              "item:slug:wall-of-thorns",
+                              "item:slug:tangling-creepers"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "other-tags",
+        "value": "blood-magic-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "alwaysActive": true,
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mergeable": true,
+        "option": "blood-magic",
+        "placement": "spellcasting",
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Elemental",
+            "predicate": [
+              "class:sorcerer"
+            ],
+            "value": "elemental"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Sorcerer.SecondBloodMagic",
+        "mergeable": true,
+        "option": "second-blood-magic",
+        "placement": "spellcasting",
+        "predicate": [
+          {
+            "or": [
+              "feat:blood-ascendancy",
+              "feat:blood-sovereignty"
+            ]
+          }
+        ],
+        "suboptions": [
+          {
+            "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Elemental",
+            "value": "elemental"
+          }
+        ],
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:tag:blood-magic-spell",
+          {
+            "or": [
+              "blood-magic:elemental",
+              {
+                "and": [
+                  "second-blood-magic:elemental",
+                  "feat:blood-sovereignty"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Elemental",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Elemental"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Elemental Blood Magic (Self)]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "label": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Title",
+        "mode": "add",
+        "predicate": [
+          "class:sorcerer",
+          "item:slug:blood-rising",
+          {
+            "or": [
+              "blood-magic:elemental",
+              {
+                "and": [
+                  "second-blood-magic:elemental",
+                  "feat:blood-ascendancy"
+                ]
+              }
+            ]
+          }
+        ],
+        "priority": 121,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicDescription.Elemental",
+            "title": "PF2E.SpecificRule.Sorcerer.Bloodline.BloodMagicLabel.Elemental"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Effect: Elemental Blood Magic (Self)]"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "feature:bloodline:tradition:primal",
+        "predicate": [
+          {
+            "not": "parent:granter:slug:crossblooded-evolution"
+          }
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:elemental-toss",
+              "item:slug:elemental-blast",
+              "item:slug:elemental-motion"
+            ]
+          }
+        ],
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.elementalBloodline.slug}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "or": [
+              "item:slug:elemental-toss",
+              "item:slug:elemental-blast"
+            ]
+          }
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "spell-damage"
+        ],
+        "slug": "base",
+        "value": "{item|flags.system.rulesSelections.elementalBloodline.damageType}"
+      }
+    }
+  ]
+}

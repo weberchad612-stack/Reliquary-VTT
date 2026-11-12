@@ -1,0 +1,49 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-thundering-dominance",
+  "system": "pf2e",
+  "name": "Spell Effect: Thundering Dominance",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Thundering Dominance\n\nThe target gains a status bonus to Intimidation checks. Once during this spell's duration, it can take the Thundering Roar action.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "selector": "intimidation",
+        "type": "status",
+        "value": "match(when(btwn(@item.level, 2, 3), 1), when(btwn(@item.level, 4, 5), 2), when(btwn(@item.level, 6, 7), 3), when(gte(@item.level, 8), 4))"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.actionspf2e.Item.Thundering Roar"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "upgrade",
+        "property": "dice-number",
+        "selectors": [
+          "thundering-roar-inline-damage"
+        ],
+        "value": "2 + 2*floor(@item.level/2)"
+      }
+    }
+  ]
+}

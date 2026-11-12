@@ -1,0 +1,190 @@
+{
+  "kind": "creature",
+  "slug": "revenant",
+  "system": "pf2e",
+  "name": "Revenant",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "undead"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 23,
+    "hp": 115,
+    "perception": 14,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 13,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 3,
+      "int": 0,
+      "str": 5,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 15,
+      "intimidation": 14
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "sleep"
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 5,
+          "except": "slashing"
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "sense murderer",
+      "languages": "any one spoken in life by their murderer (typically Common)"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 17,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+5",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sense Murderer",
+      "category": "interaction",
+      "traits": [
+        "occult",
+        "scrying"
+      ],
+      "text": "A revenant knows the direction of their murderer (as long as both are on the same plane), but not the distance."
+    },
+    {
+      "kind": "ability",
+      "name": "Self-Loathing",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "mental",
+        "visual"
+      ],
+      "text": "If a revenant sees their own reflection or any object that was important to them in life, they must attempt a DC 25 Will save save.\n\n---\n\nCritical Success The revenant is unaffected and can no longer be affected by that reflection or object in this way.\n\nSuccess The revenant is distracted by self-loathing and becomes Slowed 1 for 1 round.\n\nFailure The revenant becomes Fascinated by the source that triggered their self-loathing and does everything they can to destroy it until the end of the revenant's next turn.\n\nCritical Failure The revenant becomes Immobilized as long as the source of their self-loathing is apparent, until they're attacked, or until they see their murderer."
+    },
+    {
+      "kind": "ability",
+      "name": "Undying Vendetta",
+      "category": "defensive",
+      "traits": [
+        "emotion",
+        "occult"
+      ],
+      "text": "If the revenant's murderer dies, the revenant is immediately destroyed. A revenant that can't sense their murderer must attempt a DC 11 Flat check check once every 24 hours to avoid becoming Immobilized and Prone; they immediately rise again once they can sense their murderer. A murderer who becomes undead does not trigger the revenant's destruction until the murderer is finally destroyed. The revenant gains a +2 status bonus to checks and DCs against their murderer.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "undying-vendetta",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "skill-check",
+            "attack-roll",
+            "saving-throw",
+            "ac",
+            "perception",
+            "initiative"
+          ],
+          "type": "status",
+          "value": 2,
+          "when": [
+            "undying-vendetta"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Baleful Shriek",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "mental"
+      ],
+      "text": "The revenant wails horribly. Each creature within a 60-foot burst must attempt a DC 23 Will save save. Regardless of the outcome of their saving throw, affected creatures are then immune to Baleful Shriek for 1 hour. The revenant's murderer never improves their degree of success due to this ability's incapacitation trait.\n\nThe revenant can't use Baleful Shriek again for 1d4 rounds.\n\n---\n\nCritical Success The creature is unaffected.\n\nSuccess The creature is Frightened 2.\n\nFailure The creature is frightened 2 and Paralyzed for 1 round.\n\nCritical Failure The creature is Frightened 3 and paralyzed for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Constrict",
+      "actions": 1,
+      "category": "offensive",
+      "text": "2d6+5 bludgeoning, DC 24 basic Fortitude save\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Revenants are obsessed, undead stalkers who arise from their own murders and are driven by only one thing: revenge against their killers. The common wisdom is that revenants arise only from individuals who have been utterly betrayed or abandoned to die a grueling death, but even then, such victims might not rise from their graves. In other cases, revenants might even rise from what might legitimately be considered an accident if the revenant doesn't understand the full circumstances of their demise. In such cases, it doesn't matter that the \"murderer\" may not have intended to kill, for revenants understands no pity and can never forgive. Revenants have little memory of their lives other than anything they might need to recall in order to achieve their goal of vengeance."
+}

@@ -1,0 +1,198 @@
+{
+  "kind": "creature",
+  "slug": "aiuvarin-translator",
+  "system": "pf2e",
+  "name": "Aiuvarin Translator",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 0,
+  "traits": [
+    "aiuvarin",
+    "elf",
+    "human"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 14,
+    "hp": 12,
+    "perception": 5,
+    "saves": {
+      "fortitude": 2,
+      "reflex": 6,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 0,
+      "dex": 2,
+      "int": 3,
+      "str": 0,
+      "wis": 1
+    },
+    "skills": {
+      "arcana": 7,
+      "diplomacy": 8,
+      "occultism": 7,
+      "performance": 6,
+      "religion": 5,
+      "society": 7
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "common",
+      "elven"
+    ],
+    "notes": {
+      "languages": "two other common or uncommon languages"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Quill Pen (Functions as a Dart)",
+      "ref": "equipment:item/dart",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Staff",
+      "ref": "equipment:item/staff",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Writing Set",
+      "ref": "equipment:item/writing-set",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Book of Translations",
+      "ref": "equipment:item/basic-crafters-book",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Staff",
+      "attack": 4,
+      "traits": [
+        "two-hand-d8"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 6,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Quill Pen",
+      "attack": 6,
+      "traits": [
+        "agile",
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Linguistic Mastery",
+      "category": "interaction",
+      "text": "The translator gains a +5 circumstance bonus to skill checks involving translating or deciphering languages. If the translator rolls a critical failure on a check to Decipher Writing, they get a failure instead.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "skill-check",
+          "type": "circumstance",
+          "value": 5,
+          "when": [
+            {
+              "or": [
+                "action:decipher-language",
+                "action:translate"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "criticalFailure": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              "action:decipher-writing"
+            ],
+            "selector": "skill-check"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Translation Specialist",
+      "category": "interaction",
+      "text": "For encounters involving translating or deciphering languages, the translator is a 4th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Crosstalk",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "concentrate",
+        "linguistic",
+        "mental"
+      ],
+      "text": "Trigger A creature within 20 feet of the translator would be targeted by or in the area of an ability with the linguistic trait\n\n---\nEffect The translator attempts a Performance check check with a +5 circumstance bonus against the Will DC of the creature. On a success, the creature is unaffected by the linguistic effect, and the translator can choose to make the creature Confused until the end of the creature's next turn.",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "performance",
+          "type": "circumstance",
+          "value": 5,
+          "when": [
+            "crosstalk"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Many societies recognize aiuvarins' skills as adept translators.\n\n---\nElves' long lives give them centuries to delve into studies, artistry, or exploration."
+}

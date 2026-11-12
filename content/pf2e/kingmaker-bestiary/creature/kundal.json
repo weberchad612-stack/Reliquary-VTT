@@ -1,0 +1,289 @@
+{
+  "kind": "creature",
+  "slug": "kundal",
+  "system": "pf2e",
+  "name": "Kundal",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "chaotic",
+    "evil",
+    "human",
+    "humanoid",
+    "werecreature"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 140,
+    "perception": 15,
+    "saves": {
+      "fortitude": 16,
+      "reflex": 13,
+      "will": 17
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 17,
+      "nature": 11,
+      "stealth": 15,
+      "survival": 15
+    },
+    "speeds": {
+      "land": 35
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "hallit"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "silver",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "languages": "wolf empathy"
+    }
+  },
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Wolf Empathy",
+      "category": "interaction",
+      "traits": [
+        "primal"
+      ],
+      "text": "Kundal can communicate with lupines."
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Ambush Strike",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Requirement Kundal rolled Stealth for Initiative, and it's the first round of combat.\n\n---\n\nEffect Kundal Strides up to his speed and then attempts a jaws Strike and a claw Strike against a single adjacent target. Apply his multiple attack penalty to each Strike normally."
+    },
+    {
+      "kind": "ability",
+      "name": "Change Shape",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "polymorph",
+        "primal"
+      ],
+      "text": "Human with fist +16 for 1d4+7 bludgeoning, or wolf with Speed 40 feet and jaws with Knockdown.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ChangeShape.Label",
+            "option": "change-shape",
+            "selection": "hybrid",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Hybrid",
+                "value": "hybrid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Humanoid.Humanoid",
+                "value": "humanoid"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Animal",
+                "value": "animal"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 16,
+            "damage": {
+              "base": {
+                "damageType": "bludgeoning",
+                "dice": 1,
+                "die": "d4",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.Strike.Fist.Label",
+            "predicate": [
+              "change-shape:humanoid"
+            ],
+            "slug": "fist",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "land-speed",
+          "type": "untyped",
+          "value": 15,
+          "when": [
+            "change-shape:animal"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 17,
+            "damage": {
+              "base": {
+                "damageType": "slashing",
+                "dice": 2,
+                "die": "d8",
+                "modifier": 7
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Claw",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "claw",
+            "traits": [
+              "agile",
+              "unarmed"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "attackModifier": 17,
+            "damage": {
+              "base": {
+                "damageType": "piercing",
+                "dice": 2,
+                "die": "d12",
+                "modifier": 9
+              }
+            },
+            "key": "Strike",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "predicate": [
+              {
+                "not": "change-shape:humanoid"
+              }
+            ],
+            "slug": "jaws",
+            "traits": [
+              "unarmed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Curse of the Werewolf",
+      "category": "offensive",
+      "traits": [
+        "curse",
+        "primal"
+      ],
+      "text": "This curse affects only humanoids.\n\nSaving Throw DC 25 Fortitude save\n\n---\n\nOn each full moon, the cursed creature must succeed at another Fortitude save or turn into a werewolf until dawn.\n\nThe creature is under the GM's control and goes on a rampage for half the night before falling unconscious until dawn.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "jaws-damage",
+          "text": "{item|description}"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Moon Frenzy",
+      "category": "offensive",
+      "traits": [
+        "polymorph",
+        "primal"
+      ],
+      "text": "Kundal's moon frenzy functions a bit differently than for typical werecreatures: he doesn't become Large sized, but he does grow much more swift and powerful. His speed increases to 35 feet during moon frenzy and increases the damage of his jaws by +2. In addition, while in moon frenzy, at the start of his turn, Kundal gains an additional reaction that can be used only to make an Attack of Opportunity.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "moon-frenzy",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "jaws-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "moon-frenzy"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Rip and Drag",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirement Kundal damaged a target with his jaws Strike with a previous action this round.\n\n---\nEffect Kundal chews the bitten creature as he attempts to overwhelm them by attempting an Athletics check check against the bitten creature's Fortitude DC.\n\n---\nCritical Success Kundal inflicts 5d6 piercing damage on the target, exposes them to the curse of the werewolf, and can Stride up to half his speed. If his target is Medium or smaller, he drags the target with him into a new adjacent square.\n\nSuccess Kundal inflicts 5d6 piercing damage on the target and exposes them to the curse of the werewolf. He can reposition the target up to five feet into an adjacent square.\n\nFailure As success, except only 2d6 piercing damage.\n\nCritical Failure Kundal fails to inflict any damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "blurb": "Male human werewolf"
+}

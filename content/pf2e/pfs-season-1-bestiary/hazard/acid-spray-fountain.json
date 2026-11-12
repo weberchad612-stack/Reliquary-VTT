@@ -1,0 +1,86 @@
+{
+  "kind": "hazard",
+  "slug": "acid-spray-fountain",
+  "system": "pf2e",
+  "name": "Acid Spray Fountain",
+  "source": {
+    "title": "Pathfinder Society Scenario #1-00: Origin of the Open Road",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "mechanical",
+    "trap"
+  ],
+  "complex": true,
+  "stats": {
+    "ac": 24,
+    "hardness": 14,
+    "hp": 56,
+    "stealth": {
+      "value": 16,
+      "details": "(expert) to notice the concealed fountain"
+    },
+    "saves": {
+      "fortitude": 14,
+      "reflex": 13
+    },
+    "iwr": {
+      "immunities": [
+        "acid",
+        "critical-hits",
+        "precision"
+      ]
+    }
+  },
+  "disable": "DC 26 Thievery check (expert) on the fountain stops it from spraying acid, or DC 22 Thievery check (expert) disables one of the nozzles and reduces the number of actions the trap can take by 1. When the number of actions is reduced to 0, the fountain is disabled.",
+  "reset": "The trap deactivates after 1 minute, at which point its acid reservoir is empty. It can't reactivate until this reservoir is refilled.",
+  "routine": "(3 actions) On its initiative, the trap makes an acid spray Strike against a random creature in the room for each of its actions.",
+  "items": [
+    {
+      "kind": "ability",
+      "name": "Fountain Activation",
+      "actions": "reaction",
+      "text": "Trigger A creature steps on a pressure pad.\n\n---\n\nEffect The trap makes an acid spray Strike against a random creature in the room, although the initial damage is reduced by 8 as the acid eats through the concealing boxes. The trap then rolls initiative.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "fountain-activation",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "acid-spray-damage",
+          "type": "untyped",
+          "value": -8,
+          "when": [
+            "fountain-activation"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Acid Spray",
+      "attack": 14,
+      "maxRange": 50,
+      "damage": [
+        {
+          "dice": "2d10+8",
+          "type": "acid"
+        },
+        {
+          "dice": "2d4",
+          "type": "acid",
+          "category": "persistent"
+        }
+      ]
+    }
+  ],
+  "text": "A concealed acid fountain with three nozzles is connected to eight pressure pads in the room."
+}

@@ -1,0 +1,95 @@
+{
+  "kind": "feat",
+  "slug": "hand-of-the-lich",
+  "system": "pf2e",
+  "name": "Hand of the Lich",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Lich Dedication"
+  ],
+  "text": "Void energy intensifies your undead form and makes your very touch the antithesis of life. You gain the Advanced Undead Benefits The damage die for your fist increases to 1d6 instead of 1d4, it deals void damage instead of bludgeoning damage, and it loses the nonlethal trait. Your fist becomes magical.\n\nWhen you critically hit a living creature with your fist Strike, the creature is Slowed 1 until the end of your next turn unless it succeeds at a Fortitude save save against your spell DC. This is a critical specialization effect.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "fist": true,
+        "key": "Strike"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "xxxxxxFISTxxxxxx",
+        "key": "ItemAlteration",
+        "mode": "upgrade",
+        "property": "damage-dice-faces"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageDice",
+        "override": {
+          "damageType": "void"
+        },
+        "predicate": [
+          "item:category:unarmed",
+          "item:damage:die:faces:4"
+        ],
+        "selector": [
+          "fist-base-damage"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "remove",
+        "predicate": [
+          "item:base:fist"
+        ],
+        "property": "traits",
+        "value": "nonlethal"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "xxxxxxFISTxxxxxx",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "property": "traits",
+        "value": "magical"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "fist-damage",
+      "text": "PF2E.SpecificRule.Lich.HandOfTheLich.Note",
+      "outcome": [
+        "criticalSuccess"
+      ],
+      "when": [
+        "target:mode:living"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.ancestryfeatures.Item.Advanced Undead Benefits"
+      }
+    }
+  ]
+}

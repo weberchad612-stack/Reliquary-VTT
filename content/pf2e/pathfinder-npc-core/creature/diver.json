@@ -1,0 +1,207 @@
+{
+  "kind": "creature",
+  "slug": "diver",
+  "system": "pf2e",
+  "name": "Diver",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 50,
+    "perception": 9,
+    "saves": {
+      "fortitude": 9,
+      "reflex": 12,
+      "will": 6
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 3,
+      "int": 0,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 10,
+      "athletics": 10,
+      "nature": 9,
+      "thievery": 9,
+      "ocean-lore": 11
+    },
+    "speeds": {
+      "land": 25,
+      "swim": 30
+    },
+    "languages": [
+      "common",
+      "thalassic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Trident",
+      "ref": "equipment:item/trident",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 12,
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Trident",
+      "attack": 12,
+      "traits": [
+        "thrown-20"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+5",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Adjusted Eyes",
+      "category": "interaction",
+      "text": "Divers are used to the murky conditions underwater and train for them. If the diver spends 1 hour preparing for their dive, they have low-light vision while underwater.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "adjusted-eyes",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Sense",
+            "predicate": [
+              "adjusted-eyes"
+            ],
+            "selector": "low-light-vision"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Diving Specialist",
+      "category": "interaction",
+      "text": "For encounters involving underwater exploration, the diver is a 10th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Skilled Diver",
+      "category": "interaction",
+      "text": "The diver gains a +12 circumstance bonus to any skill check involved in underwater exploration activities and is considered a master in the skill for such checks. This bonus also applies to any initiative roll while the driver is underwater.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "skilled-diver",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "skill-check",
+            "initiative"
+          ],
+          "type": "circumstance",
+          "value": 12,
+          "when": [
+            "skilled-diver"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Strong Lungs",
+      "category": "interaction",
+      "text": "The diver can hold their breath for up to 5 minutes (50 rounds)."
+    },
+    {
+      "kind": "ability",
+      "name": "Underwater Fighter",
+      "category": "interaction",
+      "text": "The diver isn't Off-Guard underwater and doesn't take penalties for using a bludgeoning or slashing melee weapon in water."
+    },
+    {
+      "kind": "ability",
+      "name": "Underwater Awareness",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy Strikes the diver while they're underwater\n\n---\nEffect The diver senses the movement of their enemy in the water and jerks back in time. They gain a +2 circumstance bonus to their AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "underwater-awareness",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "underwater-awareness"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Dive",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The diver moves up to twice their swim Speed downward."
+    }
+  ],
+  "text": "Divers can often make large amounts of money by diving for treasures and selling them at a markup to tourists and antiquities dealers.\n\n---\nAdventurers may need passage on a swift vessel, or they might face danger from raiders at sea or in coastal settlements."
+}

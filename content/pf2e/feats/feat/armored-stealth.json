@@ -1,0 +1,57 @@
+{
+  "kind": "feat",
+  "slug": "armored-stealth",
+  "system": "pf2e",
+  "name": "Armored Stealth",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "general",
+    "skill"
+  ],
+  "category": "skill",
+  "prerequisites": [
+    "expert in Stealth"
+  ],
+  "text": "You have learned techniques to adjust and modify your armor and movements to reduce the noise you make.\n\nWhen you wear non-noisy armor with which you are trained, your penalty to Stealth checks is reduced by 1 (to a minimum penalty of 0). If you're a master in Stealth, reduce the penalty by 2, and if you're legendary, reduce the penalty by 3.\n\nIf your armor has the noisy trait, instead of reducing the penalty to Stealth checks, you ignore the effects of the noisy trait, enabling you to remove the penalty with a sufficient Strength score as normal.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "stealth",
+        "key": "RollOption",
+        "option": "armor:ignore-noisy-penalty"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "armor:trait:noisy"
+          }
+        ],
+        "selector": "stealth-check",
+        "slug": "armor-check-penalty",
+        "value": "max(@actor.system.skills.stealth.rank - 1, 0)"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "downgrade",
+        "selector": "stealth-check",
+        "slug": "armor-check-penalty",
+        "value": 0
+      }
+    }
+  ]
+}

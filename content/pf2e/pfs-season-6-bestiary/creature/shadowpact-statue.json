@@ -1,0 +1,223 @@
+{
+  "kind": "creature",
+  "slug": "shadowpact-statue",
+  "system": "pf2e",
+  "name": "Shadowpact Statue",
+  "source": {
+    "title": "Pathfinder Society Scenario #6-09: The Power of Legends",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "rare",
+  "traits": [
+    "construct",
+    "mindless"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 100,
+    "perception": 13,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 10,
+      "will": 9
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 6,
+      "dex": -1,
+      "int": -5,
+      "str": 6,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 17
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(22 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Stone Fist",
+      "attack": 19,
+      "traits": [
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "2d12+6",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Flaming Coal",
+      "attack": 12,
+      "traits": [
+        "fire",
+        "magical"
+      ],
+      "range": 80,
+      "damage": [
+        {
+          "dice": "2d6+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 10)",
+      "category": "defensive",
+      "text": "Like normal objects, a shadowpact statue has Hardness. This Hardness reduces any damage it takes by an amount equal to the Hardness. Once a shadowpact statue is reduced to less than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 22.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Brazier",
+      "category": "offensive",
+      "text": "The statue carries a wide brazier full of hot coals. To make flaming coal Strikes or use Burn Alive, the statue must have the brazier held in one hand or otherwise within reach. Instead of targeting the statue with an attack, a creature can target the brazier directly. The brazier has the same AC and saves as the statue. Dealing 15 cold damage to the brazier or dousing it with at least 2 gallons of water extinguishes the coals. This prevents the statue from using Burn Alive and causes its ranged attacks to no longer deal fire damage.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.LitItem",
+            "option": "lit-brazier",
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 2,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "lit-brazier"
+            ],
+            "selector": "flaming-coal-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "action",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              {
+                "not": "lit-brazier"
+              }
+            ],
+            "property": "description",
+            "value": [
+              {
+                "text": "PF2E.SpecificRule.Notes.RequirementsNotMet"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Burn Alive",
+      "actions": 1,
+      "category": "offensive",
+      "text": "The statue grinds a creature it has Grabbed or Restrained into the red-hot coals of its brazier. The target takes 3d8 fire,1d8 persistent,fire damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Mythic Ferocity",
+      "actions": "reaction",
+      "category": "offensive",
+      "text": "Frequency once per day\n\nRequirements The shadowpact statue is not Wounded 3\n\nTrigger The shadowpact statue is reduced to 0 HP\n\n---\nEffect The shadowpact statue avoids being knocked out and remains at half its maximum HP, but its wounded value increases by 1.",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      }
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Animated statues are often used to guard crypts, small shrines, or areas in government buildings where they can be positioned amid normal statues to hide their true nature until an intruder arouses their ire. Many less scrupulous adventurers, fueled by paranoia that statues will animate and attack, smash any statues they encounter, ruining harmless, ancient relics.\n\n---\n\nGranted a semblance of life through the use of rituals or other strange magic, animated objects take many forms and serve a variety of uses. A few examples of typical animated objects are listed below. Many of these creatures serve as guardians, surprising unsuspecting adventurers when they suddenly attack. Others serve as idle distractions for the exceptionally rich, simple servants created to handle odd jobs, and the like.",
+  "blurb": "Variant giant animated statue"
+}

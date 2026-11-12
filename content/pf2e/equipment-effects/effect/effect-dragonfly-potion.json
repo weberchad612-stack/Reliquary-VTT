@@ -1,0 +1,50 @@
+{
+  "kind": "effect",
+  "slug": "effect-dragonfly-potion",
+  "system": "pf2e",
+  "name": "Effect: Dragonfly Potion",
+  "source": {
+    "title": "Pathfinder Lost Omens The Grand Bazaar",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-end"
+  },
+  "text": "Granted by Dragonfly Potion\n\nYou gain a fly Speed equal to your land Speed, low-light vision and a +2 item bonus to visual Perception checks.\n\nYou can't be flanked except by creatures higher level than you are (though lower-level creatures can still help their higher-level allies flank).",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "perception",
+      "type": "item",
+      "value": 2,
+      "when": [
+        "visual"
+      ]
+    },
+    {
+      "key": "sense",
+      "type": "low-light-vision"
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "BaseSpeed",
+        "selector": "fly",
+        "value": "@actor.system.movement.speeds.land.value"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "override",
+        "path": "system.attributes.flanking.offGuardable",
+        "value": "@actor.level"
+      }
+    }
+  ]
+}

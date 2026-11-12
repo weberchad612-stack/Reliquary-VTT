@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "morlock-tinkerer",
+  "system": "pf2e",
+  "name": "Morlock Tinkerer",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 40,
+    "perception": 7,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 3,
+      "int": -2,
+      "str": 4,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 7,
+      "athletics": {
+        "value": 8,
+        "special": [
+          {
+            "value": 11,
+            "label": "Climbing",
+            "when": [
+              "action:climb"
+            ]
+          }
+        ]
+      },
+      "crafting": 8,
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 30,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "sakvroth"
+    ],
+    "notes": {
+      "saves": "+2 status to all saves vs. disease and poison"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Club",
+      "ref": "equipment:item/club",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 9,
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 9,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+4",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Club",
+      "attack": 8,
+      "traits": [
+        "thrown-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Light Blindness",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Status to All Saves vs. Disease and Poison",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "status",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "disease",
+                "poison"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Instinctual Tinker",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock tinkers with an adjacent construct or mechanical hazard. They attempt a Crafting check check against the construct's or hazard's Fortitude DC. The morlock can't succeed if the target's level is more than double the morlock's.\n\n---\nCritical Success The target gains 4d6 healing Hit Points and a +1 circumstance bonus to attack rolls for 1 minute.\n\nSuccess The target gains 2d6 healing Hit Points.\n\nCritical Failure The morlock injures itself, taking 2d6 damage (typically bludgeoning, piercing, or slashing, but potentially a different type at the GM's discretion).\n\nEffect: Instinctual Tinker (Critical Success)"
+    },
+    {
+      "kind": "ability",
+      "name": "Leap Attack",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The morlock Strides up to twice its Speed, during which it attempts a High Jump or a Long Jump. At any point during its movement, the morlock can make a melee Strike against an enemy in its reach.\n\nThe morlock then can't use Leap Attack for 1 round."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "A morlock's Strikes deal an extra 1d6 precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 1,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard"
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Stance",
+      "category": "offensive",
+      "text": "A morlock can share the same space as another morlock, but no more than two morlocks can occupy the same space. When morlocks share the same space, they gain a +1 circumstance bonus to attack rolls.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "swarming-stance",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "circumstance",
+          "value": 1,
+          "when": [
+            "swarming-stance"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Most morlocks have little talent for crafting, but many have an uncanny knack for tinkering. The sounds of machinery and moving parts tend to attract them. These morlocks particularly enjoy the ticking sounds of clockworks. Many tales from Darklands travelers describe morlocks who are able to take used or disabled mechanical traps and restore them, seemingly for the morlock's own satisfaction more than any desire to use the device.\n\n---\nMorlocks descended from humans who were lost among the dark, tangled tunnels of the upper reaches of the Darklands thousands of generations ago. Their eyes grew large and pale to absorb any speck of illumination. Their frames became wiry from an altered diet and their arms grew long, becoming perfect for the uncanny, four-limbed shuffle that lets them traverse the subterranean passages. However, their forms hide their strength and swiftness. Morlocks no longer remember the lives their ancestors led on the surface, although many of them dwell in shattered ruins that were swallowed by the earth. Some morlocks worship the statues of humans from these bygone eras as gods, but others now venerate Lamashtu, Rovagug, or other violent deities.\n\nMorlocks typically stands just over 5 feet tall and weigh roughly 150 pounds."
+}

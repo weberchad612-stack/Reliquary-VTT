@@ -1,0 +1,66 @@
+{
+  "kind": "feat",
+  "slug": "blade-of-law",
+  "system": "pf2e",
+  "name": "Blade of Law",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "actions": 2,
+  "prerequisites": [
+    "Hellknight Preferment"
+  ],
+  "text": "Requirements The target has attempted a hostile action against you since your previous turn.\n\n---\nYou call upon the power of law against a foe who would dare stand against you. Make a weapon or unarmed Strike against the target. This counts as two Strikes for your multiple attack penalty. The Strike deals one extra weapon damage die and 1d8 spirit damage. At 18th level, this spirit damage increases to 2d8.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.hellknightArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "domain": "damage",
+        "key": "RollOption",
+        "option": "blade-of-law",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "spirit",
+        "diceNumber": "ternary(gte(@actor.level,18),2,1)",
+        "dieSize": "d8",
+        "key": "DamageDice",
+        "predicate": [
+          "blade-of-law"
+        ],
+        "selector": "strike-damage"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "diceNumber": "1",
+        "key": "DamageDice",
+        "predicate": [
+          "blade-of-law"
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

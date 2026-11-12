@@ -1,0 +1,227 @@
+{
+  "kind": "creature",
+  "slug": "storied-harrowkin",
+  "system": "pf2e",
+  "name": "Storied Harrowkin",
+  "source": {
+    "title": "Pathfinder #192: Worst of All Possible Worlds",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 10,
+  "rarity": "uncommon",
+  "traits": [
+    "construct"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 30,
+    "hp": 180,
+    "perception": 17,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 14,
+      "will": 8
+    },
+    "attributes": {
+      "cha": 5,
+      "con": 5,
+      "dex": 4,
+      "int": 1,
+      "str": 6,
+      "wis": 1
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 22,
+      "intimidation": 21,
+      "occultism": 17
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common"
+    ],
+    "iwr": {
+      "immunities": [
+        "misfortune-effects"
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Battle Axe",
+      "ref": "equipment:item/battle-axe",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Sturdy Shield (Lesser)",
+      "ref": "equipment:item/sturdy-shield-lesser",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Harrow Deck (Simple)",
+      "ref": "equipment:item/harrow-deck-simple",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Battle Axe",
+      "attack": 23,
+      "traits": [
+        "magical",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+12",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Shield Bash",
+      "attack": 22,
+      "damage": [
+        {
+          "dice": "1d4+12",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Harrow Card",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "magical",
+        "thrown"
+      ],
+      "range": 20,
+      "damage": [
+        {
+          "dice": "2d4+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Harrowkin Suit",
+      "category": "interaction",
+      "text": "Any\n\n---\n\nNote: To select a suit add the following ability and follow the prompt (Harrowkin) Harrow Suit"
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Defensive Suit",
+      "category": "offensive",
+      "text": "When the harrowkin attempts a saving throw connected to its suit—that is, Fortitude (Hammers or Shields), Reflex (Keys or Books), or Will (Stars or Crowns)—if they roll a success, they get a critical success instead.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "harrow-suit:hammers",
+                  "harrow-suit:shields"
+                ]
+              }
+            ],
+            "selector": "fortitude"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "harrow-suit:keys",
+                  "harrow-suit:books"
+                ]
+              }
+            ],
+            "selector": "reflex"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "success": "one-degree-better"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "harrow-suit:stars",
+                  "harrow-suit:crowns"
+                ]
+              }
+            ],
+            "selector": "will"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Hit 'Em While They're Down",
+      "category": "offensive",
+      "text": "The harrowkin wildly attacks a Prone target. They deal an additional 2d6 points of damage with their melee Strikes against prone targets. This damage is equal to the damage type of the Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:prone"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "These harrowkin take on themes drawn from a specific harrow card.\n\n---\n\nWhen a harrow deck becomes infused with great magical power, it can produce a harrowkin.\n\nHarrowkin Agency\n\nHarrowkin lack free will, despite being sapient. All are neutral, even in the case of fabled harrowkin whose legacies force them into specific roles. They do not possess souls. When slain they revert back to the card from which they sprang.\n\nAncient Harrowkin\n\nSome harrowkin form from ancient decks, even originating from the days before Earthfall. These harrowkin are especially powerful as they've spent a long time—sometimes millennia—learning to control their own abilities and their magical influence over the power of fate. These harrowkin are known to keep weaker harrowkin as companions or servants, living secluded lives in their own courts of fate. Unlike other harrowkin, ancient harrowkin have souls, agency, free will, and can be of any alignment."
+}

@@ -1,0 +1,314 @@
+{
+  "kind": "creature",
+  "slug": "wild-hunt-hound",
+  "system": "pf2e",
+  "name": "Wild Hunt Hound",
+  "source": {
+    "title": "Pathfinder Kingmaker",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 14,
+  "rarity": "rare",
+  "traits": [
+    "chaotic",
+    "fey",
+    "wild-hunt"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 36,
+    "hp": 300,
+    "perception": 29,
+    "saves": {
+      "fortitude": 27,
+      "reflex": 24,
+      "will": 25
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 5,
+      "dex": 4,
+      "int": 1,
+      "str": 7,
+      "wis": 5
+    },
+    "skills": {
+      "acrobatics": 24,
+      "athletics": 29,
+      "stealth": 26,
+      "survival": {
+        "value": 27,
+        "special": [
+          {
+            "value": 29,
+            "label": "when Tracking",
+            "when": [
+              "action:track"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 50
+    },
+    "senses": [
+      {
+        "type": "greater-darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      },
+      {
+        "type": "see-invisibility"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "cold-iron",
+          "value": 15
+        }
+      ]
+    },
+    "notes": {
+      "perception": "greensight",
+      "languages": "speak with animals; speak with plants"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 34,
+      "attack": 26,
+      "spells": [
+        {
+          "name": "Stone Tell",
+          "rank": 6,
+          "ref": "spells:spell/speak-with-stones"
+        },
+        {
+          "name": "Speak with Plants (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/speak-with-plants"
+        },
+        {
+          "name": "Locate",
+          "rank": 5,
+          "ref": "spells:spell/locate",
+          "uses": 3
+        },
+        {
+          "name": "Dispel Magic",
+          "rank": 7,
+          "ref": "spells:spell/dispel-magic"
+        },
+        {
+          "name": "See Invisibility (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/see-the-unseen"
+        },
+        {
+          "name": "Speak with Animals (Constant)",
+          "rank": 7,
+          "ref": "spells:spell/speak-with-animals"
+        },
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Know Direction",
+          "rank": 1,
+          "ref": "spells:spell/know-the-way"
+        },
+        {
+          "name": "Mage Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 29,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "3d10+11",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "knockdown"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Greensight",
+      "category": "interaction",
+      "text": "The wild hunt hound ignores the Concealed condition from leaves and other foliage."
+    },
+    {
+      "kind": "ability",
+      "name": "Planar Acclimation",
+      "category": "interaction",
+      "text": "The wild hunt hound treats the plane it is located on as its home plane."
+    },
+    {
+      "kind": "ability",
+      "name": "Wild Hunt Link",
+      "category": "interaction",
+      "traits": [
+        "aura",
+        "magical"
+      ],
+      "text": "500 feet. A wild hunt hound grants all other members of the wild hunt in the aura except wild hunt hounds the effects of its constant See the Unseen innate spell."
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Instinctive Cooperation",
+      "category": "defensive",
+      "text": "The wild hunt hound automatically achieves a critical success on saving throws against effects created by other allied wild hunt creatures.",
+      "rules": [
+        {
+          "key": "note",
+          "selector": "saving-throw",
+          "text": "{item|system.description.value}",
+          "outcome": [
+            "criticalFailure",
+            "failure",
+            "success"
+          ],
+          "when": [
+            "wild-hunt"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Wild Gaze",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "fear",
+        "incapacitation",
+        "mental",
+        "primal",
+        "visual"
+      ],
+      "text": "30 feet. Those who meet the gaze of a wild hunt hound come face-to-face with the hunt's fearful power and find it difficult to act in the face of such a legendary legacy. When a creature ends its turn in the aura, it must succeed at a DC 31 Will save save to resist becoming Slowed 1 (Slowed 2 on a critical failure). The wild hunt hound can deactivate or activate this aura by using a single action, which has the concentrate trait.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "wild-gaze-active"
+            ],
+            "radius": 30,
+            "slug": "wild-gaze",
+            "traits": [
+              "fear",
+              "incapacitation",
+              "mental",
+              "primal",
+              "visual"
+            ]
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "wild-gaze-active",
+            "toggleable": true,
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Focus Gaze",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate",
+        "fear",
+        "incapacitation",
+        "mental",
+        "primal",
+        "visual"
+      ],
+      "text": "The wild hunt hound fixes its glare at a creature it can see within 30 feet. The target must immediately attempt a Will save against the wild hunt hound's wild gaze. If the creature was already slowed by the wild gaze before attempting its save, a failed save causes it to be Paralyzed for 1 round. After attempting its save, the creature is temporarily immune to Focus Gaze from any wild hunt until the start of the wild hunt hound's next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Summon Pack",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "aura",
+        "primal"
+      ],
+      "text": "Frequency once per day\n\nEffect With a howl, the wild hunt hound summons a fog that manifests into several misty hounds. These foggy hounds shift and race and howl in a 20-foot aura as long as the wild hunt hound Sustains the effect. While the hounds seem to be made of fog, their teeth are very real, and any creature that ends its turn in this aura takes 6d6 piercing damage from numerous bites (DC 31 basic Reflex save).",
+      "frequency": {
+        "max": 1,
+        "per": "day"
+      },
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "summon-pack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "Aura",
+            "predicate": [
+              "summon-pack"
+            ],
+            "radius": 20,
+            "traits": [
+              "primal"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Knockdown",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ],
+  "text": "Wild hunt hounds are intelligent hunters and expert trackers that take the lead against elusive prey. Left to their own devices, they seek out creatures that are notoriously difficult to track. They are always surrounded with green mist composed of fragments of the spirits of the wild hunt's victims, a mystic fog that forms itself into a spectral pack to fight at its side.\n\n---\n\nAlthough some believe the wild hunt is nothing more than legend, the riders of the wild hunt are real. Countless members of these fey compose the wild hunt-the term \"wild hunt\" refers to the family of creatures as a whole as well as to individual groups of these fey who gather to pursue their quarry.\n\nWild hunt monarchs set the terms of each specific hunt, depending upon the prey and their own whims. The easier the prey, the more likely a monarch is to impose rules to make the hunt more entertaining, such as forbidding anyone but their hounds from injuring the quarry, or holding back their forces to give the target creature time to rest and recover.\n\nWhile most missions come from rumors gathered by a wild hunt monarch, monarchs occasionally consider proposals from the few who are brave and knowledgeable enough to seek them out. They accept tasks only from sources they deem worthy, and the payments they demand for their services vary significantly, though they have no interest in material wealth. Wild hunt monarchs take grave offense at unfavorable deals. Those who attempt to cheat a monarch often become the enraged fey's next target."
+}

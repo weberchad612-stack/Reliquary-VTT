@@ -1,0 +1,85 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-force-fling",
+  "system": "pf2e",
+  "name": "Spell Effect: Force Fling",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Force Fling\n\nAny physical damage your weapon would deal for the Strike is force damage instead.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DamageAlteration",
+        "mode": "override",
+        "predicate": [
+          {
+            "not": "item:trait:unarmed"
+          },
+          "item:melee",
+          "item:damage:category:physical"
+        ],
+        "property": "damage-type",
+        "selectors": [
+          "strike-damage"
+        ],
+        "value": "force"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.SpellEffectForceFling.RollOptionLabel",
+        "option": "new-target",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "MultipleAttackPenalty",
+        "predicate": [
+          {
+            "not": "item:trait:unarmed"
+          },
+          "agile",
+          "item:melee",
+          "item:damage:category:physical",
+          "new-target"
+        ],
+        "selector": "attack",
+        "value": -3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "MultipleAttackPenalty",
+        "predicate": [
+          {
+            "nor": [
+              "item:trait:unarmed",
+              "agile"
+            ]
+          },
+          "item:melee",
+          "item:damage:category:physical",
+          "new-target"
+        ],
+        "selector": "attack",
+        "value": -4
+      }
+    }
+  ]
+}

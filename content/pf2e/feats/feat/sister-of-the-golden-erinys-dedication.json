@@ -1,0 +1,119 @@
+{
+  "kind": "feat",
+  "slug": "sister-of-the-golden-erinys-dedication",
+  "system": "pf2e",
+  "name": "Sister of the Golden Erinys Dedication",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "rarity": "uncommon",
+  "traits": [
+    "archetype",
+    "dedication"
+  ],
+  "category": "class",
+  "text": "Access You're from Isger or a member of the Sisterhood of the Golden Erinys.\n\n---\nThe fighting style of the Sisterhood of the Golden Erinys is rooted in their understanding of devils. You gain the Additional Lore general feat for Devil Lore. When you choose this feat, you can choose to become sanctified as unholy.\n\nYou gain access to the asp coil. You have familiarity with the Asp Coil and Scourge, treating them as simple weapons for the purposes of proficiency. If you're unholy, your Strikes using those weapons and your unarmed Strikes gain the unholy trait.\n\n---\nSpecial If you have the Monastic Weaponry feat, the asp coil gains the monk trait for you.\n\nSister of the Golden Erinys",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "uuid": "Compendium.pf2e.feats-srd.Item.Additional Lore"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.TraitUnholy",
+            "value": "unholy"
+          },
+          {
+            "label": "PF2E.NoneOption",
+            "value": "none"
+          }
+        ],
+        "key": "ChoiceSet",
+        "predicate": [
+          {
+            "nor": [
+              "sanctification:none",
+              "sanctification:holy",
+              "sanctification:unholy"
+            ]
+          }
+        ],
+        "prompt": "PF2E.SpecificRule.Prompt.Sanctification",
+        "rollOption": "sanctification",
+        "slug": "sanctification"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "unholy"
+        ],
+        "key": "ActorTraits",
+        "predicate": [
+          "sanctification:unholy"
+        ]
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:slug:asp-coil",
+              "item:slug:scourge"
+            ]
+          }
+        ],
+        "key": "MartialProficiency",
+        "label": "Golden Erinys Weapon Proficiency",
+        "sameAs": "simple",
+        "slug": "golden-erinys-weapons"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "weapon",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:slug:asp-coil",
+          "feat:monastic-weaponry"
+        ],
+        "property": "traits",
+        "value": "monk"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          {
+            "or": [
+              "item:slug:asp-coil",
+              "item:slug:scourge",
+              "item:trait:unarmed"
+            ]
+          }
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "property": "weapon-traits",
+        "value": "unholy"
+      }
+    }
+  ]
+}

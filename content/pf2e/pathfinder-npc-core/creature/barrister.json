@@ -1,0 +1,148 @@
+{
+  "kind": "creature",
+  "slug": "barrister",
+  "system": "pf2e",
+  "name": "Barrister",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": -1,
+  "traits": [
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 13,
+    "hp": 8,
+    "perception": 6,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 3,
+      "will": 12
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 1,
+      "dex": 1,
+      "int": 3,
+      "str": 0,
+      "wis": 2
+    },
+    "skills": {
+      "deception": 10,
+      "diplomacy": 12,
+      "performance": 10,
+      "society": 9,
+      "legal-lore": 13
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Court Garb (Functions as Fine Clothing)",
+      "ref": "equipment:item/clothing-fine",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Law Book (Functions as Scholarly Journal)",
+      "ref": "equipment:item/scholarly-journal",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Writing Set",
+      "ref": "equipment:item/writing-set",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 4,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Legal Specialist",
+      "category": "interaction",
+      "text": "In a court case or other legal proceeding, the barrister is a 4th-level challenge."
+    },
+    {
+      "kind": "ability",
+      "name": "Sway the Judge and Jury",
+      "category": "interaction",
+      "text": "A barrister gains a +2 circumstance bonus to Diplomacy checks to make-an-impression or request something of the deciding members within a courtroom.\n\nIf the barrister successfully Performs against a DC of 20 during the 20 minutes prior to the check, they increase the circumstance bonus to +4.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "sway-judge-and-jury",
+            "suboptions": [
+              {
+                "label": "PF2E.SpecificRule.BonusLabel.PlusTwo",
+                "value": "2"
+              },
+              {
+                "label": "PF2E.SpecificRule.BonusLabel.PlusFour",
+                "value": "4"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              "sway-judge-and-jury",
+              {
+                "or": [
+                  "action:make-an-impression",
+                  "action:request"
+                ]
+              }
+            ],
+            "selector": "diplomacy",
+            "type": "circumstance",
+            "value": "{item|flags.system.rulesSelections.swayJudgeAndJury}"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Cite Precedent",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "auditory",
+        "linguistic"
+      ],
+      "text": "The barrister uses existing case law to undermine their opposition. If they succeed at a Legal Lore check, they impose a -2 circumstance penalty on the next Diplomacy check an opponent attempts in a legal argument.\n\nAny further attempts to Cite Precedent fail until a new topic with different precedents is being argued.\n\nEffect: Cite Precedent"
+    }
+  ],
+  "text": "Barristers may serve as criminal prosecutors or legal advocates, defending the rights of those accused of crimes or named as defendants in civil cases.\n\n---\nLarger societies rely on those with the authority and the ability to interpret and enforce laws. Some carry out these duties fairly, but others are harsh and cruel, imposing severe punishments on anyone unable to pay for clemency."
+}

@@ -1,0 +1,289 @@
+{
+  "kind": "creature",
+  "slug": "warden-of-caverns-and-burrows",
+  "system": "pf2e",
+  "name": "Warden of Caverns and Burrows",
+  "source": {
+    "title": "Pathfinder Howl of the Wild",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 22,
+  "rarity": "unique",
+  "traits": [
+    "beast",
+    "earth"
+  ],
+  "size": "gargantuan",
+  "stats": {
+    "ac": 45,
+    "hp": 500,
+    "perception": 36,
+    "saves": {
+      "fortitude": 39,
+      "reflex": 36,
+      "will": 33
+    },
+    "attributes": {
+      "cha": 9,
+      "con": 10,
+      "dex": 8,
+      "int": 6,
+      "str": 12,
+      "wis": 8
+    },
+    "skills": {
+      "athletics": {
+        "value": 42,
+        "special": [
+          {
+            "value": 45,
+            "label": "to High Jump or Long Jump",
+            "when": [
+              {
+                "or": [
+                  "action:long-jump",
+                  "action:high-jump"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "intimidation": 37,
+      "stealth": 37,
+      "subterranean-lore": 35
+    },
+    "speeds": {
+      "land": 40,
+      "burrow": 40
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "tremorsense",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "iwr": {
+      "immunities": [
+        "fire"
+      ],
+      "weaknesses": [
+        {
+          "type": "cold",
+          "value": 20
+        }
+      ],
+      "resistances": [
+        {
+          "type": "physical",
+          "value": 10,
+          "except": "adamantine"
+        },
+        {
+          "type": "sonic",
+          "value": 20
+        }
+      ]
+    },
+    "notes": {
+      "saves": "+1 to all saves vs. primal",
+      "languages": "voice of nature"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Horned Crown",
+      "attack": 41,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "4d12+22",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Mandible",
+      "attack": 41,
+      "traits": [
+        "agile",
+        "magical",
+        "reach-15"
+      ],
+      "damage": [
+        {
+          "dice": "4d10+22",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "improved-grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Chirp",
+      "attack": 33,
+      "traits": [
+        "magical"
+      ],
+      "maxRange": 60,
+      "damage": [
+        {
+          "dice": "4d10+18",
+          "type": "sonic"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Magma Jet",
+      "attack": 33,
+      "traits": [
+        "magical"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "4d8+13",
+          "type": "fire"
+        },
+        {
+          "dice": "2d6",
+          "type": "fire",
+          "category": "persistent"
+        }
+      ],
+      "effects": [
+        "obsidian-cage"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Tremorsense (Imprecise) 60 feet",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Darkvision",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Voice of Nature",
+      "category": "interaction",
+      "text": "Though the Wardens of the Wild do not speak in words, they can communicate complex concepts flawlessly and wordlessly with any animal, beast, plant, or other creature of the natural world through prolonged eye contact. Sapient creatures with strong ties to the natural world, such as animal instinct barbarians or druids who speak the Wildsong, can somewhat understand a Warden of the Wild, though the meaning can be vague."
+    },
+    {
+      "kind": "ability",
+      "name": "Warden's Crown",
+      "category": "interaction",
+      "text": "A Warden of the Wild's horned crown commands respect from wild creatures. Wild creatures native to a warden's biome automatically improve their attitude toward it by one step (up to friendly) and typically do not take hostile actions towards each other while in the warden's presence."
+    },
+    {
+      "kind": "ability",
+      "name": "+1 To All Saves vs. Primal",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "untyped",
+          "value": 1,
+          "when": [
+            "item:trait:primal"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Magmatic Reflex",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger The warden is targeted with an attack\n\n---\n\nEffect The warden issues a spray of magma as they jump away from danger. This spray deals 6d12 fire damage to all adjacent creatures (DC 42 basic Reflex save save). They then Leap or Step away, gaining a +2 circumstance bonus to their AC against the triggering attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "option": "magmatic-reflex",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "magmatic-reflex"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bury Beneath Stone",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "primal"
+      ],
+      "text": "Requirements The warden has a creature Grabbed\n\n---\nEffect The warden attempts to wedge a creature they have grabbed in their mandibles within a crack in the earth that opens beneath them. The warden attempts an Athletics check check against the grabbed creature's Reflex DC. If they succeed, they bury the creature in the ground. The creature takes 10d10 bludgeoning damage. It is also Restrained, Slowed 1, and has to hold its breath or start suffocating until it Escapes. If the creature is still buried at the end of its turn, it takes 5d10 bludgeoning damage."
+    },
+    {
+      "kind": "ability",
+      "name": "Called to Depths",
+      "category": "offensive",
+      "text": "The depths call to the warden, especially as they move through the air. When they Long Jump, they can use any unused movement from the Long Jump to Burrow. Additionally, the warden can Burrow through any earthen matter, including rock. When they do so, they move at their full burrow Speed."
+    },
+    {
+      "kind": "ability",
+      "name": "Erupting Jump",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "The warden draws out a stream of lava, then jumps off the solidifying mass as it cools. The warden Leaps up to twice their Speed. When they land, the force of the impact deals 6d12 bludgeoning damage to all creatures within a 15-foot emanation with a DC 42 basic Fortitude save save. On a critical failure, the creature is also pushed 10 feet away from the warden."
+    },
+    {
+      "kind": "ability",
+      "name": "Obsidian Cage",
+      "category": "offensive",
+      "text": "Rapidly cooling obsidian clings to the target's body and stiffens around their limbs. The target must attempt a DC 42 Reflex save save. On a failure, the target is Immobilized until they escape dc=42. On a critical failure, the target is Off-Guard for as long as they remain immobilized."
+    },
+    {
+      "kind": "ability",
+      "name": "Vibratory Excavation",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "manipulate",
+        "primal"
+      ],
+      "text": "The warden screeches with a resonant call that tears apart earth and stone. They create a 10-foot-square, 50-foot-deep pit in earthen material or stone within 60 feet."
+    },
+    {
+      "kind": "ability",
+      "name": "Wall Cling",
+      "category": "offensive",
+      "text": "The Warden of Caverns and Burrows clings to surfaces with their segmented feet. They do not need to use a hand to hold on to walls or ceilings."
+    }
+  ],
+  "text": "The Connected Depths\n\nAs much as air currents flow through the skies, and the oceans connect the waters of world, the caverns and depths connect to each other as well, via several means. Underground flows of lava create tunnels and passages. Water's erosion also forms cave systems out of the stone."
+}

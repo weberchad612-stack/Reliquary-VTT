@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "topiary-beast",
+  "system": "pf2e",
+  "name": "Topiary Beast",
+  "source": {
+    "title": "Pathfinder Society Scenario #5-12: Mischief in the Maze",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "plant"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 16,
+    "hp": 20,
+    "perception": 7,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 7,
+      "will": 4
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 4,
+      "dex": 3,
+      "int": -4,
+      "str": 3,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 7,
+      "intimidation": 7,
+      "stealth": {
+        "value": 6,
+        "special": [
+          {
+            "value": 8,
+            "label": "in forests",
+            "when": [
+              "terrain:forest"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 2
+        }
+      ],
+      "resistances": [
+        {
+          "type": "piercing",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Branch",
+      "attack": 9,
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Cobra Form Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Ferocity (Boar Form Only)",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Functional Form",
+      "category": "offensive",
+      "text": "Depending on the creature it resembles, the topiary beast gains additional abilities.\n\nApe The branch Strike is agile, has reach 10 feet, and deals bludgeoning damage instead of piercing damage.\n\nBoar The topiary beast gains the Ferocity reaction.\n\nCobra The beast gains the Attack of Opportunity reaction.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "alwaysActive": true,
+            "key": "RollOption",
+            "option": "functional-form",
+            "selection": "ape",
+            "suboptions": [
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Ape",
+                "value": "ape"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Boar",
+                "value": "boar"
+              },
+              {
+                "label": "PF2E.NPCAbility.ChangeShape.Form.Animal.Specific.Cobra",
+                "value": "cobra"
+              }
+            ],
+            "toggleable": true,
+            "value": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "functional-form:ape"
+            ],
+            "property": "traits",
+            "value": "agile"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "functional-form:ape"
+            ],
+            "property": "traits",
+            "value": "reach-10"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "DamageDice",
+            "override": {
+              "damageType": "bludgeoning"
+            },
+            "predicate": [
+              "functional-form:ape"
+            ],
+            "selector": "branch-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Intimidating Display",
+      "category": "offensive",
+      "text": "When using Intimidation to Demoralize a target, a topiary beast doesn't take a penalty for not speaking the same language as the target."
+    }
+  ]
+}

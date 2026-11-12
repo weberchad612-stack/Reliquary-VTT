@@ -1,0 +1,60 @@
+{
+  "kind": "effect",
+  "slug": "effect-raise-symbol",
+  "system": "pf2e",
+  "name": "Effect: Raise Symbol",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Raise Symbol\n\nYou gain a +2 circumstance bonus to saving throws until the start of your next turn. While it's raised, if you roll a success at a saving throw against a vitality or void effect, you get a critical success instead.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustment": {
+          "success": "one-degree-better"
+        },
+        "key": "AdjustDegreeOfSuccess",
+        "predicate": [
+          {
+            "or": [
+              "vitality",
+              "void"
+            ]
+          }
+        ],
+        "selector": "saving-throw"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "or": [
+              "emblazon-armament:item:shield",
+              "shield-religious-symbol"
+            ]
+          }
+        ],
+        "uuid": "Compendium.pf2e.equipment-effects.Item.Effect: Raise a Shield"
+      }
+    }
+  ]
+}

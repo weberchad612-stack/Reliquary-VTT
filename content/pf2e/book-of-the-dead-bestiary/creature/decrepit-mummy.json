@@ -1,0 +1,148 @@
+{
+  "kind": "creature",
+  "slug": "decrepit-mummy",
+  "system": "pf2e",
+  "name": "Decrepit Mummy",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 2,
+  "traits": [
+    "evil",
+    "lawful",
+    "mummy",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 17,
+    "hp": 40,
+    "perception": 10,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 7,
+      "will": 10
+    },
+    "attributes": {
+      "cha": 2,
+      "con": -2,
+      "dex": 1,
+      "int": -2,
+      "str": 3,
+      "wis": 4
+    },
+    "skills": {
+      "athletics": 7,
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "fire",
+          "value": 5
+        }
+      ]
+    },
+    "notes": {
+      "ac": "(15 when crumbling)",
+      "hp": "void healing",
+      "languages": "any one language they knew in life"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+3",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "lesser-mummy-rot"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Crumbling Form",
+      "category": "defensive",
+      "text": "A decrepit mummy is barely cohesive. Once a decrepit mummy is reduced to fewer than half their Hit Points, or immediately upon being damaged by a critical hit, they start falling apart, reducing their Armor Class to 15.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "ac",
+            "key": "RollOption",
+            "label": "Form is Crumbling",
+            "option": "crumbling-form",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "ac",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "crumbling-form"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Lesser Mummy Rot",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "divine",
+        "void"
+      ],
+      "text": "The damage from this disease can't be healed while a creature still has the disease. A creature killed by lesser mummy rot turns to dust and can't be resurrected except by a 7th-rank Resurrect ritual or similar magic\n\nSaving Throw DC 16 Fortitude save\n\n---\n\nStage 1 carrier with no ill effect (1 minute)\n\nStage 2 2d6 void damage and Stupefied 1 (1 day)"
+    }
+  ],
+  "text": "If a mummy has been in combat, endured the ravages of time, or been exposed to the elements, it can be so damaged it barely functions. These mummies continue guarding their tombs until they are too broken to even move.\n\n---\n\nThe versatility of mummification allows the creation of mummies through a wide range of methods—nature, ritual, alchemy, and combinations of all these."
+}

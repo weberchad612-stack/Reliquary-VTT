@@ -1,0 +1,234 @@
+{
+  "kind": "creature",
+  "slug": "delamar-gianvin",
+  "system": "pf2e",
+  "name": "Delamar Gianvin",
+  "source": {
+    "title": "Pathfinder #152: Legacy of the Lost God",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "rarity": "unique",
+  "traits": [
+    "chaotic",
+    "human",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 24,
+    "hp": 90,
+    "perception": 14,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 17,
+      "will": 14
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 5,
+      "int": 2,
+      "str": 1,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 15,
+      "deception": 14,
+      "diplomacy": 14,
+      "society": 12,
+      "stealth": 17,
+      "thievery": 15,
+      "circus-lore": 10,
+      "criminal-lore": 10
+    },
+    "speeds": {
+      "land": 30
+    },
+    "languages": [
+      "common",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Hand Crossbow",
+      "ref": "equipment:item/hand-crossbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Rapier",
+      "ref": "equipment:item/rapier",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Leather Armor",
+      "ref": "equipment:item/leather-armor",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Bolts",
+      "ref": "equipment:item/bolts",
+      "type": "ammo",
+      "quantity": 10
+    },
+    {
+      "kind": "strike",
+      "name": "Rapier",
+      "attack": 17,
+      "traits": [
+        "deadly-d8",
+        "disarm",
+        "finesse",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hand Crossbow",
+      "attack": 16,
+      "traits": [
+        "reload-1"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Deny Advantage",
+      "category": "defensive",
+      "text": "Delamar isn't Off-Guard to creatures of 6th level or lower that are Hidden, Undetected, flanking, or using Surprise Attack.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.flanking.offGuardable",
+            "value": 6
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Nimble Opportunist",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within Delamar's melee reach is hit by a melee attack from one of his allies\n\n---\n\nEffect Delamar makes a Strike against the triggering creature with a -2 penalty to the attack roll. He can't deal sneak attack damage on this Strike. After this Strike, Delamar can Stride without triggering reactions.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "attack-roll",
+            "key": "RollOption",
+            "option": "nimble-opportunist",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-roll",
+          "type": "untyped",
+          "value": -2,
+          "when": [
+            "nimble-opportunist"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Surprise Attack",
+      "category": "defensive",
+      "text": "On the first round of combat, if Delamar rolled Deception or Stealth for initiative, creatures that haven't acted are Off-Guard to him.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "EphemeralEffect",
+            "predicate": [
+              "encounter:round:1",
+              {
+                "lt": [
+                  "self:participant:initiative:rank",
+                  "target:participant:initiative:rank"
+                ]
+              },
+              {
+                "or": [
+                  "self:participant:initiative:stat:deception",
+                  "self:participant:initiative:stat:stealth"
+                ]
+              }
+            ],
+            "selectors": [
+              "strike-attack-roll",
+              "spell-attack-roll",
+              "strike-damage",
+              "attack-spell-damage"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Quick Draw",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Delamar draws a weapon with an Interact action, then Strikes with the weapon he just drew."
+    },
+    {
+      "kind": "ability",
+      "name": "Sneak Attack",
+      "category": "offensive",
+      "text": "Delamar deals an extra 2d6 precision damage precision damage to Off-Guard creatures.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "target:condition:off-guard",
+              {
+                "not": "nimble-opportunist"
+              }
+            ],
+            "selector": "strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.SpecificRule.TOTMToggle.OffGuard",
+            "option": "target:condition:off-guard",
+            "toggleable": "totm"
+          }
+        }
+      ]
+    }
+  ],
+  "blurb": "Male human agitator"
+}

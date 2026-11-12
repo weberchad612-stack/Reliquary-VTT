@@ -1,0 +1,64 @@
+{
+  "kind": "feat",
+  "slug": "hellknight-mobility",
+  "system": "pf2e",
+  "name": "Hellknight Mobility",
+  "source": {
+    "title": "Pathfinder Lost Omens Hellfire Dispatches",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 8,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Hellknight Dedication",
+    "expert in Hellknight half plate or Hellknight plate"
+  ],
+  "text": "You've learned how best to move in your heavy armor. When wearing heavy armor, if you meet the Strength requirement, instead of reducing the movement penalty by 5 feet, you reduce the penalty by 10 feet (typically reducing the penalty to 0). If you're a dwarf with the Unburdened Iron feat, increase your Speed by 5 feet.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "ActiveEffectLike",
+        "mode": "add",
+        "path": "flags.system.hellknightArchetype.featCount",
+        "value": 1
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "predicate": [
+          "armor:category:heavy",
+          {
+            "gte": [
+              "attribute:str:mod",
+              "armor:strength"
+            ]
+          }
+        ],
+        "selector": "land-speed",
+        "slug": "armor-speed-penalty",
+        "value": 5
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "land-speed",
+      "type": "untyped",
+      "value": 5,
+      "slug": "hellknight-mobility",
+      "when": [
+        "armor:category:heavy",
+        "feat:unburdened-iron",
+        "self:ancestry:dwarf"
+      ]
+    }
+  ]
+}

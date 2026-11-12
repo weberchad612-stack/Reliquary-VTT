@@ -1,0 +1,54 @@
+{
+  "kind": "effect",
+  "slug": "effect-sheltering-wing",
+  "system": "pf2e",
+  "name": "Effect: Sheltering Wing",
+  "source": {
+    "title": "Pathfinder Lost Omens Draconic Codex",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Sheltering Wing\n\nYou gain a +1 circumstance bonus to AC and to saving throws against spells. If you have Dragon's Flight, this bonus increases to +2.",
+  "rules": [
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "sheltering-wing-ac"
+    },
+    {
+      "key": "modifier",
+      "selector": "saving-throw",
+      "type": "circumstance",
+      "value": 1,
+      "slug": "sheltering-wing-saves",
+      "when": [
+        "item:type:spell"
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "upgrade",
+        "predicate": [
+          "feat:dragons-flight",
+          "bonus:tag:sheltering-wing"
+        ],
+        "selectors": [
+          "ac",
+          "saving-throw"
+        ],
+        "value": 2
+      }
+    }
+  ]
+}

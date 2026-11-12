@@ -1,0 +1,190 @@
+{
+  "kind": "creature",
+  "slug": "demonbane-warrior",
+  "system": "pf2e",
+  "name": "Demonbane Warrior",
+  "source": {
+    "title": "Pathfinder NPC Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 5,
+  "traits": [
+    "elf",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 22,
+    "hp": 76,
+    "perception": 13,
+    "saves": {
+      "fortitude": 11,
+      "reflex": 13,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 0,
+      "con": 2,
+      "dex": 4,
+      "int": 1,
+      "str": 3,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "religion": 11,
+      "stealth": 10,
+      "survival": 11,
+      "demon-lore": 12
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "low-light-vision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "elven"
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Elven Branched Spear",
+      "ref": "equipment:item/elven-branched-spear",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Shirt",
+      "ref": "equipment:item/chain-shirt",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Cold Iron Elven Branched Spear",
+      "attack": 15,
+      "traits": [
+        "deadly-d8",
+        "finesse",
+        "reach"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+9",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 15,
+      "traits": [
+        "agile",
+        "finesse",
+        "nonlethal",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 15,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+7",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Sin Sense",
+      "category": "interaction",
+      "text": "A demonbane warrior automatically learns all weaknesses of a demon they've identified by Recalling Knowledge."
+    },
+    {
+      "kind": "ability",
+      "name": "Demonbane",
+      "category": "offensive",
+      "text": "A demonbane warrior gains a +1 circumstance bonus to damage rolls against demons. If their actions force a demon to take damage from its sin vulnerability, increase the damage from the vulnerability by 2.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "demonbane-sin-vulnerability",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "attack-damage",
+          "type": "circumstance",
+          "value": 1,
+          "slug": "demonbane-bonus",
+          "when": [
+            "target:trait:demon"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustModifier",
+            "mode": "upgrade",
+            "predicate": [
+              "demonbane-sin-vulnerability"
+            ],
+            "selector": "attack-damage",
+            "slug": "demonbane-bonus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Imbue Righteousness",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "holy"
+      ],
+      "text": "The warrior imbues a weapon they wield with holy energy. Until the start of their next turn, their Strikes with that weapon gain the holy trait and deal an additional 1d6 spirit damage to unholy creatures."
+    }
+  ],
+  "text": "Elves' long lives give them centuries to delve into studies, artistry, or exploration."
+}

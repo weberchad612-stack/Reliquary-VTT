@@ -1,0 +1,179 @@
+{
+  "kind": "creature",
+  "slug": "shadow-guardian",
+  "system": "pf2e",
+  "name": "Shadow Guardian",
+  "source": {
+    "title": "Pathfinder Society Scenario #3-06: Struck by Shadows",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "rarity": "uncommon",
+  "traits": [
+    "construct",
+    "evil",
+    "mindless",
+    "shadow"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 21,
+    "hp": 46,
+    "perception": 11,
+    "saves": {
+      "fortitude": 14,
+      "reflex": 8,
+      "will": 8
+    },
+    "attributes": {
+      "cha": -5,
+      "con": 5,
+      "dex": 0,
+      "int": -5,
+      "str": 4,
+      "wis": 0
+    },
+    "skills": {
+      "athletics": 12
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "notes": {
+      "ac": "(17 when broken); construct armor"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Shadow Staff",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "reach-10"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+8",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "disorienting-shadows"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 13,
+      "traits": [
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+6",
+          "type": "bludgeoning"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Construct Armor (Hardness 7)",
+      "category": "defensive",
+      "text": "Like normal objects, a shadow guardian has Hardness. This Hardness reduces any damage the guardian takes by an amount equal to the Hardness. Once a shadow guardian is reduced to fewer than half its Hit Points, or immediately upon being damaged by a critical hit, its construct armor breaks, removing the Hardness and reducing its Armor Class to 17 when broken.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "label": "PF2E.NPCAbility.ConstructArmor.CriticalHit",
+            "option": "construct-armor",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "FlatModifier",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "selector": "ac",
+            "value": -4
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hardness.value",
+            "phase": "afterDerived",
+            "predicate": [
+              {
+                "or": [
+                  "construct-armor",
+                  {
+                    "lt": [
+                      "hp-percent",
+                      50
+                    ]
+                  }
+                ]
+              }
+            ],
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disorienting Shadows",
+      "category": "offensive",
+      "traits": [
+        "occult",
+        "shadow"
+      ],
+      "text": "When a shadow guardian hits with its staff, a mote of shadow clings to the target. The target must succeed at a DC 18 Fortitude save save or become Clumsy 1 and take a -1 status penalty to Perception checks involving sight as long as the mote remains. The target can use an Interact action to remove the mote. On a critical failure, the target must use two total Interact actions to remove the mote. Otherwise, the mote vanishes after 1 minute."
+    },
+    {
+      "kind": "ability",
+      "name": "Shadowcloak",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "illusion",
+        "occult",
+        "shadow"
+      ],
+      "text": "The shadow guardian becomes shrouded in shadows and becomes Concealed. As the nature of this effect leaves the guardian's location obvious, it can't use this concealment to Hide or Sneak. This effect lasts for 1 minute or until it is exposed to direct sunlight, whichever comes first."
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

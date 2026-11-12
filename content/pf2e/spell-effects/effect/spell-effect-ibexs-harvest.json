@@ -1,0 +1,69 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-ibexs-harvest",
+  "system": "pf2e",
+  "name": "Spell Effect: Ibex's Harvest",
+  "source": {
+    "title": "Pathfinder Lost Omens Rival Academies",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Ibex's Harvest\n\nYou gain temporary Hit Points.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "adjustName": false,
+        "choices": [
+          {
+            "label": "PF2E.SpecificRule.Actions.OneAction",
+            "value": 1
+          },
+          {
+            "label": "PF2E.SpecificRule.Actions.TwoActions",
+            "value": 2
+          },
+          {
+            "label": "PF2E.SpecificRule.Actions.ThreeActions",
+            "value": 3
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Actions.Prompt",
+        "rollOption": "ibexs-harvests"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          {
+            "lte": [
+              "ibexs-harvests",
+              2
+            ]
+          }
+        ],
+        "value": "1 + 3*@item.level"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "TempHP",
+        "predicate": [
+          "ibexs-harvests:3"
+        ],
+        "value": "3*@item.level - 4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "kind": "feat",
+  "slug": "sanctified-soul",
+  "system": "pf2e",
+  "name": "Sanctified Soul",
+  "source": {
+    "title": "Pathfinder War of Immortals",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "exemplar"
+  ],
+  "category": "class",
+  "text": "You've drawn a line in the sand in the cosmic struggle between good and evil and chosen a side. You gain either the holy trait or the unholy trait. All your exemplar abilities that deal spirit damage gain the sanctified trait, allowing you to apply your holy or unholy trait to them to better affect your chosen enemies.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.TraitHoly",
+            "value": "holy"
+          },
+          {
+            "label": "PF2E.TraitUnholy",
+            "value": "unholy"
+          }
+        ],
+        "flag": "sanctification",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "add": [
+          "{item|flags.system.rulesSelections.sanctification}"
+        ],
+        "key": "ActorTraits"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "action",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "energized-spark"
+          },
+          "item:tag:exemplar-spirit-damage"
+        ],
+        "priority": 121,
+        "property": "traits",
+        "value": "sanctified"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "feat",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "energized-spark"
+          },
+          "item:tag:exemplar-spirit-damage"
+        ],
+        "priority": 121,
+        "property": "traits",
+        "value": "sanctified"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          {
+            "not": "energized-spark"
+          },
+          {
+            "or": [
+              "feature:spirit-striking",
+              "exemplar-spirit-damage"
+            ]
+          }
+        ],
+        "priority": 150,
+        "property": "traits",
+        "value": "{item|flags.system.rulesSelections.sanctification}"
+      }
+    }
+  ]
+}

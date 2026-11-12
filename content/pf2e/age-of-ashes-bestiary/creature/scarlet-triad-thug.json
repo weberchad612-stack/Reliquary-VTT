@@ -1,0 +1,212 @@
+{
+  "kind": "creature",
+  "slug": "scarlet-triad-thug",
+  "system": "pf2e",
+  "name": "Scarlet Triad Thug",
+  "source": {
+    "title": "Pathfinder #147: Tomorrow Must Burn",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "rarity": "uncommon",
+  "traits": [
+    "chaotic",
+    "dwarf",
+    "evil",
+    "humanoid"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 25,
+    "hp": 120,
+    "perception": 13,
+    "saves": {
+      "fortitude": 18,
+      "reflex": 12,
+      "will": 15
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 3,
+      "dex": 2,
+      "int": 0,
+      "str": 4,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 13,
+      "athletics": 17,
+      "intimidation": 16,
+      "survival": 13,
+      "thievery": 13
+    },
+    "speeds": {
+      "land": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "dwarven"
+    ],
+    "notes": {
+      "saves": "+2 circumstance to all saves vs. shove, trip, or being knocked prone"
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Flail",
+      "ref": "equipment:item/flail",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Javelin",
+      "ref": "equipment:item/javelin",
+      "type": "weapon",
+      "quantity": 3
+    },
+    {
+      "kind": "gear",
+      "name": "Chain Mail",
+      "ref": "equipment:item/chain-mail",
+      "type": "armor"
+    },
+    {
+      "kind": "gear",
+      "name": "Manacles (Average) (Marked with the Symbol of the Scarlet Triad)",
+      "ref": "equipment:item/manacles-average",
+      "type": "equipment"
+    },
+    {
+      "kind": "gear",
+      "name": "Key to Manacles",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Flail",
+      "attack": 18,
+      "traits": [
+        "disarm",
+        "sweep",
+        "trip"
+      ],
+      "damage": [
+        {
+          "dice": "2d6+10",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Javelin",
+      "attack": 15,
+      "traits": [
+        "thrown-30"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+10",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+2 Circumstance to All Saves vs. Shove, Trip, or Being Knocked Prone",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            {
+              "or": [
+                "action:shove",
+                "action:trip"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Bully's Push",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger A creature within the thug's reach misses the thug with a melee Strike.\n\n---\n\nEffect The thug attempts to Shove the triggering creature at a -2 penalty. If the thug rolls a critical failure, it gets a failure instead."
+    },
+    {
+      "kind": "ability",
+      "name": "Rock Dwarf",
+      "category": "defensive",
+      "text": "When forced to move 10 feet or more, the thug is moved only half the distance."
+    },
+    {
+      "kind": "ability",
+      "name": "Efficient Capture",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "attack",
+        "manipulate"
+      ],
+      "text": "Requirements The thug has manacles in hand and is next to a creature.\n\n---\n\nEffect The thug attempts to bind the creature's wrists or ankles with the manacles. The thug must succeed at an attack roll with a +18 modifier against the target's AC.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "slug": "efficient-capture",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "efficient-capture-attack-roll",
+          "type": "untyped",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "The thug deals an extra 1d8 damage to any creature that's within reach of at least two of the thug's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "dieSize": "d8",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    }
+  ]
+}

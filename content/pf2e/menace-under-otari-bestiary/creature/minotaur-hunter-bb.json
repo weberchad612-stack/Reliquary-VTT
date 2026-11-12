@@ -1,0 +1,157 @@
+{
+  "kind": "creature",
+  "slug": "minotaur-hunter-bb",
+  "system": "pf2e",
+  "name": "Minotaur Hunter (BB)",
+  "source": {
+    "title": "Pathfinder Beginner Box: Secrets of the Unlit Star",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "beast",
+    "humanoid"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 70,
+    "perception": 12,
+    "saves": {
+      "fortitude": 13,
+      "reflex": 8,
+      "will": 10
+    },
+    "attributes": {
+      "cha": -1,
+      "con": 3,
+      "dex": 0,
+      "int": -2,
+      "str": 6,
+      "wis": 2
+    },
+    "skills": {
+      "athletics": 14,
+      "intimidation": 9,
+      "survival": 12
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ]
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Greataxe",
+      "ref": "equipment:item/greataxe",
+      "type": "weapon"
+    },
+    {
+      "kind": "strike",
+      "name": "Greataxe",
+      "attack": 14,
+      "traits": [
+        "reach-10",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d12+8",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 14,
+      "traits": [
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+8",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Perfect Orienteering",
+      "category": "interaction",
+      "text": "A minotaur automatically critically succeeds on Survival checks to sense-direction or track",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "adjustment": {
+              "all": "to-critical-success"
+            },
+            "key": "AdjustDegreeOfSuccess",
+            "predicate": [
+              {
+                "or": [
+                  "action:sense-direction",
+                  "action:track"
+                ]
+              }
+            ],
+            "selector": "survival"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Axe Swipe",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The minotaur makes two Strikes with their greataxe against two adjacent enemies, both of whom are within their reach. The second attack uses the same multiple attack penalty as the first, but attacks they make after this take a –10 multiple attack penalty."
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The minotaur Strides twice, then makes a horn Strike. If they moved at least 20 feet from their starting position, the Strike's damage is increased to 2d8+10.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "powerful-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 1,
+            "key": "DamageDice",
+            "predicate": [
+              "powerful-charge"
+            ],
+            "selector": "horn-damage"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "horn-damage",
+          "type": "untyped",
+          "value": 2,
+          "when": [
+            "powerful-charge"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "A minotaur is a large humanoid with a bovine head and hooves. Though often mistaken for aggressive brutes, many minotaurs are skilled artisans. Lone minotaurs tend to make their lairs within a maze or old ruin, hunting anyone who dares to invade their labyrinthine home."
+}

@@ -1,0 +1,288 @@
+{
+  "kind": "creature",
+  "slug": "suli-dune-dancer",
+  "system": "pf2e",
+  "name": "Suli Dune Dancer",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "traits": [
+    "human",
+    "humanoid",
+    "suli"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 15,
+    "hp": 16,
+    "perception": 5,
+    "saves": {
+      "fortitude": 3,
+      "reflex": 5,
+      "will": 5
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 0,
+      "dex": 2,
+      "int": 1,
+      "str": 2,
+      "wis": 0
+    },
+    "skills": {
+      "acrobatics": 5,
+      "deception": 6,
+      "diplomacy": 7,
+      "occultism": 4,
+      "performance": 7,
+      "society": 4
+    },
+    "speeds": {
+      "land": 25
+    },
+    "languages": [
+      "common",
+      "petran",
+      "pyric",
+      "sussuran",
+      "thalassic"
+    ]
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Occult Spontaneous Spells",
+      "tradition": "occult",
+      "type": "spontaneous",
+      "dc": 17,
+      "attack": 9,
+      "spells": [
+        {
+          "name": "Detect Magic",
+          "rank": 1,
+          "ref": "spells:spell/detect-magic"
+        },
+        {
+          "name": "Dizzying Colors",
+          "rank": 1,
+          "ref": "spells:spell/dizzying-colors"
+        },
+        {
+          "name": "Guidance",
+          "rank": 1,
+          "ref": "spells:spell/guidance"
+        },
+        {
+          "name": "Shield",
+          "rank": 1,
+          "ref": "spells:spell/shield"
+        },
+        {
+          "name": "Soothe",
+          "rank": 1,
+          "ref": "spells:spell/soothe"
+        },
+        {
+          "name": "Sure Strike",
+          "rank": 1,
+          "ref": "spells:spell/sure-strike"
+        },
+        {
+          "name": "Telekinetic Hand",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-hand"
+        },
+        {
+          "name": "Telekinetic Projectile",
+          "rank": 1,
+          "ref": "spells:spell/telekinetic-projectile"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Scimitar",
+      "ref": "equipment:item/scimitar",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Tambourine (Handheld Musical Instrument)",
+      "ref": "equipment:item/musical-instrument-handheld",
+      "type": "equipment"
+    },
+    {
+      "kind": "strike",
+      "name": "Scimitar",
+      "attack": 7,
+      "traits": [
+        "forceful",
+        "sweep"
+      ],
+      "damage": [
+        {
+          "dice": "1d6+2",
+          "type": "slashing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Elemental Bulwark",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Trigger An enemy is about to damage the dune dancer with cold, electricity, or fire, or with a spell that has the air, earth, fire, or water trait\n\n---\n\nEffect The dune dancer gain resistance 2 against the triggering damage"
+    },
+    {
+      "kind": "ability",
+      "name": "Distracting Dance",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "mental",
+        "visual"
+      ],
+      "text": "With a twirl of their body or with elaborate hand movements, the suli dune dancer attempts to distract a creature within 30 feet. The dune dance attempts a Performance check check against the target's Perception DC.\n\n---\nCritical Success The target is Off-Guard and takes a –2 circumstance bonus to Perception checks until the end of the dune dancer's next turn.\n\nSuccess The target is off-guard until the end of the dune dancer's current turn.\n\nCritical Failure The dune dancer is off-guard against attacks from the target until the end of their next turn."
+    },
+    {
+      "kind": "ability",
+      "name": "Elemental Assault",
+      "actions": 2,
+      "category": "offensive",
+      "text": "Elemental magic fills the dune dancer's body or weapon. The dune dancer chooses one element and makes a melee Strike. The Strike deals an additional 1d4 damage of the indicated type and has the trait corresponding to the element:\n- Air electricity\n\n- Earth bludgeoning\n\n- Fire fire\n\n- Metal slashing\n\n- Water cold\n\n- Wood vitality",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "elemental-assault",
+            "suboptions": [
+              {
+                "label": "PF2E.TraitAir",
+                "value": "air"
+              },
+              {
+                "label": "PF2E.TraitEarth",
+                "value": "earth"
+              },
+              {
+                "label": "PF2E.TraitFire",
+                "value": "fire"
+              },
+              {
+                "label": "PF2E.TraitMetal",
+                "value": "metal"
+              },
+              {
+                "label": "PF2E.TraitWater",
+                "value": "water"
+              },
+              {
+                "label": "PF2E.TraitWood",
+                "value": "wood"
+              }
+            ],
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "itemType": "melee",
+            "key": "ItemAlteration",
+            "mode": "add",
+            "predicate": [
+              "elemental-assault",
+              "item:melee"
+            ],
+            "property": "traits",
+            "value": "{item|flags.system.rulesSelections.elementalAssault}"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "electricity",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:air"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "bludgeoning",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:earth"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "fire",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:fire"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "cold",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:water"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "slashing",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:metal"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "damageType": "vitality",
+            "diceNumber": 1,
+            "dieSize": "d4",
+            "key": "DamageDice",
+            "predicate": [
+              "elemental-assault:wood"
+            ],
+            "selector": "melee-strike-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Because their genie forebears travel all across the Universe, sulis (scions of mortals and jann, who are composed of all six elements) are by and large the most common geniekin on that plane. They're often artisans and peace brokers, compelled to try and bring harmony and balance in a world wrought with discord.\n\nSulis have a natural charm that often eludes other geniekin, but they tend to layer on a level of boastful pride or even arrogance as a personal quirk or humorous facade. Few non-sulis realize that bragging isn't simply the symptom of a puffed-up ego for sulis, but instead a cultural institution easily comparable to human poetry. Sulis' boasts not only glorify themselves but also secure their companions' and families' accomplishments in history, with the ultimate goal of spinning stories that will be retold for generations. This is especially true for sulis who have lived with other geniekin and have been seen as lesser for not having a strong connection to an Elemental Plane.\n\nSuli dune dancers are but one way these geniekin seek to integrate with other humanoid societies. They work to hone their skills at boasting to an extent that their claims help bolster those they travel with. Suli from regions other than deserts adjust their names to match their terrains, but regardless of whether they prefer forests, hills, or arctic plains, their boasts remain as compelling."
+}

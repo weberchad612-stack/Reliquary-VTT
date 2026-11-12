@@ -1,0 +1,50 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-bone-flense-damage",
+  "system": "pf2e",
+  "name": "Spell Effect: Bone Flense (Damage)",
+  "source": {
+    "title": "Pathfinder Adventure: Prey for Death",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Bone Flense\n\nThe target takes an additional d6 persistent bleed damage from the Strike of the imbued weapon.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": {
+          "ownedItems": true,
+          "types": [
+            "weapon"
+          ]
+        },
+        "flag": "weapon",
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.Weapon"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "damageType": "bleed",
+        "diceNumber": "(floor((@item.level - 1)/2))",
+        "dieSize": "d6",
+        "key": "DamageDice",
+        "label": "PF2E.SpecificRule.SpellEffectBoneFlense.Label",
+        "predicate": [
+          "item:id:{item|flags.system.rulesSelections.weapon}",
+          "bone-flense"
+        ],
+        "selector": "strike-damage"
+      }
+    }
+  ]
+}

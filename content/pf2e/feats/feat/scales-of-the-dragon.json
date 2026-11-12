@@ -1,0 +1,83 @@
+{
+  "kind": "feat",
+  "slug": "scales-of-the-dragon",
+  "system": "pf2e",
+  "name": "Scales of the Dragon",
+  "source": {
+    "title": "Pathfinder Advanced Player's Guide",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "traits": [
+    "archetype"
+  ],
+  "category": "class",
+  "prerequisites": [
+    "Dragon Disciple Dedication"
+  ],
+  "text": "Scales grow across your body, protecting you against physical and magical threats. When you're unarmored, the scales give you a +2 item bonus to AC with a Dexterity cap of +3. The item bonus to AC from Scales of the Dragon is cumulative with armor potency runes on your explorer's clothing, mage armor, and bracers of armor. Your resistance from Dragon Disciple Dedication increases to 3 + half your level.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "DexterityModifierCap",
+        "predicate": [
+          {
+            "not": "self:armored"
+          }
+        ],
+        "value": 3
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "relabel": "PF2E.SpecificRule.DragonDisciple.ScalesOfTheDragon.BandsOfForce",
+        "selector": "ac",
+        "slug": "bands-of-force",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "relabel": "PF2E.SpecificRule.DragonDisciple.ScalesOfTheDragon.ExplorersClothing",
+        "selector": "ac",
+        "slug": "explorers-clothing",
+        "value": 2
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "AdjustModifier",
+        "mode": "add",
+        "relabel": "PF2E.SpecificRule.DragonDisciple.ScalesOfTheDragon.MageArmor",
+        "selector": "ac",
+        "slug": "mage-armor",
+        "value": 2
+      }
+    },
+    {
+      "key": "resistance",
+      "type": "{actor|flags.system.dragonDisciple.energyType}",
+      "value": "3+floor(@level/2)"
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "item",
+      "value": 2,
+      "when": [
+        {
+          "not": "self:armored"
+        }
+      ]
+    }
+  ]
+}

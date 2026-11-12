@@ -1,0 +1,235 @@
+{
+  "kind": "creature",
+  "slug": "kuribu",
+  "system": "pf2e",
+  "name": "Kuribu",
+  "source": {
+    "title": "Pathfinder Monster Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "angel",
+    "celestial",
+    "holy"
+  ],
+  "size": "small",
+  "stats": {
+    "ac": 17,
+    "hp": 45,
+    "perception": 11,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 11,
+      "will": 9
+    },
+    "attributes": {
+      "cha": 1,
+      "con": 1,
+      "dex": 4,
+      "int": 0,
+      "str": 2,
+      "wis": 2
+    },
+    "skills": {
+      "acrobatics": 11,
+      "diplomacy": 8,
+      "religion": 9,
+      "stealth": 9
+    },
+    "speeds": {
+      "land": 25,
+      "fly": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "diabolic",
+      "draconic",
+      "empyrean"
+    ],
+    "iwr": {
+      "weaknesses": [
+        {
+          "type": "unholy",
+          "value": 5
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "kind": "gear",
+      "name": "Composite Shortbow",
+      "ref": "equipment:item/composite-shortbow",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Arrows",
+      "ref": "equipment:item/arrows",
+      "type": "ammo",
+      "quantity": 20
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 11,
+      "traits": [
+        "agile",
+        "holy",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d4+6",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Composite Shortbow",
+      "attack": 11,
+      "traits": [
+        "deadly-d10",
+        "propulsive",
+        "reload-0"
+      ],
+      "range": 60,
+      "damage": [
+        {
+          "dice": "1d6+5",
+          "type": "piercing"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Immobilizing Ambush",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Requirements The kuribu is disguised as a statue\n\nTrigger A creature moves within 60 feet of the kuribu\n\n---\nEffect The kuribu springs into action by making a shortbow Strike against the triggering creature. If the Strike hits, the creature is pinned by the arrow, as described in the bow critical specialization."
+    },
+    {
+      "kind": "ability",
+      "name": "Sentinel's Aura",
+      "category": "defensive",
+      "traits": [
+        "aura",
+        "divine"
+      ],
+      "text": "30 feet. The kuribu and any other creature in the aura defending the same holy site gain a +1 status bonus to AC. This aura is suppressed while Statue is in effect.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "effects": [
+              {
+                "affects": "allies",
+                "uuid": "Compendium.pf2e.bestiary-effects.Item.Effect: Sentinel's Aura"
+              }
+            ],
+            "key": "Aura",
+            "predicate": [
+              {
+                "not": "statue"
+              }
+            ],
+            "radius": 30,
+            "traits": [
+              "divine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Blessed Aspect",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "The kuribu's face transforms, and their holy countenance unleashes an attack based on the aspect the kuribu chooses. The kuribu can't use Blessed Aspect again for 1d4 rounds. They can revert back to their humanoid appearance at any time, but they still have to wait before using Blessed Aspect again.\n- Eagle The kuribu unleashes a disorienting screech in a 15-foot cone that deals 2d10 sonic damage with a DC 19 basic Will save save. A creature that critically fails is also Stunned 1.\n- Lion The kuribu makes a powerful jaws Strike against an adjacent creature. The attack has a +12 attack modifer and deals 4d6 piercing damage plus 1d4 persistent bleed damage.\n- Ox The kuribu charges into a creature. The kuribu Flies or Strides. At the end of their movement, the kuribu crashes into one adjacent creature, dealing 4d6 bludgeoning damage to it with a DC 17 basic Fortitude save save. If the target critically fails, it's also knocked Prone.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SpecialStatistic",
+            "label": "PF2E.BattleForm.Attack.Jaws",
+            "slug": "kuribu-jaws-attack",
+            "type": "attack-roll"
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "kuribu-jaws-attack",
+          "type": "untyped",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Statue",
+      "actions": 1,
+      "category": "offensive",
+      "traits": [
+        "concentrate"
+      ],
+      "text": "Until the next time they act, the kuribu appears to be a statue. They have an automatic result of 29 on Deception checks and DCs to pass as a statue.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "statue",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": "deception-dc",
+          "type": "untyped",
+          "value": 19,
+          "slug": "rubble-bonus",
+          "when": [
+            "statue"
+          ]
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "SubstituteRoll",
+            "predicate": [
+              "statue"
+            ],
+            "required": true,
+            "selector": "deception-check",
+            "slug": "statue",
+            "value": 9
+          }
+        },
+        {
+          "key": "note",
+          "selector": [
+            "deception-dc",
+            "deception"
+          ],
+          "text": "{item|description}",
+          "when": [
+            "statue"
+          ]
+        }
+      ]
+    }
+  ],
+  "text": "Kuribus serve as the guardians of temples and other holy sites. They are humanoid in appearance and roughly the size of human children. Their bodies look like stone, which allows kuribus to disguise themselves as statues for extended periods of time (sometimes up to centuries). When defending their sites, kuribus harry invaders from a distance."
+}

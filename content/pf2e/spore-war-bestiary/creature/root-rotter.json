@@ -1,0 +1,261 @@
+{
+  "kind": "creature",
+  "slug": "root-rotter",
+  "system": "pf2e",
+  "name": "Root Rotter",
+  "source": {
+    "title": "Pathfinder #210: Whispers in the Dirt",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 9,
+  "rarity": "rare",
+  "traits": [
+    "fungus",
+    "undead",
+    "unholy"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 26,
+    "hp": 195,
+    "perception": 18,
+    "saves": {
+      "fortitude": 17,
+      "reflex": 20,
+      "will": 16
+    },
+    "attributes": {
+      "cha": 2,
+      "con": 4,
+      "dex": 5,
+      "int": 0,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "acrobatics": 20,
+      "athletics": 17,
+      "nature": 15,
+      "stealth": {
+        "value": 18,
+        "special": [
+          {
+            "value": 20,
+            "label": "in fungal environs",
+            "when": [
+              "terrain:fungus"
+            ]
+          }
+        ]
+      }
+    },
+    "speeds": {
+      "land": 30
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "chthonian",
+      "common",
+      "elven"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ],
+      "weaknesses": [
+        {
+          "type": "holy",
+          "value": 10
+        },
+        {
+          "type": "slashing",
+          "value": 10
+        }
+      ]
+    },
+    "notes": {
+      "hp": "void healing",
+      "perception": "fungus sense 120 feet",
+      "languages": "Telepathy 30 feet fungi only"
+    }
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Jaws",
+      "attack": 21,
+      "traits": [
+        "magical",
+        "poison",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d8",
+          "type": "poison"
+        }
+      ],
+      "effects": [
+        "rotter-infestation"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Fist",
+      "attack": 21,
+      "traits": [
+        "agile",
+        "magical",
+        "unarmed",
+        "unholy"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+9",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fungus Sense",
+      "category": "interaction",
+      "text": "A root rotter has imprecise tremorsense to detect the vibrations of creatures who are within a region of fungal terrain shared by the root rotter."
+    },
+    {
+      "kind": "ability",
+      "name": "Fungal Empowerment",
+      "category": "defensive",
+      "text": "If the root rotter is touching fungal terrain at the start of its turn, they regain 10 healing Hit Points and are Quickened that turn; they can use the extra action only to Stride or Strike.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "fungal-empowerment",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "inMemoryOnly": true,
+            "key": "GrantItem",
+            "predicate": [
+              "fungal-empowerment"
+            ],
+            "uuid": "Compendium.pf2e.conditionitems.Item.Quickened"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Fungal Mind",
+      "category": "defensive",
+      "traits": [
+        "primal"
+      ],
+      "text": "Root rotters communicate telepathically with each other. While within telepathic range of at least one other root rotter, they gain a +2 circumstance bonus to initiative rolls, Perception checks, and saving throws against mental effects. If one root rotter is aware of a combatant, all members of the fungal mind within range are aware of it.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "RollOption",
+            "option": "fungal-mind",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "modifier",
+          "selector": [
+            "initiative",
+            "perception"
+          ],
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "fungal-mind"
+          ]
+        },
+        {
+          "key": "modifier",
+          "selector": "saving-throw",
+          "type": "circumstance",
+          "value": 2,
+          "when": [
+            "fungal-mind",
+            "item:trait:mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Disperse",
+      "actions": 3,
+      "category": "offensive",
+      "traits": [
+        "magical",
+        "poison",
+        "unholy"
+      ],
+      "text": "Requirements The root rotter has 25 Hit Points or fewer\n\n---\nEffect The root rotter destroys themself. Thorny fungal roots explode from their body, dealing 10d6 piercing damage in a 10-foot emanation (DC 25 basic Reflex save save). Any creature who fails the save is exposed to rotter infestation."
+    },
+    {
+      "kind": "ability",
+      "name": "Fungal Root",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "divine",
+        "poison",
+        "unholy"
+      ],
+      "text": "Requirements The root rotter is standing in fungal terrain\n\n---\nEffect Fungal roots reach out to snag a nearby foe. An enemy within 30 feet of the root rotter takes 4d6 piercing damage and must attempt a DC 27 Reflex save saving throw.\n\n---\nCritical Success The creature is unaffected.\n\nSuccess The creature takes half damage and becomes Clumsy 1 until the end of its next turn.\n\nFailure The creature takes full damage and becomes clumsy 1 with an unlimited duration. In addition, the creature is Restrained (escape dc=27) for 1 minute.\n\nCritical Failure As failure but double damage. In addition, the creature is exposed to rotter infestation."
+    },
+    {
+      "kind": "ability",
+      "name": "Rotter Infestation",
+      "category": "offensive",
+      "traits": [
+        "disease",
+        "divine"
+      ],
+      "text": "Saving Throw DC 27 Fortitude save\n\nOnset 1 day\n\nStage 1 Drained 1 (1 day)\n\nStage 2 Drained 2 and can sense the presence of root rotters within 30 feet as an imprecise sense (1 round)\n\nStage 3 as stage 2, but transformation into a root rotter upon death (1 day)"
+    }
+  ],
+  "text": "Root rotters are all that remain of the unfortunate elven residents of Greengold. Some died in the initial bursts of Jeharlu spores, while others succumbed to infestation by sinmolds. Fungus now riddles their bodies, wrapping around their brains and nerves to reanimate them.\nCorruption Spreaders\nA root rotter that remains in place for 24 hours causes a 5-foot emanation to become overgrown with foul-smelling unpleasant fungus. This spread increases by 5 feet for each additional 24 hours the root rotter remains motionless, to a maximum area of a 60-foot emanation after 12 days of motionless lurking. This fungus is permanent as long as it has a source of nourishment but can be destroyed as easily as any patch of mundane fungus."
+}

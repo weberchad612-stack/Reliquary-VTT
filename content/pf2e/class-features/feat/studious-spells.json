@@ -1,0 +1,82 @@
+{
+  "kind": "feat",
+  "slug": "studious-spells",
+  "system": "pf2e",
+  "name": "Studious Spells",
+  "source": {
+    "title": "Pathfinder Impossible Magic",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 7,
+  "traits": [
+    "magus"
+  ],
+  "category": "classfeature",
+  "text": "You've deeply studied certain beneficial spells to speedily enter Arcane Cascade when you cast them. When you cast a studious spell, you can use Arcane Cascade as a free action as your next action this turn. Add any studious spell you gain to your spellbook if you don't know it already. Your studious spells are Gecko Grip and an additional spell depending on your hybrid study, listed in the hybrid study's entry.\n\nAt 11th level, add Haste and an additional spell depending on your hybrid study to your studious spells. At 13th level, add Fly and an additional spell depending on your hybrid study to your studious spells.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "spellcasting:category:prepared",
+          "spellcasting:tradition:arcane",
+          {
+            "or": [
+              "item:slug:gecko-grip",
+              {
+                "and": [
+                  "item:slug:haste",
+                  {
+                    "gte": [
+                      "self:level",
+                      11
+                    ]
+                  }
+                ]
+              },
+              {
+                "and": [
+                  "item:slug:fly",
+                  {
+                    "gte": [
+                      "self:level",
+                      13
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "property": "other-tags",
+        "value": "studious-spell"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemType": "spell",
+        "key": "ItemAlteration",
+        "mode": "add",
+        "predicate": [
+          "item:tag:studious-spell"
+        ],
+        "priority": 130,
+        "property": "description",
+        "value": [
+          {
+            "text": "PF2E.SpecificRule.Magus.StudiousSpells.Addendum"
+          },
+          {
+            "text": "@UUID[Compendium.pf2e.feat-effects.Item.Stance: Arcane Cascade]"
+          }
+        ]
+      }
+    }
+  ]
+}

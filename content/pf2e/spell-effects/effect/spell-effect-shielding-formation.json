@@ -1,0 +1,53 @@
+{
+  "kind": "effect",
+  "slug": "spell-effect-shielding-formation",
+  "system": "pf2e",
+  "name": "Spell Effect: Shielding Formation",
+  "source": {
+    "title": "Pathfinder Battlecry!",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start",
+    "sustained": true
+  },
+  "text": "Granted by Shielding Formation\n\nYou gain a +1 circumstance bonus to AC. You can end this bonus to gain resistance 10 to all damage.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "label": "PF2E.SpecificRule.Wizard.WarMage.ShieldingFormation.ResistanceToggle",
+        "option": "shielding-formation-resistance",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "ac",
+      "type": "circumstance",
+      "value": 1,
+      "when": [
+        {
+          "not": "shielding-formation-resistance"
+        }
+      ]
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "Resistance",
+        "predicate": [
+          "shielding-formation-resistance"
+        ],
+        "type": "all-damage",
+        "value": 10
+      }
+    }
+  ]
+}

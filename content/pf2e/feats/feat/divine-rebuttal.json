@@ -1,0 +1,75 @@
+{
+  "kind": "feat",
+  "slug": "divine-rebuttal",
+  "system": "pf2e",
+  "name": "Divine Rebuttal",
+  "source": {
+    "title": "Pathfinder Player Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 6,
+  "traits": [
+    "cleric",
+    "divine"
+  ],
+  "category": "class",
+  "actions": "reaction",
+  "text": "Trigger Your ally is about to roll a saving throw against a magical ability of a creature you're adjacent to.\n\nRequirements You are wielding your deity's favored weapon.\n\n---\n\nYou strive against magical threats physically and spiritually. You can Strike the adjacent creature with your deity's favored weapon. If you are holy or unholy, the Strike gains that trait. If your Strike hits, all your allies gain a +2 circumstance bonus to the triggering saving throw (or a +3 circumstance bonus on a critical hit).\n\nEffect: Divine Rebuttal",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "divine-rebuttal",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:deity-favored"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "divine-rebuttal",
+          "self:trait:holy"
+        ],
+        "property": "traits",
+        "value": "holy"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "definition": [
+          "item:deity-favored"
+        ],
+        "key": "AdjustStrike",
+        "mode": "add",
+        "predicate": [
+          "divine-rebuttal",
+          "self:trait:unholy"
+        ],
+        "property": "traits",
+        "value": "unholy"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "strike-attack-roll",
+      "text": "PF2E.SpecificRule.Cleric.DivineRebuttal.Note",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        "divine-rebuttal",
+        "item:deity-favored"
+      ]
+    }
+  ]
+}

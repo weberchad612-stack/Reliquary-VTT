@@ -1,0 +1,97 @@
+{
+  "kind": "effect",
+  "slug": "effect-endemic-herbs",
+  "system": "pf2e",
+  "name": "Effect: Endemic Herbs",
+  "source": {
+    "title": "Pathfinder Player Core 2",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 1,
+  "duration": {
+    "value": 1,
+    "unit": "minutes",
+    "expiry": "turn-start"
+  },
+  "text": "Granted by Endemic Herbs\n\nYou gain a benefit matching the location where the item was created.\n- Aquatic You gain a +1 circumstance bonus to Fortitude saves.\n- Forest You gain a +2 circumstance bonus to saves against disease and poison effects.\n- Mountain You gain a +1 circumstance bonus to Reflex saves.\n- Plains You gain a +1 circumstance bonus to Will saves.\n- Underground You gain a +1 circumstance bonus to Perception.",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Terrain.Aquatic",
+            "value": {
+              "bonus": 1,
+              "selector": "fortitude",
+              "terrain": "aquatic"
+            }
+          },
+          {
+            "label": "PF2E.Terrain.Forest",
+            "value": {
+              "bonus": 2,
+              "selector": "saving-throw",
+              "terrain": "forest"
+            }
+          },
+          {
+            "label": "PF2E.Terrain.Mountain",
+            "value": {
+              "bonus": 1,
+              "selector": "reflex",
+              "terrain": "mountain"
+            }
+          },
+          {
+            "label": "PF2E.Terrain.Plains",
+            "value": {
+              "bonus": 1,
+              "selector": "will",
+              "terrain": "plains"
+            }
+          },
+          {
+            "label": "PF2E.Terrain.Underground",
+            "value": {
+              "bonus": 1,
+              "selector": "perception",
+              "terrain": "underground"
+            }
+          }
+        ],
+        "flag": "endemicHerbs",
+        "key": "ChoiceSet"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "endemic-herbs:{item|flags.system.rulesSelections.endemicHerbs.terrain}"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "FlatModifier",
+        "predicate": [
+          {
+            "or": [
+              {
+                "not": "endemic-herbs:forest"
+              },
+              "item:trait:poison",
+              "item:trait:disease"
+            ]
+          }
+        ],
+        "selector": "{item|flags.system.rulesSelections.endemicHerbs.selector}",
+        "type": "circumstance",
+        "value": "@item.flags.system.rulesSelections.endemicHerbs.bonus"
+      }
+    }
+  ]
+}

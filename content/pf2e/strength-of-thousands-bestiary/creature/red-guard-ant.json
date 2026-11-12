@@ -1,0 +1,177 @@
+{
+  "kind": "creature",
+  "slug": "red-guard-ant",
+  "system": "pf2e",
+  "name": "Red Guard Ant",
+  "source": {
+    "title": "Pathfinder #174: Shadows of the Ancients",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 15,
+  "rarity": "rare",
+  "traits": [
+    "beast"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 37,
+    "hp": 275,
+    "perception": 27,
+    "saves": {
+      "fortitude": 29,
+      "reflex": 23,
+      "will": 26
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 6,
+      "dex": 4,
+      "int": -2,
+      "str": 8,
+      "wis": 6
+    },
+    "skills": {
+      "athletics": 31,
+      "intimidation": 27,
+      "survival": 27
+    },
+    "speeds": {
+      "land": 40,
+      "climb": 20
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 60,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common"
+    ]
+  },
+  "items": [
+    {
+      "kind": "strike",
+      "name": "Mandibles",
+      "attack": 30,
+      "damage": [
+        {
+          "dice": "3d10+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "grab"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Stinger",
+      "attack": 30,
+      "traits": [
+        "agile"
+      ],
+      "damage": [
+        {
+          "dice": "3d6+14",
+          "type": "piercing"
+        }
+      ],
+      "effects": [
+        "red-ant-venom"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity (Stinger Only)",
+      "actions": "reaction",
+      "category": "defensive",
+      "text": "Stinger only\n\n---"
+    },
+    {
+      "kind": "ability",
+      "name": "Formic Acid Spray",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "acid",
+        "primal"
+      ],
+      "text": "The red guard ant sprays a 15-foot cone of acid from its abdomen that deals 10d10 acid damage (DC 34 basic Reflex save). It can't use Formic Acid Spray again for 1d4 rounds."
+    },
+    {
+      "kind": "ability",
+      "name": "Haul Away",
+      "actions": 1,
+      "category": "offensive",
+      "text": "Requirements The red guard ant has a Huge or smaller creature Grabbed\n\n---\n\nEffect The ant Strides up to its full Speed, carrying the grabbed creature with it. It's encumbered if the grabbed creature is Large or larger."
+    },
+    {
+      "kind": "ability",
+      "name": "Pack Attack",
+      "category": "offensive",
+      "text": "A red guard ant deals an additional 2d6 precision damage to any creature within reach of at least two of the ant's allies.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "pack-attack",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "category": "precision",
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "pack-attack"
+            ],
+            "selector": "strike-damage"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Red Ant Venom",
+      "category": "offensive",
+      "traits": [
+        "poison"
+      ],
+      "text": "Saving Throw DC 36 Fortitude save\n\nMaximum Duration 4 rounds\n\nStage 1 3d6 poison damage and Enfeebled 1 (1 round)\n\nStage 2 4d6 poison damage and Enfeebled 2 (1 round)\n\nStage 3 6d6 poison damage and Enfeebled 3 (1 round)"
+    },
+    {
+      "kind": "ability",
+      "name": "Swarming Flank",
+      "category": "offensive",
+      "text": "If at least three red guard ants have a creature within their reach, they flank the creature, even if they can't draw a line to each other that passes through opposite sides of the creature's space.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.attributes.flanking.canGangUp",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Grab",
+      "actions": 1,
+      "category": "offensive"
+    }
+  ]
+}

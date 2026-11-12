@@ -1,0 +1,80 @@
+{
+  "kind": "effect",
+  "slug": "effect-phantom-hands",
+  "system": "pf2e",
+  "name": "Effect: Phantom Hands",
+  "source": {
+    "title": "Pathfinder Adventures: Troubles in Grayce",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 4,
+  "duration": {
+    "value": 1,
+    "unit": "rounds",
+    "expiry": "turn-start"
+  },
+  "text": "You take a –2 status penalty to your initiative",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "choices": [
+          {
+            "label": "PF2E.Check.Result.Degree.Check.criticalFailure",
+            "value": "critical-failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.failure",
+            "value": "failure"
+          },
+          {
+            "label": "PF2E.Check.Result.Degree.Check.success",
+            "value": "success"
+          }
+        ],
+        "key": "ChoiceSet",
+        "prompt": "PF2E.SpecificRule.Prompt.DegreeOfSuccess",
+        "rollOption": "phantom-hands"
+      }
+    },
+    {
+      "key": "modifier",
+      "selector": "initiative",
+      "type": "status",
+      "value": 2
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "inMemoryOnly": true,
+        "key": "GrantItem",
+        "predicate": [
+          {
+            "or": [
+              "phantom-hands:critical-failure",
+              "phantom-hands:failure"
+            ]
+          }
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Immobilized"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "keep": "lower",
+        "key": "RollTwice",
+        "predicate": [
+          "phantom-hands:critical-failure",
+          "action:escape"
+        ],
+        "selector": [
+          "skill-check",
+          "unarmed-attack-roll"
+        ]
+      }
+    }
+  ]
+}

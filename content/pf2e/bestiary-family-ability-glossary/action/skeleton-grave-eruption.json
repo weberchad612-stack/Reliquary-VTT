@@ -1,0 +1,60 @@
+{
+  "kind": "action",
+  "slug": "skeleton-grave-eruption",
+  "system": "pf2e",
+  "name": "(Skeleton) Grave Eruption",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "actions": 2,
+  "category": "offensive",
+  "text": "Requirements The skeleton is undetected and buried in dirt, gravel, or other loose material\n\n---\n\nEffect The skeleton erupts from the ground, Stands, and makes a melee Strike. The target is Off-Guard against this Strike. If the Strike hits, the target is Frightened 1 (or Frightened 2 on a critical hit).",
+  "rules": [
+    {
+      "key": "unsupported",
+      "foundry": {
+        "itemId": "{item|id}",
+        "key": "ItemAlteration",
+        "mode": "override",
+        "property": "name",
+        "value": "PF2E.NPCAbility.Skeleton.GraveEruption.Name"
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "RollOption",
+        "option": "grave-eruption",
+        "toggleable": true
+      }
+    },
+    {
+      "key": "unsupported",
+      "foundry": {
+        "key": "EphemeralEffect",
+        "predicate": [
+          "grave-eruption"
+        ],
+        "selectors": [
+          "melee-strike-attack-roll",
+          "melee-strike-damage"
+        ],
+        "uuid": "Compendium.pf2e.conditionitems.Item.Off-Guard"
+      }
+    },
+    {
+      "key": "note",
+      "selector": "melee-strike-attack-roll",
+      "text": "{item|system.description.value}",
+      "outcome": [
+        "criticalSuccess",
+        "success"
+      ],
+      "when": [
+        "grave-eruption"
+      ]
+    }
+  ]
+}

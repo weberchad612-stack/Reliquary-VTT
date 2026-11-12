@@ -1,0 +1,206 @@
+{
+  "kind": "creature",
+  "slug": "unicorn",
+  "system": "pf2e",
+  "name": "Unicorn",
+  "source": {
+    "title": "Pathfinder Monster Core",
+    "license": "ORC",
+    "remaster": true,
+    "from": "foundry-pf2e"
+  },
+  "level": 3,
+  "traits": [
+    "beast",
+    "fey",
+    "holy"
+  ],
+  "size": "large",
+  "stats": {
+    "ac": 20,
+    "hp": 45,
+    "perception": 13,
+    "saves": {
+      "fortitude": 10,
+      "reflex": 8,
+      "will": 11
+    },
+    "attributes": {
+      "cha": 4,
+      "con": 3,
+      "dex": 3,
+      "int": 0,
+      "str": 4,
+      "wis": 4
+    },
+    "skills": {
+      "acrobatics": 10,
+      "diplomacy": 11,
+      "stealth": 8,
+      "survival": 9
+    },
+    "speeds": {
+      "land": 45
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      },
+      {
+        "type": "scent",
+        "range": 30,
+        "acuity": "imprecise"
+      }
+    ],
+    "languages": [
+      "common",
+      "fey"
+    ],
+    "iwr": {
+      "immunities": [
+        "poison"
+      ]
+    },
+    "notes": {
+      "saves": "+2 to will saves vs. mental"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Primal Innate Spells",
+      "tradition": "primal",
+      "type": "innate",
+      "dc": 21,
+      "attack": 13,
+      "spells": [
+        {
+          "name": "Nature's Pathway",
+          "rank": 5,
+          "ref": "spells:spell/natures-pathway"
+        },
+        {
+          "name": "Cleanse Affliction",
+          "rank": 3,
+          "ref": "spells:spell/cleanse-affliction"
+        },
+        {
+          "name": "Heal",
+          "rank": 3,
+          "ref": "spells:spell/heal",
+          "uses": 2
+        },
+        {
+          "name": "Light",
+          "rank": 1,
+          "ref": "spells:spell/light"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Horn",
+      "attack": 12,
+      "traits": [
+        "holy",
+        "magical",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "1d10+4",
+          "type": "piercing"
+        },
+        {
+          "dice": "1d4",
+          "type": "spirit"
+        }
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Hoof",
+      "attack": 12,
+      "traits": [
+        "agile",
+        "magical"
+      ],
+      "damage": [
+        {
+          "dice": "1d8+4",
+          "type": "bludgeoning"
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Animal Empathy",
+      "category": "interaction",
+      "text": "The unicorn has a connection to the creatures of the natural world that allows them to communicate with animals. They can ask questions of, receive answers from, and use the Diplomacy skill with animals."
+    },
+    {
+      "kind": "ability",
+      "name": "+2 to Will Saves vs. Mental",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "will",
+          "type": "status",
+          "value": 2,
+          "when": [
+            "mental"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Ghost Touch",
+      "category": "offensive",
+      "text": "A unicorn's Strikes have the effects of a Ghost Touch property rune.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "AdjustStrike",
+            "mode": "add",
+            "property": "property-runes",
+            "value": "ghost-touch"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Powerful Charge",
+      "actions": 2,
+      "category": "offensive",
+      "text": "The unicorn Strides up to double its Speed in a straight line and then makes a horn Strike. If the unicorn moved at least 20 feet, it deals an additional 2d6 damage on a hit.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "domain": "damage",
+            "key": "RollOption",
+            "option": "powerful-charge",
+            "toggleable": true
+          }
+        },
+        {
+          "key": "unsupported",
+          "foundry": {
+            "diceNumber": 2,
+            "dieSize": "d6",
+            "key": "DamageDice",
+            "predicate": [
+              "powerful-charge"
+            ],
+            "selector": "horn-damage"
+          }
+        }
+      ]
+    }
+  ],
+  "text": "Symbols of grace and purity, unicorns resemble proud and noble horses. They typically have pure white coats, but they are best known for the single, delicate horn that extends from the center of their forehead. While unicorns often serve as protectors of unspoiled wilderness and sacred places, they are themselves highly sought after for their horns, which are said to possess potent magical properties. To many, the mere idea of hunting such a magnificent creature in the hopes of severing its horn is utterly reprehensible. Indeed, a dehorned unicorn is a sorry sight, and few such unicorns survive much longer in the wild.\n\nUnicorns are found almost exclusively in remote, unsullied areas of wilderness. Sometimes associated with good-aligned deities, other times associated with nature and the fey, unicorns are always known for their righteousness and nobility. They are wary, at best, of most humanoid creatures, due in large part to poachers' tendency to hunt them for their horns, but unicorns are often rumored to have a weakness for those who are pure of both heart and spirit. Despite some tales, unicorns are equally likely to recognize purity in people of all genders."
+}

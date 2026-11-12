@@ -1,0 +1,256 @@
+{
+  "kind": "creature",
+  "slug": "wight-commander",
+  "system": "pf2e",
+  "name": "Wight Commander",
+  "source": {
+    "title": "Pathfinder Book of the Dead",
+    "license": "OGL",
+    "from": "foundry-pf2e"
+  },
+  "level": 12,
+  "rarity": "rare",
+  "traits": [
+    "evil",
+    "lawful",
+    "undead",
+    "unholy",
+    "wight"
+  ],
+  "size": "medium",
+  "stats": {
+    "ac": 32,
+    "hp": 220,
+    "perception": 22,
+    "saves": {
+      "fortitude": 24,
+      "reflex": 19,
+      "will": 21
+    },
+    "attributes": {
+      "cha": 3,
+      "con": 4,
+      "dex": 3,
+      "int": 5,
+      "str": 6,
+      "wis": 3
+    },
+    "skills": {
+      "athletics": 24,
+      "intimidation": 25,
+      "warfare-lore": 25
+    },
+    "speeds": {
+      "land": 25
+    },
+    "senses": [
+      {
+        "type": "darkvision"
+      }
+    ],
+    "languages": [
+      "common",
+      "necril"
+    ],
+    "iwr": {
+      "immunities": [
+        "bleed",
+        "death-effects",
+        "disease",
+        "paralyzed",
+        "poison",
+        "unconscious"
+      ]
+    },
+    "notes": {
+      "ac": "(34 with shield raised)",
+      "hp": "void healing",
+      "languages": "tongues"
+    }
+  },
+  "items": [
+    {
+      "kind": "spellcasting",
+      "name": "Divine Innate Spells",
+      "tradition": "divine",
+      "type": "innate",
+      "dc": 29,
+      "attack": 21,
+      "spells": [
+        {
+          "name": "Tongues (Constant)",
+          "rank": 5,
+          "ref": "spells:spell/truespeech"
+        }
+      ]
+    },
+    {
+      "kind": "gear",
+      "name": "Longsword",
+      "ref": "equipment:item/longsword",
+      "type": "weapon"
+    },
+    {
+      "kind": "gear",
+      "name": "Steel Shield",
+      "ref": "equipment:item/steel-shield",
+      "type": "shield"
+    },
+    {
+      "kind": "gear",
+      "name": "Full Plate",
+      "ref": "equipment:item/full-plate",
+      "type": "armor"
+    },
+    {
+      "kind": "strike",
+      "name": "Longsword",
+      "attack": 27,
+      "traits": [
+        "magical",
+        "versatile-p"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "strike",
+      "name": "Claw",
+      "attack": 26,
+      "traits": [
+        "agile",
+        "unarmed"
+      ],
+      "damage": [
+        {
+          "dice": "2d8+14",
+          "type": "slashing"
+        }
+      ],
+      "effects": [
+        "drain-life"
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "+26 to Initiative",
+      "category": "interaction",
+      "rules": [
+        {
+          "key": "modifier",
+          "selector": "initiative",
+          "type": "untyped",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Constant Spells",
+      "category": "interaction"
+    },
+    {
+      "kind": "ability",
+      "name": "Attack of Opportunity",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Final Spite",
+      "actions": "reaction",
+      "category": "defensive",
+      "traits": [
+        "auditory",
+        "divine"
+      ],
+      "text": "Trigger The wight commander is reduced to 0 Hit Points\n\n---\nEffect The wight commander blows a battered war horn before being destroyed. The unnerving blast summons reinforcements, raising 1d4 corpses in a 200-foot emanation as Wights."
+    },
+    {
+      "kind": "ability",
+      "name": "Shield Block",
+      "actions": "reaction",
+      "category": "defensive"
+    },
+    {
+      "kind": "ability",
+      "name": "Void Healing",
+      "category": "defensive",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "system.attributes.hp.negativeHealing",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Coordinated Strike",
+      "category": "offensive",
+      "text": "The wight commander flanks with an ally as long as the target is within both their reaches, even if commander and ally aren't on opposite sides.",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "add",
+            "path": "system.attributes.flanking.canGangUp",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Drain Life",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "When the hunter wight damages a living creature using an unarmed attack or their bound weapon, they gain 12 temporary Hit Points, and the creature must succeed at a DC 29 Fortitude save save or become Drained 1. Further damage dealt by the hunter wight's unarmed and bound weapon attacks increases the value of the drained condition by 1 on a failed save, to a maximum of drained 4.\n\nEffect: Drain Life",
+      "rules": [
+        {
+          "key": "unsupported",
+          "foundry": {
+            "key": "ActiveEffectLike",
+            "mode": "override",
+            "path": "flags.system.drainLifeTempHP",
+            "value": 12
+          }
+        }
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "Spawn Wight Soldier",
+      "category": "offensive",
+      "traits": [
+        "divine"
+      ],
+      "text": "A living humanoid killed by a wight commander's weapon or claw Strike rises as a wight of the commander's level or lower, most often a hunter wight or prowler wight, after 1d4 rounds. This spawn is under the command of the wight commander that killed them. They don't have drain life or spawn wight soldier and are Clumsy 2 for as long as they're a wight spawn. If the creator of the wight spawn dies, the wight spawn becomes a fully autonomous wight; they regain their free will, gain drain life and spawn wight soldier, and are no longer clumsy."
+    },
+    {
+      "kind": "ability",
+      "name": "Tactical Direction",
+      "actions": 2,
+      "category": "offensive",
+      "traits": [
+        "auditory"
+      ],
+      "text": "Each wight ally in a 30-foot emanation gains the Attack of Opportunity reaction until the end of their next turn."
+    }
+  ],
+  "text": "When the beloved leader of a military unit is raised as a wight, sometimes the spirits of their comrades return with them, creating a gestalt being of impeccable tactical acumen.\n\n---\n\nWights are undead beings of spite who primarily stalk places related to death."
+}
