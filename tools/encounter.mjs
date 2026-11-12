@@ -13,7 +13,7 @@
 //   roll <who> [--roll D] [--stat S] [--mode higher|lower]
 //                                      roll initiative: d20 (or D) + Perception (or the skill S, such as stealth),
 //                                      with initiative's modifiers and notes; also writes the roll card (a chat message, chat/)
-//   defeat <who> [--undo]              mark defeated (its turns are skipped) or not
+//   defeat <who> [--undo]              mark defeated (its turns are skipped; the token shows dead) or not
 //   hide <who> [--undo]                hide the token from players (map, tracker, rolls) or show it again
 //   previous                           back one turn (a correction: no turn rules run)
 //   next-round                         end this turn and the round; the next round's first turn (the rest skipped)
@@ -111,8 +111,13 @@ export function runEncounter(game, cmd, args, opts = {}) {
     return out;
   }
   if (cmd === 'defeat') {
-    const id = who(args[0]);
-    return done(E.setFlags(enc, id, { defeated: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}defeated`]);
+    // as the board's tracker: the token shows dead on the map (faded, red cross) and back; hit points are not touched
+    const id = who(args[0]), out = done(E.setFlags(enc, id, { defeated: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}defeated`]);
+    if (game.tokens[id]) {
+      out.writes.push({ op: 'update', path: `tokens/${id}`, data: { dead: opts.undo ? { __delete__: true } : true } });
+      if (opts.undo) delete game.tokens[id].dead; else game.tokens[id].dead = true;
+    }
+    return out;
   }
   if (cmd === 'hide') {
     // the token itself is hidden (as the board's token menu and the tracker's eye do): players never see it

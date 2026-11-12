@@ -7,7 +7,7 @@
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null),
-//   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
+//   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), setDead(id, dead) (the token's dead look on the map), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js), openButton}
 
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines, dropInitiative, canDrag } from './tracker.js';
@@ -340,7 +340,11 @@ export async function mountTracker(o) {
       if (t) { if (c.hidden) commit({ type: 'flags', token: id, flags: { hidden: false } }); o.setHidden(id, !(t.hidden || c.hidden)); lastKey = ''; return render(); }
       return commit({ type: 'flags', token: id, flags: { hidden: !c.hidden } });
     }
-    if (a === 'defeated') return commit({ type: 'flags', token: id, flags: { defeated: !(ENC.combatants.find((c) => c.token === id) || {}).defeated } });
+    if (a === 'defeated') {
+      // defeated shows the token dead on the map (and back again); hit points are not touched
+      const on = !(ENC.combatants.find((c) => c.token === id) || {}).defeated;
+      return commit({ type: 'flags', token: id, flags: { defeated: on } }).then((ok) => { if (ok && o.tokens()[id]) o.setDead(id, on); });
+    }
     if (a === 'reveal') { o.reveal(id); lastKey = ''; return render(); }
     if (a === 'target') return o.target(id, e.shiftKey);
     if (a === 'ping') return o.ping(id);

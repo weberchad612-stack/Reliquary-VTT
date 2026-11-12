@@ -3114,6 +3114,8 @@ export async function start(store, { build = null } = {}) {
     hover: (id) => { if (trkHover !== id) { trkHover = id; targetsChanged(); } },
     onActing: (id) => { actingId = id; targetsChanged(); },
     setHidden: (id, hidden) => setHidden(id, hidden),
+    // the tracker's Defeated marks the token dead on the map (faded, red cross) and back; its hit points are not touched
+    setDead: (id, dead) => { const t = S.tokens[id]; if (t && !!t.dead !== !!dead) setDead(id, dead); },
     reveal: (id) => { const t = S.tokens[id]; if (!t || !t.alias) return; S.tokens[id] = { ...t, known: true }; schedulePersist(); draw(); toast(`The party now knows ${t.name}.`); },
     conditionWords: (t) => [...(t.dead ? ['dead'] : []), ...(t.effects || []).filter((e) => e && (S.view === 'gm' || !e.gm_only)).map((e) => (e.id ? ((CONDS[e.id] || {}).label || e.id) : e.name) + (e.value ? ` ${e.value}` : ''))],
     rolls: chatUi, panel: sidebar.panel('encounter'), openButton: document.getElementById('b-enc'),

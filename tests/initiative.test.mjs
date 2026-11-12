@@ -107,6 +107,9 @@ test('Claude\'s tool: roll with a statistic, the roll card record, defeat and hi
   assert.ok(card.data.parts.length >= 2);
   const d = runEncounter(g, 'defeat', ['Pip'], {});
   assert.ok(d.writes[0].data.combatants.find((c) => c.defeated));
+  assert.ok(d.writes.some((w) => /^tokens\//.test(w.path) && w.data.dead === true), 'the token shows dead');
+  assert.ok(runEncounter(g, 'defeat', ['Pip'], { undo: true }).writes.some((w) => /^tokens\//.test(w.path) && w.data.dead.__delete__), 'and back');
+  runEncounter(g, 'defeat', ['Pip'], {});
   assert.match(runEncounter(g, 'show', [], {}).lines.join('\n'), /defeated/);
 });
 
