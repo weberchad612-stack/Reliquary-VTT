@@ -66,6 +66,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Images are matched by fingerprint.** `list_assets` returns each file's SHA-256, the same fingerprint the map record holds, so a switch re-uploads nothing.
 - **Verify on the PC, not just in the workspace.** The read-back checksum is what proves the save reached the user's disk.
 - **Do not trust a log entry you wrote by hand** until you have compared it with one the board wrote (section 2).
+- **Icon toggles override the page's pressed style.** Every `button[aria-pressed=true]` is filled with the accent colour, which hides a line icon drawn in `currentColor`. An icon button that toggles (the tracker's eye and skull) sets its own pressed style: a faint accent tint behind an accent-coloured icon.
 
 ## 6. Maps, entrances, area maps and discovery
 
