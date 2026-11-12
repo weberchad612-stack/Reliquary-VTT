@@ -34,7 +34,31 @@ import { campaignRecords, saveFromRecords } from '../board/records.js';
 
 export const BACKUPS = 5;
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
+
+/**
+ * The game content a pack's campaigns use: the open sources it lists (pack.json `content`: content/<source>/
+ * in the repository), then its own content/ folder, which overrides them. {'<kind>/<slug>': document}.
+ */
+export function readContent(pack, packDir) {
+  const content = {};
+  const readKinds = (dir) => {
+    if (!fs.existsSync(dir)) return;
+    for (const kind of fs.readdirSync(dir)) {
+      const kdir = path.join(dir, kind);
+      if (!fs.statSync(kdir).isDirectory()) continue;
+      for (const n of fs.readdirSync(kdir).filter((x) => x.endsWith('.json'))) { const { $schema: _s, ...d } = readJson(path.join(kdir, n)); content[`${kind}/${d.slug || path.basename(n, '.json')}`] = d; }
+    }
+  };
+  for (const src of pack.content || []) {
+    const dir = path.join(REPO, 'content', src);
+    if (!fs.existsSync(dir)) throw new Error(`pack.json content: no open content "${src}" (content/${src})`);
+    readKinds(dir);
+  }
+  readKinds(path.join(packDir, 'content'));
+  return content;
+}
 
 /** Read a pack and a save from disk into what campaignRecords() takes, plus the map images. */
 export function readCampaign(packDir, saveDir) {
@@ -69,8 +93,7 @@ export function readCampaign(packDir, saveDir) {
   // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the pack's content (content/<kind>/<slug>.json)
   const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
   const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
-  const content = {}, cdir = path.join(packDir, 'content');
-  if (fs.existsSync(cdir)) for (const kind of fs.readdirSync(cdir)) for (const [slug, d] of Object.entries(readDir(path.join(cdir, kind)))) content[`${kind}/${d.slug || slug}`] = d;
+  const content = readContent(pack, packDir);
   const { $schema, ...camp } = campaign;
   return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content };
 }

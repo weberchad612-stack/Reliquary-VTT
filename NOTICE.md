@@ -1,0 +1,25 @@
+# Notices
+
+**Code.** Reliquary VTT's code is under the MIT License ([LICENSE](LICENSE)).
+
+**Pathfinder game content.** The open game content in [content/pf2e/](content/pf2e/README.md) (conditions,
+items, spells, feats, effects and creatures, including adventure bestiaries) is converted from the
+Pathfinder Second Edition system for Foundry VTT (github.com/foundryvtt/pf2e), whose game data is published
+under open licences. Each document records its licence and book (`source.license`, `source.title`):
+
+- **ORC:** this product is licensed under the ORC License located at the Library of Congress at TX 9-307-067
+  and available online at various locations. All warranties are disclaimed as set forth therein. Attribution
+  notices: [licenses/ORC.md](licenses/ORC.md).
+- **OGL:** Open Game Content under the Open Game License 1.0a, with its Section 15 copyright notices:
+  [licenses/OGL.md](licenses/OGL.md).
+
+**Paizo Community Use Policy.** Reliquary VTT uses trademarks and/or copyrights owned by Paizo Inc., used under
+Paizo's Community Use Policy (paizo.com/licenses/communityuse). We are expressly prohibited from charging you to
+use or access this content. Reliquary VTT is not published, endorsed, or specifically approved by Paizo. For
+more information about Paizo Inc. and Paizo products, visit paizo.com.
+
+Names and descriptions of creatures, places and characters are Paizo's (Product Identity under the OGL); they
+are included for non-commercial use under the Community Use Policy above, and the project must stay free.
+
+**Not included:** text, maps and art from books (adventure text, keyed room descriptions, maps): those are
+used only in private packs built from books the user owns, never in this repository.

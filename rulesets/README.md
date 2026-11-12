@@ -4,7 +4,7 @@ One folder per game system (`pf2e` first, then `dnd5e`).
 
 A ruleset declares the character model, action economy, check resolution, conditions, rest and time rules, encounter math, and stat block and sheet schemas. It knows nothing about any adventure. The map engine asks it for the game rules of movement (diagonal costs, terrain costs, who may share a space), so the engine itself stays system-free.
 
-Only open-licensed rules content (Pathfinder ORC, D&D 5e SRD) may be committed here, paraphrased.
+Only open-licensed rules content (Pathfinder ORC and OGL, D&D 5e SRD) may be committed here. Converted game content (creatures, items, spells) goes in `content/<system>/` instead ([NOTICE.md](../NOTICE.md)).
 
 | File | What |
 |---|---|

@@ -185,3 +185,32 @@ test('saves keep actors and live state; the validator checks them', () => {
   assert.match(m2, /rat.json: its kind and slug make "item\/longsword"/);
   fs.rmSync(t2, { recursive: true, force: true });
 });
+
+test('open content: only ORC and OGL documents in public mode; the validator checks licences; packs draw on it', async () => {
+  const { OPEN_LICENSES } = await import('../tools/import/foundry-pf2e.mjs');
+  const { validateOpenContent } = await import('../tools/validate.mjs');
+  const { readContent } = await import('../tools/campaign.mjs');
+  assert.deepEqual([...OPEN_LICENSES], ['ORC', 'OGL']);
+  const closed = { ...ARMOR, name: 'Secret Coat', system: { ...ARMOR.system, publication: { license: 'Paizo', title: 'X' } } };
+  const none = { ...ARMOR, name: 'Unknown Coat', system: { ...ARMOR.system, publication: undefined } };
+  const ogl = { ...NPC, name: 'Old Bat', system: { ...NPC.system, details: { ...NPC.system.details, publication: { license: 'OGL', title: 'Old Book' } } } };
+  const { docs, report } = importDocs([{ file: 'a', data: NPC }, { file: 'b', data: closed }, { file: 'c', data: none }, { file: 'd', data: ogl }], { open: true });
+  assert.deepEqual(docs.map((d) => d.key).sort(), ['creature/gloomfang-bat', 'creature/old-bat']);
+  assert.ok(report.skipped.some((s) => s.name === 'Secret Coat' && /licence "Paizo" is not open/.test(s.why)));
+  assert.ok(report.skipped.some((s) => s.name === 'Unknown Coat' && /none recorded/.test(s.why)));
+  assert.equal(importDocs([{ file: 'b', data: closed }]).docs.length, 1, 'private packs take anything');
+  // the validator: an open document must carry ORC or OGL
+  const t = fs.mkdtempSync(path.join(os.tmpdir(), 'rvtt-open-'));
+  const put = (p, d) => { fs.mkdirSync(path.dirname(path.join(t, p)), { recursive: true }); fs.writeFileSync(path.join(t, p), JSON.stringify(d)); };
+  put('src-a/item/fine-coat.json', { kind: 'armor', slug: 'fine-coat', system: 'pf2e', name: 'Fine Coat', source: { title: 'X', license: 'ORC' } });
+  put('src-a/item/shut-coat.json', { kind: 'armor', slug: 'shut-coat', system: 'pf2e', name: 'Shut Coat', source: { title: 'X', license: 'original' } });
+  const msgs = validateOpenContent(t).items.map((i) => `${path.basename(i.file)}: ${i.msg}`).join('\n');
+  assert.match(msgs, /shut-coat.json: licence "original": open content must be ORC or OGL/);
+  assert.doesNotMatch(msgs, /fine-coat/);
+  // the repository's own open content is valid
+  assert.deepEqual(validateOpenContent(path.join(ROOT, 'content', 'pf2e')).errors, []);
+  fs.rmSync(t, { recursive: true, force: true });
+  // a pack lists open sources; its own content overrides them; a missing source is an error
+  assert.throws(() => readContent({ content: ['pf2e/no-such-source'] }, PACK), /no open content "pf2e\/no-such-source"/);
+  assert.ok(readContent({}, PACK)['creature/rat'], 'the pack\'s own content');
+});

@@ -6,11 +6,15 @@
 // imported yet. Each document keeps its licence and book.
 //
 // Usage:
+//   node tools/import/foundry-pf2e.mjs <file-or-folder> [...] --public <source> [--dry-run]
 //   node tools/import/foundry-pf2e.mjs <file-or-folder> [...] --out <pack-dir> [--dry-run]
 //
-// <pack-dir> must be a private pack (packs/<id> in this repository, git-ignored, or a folder outside it):
-// imported content is never written into the repository. Writes <pack-dir>/content/<creature|item>/<slug>.json
-// and <pack-dir>/content/import-report.json, and prints the report's summary.
+// --public <source>: the open content in this repository, content/pf2e/<source>/<creature|item>/<slug>.json
+// (<source> names the Foundry pack, such as pathfinder-monster-core). Only documents licensed ORC or OGL are
+// written; any other is skipped (NOTICE.md, content/pf2e/README.md).
+// --out <pack-dir>: a private pack (packs/<id> in this repository, git-ignored, or a folder outside it), for
+// anything that is not open; writes <pack-dir>/content/<creature|item>/<slug>.json.
+// Both write an import report (import-report.json beside the content) and print its summary.
 // Docs: docs/design/game-data.md section 5, docs/best-practices/game-data.md.
 
 import fs from 'node:fs';
@@ -21,6 +25,8 @@ import { parseExpr } from '../../engine/rules/expr.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SIZES = { tiny: 'tiny', sm: 'small', med: 'medium', lg: 'large', huge: 'huge', grg: 'gargantuan' };
 const ITEM_TYPES = new Set(['armor', 'shield', 'weapon', 'equipment', 'consumable', 'effect', 'feat']);
+/** The licences open content may carry (NOTICE.md). */
+export const OPEN_LICENSES = Object.freeze(['ORC', 'OGL']);
 const slugify = (s) => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 /** Foundry's text markup and HTML as plain text, with checks, damage and links in words. */
@@ -166,11 +172,15 @@ export function convertItem(d, report) {
   return doc;
 }
 
-/** Import documents: {docs: [{key, doc}], report}. */
-export function importDocs(list) {
+/** Import documents: {docs: [{key, doc}], report}. `open`: only documents licensed ORC or OGL (the rest skipped). */
+export function importDocs(list, { open = false } = {}) {
   const report = { converted: [], flagged: [], skipped: [] }, docs = [];
   for (const { file, data: d } of list) {
     if (!d || typeof d !== 'object' || !d.type) { report.skipped.push({ file, why: 'not a Foundry document' }); continue; }
+    if (open && (d.type === 'npc' || ITEM_TYPES.has(d.type))) {
+      const lic = source(d, d.system || {}).license, pub = (d.system || {}).publication || ((d.system || {}).details || {}).publication;
+      if (!pub || !OPEN_LICENSES.includes(lic)) { report.skipped.push({ file, name: d.name, why: `licence "${pub ? lic : 'none recorded'}" is not open (ORC or OGL): import it into a private pack` }); continue; }
+    }
     if (d.type === 'npc') { const c = convertCreature(d, report); docs.push({ key: `creature/${c.slug}`, doc: c }); report.converted.push({ name: d.name, as: `creature/${c.slug}`, license: c.source.license }); }
     else if (ITEM_TYPES.has(d.type)) { const c = convertItem(d, report); docs.push({ key: `item/${c.slug}`, doc: c }); report.converted.push({ name: d.name, as: `item/${c.slug}`, license: c.source.license }); }
     else if (d.type === 'condition') report.skipped.push({ file, name: d.name, why: 'conditions are defined by the ruleset (rulesets/pf2e/rules.js)' });
@@ -207,20 +217,22 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
-    const out = opt('--out'), dry = flag('--dry-run');
-    if (!out || !args.length) throw new Error('give the Foundry files or folders and --out <pack-dir>');
-    if (!privateTarget(out)) throw new Error(`"${out}" is inside the repository: imported content goes into a private pack (packs/<id>) or a folder outside the repository`);
-    const { docs, report } = importDocs(readInputs(args));
+    const out = opt('--out'), pub = opt('--public'), dry = flag('--dry-run');
+    if ((!out && !pub) || (out && pub) || !args.length) throw new Error('give the Foundry files or folders and one of --public <source> or --out <pack-dir>');
+    if (pub && !/^[a-z0-9][a-z0-9-]*$/.test(pub)) throw new Error('--public: the source\'s name, lower case with dashes (pathfinder-monster-core)');
+    if (out && !privateTarget(out)) throw new Error(`"${out}" is inside the repository: open content goes in with --public, anything else into a private pack (packs/<id>) or a folder outside the repository`);
+    const dest = pub ? path.join(ROOT, 'content', 'pf2e', pub) : path.join(out, 'content');
+    const { docs, report } = importDocs(readInputs(args), { open: !!pub });
     if (!dry) {
       for (const { key, doc } of docs) {
-        const [kind, slug] = key.split('/'), f = path.join(out, 'content', kind, `${slug}.json`);
+        const [kind, slug] = key.split('/'), f = path.join(dest, kind, `${slug}.json`);
         fs.mkdirSync(path.dirname(f), { recursive: true });
         fs.writeFileSync(f, JSON.stringify(doc, null, 2) + '\n');
       }
-      fs.mkdirSync(path.join(out, 'content'), { recursive: true });
-      fs.writeFileSync(path.join(out, 'content', 'import-report.json'), JSON.stringify(report, null, 2) + '\n');
+      fs.mkdirSync(dest, { recursive: true });
+      fs.writeFileSync(path.join(dest, 'import-report.json'), JSON.stringify(report, null, 2) + '\n');
     }
-    console.log(`${report.converted.length} converted, ${report.flagged.length} flagged, ${report.skipped.length} skipped${dry ? ' (dry run: nothing written)' : ` into ${path.join(out, 'content')}`}`);
+    console.log(`${report.converted.length} converted, ${report.flagged.length} flagged, ${report.skipped.length} skipped${dry ? ' (dry run: nothing written)' : ` into ${dest}`}`);
     for (const f of report.flagged.slice(0, 30)) console.log(`  flagged ${f.where}: ${f.what}`);
     for (const s of report.skipped.slice(0, 10)) console.log(`  skipped ${s.name || s.file}: ${s.why}`);
     return 0;

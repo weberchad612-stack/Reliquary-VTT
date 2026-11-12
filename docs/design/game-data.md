@@ -156,8 +156,9 @@ on the PC (`characters/<id>.json`) when one PC moves to another campaign. One pl
 ### 3.6 Rules content
 
 - **Foundry PF2E data** is the richest source (every creature, item, spell and feat, with rule elements). Its
-  licences allow use with notices; to stay safe, treat it like book content: imported into private packs on
-  the user's PC, never into the repository. Its rule-element shape can be the model for ours, adapted.
+  licences allow use with notices. **Decision (the user, 2026-11-12): open in this repository too**, in
+  `content/pf2e/`, documents licensed ORC or OGL only, flavour descriptions and adventure bestiaries included,
+  with the notices in `NOTICE.md` and `licenses/`. Its rule-element shape is the model for ours, adapted.
 - **The user's PDFs** and **Archives of Nethys**: for what is missing or to check; private packs only.
 - **Claude** enters what a campaign needs when nothing else has it.
 - **The sample pack** gets a few original creatures, items and two sample PCs, so every test runs on open data.
@@ -290,9 +291,10 @@ scratch folder, nothing kept):
   `dex-based`, `attack-roll`, `damage`, `hp`, `speed`, `all`...).
 
 **The importer** (`tools/import/foundry-pf2e.mjs`):
-- Reads Foundry PF2E JSON (a pack folder or single files, from the user's copy of the repository or an
-  export) and writes our format into a **private pack** (`packs/<pack>/content/...`), never into the
-  repository; it keeps each document's licence and book.
+- Reads Foundry PF2E JSON (a pack folder or single files, from a copy of their repository or an export) and
+  writes our format: `--public <source>` into the open content (`content/pf2e/<source>/`, ORC and OGL only),
+  `--out` into a private pack (`packs/<pack>/content/...`) for anything else; it keeps each document's
+  licence and book. A pack lists the open sources it uses in `pack.json` (`content`).
 - Converts creatures, hazards (later), items (armour, weapons, shields, equipment, consumables), conditions
   and effects, and feats (as reference, with the rule elements we support).
 - **Rule elements:** `FlatModifier` becomes `modifier`; `Resistance`, `Weakness`, `Immunity`, `BaseSpeed`,

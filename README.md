@@ -39,3 +39,7 @@ node tools/validate.mjs examples/sample-pack --save examples/sample-save
 The framework code is released under the [MIT License](LICENSE), copyright Cahoots Creative, LLC.
 
 No publisher game content (rulebooks, adventures, maps or art) is included in this repository. Users supply their own.
+
+## Licences
+
+Code: MIT ([LICENSE](LICENSE)). Pathfinder game content in `content/pf2e/` is converted from the Foundry VTT PF2E system's open data under the ORC License and the Open Game License 1.0a, and uses Paizo trademarks and copyrights under Paizo's Community Use Policy: see [NOTICE.md](NOTICE.md). Reliquary VTT is not published, endorsed, or specifically approved by Paizo, and is free.

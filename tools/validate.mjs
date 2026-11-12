@@ -530,11 +530,39 @@ function checkRules(rules, where, file, sys, report) {
   }
 }
 
-/** A pack's game content (content/<kind>/<slug>.json): the ruleset's schema, unique slugs, rule elements. */
+/**
+ * A pack's game content: the open sources it lists (content/<source>/ in the repository, checked by
+ * validateOpenContent) and its own content/<kind>/<slug>.json (the ruleset's schema, unique slugs, rule elements).
+ */
 export function validateContent(target, pack, report) {
-  const dir = path.join(target, 'content'), out = {};
+  const out = {};
+  for (const src of pack.content || []) {
+    const dir = path.join(ROOT, 'content', src);
+    if (!fs.existsSync(dir)) { report.error(path.join(target, 'pack.json'), `content: no open content "${src}" (content/${src})`); continue; }
+    Object.assign(out, contentDir(dir, pack.ruleset, report, false));
+  }
+  Object.assign(out, contentDir(path.join(target, 'content'), pack.ruleset, report, false));
+  return out;
+}
+
+/**
+ * The repository's open content (content/<system>/<source>/<kind>/<slug>.json): the ruleset's schema and an
+ * open licence (ORC or OGL) on every document (NOTICE.md).
+ */
+export function validateOpenContent(dir, ruleset = 'pf2e', report = new Report()) {
+  if (!fs.existsSync(dir)) return report;
+  const kinds = new Set(['creature', 'item']);
+  const sources = fs.readdirSync(dir).filter((n) => fs.statSync(path.join(dir, n)).isDirectory());
+  if (sources.some((s) => kinds.has(s))) contentDir(dir, ruleset, report, true);
+  else for (const s of sources) contentDir(path.join(dir, s), ruleset, report, true);
+  return report;
+}
+
+/** One folder of content (<kind>/<slug>.json); `open`: every document must carry an open licence. */
+function contentDir(dir, ruleset, report, open) {
+  const out = {};
   if (!fs.existsSync(dir)) return out;
-  const check = rulesetSchema(pack.ruleset, 'content'), sys = systemConfig(pack.ruleset);
+  const check = rulesetSchema(ruleset, 'content'), sys = systemConfig(ruleset);
   for (const kind of fs.readdirSync(dir)) {
     const kdir = path.join(dir, kind);
     if (!fs.statSync(kdir).isDirectory()) continue;
@@ -542,6 +570,7 @@ export function validateContent(target, pack, report) {
       const file = path.join(kdir, f), d = readJson(file, report);
       if (!d) continue;
       if (check && !schemaErrors(check, d, file, report)) continue;
+      if (open && !['ORC', 'OGL'].includes((d.source || {}).license)) report.error(file, `licence "${(d.source || {}).license}": open content must be ORC or OGL (NOTICE.md)`);
       const key = `${d.kind === 'creature' ? 'creature' : 'item'}/${d.slug}`;
       if (`${kind}/${path.basename(f, '.json')}` !== key) report.error(file, `its kind and slug make "${key}", not the file's place "${kind}/${path.basename(f, '.json')}"`);
       if (out[key]) report.error(file, `"${key}" is defined twice`);
@@ -591,6 +620,13 @@ export function validateActors(save, pack, content, report) {
 
 function main(argv) {
   const args = argv.slice(2);
+  const ci = args.indexOf('--content');
+  if (ci >= 0) {   // the repository's open content: node tools/validate.mjs --content content/pf2e
+    const report = validateOpenContent(path.resolve(args[ci + 1] || 'content/pf2e'));
+    for (const i of report.items) console.log(`${i.level.toUpperCase()}  ${path.relative(process.cwd(), i.file) || i.file}: ${i.msg}`);
+    console.log(report.errors.length ? `FAILED: ${report.errors.length} error(s), ${report.warnings.length} warning(s)` : `OK: 0 errors, ${report.warnings.length} warning(s)`);
+    return report.errors.length ? 1 : 0;
+  }
   const si = args.indexOf('--save');
   let save = null;
   if (si >= 0) { save = args[si + 1]; args.splice(si, 2); }

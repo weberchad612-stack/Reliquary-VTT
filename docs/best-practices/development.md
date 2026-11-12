@@ -23,7 +23,7 @@
 
 - Book content (PDFs, images, extracted text, imported packs, demos built on them) never goes into git or a published link. `pdfsource/`, `extracted/`, `packs/` and `saves/` are ignored; check `git status` before every commit.
 - Paraphrase adventure text; never copy passages.
-- The public repo ships only code, schemas, original sample content and open-licensed rules content.
+- The public repo ships only code, schemas, original sample content and open-licensed rules content: the PF2E rules we write, and game data converted from the Foundry PF2E system's open data (ORC and OGL) in `content/pf2e/`, with the notices in `NOTICE.md` and `licenses/`. Text, maps and art from books never.
 
 ## The user's working preferences
 

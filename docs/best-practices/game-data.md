@@ -60,16 +60,25 @@ write a number into an actor that the rules can work out. The board and the tool
 
 ## 4. Importing content (Foundry PF2E)
 
-- `node tools/import/foundry-pf2e.mjs <files or folders> --out packs/<pack-id>` converts creatures, items,
-  effects and feats from Foundry PF2E's open data into a **private pack**: it refuses any folder in the
-  repository except `packs/` (git-ignored). Each document keeps its licence and book.
+- **Open content (the user's decision, 2026-11-12):** Foundry PF2E's open data is open in this repository too.
+  `node tools/import/foundry-pf2e.mjs <Foundry pack folder> --public <source>` converts creatures, items,
+  effects and feats into `content/pf2e/<source>/` (for example `--public pathfinder-monster-core`, `--public
+  abomination-vaults-bestiary`), flavour descriptions and adventure bestiaries included. Only documents
+  licensed **ORC or OGL** are written; anything else is skipped with its reason. The notices are in
+  `NOTICE.md` and `licenses/` (ORC attribution, OGL Section 15, Paizo's Community Use Policy): keep them, and
+  keep the project free. Check with `node tools/validate.mjs --content content/pf2e`.
+- **A pack uses open content** by listing it in `pack.json` (`"content": ["pf2e/pathfinder-monster-core"]`);
+  its own `content/` folder overrides it (a creature adjusted for this adventure).
+- **Anything not open** (a document with another licence, content from a source that is not Foundry's open
+  data) goes into a private pack: `--out packs/<pack-id>`, which refuses any folder in the repository except
+  `packs/`. Each document keeps its licence and book.
+- **Never commit text, maps or art from books** (adventure text, keyed rooms): those stay private, whatever
+  Foundry's data holds.
 - Read the report (`content/import-report.json`): rules we do not support yet are kept untouched under
   `foundry` and listed, and the creature works without them (`show` lists them as unsupported, for Claude to
   apply by hand). Spellcasting is kept as text until spells are built; hazards and characters are skipped.
-- **One pack per adventure** (its creatures, hazards and maps, Foundry's adventure bestiaries are a good
-  start, checked against the book), and shared rules content (items, generic creatures) in a pack of its own,
-  so it is not copied into every adventure.
-- Never commit imported content, and never import into the sample pack: it holds only original data.
+- **Don't edit converted documents by hand:** fix the importer and convert again. Never import into the sample
+  pack: it holds only original data.
 
 ## 5. Lessons (2026-11-12, step 1)
 
@@ -83,3 +92,6 @@ write a number into an actor that the rules can work out. The board and the tool
 - **Foundry keeps a creature's book under `details.publication`**, an item's under `publication`: the
   importer's first run recorded every creature as OGL with no book.
 - **The private-pack guard must refuse the repository's root itself**, not only folders inside it.
+- **Check what a licence covers before relying on it.** Foundry's data is open (ORC or OGL on every document),
+  but Paizo's names and descriptions are Product Identity, used under the Community Use Policy: hence the
+  notices, and the project staying free.
