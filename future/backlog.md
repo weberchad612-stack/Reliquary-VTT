@@ -22,6 +22,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-12 | [Encounter tracker settings](#fr-12-encounter-tracker-settings) | open | 2026-11-12 |
 | FR-13 | [Encounter threat and XP](#fr-13-encounter-threat-and-xp) | open | 2026-11-12 |
 | FR-14 | [Aura notes on the board's turns](#fr-14-aura-notes-on-the-boards-turns) | open | 2026-11-12 |
+| FR-15 | [A home for the Selection card's controls](#fr-15-a-home-for-the-selection-cards-controls) | open | 2026-11-12 |
 
 ---
 
@@ -372,3 +373,12 @@ the ogre's Frightful Presence: Will save"). The board's tracker runs the same tu
 working out auras needs every creature's position and their prepared auras (`tools/actor.mjs auraEffects`), which
 only the tools have. To do: move the aura check into the ruleset or engine (pure, from tokens and prepared
 creatures) so the board and the tools share it. Until then Claude says it.
+
+---
+
+## FR-15: A home for the Selection card's controls
+
+**Known so far (2026-11-12):** the side panel's Selection card was retired with the move to Foundry's sidebar. It
+also held a few controls that now have no button: lighting or putting out a token's carried light, the GM's carried
+light colour and animation, marking an unseen foe's hidden position for players, and the GM's reminder of the name
+players see for a named NPC. Candidates: the token HUD (as Foundry's light toggle), Token Quick-View, or a token tab.

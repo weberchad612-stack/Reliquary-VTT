@@ -60,7 +60,7 @@ export async function mountClock(o) {
       const before = CLOCK;
       await o.store.set('state/clock', next);
       CLOCK = next;
-      o.logChange(what(before, next));
+      o.logChange(what(before, next), true);   // the time is everyone's
       render();
       if (runOut && before && next.now > before.now) await expire(next.now);
       if (!dlg.hidden) open();

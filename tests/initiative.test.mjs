@@ -11,7 +11,7 @@ import * as E from '../engine/time/encounter.js';
 import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
 import { loadGame, creature } from '../tools/actor.mjs';
 import { runEncounter } from '../tools/encounter.mjs';
-import { diceWords, chipWords } from '../board/rolls.js';
+import { diceWords, chipWords } from '../board/chat.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const game = () => loadGame(path.join(ROOT, 'examples/sample-pack'), path.join(ROOT, 'examples/campaigns/keep-test'));
@@ -98,9 +98,10 @@ test('Claude\'s tool: roll with a statistic, the roll card record, defeat and hi
   const k = enc.combatants.find((c) => c.stat === 'stealth');
   assert.equal(k.initiative, 10 + creature(g, 'Kerra').prepared.skills.stealth.value);
   assert.deepEqual(k.roll.dice, [10]);
-  const card = out.writes.find((w) => w.path.startsWith('rolls/'));
-  assert.match(card.path, /^rolls\/[0-9a-z]{9}-/);
-  assert.equal(card.data.kind, 'initiative');
+  const card = out.writes.find((w) => w.path.startsWith('chat/'));
+  assert.match(card.path, /^chat\/[0-9a-z]{9}-/);
+  assert.equal(card.data.kind, 'roll');
+  assert.equal(card.data.check, 'initiative');
   assert.equal(card.data.stat.label, 'Stealth');
   assert.equal(card.data.total, k.initiative);
   assert.ok(card.data.parts.length >= 2);

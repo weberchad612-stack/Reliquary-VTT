@@ -7,11 +7,13 @@
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, isTarget(id), toggleTarget(id), ping(id), hover(id | null), onActing(id | null),
-//   reveal(id), conditionWords(token) -> [words this view may see], rolls ({show, latest}), openButton}
+//   reveal(id), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), pane (the
+//   Encounter tab's pane), showTab() (open that tab), openButton}
 
 import { makePanel } from './panel.js';
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines } from './tracker.js';
-import { rollRecord, rollPath } from './rolls.js';
+import { rollRecord } from './rolls.js';
+import { chatPath } from './chat.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const sgn = (v) => (v < 0 ? `−${-v}` : `+${v}`);
@@ -31,9 +33,9 @@ export async function mountTracker(o) {
   const I = SYS.initiative || null;
   const Tm = SYS.time || {};
   const TT = { tiebreak: Tm.tiebreak || (() => 0), roundSeconds: Tm.roundSeconds || 6 };
-  const panel = makePanel({ id: 'tracker', title: 'Encounter', key: 'reliquary.tracker', docked: true, dockInto: document.querySelector('main aside'), onClose: () => { hover(null); } });
+  const panel = makePanel({ id: 'tracker', title: 'Encounter', key: 'reliquary.tracker', dockInto: o.pane, showTab: o.showTab });
   let ENC = await store.get('state/encounter').catch(() => null);
-  let lastKey = '', busy = false, menuFor = null, typing = null, autoOpened = !!openEncounter(ENC), lastActing = null;
+  let lastKey = '', busy = false, menuFor = null, typing = null, lastActing = null;
   const gm = () => o.view() === 'gm' && !o.readOnly;
   const hover = (id) => o.hover(id);
 
@@ -47,7 +49,9 @@ export async function mountTracker(o) {
       const clock = await store.get('state/clock').catch(() => null);
       const now0 = clock ? clock.now : 0;
       const r = applyAction(enc0, action, { E: Engine, T: TT, now: now0, view: o.view(), tokens: o.tokens(), name: o.publicName });
-      const lines = [...r.lines], turnWords = eventLines(r.events, o.publicName);
+      // each line is public unless it is about a creature the players do not see (hidden, or out of sight)
+      const secret = (id) => { const c = r.encounter.combatants.find((x) => x.token === id), t = o.tokens()[id]; return !!(c && c.hidden) || !!(t && t.kind !== 'pc' && !o.partySees(id)); };
+      const lines = r.lines.map((text) => ({ text, pub: !(action.token && secret(action.token)) })), turnWords = eventLines(r.events.filter((ev) => !ev.token || !secret(ev.token)), o.publicName);
       const tokChanged = {}, stateChanged = {};
       if (r.events.length && Tm.turnRules) {
         const all = Object.fromEntries((await store.list('tokens')).map((e) => [e.id, e.data]));
@@ -56,10 +60,11 @@ export async function mountTracker(o) {
         const prepare = (id, token, state) => { const c = cre[id]; if (!c) return null; try { return Engine.prepareActor({ actor: c.actor, state: state || {}, effects: (token && token.effects) || [], content: c.content, ruleset: SYS.actors }); } catch { return null; } };
         const names = Object.fromEntries(Object.keys(all).map((id) => [id, o.publicName(id)]));
         for (const ev of r.events) {
-          if (ev.type === 'round-start') lines.push(`— round ${ev.round} —`);
-          if (ev.type === 'turn-start') lines.push(`${o.publicName(ev.token)}'s turn`);
+          const pub = !ev.token || !secret(ev.token);
+          if (ev.type === 'round-start') lines.push({ text: `round ${ev.round}`, pub: true });
+          if (ev.type === 'turn-start') lines.push({ text: `${o.publicName(ev.token)}'s turn`, pub });
           const res = Tm.turnRules({ events: [ev], now: ev.type === 'turn-end' || ev.type === 'round-end' ? now0 : r.now, encounter: r.encounter, tokens: all, states, names, roundSeconds: TT.roundSeconds, rng: Math.random, prepare });
-          lines.push(...res.lines);
+          lines.push(...res.lines.map((text) => ({ text, pub })));
           for (const [id, t] of Object.entries(res.tokens || {})) { all[id] = { ...all[id], ...t }; tokChanged[id] = { effects: t.effects || [], dead: !!t.dead }; }
           for (const [id, s] of Object.entries(res.states || {})) { states[id] = s; stateChanged[id] = s; }
         }
@@ -82,7 +87,7 @@ export async function mountTracker(o) {
         await store.set(`actorstate/${id}`, data);
       }
       for (const w of extra) await store.set(w.path, w.data);
-      for (const l of lines) o.logChange(l.replace(/^— | —$/g, ''));
+      for (const l of lines) o.logChange(l.text, l.pub);
       if (turnWords.length) o.toast(turnWords.join(' · '));
       render();
       return true;
@@ -108,8 +113,8 @@ export async function mountTracker(o) {
     // a creature the players do not see (hidden in the tracker, or out of the party's sight): its roll is the GM's
     const c = openEncounter(ENC) ? ENC.combatants.find((x) => x.token === id) : null, t = o.tokens()[id];
     const secret = !!(c && c.hidden) || !!(t && t.kind !== 'pc' && !o.partySees(id));
-    const rec = rollRecord({ by: o.view() === 'gm' ? 'gm' : 'player', token: id, name: o.publicName(id), kind: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: secret });
-    return { action: { type: 'initiative', token: id, initiative: r.total, extra: { stat: slug, roll } }, write: { path: rollPath(), data: rec } };
+    const rec = rollRecord({ by: o.view() === 'gm' ? 'gm' : 'player', token: id, name: o.publicName(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: secret });
+    return { action: { type: 'initiative', token: id, initiative: r.total, extra: { stat: slug, roll } }, write: { path: chatPath(), data: rec } };
   }
   /** Roll All / Roll NPCs: Perception, no dialog, for everyone who still needs it. */
   async function rollMany(which) {
@@ -205,8 +210,6 @@ export async function mountTracker(o) {
   function render() {
     const view = o.view(), tokens = o.tokens();
     const live = openEncounter(ENC), started = begun(ENC);
-    if (live && !autoOpened) { autoOpened = true; panel.open(); }
-    if (!live) autoOpened = false;
     const rows = trackerRows(ENC, tokens, { view, seen: o.seen, name: o.name });
     const acting = rows.find((r) => r.acting);
     const actingId = acting ? acting.token : null;
@@ -292,7 +295,7 @@ export async function mountTracker(o) {
     const n = Math.round(Number(e.target.querySelector('input').value)), id = menuFor;
     if (!Number.isFinite(n)) return;
     closeMenu();
-    commit({ type: 'initiative', token: id, initiative: n, extra: { roll: { typed: true } } }, []).then((ok) => { if (ok) o.logChange(`${o.publicName(id)}: initiative ${n} (typed in)`); });
+    commit({ type: 'initiative', token: id, initiative: n, extra: { roll: { typed: true } } }, []).then((ok) => { if (ok) o.logChange(`${o.publicName(id)}: initiative ${n} (typed in)`, !((ENC.combatants.find((c) => c.token === id) || {}).hidden)); });
   });
   panel.el.addEventListener('click', (e) => {
     const m = e.target.closest('[data-m]');
@@ -326,7 +329,7 @@ export async function mountTracker(o) {
   panel.el.addEventListener('mouseover', (e) => { const li = e.target.closest('.trk-row'); hover(li ? li.dataset.id : null); });
   panel.el.addEventListener('mouseleave', () => hover(null));
   panel.el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuFor) { closeMenu(); } });
-  if (o.openButton) o.openButton.addEventListener('click', () => panel.toggle());
+  if (o.openButton) o.openButton.addEventListener('click', () => panel.open());
 
   // the GM view marks dead creatures defeated (their turns are then skipped), once each
   const marking = new Set();

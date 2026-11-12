@@ -85,10 +85,13 @@ export function readCampaign(packDir, saveDir) {
   // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the content they use
   const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
   const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
+  // the chat (chat.json: {messages: [{id, ...message}]}), oldest first
+  const chatFile = path.join(saveDir, 'chat.json');
+  const chat = fs.existsSync(chatFile) ? (readJson(chatFile).messages || []) : [];
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
   const content = readContent(pack, packDir, actors, tokens);
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
@@ -109,7 +112,7 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const campFile = path.join(saveDir, 'campaign.json');
   const base = fs.existsSync(campFile) ? readJson(campFile) : {};
   if (fs.existsSync(campFile)) backup(saveDir, now);
-  const { campaign, mapStates, actors, actorStates } = saveFromRecords(records, base);
+  const { campaign, mapStates, actors, actorStates, chat } = saveFromRecords(records, base);
   campaign.saved_at = now.toISOString();
   const written = [];
   const write = (f, obj) => {
@@ -123,6 +126,10 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
     const prev = fs.existsSync(f) ? readJson(f) : {};
     write(f, { $schema: prev.$schema || '../../../../schemas/map-state.schema.json', ...st });
   }
+  // the chat, whole (an empty chat leaves no file)
+  const chatFile = path.join(saveDir, 'chat.json');
+  if (chat.length) write(chatFile, { $schema: '../../../schemas/chat.schema.json', messages: chat });
+  else if (fs.existsSync(chatFile)) fs.rmSync(chatFile);
   // one file per creature; files of creatures no longer on the board are removed (the backup keeps them)
   for (const [dir, docs] of [['actors', actors], ['actorstate', actorStates]]) {
     const d = path.join(saveDir, dir);
@@ -137,6 +144,7 @@ function backup(saveDir, now) {
   const dest = path.join(saveDir, 'backups', stamp);
   fs.mkdirSync(dest, { recursive: true });
   fs.copyFileSync(path.join(saveDir, 'campaign.json'), path.join(dest, 'campaign.json'));
+  if (fs.existsSync(path.join(saveDir, 'chat.json'))) fs.copyFileSync(path.join(saveDir, 'chat.json'), path.join(dest, 'chat.json'));
   for (const sub of ['maps', 'actors', 'actorstate']) if (fs.existsSync(path.join(saveDir, sub))) fs.cpSync(path.join(saveDir, sub), path.join(dest, sub), { recursive: true });
   const all = fs.readdirSync(path.join(saveDir, 'backups')).sort();
   for (const old of all.slice(0, Math.max(0, all.length - BACKUPS))) fs.rmSync(path.join(saveDir, 'backups', old), { recursive: true, force: true });
@@ -162,10 +170,11 @@ export function roundTrip(packDir, saveDir) {
     out.push(...diff({ map: id, ...strip(c.mapStates[id] || {}) }, strip(back.mapStates[id] || {}), `maps/${id}`));
   }
   out.push(...diff(strip(c.actors), strip(back.actors), 'actors'), ...diff(strip(c.actorStates), strip(back.actorStates), 'actorstate'));
+  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'));
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 
@@ -212,6 +221,7 @@ export function verifySave(records, packDir, saveDir) {
   const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
   for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
   out.push(...diff(strip(fromDb.actors), strip(disk.actors), 'actors'), ...diff(strip(fromDb.actorStates), strip(disk.actorStates), 'actorstate'));
+  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'));
   return out;
 }
 

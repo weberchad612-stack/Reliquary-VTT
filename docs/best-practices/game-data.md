@@ -66,7 +66,7 @@ write a number into an actor that the rules can work out. The board and the tool
   it prints and put its lines in the log; tell the story from them. `delay`, `resume <who>`, `remove <who>`,
   `end`, `previous` (a correction), `defeat <who>` and `hide <who>` (`--undo` for either). `roll` takes
   initiative's own modifiers and notes (Incredible Initiative, Battle Cry), `--mode higher|lower` for rolling
-  twice, and also writes the roll card (`rolls/`) every board shows. While an encounter is under way, time
+  twice, and also writes the roll card (a chat message, `chat/`) every board shows. Post narration, rulings and NPC lines with `tools/chat.mjs` (docs/best-practices/board.md, chat). While an encounter is under way, time
   moves only by rounds.
 - **The board runs encounters too** (the encounter tracker, 2026-11-12): the GM and the players add creatures
   (Enter Combat), roll, and move turns on, writing the same `state/encounter`. Read it before acting

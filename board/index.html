@@ -67,7 +67,7 @@ button {
 button:hover { background: #333842; }
 button[aria-pressed="true"] { background: var(--accent); color: #1a1408; }
 button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) auto; min-height: 0; grid-row: 3; }   /* the row that fills the window (the preview bar, when shown, takes row 2) */
 .stage { position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 canvas#map, .hud { margin: 0 auto; flex: none; }
 .selbox { position: absolute; border: 1px dashed var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); pointer-events: none; z-index: 5; }
@@ -143,11 +143,61 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .clock-panel input[type=number] { width: 5.5em; }
 .clock-panel input[name=day] { width: 4em; }
 .clock-panel .row { justify-content: space-between; }
-/* Board panels: docked at the top of the side panel or floating (board/panel.js) */
+/* The sidebar (board/sidebar.js): Foundry's icon strip, the open tab's pane, collapse and resize */
+#sidebar { position: relative; width: var(--sbw, 340px); display: flex; padding: 0; gap: 0; overflow: hidden; align-content: stretch; }
+#sidebar.collapsed { width: 46px; }
+#sidebar.resizing { user-select: none; }
+.sb-resize { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; cursor: ew-resize; z-index: 3; touch-action: none; }
+.sb-resize:hover, #sidebar.resizing .sb-resize { background: rgba(227,164,67,.35); }
+#sidebar.collapsed .sb-resize { display: none; }
+.sb-strip { width: 46px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border-right: 1px solid var(--line); background: #1a1d22; }
+.sb-tab { position: relative; width: 36px; height: 36px; padding: 7px; border: 1px solid transparent; border-radius: 8px; background: #23272e; color: var(--muted); cursor: pointer; }
+.sb-tab svg { width: 100%; height: 100%; display: block; }
+.sb-tab:hover { color: var(--ink); }
+.sb-tab.on { color: var(--accent); border-color: var(--accent); }
+.sb-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.sb-gap { flex: 1; }
+.sb-badge { position: absolute; top: -4px; right: -5px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--foe); color: #fff; font: 700 10px/16px var(--font-body); text-align: center; }
+.sb-panes { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sb-pane { flex: 1; min-height: 0; overflow: auto; padding: 12px 12px 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+.sb-pane[hidden] { display: none; }
+#sidebar.collapsed .sb-panes { display: none; }
+/* chat (board/chatui.js, board/chat.js) */
+.sb-pane[data-pane=chat] { padding: 0; gap: 0; }
+.cm-list { list-style: none; margin: 0; padding: 8px 10px; overflow: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.cm-foot:empty { display: none; }
+.cm-foot { padding: 6px 10px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; }
+.cm-clear { background: none; border: 1px solid var(--line); color: #ff8a7a; border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
+.cm-empty, .cm-older { color: var(--muted); font-size: 13px; text-align: center; padding: 8px; }
+.cm { background: #23272e; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.cm.gm { border-color: #6c3b8a; }
+.cm-h { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.cm-pic { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; font: 700 14px var(--font-display); color: #10131a; background: var(--c); border: 2px solid rgba(0,0,0,.4); }
+.cm-claude { background: #3b2f1a; color: var(--accent); border-color: var(--accent); }
+.cm-who { flex: 1; font: 700 15px var(--font-display); color: var(--accent); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cm time { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.cm-del { width: 20px; height: 20px; padding: 2px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+.cm-del:hover { color: #ff8a7a; }
+.cm-del svg { width: 100%; height: 100%; }
+.cm-gm { font: 700 10px var(--font-body); background: #54166e; color: #fff; padding: 1px 5px; border-radius: 3px; }
+.cm-log { background: none; border: 0; padding: 0 2px; display: flex; gap: 6px; align-items: baseline; font-size: 12px; color: var(--muted); }
+.cm-log .cm-logtext { flex: 1; }
+.cm-log .cm-del { width: 16px; height: 16px; }
+.cm-read { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: rgba(227,164,67,.07); font: italic 15px/1.5 Georgia, serif; color: var(--ink); }
+.cm-ruling { font-size: 14px; line-height: 1.45; }
+.cm-ruling b { color: var(--accent); margin-right: 4px; }
+.cm-say { margin: 2px 0 0; font-size: 15px; line-height: 1.45; }
+.cm-pops { position: fixed; bottom: 16px; right: 360px; z-index: 65; display: flex; flex-direction: column; gap: 8px; width: 300px; pointer-events: none; }
+.cm-popcard { position: relative; pointer-events: auto; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.55); border-radius: 8px; }
+.cm-popcard ol { list-style: none; margin: 0; padding: 0; }
+.cm-popcard .cm { border-color: var(--accent); }
+.cm-popx { position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; font-size: 11px; z-index: 1; }
+/* Board panels: in a sidebar tab or popped out (board/panel.js) */
 .tl-btn { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 2px 8px; font: 600 13px var(--font-body); cursor: pointer; }
 .tl-btn:hover, .tl-btn.on { color: var(--accent); border-color: var(--accent); }
 .bpanel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; outline: none; }
-.bpanel.docked { position: relative; max-height: 60vh; }
+.bpanel.docked { position: relative; border: 0; background: none; }
+.bpanel.docked .bp-h { padding-left: 2px; }
 .bpanel.floating { position: fixed; width: 320px; max-height: 78vh; z-index: 55; box-shadow: 0 12px 40px rgba(0,0,0,.55); }
 .bpanel.collapsed .bp-body, .bpanel.collapsed .bp-foot { display: none; }
 .bp-h { display: flex; align-items: center; gap: 6px; padding: 6px 8px 6px 12px; border-bottom: 2px solid var(--accent); user-select: none; }
@@ -221,10 +271,6 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .rd-roll { width: 100%; padding: 9px; font: 700 15px var(--font-body); background: #1d2a6b; color: #fff; border: 2px solid #b29c74; border-radius: 6px; cursor: pointer; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 /* roll cards and the roll log (board/rollsui.js) */
-.rc-stack { position: fixed; left: 16px; bottom: 16px; z-index: 65; display: flex; flex-direction: column; gap: 8px; width: 300px; pointer-events: none; }
-.rcard { position: relative; pointer-events: auto; background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.55); }
-.rc-x { position: absolute; top: 6px; right: 8px; background: none; border: 0; color: var(--muted); cursor: pointer; }
-.rc-who { font: 700 15px var(--font-display); color: var(--accent); }
 .rc-what { font-weight: 700; font-size: 13px; margin: 2px 0 6px; }
 .rc-by { font-weight: 400; color: var(--muted); }
 .rc-gm { font: 700 10px var(--font-body); background: #54166e; color: #fff; padding: 1px 5px; border-radius: 3px; }
@@ -235,9 +281,6 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .rc-formula { text-align: center; border: 1px solid var(--line); border-radius: 6px; padding: 4px; margin-top: 6px; font-family: var(--font-mono); font-size: 13px; }
 .rc-dice s { color: var(--muted); }
 .rc-total { text-align: center; border: 1px solid var(--line); border-radius: 6px; padding: 4px; margin-top: 4px; font: 700 22px var(--font-display); }
-.rl-item { border-bottom: 1px solid var(--line); padding: 6px 2px; position: relative; }
-.rl-item time { position: absolute; top: 6px; right: 2px; font-size: 11px; color: var(--muted); }
-.rl-item .rc-total { font-size: 17px; padding: 2px; }
 /* Token Quick-View (board/quickview.js) */
 .qvwin { position: fixed; width: 440px; max-width: calc(100vw - 16px); max-height: 72vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.55); outline: none; }
 .qvwin:focus-visible { border-color: var(--accent); }
@@ -451,7 +494,6 @@ ol.log li.foe { border-left-color: var(--foe); }
       <h1 id="title"><span id="campaign-title">Reliquary Virtual Tabletop</span></h1>
       <button class="clock" id="clock" type="button" hidden></button>
       <button class="tl-btn" id="b-enc" type="button" title="The encounter tracker">⚔</button>
-      <button class="tl-btn" id="b-rolls" type="button" title="The roll log">🎲 Rolls</button>
       <span class="bver" id="bver" hidden></span>
       <nav class="menubar mapmenu" id="mapmenu" aria-label="Maps" hidden></nav>
       <small id="subtitle"></small>
@@ -504,22 +546,19 @@ ol.log li.foe { border-left-color: var(--foe); }
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
       <div class="hud" id="hud"></div>
     </div>
-    <aside>
-      <section class="card" id="sel" aria-live="polite"></section>
-      <section class="card" id="lightcard" hidden></section>
-      <section class="card" id="changelog" hidden></section>
-      <section>
-        <h2>Try this</h2>
-        <ul class="try" id="try"></ul>
-      </section>
-      <section>
-        <h2>Walls</h2>
-        <div class="legend" id="legend"></div>
-      </section>
-      <section>
-        <h2>Table log</h2>
-        <ol class="log" id="log"></ol>
-      </section>
+    <aside id="sidebar" aria-label="Sidebar">
+      <div class="sb-resize" title="Drag to resize the sidebar (double-click: the usual width)" aria-hidden="true"></div>
+      <nav class="sb-strip" role="tablist" aria-orientation="vertical" aria-label="Sidebar tabs"></nav>
+      <div class="sb-panes">
+        <section class="sb-pane" data-pane="place" id="pane-place" hidden></section>
+        <section class="sb-pane" data-pane="chat" id="pane-chat" aria-label="Chat" hidden></section>
+        <section class="sb-pane" data-pane="encounter" id="pane-encounter" aria-label="Encounter" hidden></section>
+        <section class="sb-pane" data-pane="lighting" aria-label="Lighting" hidden><section class="card" id="lightcard"></section></section>
+        <section class="sb-pane" data-pane="changes" aria-label="Change log" hidden><section class="card" id="changelog"></section></section>
+        <section class="sb-pane" data-pane="tablelog" aria-label="Table log" hidden><h2>Table log</h2><ol class="log" id="log"></ol></section>
+      </div>
+      <!-- retired from the side panel (2026-11-12): kept off screen so older code paths have somewhere to write -->
+      <div hidden><section id="sel"></section><ul id="try"></ul><div id="legend"></div></div>
     </aside>
   </main>
 </div>

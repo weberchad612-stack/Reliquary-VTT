@@ -11,6 +11,10 @@
 import { makeShell, confirmBox } from './shell.js';
 import { mountClock } from './clockui.js';
 import { publicName } from './names.js';
+import { mountSidebar } from './sidebar.js';
+import { mountChat } from './chatui.js';
+import { chatPath, logMessage, changeLog } from './chat.js';
+import { kindColour } from './targeting.js';
 
 /** The places a view may see, with what the pin and card need. */
 export function visiblePlaces(map, view, found = []) {
@@ -38,14 +42,13 @@ export async function startArea(store, c) {
   let TABLE = c.table;
   let found = (c.mapState && c.mapState.places_found) || [];
   let request = await store.get('state/request');
-  let view = 'player', selected = null, logN = 0, CHANGES = [], clockUi = null;
+  let view = 'player', selected = null, clockUi = null, chatUi = null;
   const tokensHere = {};
   for (const e of await store.list('tokens')) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
 
   // ---- the page: hide the battle map's own controls and cards ----
   for (const id of ['map', 'anim', 'hud']) { const n = document.getElementById(id); if (n) n.hidden = true; }
-  for (const sel of ['.zoom', '#sky-wrap', '#b-lighting', '#b-colour', '#b-anim', '#b-walls']) { const n = document.querySelector(sel); if (n) n.hidden = true; }
-  document.querySelectorAll('aside > section').forEach((s) => { if (s.id !== 'changelog') s.hidden = true; });
+  for (const sel of ['.zoom', '#sky-wrap', '#b-lighting', '#b-colour', '#b-anim', '#b-walls', '#b-enc']) { const n = document.querySelector(sel); if (n) n.hidden = true; }
   const stage = document.getElementById('stage');
   stage.classList.add('area-stage');
   const box = document.createElement('div');
@@ -57,7 +60,9 @@ export async function startArea(store, c) {
   const card = document.createElement('section');
   card.className = 'card place-card';
   card.id = 'place-card';
-  document.querySelector('aside').prepend(card);
+  document.getElementById('pane-place').prepend(card);
+  // the sidebar (board/sidebar.js): the place, the chat and the change log
+  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'changes', label: 'Change log' }] });
 
   const toastEl = document.getElementById('toast');
   let toastT = null;
@@ -66,9 +71,10 @@ export async function startArea(store, c) {
     clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2400);
   }
   const by = () => (view === 'gm' ? 'gm' : 'player');
-  function logChange(what) {
-    const id = Date.now().toString(36).padStart(9, '0') + '-' + (logN++).toString(36) + Math.random().toString(36).slice(2, 6);
-    store.set('log/' + id, { by: by(), at: new Date().toISOString(), map: map.id, what }).catch(() => {});
+  /** A change-log line into the chat: public when `pub` (by default, a player's own changes). */
+  function logChange(what, pub) {
+    if (PAGE.readOnly) return;
+    store.set(chatPath(), logMessage({ text: what, by: by(), map: map.id, public: pub ?? by() === 'player' })).catch(() => {});
   }
 
   // ---- fit the picture to the window ----
@@ -138,7 +144,7 @@ export async function startArea(store, c) {
     request = { by: 'player', at: new Date().toISOString(), map: map.id, place: p.id, what, status: 'pending' };
     try {
       await store.set('state/request', request);
-      logChange(`request: ${what}`);
+      logChange(`request: ${what}`, true);
       toast('Request left for Claude. Tell Claude in chat when you are ready.');
     } catch (e) { toast(`Could not leave the request (${e.message || e}).`); }
     drawPins(); drawCard();
@@ -146,7 +152,7 @@ export async function startArea(store, c) {
   async function clearRequest(how) {
     const what = request && request.what;
     request = null;
-    try { await store.remove('state/request'); logChange(`${how}: ${what}`); } catch (e) { toast(`Could not clear the request (${e.message || e}).`); }
+    try { await store.remove('state/request'); logChange(`${how}: ${what}`, true); } catch (e) { toast(`Could not clear the request (${e.message || e}).`); }
     drawPins(); drawCard();
   }
 
@@ -159,8 +165,9 @@ export async function startArea(store, c) {
     view = v;
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
-    document.getElementById('changelog').hidden = v !== 'gm';
-    if (v === 'gm') changeLogCard();
+    sidebar.refresh();
+    changeLogCard();
+    if (chatUi) chatUi.render();
     if (selected && !places().find((p) => p.id === selected)) selected = null;
     shell.setView(v);
     if (clockUi) clockUi.render();
@@ -179,10 +186,10 @@ export async function startArea(store, c) {
   const WHO = { claude: 'Claude', gm: 'GM view', player: 'Player' };
   function changeLogCard() {
     const el = document.getElementById('changelog');
-    const rows = CHANGES.slice(-60).reverse().map((e) => {
-      const d = e.data, t = d.at ? new Date(d.at) : null;
+    const rows = changeLog(chatUi ? chatUi.messages() : [], view).map((d) => {
+      const t = d.at ? new Date(d.at) : null;
       const time = t ? t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
-      return `<li><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || esc(d.by)}</b> ${esc(d.what)}</li>`;
+      return `<li${d.gm ? ' class="gmline"' : ''}><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || esc(d.by)}</b> ${esc(d.text)}</li>`;
     });
     el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
   }
@@ -211,7 +218,9 @@ export async function startArea(store, c) {
       for (const k of Object.keys(tokensHere)) delete tokensHere[k];
       for (const e of list) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
     });
-    store.watchCollection('log', (list) => { CHANGES = list; if (view === 'gm') changeLogCard(); });
+    chatUi = mountChat({ store, view: () => view, readOnly: PAGE.readOnly, sidebar, pane: document.getElementById('pane-chat'),
+      names: (id) => (tokensHere[id] ? (view === 'gm' ? tokensHere[id].name : publicName(tokensHere[id])) : null), colour: kindColour, kindOf: (id) => (tokensHere[id] ? tokensHere[id].kind : null) });
+    chatUi.onChange(() => changeLogCard());
   }
 
   // ---- start ----

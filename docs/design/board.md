@@ -69,10 +69,9 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
-| `log/<time>-<n>` | Change log: who (`claude`, `gm`, `player`), when, what. The board keeps the newest 300 | Whoever made the change |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
-| `rolls/<time36>-<n>` | A roll card: who, the statistic, the dice, the modifiers that counted, the notes that triggered, the total; `gm: true` for the GM's eyes only. Not part of the save; the GM view keeps the newest 200 | Whoever rolled (the board, `tools/encounter.mjs roll`) |
+| `chat/<time36>-<n>` | A chat message: a roll card, Claude's narration, a ruling, an NPC speaking, or a change-log line; `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
@@ -207,8 +206,8 @@ map, fitted to the window, its places as pins.
   shown, and no warnings are given for walls, taken squares or Speed (the GM decides). The arrow keys step
   the whole selection one square. Group moves never use marching order (FR-1).
 - With two or more selected, the map shows the same view as with nothing selected (the party's view; the
-  whole map for the GM), with no movement outlines and no single creature's eyes. The Selection card is
-  left as it is (it is being redesigned) and shows its nothing-selected text.
+  whole map for the GM), with no movement outlines and no single creature's eyes. The Selection card was
+  retired with the old side panel (2026-11-12).
 - The selection is this screen's only: not saved, not shared, not logged. The moves are logged as usual.
 - Touch screens have no box yet: one finger on empty floor pans.
 
@@ -542,7 +541,7 @@ Later (future/backlog.md): **roll visibility** (FR-10); **several encounters at 
 (the gear: skip defeated, which resource to show; FR-12); **threat and XP** for the encounter (the system's encounter
 budget; FR-13). **Roll All** and **Roll NPCs** are cheap and come with the first build.
 
-## The sidebar and chat (designed 2026-11-12)
+## The sidebar and chat (designed and built 2026-11-12)
 
 The right-hand panel becomes Foundry's sidebar (v13): a **strip of tab icons** down its left edge and the open
 tab's pane beside it. Clicking the open tab's icon collapses the sidebar to the strip (the map takes the room);
@@ -550,6 +549,7 @@ a collapse/expand control does the same. The user's decisions:
 
 | Question | Decision |
 |---|---|
+| Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
 | Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Change log**, **Table log**, and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **change-log lines** as small grey lines. Typed messages, whispers and the chat box come later. |

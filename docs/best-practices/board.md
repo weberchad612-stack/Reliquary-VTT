@@ -37,7 +37,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -252,14 +252,47 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   creature of a type; these are per creature and computed.
 - **A creature without game data** says so; give it some with `tools/actor.mjs create`.
 
+### The sidebar and chat (2026-11-12)
+
+- **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
+  The battle map's tabs: **Chat**, **Encounter**, **Lighting** (GM view only), **Change log**, **Table log**; an area
+  map's: **Place**, **Chat**, **Change log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
+  the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
+  (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
+  collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar changes size.
+- **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
+  Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
+  Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
+- **Chat** carries roll cards, Claude's narration (read-aloud, gold rule), rulings ("Ruling") and NPC lines (the NPC's
+  disc and name; players see its alias until they learn the name), and the change log's lines as small grey lines.
+  Each shows how long ago ("36m 39s ago", kept current). The GM view sees every message, GM-only ones marked GM;
+  players see the rest. The GM deletes a message with its trash icon, or all of them with **Clear chat** (click
+  twice). When the Chat tab is not showing, a new message (not a log line) **pops up beside the sidebar** for 12
+  seconds (click it to open the chat) and the Chat icon counts unread; opening the tab clears both.
+- **Change-log lines** (`logChange(what, pub)` on both pages): the GM sees every line; players see the public ones.
+  A line is public when it is about a PC or a creature the party sees (token changes), the clock, templates, a
+  note that is not GM-only, travel, a player's own change, or rounds and turns (not of hidden or unseen
+  creatures). Anything else is the GM's: pass `pub` when adding a new kind of line.
+- **The Change log tab** lists the same lines (newest first, this view's), and the **Table log** tab keeps this
+  screen's own notes ("comes into view").
+- **Claude posts** with `tools/chat.mjs`: `narration "text"`, `ruling "text"`, `npc <who> "text" --pack P --save S`
+  (or `npc --as "Name" [--alias A]`), `--gm` for the GM's eyes only; write the record it prints.
+- **The chat is in the save** (`chat.json`, oldest first; `chat/` records on the board) and loads with the campaign.
+  It replaces the roll log (`rolls/`) and the change log (`log/`), which are gone.
+- **Lessons:** the page's main row was sized by its content, and the old side panel's long content had been hiding
+  that: `main` now takes the grid's stretching row (`grid-row: 3`). Check a panel's height with little in it.
+- Built in `board/sidebar.js` (the strip, tabs, collapse, resize), `board/chat.js` (pure: messages, visibility,
+  HTML, the change log, `tests/board-chat.test.mjs`), `board/chatui.js` (the Chat tab, pop-ups, unread, delete),
+  `tools/chat.mjs`, `schemas/chat.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
+
 ### The encounter tracker (2026-11-12)
 
 - **Getting in:** right-click a token and choose **Enter Combat** (the crossed swords); the GM's choice adds every
   selected token with it, and a player adds their own PC. The first creature in makes the encounter. **Leave
-  combat** on the same button takes one out. The ⚔ button in the title line opens the tracker; it opens by itself
-  when an encounter appears and shows the round.
-- **The panel** docks at the top of the side panel or floats (⇱ / ⇥ in its title), collapses and closes; each
-  browser remembers how. The roll log (🎲 Rolls) works the same way.
+  combat** on the same button takes one out. The tracker is the sidebar's **Encounter** tab; the ⚔ button in the
+  title line opens it and shows the round.
+- **The panel** lives in its tab or pops out as a window (⇱ in its title; ✕ or ⇥ puts it back), and a popped-out
+  one collapses to its title; each browser remembers how.
 - **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
   it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
   name** (only for a named NPC with an alias), **defeated** (skull); for everyone **target** and **ping** (rings
@@ -272,11 +305,10 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   the button shows the total ("Roll (+10)") and stacking follows the system (two circumstance bonuses: only the
   bigger counts). **Roll All** and **Roll NPCs** roll Perception for everyone still without initiative, no dialog.
   **Type a result** (⋮) for physical dice.
-- **Roll cards:** every roll pops up on every screen (bottom left, 15 seconds, hover to keep it) and goes into
-  the roll log: who, "Initiative: Perception", the modifiers as chips, the features that trigger on it (a feat's
-  note on initiative, such as Battle Cry), the dice and the total. **A roll for a creature the players do not see**
-  (hidden in the tracker, or out of the party's sight) is the GM's only, marked GM; other private and blind rolls
-  are FR-10. The GM view keeps the newest 200 (`rolls/`).
+- **Roll cards** are chat messages (see Chat): who, "Initiative: Perception", the modifiers as chips, the
+  features that trigger on it (a feat's note on initiative, such as Battle Cry), the dice and the total. **A roll
+  for a creature the players do not see** (hidden in the tracker, or out of the party's sight) is the GM's only,
+  marked GM; other private and blind rolls are FR-10.
 - **Turns:** the GM begins (every creature needs initiative), then **Next turn**, **Previous** (a correction: no
   rule is undone; going back past a round takes the clock back too), **Delay**, and **Act now** on a delaying
   row; **End encounter** in the tools. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
@@ -291,8 +323,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   truth (it bit the tracker, the clock and the tools at once). One action at a time: each reads the record fresh,
   applies the action and writes it, so two people rolling at once do not undo each other.
 - Built in `board/tracker.js` (pure: rows by view, who may do what, the actions; `tests/board-tracker.test.mjs`),
-  `board/trackerui.js` (the panel, rows, roll dialog and turn rules), `board/rollsui.js` and `board/rolls.js` (roll
-  cards, the log, the record), `board/panel.js` (docked or floating panels), `engine/rules/check.js` (the dialog's
+  `board/trackerui.js` (the panel, rows, roll dialog and turn rules), `board/rolls.js` (a roll's chat message),
+  `board/panel.js` (a tab's panel that pops out), `engine/rules/check.js` (the dialog's
   maths: rows, switches, added modifiers, rolling twice, notes; `tests/initiative.test.mjs`) and
   `rulesets/pf2e/initiative.js` (which statistics, initiative's modifiers and notes, the types).
 

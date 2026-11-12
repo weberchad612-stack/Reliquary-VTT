@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chat.schema.json",
+  "title": "A campaign's chat (saves/<campaign>/chat.json)",
+  "description": "The chat, oldest first: roll cards, Claude's narration, rulings and NPC lines, and change-log lines (board/chat.js). On the board each message is a record chat/<id>.",
+  "type": "object",
+  "required": ["messages"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "at", "by", "kind"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
+          "at": { "type": "string" },
+          "by": { "enum": ["claude", "gm", "player"] },
+          "kind": { "enum": ["roll", "narration", "ruling", "npc", "log"] },
+          "gm": { "type": "boolean", "description": "Only the GM sees it." },
+          "text": { "type": "string" },
+          "map": { "type": "string" },
+          "token": { "type": "string" },
+          "speaker": { "type": "string" },
+          "alias": { "type": "string" }
+        }
+      }
+    }
+  }
+}

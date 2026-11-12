@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import * as E from '../engine/time/encounter.js';
 import { PF2E_SYSTEM } from '../rulesets/pf2e/system.js';
 import { controls, trackerRows, applyAction, needInitiative, initiativeText, eventLines, newlyDefeated } from '../board/tracker.js';
-import { cardHtml } from '../board/rollsui.js';
+import { cardHtml } from '../board/chat.js';
 
 const T = { tiebreak: PF2E_SYSTEM.time.tiebreak, roundSeconds: 6 };
 const tokens = {
@@ -75,18 +75,20 @@ test('removing the last creature ends the encounter; delay and resume by the own
 });
 
 test('a roll card: who, the statistic, chips, notes, the dice and the total', () => {
-  const html = cardHtml({ name: 'Vincent', kind: 'initiative', stat: { label: 'Perception' }, by: 'player', mode: 'normal', sides: 20, mod: 17, total: 32, dice: [15], kept: 15,
+  const html = cardHtml({ name: 'Vincent', check: 'initiative', stat: { label: 'Perception' }, by: 'player', mode: 'normal', sides: 20, mod: 17, total: 32, dice: [15], kept: 15,
     parts: [{ label: 'Wisdom', value: 2 }, { label: 'proficiency (master)', value: 14 }, { label: 'Trap Finder', value: 1 }], notes: [{ from: 'Battle Cry', text: 'When you roll initiative, you can yell.' }] });
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-  assert.match(text, /Vincent Initiative: Perception Wisdom \+2 Master \+14 Trap Finder \+1 Battle Cry When you roll initiative, you can yell\. 1d20 \+ 17 32/);
-  assert.match(cardHtml({ name: 'x', kind: 'initiative', mode: 'higher', dice: [4, 15], kept: 15, mod: 1, total: 16, by: 'gm' }), /<s>4<\/s> <b>15<\/b>/);
+  assert.match(text, /Initiative: Perception Wisdom \+2 Master \+14 Trap Finder \+1 Battle Cry When you roll initiative, you can yell\. 1d20 \+ 17 32/);
+  assert.match(cardHtml({ name: 'x', check: 'initiative', mode: 'higher', dice: [4, 15], kept: 15, mod: 1, total: 16, by: 'gm' }), /<s>4<\/s> <b>15<\/b>/);
 });
 
 test('a roll for a creature the players do not see is the GM\'s', async () => {
-  const { rollRecord, rollVisible } = await import('../board/rolls.js');
-  const secret = rollRecord({ name: 'Hooded Cultist', kind: 'initiative', total: 12, gm: true });
-  assert.equal(rollVisible(secret, 'player'), false);
-  assert.equal(rollVisible(secret, 'gm'), true);
-  assert.equal(rollVisible(rollRecord({ name: 'Kerra', total: 9 }), 'player'), true);
-  assert.match(cardHtml(secret), /class="rc-gm"/);
+  const { rollRecord } = await import('../board/rolls.js');
+  const { chatVisible, messageHtml } = await import('../board/chat.js');
+  const secret = rollRecord({ name: 'Hooded Cultist', check: 'initiative', total: 12, gm: true });
+  assert.equal(secret.kind, 'roll');
+  assert.equal(chatVisible(secret, 'player'), false);
+  assert.equal(chatVisible(secret, 'gm'), true);
+  assert.equal(chatVisible(rollRecord({ name: 'Kerra', total: 9 }), 'player'), true);
+  assert.match(messageHtml(secret, { view: 'gm' }), /class="cm-gm"/);
 });

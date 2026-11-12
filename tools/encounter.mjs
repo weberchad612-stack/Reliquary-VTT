@@ -12,7 +12,7 @@
 //   init <who> <N>                     set an initiative result
 //   roll <who> [--roll D] [--stat S] [--mode higher|lower]
 //                                      roll initiative: d20 (or D) + Perception (or the skill S, such as stealth),
-//                                      with initiative's modifiers and notes; also writes the roll card (rolls/)
+//                                      with initiative's modifiers and notes; also writes the roll card (a chat message, chat/)
 //   defeat <who> [--undo]              mark defeated (its turns are skipped) or not
 //   hide <who> [--undo]                hide from players in the tracker or show again
 //   previous                           back one turn (a correction: no turn rules run)
@@ -32,7 +32,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as E from '../engine/time/encounter.js';
 import { rollCheck, countedParts, notesFor } from '../engine/rules/check.js';
-import { rollRecord, rollPath } from '../board/rolls.js';
+import { rollRecord } from '../board/rolls.js';
+import { chatPath } from '../board/chat.js';
 import { resolveToken, publicName } from '../board/names.js';
 import { loadGame, creature } from './actor.mjs';
 import { runTurnRules, randomSource } from './turns.mjs';
@@ -104,7 +105,7 @@ export function runEncounter(game, cmd, args, opts = {}) {
     const parts = countedParts(st), notes = notesFor(c.prepared.notes, I.noteSelectors(slug), c.prepared.tags, c.prepared.facts);
     const roll = { dice: r.dice, kept: r.kept, mode: r.mode, sides: r.sides, mod: r.mod, parts };
     const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
-    out.writes.push({ op: 'set', path: rollPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), kind: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: !!(enc.combatants.find((x) => x.token === id) || {}).hidden }) });
+    out.writes.push({ op: 'set', path: chatPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: !!(enc.combatants.find((x) => x.token === id) || {}).hidden }) });
     return out;
   }
   if (cmd === 'defeat' || cmd === 'hide') {

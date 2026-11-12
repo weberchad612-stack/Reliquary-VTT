@@ -24,7 +24,9 @@ import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNot
 import { removeButton } from './ui.js';
 import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
-import { mountRolls } from './rollsui.js';
+import { mountChat } from './chatui.js';
+import { mountSidebar } from './sidebar.js';
+import { chatPath, logMessage, changeLog } from './chat.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
@@ -173,7 +175,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, rollsUi = null;   // the encounter tracker and the roll log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null;   // the encounter tracker, the chat and the sidebar (mounted after the clock)
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
@@ -1801,7 +1803,7 @@ export async function start(store, { build = null } = {}) {
     sending('templates/' + id, store.set('templates/' + id, rec)).catch((e) => { delete TEMPLATES[id]; draw(); toast(`Could not save the template (${e.message || e}).`); });
     const { ids, over } = whoIn({ ...t, cells: t.cells }, caster, shape, R, height);
     const what = Engine.describeArea(t, SYS.measurement.unit);
-    logChange(`placed a ${what}`);
+    logChange(`placed a ${what}`, true);
     setMyTargets(ids, `${what[0].toUpperCase() + what.slice(1)}: ${ids.length ? `targeting ${ids.map((i) => nm(S.tokens[i])).join(', ')}` : 'nobody in the area'}.${over.length ? ` Out of reach: ${overText(over)}.` : ''}`);
     draw();
   }
@@ -1810,7 +1812,7 @@ export async function start(store, { build = null } = {}) {
     if (!t) return;
     delete TEMPLATES[id];
     sending('templates/' + id, store.remove('templates/' + id)).catch((e) => { TEMPLATES[id] = t; draw(); toast(`Could not remove the template (${e.message || e}).`); });
-    logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`); toast('Template removed.');
+    logChange(`removed a ${Engine.describeArea(t, SYS.measurement.unit)}`, true); toast('Template removed.');
     draw();
   }
   function onCommand(id, item, state) {
@@ -2008,7 +2010,7 @@ export async function start(store, { build = null } = {}) {
       if (before) MAPNOTES[id] = before; else delete MAPNOTES[id];
       renderNotes(); toast(`Could not save the note (${e.message || e}).`);
     });
-    if (what) logChange(what);
+    if (what) logChange(what, !n.gm_only);
     renderNotes();
   }
   function saveNote(o, raw, gmOnly) {
@@ -2035,7 +2037,7 @@ export async function start(store, { build = null } = {}) {
     if (!n) return;
     delete MAPNOTES[id];
     sending('notes/' + id, store.remove('notes/' + id)).catch((e) => { MAPNOTES[id] = n; renderNotes(); toast(`Could not delete the note (${e.message || e}).`); });
-    logChange(`removed a note: "${noteGist(n.text)}"`);
+    logChange(`removed a note: "${noteGist(n.text)}"`, !n.gm_only);
     toast('Note removed.');
     renderNotes();
   }
@@ -2460,15 +2462,15 @@ export async function start(store, { build = null } = {}) {
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
     if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
     if (v === 'player' && multi.size) setSelection([...multi].filter((id) => S.tokens[id] && S.tokens[id].kind === 'pc'));
-  document.getElementById('changelog').hidden = v !== 'gm';
-  if (v === 'gm') changeLogCard();
+  if (sidebar) sidebar.refresh();
+  changeLogCard();
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
     if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
     if (trackerUi) trackerUi.render();
-    if (rollsUi) rollsUi.render();
+    if (chatUi) chatUi.render();
     if (clockUi) clockUi.render();
     qvRefresh();
     if (READONLY && v !== 'gm') shell.leavePreview();
@@ -2625,7 +2627,9 @@ export async function start(store, { build = null } = {}) {
       const before = knownData.get(p);
       known.set(p, c); knownData.set(p, v);
       sending(p, store.set(p, v)).catch((e) => toast(`Could not save a change (${e.message || e}).`));
-      for (const what of describe(p, before, v)) logChange(what);
+      const [coll, rid] = p.split('/');
+      const pub = coll === 'tokens' ? !!(S.tokens[rid] && (S.tokens[rid].kind === 'pc' || (view && view.seen && view.seen.has(rid)))) : undefined;
+      for (const what of describe(p, before, v)) logChange(what, pub);
     }
   }
 
@@ -2683,10 +2687,13 @@ export async function start(store, { build = null } = {}) {
     }
     return [`${p} changed`];
   }
-  let logN = 0;
-  function logChange(what) {
-    const id = Date.now().toString(36).padStart(9, '0') + '-' + (logN++).toString(36) + Math.random().toString(36).slice(2, 6);
-    store.set('log/' + id, { by: by(), at: new Date().toISOString(), map: MAP_ID, what }).catch(() => {});
+  /**
+   * A change-log line, into the chat (board/chat.js): the GM sees every line; players see it when `pub` (about a PC
+   * or a creature the party sees, the clock, rounds and turns); by default a player's own changes are public.
+   */
+  function logChange(what, pub) {
+    if (READONLY) return;
+    store.set(chatPath(), logMessage({ text: what, by: by(), map: MAP_ID, public: pub ?? by() === 'player' })).catch(() => {});
   }
 
   // the explored area: written a moment after it grows
@@ -2714,8 +2721,6 @@ export async function start(store, { build = null } = {}) {
   }
   function reloadBoard(why) { toast(why + ' Reloading the board...'); setTimeout(() => location.reload(), 900); }
 
-  let CHANGES = [];
-  const LOG_KEEP = 300;
   function startSync() {
     store.watch('board/meta', (m) => {
       if (!m) return reloadBoard('The campaign was unloaded.');
@@ -2822,12 +2827,7 @@ export async function start(store, { build = null } = {}) {
       mask = Engine.ExploredMask.fromExplored({ v: 1, polys }, G);   // Claude reset or edited the fog
       remoteChanged();
     });
-    store.watchCollection('log', (list) => {
-      CHANGES = list;
-      if (S.view === 'gm') changeLogCard();
-      // the log is a growing stream: keep the newest LOG_KEEP entries (the platform caps records per board)
-      if (list.length > LOG_KEEP + 50) for (const e of list.slice(0, list.length - LOG_KEEP)) store.remove(e.path).catch(() => {});
-    });
+
   }
 
   // ---------- visual effects (engine/fx, board/fx.js; docs/design/board.md section 7) ----------
@@ -2965,10 +2965,10 @@ export async function start(store, { build = null } = {}) {
   const WHO = { claude: 'Claude', gm: 'GM view', player: 'Player' };
   function changeLogCard() {
     const el = document.getElementById('changelog');
-    const rows = CHANGES.slice(-60).reverse().map((e) => {
-      const d = e.data, t = d.at ? new Date(d.at) : null;
+    const rows = changeLog(chatUi ? chatUi.messages() : [], S.view).map((d) => {
+      const t = d.at ? new Date(d.at) : null;
       const time = t ? t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
-      return `<li><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || d.by}</b> ${String(d.what || '').replace(/</g, '&lt;')}</li>`;
+      return `<li${d.gm ? ' class="gmline"' : ''}><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || d.by}</b> ${String(d.text || '').replace(/</g, '&lt;')}</li>`;
     });
     el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
   }
@@ -3030,8 +3030,6 @@ export async function start(store, { build = null } = {}) {
   document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('campaign-title').textContent = META.campaign.title;
   document.getElementById('subtitle').textContent = NOTES.subtitle || `${META.pack.title} · ${map.name || map.id}`;
-  document.getElementById('try').innerHTML = (NOTES.tips || []).map((t) => `<li>${t}</li>`).join('');
-  document.getElementById('try').closest('section').hidden = !(NOTES.tips || []).length;
   document.getElementById('sky').value = S.sky;
   syncColourButton(); syncAnimButton();
   if (NOTES.intro) log(NOTES.intro);
@@ -3050,8 +3048,13 @@ export async function start(store, { build = null } = {}) {
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
-  // the roll log and the encounter tracker (board/rollsui.js, board/trackerui.js)
-  rollsUi = mountRolls({ store, view: () => S.view, readOnly: READONLY, openButton: document.getElementById('b-rolls') });
+  // the sidebar (board/sidebar.js): chat, the encounter tracker, the GM's lighting, the change log, the table log
+  sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
+    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
+    { id: 'changes', label: 'Change log' }, { id: 'tablelog', label: 'Table log' }] });
+  chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: document.getElementById('pane-chat'),
+    names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
+  chatUi.onChange(() => changeLogCard());
   trackerUi = await mountTracker({
     store, Engine, SYS, readOnly: READONLY, view: () => S.view, tokens: () => S.tokens,
     seen: (id) => S.view === 'gm' || shown().seen.has(id) || (S.tokens[id] && S.tokens[id].kind === 'pc'),
@@ -3083,7 +3086,7 @@ export async function start(store, { build = null } = {}) {
     onActing: (id) => { actingId = id; targetsChanged(); },
     reveal: (id) => { const t = S.tokens[id]; if (!t || !t.alias) return; S.tokens[id] = { ...t, known: true }; schedulePersist(); draw(); toast(`The party now knows ${t.name}.`); },
     conditionWords: (t) => [...(t.dead ? ['dead'] : []), ...(t.effects || []).filter((e) => e && (S.view === 'gm' || !e.gm_only)).map((e) => (e.id ? ((CONDS[e.id] || {}).label || e.id) : e.name) + (e.value ? ` ${e.value}` : ''))],
-    rolls: rollsUi, openButton: document.getElementById('b-enc'),
+    rolls: chatUi, pane: document.getElementById('pane-encounter'), showTab: () => sidebar.select('encounter'), openButton: document.getElementById('b-enc'),
   });
   await shell.startMapMenu();
   if (keepGM) setView('gm');

@@ -169,7 +169,7 @@ export function makeShell(o) {
         const add = ids.filter((x) => !have.includes(x) && !inPack.find((l) => l.id === x && l.found));
         if (add.length) await store.set('mapstate/' + mid, { ...st, map: mid, links_found: [...have, ...add] });
       }
-      o.logChange(`party moved to ${where}`);
+      o.logChange(`party moved to ${where}`, true);
       await store.update('state/table', { current_map: dest.id });   // every board reloads on this
     } catch (e) { o.toast(`Could not move the party (${e.message || e}).`); }
   }
