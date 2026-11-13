@@ -376,7 +376,8 @@ hand.
 - **Ending a session** ("wrap up"; offer it when the user says he's done): _(X)_
   1. Close what's open: no replay left unrevealed, the banner cleared, the encounter ended or noted as
      ongoing.
-  2. Bring the ledger up to date: open threads, quests and timed events, XP, loot; then write the session's
+  2. Bring the ledger up to date: open threads, quests and timed events, XP; check the Party loot tab holds
+     everything found this session (`loot.mjs list`), with any misidentification noted as a secret; then write the session's
      summary (`ledger.mjs summary "..." --title "Session N"`): what happened, in a short paragraph or two, for
      a new conversation to start from.
   3. Save the game ([board.md](../best-practices/board.md) section 3): the database to `saves/<campaign>`
