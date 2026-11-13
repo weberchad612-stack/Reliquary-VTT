@@ -4,7 +4,7 @@
 // manifest loads, music plays and follows the encounter, a visual effect plays its sound, the soundboard plays on
 // every screen, and an ambient source is heard from the selected token and not from far away.
 //
-//   NODE_PATH=$(npm root -g) node tools/headless/soundcheck.mjs --sounds /home/claude/audio/sounds
+//   NODE_PATH=$(npm root -g) node tools/headless/soundcheck.mjs [--sounds DIR]   (default: the repository's sounds/)
 //
 // Docs: docs/best-practices/sound.md.
 
@@ -12,11 +12,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import { fileURLToPath } from 'node:url';
 import { buildTestBoard, playwright, asGM, writeRecord } from './board.mjs';
 
 const KERRA = 'tok-cw77vfz9', OGRE = 'tok-sxodpi74', PIP = 'tok-rf053o2i';   // Pip has a wall 3 squares to the west
 const args = process.argv.slice(2);
-const soundsDir = args.includes('--sounds') ? args[args.indexOf('--sounds') + 1] : '/home/claude/audio/sounds';
+const soundsDir = args.includes('--sounds') ? args[args.indexOf('--sounds') + 1] : fileURLToPath(new URL('../../sounds', import.meta.url));
 if (!fs.existsSync(path.join(soundsDir, 'sounds.json'))) { console.error(`no sounds.json in ${soundsDir}`); process.exit(2); }
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'soundcheck-'));

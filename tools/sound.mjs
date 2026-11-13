@@ -5,7 +5,7 @@
 //
 // Usage: node tools/sound.mjs <pack-dir> <save-dir> [--records FILE] [--sounds DIR] <command> ...
 //   (--records: the board's records: state/music, ambient/, tokens/, actors/, state/encounter, state/table, board/meta;
-//    --sounds: the sound files' folder with sounds.json, to check names; default /home/claude/audio/sounds)
+//    --sounds: the sound files' folder with sounds.json, to check names; default the repository's sounds/)
 //   status                               the mood and why, the boss check, this map's ambient sounds
 //   mood <auto|explore|combat|boss|town|tension|rest|silence>
 //   boss <auto|on|off>                   boss music for the running encounter
@@ -33,7 +33,7 @@ import { fxId } from '../board/fx.js';
 import { MUSIC_PATH, AMBIENT, MOODS, MOOD_WORDS, CUES, soundRules, musicRecord, encounterFacts, ambientRecord, moodsIn } from '../board/sound.js';
 import { chooseMood } from '../engine/sound/sound.js';
 
-export const DEFAULT_SOUNDS = '/home/claude/audio/sounds';
+export const DEFAULT_SOUNDS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'sounds');   // kept with Git LFS
 const STINGS = ['victory', 'defeat', 'discovery', 'danger', 'rested'];
 
 export function readManifest(dir = DEFAULT_SOUNDS) {

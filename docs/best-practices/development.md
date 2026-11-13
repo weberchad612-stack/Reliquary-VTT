@@ -27,6 +27,12 @@
 - Render the result and look at it: overlays for walls, zoomed tiles with the cell grid for corrections, the demo page for behaviour.
 - For pages: one look before publishing, fix what it shows, then publish.
 
+## Large files (Git LFS)
+
+- The board's sound set (`sounds/**/*.mp3`, about 150 MB) is kept with Git LFS (`.gitattributes`). Everything else is plain git.
+- Clone with `GIT_LFS_SKIP_SMUDGE=1` unless the audio is needed, then `git lfs pull` (all) or `git lfs pull --include "<paths>"` (some). Every LFS download counts against the account's 10 GiB a month.
+- [sound.md](sound.md) section 4 covers rendering and publishing the set.
+
 ## Privacy and licensing
 
 - Book content (PDFs, images, extracted text, imported packs, demos built on them) never goes into git or a published link. `pdfsource/`, `extracted/`, `packs/` and `saves/` are ignored; check `git status` before every commit.

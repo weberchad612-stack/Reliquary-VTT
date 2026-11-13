@@ -109,7 +109,7 @@ def sting_one(out, kind, n, man=None):
 
 
 def main(argv):
-    out = '/home/claude/audio/sounds'
+    out = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'sounds')   # the repository's sounds/ (Git LFS)
     if '--out' in argv: i = argv.index('--out'); out = argv[i + 1]; del argv[i:i + 2]
     cmd = argv[1] if len(argv) > 1 else 'audition'
     manf = os.path.join(out, 'sounds.json')

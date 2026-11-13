@@ -73,7 +73,7 @@ node tools/sound.mjs ... ambient list | set <id> [...] [--on|--off] | remove <id
 ```
 
 - Changing commands print `{lines, writes}`; db_write each.
-- Names are checked against the sound set (`--sounds DIR`, default `/home/claude/audio/sounds`).
+- Names are checked against the sound set (`--sounds DIR`, default the repository's `sounds/`).
 - When preparing an area, Claude places its ambient sounds (GM guide, Preparing an area):
   - fires and braziers on their squares with a 15–25 ft radius;
   - a river or a waterfall along its course (several sources for a long one);
@@ -121,7 +121,7 @@ python3 tools/sound/render.py music ALL                  # 49 pieces of ~2 min i
 python3 tools/sound/render.py audition                   # a few of each, to listen to first
 ```
 
-- Output goes to `/home/claude/audio/sounds/` (`--out DIR`), with `sounds.json` as the manifest the board reads.
+- Output goes to the repository's `sounds/` (`--out DIR` for elsewhere), with `sounds.json` as the manifest the board reads.
 - Everything is deterministic per seed.
 - File naming:
   - `fx/<effect>.mp3` and `cue/<cue>.mp3`: **sprites**. Each holds all the effect's sounds (hit, crit and miss, 3 variants each) one after another with 0.3 s of silence between, and the manifest gives each sound's `start` and `secs`. An artifact holds at most 512 files, so one file per variant (751 in all) didn't fit. The board plays a sound from its start for its length plus 80 ms, in case the decoder keeps the mp3 encoder's delay, which costs at most about 35 ms on the impact;
@@ -129,7 +129,11 @@ python3 tools/sound/render.py audition                   # a few of each, to lis
   - `music/<mood>-<n>.mp3` and `music/sting-<kind>-<n>.mp3`.
 - Bit rates: effects mono 112 kbps, ambient 128, music 160.
 - The whole set is about 150 MB in 222 files.
-- The rendered audio and the samples are **never committed**; the generator is.
+- **The sound set is kept in the repository with Git LFS** (the user, 2026-11-13). `.gitattributes` tracks `sounds/**/*.mp3`, while `sounds.json` stays plain git. The samples are not committed: the generator points at its own copy.
+  - **GitHub's free LFS allowance is 10 GiB of storage and 10 GiB of downloads a month** for the account. Every LFS download counts against it, including clones by Claude's sessions.
+  - **Claude's clones skip the audio:** clone with `GIT_LFS_SKIP_SMUDGE=1`, then `git lfs pull --include "sounds/fx/strike_slash.mp3"` for only the files a change needs, or `git lfs pull` for the whole set when publishing it.
+  - **Re-render only what changed.** Every new version of a file is kept in LFS: one tweaked effect adds about 150 KB, a music piece about 2.3 MB, everything about 150 MB.
+  - Before committing, check that `git lfs status` lists the mp3s as LFS objects, not plain git.
 
 **Effects line up with their visuals.**
 - An attack's sound lands its impact at the visual effect's own `impact` (ms, from the effects library).
@@ -160,7 +164,7 @@ Titles are generic, never an adventure's names.
 ## 5. Publishing the sound files
 
 - The files are part of the board artifact. They are served next to its page at `sounds/...` and fetched by the board (`MANIFEST = 'sounds/sounds.json'`).
-- Publish them with `publish_files`, `as: sounds/<path>`, in patch mode, so the page and the other files stay. Watch the limits: 256 files, 20 MiB a file and 64 MiB per call, so the set goes up in about four calls. The board's allowance is 1 GB, and **an artifact holds at most 512 files** (the page included).
+- Publish them with `publish_files` from the repository's `sounds/` (pull them from LFS first), `as: sounds/<path>`, in patch mode, so the page and the other files stay. Watch the limits: 256 files, 20 MiB a file and 64 MiB per call, so the set goes up in about four calls. The board's allowance is 1 GB, and **an artifact holds at most 512 files** (the page included).
 - A page republish (the board's `index.html` alone, patch mode) keeps the sound files.
 - Re-render, then republish only what changed.
 - A board opened from disk (tests, previews) fetches nothing and stays quiet.
@@ -170,7 +174,7 @@ Titles are generic, never an adventure's names.
 
 - `npm test`: `tests/sound.test.mjs` covers the bag, the timeline, the mood, hearing, files, records, the boss rule, listeners, the ambient mix, the tab's HTML, the tool, the save and the system-free code.
 - `tools/headless/smoke.mjs --only sound`: the tab (mood, soundboard, ambient mute, the player view without the GM controls).
-- `NODE_PATH=$(npm root -g) node tools/headless/soundcheck.mjs --sounds /home/claude/audio/sounds`: the real files over http in headless Chrome, launched with `--autoplay-policy=no-user-gesture-required` plus a click. It checks:
+- `NODE_PATH=$(npm root -g) node tools/headless/soundcheck.mjs` (the repository's `sounds/`, or `--sounds DIR`): the real files over http in headless Chrome, launched with `--autoplay-policy=no-user-gesture-required` plus a click. It checks:
   - the manifest loads;
   - music plays and the record follows;
   - a strike's crit sound plays;
