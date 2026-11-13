@@ -1,7 +1,9 @@
 // The Audit tab (the GM's only): the audit log's newest entries, live, with the GM's clear. The records and their
 // HTML are board/audit.js. Docs: docs/best-practices/board.md (chat and audit log).
 //
-// o: {store, view() -> 'gm' | 'player', readOnly, pane (the Audit pane)}. Returns {render(), entries()}.
+// o: {store, view() -> 'gm' | 'player', readOnly, pane (the Audit pane), sidebar, tab ('audit')}. With the sidebar,
+// the audit log is watched only while its tab is seen, which is never in the player view. Returns {render(),
+// entries(), listening()}.
 
 import { AUDIT, auditRows, auditHtml } from './audit.js';
 
@@ -27,6 +29,11 @@ export function mountAudit(o) {
     armed = false;
     for (const m of LIST) o.store.remove(`${AUDIT}/${m.id}`).catch(() => {});
   });
-  o.store.watchCollection(AUDIT, (l) => { LIST = l; render(); });
-  return { render, entries: () => LIST };
+  let off = null;
+  const listen = (on) => {
+    if (on && !off) off = o.store.watchCollection(AUDIT, (l) => { LIST = l; render(); });
+    if (!on && off) { if (typeof off === 'function') off(); off = null; LIST = []; render(); }
+  };
+  if (o.sidebar) o.sidebar.onVisible(o.tab || 'audit', listen); else listen(true);
+  return { render, entries: () => LIST, listening: () => !!off };
 }

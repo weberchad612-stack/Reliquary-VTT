@@ -28,13 +28,14 @@ export const SIDEBAR_WIDTH = Object.freeze({ min: 260, max: 720, initial: 340 })
 /**
  * root: the sidebar element (holding .sb-strip and .sb-pane[data-pane=<id>] for each tab). tabs: [{id, label,
  * icon?, gm?}] in order. view() -> 'gm' | 'player'. Returns {select(id), current(), showing(id), setBadge(id, n),
- * refresh(), onShow(id, fn), collapsed(), panel(id)}. showing(id) is true while a tab is open in the sidebar or
- * popped out.
+ * refresh(), onShow(id, fn), onVisible(id, fn(visible)), collapsed(), panel(id)}. showing(id) is true while a tab is
+ * open in the sidebar or popped out; onVisible also needs the tab allowed in this view (a GM tab in the player view
+ * is never visible).
  */
 export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliquary.sidebar' }) {
   const pref = { tab: tabs[0] && tabs[0].id, collapsed: false, width: SIDEBAR_WIDTH.initial, ...load(key) };
   const strip = root.querySelector('.sb-strip'), handle = root.querySelector('.sb-resize');
-  const shows = new Map(), badges = new Map();
+  const shows = new Map(), badges = new Map(), seen = new Map();   // seen: visibility listeners, id -> {fns, on}
   const allowed = (t) => !t.gm || view() === 'gm';
   strip.innerHTML = tabs.map((t) => `<button type="button" class="sb-tab" role="tab" data-tab="${t.id}" title="${t.label}" aria-label="${t.label}">${svg(t.icon || t.id)}<span class="sb-badge" hidden></span></button>`).join('')
     + '<span class="sb-gap"></span><button type="button" class="sb-tab sb-fold" data-fold="1"></button>';
@@ -72,7 +73,14 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
     fold.innerHTML = svg(pref.collapsed ? 'expand' : 'collapse');
     fold.title = pref.collapsed ? 'Expand the sidebar' : 'Collapse the sidebar';
     fold.setAttribute('aria-label', fold.title); fold.setAttribute('aria-expanded', String(!pref.collapsed));
+    // tell each tab that asked when it starts or stops being seen (open in the sidebar or popped out, and allowed
+    // in this view): a tab that watches the database only while it is seen keeps the page's listeners few
+    for (const [id, v] of seen) {
+      const t = tabs.find((x) => x.id === id), on = !!t && allowed(t) && isShowing(id);
+      if (on !== v.on) { v.on = on; for (const fn of v.fns) fn(on); }
+    }
   }
+  function isShowing(id) { return (!pref.collapsed && pref.tab === id) || !!(panels.get(id) && !panels.get(id).panel.docked()); }
   function select(id, { toggle = false } = {}) {
     const was = { tab: pref.tab, collapsed: pref.collapsed };
     if (toggle && id === pref.tab && !pref.collapsed) pref.collapsed = true;   // Foundry: the open tab's icon collapses
@@ -118,12 +126,18 @@ export function mountSidebar({ root, tabs, view = () => 'player', key = 'reliqua
     select: (id) => select(id),
     current: () => pref.tab,
     collapsed: () => !!pref.collapsed,
-    showing: (id) => (!pref.collapsed && pref.tab === id) || !!(panels.get(id) && !panels.get(id).panel.docked()),
+    showing: (id) => isShowing(id),
     panel: (id) => (panels.get(id) || {}).panel || null,
     setBadge(id, n) { badges.set(id, n); paintBadge(id); },
     badge: (id) => badges.get(id) || 0,
     refresh() { apply(); },
     onShow(id, fn) { if (!shows.has(id)) shows.set(id, []); shows.get(id).push(fn); },
+    /** fn(visible) now and whenever the tab starts or stops being seen in this view (open, popped out, allowed). */
+    onVisible(id, fn) {
+      if (!seen.has(id)) seen.set(id, { fns: [], on: false });
+      const v = seen.get(id), t = tabs.find((x) => x.id === id);
+      v.fns.push(fn); v.on = !!t && allowed(t) && isShowing(id); fn(v.on);
+    },
   };
   return api;
 }

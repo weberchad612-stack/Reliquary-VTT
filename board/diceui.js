@@ -4,8 +4,13 @@
 // chosen die's faces as a histogram with the fair count marked, and a table by roller. The GM starts a new session
 // (state/session) and resets the statistics: this session's dice, or all of them (the records are deleted). Docs: docs/best-practices/board.md (dice statistics).
 //
-// o: {store, view() -> 'gm' | 'player', readOnly, pane, kinds: [{id, label}] (the ruleset's; may be empty)}.
-// Returns {render()}.
+// o: {store, view() -> 'gm' | 'player', readOnly, pane, kinds: [{id, label}] (the ruleset's; may be empty), sidebar
+// (board/sidebar.js; with it, the tab watches the database only while it is seen: two listeners, none when
+// hidden), tab (its id, 'dice')}. Returns {render(), listening()}.
+//
+// Lesson from the previous board (2026-11-12): its dice panel read 80 roll documents and kept listeners on two of
+// them, all the time, on every page. Here the dice are one collection, watched by one listener (plus the session
+// start), and only while the Dice tab is open or popped out.
 
 import { DICE, filterDice, diceStats, sessionStart } from './dice.js';
 
@@ -82,7 +87,12 @@ export function mountDice(o) {
   });
   pane.addEventListener('keydown', (e) => { const r = e.target.closest('tr[data-pick]'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick = Number(r.dataset.pick); render(); } });
   pane.addEventListener('change', (e) => { if (e.target.matches('[data-kind]')) { kind = e.target.value; render(); } });
-  o.store.watchCollection(DICE, (l) => { LIST = l; render(); });
-  o.store.watch('state/session', (s) => { session = s; render(); });
-  return { render };
+  // the database, watched only while the tab is seen
+  let offs = [];
+  const listen = (on) => {
+    if (on && !offs.length) offs = [o.store.watchCollection(DICE, (l) => { LIST = l; render(); }), o.store.watch('state/session', (s) => { session = s; render(); })];
+    if (!on && offs.length) { for (const off of offs) if (typeof off === 'function') off(); offs = []; LIST = []; pane.innerHTML = ''; }
+  };
+  if (o.sidebar) o.sidebar.onVisible(o.tab || 'dice', listen); else listen(true);
+  return { render: () => { if (offs.length) render(); }, listening: () => offs.length > 0 };
 }

@@ -364,6 +364,13 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   elsewhere (a player's own dice). With `--pack`/`--save` it finds the roller's token (public name, side); `--gm`
   for a roll players must not know about. **Log every roll Claude makes**, or the statistics are only part of the
   story.
+- **Listeners** (the previous board's dice panel read 80 roll documents and kept two listeners on every page all
+  the time): the Dice tab watches the `dice` collection and `state/session` **only while it is seen** (open in the
+  sidebar or popped out): 2 listeners then, none otherwise. The Audit log does the same (1 listener, and never in
+  the player view, where its tab is not allowed). Use `sidebar.onVisible(tab, fn(visible))` for any new tab that
+  reads the database for its own pane; keep always-on listeners for what must react while hidden (the chat's
+  pop-ups, the tracker's turns). A battle-map page holds about 15 listeners with these tabs closed
+  (`store.listeners()`); the platform caps them (about 40), so check the count when adding a listener.
 - **Roll kinds are the ruleset's** (`rollKinds` in `rulesets/<system>/system.js`: Pathfinder's are initiative,
   attack, save, skill, perception, damage, flat, recovery, other); the board shows a kind it does not know by its
   id. Built in `board/dice.js` (pure), `board/diceui.js` (the tab), `tools/dice.mjs`, `schemas/dice.schema.json`,

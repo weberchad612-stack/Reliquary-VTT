@@ -3118,8 +3118,8 @@ export async function start(store, { build = null } = {}) {
     { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
-  auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body });
-  diceUi = mountDice({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('dice').body, kinds: SYS.rollKinds || [] });
+  auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
+  diceUi = mountDice({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('dice').body, sidebar, tab: 'dice', kinds: SYS.rollKinds || [] });
   // an older board's change-log lines (chat messages of kind 'log') move to the audit log: same ids, so two pages
   // doing it at once write the same records
   if (!READONLY) store.list('chat').then((l) => { for (const e of l) if (e.data && e.data.kind === 'log') store.set(`audit/${e.id}`, auditFromLog(e.data)).then(() => store.remove(`chat/${e.id}`)).catch(() => {}); }).catch(() => {});
