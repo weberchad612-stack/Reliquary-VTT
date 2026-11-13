@@ -10,10 +10,10 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import {
   PLAIN_LOOT, lootRules, lootItem, resolveLoot, lootView, stackKey, mergeInto, splitQty, takeLoot, putBack, giveLoot, setCarry,
-  setInvested, coinsOf, coinValue, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, asCarried,
+  setInvested, lootDetails, lootGroup, coinsOf, coinValue, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, asCarried,
 } from '../board/loot.js';
-import { PF2E_LOOT as L, bulkTotal, mysteryName, needsIdentify, valueKnown, sellCp, inUse, priceLabel, bulkLabel } from '../rulesets/pf2e/loot.js';
-import { stashRowHtml, pcCardHtml } from '../board/lootui.js';
+import { PF2E_LOOT as L, bulkTotal, mysteryName, needsIdentify, valueKnown, sellCp, inUse, priceLabel, bulkLabel, levelDC, seenTraits, itemKind, itemUsage, itemStats, unitCp } from '../rulesets/pf2e/loot.js';
+import { stashRowHtml, pcCardHtml, detailsHtml, summaryHtml, filtersHtml } from '../board/lootui.js';
 import { runLoot } from '../tools/loot.mjs';
 import { loadGame } from '../tools/actor.mjs';
 import { campaignRecords, saveFromRecords } from '../board/records.js';
@@ -181,8 +181,11 @@ test('the tab\'s HTML: players see vague names and no GM controls; Bulk bars', (
   assert.match(gm, /Healing Potion \(Minor\)/);
   assert.match(gm, /Players see: Unidentified Potion/);
   assert.match(gm, /data-act="identify"/);
-  assert.match(gm, /Found from the bugbear/);
-  assert.doesNotMatch(stashRowHtml(e, lootView(e.data, C, 'gm', L), { gm: true, write: false, pcs }), /data-act/, 'read-only: no buttons');
+  assert.doesNotMatch(gm, /bugbear/, 'details are closed');
+  const opened = stashRowHtml(e, lootView(e.data, C, 'player', L), { gm: false, write: true, pcs, open: () => true }, lootDetails(e.data, C, 'player', L));
+  assert.match(opened, /Found on the bugbear/, 'players see where it was found (the user, 2026-11-13)');
+  assert.match(opened, /Not identified/);
+  assert.doesNotMatch(stashRowHtml(e, lootView(e.data, C, 'gm', L), { gm: true, write: false, pcs }), /data-act="(take|identify|appraise|remove)"/, 'read-only: only opening the details');
   const pip = { kind: 'character', attributes: { str: 0 }, items: [{ name: 'Anvil', bulk: 6, carry: 'held' }] };
   const card = pcCardHtml({ id: 'tok-2', name: 'Pip' }, carried(pip, {}, {}, L), { gm: false, write: true, pcs, coins: { gp: 3 }, L });
   assert.match(card, /lt-bar lt-enc/);
@@ -280,3 +283,71 @@ test('the stash and purse in the save: records both ways, the round trip, the sc
   assert.ok(!v({ items: [{ id: '0mwe00000-0a' }] }), 'an item needs a ref or a name');
   fs.rmSync(tmp, { recursive: true, force: true });
 });
+
+test('PF2E item words: kind, usage, stats by kind, identify DCs, what a look can tell', () => {
+  assert.deepEqual([levelDC(0), levelDC(3), levelDC(10), levelDC(25), levelDC(6, 'uncommon'), levelDC(6, 'rare'), levelDC(6, 'unique')], [14, 18, 27, 50, 24, 27, 32]);
+  assert.equal(itemKind(item('longsword')), 'Martial weapon · Sword');
+  assert.equal(itemKind(CHAIN), 'Medium armor · Chain');
+  assert.equal(itemKind(POTION), 'Potion');
+  assert.equal(itemKind({ kind: 'equipment', usage: 'worncloak' }), 'Worn cloak');
+  assert.equal(itemKind({ kind: 'treasure', category: 'gem' }), 'Gem');
+  assert.equal(itemUsage(item('longsword')), '1 hand');
+  assert.equal(itemUsage(item('shortbow')), '1+ hands');
+  assert.deepEqual(itemStats(item('shortbow')), [['Damage', '1d6 piercing'], ['Range', '60 ft'], ['Reload', '0']]);
+  assert.deepEqual(itemStats(CHAIN), [['AC', '+4'], ['Dex cap', '+1'], ['Check penalty', '−2'], ['Speed', '−5 ft'], ['Strength', '+3']]);
+  assert.deepEqual(itemStats(item('steel-shield')), [['AC raised', '+2'], ['Hardness', '5'], ['HP', '20 (BT 10)']]);
+  assert.deepEqual(itemStats(POTION), [['Heals', '1d8']]);
+  assert.deepEqual(itemStats(POTION, false), [], 'a potion\'s effect waits for identifying');
+  assert.deepEqual(itemStats(BACKPACK), [['Holds', '4 Bulk; the first 2 don\'t count']]);
+  const spiral = item('ladys-spiral');
+  assert.deepEqual(itemStats(spiral), [['Damage', '2d4 slashing'], ['Runes', '+1 striking disrupting']]);
+  assert.deepEqual(itemStats(spiral, false), [['Damage', '1d4 slashing']], 'a whip\'s own damage, no runes');
+  assert.deepEqual(seenTraits(['disarm', 'finesse', 'magical', 'fire', 'deadly-d10', 'potion', 'invested'], false), ['disarm', 'finesse', 'deadly-d10', 'potion']);
+  assert.equal(unitCp({ sp: 1, per: 10 }), 1, 'ammunition priced for ten');
+});
+
+test('item details: secrecy per view, the GM\'s identify DC and sale price, items not in use, filter groups', () => {
+  const p = { ref: 'item/healing-potion-minor', found: { from: 'the bugbear', where: { area: 'B12' }, game: { now: 1, label: 'Day 2' } } };
+  const pd = lootDetails(p, C, 'player', L);
+  assert.equal(pd.kind, 'Potion');
+  assert.equal(pd.level, null);
+  assert.deepEqual(pd.traits, ['consumable', 'potion'], 'its form, not its magic');
+  assert.deepEqual(pd.stats, []);
+  assert.equal(pd.text, '');
+  assert.equal(pd.source, '');
+  assert.equal(pd.identify, undefined, 'the DC is the GM\'s');
+  assert.deepEqual(pd.found, p.found, 'players see where it was found');
+  const gd = lootDetails(p, C, 'gm', L);
+  assert.equal(gd.level, 1);
+  assert.deepEqual(gd.identify, { by: 'magic', words: 'Identify Magic', dc: 15 });
+  assert.equal(gd.sell, '2 gp');
+  assert.match(gd.text, /ruby-red/);
+  assert.equal(gd.source, 'Pathfinder GM Core');
+  // identified: players see all of it
+  const kd = lootDetails({ ...p, identified: true }, C, 'player', L);
+  assert.equal(kd.level, 1);
+  assert.deepEqual(kd.stats, [['Heals', '1d8']]);
+  // misidentified: the false words, nothing of the truth
+  const md = lootDetails({ ...p, misidentified: { name: 'Potion of Swimming', text: 'You can swim.' } }, C, 'player', L);
+  assert.equal(md.text, 'You can swim.');
+  assert.equal(md.level, null);
+  // carried: a character's own gear is known; stowed armor is not in use
+  assert.equal(lootDetails({ ref: 'item/chain-mail', carry: 'stowed' }, C, 'player', L, { carriedBy: true }).notInUse, 'stowed: not in use');
+  assert.equal(lootDetails({ ref: 'item/rope', carry: 'stowed' }, C, 'player', L, { carriedBy: true }).notInUse, undefined, 'rope in a pack is fine');
+  assert.equal(lootDetails({ name: 'Ring', traits: ['invested', 'magical'], carry: 'worn', invested: false }, {}, 'gm', L, { carriedBy: true }).notInUse, 'not invested: not working');
+  assert.deepEqual([lootGroup(item('longsword')), lootGroup(CHAIN), lootGroup(item('steel-shield')), lootGroup(POTION), lootGroup({ kind: 'treasure' }), lootGroup(ROPE)], ['weapon', 'armor', 'armor', 'consumable', 'treasure', 'other']);
+  // HTML: the summary line, traits with their glossary words, stats, the GM's line
+  assert.equal(summaryHtml(gd), '<div class="lt-sum">Potion · 1 hand · level 1</div>');
+  const html = detailsHtml(gd, lootView(p, C, 'gm', L), { gm: true, trait: (t) => ({ label: t, text: t === 'potion' ? 'Potion: drunk' : '' }) });
+  assert.match(html, /title="Potion: drunk">potion</);
+  assert.match(html, /<dt>Heals<\/dt><dd>1d8<\/dd>/);
+  assert.match(html, /Identify: Identify Magic DC 15 · Sells for 2 gp/);
+  assert.match(html, /Found on the bugbear, in B12, Day 2 · Source: Pathfinder GM Core/);
+  assert.doesNotMatch(detailsHtml(pd, lootView(p, C, 'player', L), { gm: false }), /Identify|Sells/);
+  const f = filtersHtml({ group: 'weapon', unknown: false }, { weapon: 2, consumable: 1 }, 1);
+  assert.match(f, /data-group="weapon" aria-pressed="true">Weapons <span>2/);
+  assert.match(f, /All <span>3/);
+  assert.doesNotMatch(f, /Treasure/, 'only the kinds there are');
+  assert.match(f, /Unidentified <span>1/);
+});
+

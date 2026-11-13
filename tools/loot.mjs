@@ -160,7 +160,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
     }
     hits.sort((a, b) => (a.doc.level || 0) - (b.doc.level || 0) || a.key.localeCompare(b.key));
     const lim = Number(o.limit) || 25;
-    for (const h of hits.slice(0, lim)) lines.push(`${h.key}  ${h.doc.name}, level ${h.doc.level ?? 0}${h.doc.rarity ? `, ${h.doc.rarity}` : ''}, ${L.priceLabel(L.priceCp(h.doc.price))}, ${L.bulkLabel(L.bulkOf(h.doc)) || 'no'} Bulk`);
+    for (const h of hits.slice(0, lim)) lines.push(`${h.key}  ${h.doc.name}, level ${h.doc.level ?? 0}${h.doc.rarity ? `, ${h.doc.rarity}` : ''}, ${L.priceLabel(L.priceCp(h.doc.price))}${h.doc.price && h.doc.price.per > 1 ? ` for ${h.doc.price.per}` : ''}, ${L.bulkLabel(L.bulkOf(h.doc)) || 'no'} Bulk`);
     if (hits.length > lim) lines.push(`... ${hits.length - lim} more: narrow the words or --limit`);
     if (!hits.length) lines.push('No library item matches.');
     return { lines, writes };
@@ -284,7 +284,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
     const { doc } = resolveLoot(x.item, content);
     const [taken, rest] = splitQty(x.item, qty);
     const n = taken.qty ?? 1;
-    const cp = o.price ? coinCp(parseCoins(o.price, L)) : L.sellCp(doc) * n;
+    const cp = o.price ? coinCp(parseCoins(o.price, L)) : Math.floor(L.sellCp(doc) * n);
     if (x.at === 'stash') setStash(x.e, rest);
     else { const items = itemsOf(x.at).slice(); if (rest) items[x.i] = rest; else items.splice(x.i, 1); setItems(x.at, items); }
     const coins = priceCoins(cp);
@@ -300,7 +300,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
     if (!KEY_RE.test(key)) throw new Error('buy a library item by its key (tools/loot.mjs find "words")');
     contentFor(key);
     const doc = game.lib.get(key), n = qty || 1;
-    const cp = o.price ? coinCp(parseCoins(o.price, L)) : L.priceCp(doc.price) * n;
+    const cp = o.price ? coinCp(parseCoins(o.price, L)) : Math.round((L.unitCp || L.priceCp)(doc.price) * n);
     const pay = priceCoins(cp);
     if (o.from) { const id = pc(o.from); const r = takeCoins(coinsOfPc(id), pay, L); setPcCoins(id, r.left); }
     else { const r = takeCoins(coinsOf(st.purse, L), pay, L); setPurse(r.left); }

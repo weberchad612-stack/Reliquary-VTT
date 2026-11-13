@@ -121,7 +121,7 @@ export function lootView(item, content, view, L) {
   if (!gm && item.misidentified) { name = item.misidentified.name; text = item.misidentified.text || ''; }
   else if (!gm && !identified) { name = L.mysteryName(doc); text = ''; }
   const known = gm || L.valueKnown(doc, item);
-  const each = L.priceCp(doc.price);
+  const each = (L.unitCp || L.priceCp)(doc.price);
   const b = L.bulkOf(doc, item.carry || null);
   return {
     name, text, qty, missing,
@@ -133,6 +133,49 @@ export function lootView(item, content, view, L) {
     real: gm && (item.misidentified || !identified) ? { believed: item.misidentified ? item.misidentified.name : L.mysteryName(doc) } : null,
     invested: !!L.invests(doc), carry: item.carry || null, isInvested: item.invested !== false && L.invests(doc) && item.carry === 'worn',
   };
+}
+
+/**
+ * An item's fuller details for the view (pure), shown when its row is opened: {kind (words), usage, level, rarity,
+ * traits (slugs the view may see), stats ([label, value]), text, source, found, sell (GM: what it sells for, words),
+ * identify (GM, an unknown item: {by: 'magic' | 'alchemy', dc}), notInUse (a carried item that is doing nothing:
+ * stowed, or worn but not invested)}. Players see what a look can tell until it is identified: the base item's own
+ * numbers and how it is worn, never runes, magic traits, level, rarity, description or (unless known) value.
+ */
+export function lootDetails(item, content, view, L, { carriedBy = false } = {}) {
+  const it = carriedBy ? asCarried(item) : item;
+  const { doc } = resolveLoot(it, content);
+  const gm = view === 'gm', known = isIdentified(it, doc, L), see = gm || known;
+  const out = {
+    kind: L.itemKind ? L.itemKind(doc) : (doc.kind || ''),
+    usage: L.itemUsage ? L.itemUsage(doc) : '',
+    level: see ? doc.level ?? null : null,
+    rarity: see ? doc.rarity || null : null,
+    traits: L.seenTraits ? L.seenTraits(doc.traits || [], see) : (see ? doc.traits || [] : []),
+    stats: L.itemStats ? L.itemStats(doc, see) : [],
+    text: gm || known ? doc.text || '' : (it.misidentified ? it.misidentified.text || '' : ''),
+    source: see && doc.source && doc.source.title ? doc.source.title : '',
+    found: it.found || null,
+  };
+  if (!gm && it.misidentified) { out.level = null; out.rarity = null; }
+  if (gm) {
+    if (doc.price) out.sell = L.priceLabel(L.sellCp(doc));
+    if (!known) { const by = L.identifyBy(doc) || 'magic'; out.identify = { by, words: (L.identifyWords || {})[by] || by, ...(L.levelDC ? { dc: L.levelDC(doc.level || 0, doc.rarity || null) } : {}) }; }
+  }
+  if (carriedBy && L.inUse && !L.inUse(it, doc)) {
+    const matters = ['armor', 'shield', 'weapon'].includes(doc.kind) || (doc.rules && doc.rules.length) || L.invests(doc);
+    if (matters) out.notInUse = it.carry === 'stowed' ? 'stowed: not in use' : L.invests(doc) && it.invested === false ? 'not invested: not working' : 'not in use';
+  }
+  return out;
+}
+
+/** Which of the tab's kind filters an item falls under: 'weapon', 'armor', 'consumable', 'treasure' or 'other'. */
+export function lootGroup(doc) {
+  if (doc.kind === 'weapon') return 'weapon';
+  if (doc.kind === 'armor' || doc.kind === 'shield') return 'armor';
+  if (doc.kind === 'consumable' || doc.kind === 'ammo') return 'consumable';
+  if (doc.kind === 'treasure') return 'treasure';
+  return 'other';
 }
 
 /** Two items stack when they are the same thing known the same way (where they were found does not matter). */

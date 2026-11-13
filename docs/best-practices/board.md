@@ -453,6 +453,24 @@ about, with the encumbered condition on the token; using consumables comes next 
 - **Items in use:** stowed items are not in use for the rules (no armor, shield, strike or rule element); armor
   works worn; an invested item works worn and invested (rulesets/pf2e/actor.js through `inUse`). Items with no
   `carry` (older characters) are in use, so nothing changed for them.
+- **Item details** (the user, 2026-11-13: more metadata for players and the GM): every row, in the stash and on
+  the PC cards, has a line under its name with what kind of thing it is, how it is used and its level ("Martial
+  weapon · Sword · 1 hand · level 2"), the rarity badge and, on a PC's item doing nothing (stowed armor, a weapon in
+  the pack, a worn invested item not invested), **not in use**. Clicking the name (▸) **unfolds the details in
+  place** (anyone, read-only too; the tab remembers which rows are open while the page is up): traits with their
+  glossary words on hover (the system's `traits.label` and the board's built-in glossary), the stats for its kind
+  (weapons: damage with striking dice, range, reload, runes; armor: AC with potency, Dex cap, check penalty, Speed,
+  Strength; shields: AC raised, Hardness, HP and BT; consumables: healing or damage; containers: what they hold and
+  ignore; invested items), the description, the source book, and **where it was found** (players see it too, area
+  key included). The GM also sees **which check identifies it and its DC** (GM Core's DCs by level, adjusted +2, +5,
+  +10 for uncommon, rare, unique: `levelDC` in the ruleset) and **what it sells for**. Before an item is identified a
+  player sees only what a look can tell: the base item's own numbers (a magic whip's 1d4 slashing, no striking dice,
+  no runes, an armor's AC without potency), how it is worn, and the handling and form traits (`seenTraits`:
+  finesse, reach, potion...), never magic traits, level, rarity, the description or the effect; after a
+  misidentification, the false words. **Filters** above the stash: All, Weapons, Armor (and shields), Consumables
+  (and ammunition), Treasure, Other (only the kinds there are, with counts), and Unidentified. The words for kinds,
+  usage and stats (`itemKind`, `itemUsage`, `itemStats`) are the system's. Ammunition priced for ten (`price.per`)
+  is valued, bought and sold per piece (`unitCp`).
 - **Claude's tool:** `node tools/loot.mjs <pack> <save> --records FILE <command>`: `list [--view player]`, `find
   "words"`, `add item/<slug> | "Custom name" [--qty] [--to PC] [--from] [--area] [--value] [--bulk] [--text]
   [--unidentified] [--mystery]`, `identify <item> [--as "False name"]`, `unidentify`, `appraise`, `take <item>

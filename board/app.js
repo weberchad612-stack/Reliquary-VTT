@@ -3254,6 +3254,12 @@ export async function start(store, { build = null } = {}) {
   lootUi = mountLoot({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('loot').body, sidebar, tab: 'loot', sys: SYS,
     pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
     content: (keys) => qvContent(keys), log: (text) => logChange(text), map: () => MAP_ID,
+    // a trait in the system's words, with its glossary entry (the glossary built into the board for this system)
+    trait: (slug) => {
+      const g = (typeof GLOSSARIES !== 'undefined' && GLOSSARIES && GLOSSARIES[META.ruleset] && GLOSSARIES[META.ruleset].entries) || {};
+      const T = SYS.traits, e = T && T.entry ? T.entry(slug, g) : g[slug];
+      return { label: T && T.label ? T.label(slug) : String(slug).replace(/-/g, ' '), text: e ? `${e.name || ''}: ${String(e.text || '').replace(/\s+/g, ' ').slice(0, 400)}` : '' };
+    },
     gameNow: () => { const c = clockUi && clockUi.clock(); if (!c || typeof c.now !== 'number') return null; const label = SYS.time && SYS.time.calendar ? clockLabel({ readClock: Engine.readClock, adventureDay: Engine.adventureDay }, SYS.time.calendar, c) : null; return { now: c.now, ...(label ? { label } : {}) }; },
     setEncumbered: (id, on) => {
       const t = S.tokens[id];

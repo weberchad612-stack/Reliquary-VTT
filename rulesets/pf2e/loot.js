@@ -153,7 +153,7 @@ export function valueKnown(doc, item = {}) {
 
 /** What the item sells for, in copper: half its price; treasure (coins, gems, art objects, raw materials) full. */
 export function sellCp(doc) {
-  const p = priceCp(doc.price);
+  const p = unitCp(doc.price);
   return doc.kind === 'treasure' ? p : Math.floor(p / 2);
 }
 
@@ -182,6 +182,101 @@ export function inUse(item, doc = item) {
   return true;
 }
 
+/** The price of one: a price for several ({sp: 1, per: 10}: ammunition) divided. */
+export function unitCp(price) {
+  const p = priceCp(price), per = (price && typeof price === 'object' && price.per) || 1;
+  return per > 1 ? p / per : p;
+}
+
+// GM Core's DCs by level (Table 10-5) and the rarity adjustments (Table 10-6: uncommon +2, rare +5, unique +10);
+// identifying an item uses its level's DC adjusted for its rarity (checked against Archives of Nethys, 2026-11-13).
+const DC_BY_LEVEL = Object.freeze([14, 15, 16, 18, 19, 20, 22, 23, 24, 26, 27, 28, 30, 31, 32, 34, 35, 36, 38, 39, 40, 42, 44, 46, 48, 50]);
+const RARITY_DC = Object.freeze({ uncommon: 2, rare: 5, unique: 10 });
+/** The DC to identify (or Recall Knowledge about) a thing of this level and rarity. */
+export function levelDC(level = 0, rarity = null) {
+  const l = Math.max(0, Math.min(DC_BY_LEVEL.length - 1, Math.round(level || 0)));
+  return DC_BY_LEVEL[l] + (RARITY_DC[rarity] || 0);
+}
+
+// Traits a look can tell before an item is identified: how a weapon or armor handles, and what form a consumable
+// takes. Everything else (magical, invested, elements, effects) waits for identifying.
+const SEEN_TRAITS = new Set(['agile', 'attached', 'backstab', 'backswing', 'brace', 'brutal', 'capacity', 'concealable', 'concussive', 'critical-fusion', 'deadly', 'disarm', 'double-barrel', 'fatal', 'fatal-aim', 'finesse', 'forceful', 'free-hand', 'grapple', 'hampering', 'jousting', 'kickback', 'modular', 'monk', 'nonlethal', 'parry', 'propulsive', 'ranged-trip', 'reach', 'recovery', 'repeating', 'resonant', 'scatter', 'shove', 'sweep', 'tethered', 'thrown', 'trip', 'twin', 'two-hand', 'unarmed', 'versatile', 'volley', 'combination', 'cobbled', 'tearing', 'climbing', 'injection', 'razing', 'reload', 'flexible', 'noisy', 'bulwark', 'comfort', 'laminar', 'ponderous', 'entrench', 'hindering', 'inured', 'potion', 'elixir', 'oil', 'scroll', 'wand', 'staff', 'talisman', 'tattoo', 'bomb', 'snare', 'gadget', 'mechanical', 'clockwork', 'consumable', 'ingested', 'injury', 'contact', 'inhaled', 'splash', 'ammunition', 'drug', 'fulu', 'catalyst', 'mutagen', 'poison']);
+const traitBase = (t) => String(t).replace(/-(d\d+|\d+|[a-z])$/, '');
+/** The traits a player sees: all of them once known, else only what a look can tell. */
+export function seenTraits(traits = [], known = true) {
+  return known ? [...traits] : traits.filter((t) => SEEN_TRAITS.has(String(t)) || SEEN_TRAITS.has(traitBase(t)));
+}
+
+const HANDS = { 'held-in-one-hand': '1 hand', 'held-in-two-hands': '2 hands', 'held-in-one-plus-hands': '1+ hands', 'affixed-or-held-in-one-hand': 'affixed or 1 hand' };
+const signed = (n) => (n >= 0 ? `+${n}` : `−${Math.abs(n)}`);
+const TREASURE = { 'art-object': 'Art object', gem: 'Gem', coin: 'Coins' };
+
+/** What kind of item it is, in words: "Martial weapon · Sword", "Medium armor · Chain", "Potion", "Worn cloak". */
+export function itemKind(doc) {
+  const g = doc.group ? ` · ${title(doc.group)}` : '';
+  if (doc.kind === 'weapon') return `${doc.category ? `${title(doc.category)} weapon` : 'Weapon'}${g}`;
+  if (doc.kind === 'armor') return `${doc.category ? (doc.category === 'unarmored' ? 'Clothing' : `${title(doc.category)} armor`) : 'Armor'}${g}`;
+  if (doc.kind === 'shield') return 'Shield';
+  if (doc.kind === 'ammo') return 'Ammunition';
+  if (doc.kind === 'backpack') return 'Container';
+  if (doc.kind === 'kit') return 'Kit';
+  if (doc.kind === 'treasure') return TREASURE[doc.category] || 'Treasure';
+  if (doc.kind === 'consumable') return doc.category && doc.category !== 'other' ? title(doc.category) : 'Consumable';
+  const u = String(doc.usage || '');
+  if (u.startsWith('worn') && u.length > 4) return `Worn ${(SLOT_WORDS[u.slice(4)] || title(u.slice(4))).toLowerCase()}`;
+  if (u === 'worn') return 'Worn item';
+  if (/tattoo/.test(u)) return 'Tattoo';
+  if (/affixed|etched/.test(u)) return 'Talisman or rune';
+  return doc.kind && doc.kind !== 'equipment' ? title(doc.kind) : 'Gear';
+}
+
+/** How it is used: "1 hand", "2 hands", "worn", "affixed to armor", or ''. */
+export function itemUsage(doc) {
+  const h = doc.hands || doc.usage || '';
+  if (typeof h === 'number' || /^\d$/.test(String(h))) return `${h} hand${Number(h) === 1 ? '' : 's'}`;   // older data: hands as a number
+  if (HANDS[h]) return HANDS[h];
+  if (String(h).startsWith('worn')) return 'worn';
+  if (/^held/.test(h)) return title(h).toLowerCase();
+  return h && h !== 'other' && h !== 'carried' ? String(h).replace(/-/g, ' ') : '';
+}
+
+/**
+ * The item's numbers by kind, as [label, value] rows. known: false gives only what a look can tell (the base item's
+ * damage, an armor's protection), never runes or a consumable's effect.
+ */
+export function itemStats(doc, known = true) {
+  const out = [], r = doc.runes || {};
+  if (doc.kind === 'weapon' && doc.damage && doc.damage.die) {
+    const dice = 1 + (known ? (r.striking || 0) : 0);
+    out.push(['Damage', `${dice}${doc.damage.die} ${doc.damage.type || ''}`.trim()]);
+  }
+  if (doc.range) out.push(['Range', `${doc.range} ft`]);
+  if (doc.reload !== undefined && doc.reload !== null && doc.reload !== '' && doc.kind === 'weapon' && doc.range) out.push(['Reload', String(doc.reload) === '-' ? '—' : String(doc.reload)]);
+  if (doc.kind === 'armor') {
+    if (typeof doc.acBonus === 'number') out.push(['AC', signed(doc.acBonus + (known ? (r.potency || 0) : 0))]);
+    if (typeof doc.dexCap === 'number' && doc.category !== 'unarmored') out.push(['Dex cap', signed(doc.dexCap)]);
+    if (doc.checkPenalty) out.push(['Check penalty', signed(doc.checkPenalty)]);
+    if (doc.speedPenalty) out.push(['Speed', `${signed(doc.speedPenalty)} ft`]);
+    if (doc.strength) out.push(['Strength', signed(doc.strength)]);
+  }
+  if (doc.kind === 'shield') {
+    if (typeof doc.acBonus === 'number') out.push(['AC raised', signed(doc.acBonus)]);
+    if (doc.hardness !== undefined) out.push(['Hardness', String(doc.hardness)]);
+    if (doc.hp !== undefined) out.push(['HP', `${doc.hp}${doc.brokenAt !== undefined ? ` (BT ${doc.brokenAt})` : ''}`]);
+  }
+  if (known && doc.kind !== 'weapon' && doc.damage && (doc.damage.formula || doc.damage.die)) {
+    const f = doc.damage.formula || `1${doc.damage.die}`;
+    out.push([doc.damage.kind === 'healing' ? 'Heals' : 'Damage', doc.damage.kind === 'healing' ? f : `${f} ${doc.damage.type || ''}`.trim()]);
+  }
+  if (typeof doc.capacity === 'number' && doc.capacity > 0) out.push(['Holds', `${doc.capacity} Bulk${doc.ignored ? `; the first ${doc.ignored} don't count` : ''}`]);
+  if (known && (r.potency || r.striking || r.resilient || (r.property || []).length)) {
+    const words = [r.potency ? `+${r.potency}` : '', r.striking ? ['striking', 'greater striking', 'major striking'][r.striking - 1] : '', r.resilient ? ['resilient', 'greater resilient', 'major resilient'][r.resilient - 1] : '', ...(r.property || [])].filter(Boolean);
+    out.push(['Runes', words.join(' ')]);
+  }
+  if (known && invests(doc)) out.push(['Invested', 'works only worn and invested']);
+  return out;
+}
+
 export const PF2E_LOOT = Object.freeze({
   coins: COINS,
   carry: CARRY,
@@ -192,7 +287,7 @@ export const PF2E_LOOT = Object.freeze({
   words: Object.freeze({ bulk: 'Bulk', encumbered: 'encumbered', invested: 'invested', coins: '5 gp', value: '25 gp' }),
   bareCoin: 'gp',   // a plain number of coins typed in the board or the tool is gold
   bulkChoices: Object.freeze([['', 'No Bulk'], ['0.1', 'L'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']]),
-  priceCp, priceLabel, bulkOf, bulkLabel, bulkTotal, bulkLimits, needsIdentify, identifyBy, mysteryName, valueKnown, sellCp, invests, carryOptions, inUse,
+  priceCp, unitCp, priceLabel, levelDC, seenTraits, itemKind, itemUsage, itemStats, bulkOf, bulkLabel, bulkTotal, bulkLimits, needsIdentify, identifyBy, mysteryName, valueKnown, sellCp, invests, carryOptions, inUse,
   // the condition put on a token over its Bulk limit, and the words its effect carries (so only that one is taken off)
   encumbered: Object.freeze({ condition: 'encumbered', source: 'Bulk' }),
 });
