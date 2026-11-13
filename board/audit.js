@@ -30,11 +30,6 @@ export function auditRows(list, limit = 200) {
   return [...list].sort((a, b) => (a.id < b.id ? 1 : -1)).slice(0, limit).map((e) => ({ id: e.id, ...e.data }));
 }
 
-/** A record list ({id, data}) as the save keeps it: [{id, ...entry}], oldest first. */
-export function auditForSave(list) {
-  return [...list].sort((a, b) => (a.id < b.id ? -1 : 1)).map((e) => ({ id: e.id, ...e.data }));
-}
-
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const WHO = { claude: 'Claude', gm: 'GM', player: 'Player' };
 

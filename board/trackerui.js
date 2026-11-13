@@ -8,7 +8,7 @@
 //   logChange(what) (the GM's audit log), postEvent(text, pub, token) (an event in the players' chat), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null), onEncounter(underWay) (an encounter began or ended),
 //   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), setDead(id, dead) (the token's dead look on the map), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
-//   Encounter tab's panel, board/panel.js), openButton}
+//   Encounter tab's panel, board/panel.js)}
 
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines, dropInitiative, canDrag } from './tracker.js';
 import { rollRecord } from './rolls.js';
@@ -229,11 +229,6 @@ export async function mountTracker(o) {
     if (actingId !== lastActing) { lastActing = actingId; o.onActing(actingId); }
     const status = !live ? 'No encounter' : started ? `Round ${ENC.round}` : 'Not started';
     panel.setNote(status);
-    if (o.openButton) {
-      o.openButton.textContent = live ? (started ? `⚔ Round ${ENC.round}` : '⚔ Encounter') : '⚔';
-      o.openButton.classList.toggle('on', live);
-      o.openButton.title = live ? `The encounter (${status.toLowerCase()})` : 'The encounter tracker';
-    }
     const B = panel.body;
     if (!live) {
       lastKey = '';
@@ -368,7 +363,6 @@ export async function mountTracker(o) {
   panel.el.addEventListener('focusout', (e) => { if (!panel.el.contains(e.relatedTarget)) hover(null); });
   panel.el.addEventListener('mouseleave', () => hover(null));
   panel.el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuFor) { closeMenu(); } });
-  if (o.openButton) o.openButton.addEventListener('click', () => panel.open());
 
   // the GM changes a number in place: Enter sets it (the order re-sorts), Escape or leaving cancels
   function editInitiative(id, btn) {

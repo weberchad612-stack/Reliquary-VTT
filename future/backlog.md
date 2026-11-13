@@ -382,3 +382,8 @@ creatures) so the board and the tools share it. Until then Claude says it.
 also held a few controls that now have no button: lighting or putting out a token's carried light, the GM's carried
 light colour and animation, marking an unseen foe's hidden position for players, and the GM's reminder of the name
 players see for a named NPC. Candidates: the token HUD (as Foundry's light toggle), Token Quick-View, or a token tab.
+Its code was removed on 2026-11-12 (dead: it drew into a hidden element); what it did, for rebuilding: the light
+button flipped `t.light.on` and recomputed; the GM's carried-light row set `t.light.colour`, `intensity` and
+`animation` through the same `lightRow`/`animRow` controls the Lighting tab still uses; "Mark hidden for players"
+set or cleared `S.hiddenMarks[id] = [x, y]` (saved as the map state's `hidden_marks`) for a foe the party does not
+see. Claude can still do all of these from chat (`tools/token.mjs`, the map state).

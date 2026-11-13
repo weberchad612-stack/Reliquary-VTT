@@ -112,7 +112,6 @@ export async function start(store, { build = null } = {}) {
   const SYS = Engine.systemConfig(META.ruleset);
   if (!SYS) return showMessage(`This campaign uses the "${META.ruleset}" rules, which this board does not have yet.`);
   let TABLE = (await store.get('state/table')) || {};
-  const NOTES = TABLE.notes || {};
   const PARTY_MAP = TABLE.current_map || (META.maps || [])[0];
   // The GM's preview of another map: this screen only; nothing is written while it is shown.
   const PAGE = pageMap(META, PARTY_MAP);
@@ -145,7 +144,6 @@ export async function start(store, { build = null } = {}) {
   const OX = G.origin_px[0], OY = G.origin_px[1];
   const W = map.image.w, H = map.image.h;
   const RANGE = Infinity;   // PF2E vision has no range: walls and darkness limit sight
-  const PCS = () => new Set(Object.entries(TOKENS0).filter(([, t]) => t.kind === 'pc').map(([id]) => id));
 
   // The table's state on this map, as loaded; kept in step with the store by persist() and the watchers.
   const START = () => ({
@@ -407,14 +405,7 @@ export async function start(store, { build = null } = {}) {
 
   // ---------- drawing ----------
   const WALL_COLOURS = { solid: '#d9d2c3', terrain: '#e8913a', grate: '#9aa3ad', window: '#46c6e0', slit: '#d055c8', ethereal: '#9a7cf0', door: '#e5615a', secret: '#e3b330' };
-  const LEGEND = [['solid', 'Wall'], ['door', 'Door'], ['secret', 'Secret door (GM only until found)'], ['grate', 'Portcullis: see through, cannot pass'], ['window', 'Window: see through, cannot pass'], ['slit', 'Arrow slit: see through only up close'], ['ethereal', 'Force barrier: pass through, cannot see'], ['terrain', 'Curtain: see past one, not two']];
-  const TERRAIN_ICON = {
-    chevron: 'M3 12 L9 6 L15 12', chevron2: 'M3 9 L9 3 L15 9 M3 15 L9 9 L15 15', waves: 'M2 7 Q5 4 9 7 T16 7 M2 12 Q5 9 9 12 T16 12',
-    arrow: 'M9 16 V3 M5 7 L9 3 L13 7', zigzag: 'M2 11 L5.5 6 L9 11 L12.5 6 L16 11', bang: 'M9 3 V11 M9 15 V15.5',
-  };
-  const terrainKinds = [...new Set(PACK_TERRAIN.map((a) => a.kind))];
-  document.getElementById('legend').innerHTML = LEGEND.map(([t, l]) => `<span class="sw" style="background:${WALL_COLOURS[t]}"></span><span>${l}</span>`).join('')
-    + terrainKinds.map((k) => `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="${TERRAIN_ICON[TERRAIN_LOOK[k].mark]}" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="${TERRAIN_ICON[TERRAIN_LOOK[k].mark]}" fill="none" stroke="${TERRAIN_LOOK[k].colour}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${TERRAIN_LOOK[k].name[0].toUpperCase() + TERRAIN_LOOK[k].name.slice(1)}</span>`).join('');
+
 
   function fit() {
     const stage = document.getElementById('stage');
@@ -1299,7 +1290,6 @@ export async function start(store, { build = null } = {}) {
     badgeHits.push({ x, y, w: sz, h: sz, text: `Concealed from ${who}: in dim light. Targeting it takes a DC 5 flat check.${others} (Worked out from light and senses; changes as they move.)` });
   }
 
-  const namesOf = (ids) => ids.map((i) => nm(S.tokens[i])).join(' and ');
 
   function hud() {
     const parts = [];
@@ -1339,56 +1329,6 @@ export async function start(store, { build = null } = {}) {
     set(open);
     document.getElementById('dbg').hidden = S.view !== 'gm';
     setInterval(() => { const l = document.getElementById('lstat'); if (l && !body.hidden && S.view === 'gm') l.innerHTML = listenText(); }, 2000);
-  }
-
-  function panel() {
-    const el = document.getElementById('sel');
-    if (!selected) {
-      el.innerHTML = `<h2>Selection</h2><div style="color:var(--muted);font-size:14px">${S.view === 'gm' ? 'Click any token to see the board through its eyes: only what it perceives now. Click empty floor or press Escape for the whole map. Click a door to cycle closed, open, locked; Shift+click a double door for both leaves.' : 'Click a PC to see only what they perceive now and how far they can move; click empty floor or press Escape to see everything the party has explored. Click a door to open or close it; Shift+click a double door to work both leaves.'}</div>`;
-      return;
-    }
-    const t = S.tokens[selected], size = t.size || 1;
-    const seen = view.seen.has(selected);
-    el.innerHTML = `<h2>Selection</h2>
-      <div class="sel-name">${esc(nm(t))}</div>${S.view === 'gm' && t.alias ? `<div class="sel-alias">Players see: <b>${esc(t.known ? t.name : t.alias)}</b>${t.known ? ' (name learned)' : ' (name not learned yet)'}</div>` : ''}
-      <div class="chips">
-        <span class="chip ${t.kind}">${t.kind === 'pc' ? 'PC' : 'Foe'}</span>
-        <span class="chip">${t.small && size === 1 ? 'Small' : size === 4 ? 'Gargantuan 4×4' : size === 3 ? 'Huge 3×3' : size === 2 ? 'Large 2×2' : size < 1 ? (t.slot === undefined ? 'Tiny, centred' : 'Tiny, quadrant ' + (t.slot + 1)) : 'Medium'}</span>
-        <span class="chip">Speed ${t.speed} ft</span>
-        ${t.kind === 'pc' ? '' : `<span class="chip ${seen ? 'ok' : 'warn'}">${seen ? 'Seen by the party' : 'Hidden from players'}</span>`}
-        ${(t.senses || []).map((x) => `<span class="chip">${typeof x === 'string' ? x : x.type}</span>`).join('')}
-        ${seen && view.concealedFrom && view.concealedFrom[selected] ? `<span class="chip warn">Concealed from ${namesOf(view.concealedFrom[selected])}</span>` : ''}
-      </div>
-      <div class="sel-actions">
-        ${t.light ? `<button id="b-light">${t.light.on === false ? 'Light' : 'Put out'} the ${(Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light'}</button>` : ''}
-      </div>
-      ${t.light && S.view === 'gm' && LIT ? lightRow('carried', selected, 'Carried light', t.light.on !== false, Engine.lightSpec(t.light).colour, Engine.lightSpec(t.light).intensity) + `<div data-anim-for="carried">${animRow(Engine.lightSpec(t.light).animation)}</div>` : ''}
-      <div class="sel-actions">
-        ${S.view === 'gm' && t.kind !== 'pc' && !seen ? `<button id="b-mark">${S.hiddenMarks[selected] ? 'Clear the hidden marker' : 'Mark hidden for players'}</button>` : ''}
-      </div>
-      <div style="color:var(--muted);font-size:13px">Square ${t.x},${t.y}${t.note ? ' · ' + t.note : ''}. ${focusId() ? `The board shows only what ${esc(nm(t))} perceives now. ` : ''}${canDrag(selected) ? 'Dashed green: where one, two and three Strides reach (light, medium, dark green).' : ''}</div>`;
-    const cr = el.querySelector('.lrow[data-kind=carried]');
-    if (cr) {
-      const set = (k, v) => { t.light = { ...t.light, [k]: v }; };
-      cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); panel(); recompute(); };
-      cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); panel(); relight(); };
-      cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); panel(); relight(); };
-      cr.querySelector('[data-f=intensity]').oninput = (e) => { cr.querySelector('.pct').textContent = e.target.value + '%'; };
-      cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); panel(); relight(); };
-      wireAnimRow(el.querySelector('[data-anim-for="carried"]'), () => Engine.lightSpec(t.light).animation, (a) => set('animation', a), `${pubName(t)}'s light`);
-    }
-    const bl = document.getElementById('b-light');
-    if (bl) bl.onclick = () => {
-      const on = t.light.on === false;
-      t.light = { ...t.light, on };
-      panel(); recompute();
-    };
-    const bm = document.getElementById('b-mark');
-    if (bm) bm.onclick = () => {
-      if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; }
-      else { S.hiddenMarks[selected] = [t.x, t.y]; }
-      panel(); draw();
-    };
   }
 
   // ---------- interaction ----------
@@ -1499,7 +1439,7 @@ export async function start(store, { build = null } = {}) {
       if (!canDrag(id0)) return;
       const cur = selectedIds();
       setSelection(cur.includes(id0) ? cur.filter((x) => x !== id0) : [...cur, id0]);
-      panel(); draw(); return;
+      draw(); return;
     }
     if (target.door) { clickDoor(target.door, ev.shiftKey); return; }
     const id = id0;
@@ -1520,8 +1460,7 @@ export async function start(store, { build = null } = {}) {
       canvas.style.cursor = 'grabbing';
       return;
     }
-    setSelection([id]); panel();
-    if (canDrag(id)) {
+    setSelection([id]);     if (canDrag(id)) {
       drag = { id, start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], waypoints: [], moved: false };
       canvas.setPointerCapture(ev.pointerId);
       canvas.style.cursor = 'grabbing';
@@ -1612,7 +1551,7 @@ export async function start(store, { build = null } = {}) {
       const { moved, deselect, button, p } = pan;
       pan = null; canvas.style.cursor = 'default';
       if (!moved && button === 2 && !cancelled && ev.target === canvas) { const id = clickTarget(p).token; if (id && canHud(id)) openHud(id); else closeHud(); return; }   // right-click: the token HUD
-      if (!moved && deselect && !cancelled) { selected = null; panel(); draw(); }
+      if (!moved && deselect && !cancelled) { selected = null; draw(); }
       return;
     }
     if (!drag) return;
@@ -1767,7 +1706,7 @@ export async function start(store, { build = null } = {}) {
       return;
     }
     setSelection(b.moved ? tokensInBox(b.p0, b.p1) : []);   // a click without a box clears the selection
-    panel(); draw();
+    draw();
   }
   /** Move several tokens by (dx, dy) together, keeping their spacing. No route and no warnings (the user's choice). */
   function moveGroup(ids, dx, dy) {
@@ -1784,7 +1723,7 @@ export async function start(store, { build = null } = {}) {
       t.x += dx; t.y += dy;
       delete t.slot;
     }
-    panel(); recompute();
+    recompute();
   }
 
   // ---- area templates (the token HUD's Area template): a shape, a size, aim, place; placing replaces your targets ----
@@ -2566,11 +2505,11 @@ export async function start(store, { build = null } = {}) {
     }
     t.x = goal[0]; t.y = goal[1];
     delete t.slot; // a token arriving in a square takes the next free quadrant
-    panel(); recompute();
+    recompute();
   }
 
   canvas.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Escape') { setSelection([]); panel(); draw(); return; }
+    if (ev.key === 'Escape') { setSelection([]); draw(); return; }
     const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
     if (k && multi.size) { ev.preventDefault(); moveGroup([...multi], k[0], k[1]); return; }
     if (!k || !selected || !canDrag(selected)) return;
@@ -2583,7 +2522,7 @@ export async function start(store, { build = null } = {}) {
     const stepOk = Engine.canStepInto(entered, moverOf(selected));
     t.x += k[0]; t.y += k[1]; delete t.slot;
     if (!stepOk) log(`${pubName(t)} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
-    panel(); recompute();
+    recompute();
   });
 
   function setView(v) {
@@ -2601,7 +2540,7 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
-    panel(); lightingCard(); draw();
+    lightingCard(); draw();
     if (notesReady) renderNotes();
     if (shellReady) shell.setView(v);
     if (trackerUi) trackerUi.render();
@@ -2634,7 +2573,7 @@ export async function start(store, { build = null } = {}) {
       bl.setAttribute('aria-pressed', String(LIT));
       bl.textContent = LIT ? 'Lighting on' : 'Lighting off';
       document.getElementById('sky-wrap').hidden = !(LIT && HAS_SKY);
-      panel(); lightingCard(); recompute();
+      lightingCard(); recompute();
     };
   }
   if (HAS_SKY) {
@@ -2870,7 +2809,7 @@ export async function start(store, { build = null } = {}) {
   }
 
   let remoteT = null;
-  function remoteChanged() { if (!remoteT) remoteT = setTimeout(() => { remoteT = null; panel(); lightingCard(); recompute(); qvRefresh(); }, 0); }
+  function remoteChanged() { if (!remoteT) remoteT = setTimeout(() => { remoteT = null; lightingCard(); recompute(); qvRefresh(); }, 0); }
   /** Has the store's value at p changed from what the board knows? If so, remember it and say yes. */
   function fresh(p, data) {
     const v = prune(data || {}), c = canon(v);
@@ -3157,7 +3096,7 @@ export async function start(store, { build = null } = {}) {
     state: () => clone(S),
     known: (p) => clone(knownData.get(p)),
     exploredPolys: () => mask.toPolys(),
-    select: (id) => { setSelection(id ? [id] : []); panel(); draw(); },
+    select: (id) => { setSelection(id ? [id] : []); draw(); },
     selection: () => selectedIds(),
     targets: () => clone(TARGETS),
     fx: { play: (rec) => playFx(rec, { local: true }), busy: () => fxPlayer.busy, jobs: () => fxPlayer.jobs.map((j) => ({ p: j.p, t0: j.t0, ms: j.ms })), on: () => fxOn, libs: () => FX_LIBS.map((l) => l.via) },
@@ -3183,8 +3122,7 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('sky').value = S.sky;
   syncColourButton(); syncAnimButton();
   recompute('reset');
-  panel();
-  lightingCard();
+    lightingCard();
   fit();
   shell.startMenu();
   document.getElementById('fx-on').checked = fxOn;

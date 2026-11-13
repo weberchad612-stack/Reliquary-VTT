@@ -100,11 +100,14 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
   the database.
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 
-## 8. The top menu
+## 8. The top menu (empty since 2026-11-12)
 
+- **The top menu is empty and its bar hidden**: everything it held moved to the sidebar's tabs (section on the
+  sidebar). New features get a tab, not a menu entry, unless the user asks otherwise. The builder below still makes
+  the map menu on the current map's name (`board/travel.js`), and any menu added later.
 - **Add an entry to `MENU`** in `board/menu.js`, not markup: `{id, label, kind}` (`command`, `toggle`, `radio`, or `button` on the bar), `items` for a menu or sub-menu, `{sep: true}` for a line. Optional: `hint` (tooltip), `gm: true`, `key` (shown, not bound), `badge: true`.
 - **Wire it in `app.js`**, in the menu's `onSelect(id, item, state)`: one `case` per id. Ids are unique; a repeat fails at start-up and in the tests.
-- **Keep the menu in step** when the board changes a toggle some other way (`menu.setToggle(id, on)`), and use `setBadge(id, n)` for counts (Replay, Narration) and `setPending(menuId, true)` for a menu that needs attention.
+- **Keep the menu in step** when the board changes a toggle some other way (`menu.setToggle(id, on)`), and use `setBadge(id, n)` for counts and `setPending(menuId, true)` for a menu that needs attention.
 - **One level of sub-menu.** Deeper menus are hard to use with a mouse and on a phone; split the menu instead.
 - Test the rules in `tests/board-menu.test.mjs`; check the page by hand (or headless) for clicking, hovering across the bar, the keyboard and a narrow window.
 
@@ -305,8 +308,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Walls are the GM's** (the user, 2026-11-12): the **Walls** tab (GM only, below Lighting) holds **Show walls** /
   **Hide walls**, moved from the header. Switching to the player view hides them again.
 - **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
-  Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
-  Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
+  Their code is gone too (it drew into hidden elements); the Selection card's buttons (light a carried light, mark
+  a hidden foe for players) need a new home (FR-15, which records what they did).
 - **Two streams** (the user's decision, 2026-11-12): the **chat is the players' story**, and the **audit log is the
   GM's record of every change**. They replaced the change log and the table log, which are gone from the board, the
   database and the code.

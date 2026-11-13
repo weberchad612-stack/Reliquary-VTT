@@ -131,7 +131,7 @@ The user owns the board and its database, so nothing can be hidden from the user
 prevents accidental spoilers. When other people play on a board, the secrecy model in the rebuild plan
 (a player projection that never receives GM-only data) is separate, later work.
 
-## 7. The title line and the top menu
+## 7. The title line and the top menu (the top menu is empty since 2026-11-12)
 
 **The title line**, left to right (agreed with the user on 2026-11-10; since 2026-11-12: the campaign's title, the
 map menu right after it, then the game clock in smaller type; the encounter tracker's ⚔ button and the subtitle
@@ -469,7 +469,8 @@ lightning at a flyer); every open board draws it once, on its own canvas over th
   selected token to this view's targets (or the last hovered token), or over the newest template for an area
   effect, with Hit, Crit or Miss, a text and a count. This screen only; nothing is written.
 
-**The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
+**The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus. Empty and
+hidden since 2026-11-12 (its entries moved to the sidebar); the builder still makes the map menu:
 
 - **Bar:** empty since 2026-11-12, and hidden: the Map menu went (Add note to the Notes tab; Reload the board,
   Measure, Show walls and Turn view dropped), Play's Actions and Exploration became sidebar tabs under Replay, and

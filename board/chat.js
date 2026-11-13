@@ -112,8 +112,3 @@ export function messageHtml(msg, o = {}) {
 }
 
 const TRASH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
-
-/** A record list ({id, data}) as the save keeps it: [{id, ...message}], oldest first. */
-export function chatForSave(list) {
-  return [...list].sort((a, b) => (a.id < b.id ? -1 : 1)).map((e) => ({ id: e.id, ...e.data }));
-}

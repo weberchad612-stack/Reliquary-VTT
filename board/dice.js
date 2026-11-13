@@ -69,11 +69,6 @@ export function diceStats(list) {
   };
 }
 
-/** Records as the save keeps them: [{id, ...record}], oldest first. */
-export function diceForSave(list) {
-  return [...list].sort((a, b) => (a.id < b.id ? -1 : 1)).map((e) => ({ id: e.id, ...e.data }));
-}
-
 /** When "this session" starts: the GM's marked start (state/session), else the start of today (local time). */
 export function sessionStart(session, now = new Date()) {
   if (session && session.started) return session.started;
