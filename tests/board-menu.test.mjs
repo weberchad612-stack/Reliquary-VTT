@@ -5,18 +5,18 @@ import { MENU, menuForView, menuIndex, activeMenus, moveIndex } from '../board/m
 
 test('menu: every id is used once, and every menu on the bar has items', () => {
   const idx = menuIndex(MENU);
-  assert.ok(idx.size > 8);
+  assert.ok(idx.size >= 4);
   for (const e of MENU) if (e.items) assert.ok(e.items.some((i) => !i.sep), e.id);
   assert.throws(() => menuIndex([{ id: 'x', label: 'X' }, { id: 'm', label: 'M', items: [{ id: 'x', label: 'again' }] }]), /used twice/);
 });
 
 test('menu: the previous board\'s groups are all there, with a sub-menu', () => {
   const idx = menuIndex(MENU);
-  for (const id of ['menu-map', 'menu-play', 'narration', 'measure', 'add-note', 'walls', 'turn-view', 'reload', 'actions', 'exploration']) {
+  for (const id of ['menu-play', 'narration', 'actions', 'exploration']) {
     assert.ok(idx.has(id), id);
   }
-  // moved to the sidebar (2026-11-12): party loot, quest log, dice, replay and the visual effects
-  for (const id of ['menu-records', 'loot', 'quests', 'dice', 'replay', 'fx-on', 'fx-preview']) assert.equal(idx.get(id), undefined, id);
+  // moved to the sidebar (2026-11-12): party loot, quest log, dice, replay, the visual effects, notes; the Map menu is gone
+  for (const id of ['menu-records', 'loot', 'quests', 'dice', 'replay', 'fx-on', 'fx-preview', 'menu-map', 'add-note', 'measure', 'walls', 'turn-view', 'reload']) assert.equal(idx.get(id), undefined, id);
   assert.equal(idx.get('tpl-cone'), undefined, 'templates moved to the token menu');
 });
 

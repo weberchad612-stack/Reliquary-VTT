@@ -20,7 +20,7 @@ import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
 import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
-import { NOTE_MAX, NOTE_COMMAND, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
+import { NOTE_MAX, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
@@ -1869,7 +1869,6 @@ export async function start(store, { build = null } = {}) {
     draw();
   }
   function onCommand(id, item, state) {
-    if (id === NOTE_COMMAND) { if (READONLY) { toast('This is a preview: notes are added on the party\'s map.'); setNoting(false); } else setNoting(state); return true; }
     return false;
   }
   /** Placed templates, on the map under the tokens: filled squares with an outline. Their remove buttons are
@@ -1918,7 +1917,7 @@ export async function start(store, { build = null } = {}) {
     }
   }
 
-  // ---- map notes (Map > Add note, or N under the mouse): pins and bubbles in a page layer over the map ----
+  // ---- map notes (the Notes tab's Add note, or N under the mouse): pins and bubbles in a page layer over the map ----
   const notesEl = document.getElementById('notes');
   const NOTES_SHUT = collapsedStore(`reliquary-notes-shut:${META.campaign.id}:${MAP_ID}`);
   let noting = false;      // Add note is on: the next click on the map opens the editor there
@@ -1928,9 +1927,8 @@ export async function start(store, { build = null } = {}) {
   function setNoting(on) {
     noting = !!on && !READONLY;
     if (noting) endAim();
-    const m = shellReady && shell.menu();
-    if (m) m.setToggle(NOTE_COMMAND, noting);
     canvas.style.cursor = noting ? 'crosshair' : 'default';
+    renderNotesTab();
     if (noting) toast('Click the map to drop a note. Esc cancels.');
   }
   /** Map point (cells) -> pixels inside the notes layer. */
@@ -1956,6 +1954,7 @@ export async function start(store, { build = null } = {}) {
       pin.style.setProperty('--nc', noteColour(n));
       pin.style.left = px + 'px'; pin.style.top = py + 'px';
       pin.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="nfill" d="M4 3h16v12l-6 6H4z" fill="currentColor" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 21v-6h6" fill="#fff" fill-opacity=".55" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M7.5 8h9M7.5 11.5h9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>';
+      pin.dataset.note = id;
       pin.setAttribute('aria-expanded', String(!shut));
       pin.setAttribute('aria-label', `${shut ? 'Show' : 'Hide'} note by ${who}: ${n.text}`);
       pin.title = (shut ? 'Show note' : 'Hide note') + (mine ? ' · drag to move (Shift: centre of a square)' : '');
@@ -1981,6 +1980,76 @@ export async function start(store, { build = null } = {}) {
       notesEl.appendChild(b);
     }
     if (keepEditor) notesEl.appendChild(keepEditor);
+    renderNotesTab();
+  }
+  // ---- the Notes tab (the sidebar): Add note, and every note this view may see, newest first. Hovering a note
+  // highlights its pin on the map; clicking it scrolls the map to it; its author (or the GM) edits it in place or
+  // removes it. No database listener of its own: it draws from the notes the board already holds.
+  const notesTab = document.getElementById('notes-tab');
+  let tabEditing = null;   // the note being edited in the tab
+  function highlightNote(id) {
+    for (const p of notesEl.querySelectorAll('.pin.hl')) p.classList.remove('hl');
+    if (id) { const p = notesEl.querySelector(`.pin[data-note="${CSS.escape(id)}"]`); if (p) p.classList.add('hl'); }
+  }
+  function centreOnPoint([x, y]) {
+    const stage = document.getElementById('stage'), sr = stage.getBoundingClientRect(), r = canvas.getBoundingClientRect();
+    stage.scrollLeft += r.left - sr.left + (OX + x * CS) * scale - stage.clientWidth / 2;
+    stage.scrollTop += r.top - sr.top + (OY + y * CS) * scale - stage.clientHeight / 2;
+  }
+  function renderNotesTab() {
+    if (!notesTab || (tabEditing && notesTab.querySelector('.nt-edit textarea') === document.activeElement)) return;
+    const ids = Object.keys(MAPNOTES).filter((id) => noteVisible(MAPNOTES[id], S.view))
+      .sort((a, b) => String(MAPNOTES[b].updated || '').localeCompare(String(MAPNOTES[a].updated || '')) || a.localeCompare(b));
+    const add = READONLY ? '' : `<button type="button" class="nt-add" data-nt="add" aria-pressed="${noting}">${noting ? 'Click the map to drop a note… (Esc)' : '+ Add note'}</button><p class="nt-hint">or press <kbd>N</kbd> with the pointer over the map</p>`;
+    const rows = ids.map((id) => {
+      const n = MAPNOTES[id], mine = canEditNote(n, S.view) && !READONLY, who = authorName(n, S.view);
+      if (tabEditing === id && mine) {
+        return `<li class="nt-row nt-edit" data-id="${esc(id)}" style="--nc:${noteColour(n)}"><textarea maxlength="${NOTE_MAX}" aria-label="Note text">${esc(n.text)}</textarea>
+          ${S.view === 'gm' ? `<label class="ngm"><input type="checkbox" data-nt="gm"${n.gm_only ? ' checked' : ''}> GM only</label>` : ''}
+          <div class="nt-btns"><button type="button" data-nt="save">Save</button><button type="button" data-nt="cancel">Cancel</button></div></li>`;
+      }
+      return `<li class="nt-row${n.gm_only ? ' gm-only' : ''}" data-id="${esc(id)}" style="--nc:${noteColour(n)}" tabindex="0" title="Show it on the map">
+        <span class="nt-text">${esc(n.text)}</span><span class="nt-by">${esc(who)}${n.gm_only ? ' · GM only' : ''}</span>
+        ${mine ? `<span class="nt-acts"><button type="button" data-nt="edit" title="Edit this note" aria-label="Edit this note">✎</button><span class="nt-rm"></span></span>` : ''}</li>`;
+    }).join('');
+    notesTab.innerHTML = `${add}<ul class="nt-list">${rows || '<li class="nt-empty">No notes on this map yet.</li>'}</ul>`;
+    // the shared remove button (board/ui.js): click twice
+    for (const slot of notesTab.querySelectorAll('.nt-rm')) {
+      const id = slot.closest('[data-id]').dataset.id, n = MAPNOTES[id];
+      slot.appendChild(removeButton({ colour: noteColour(n), what: 'this note', onRemove: () => deleteNote(id) }));
+    }
+    const ta = notesTab.querySelector('.nt-edit textarea');
+    if (ta) setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 0);
+  }
+  if (notesTab) {
+    const saveTab = (row) => {
+      const id = row.dataset.id, gm = row.querySelector('[data-nt=gm]');
+      tabEditing = null;
+      saveNote({ id, at: MAPNOTES[id].at, gmOnly: !!MAPNOTES[id].gm_only }, row.querySelector('textarea').value, gm ? gm.checked : !!MAPNOTES[id].gm_only);
+      renderNotesTab();
+    };
+    notesTab.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-nt]'), row = e.target.closest('.nt-row[data-id]');
+      if (b && b.dataset.nt === 'add') { setNoting(!noting); return; }
+      if (b && b.dataset.nt === 'edit') { tabEditing = row.dataset.id; renderNotesTab(); return; }
+      if (b && b.dataset.nt === 'save') { saveTab(row); return; }
+      if (b && b.dataset.nt === 'cancel') { tabEditing = null; renderNotesTab(); return; }
+      if (row && !row.classList.contains('nt-edit') && !e.target.closest('button') && MAPNOTES[row.dataset.id]) centreOnPoint(MAPNOTES[row.dataset.id].at);
+    });
+    notesTab.addEventListener('keydown', (e) => {
+      const row = e.target.closest('.nt-row[data-id]');
+      if (!row) return;
+      if (row.classList.contains('nt-edit')) {
+        e.stopPropagation();
+        if (e.key === 'Enter' && !e.shiftKey && e.target.tagName === 'TEXTAREA') { e.preventDefault(); saveTab(row); }
+        if (e.key === 'Escape') { e.preventDefault(); tabEditing = null; renderNotesTab(); }
+        return;
+      }
+      if ((e.key === 'Enter' || e.key === ' ') && e.target === row) { e.preventDefault(); centreOnPoint(MAPNOTES[row.dataset.id].at); }
+    });
+    notesTab.addEventListener('pointerover', (e) => { const row = e.target.closest('.nt-row[data-id]'); highlightNote(row ? row.dataset.id : null); });
+    notesTab.addEventListener('pointerleave', () => highlightNote(null));
+    notesTab.addEventListener('focusin', (e) => { const row = e.target.closest('.nt-row[data-id]'); if (row) highlightNote(row.dataset.id); });
   }
   /** A pin: click hides or shows its bubble (this browser only); the author drags it to move the note. */
   function wirePin(pin, id, mine) {
@@ -3129,7 +3198,7 @@ export async function start(store, { build = null } = {}) {
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12)
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'replay', label: 'Replay' },
-    { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
+    { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,

@@ -1,7 +1,7 @@
 // The board's top menu: a menubar of drop-down menus, each holding commands, toggles and one level of
 // sub-menu (docs/design/board.md, section 7). Modelled on the previous board's top bar (Map / Play /
 // Records, with Replay and Narration beside them; the records, Replay and the visual effects moved to the
-// sidebar on 2026-11-12) and on Foundry's
+// sidebar on 2026-11-12; the Map menu went too: Add note is in the Notes tab, Reload was dropped) and on Foundry's
 // menus: click to open, hover moves between menus once one is open, one menu open at a time, a menu
 // shows as active while one of its toggles is on, and a dot when something inside is waiting.
 //
@@ -27,14 +27,6 @@
  * The same builder makes the map menu on the current map's name (board/travel.js): a bar of one menu.
  */
 export const MENU = [
-  { id: 'menu-map', label: 'Map', items: [
-    { id: 'measure', label: 'Measure', kind: 'toggle', hint: 'Measure distance on the grid' },
-    { id: 'add-note', label: 'Add note', kind: 'toggle', key: 'N', hint: 'Click the map to drop a note' },
-    { id: 'walls', label: 'Show walls', kind: 'toggle', hint: 'Show the walls and doors the engine uses' },
-    { id: 'turn-view', label: 'Turn view', kind: 'toggle', hint: 'Show what the creature whose turn it is can see' },
-    { sep: true },
-    { id: 'reload', label: 'Reload the board', kind: 'command' },
-  ] },
   { id: 'menu-play', label: 'Play', items: [
     { id: 'actions', label: 'Actions', kind: 'command', hint: 'The selected creature\'s actions' },
     { id: 'exploration', label: 'Exploration', kind: 'command', hint: 'Exploration activities' },

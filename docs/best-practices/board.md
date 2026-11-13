@@ -20,7 +20,7 @@ The database is the truth during play; the PC save is the truth between sessions
 - **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add an audit line in the same call (and a chat event when players should know: damage, a condition, a death). The board redraws every open page within a moment.
 - **Audit lines and chat events use the board's own format**, so they sort and show correctly: make them with `tools/chat.mjs audit "..."` and `tools/chat.mjs event "..."` (or `board/audit.js` `auditPath`/`auditEntry` and `board/chat.js` `chatPath`/`eventMessage`). An audit entry is `audit/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `audit/0mwbam9my-0clde`) and data `{at: <ISO time>, by: "claude", text: "<one line>", map: <map id>, level?: "warn"}`. (An entry with an id lacking the leading zero sorts last.)
 - **Read the audit log to see what the player did** since you last looked (moves, doors, lights, conditions). In the GM view the user reads the same log to audit Claude.
-- **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (Map ▸ Add note, N), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat (a ruling) and in the audit log.
+- **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (the Notes tab's Add note, or N over the map; edited and removed on the map or in the tab), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat (a ruling) and in the audit log.
 - **Claude's tools at the table** (each prints the record to write with `db_write`; details in section 12):
 
   | To | Use | Writes |
@@ -163,6 +163,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Notes are page elements, not canvas drawings** (`#notes`, `renderNotes`): text needs wrapping, editing and focus, which a canvas does badly. Place them from map cells with the map's scale (`notePx`), and re-place them in `fit()` so they follow the zoom. They never call `draw()`.
 - **Keys in the editor stay in the editor:** its textarea stops key events, and the board's key handlers ignore inputs and textareas, so typing "t" or "n" in a note never targets or opens another note.
 - **Which bubbles are collapsed is per browser** (localStorage, guarded with try/catch: a preview or private window may refuse storage; then it lasts as long as the page).
+- **The Notes tab** (the user, 2026-11-12; below Party loot): **Add note** (the same note mode as N), and every note this view may see, newest first, with its author. **Hovering a note highlights its pin on the map** (a pulsing ring, `.pin.hl`); clicking it scrolls the map to it; its author, or the GM, **edits it in place** (✎: text, and GM only for the GM; Enter saves, Escape cancels) or **removes it** (the shared remove button, two clicks). It has no database listener of its own: `renderNotes()` redraws it from the notes the board already holds. The Map menu (Add note's old home) is gone, with Reload the board, Measure, Show walls and Turn view (never built).
 - **Names clash in `start()`:** `NOTES` already meant the table's tips (`TABLE.notes`); map notes are `MAPNOTES`. Search before naming a new top-level constant in `app.js`.
 
 ### Effect badges
@@ -275,7 +276,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
   The battle map's tabs, top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter**, **Replay**, **Party
-  loot**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
+  loot**, **Notes**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
   an area map's: **Place**, **Chat**, **Party loot**, **Quest log**, **Dice statistics** and the GM's **Audit log**. Clicking the open tab's icon collapses the
   sidebar to its strip (so does the » control at the bottom of the strip, which also expands it); **dragging the
   inner edge resizes it** (double-click the edge for the usual width). Each browser remembers the tab, the width

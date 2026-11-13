@@ -56,5 +56,3 @@ export function collapsedStore(key, storage = (typeof localStorage !== 'undefine
   };
 }
 
-/** The menu command and key for notes. */
-export const NOTE_COMMAND = 'add-note';
