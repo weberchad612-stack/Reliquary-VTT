@@ -110,6 +110,11 @@ lands early.
    (the board slides it along its path). `--gm` keeps a step from players altogether (a hidden creature's).
    Each step prints a refreshed `state/adjudicating`: **write it**, or the banner says "Still working on it" after
    5 minutes and goes after 30. Before a long think or long narration, `replay.mjs ping` and write that too.
+   **Roll details**: give each action's outputs in order, the check (`check.mjs`), the damage roll (`dice.mjs roll
+   1d8+4 --kind damage --type slashing [--crit] --pack P --save S --records W`, so the roller is known) and the
+   damage applied (`actor.mjs damage`); the step shows them as the table's roll details. `--crit` on the damage roll
+   doubles it: give its `total` to `actor.mjs damage ... --crit`. A situational modifier is `check.mjs --bonus "1
+   backswing"`, so its name shows.
 4. **Narration** for the end: `replay.mjs narrate "..."` (one call per paragraph); it is posted to the chat when
    the last step is revealed.
 5. **Reactions:** stop the batch before a step where a PC could react: `replay.mjs stop "Can anyone react to the
@@ -124,10 +129,10 @@ Lessons from the first live replay (2026-11-12, a round of the keep test):
 
 - **Raise the banner before the first change of any adjudication**, initiative included: `begin` first, then
   roll. The first run rolled initiative straight to the board and the table saw no banner.
-- **A critical hit's damage is doubled by you**: roll the dice, double the total, and give it to `actor.mjs damage
-  ... --crit` (the flag is for the dying rule; it does not double).
+- **A critical hit's damage**: `dice.mjs roll ... --crit` doubles it (since 2026-11-12); `actor.mjs damage ... --crit`
+  does not (its flag is for the dying rule).
 - **Mind the weapon traits**: a greatclub's backswing gives +1 to the next Strike after a miss (`check.mjs
-  --bonus 1`); the tools do not track it.
+  --bonus "1 backswing"`); the tools do not track it.
 - **One chat event per step reads best first**: put the step's own event before what the turn rules add ("is
   dead", "Round 2"), so the chat reads in story order.
 - Put each turn's `encounter.mjs next` in that creature's last step, so the tracker moves on as the table watches.
