@@ -33,12 +33,20 @@ def names():
     return list(sfx.RECIPES) + [k for k in fx.SPECS if k not in sfx.RECIPES]
 
 
+SPRITE_GAP = 0.3   # seconds of silence after each variant in a sprite
+
+
 def fx_one(out, name, variants=VARIANTS, man=None, eff=None):
+    """One effect or cue as a sprite: every result's variants in one file, one after another with silence between
+    (an artifact holds at most 512 files). The manifest gives each variant's start and length in the file."""
     eff = eff if eff is not None else effects()
     imp = (eff.get(name, {}).get('impact') or 0) / 1000
     attack = name in sfx.ATTACKS or name in fx.ATTACK_SPECS
     res = ['hit', 'crit', 'miss'] if attack else ['hit']
-    entry = {}
+    kind = 'cue' if name.startswith('cue_') else 'fx'
+    path = f'{kind}/{name}.mp3'
+    parts, entry, t = [], {}, 0.0
+    gap = np.zeros((secs(SPRITE_GAP), 2), np.float32)
     for r in res:
         files = []
         for v in range(variants):
@@ -50,10 +58,11 @@ def fx_one(out, name, variants=VARIANTS, man=None, eff=None):
                     x = np.concatenate([np.zeros((d, 2), np.float32), x]) if d > 0 else x[-d:]
             else:
                 x = fx.recipe(name)(rng, r, imp or 0.3)
-            kind = 'cue' if name.startswith('cue_') else 'fx'
-            path = f'{kind}/{name}-{r}-{v + 1}.mp3' if attack else f'{kind}/{name}-{v + 1}.mp3'
-            write(os.path.join(out, path), x, kbps=112, mono=True); files.append({'file': path, 'secs': round(len(x) / SR, 2)})
+            if x.ndim == 1: x = np.stack([x, x], 1)
+            files.append({'file': path, 'start': round(t, 4), 'secs': round(len(x) / SR, 3)})
+            parts += [x.astype(np.float32), gap]; t += (len(x) + len(gap)) / SR
         entry[r] = files
+    write(os.path.join(out, path), np.concatenate(parts), kbps=112, mono=True)
     if man is not None:
         rec = {'impact': round(imp, 3) if attack else 0, **entry}
         (man.setdefault('cues', {}) if name.startswith('cue_') else man['fx'])[name] = rec

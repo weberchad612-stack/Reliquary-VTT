@@ -653,7 +653,7 @@ The user's decisions:
 | Boss | Automatic, by the system's rule, with GM and Claude overrides. |
 | Listener | The party's PCs in the player view, the middle of the screen in the GM view. A single selected token overrides both (the user, 2026-11-13), in the player view only one they can see. Effects follow the same rule for walls. |
 | Ambient placement | Claude only, with a tool. |
-| Files | Published as the board artifact's own files (`sounds/`, about 150 MB of its 1 GB). Not committed: the generator is. |
+| Files | Published as the board artifact's own files (`sounds/`, about 150 MB of its 1 GB, in 222 files: effects and cues as sprites, under the 512-file cap). Not committed: the generator is. |
 
 **Pieces:**
 - `engine/sound/sound.js` (system-free): `SoundMixer` (Web Audio with channels, buffers, loops, streamed and crossfaded music), `bagIndex`, `musicAt`, `chooseMood`, `falloff`, `hearing`, `screenPan`, `activeAt`.

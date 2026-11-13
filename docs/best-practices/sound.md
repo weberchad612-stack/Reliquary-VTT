@@ -122,12 +122,11 @@ python3 tools/sound/render.py audition                   # a few of each, to lis
 - Output goes to `/home/claude/audio/sounds/` (`--out DIR`), with `sounds.json` as the manifest the board reads.
 - Everything is deterministic per seed.
 - File naming:
-  - `fx/<effect>-<hit|crit|miss>-<n>.mp3` for attacks, `fx/<effect>-<n>.mp3` for other effects;
-  - `cue/<cue>-<n>.mp3`;
+  - `fx/<effect>.mp3` and `cue/<cue>.mp3`: **sprites**. Each holds all the effect's sounds (hit, crit and miss, 3 variants each) one after another with 0.3 s of silence between, and the manifest gives each sound's `start` and `secs`. An artifact holds at most 512 files, so one file per variant (751 in all) didn't fit. The board plays a sound from its start for its length plus 80 ms, in case the decoder keeps the mp3 encoder's delay, which costs at most about 35 ms on the impact;
   - `ambient/<loop>.mp3`;
   - `music/<mood>-<n>.mp3` and `music/sting-<kind>-<n>.mp3`.
 - Bit rates: effects mono 112 kbps, ambient 128, music 160.
-- The whole set is about 150 MB (751 files).
+- The whole set is about 150 MB in 222 files.
 - The rendered audio and the samples are **never committed**; the generator is.
 
 **Effects line up with their visuals.**
@@ -159,7 +158,7 @@ Titles are generic, never an adventure's names.
 ## 5. Publishing the sound files
 
 - The files are part of the board artifact. They are served next to its page at `sounds/...` and fetched by the board (`MANIFEST = 'sounds/sounds.json'`).
-- Publish them with `publish_files`, `as: sounds/<path>`, in patch mode, so the page and the other files stay. Watch the limits: 256 files, 20 MiB a file and 64 MiB per call, so the set goes up in about four calls. The board's allowance is 1 GB.
+- Publish them with `publish_files`, `as: sounds/<path>`, in patch mode, so the page and the other files stay. Watch the limits: 256 files, 20 MiB a file and 64 MiB per call, so the set goes up in about four calls. The board's allowance is 1 GB, and **an artifact holds at most 512 files** (the page included).
 - A page republish (the board's `index.html` alone, patch mode) keeps the sound files.
 - Re-render, then republish only what changed.
 - A board opened from disk (tests, previews) fetches nothing and stays quiet.
@@ -191,4 +190,5 @@ Titles are generic, never an adventure's names.
 - **Music is streamed on media elements**, not decoded whole: two minutes of decoded audio is about 46 MB. Ambient loops are decoded buffers, because media elements leave a gap when they loop. Each loop starts at a random point.
 - **Don't load a far-away loop:** it starts only once it can be heard.
 - **The board adds six watchers** (music, encounter, ambient, sfx, chat, dice): 24 in all against the platform's cap of about 40.
+- **An artifact holds at most 512 files.** The first upload of one file per variant hit that cap (2026-11-13), so effects and cues became sprites.
 - **A page opened from disk can't fetch** (CORS), and its console errors would fail the smoke checks, so the manifest is fetched only over http(s).

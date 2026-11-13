@@ -3355,20 +3355,21 @@ export async function start(store, { build = null } = {}) {
     const hourNow = () => { const c = clockUi && clockUi.clock(); return c && typeof c.now === 'number' && SYS.time && SYS.time.calendar ? Engine.readClock(SYS.time.calendar, c.now).hour : (S.sky === 'dark' ? 0 : null); };
 
     /** Play a file for this screen: how loud it is where it happens (a point in cells), or plain (interface cues). */
-    function at(file, { cell = null, px = null, delay = 0, channel = 'effects', gain = 1 } = {}) {
+    function at(file, { cell = null, px = null, delay = 0, channel = 'effects', gain = 1, start = 0, secs = null } = {}) {
       if (!file || !mixer.running) return;
       const L = lis();
       // effects carry across the map (the board only plays what the view may see); walls that stop sound muffle them
       const muffled = !!(cell && L.walls && L.points.length && L.points.every((p) => blocked(cell, p)));
       const g = gain;
       const pan = px ? panOfPx(px) : 0;
-      mixer.play(file, { channel, gain: muffled ? g * Engine.MUFFLE.gain : g, pan, lowpass: muffled ? Engine.MUFFLE.lowpass : null, delay });
-      PLAYED.push({ file, channel, muffled, pan: Math.round(pan * 100) / 100, delay }); if (PLAYED.length > 40) PLAYED.shift();
+      // a sprite's sound: from its start, a little past its length (the silence after it), in case the decoder keeps the encoder's delay
+      mixer.play(file, { channel, gain: muffled ? g * Engine.MUFFLE.gain : g, pan, lowpass: muffled ? Engine.MUFFLE.lowpass : null, delay, offset: start, duration: secs ? secs + 0.08 : null });
+      PLAYED.push({ file, start, channel, muffled, pan: Math.round(pan * 100) / 100, delay }); if (PLAYED.length > 40) PLAYED.shift();
     }
     function cue(name, o = {}) {
       if (String(name).startsWith('sting:')) { const f = stingSound(MAN, name.slice(6)); return f && at(f.file, { channel: 'music', gain: 0.9 }); }
       const f = cueSound(MAN, name);
-      if (f) at(f.file, { channel: INTERFACE_CUES.has(name) ? 'interface' : 'effects', ...o });
+      if (f) at(f.file, { channel: INTERFACE_CUES.has(name) ? 'interface' : 'effects', start: f.start, secs: f.secs, ...o });
     }
     // ---- music: the mood from the game (or the GM's choice), the piece from the shared record's run ----
     async function encounterActors(enc) {
@@ -3485,7 +3486,7 @@ export async function start(store, { build = null } = {}) {
       effect(name, result, pt, delay = 0) {
         if (name === 'creature_down' && pt) for (const [id, t] of Object.entries(S.tokens)) { const c = centreOf(id); if (Math.hypot(P(c.x) - pt.x, P(c.y) - pt.y) < CS && t) fxDeaths.set(id, Date.now()); }
         const f = effectSound(MAN, name, result || 'hit');
-        if (f) at(f.file, { cell: pt ? { x: pt.x / CS, y: pt.y / CS } : null, px: pt, delay });
+        if (f) at(f.file, { cell: pt ? { x: pt.x / CS, y: pt.y / CS } : null, px: pt, delay, start: f.start, secs: f.secs });
       },
       turn(id) {
         if (!id || !S.tokens[id]) return;

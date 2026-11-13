@@ -92,6 +92,9 @@ test('hearing: falloff with distance, pan by side, walls muffle, the loudest lis
 
 test('files for effects, cues and stings; the moods with music', () => {
   assert.equal(effectSound(MAN, 'strike_slash', 'crit').file, 'fx/s-crit-1.mp3');
+  const spr = { fx: { s: { impact: 0.2, hit: [{ file: 'fx/s.mp3', start: 0, secs: 1 }], crit: [{ file: 'fx/s.mp3', start: 1.3, secs: 1.1 }] } }, cues: { cue_x: { hit: [{ file: 'cue/x.mp3', start: 2.5, secs: 0.4 }] } } };
+  assert.deepEqual(effectSound(spr, 's', 'crit'), { file: 'fx/s.mp3', impact: 0.2, secs: 1.1, start: 1.3 }, 'a sprite: one file, each sound\'s start and length');
+  assert.deepEqual(cueSound(spr, 'cue_x'), { file: 'cue/x.mp3', start: 2.5, secs: 0.4 });
   assert.equal(effectSound(MAN, 'strike_slash', 'hit', 0.99).file, 'fx/s-hit-2.mp3');
   assert.equal(effectSound(MAN, 'strike_slash', 'miss').impact, 0.16);
   assert.equal(effectSound(MAN, 'heal', 'crit').file, 'fx/heal-1.mp3', 'an effect with one sound plays it for every result');

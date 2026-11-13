@@ -10,7 +10,8 @@
 //   ambient/<id>    {map, sound (an ambient loop's name), at: [x, y] cells, radius (ft), inner (ft)?, when ('always' |
 //                   'day' | 'night'), volume (0..1)?, label?, off?, gm_only?, by}. Saved with the map's state.
 // The sound files and their manifest (sounds/sounds.json) ride along with the board page; the manifest lists
-// effects by the visual effect's name, table cues, ambient loops, music by mood and short stings.
+// effects by the visual effect's name (each effect or cue is one file holding all its variants: {file, start, secs}
+// for each, as an artifact holds at most 512 files), table cues, ambient loops, music by mood and short stings.
 //
 // The system says what a boss is (system.sound.isBoss); a system without it never switches to boss music by itself.
 
@@ -47,7 +48,7 @@ export function effectSound(man, name, result = 'hit', r = Math.random()) {
   const list = e[result] || e.hit || Object.values(e).find(Array.isArray);
   if (!list || !list.length) return null;
   const f = list[Math.min(list.length - 1, Math.floor(r * list.length))];
-  return { file: f.file, impact: e.impact || 0, secs: f.secs };
+  return { file: f.file, impact: e.impact || 0, secs: f.secs, start: f.start || 0 };
 }
 
 /** The file for a table cue (CUES), or null. */
@@ -55,7 +56,8 @@ export function cueSound(man, cue, r = Math.random()) {
   const e = man && man.cues && man.cues[cue];
   const list = e && (e.hit || Object.values(e).find(Array.isArray));
   if (!list || !list.length) return null;
-  return { file: list[Math.min(list.length - 1, Math.floor(r * list.length))].file };
+  const f = list[Math.min(list.length - 1, Math.floor(r * list.length))];
+  return { file: f.file, start: f.start || 0, secs: f.secs };
 }
 
 /** A sting (victory, defeat, discovery, danger, rested): a file or null. */

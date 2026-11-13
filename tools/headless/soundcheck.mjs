@@ -63,8 +63,8 @@ try {
   check('music', !!d.music && d.music.t > 1 && !d.music.paused && d.playing.mood === 'explore' && d.rec && d.rec.playing === 'explore', `${d.playing.mood} "${d.playing.piece && d.playing.piece.title}" at ${d.music && d.music.t.toFixed(1)} s; record ${d.rec && d.rec.playing}`);
 
   await page.evaluate(([a, b]) => window.reliquary.fx.play({ name: 'strike_slash', from: a, to: b, o: { result: 'crit' } }), [KERRA, OGRE]);
-  d = await until((x) => x.played.some((p) => p.file.startsWith('fx/strike_slash-crit')));
-  check('effect', d.played.some((p) => p.file.startsWith('fx/strike_slash-crit')), d.played.map((p) => p.file).join(', '));
+  d = await until((x) => x.played.some((p) => p.file === 'fx/strike_slash.mp3' && p.start > 2.5));
+  check('effect', d.played.some((p) => p.file === 'fx/strike_slash.mp3' && p.start > 2.5), d.played.map((p) => `${p.file}@${p.start}`).join(', '));
 
   await writeRecord(page, 'sfx/9999999999999-001', { map: await page.evaluate(() => window.reliquary.map), name: 'sting:victory', by: 'claude', ts: Date.now() });
   d = await until((x) => x.played.some((p) => /sting-victory/.test(p.file)));

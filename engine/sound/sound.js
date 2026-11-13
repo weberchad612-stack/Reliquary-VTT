@@ -192,15 +192,17 @@ export class SoundMixer {
     else g.connect(this.bus[channel] || this.bus.effects);
     return { input: head, gain: g, pan: p, lp };
   }
-  /** Play a file once. delay: seconds before it starts; offset: seconds into the file. Resolves to the source. */
-  async play(file, { channel = 'effects', gain = 1, pan = 0, lowpass = null, delay = 0, offset = 0 } = {}) {
+  /** Play a file once. delay: seconds before it starts; offset: seconds into the file; duration: how much of it (one
+   *  sound of a sprite: a file holding several, one after another). Resolves to the source. */
+  async play(file, { channel = 'effects', gain = 1, pan = 0, lowpass = null, delay = 0, offset = 0, duration = null } = {}) {
     if (!this.ctx || !file) return null;
     const buf = await this.buffer(file).catch(() => null);
     if (!buf) return null;
     const src = this.ctx.createBufferSource(); src.buffer = buf;
     const c = this.chain(channel, { gain, pan, lowpass });
     src.connect(c.input);
-    src.start(this.ctx.currentTime + Math.max(0, delay), Math.max(0, Math.min(buf.duration - 0.01, offset)));
+    const from = Math.max(0, Math.min(buf.duration - 0.01, offset));
+    if (duration) src.start(this.ctx.currentTime + Math.max(0, delay), from, duration); else src.start(this.ctx.currentTime + Math.max(0, delay), from);
     return src;
   }
   /** Start or steer a looping sound by key: gain, pan, muffled; gain 0 fades it out (it keeps running, silent). */
