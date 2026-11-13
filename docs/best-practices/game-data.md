@@ -148,6 +148,10 @@ Lessons from the first live replay (2026-11-12, a round of the keep test):
 - (Retired 2026-11-12: steps post check and damage cards, not chat events.) **One chat event per step read best first**: the step's own event before what the turn rules added ("is
   dead", "Round 2"), so the chat reads in story order.
 - Put each turn's `encounter.mjs next` in that creature's last step, so the tracker moves on as the table watches.
+- **Narrate as you go, right after each action** (2026-11-12): rolling two Treat Wounds checks first and narrating
+  afterwards put the story of the first after the second, and the table saw it out of place. Resolve an action,
+  make its step, narrate it, then the next. `narrate --after N` places a beat noticed late, and `replay.mjs show`
+  before `end` lists each narration with the step it follows: check the order there.
 
 What the board does with it: docs/best-practices/board.md (Replay).
 

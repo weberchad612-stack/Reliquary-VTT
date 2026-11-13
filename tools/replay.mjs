@@ -21,14 +21,15 @@
 //                       the outputs' rolls in parts (check.mjs, dice.mjs, actor.mjs damage) become the step's
 //                       details, in the order given: give the check, then the damage roll, then actor.mjs damage.
 //                       Prints the refreshed "adjudicating" record (write it: the banner times out without it).
-//   narrate "text" [--focus WHO,WHO] [--gm]
+//   narrate "text" [--focus WHO,WHO] [--gm] [--after N]
 //                       a narration step, right after the actions it tells (the user, 2026-11-12: narration is the
 //                       heart of the game): revealed with its own Next, it posts the paragraph to the chat and the
 //                       camera frames the creatures it names (--focus: names or ids). End with a narration step that
-//                       ties together whatever the others did not tell.
+//                       ties together whatever the others did not tell. --after N puts it right after step N (a
+//                       beat noticed late); otherwise it follows the last step. Narrate as you go, after each action.
 //   stop "text"         end the batch here, waiting for reactions ("Can anyone react to the ogre's swing?")
 //   ping                the refreshed "adjudicating" record (before a long think)
-//   show                the draft so far
+//   show                the draft so far, each narration step with the action it follows (check the order before end)
 //   end                 the replay record to write, the "adjudicating" record's delete and an audit line
 //   abort               drop the draft: the "adjudicating" record's delete and an audit line
 //
@@ -208,7 +209,13 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
   if (cmd === 'ping') return { lines: ['refreshed'], writes: [adjWrite(d, now)] };
   if (cmd === 'show') {
     lines.push(`"${d.title}" begun ${d.started}: ${d.steps.length} step(s)`);
-    d.steps.forEach((s, i) => lines.push(`  ${i + 1}. [${s.side}] ${s.who ? s.who + ': ' : ''}${s.text}${s.gm ? ' (GM only)' : ''}`));
+    d.steps.forEach((s, i) => {
+      if (s.side !== 'story') { lines.push(`  ${i + 1}. [${s.side}] ${s.who ? s.who + ': ' : ''}${s.text}${s.gm ? ' (GM only)' : ''}`); return; }
+      // a narration step: what it follows, so a beat told out of place shows before the table sees it
+      const prev = d.steps.slice(0, i).reverse().find((x) => x.side !== 'story');
+      lines.push(`  ${i + 1}. [story${s.gm ? ', GM only' : ''}] after ${prev ? `#${d.steps.indexOf(prev) + 1} (${prev.who ? prev.who + ': ' : ''}${String(prev.text).slice(0, 50)})` : 'the start'}: "${s.text.slice(0, 70)}${s.text.length > 70 ? '…' : ''}"`);
+    });
+    if (d.steps.length && d.steps.at(-1).side !== 'story') lines.push('  (no closing narration step yet)');
     if (d.stop) lines.push(`stops for reactions: ${d.stop}`);
     return { lines, writes: [] };
   }
@@ -220,9 +227,15 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
     const step = { side: 'story', text, changes: [], posts: [{ c: 'chat', data: { by: 'claude', kind: 'narration', text, ...(d.map ? { map: d.map } : {}), ...(opts.gm ? { gm: true } : {}) } }], moves: [] };
     if (focus.length) step.focus = focus;
     if (opts.gm) step.gm = true;
-    d.steps.push(step);
+    let at = d.steps.length;
+    if (opts.after !== undefined) {
+      const n = Number(opts.after);
+      if (!Number.isInteger(n) || n < 0 || n > d.steps.length) throw new Error(`--after is a step number from 0 to ${d.steps.length}`);
+      at = n;
+    }
+    d.steps.splice(at, 0, step);
     saveDraft(draftFile, d);
-    return { lines: [`step ${d.steps.length}: narration (${text.length} characters)${focus.length ? `, about ${focus.join(', ')}` : ''}`], writes: [adjWrite(d, now)] };
+    return { lines: [`step ${at + 1}: narration (${text.length} characters)${focus.length ? `, about ${focus.join(', ')}` : ''}${at < d.steps.length - 1 ? `, after step ${at}` : ''}`], writes: [adjWrite(d, now)] };
   }
   if (cmd === 'stop') {
     const text = args.join(' ').trim();

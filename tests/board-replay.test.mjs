@@ -121,6 +121,12 @@ test('replay tool: a draft changes a working copy step by step, and end writes t
   fs.writeFileSync(out, JSON.stringify({ op: 'update', path: 'actorstate/kerra', data: { hp: 6 } }));
   run('step', [], { side: 'npc', actor: 'ogre', text: 'Again', in: [out] });
   run('narrate', ['Thud.'], { focus: ['Ogre'] });
+  // a beat told late goes where it belongs; show says what each narration follows
+  run('narrate', ['First blow.'], { after: 1 });
+  assert.deepEqual(JSON.parse(fs.readFileSync(draftFile, 'utf8')).steps.map((s) => s.side), ['npc', 'story', 'npc', 'story']);
+  assert.match(run('show').lines.join('\n'), /2\. \[story\] after #1 \(Ogre: Clubs Kerra\): "First blow\."/);
+  assert.throws(() => run('narrate', ['x'], { after: 9 }), /--after is a step number/);
+  const drafted = JSON.parse(fs.readFileSync(draftFile, 'utf8')); drafted.steps.splice(1, 1); fs.writeFileSync(draftFile, JSON.stringify(drafted));
   const e = run('end');
   const rep = e.writes[0].data;
   // narration is a step of its own, right after the actions it tells (the user, 2026-11-12)
