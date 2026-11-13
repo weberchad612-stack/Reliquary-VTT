@@ -418,7 +418,8 @@ and edit; summaries per session; the old Abomination Vaults ledger is not import
 - **The campaign's players** (`state/table.players`, saved in `campaign.json`): `{id, name, pcs: [token ids], gm?}`,
   who plays whom (board/players.js). Claude keeps it with `node tools/players.mjs list | add "Chad" --pcs "Kerra, Lyra"
   [--gm] | set | remove --records FILE` (prints a merge of `state/table`). An entry shows "added by Chad (as Kerra)";
-  with one player in the campaign, his name is used when none is given.
+  with one player in the campaign, his name is used when none is given. Record the players when a campaign is
+  first loaded (ask the user who plays whom), and update the list when a PC joins or leaves.
 - **Lessons:** whoever invents a detail is recorded, not just that it was invented: the user improvises too (the
   king's orders, through Kerra), and a quest or a fact can be an improvisation as much as an "improv" entry. Keep
   the ledger for what the chat can't hold; duplicating the story makes it slow to search.

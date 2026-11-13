@@ -36,7 +36,8 @@ The table rules (secrecy, narration, the ledger, tactics, rulings) are in the GM
 [docs/gm/running-a-game.md](../gm/running-a-game.md) and [rulesets/pf2e/gm.md](../../rulesets/pf2e/gm.md). This section is the tools.
 
 - **The ledger** (the GM's memory: improvisations, secrets, rulings, threads, quests, timed events, session
-  summaries): `node tools/ledger.mjs add <kind> "text" --subjects "..." --records FILE`, `find`, `story`
+  summaries): `node tools/ledger.mjs add <kind> "text" --subjects "..." [--character <PC>] --records FILE`, `find`, `story`;
+  the campaign's players (who plays which PCs) with `tools/players.mjs`
   ([board.md](board.md), the ledger). Write it the same turn; read it before answering about the past.
 
 

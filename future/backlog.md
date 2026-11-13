@@ -439,7 +439,9 @@ focus points as a creature resource (spend, refocus) with the turn and rest rule
 
 **Built:** records `ledger/<id>` (GM only, saved as `ledger.json`), `tools/ledger.mjs` (add, summary, edit, close,
 reopen, remove, find with `--chat`, story, subjects) and the GM's Ledger tab (search, kind filters, story so far,
-add, edit, close, remove). Docs: `docs/best-practices/board.md` (the ledger), GM guide rule B5. The stop-gap
+add, edit, close, remove), each invented detail with who invented it (Claude, or which player through which
+character; the campaign's players in `state/table.players`, kept with `tools/players.mjs`). Docs:
+`docs/best-practices/board.md` (the ledger), GM guide rule B5. The stop-gap
 `saves/<campaign>/ledger.md` below is no longer used.
 
 **The user, 2026-11-13 (GM guide rule B5): "SUPER important"** for running a consistent game. Any Claude

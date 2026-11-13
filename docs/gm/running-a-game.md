@@ -362,7 +362,8 @@ hand.
 
 - **Starting a session.** Read this guide and the system's, `docs/STATUS.md`, and the campaign's ledger
   (`ledger.mjs story`: the story so far, timed events due, open quests and threads); check the board is on the
-  right campaign. Every PC starts with
+  right campaign, and that the campaign's players are recorded (`players.mjs list`: who plays which PCs; if not,
+  ask the user once and record it), so the ledger can say who introduced what. Every PC starts with
   the system's per-session resources (PF2E: 1 Hero Point).
 - **Ending a session** ("wrap up"; offer it when the user says he's done): _(X)_
   1. Close what's open: no replay left unrevealed, the banner cleared, the encounter ended or noted as

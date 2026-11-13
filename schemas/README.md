@@ -5,7 +5,7 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 | Schema | Describes | Lives in |
 |---|---|---|
 | `pack.schema.json` | A pack's manifest: id, version, the ruleset it targets, its maps, its visual effects file, and the open content its campaigns use (`content`: `pf2e/<source>`) | pack: `pack.json` |
-| `campaign.schema.json` | A campaign save's own record: pack and ruleset, current map, maps discovered, table settings (sky, colour, animation), notes (a test campaign's tips) | save: `campaign.json` |
+| `campaign.schema.json` | A campaign save's own record: pack and ruleset, current map, maps discovered, table settings (sky, colour, animation), notes (a test campaign's tips), the players (who plays which PCs) | save: `campaign.json` |
 | `map.schema.json` | One map: image, grid calibration, wall files, links to other maps, hidden areas (insets of other maps) | pack: `maps/<id>/map.json` |
 | `walls.schema.json` | Wall segments in grid cells (8 types, doors, secret doors, one-way, proximity); doors may be stuck (`stuck_dc`), blocked, or found automatically (`auto_find`); door leaves have a `hinge` and `swing`, and the two leaves of a double door name each other in `pair` | pack: `maps/<id>/walls.json` |
 | `terrain.schema.json` | Terrain areas in whole squares (difficult, greater difficult, swim, climb, uneven, narrow, hazardous) with cause, DC, damage, and areas that start switched off | pack: `maps/<id>/terrain.json` |
@@ -14,7 +14,7 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 | `actorstate.schema.json` | What is happening to a creature now: HP, temporary HP, resources, a raised shield, situation tags | save: `actorstate/<id>.json` |
 | `chat.schema.json` | The chat: narration, rulings, NPC lines, initiative, check and damage cards (retired kinds `event` and `log` still load) | save: `chat.json` |
 | `audit.schema.json` | The GM's audit log: every change, in words | save: `audit.json` |
-| `ledger.schema.json` | The campaign ledger, the GM's memory: improvisations, secrets, rulings, threads, quests, timed events, session summaries | save: `ledger.json` |
+| `ledger.schema.json` | The campaign ledger, the GM's memory: improvisations (who invented each: Claude, or which player through which character), secrets, rulings, threads, quests, timed events, session summaries | save: `ledger.json` |
 | `dice.schema.json` | Every die rolled, for the Dice statistics | save: `dice.json` |
 | `replay.schema.json` | Replays: batches revealed step by step (changes, posts, moves, roll details, narration steps), the unfinished ones and the last few finished | save: `replays.json` |
 | `map-state.schema.json` | Door states, found secrets, explored outlines, tokens by generated id (`tok-…`) with their names (adjective names, proper names with an alias until learned), type, group and letter, token cells, temporary terrain and terrain switched on or off, sky light, static lights and regions changed in play (on/off, colour, intensity, animation), the table's coloured-light switch and strength and animation switch, carried lights and senses, token effect badges (conditions and custom effects), dead and elevation, placed area templates and map notes (by generated ids, `tpl-…`, `note-…`), area-map places and entrances found, on one map | save: `maps/<id>.json` |
