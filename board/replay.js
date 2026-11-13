@@ -168,13 +168,13 @@ export function checkReplay(rep) {
 
 // ---------- "Claude is adjudicating" (state/adjudicating) ----------
 // tools/replay.mjs writes {by, since, at} when Claude starts a batch, refreshes `at` with every step, and deletes it
-// when done. Every screen shows a banner while it is there. A screen times it from when it last saw the record
+// when done. Every screen shows a banner while it is there: "Claude is thinking", one line picked at random for the
+// whole time, and the time elapsed. A screen times it from when it last saw the record
 // change (clocks differ between machines): quiet for SLOW, the banner says it is still working with the time; quiet
 // for STALE, the banner goes (the GM's board then deletes the record and notes it in the audit log).
 export const ADJ_PATH = 'state/adjudicating';
 export const ADJ_SLOW = 5 * 60 * 1000;
 export const ADJ_STALE = 30 * 60 * 1000;
-export const ADJ_ROTATE = 6000;   // ms between lines
 
 /** 'off' | 'busy' | 'slow' | 'stale' for a record seen (changed) at `seen` (this screen's ms), now `now`. */
 export function adjState(rec, seen, now) {
@@ -200,11 +200,17 @@ export const ADJ_LINES = Object.freeze([
   'Cue the suspense…', 'And then…',
 ]);
 
-/** The line to show at `now`: a new one every ADJ_ROTATE ms, in a shuffled order seeded by the record's start. */
-export function adjLine(rec, now, lines = ADJ_LINES) {
-  const seed = Date.parse((rec && rec.since) || '') || 0;
-  const i = Math.floor(now / ADJ_ROTATE);
-  return lines[Math.abs((i * 7919 + Math.floor(seed / 1000)) % lines.length)];
+/** The banner's line: one picked at random for the whole of an adjudication (the user, 2026-11-12: no cycling), the
+ *  same on every screen (chosen from the record's start time). */
+export function adjLine(rec, lines = ADJ_LINES) {
+  const seed = Math.floor((Date.parse((rec && rec.since) || '') || 0) / 1000);
+  return lines[Math.abs((seed * 7919) % lines.length)];
+}
+
+/** "0:42", "12:05", "1:02:10" for an elapsed time in ms. */
+export function elapsedWords(ms) {
+  const t = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), sec = String(t % 60).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`;
 }
 
 /** "4 min" or "1 h 12 min" for a quiet time in ms. */

@@ -408,12 +408,14 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   **The controls stay at the top** and only the steps scroll (the user, 2026-11-12: no scrolling up to reach Next),
   following the newest step.
 - **The banner** (`mountAdjudicating`, on the battle map and area maps): while `state/adjudicating` exists, a pill
-  over the top of the map shows one of 50 lines (`ADJ_LINES`, for any game and any world, never saying what is
-  being worked out), a new one every 6 s, pulsing gold (steady with reduced motion). Quiet for **5 minutes**: "Still
-  working on it… 12 min". Quiet for **30 minutes**: gone, and the GM's board deletes the record with an audit
-  warning. The GM has a **Clear** button. Each screen times it from when it last saw the record change (clocks differ
-  between machines; a record already there on load counts from its own `at`). The banner lets clicks through to the
-  map, except on Clear. Banner only, for now: nothing is locked while it shows (the user, 2026-11-12).
+  over the top of the map: the header **"Claude is thinking"**, **one line picked at random for the whole
+  adjudication** (`ADJ_LINES`, 50 lines for any game and any world, never saying what is being worked out; the same
+  line on every screen, chosen from the record's start), and **the time elapsed** (0:48), pulsing gold (steady with
+  reduced motion). The user (2026-11-12): no cycling through lines; the elapsed time always shown. Quiet for **5
+  minutes**: the header reads "Claude is still thinking". Quiet for **30 minutes**: gone, and the GM's board deletes
+  the record with an audit warning. The GM has a **Clear** button. Each screen times the quiet from when it last saw
+  the record change, and the elapsed time from the start as it first saw it (clocks differ between machines). The
+  banner lets clicks through to the map, except on Clear. Banner only, for now: nothing is locked while it shows.
 - **The save** keeps every unfinished replay and the last 5 finished (`replays.json`); `campaign.mjs tidy` gives
   the deletes for older ones. `state/adjudicating` is not saved.
 - **Listeners**: two, always (the replay collection and the banner's record), because every screen plays the steps

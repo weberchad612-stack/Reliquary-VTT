@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   diffRecord, applyChange, conflicts, stepWrites, postPath, currentReplay, waitingBehind, remaining, claim, claimStood,
-  focusOf, checkReplay, adjState, adjLine, ADJ_LINES, ADJ_SLOW, ADJ_STALE, quietWords, narrationPosts,
+  focusOf, checkReplay, adjState, adjLine, elapsedWords, ADJ_LINES, ADJ_SLOW, ADJ_STALE, quietWords, narrationPosts,
 } from '../board/replay.js';
 import { runReplay, writesOf, project, parseMove } from '../tools/replay.mjs';
 import { saveFromRecords, campaignRecords, KEEP_REPLAYS } from '../board/records.js';
@@ -92,8 +92,12 @@ test('replay: the adjudicating banner goes slow, then stale; lines rotate and sa
   assert.equal(ADJ_LINES.length, 50);
   assert.equal(new Set(ADJ_LINES).size, 50);
   const rec = { since: '2026-11-12T00:00:00Z' };
-  assert.ok(ADJ_LINES.includes(adjLine(rec, 0)));
-  assert.notEqual(adjLine(rec, 0), adjLine(rec, 6000));
+  assert.ok(ADJ_LINES.includes(adjLine(rec)));
+  assert.equal(adjLine(rec), adjLine({ ...rec, at: 'later' }), 'one line for the whole adjudication');
+  assert.notEqual(adjLine(rec), adjLine({ since: '2026-11-12T00:00:01Z' }), 'another adjudication, another line');
+  assert.equal(elapsedWords(42000), '0:42');
+  assert.equal(elapsedWords(725000), '12:05');
+  assert.equal(elapsedWords(3730000), '1:02:10');
   assert.equal(quietWords(4 * 60000), '4 min');
   assert.equal(quietWords(72 * 60000), '1 h 12 min');
   // for any game: no game system's words

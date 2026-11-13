@@ -12,7 +12,7 @@
 
 import {
   REPLAY, ADJ_PATH, ADJ_STALE, CLAIM_WAIT, currentReplay, waitingBehind, remaining, claim, claimStood, stepWrites,
-  focusOf, adjState, adjLine, quietWords,
+  focusOf, adjState, adjLine, quietWords, elapsedWords,
 } from './replay.js';
 import { auditPath, auditEntry } from './audit.js';
 import { rollLines } from './rolldetail.js';
@@ -202,6 +202,7 @@ export function mountReplay(o) {
 export function mountAdjudicating(o) {
   const ban = o.el;
   let adj = null, seen = 0, tick = null, adjFirst = true;
+  const starts = {};   // since -> when it started, by this screen's clock
   function paintBanner() {
     if (!ban) return;
     const now = Date.now(), st = adjState(adj, seen, now);
@@ -210,10 +211,11 @@ export function mountAdjudicating(o) {
       o.store.remove(ADJ_PATH).then(() => o.store.set(auditPath(), auditEntry({ text: `The "Claude is adjudicating" banner timed out: nothing from Claude for ${quietWords(ADJ_STALE)} (begun ${was.since || '?'})`, by: 'gm', level: 'warn' }))).catch(() => {});
     }
     if (st === 'off' || st === 'stale') { ban.hidden = true; if (tick) { clearInterval(tick); tick = null; } return; }
-    const line = st === 'slow' ? `Still working on it… <span class="adj-time">${esc(quietWords(now - Date.parse(adj.since || '') || 0))}</span>` : esc(adjLine(adj, now));
+    // the elapsed time counts from the start as this screen first saw it (a start in this screen's future counts from now)
+    if (!(adj.since in starts)) starts[adj.since] = Math.min(now, Date.parse(adj.since || '') || now);
     ban.hidden = false;
     ban.classList.toggle('slow', st === 'slow');
-    ban.innerHTML = `<span class="adj-mark" aria-hidden="true">⚖</span><span class="adj-line" role="status">${line}</span>${o.view() === 'gm' && !o.readOnly ? '<button type="button" class="adj-clear" title="Take the banner down (the GM\'s only)">Clear</button>' : ''}`;
+    ban.innerHTML = `<span class="adj-mark" aria-hidden="true">⚖</span><span class="adj-body" role="status"><b class="adj-head">${st === 'slow' ? 'Claude is still thinking' : 'Claude is thinking'}</b><span class="adj-line">${esc(adjLine(adj))}</span></span><span class="adj-time" title="Time since Claude began">${elapsedWords(now - starts[adj.since])}</span>${o.view() === 'gm' && !o.readOnly ? '<button type="button" class="adj-clear" title="Take the banner down (the GM\'s only)">Clear</button>' : ''}`;
     if (!tick) tick = setInterval(paintBanner, 1000);
   }
   if (ban) ban.addEventListener('click', (e) => {

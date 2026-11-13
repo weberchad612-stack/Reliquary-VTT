@@ -612,7 +612,7 @@ revealed; per-browser progress; narration written when a browser reached the end
 | Narration | **At the end**, as before: posted to the chat when the last step is revealed. |
 | Extras | **Camera follows** (per viewer), **Auto with a pace**, **reaction stops** (Claude ends a batch where a PC could react; "Waiting for reactions"), **replay a revealed step** (click it). No Back or Restart (a revealed step is real state). |
 | Claude's side | A **draft** (`tools/replay.mjs`): the other tools run on a working copy, so each step sees the ones before; a batch can be as long as needed. |
-| The banner (2026-11-12) | **"Claude is adjudicating"** on every screen while a draft is open: 50 rotating lines for any game and any world that never say what is being worked out. **Banner only** for now (nothing locked). Each tool call refreshes it; **5 quiet minutes**: "Still working on it" with the time; **30**: gone (the GM's board deletes it, with an audit line); the GM can **Clear** it. |
+| The banner (2026-11-12) | **"Claude is thinking"** on every screen while a draft is open, with one line picked at random for the whole time (50 lines for any game and any world that never say what is being worked out; no cycling) and the time elapsed. **Banner only** for now (nothing locked). Each tool call refreshes it; **5 quiet minutes**: "Still working on it" with the time; **30**: gone (the GM's board deletes it, with an audit line); the GM can **Clear** it. |
 
 Records: `replay/<id>` and `state/adjudicating` (section 3). Code: `board/replay.js` (pure), `board/replayui.js` (the
 tab, playing, the banner), the slides and rings in `board/app.js`, `tools/replay.mjs`. How to use and change it:
