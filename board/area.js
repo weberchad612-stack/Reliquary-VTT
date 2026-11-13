@@ -16,6 +16,7 @@ import { mountChat } from './chatui.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountDice } from './diceui.js';
+import { showSystemBadge } from './sysbadge.js';
 import { kindColour } from './targeting.js';
 
 /** The places a view may see, with what the pin and card need. */
@@ -225,6 +226,7 @@ export async function startArea(store, c) {
   };
   document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('campaign-title').textContent = META.campaign.title;
+  showSystemBadge(document.getElementById('sysbadge'), Engine.systemConfig(META.ruleset));
   shell.startMenu();
   const SYS = Engine.systemConfig(META.ruleset) || {};
   clockUi = await mountClock({

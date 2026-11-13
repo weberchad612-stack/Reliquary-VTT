@@ -134,7 +134,8 @@ prevents accidental spoilers. When other people play on a board, the secrecy mod
 ## 7. The title line and the top menu (the top menu is empty since 2026-11-12)
 
 **The title line**, left to right (agreed with the user on 2026-11-10; since 2026-11-12: the campaign's title, the
-map menu right after it, then the game clock in smaller type; the encounter tracker's ⚔ button and the subtitle
+game system's badge (the ruleset's `badge`: Pathfinder's is our own "PF2e" mark, not Paizo's trademarked
+logo), the map menu, then the game clock in smaller type; the encounter tracker's ⚔ button and the subtitle
 (a campaign's `notes.subtitle`, or the adventure and map) were removed):
 
 1. **The campaign's title**, from `board/meta`.

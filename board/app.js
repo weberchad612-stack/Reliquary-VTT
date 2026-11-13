@@ -23,6 +23,7 @@ import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from 
 import { NOTE_MAX, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
 import { pointOutRing } from './highlight.js';
+import { showSystemBadge } from './sysbadge.js';
 import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
 import { mountChat } from './chatui.js';
@@ -3121,6 +3122,7 @@ export async function start(store, { build = null } = {}) {
   // ---------- start ----------
   document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('campaign-title').textContent = META.campaign.title;
+  showSystemBadge(document.getElementById('sysbadge'), SYS);
   document.getElementById('sky').value = S.sky;
   syncColourButton(); syncAnimButton();
   recompute('reset');

@@ -101,6 +101,14 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Before every publish, run the headless smoke checks** (`NODE_PATH=$(npm root -g) node tools/headless/smoke.mjs`; docs/best-practices/development.md): every check must pass with no page errors.
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 
+## 7b. The game system's badge
+
+- **After the campaign's name** the title line shows which game system the campaign uses (2026-11-12). The ruleset
+  defines it in `rulesets/<system>/system.js` as `badge: {text, title, colour, ink}`; `board/sysbadge.js` draws it
+  (no image file). A system without a badge shows its name in plain small text. Pathfinder's is our own "PF2e" mark
+  in red and gold, not Paizo's logo: their logos are trademarks under licences that change (the user chose an
+  original mark, 2026-11-12). Do not add a publisher's logo to the repository.
+
 ## 8. The top menu (empty since 2026-11-12)
 
 - **The top menu is empty and its bar hidden**: everything it held moved to the sidebar's tabs (section on the

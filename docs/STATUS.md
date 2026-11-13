@@ -9,7 +9,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 | Area | What exists | Read |
 |---|---|---|
 | Engine (`engine/`) | Walls and doors, sight and fog, light (daylight, colour, intensity, animation), movement (paths, Stride ranges, waypoints), terrain, measurement and height, areas, tokens (Tiny layout, occupancy), visual effects, the rules machinery, dice, time (calendar, clock, durations, encounters). System-free. | [engine/README.md](../engine/README.md), the best-practices guides |
-| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds. | [game-data.md](best-practices/game-data.md) |
+| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge. | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
 | Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, events and audit lines. | [tools/README.md](../tools/README.md) |
@@ -18,7 +18,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 
 ## The board today
 
-- **Title line:** the campaign's title, the map menu on the current map's name (travel, entrances, the GM's
+- **Title line:** the campaign's title, its game system's badge ("PF2e"), the map menu on the current map's name (travel, entrances, the GM's
   previews), the game clock. The top menu is empty and hidden.
 - **The map:** tokens (drag, Space waypoints with running distances, group moves, arrow keys), doors, fog and
   light, terrain, area templates, map notes, effect badges, targets (T), the token HUD (right-click: target,

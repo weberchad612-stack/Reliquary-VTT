@@ -45,6 +45,9 @@ export const PF2E_SYSTEM = Object.freeze({
   // initiative: the statistics a creature may roll, with initiative's modifiers and notes (rulesets/pf2e/initiative.js)
   initiative: PF2E_INITIATIVE,
   traits: PF2E_TRAITS,
+  // the small badge after the campaign's name in the title line: our own mark (not Paizo's logo, a trademark), drawn
+  // by the board from these words and colours
+  badge: Object.freeze({ text: 'PF2e', title: 'Pathfinder Second Edition rules', colour: '#7a1d1d', ink: '#f2c14e' }),
   // the kinds of roll the Dice tab (board/dice.js) sorts dice into, in the order its filter lists them; a roll of
   // another kind is 'other'
   rollKinds: Object.freeze([
