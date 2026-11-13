@@ -270,9 +270,9 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The sidebar, the chat and the audit log (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs: **Chat**, **Encounter**, **Dice**, **Visual effects**, **Party loot**, **Quest log**,
-  **Replay**, and the GM view's **Lighting**, **Walls** and **Audit log**; an area map's: **Place**, **Chat**,
-  **Dice**, **Party loot**, **Quest log** and the GM's **Audit log**. Clicking the open tab's icon collapses the
+  The battle map's tabs, top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter**, **Replay**, **Party
+  loot**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
+  an area map's: **Place**, **Chat**, **Party loot**, **Quest log**, **Dice statistics** and the GM's **Audit log**. Clicking the open tab's icon collapses the
   sidebar to its strip (so does the » control at the bottom of the strip, which also expands it); **dragging the
   inner edge resizes it** (double-click the edge for the usual width). Each browser remembers the tab, the width
   and whether it is collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar

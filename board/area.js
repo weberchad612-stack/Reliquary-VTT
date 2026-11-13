@@ -64,7 +64,7 @@ export async function startArea(store, c) {
   card.id = 'place-card';
   document.getElementById('pane-place').prepend(card);
   // the sidebar (board/sidebar.js): the place, the chat, the dice statistics and the GM's audit log
-  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'dice', label: 'Dice statistics' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
 
   const toastEl = document.getElementById('toast');
   let toastT = null;

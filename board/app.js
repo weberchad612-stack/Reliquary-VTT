@@ -3115,11 +3115,11 @@ export async function start(store, { build = null } = {}) {
   // the sidebar (board/sidebar.js): chat, the encounter tracker, the dice statistics, visual effects, party loot, the
   // quest log and replay (the last three not built yet), the GM's lighting, walls and audit log
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
-    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'dice', label: 'Dice statistics' },
-    { id: 'effects', label: 'Visual effects' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'replay', label: 'Replay' },
-    { id: 'lighting', label: 'Lighting (GM)', gm: true },
-    { id: 'walls', label: 'Walls (GM)', gm: true },
-    { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+    // the user's order (2026-11-12)
+    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'replay', label: 'Replay' },
+    { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
+    { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
+    { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
