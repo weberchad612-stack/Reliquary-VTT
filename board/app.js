@@ -1858,8 +1858,6 @@ export async function start(store, { build = null } = {}) {
     draw();
   }
   function onCommand(id, item, state) {
-    if (id === 'fx-on') { setFxOn(state); return true; }
-    if (id === 'fx-preview') { openFxPanel(); return true; }
     if (id === NOTE_COMMAND) { if (READONLY) { toast('This is a preview: notes are added on the party\'s map.'); setNoting(false); } else setNoting(state); return true; }
     return false;
   }
@@ -2514,6 +2512,7 @@ export async function start(store, { build = null } = {}) {
   if (sidebar) sidebar.refresh();
   if (auditUi) auditUi.render();
   if (diceUi) diceUi.render();
+  if (shellReady) syncFxPanel();
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
@@ -2975,8 +2974,8 @@ export async function start(store, { build = null } = {}) {
   }
   function setFxOn(on) {
     fxOn = !!on; fxPref.set(fxOn);
-    const m = shellReady && shell.menu();
-    if (m) m.setToggle('fx-on', fxOn);
+    const box = document.getElementById('fx-on');
+    if (box) box.checked = fxOn;
     if (!fxOn) { fxPlayer.clear(); fxFrame(); }
     toast(fxOn ? 'Visual effects on (this screen).' : 'Visual effects off (this screen).');
   }
@@ -2988,7 +2987,8 @@ export async function start(store, { build = null } = {}) {
     if (READONLY) return;
     for (const e of stale(list)) if (!fxRemoving.has(e.path)) { fxRemoving.add(e.path); store.remove(e.path).catch(() => {}); }
   }
-  // the GM's preview: every effect by group, played from the selected token to the targets (or the hovered token)
+  // the Visual effects tab (the sidebar): this screen's switch for everyone, and the GM's preview: every effect by
+  // group, played from the selected token to the targets (or the hovered token)
   const fxPanel = document.getElementById('fxpanel'), fxList = document.getElementById('fx-list'), fxSearch = document.getElementById('fx-search');
   let fxLastHover = null;
   function renderFxList() {
@@ -3018,14 +3018,14 @@ export async function start(store, { build = null } = {}) {
     if (!src && !to && !tpl) { toast('Select a token to play from, and target or hover one to play at.'); return; }
     if (!playFx(rec, { local: true })) toast('Nothing to play at here.');
   }
-  function openFxPanel() {
-    if (S.view !== 'gm') return;
-    fxPanel.hidden = false; renderFxList(); fxSearch.focus();
+  /** The preview is the GM view's only; drawn when the tab is shown in it. */
+  function syncFxPanel() {
+    fxPanel.hidden = S.view !== 'gm';
+    if (!fxPanel.hidden && !fxList.childElementCount) renderFxList();
   }
+  document.getElementById('fx-on').addEventListener('change', (ev) => setFxOn(ev.target.checked));
   fxSearch.addEventListener('input', renderFxList);
   fxList.addEventListener('click', (ev) => { const b = ev.target.closest('button[data-fx]'); if (b) previewFx(b.dataset.fx); });
-  document.getElementById('fx-close').addEventListener('click', () => { fxPanel.hidden = true; });
-  fxPanel.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); fxPanel.hidden = true; } });
   canvas.addEventListener('pointermove', () => { if (hoverId) fxLastHover = hoverId; });
 
   // ---------- the GM switch ----------
@@ -3043,6 +3043,7 @@ export async function start(store, { build = null } = {}) {
     view: () => S.view, tokensHere: () => S.tokens, toast, logChange, onCommand, centreOn: centreOnLink, fitWhole: () => { zoom = 1; fit(); },
   });
   shellReady = true;
+  syncFxPanel();
   const travelChanged = () => shell.travelChanged();
   /** Scroll the map so a token is in the middle of the view (the tracker's ping). */
   function centreOnToken(id) {
@@ -3101,7 +3102,7 @@ export async function start(store, { build = null } = {}) {
   lightingCard();
   fit();
   shell.startMenu();
-  shell.menu().setToggle('fx-on', fxOn);
+  document.getElementById('fx-on').checked = fxOn;
   notesReady = true; renderNotes();
   // the game clock in the title line; the GM view edits it (board/clockui.js)
   clockUi = await mountClock({
@@ -3111,9 +3112,12 @@ export async function start(store, { build = null } = {}) {
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
-  // the sidebar (board/sidebar.js): chat, the encounter tracker, the dice statistics, the GM's lighting, walls and audit log
+  // the sidebar (board/sidebar.js): chat, the encounter tracker, the dice statistics, visual effects, party loot, the
+  // quest log and replay (the last three not built yet), the GM's lighting, walls and audit log
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
-    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'dice', label: 'Dice statistics' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
+    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'dice', label: 'Dice statistics' },
+    { id: 'effects', label: 'Visual effects' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'replay', label: 'Replay' },
+    { id: 'lighting', label: 'Lighting (GM)', gm: true },
     { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,

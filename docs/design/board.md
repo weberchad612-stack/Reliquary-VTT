@@ -460,16 +460,17 @@ lightning at a flyer); every open board draws it once, on its own canvas over th
 - **On screen:** a canvas over the map, its notes and template buttons, under the HUD and menus, scaled with the
   map. Floating text shows only what the players know: red damage, green healing, Miss, CRIT!, a condition's name;
   never hit points, AC or an unseen ability. A short shake of the token on a hit (the map under it redrawn, offset).
-- **Settings per browser:** Map ▸ Visual effects (on by default, kept in this browser), and the system's reduced
+- **Settings per browser:** the Visual effects tab's switch (on by default, kept in this browser), and the system's reduced
   motion setting: particles, rings and shakes are dropped, lightning becomes a calm streak, fades and text stay.
-- **The GM's preview:** Map ▸ Effects... (GM view): a searchable list by group; clicking one plays it from the
+- **The GM's preview:** in the Visual effects tab (GM view; it was Map ▸ Effects... until 2026-11-12): a searchable list by group; clicking one plays it from the
   selected token to this view's targets (or the last hovered token), or over the newest template for an area
   effect, with Hit, Crit or Miss, a text and a count. This screen only; nothing is written.
 
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
-- **Bar:** Map (Measure, Add note, Show walls, Turn view, Visual effects, Effects... for the GM; Reload), Play (Actions, Exploration), Records (Party loot, Quest log, Dice), and two
-  buttons straight on the bar, Replay and Narration, which can show a count.
+- **Bar:** Map (Measure, Add note, Show walls, Turn view; Reload), Play (Actions, Exploration), and Narration straight on
+  the bar, which can show a count. Records (Party loot, Quest log, Dice), Replay and the visual effects moved to
+  the sidebar's tabs on 2026-11-12.
 - **Behaviour:** click a menu to open it; once one is open, pointing at another opens that one; one menu
   open at a time; picking an item, clicking outside or Escape closes it. A menu shows as active (amber)
   while one of its toggles is on, and a red dot when something inside is waiting. One level of sub-menu,
@@ -557,7 +558,7 @@ a collapse/expand control does the same. The user's decisions:
 |---|---|
 | Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
 | Pop-out windows | **Every tab pops out** as a floating window (the user's standard for all sidebar tabs, 2026-11-12), **resizable**, and each **remembers its position** and size (and whether it is out) per browser. |
-| Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Walls** (GM only, from 2026-11-12: Show walls moved from the header), **Audit log** (GM only, from 2026-11-12: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
+| Tabs now | **Chat**, **Encounter** (the tracker), **Dice**, **Visual effects** (this screen's switch, and the GM's preview), **Party loot**, **Quest log** and **Replay** (moved from the top menu on 2026-11-12; to be built), **Lighting** (GM only), **Walls** (GM only, from 2026-11-12: Show walls moved from the header), **Audit log** (GM only, from 2026-11-12: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **events** players should know about. Typed messages, whispers and the chat box come later. |
 | Chat and audit log (the user, 2026-11-12) | **The chat holds everything important to the players, above all Claude's story narration**: the narration, rulings and NPC lines, the dice rolled by and for the PCs, the NPC rolls players should know about, and **events**: combat rolls' results, damage, conditions applied, deaths, the encounter beginning and ending, new rounds. **An audit log only the GM sees shows every underlying state change** (moves, doors, lights, templates, notes, terrain, the clock, initiative, hiding) and the board's warnings. The change log and the table log are **removed** from the board, the database and the code. |

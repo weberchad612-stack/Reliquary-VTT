@@ -87,11 +87,13 @@ canvas#map, .hud { margin: 0 auto; flex: none; }
 .zoom output { min-width: 3.5em; text-align: center; font: 500 13px var(--font-mono); color: var(--muted); }
 canvas#anim, canvas#tgt { position: absolute; pointer-events: none; }
 canvas#fxc { position: absolute; pointer-events: none; z-index: 4; }   /* visual effects: over the map, notes and template buttons; under the HUD and menus */
-.fxpanel { position: fixed; right: 18px; top: 84px; z-index: 44; width: 300px; max-height: calc(100vh - 120px); display: grid; grid-template-rows: auto auto auto 1fr; gap: 8px;
-  background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; box-shadow: 0 12px 40px rgba(0,0,0,.5); font-size: 13px; }
+.fxpanel { display: grid; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
 .fxpanel[hidden] { display: none; }
-.fxpanel header { display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; }
-.fxpanel header h2 { margin: 0; font-size: 14px; flex: 1; }
+.fx-h { margin: 0; font: 600 11px var(--font-body); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.fx-on { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer; }
+.fx-on + .fxhint { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+.soon { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.soon b { color: var(--ink); }
 .fxpanel input[type=search], .fxpanel input[type=text] { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
 .fxpanel .fxopts { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 12px; }
 .fxpanel .fxopts label { display: inline-flex; gap: 3px; align-items: center; }
@@ -576,21 +578,6 @@ ul.try b { color: var(--ink); font-weight: 500; }
     </div>
   </header>
   <div class="preview-bar" id="preview-bar" hidden role="status"><span id="preview-text"></span><button id="preview-back">Back to the party's map</button></div>
-  <div class="fxpanel" id="fxpanel" hidden role="dialog" aria-label="Visual effects preview">
-    <header><h2>Visual effects</h2><button type="button" id="fx-close" aria-label="Close">✕</button></header>
-    <p class="fxhint" id="fx-hint">Plays from the selected token to your targets (or the hovered token). This screen only.</p>
-    <div>
-      <input type="search" id="fx-search" placeholder="Search effects" aria-label="Search effects">
-      <div class="fxopts" role="group" aria-label="Result">
-        <label><input type="radio" name="fx-res" value="hit" checked> Hit</label>
-        <label><input type="radio" name="fx-res" value="crit"> Crit</label>
-        <label><input type="radio" name="fx-res" value="miss"> Miss</label>
-        <label>Text <input type="text" id="fx-text" placeholder="-12"></label>
-        <label>n <input type="number" id="fx-n" min="1" max="10" value="3"></label>
-      </div>
-    </div>
-    <div class="fxlist" id="fx-list"></div>
-  </div>
   <main>
     <div class="stage" id="stage">
       <canvas id="map" tabindex="0" aria-label="Map. Click a token to select it, drag to move, arrow keys step one square."></canvas>
@@ -627,6 +614,28 @@ ul.try b { color: var(--ink); font-weight: 500; }
           <div class="lt-controls"><button id="b-walls" aria-pressed="false" title="Draw the walls, doors and windows the engine uses over the map">Show walls</button></div>
         </section>
         <section class="sb-pane" data-pane="dice" aria-label="Dice statistics" hidden></section>
+        <section class="sb-pane" data-pane="effects" aria-label="Visual effects" hidden>
+          <label class="fx-on"><input type="checkbox" id="fx-on"> Show visual effects on this screen</label>
+          <p class="fxhint">Spell and attack effects Claude plays. Off: this screen shows none (others still do).</p>
+          <div class="fxpanel" id="fxpanel" aria-label="Preview the visual effects (GM)">
+              <h3 class="fx-h">Preview (GM)</h3>
+              <p class="fxhint" id="fx-hint">Plays from the selected token to your targets (or the hovered token). This screen only.</p>
+              <div>
+                <input type="search" id="fx-search" placeholder="Search effects" aria-label="Search effects">
+                <div class="fxopts" role="group" aria-label="Result">
+                  <label><input type="radio" name="fx-res" value="hit" checked> Hit</label>
+                  <label><input type="radio" name="fx-res" value="crit"> Crit</label>
+                  <label><input type="radio" name="fx-res" value="miss"> Miss</label>
+                  <label>Text <input type="text" id="fx-text" placeholder="-12"></label>
+                  <label>n <input type="number" id="fx-n" min="1" max="10" value="3"></label>
+                </div>
+              </div>
+              <div class="fxlist" id="fx-list"></div>
+            </div>
+        </section>
+        <section class="sb-pane" data-pane="loot" aria-label="Party loot" hidden><p class="soon"><b>Party loot</b> is coming soon: the party's coins and treasure, shared with everyone.</p></section>
+        <section class="sb-pane" data-pane="quests" aria-label="Quest log" hidden><p class="soon"><b>The quest log</b> is coming soon: the party's quests, leads and promises.</p></section>
+        <section class="sb-pane" data-pane="replay" aria-label="Replay" hidden><p class="soon"><b>Replay</b> is coming soon: step through a batch of resolved actions on the map.</p></section>
         <section class="sb-pane" data-pane="audit" aria-label="Audit log (GM)" hidden></section>
       </div>
       <!-- retired from the side panel (2026-11-12): kept off screen so older code paths have somewhere to write -->

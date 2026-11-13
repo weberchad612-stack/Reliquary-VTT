@@ -270,11 +270,18 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The sidebar, the chat and the audit log (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs: **Chat**, **Encounter**, **Dice**, and the GM view's **Lighting**, **Walls** and **Audit log**;
-  an area map's: **Place**, **Chat**, **Dice** and the GM's **Audit log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
-  the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
-  (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
-  collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar changes size.
+  The battle map's tabs: **Chat**, **Encounter**, **Dice**, **Visual effects**, **Party loot**, **Quest log**,
+  **Replay**, and the GM view's **Lighting**, **Walls** and **Audit log**; an area map's: **Place**, **Chat**,
+  **Dice**, **Party loot**, **Quest log** and the GM's **Audit log**. Clicking the open tab's icon collapses the
+  sidebar to its strip (so does the » control at the bottom of the strip, which also expands it); **dragging the
+  inner edge resizes it** (double-click the edge for the usual width). Each browser remembers the tab, the width
+  and whether it is collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar
+  changes size.
+- **Moved from the top menu** (the user, 2026-11-12): Party loot, the Quest log and Replay are sidebar tabs, each
+  saying what it will hold until it is built; the Records menu and the Replay button are gone. The **Visual effects**
+  tab holds this screen's switch ("Show visual effects on this screen", everyone; remembered per browser) and the
+  GM's **preview** of every effect (search, hit / crit / miss, text, n; it plays from the selected token to the
+  targets or the hovered token, on this screen only), which was the Map menu's Visual effects and Effects... items.
 - **Every tab pops out** (the user's standard, 2026-11-12: any new tab must too). Each tab's content sits in a
   panel (`board/panel.js`, made by `board/sidebar.js`): ⇱ in its title pops it out as a floating window, which moves
   by its title, **resizes from its bottom-right corner**, collapses to its title (▾), and goes back with ✕ or ⇥
