@@ -62,9 +62,10 @@ for this project (not copied); tests that the masks still respect walls and the 
 
 ## Group 4: needs other systems
 
-- **Sound-Reactive Pulse:** brightness follows the loudness of the table's music or ambient sound. Needs
-  the audio system (engine music is planned); then it is a Group 1 animation driven by an audio level
-  instead of a clock.
+- **Sound-Reactive Pulse:** brightness follows the loudness of the table's music or ambient sound. The audio
+  system exists now (engine/sound, 2026-11-13): add an analyser node on the music and ambience channels
+  (`SoundMixer`), and it becomes a Group 1 animation driven by an audio level instead of a clock. Each
+  screen hears its own mix, so screens would pulse a little differently.
 
 ## Overlapping animated lights: flicker by share (proposed 2026-11-10)
 

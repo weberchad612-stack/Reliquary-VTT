@@ -170,7 +170,7 @@ For one sense, a ray from source P to target Q:
 6. **40 reverse proximity:** the opposite: none if P is farther than `prox` feet, otherwise normal.
 7. **Doors:** open doors are 0 for every sense. Closed and locked doors use their type's values. An unfound secret door uses `solid`.
 
-The engine applies the same function to sight now, movement next, and light and sound later.
+The engine applies the same function to sight, movement and light, and to sound: the board muffles effects and ambient sounds behind walls that stop sound (2026-11-13, docs/best-practices/sound.md).
 
 ## 7. Map state (save)
 
@@ -380,7 +380,7 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 3. Movement (`canStep`, `fits`, `path`, `reach`). Done.
 4. Explored-area merging and the three-state fog renderer. Done.
 5. The import pipeline, then converting the first campaign's levels into a private pack and running the private golden positions. Pipeline and Level 1 done; Levels 2 and 3 to follow.
-6. Light and vision types (darkvision, low-light), then sound. Light and vision done: [lighting.md](lighting.md).
+6. Light and vision types (darkvision, low-light), then sound. Light and vision done: [lighting.md](lighting.md). Sound done (2026-11-13): [sound.md](../best-practices/sound.md).
 
 ## 16. Open items
 

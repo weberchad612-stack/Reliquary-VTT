@@ -86,6 +86,9 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
 | `fxlib/pack` | The pack's own visual effects (its `effects.json`: palette, effects, fallbacks), if it has any; read once when the board opens | Claude (loading) |
 | `fx/<time>-<n>` | A visual effect being played: name, from, to, result and text (section 7, Visual effects). Not part of the save; any board removes records older than ten minutes | Claude (`tools/fx.mjs`) |
+| `state/music` | The music (board/sound.js): the mood (automatic or set), the boss switch, the run every screen plays in step (`since`, `seed`, `playing`), `paused`, and each map's music out of combat (saved in `campaign.json` as `music`) | The GM view (Sound tab, and when the game's mood changes), Claude (`tools/sound.mjs`) |
+| `ambient/<amb-id>` | One ambient sound on a map: its loop, where, radius, day or night, volume, off, GM only (board/sound.js). Saved in the map's state (`ambient`) | Claude (`tools/sound.mjs ambient`); the GM view (mute, remove) |
+| `sfx/<time>-<n>` | A sound every screen hears once (a sting or cue from the soundboard or Claude). Not part of the save; removed after ten minutes like `fx/` | The GM view (soundboard), Claude (`tools/sound.mjs cue`) |
 
 **Ids** (`board/ids.js`; decided 2026-11-12, backlog FR-10). Game objects that other records point at get a type
 prefix and 8 random base-36 characters: tokens `tok-k3x9q2m7`, notes `note-…`, templates `tpl-…` (about 2.8 trillion
@@ -104,7 +107,7 @@ it); `group` is its encounter set (`cellar-rats`); `short` is the letter drawn w
 first letter of its adjective, unique within its group. Duplicate names and letters are warnings, never errors.
 
 The page listens to ten of these (the meta record, the table, the current map's state, and the token,
-explored, targets, templates, notes, fx and log collections), far under the platform's limit of 64. Records are per token and per map,
+explored, targets, templates, notes, fx and log collections), far under the platform's limit of 64. Later tabs added their own; sound alone adds six (music, encounter, ambient, sfx, chat, dice), and Board info counts them: about 24 in all (2026-11-13). Records are per token and per map,
 so the player and Claude changing different things never overwrite each other. Measured: the whole Sample
 Keep campaign (three maps, thirteen tokens) is 27 records and about 25 KB.
 
