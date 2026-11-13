@@ -4,6 +4,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 ## Read first
 
+- **Where things stand:** [docs/STATUS.md](docs/STATUS.md), one page: what is built, the board today, the user's standards, what is next. Start here; keep it current.
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
 - Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md); the board (client): [docs/design/board.md](docs/design/board.md); game data and rules: [docs/design/game-data.md](docs/design/game-data.md).
 - Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.

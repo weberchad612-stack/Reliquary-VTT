@@ -3094,6 +3094,8 @@ export async function start(store, { build = null } = {}) {
   window.reliquary = {
     store, meta: META, map: MAP_ID,
     state: () => clone(S),
+    /** The screen point of map point (x, y) in squares, for tests (tools/headless/board.mjs). */
+    screenOf: (x, y) => { const r = canvas.getBoundingClientRect(); return [r.left + (OX + x * CS) * scale, r.top + (OY + y * CS) * scale]; },
     known: (p) => clone(knownData.get(p)),
     exploredPolys: () => mask.toPolys(),
     select: (id) => { setSelection(id ? [id] : []); draw(); },

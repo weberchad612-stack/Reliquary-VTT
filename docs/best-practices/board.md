@@ -98,6 +98,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
   every system's glossary keyed by ruleset id (Pathfinder's is about 160 KB); the board uses only the campaign's
   own system's. It is the same for every campaign of a system, so it travels with the page rather than through
   the database.
+- **Before every publish, run the headless smoke checks** (`NODE_PATH=$(npm root -g) node tools/headless/smoke.mjs`; docs/best-practices/development.md): every check must pass with no page errors.
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 
 ## 8. The top menu (empty since 2026-11-12)

@@ -15,6 +15,13 @@
 - One export per declaration in engine and ruleset modules: the bundler only sees the first name of `export const a = 1, b = 2` (it now refuses that form), and `tests/demo.test.mjs` checks every module export reaches the bundled engine. A bug like this passes every Node test and only shows in the page.
 - After any change, build it and load it in a headless browser: watch for page errors (a constant used before its definition only fails there), click a token in both views, drag a token, open a door.
 
+## Headless checks of the board (`tools/headless/`)
+
+- **Run the smoke checks before every publish:** `NODE_PATH=$(npm root -g) node tools/headless/smoke.mjs`. It builds the Sample Keep test board (the campaign seeded into the page, with the trait glossaries) and walks the main features in both views: the tabs each view gets, a drag through a Space waypoint (and its audit line), the Notes tab (add, highlight), the encounter (begin, next, defeated, the chat's events), the Dice tab, hiding a token from players, Board info, and the listener count. It prints one line per check, fails on any page error, and leaves a screenshot of a failed check in `/tmp/smoke-<check>.png`. `--only drag,notes` runs some; `--keep FILE` keeps the built board to open by hand.
+- **Check a new feature with the helpers** in `tools/headless/board.mjs` rather than a throwaway script: `buildTestBoard()`, `openBoard(html)` (collects page errors), `asGM(page)` / `asPlayer(page)`, `openTab(page, id)`, `screenAt(page, tokenId)` and `screenAtSquare(page, x, y)` (screen points from the board's own `window.reliquary.screenOf`, so zoom and offsets are right), `records(page, collection)`, `writeRecord(page, path, data)` (as Claude would). Then add the feature's check to `smoke.mjs`.
+- **Lessons:** wait for an editor to take the focus before typing (the note editor focuses a moment after it opens; typing earlier goes to the page, and Enter with a token selected opens its Quick-View, which then covers the sidebar). Let go of a selection (Escape) after dragging. Look at a screenshot when a check fails: the cause is usually something on top.
+- Playwright and Chrome are found as installed globally (`NODE_PATH`, `/usr/bin/google-chrome`, or `CHROME`); the checks are not part of `npm test`, which must run without a browser.
+
 ## Visual work
 
 - Render the result and look at it: overlays for walls, zoomed tiles with the cell grid for corrections, the demo page for behaviour.
