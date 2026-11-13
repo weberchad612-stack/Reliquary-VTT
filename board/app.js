@@ -1028,12 +1028,14 @@ export async function start(store, { build = null } = {}) {
     // the waypoints (Space): a dot on each
     ctx.setLineDash([]); ctx.fillStyle = '#e3a443'; ctx.strokeStyle = 'rgba(6, 10, 7, .8)'; ctx.lineWidth = 2;
     for (const [x, y] of drag.waypoints || []) { ctx.beginPath(); ctx.arc(P(x + size / 2), P(y + size / 2), Math.max(5, P(0.16)), 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
-    // each finished leg's distance, stamped beside the waypoint that ends it
+    // the distance so far (every leg up to it), stamped beside each waypoint
     const legs = drag.route && drag.route.legs, perCell = drag.route && drag.route.cost ? drag.route.feet / drag.route.cost : FPC;
     if (legs) {
       ctx.font = '600 12px IBM Plex Sans, sans-serif'; ctx.textBaseline = 'middle';
+      let sofar = 0;
       legs.slice(0, -1).forEach((leg, i) => {
-        const [x, y] = drag.waypoints[i], text = `${Math.round(leg.cost * perCell)} ${SYS.measurement.unit}`;
+        sofar += leg.cost;
+        const [x, y] = drag.waypoints[i], text = `${Math.round(sofar * perCell)} ${SYS.measurement.unit}`;
         const w = ctx.measureText(text).width + 10, bx = P(x + size / 2) + Math.max(8, P(0.22)), by = P(y + size / 2) - 9;
         ctx.fillStyle = 'rgba(20, 22, 26, .88)'; ctx.fillRect(bx, by, w, 18);
         ctx.fillStyle = '#e3a443'; ctx.fillText(text, bx + 5, by + 9);
