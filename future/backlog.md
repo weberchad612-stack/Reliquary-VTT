@@ -434,3 +434,97 @@ cards. The ruleset decides each trait's rule; the tools stay system-free.
 details and the narration show it), and Pip's Refocus was story only: focus points are not tracked. Wanted: a
 healing card like the damage card (`actor.mjs heal --from <dice.mjs output>`: the dice, the HP restored, to whom), and
 focus points as a creature resource (spend, refocus) with the turn and rest rules the ruleset gives.
+
+## FR-20: The GM's campaign ledger
+
+**The user, 2026-11-13 (GM guide rule B5): "SUPER important"** for running a consistent game. Any Claude
+conversation must be able to find quickly what has happened in the story and every improvisation, by Claude or by
+the user: improvised room details, items, characters, plots, conversations. Players will refer back to things that
+happened. Wanted: a GM-only ledger on the board (records in a `ledger` collection, never shown to players), saved
+and loaded with the game like the chat and audit log, plus a tool (`ledger.mjs add | find | story`) that appends an
+entry (what, where, when in game time, source ADVENTURE or ADDED, by Claude or the user) and searches it by name,
+place or kind. Until it exists, the ledger is a private file in the campaign's save (`saves/<campaign>/ledger.md`).
+
+## FR-21: Adventure art at hand during play
+
+**The user, 2026-11-13 (GM guide rule B6):** the map and adventure importer will pull every illustration out of the
+book ahead of time (creatures, NPCs, items, rooms, handouts) into the private pack, with an index saying which area
+each belongs to and whether showing it would spoil something, so Claude can show the right picture at the right
+moment without searching the PDF mid-game.
+
+## FR-22: The adventure importer: an area ready for play
+
+**The user, 2026-11-13 (GM guide review):** much of what the old GM rules did by hand when a level was prepared
+belongs in the map and adventure importer, with its own guide (alongside `docs/best-practices/map-importer.md`),
+so an area arrives ready for play. Collected from the GM guide's "Preparing an area" rules as they are reviewed:
+- **The cast (D7):** every creature the adventure places in an area, as a hidden token (unique name, start position
+  from its room, size from its stat block) with its actor record pointing at its stat block in the content.
+- **The art (D9, FR-21):** every illustration that belongs to the area, with an index entry (area, what it shows,
+  whether it would spoil anything).
+- **The room table (D11):** each map's rooms by the adventure's own keys (room key to board cells), read from the
+  labelled map, so Claude can tell which room the party is in before reading its text.
+- **Locked doors (K3):** every locked, barred or stuck door the adventure puts in the area, locked on the board
+  before the party arrives.
+
+## FR-23: Sound for visual effects
+
+**From the old VTT (GM rule D10, deferred by the user 2026-11-13):** every visual effect had its own sound recipe
+(distinct per effect, with hit, miss and critical variants; a miss makes no impact sound), written at the same time
+as the effect whenever a new map or level brought new attacks, spells or deaths. The new board's visual effects have
+no sound yet. When sound comes: a sound per effect in the effects library, system-free, with a header switch and
+volume, and a rule in the GM guide's "Preparing an area" to add sounds with new effects.
+
+## FR-24: Reaction used, on the tracker
+
+**The user, 2026-11-13 (GM guide rule E5):** the old board showed "Reaction ready" or "Reaction used: Shield Block"
+per combatant. Wanted: a used-reaction marker on the encounter tracker and the token (a badge), set by the tools when
+a creature reacts (`encounter.mjs react <who> "Shield Block"`, and from a replay step), cleared by the turn rules
+when its next turn starts (the system says how many reactions a creature has and when they refresh), all cleared
+when the encounter ends.
+
+## FR-25: Suggested actions on the Actions tab
+
+**From the old VTT (GM rule E6, deferred by the user 2026-11-13 to the Actions tab):** on a PC's turn the old board
+listed sensible actions for that PC with their action costs (every cantrip for casters), updated each turn, never
+naming a foe's unseen abilities. Wanted when the sidebar's Actions tab is built: the PC's available actions from its
+sheet and the system (costs as action glyphs, never a range), with Claude's suggestions for the current turn marked.
+
+## FR-26: Experience points on the character
+
+Pairs with FR-13 (the encounter's threat and the XP it awards): FR-13 works out the award, FR-26 keeps it on
+the characters.
+
+**The user, 2026-11-13 (GM guide rule E10), asked whether PCs track level and XP.** A character's actor record has
+its `level` (a ruleset field: `rulesets/pf2e/actor.js`), but no experience points. Wanted: XP as part of the
+character's state (`actorstate`), awarded with a tool (`actor.mjs xp <who|party> +40 --why "..."`, every living PC
+by default), shown on Quick-View and the sheet with the progress to the next level, and a level-up prompt when it is
+reached (the system says how much XP a level takes: PF2E 1,000).
+
+## FR-27: Music by mood
+
+**From the old VTT (GM rule E18, deferred by the user 2026-11-13):** the old board played pre-rendered orchestral
+pieces of about two minutes, crossfaded by mood: combat while an encounter runs, exploration otherwise, each mood a
+shuffle bag (every piece once before any repeats, never the same twice in a row), and a boss mode Claude switched on
+for the adventure's named bosses and set pieces. Music had its own header button, volume and Next, kept per browser.
+When music comes: mood from the encounter state, a GM boss override, system-free pieces kept as uploaded assets.
+
+## FR-28: The Party loot tab
+
+**The user, 2026-11-13 (GM guide rules H2, H3):** the sidebar's Party loot tab is a placeholder. Wanted: the party's
+shared loot, every item with where it came from (what it was on or in, the area, the game time), its value and sale
+price once known ("unknown until identified" or "until appraised" before that, by the secrecy rules), coins with
+their source; taking an item moves it onto that character (`actor.mjs give`); saved with the game. Until it
+exists, the party's loot is kept in the campaign ledger.
+
+## FR-29: Character sheets as printable files
+
+**From the old VTT (GM rule H5, deferred by the user 2026-11-13):** the old VTT kept a fillable PDF character sheet
+per PC, regenerated at every session wrap-up (HP, XP, hero points, spell slots, shield HP, gear, wealth). Wanted
+later: a printable sheet built from the character's record, from the board or a tool.
+
+## FR-30: The Quest log tab
+
+**The user, 2026-11-13 (GM guide rule J1, "high priority" in the old VTT):** the sidebar's Quest log tab is a
+placeholder. Wanted: quests and smaller requests (who asked, where, the summary as the party heard it, reward,
+status active, done or failed, progress notes), Active and Completed lists, written by a tool as an NPC makes the
+ask; saved with the game. Until it exists, quests are kept in the campaign ledger.

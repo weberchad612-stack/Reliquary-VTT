@@ -6,6 +6,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 - **Where things stand:** [docs/STATUS.md](docs/STATUS.md), one page: what is built, the board today, the user's standards, what is next. Start here; keep it current.
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
+- **Running a game (GM rules):** [docs/gm/running-a-game.md](docs/gm/running-a-game.md) (any system) and the system's own guide ([rulesets/pf2e/gm.md](rulesets/pf2e/gm.md) for PF2E). Read both at the start of every session and after any context compaction, and re-read the guide's pre-flight checklist before every reply that resolves something at the table.
 - **Running a game on the board:** [docs/best-practices/game-data.md](docs/best-practices/game-data.md) sections 2 to 2c (the thinking banner first; anything with several steps as a replay, narrated step by step) and [docs/best-practices/board.md](docs/best-practices/board.md) (records, chat cards, saving).
 - Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md); the board (client): [docs/design/board.md](docs/design/board.md); game data and rules: [docs/design/game-data.md](docs/design/game-data.md).
 - Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.

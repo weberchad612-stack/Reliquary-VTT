@@ -14,6 +14,7 @@ line here in the same commit. Last brought up to date: 2026-11-12 (late: replay,
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
 | Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
+| GM guides (`docs/gm/`, `rulesets/pf2e/gm.md`) | How Claude runs a game: secrecy, narration, the ledger, dice, foes, exploration, combat, time, loot, quests, preparing an area, sessions, house rules, a pre-flight checklist; the PF2E guide adds the system's secret checks, reactions, conditions, healing and rulings. Reviewed rule by rule with the user (2026-11-13). | [running-a-game.md](gm/running-a-game.md) |
 | Tests | `npm test` (about 460) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
 ## The board today
@@ -64,6 +65,9 @@ line here in the same commit. Last brought up to date: 2026-11-12 (late: replay,
 
 ## What is next
 
+- From the GM guide review (2026-11-13): the campaign ledger on the board (FR-20, "SUPER important"), the
+  adventure importer making areas ready for play (FR-21, FR-22), reactions on the tracker (FR-24), XP on the
+  characters (FR-26), and the Party loot and Quest log tabs (FR-28, FR-30).
 - The placeholder tabs: Actions, Exploration, Party loot, Quest log.
 - The board rolling attacks, saves and damage itself (its own check and damage cards; today only initiative rolls on
   the board, and Claude's rolls come from `tools/check.mjs`, `tools/dice.mjs` and `tools/actor.mjs`).

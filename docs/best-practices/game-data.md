@@ -32,6 +32,10 @@ write a number into an actor that the rules can work out. The board and the tool
 
 ## 2. During play (Claude)
 
+The table rules (secrecy, narration, the ledger, tactics, rulings) are in the GM guides:
+[docs/gm/running-a-game.md](../gm/running-a-game.md) and [rulesets/pf2e/gm.md](../../rulesets/pf2e/gm.md). This section is the tools.
+
+
 - **Know a creature's numbers:** `node tools/actor.mjs <pack> <save> show "Kerra"`. Every number comes with
   how it is made up ("AC 18 = 10 base + 1 Dexterity (capped at 1) + 5 medium armour (trained) + 4 Chain Mail
   (item) − 2 Frightened 2 (status)"), so a ruling can be explained. `list` shows everyone's HP and health band.
