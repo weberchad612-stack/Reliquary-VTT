@@ -40,6 +40,7 @@ const V = {
   actorstate: schema('actorstate.schema.json'),
   ledger: schema('ledger.schema.json'),
   loot: schema('loot.schema.json'),
+  exploration: schema('exploration.schema.json'),
 };
 /** A ruleset's own schemas (rulesets/<id>/schemas/<name>.schema.json), compiled once. */
 const RULESET_SCHEMAS = new Map();
@@ -522,6 +523,9 @@ export function validate(target, { save = null } = {}) {
     // the party's stash and purse
     const lootFile = path.join(save, 'loot.json');
     if (fs.existsSync(lootFile)) { const l = readJson(lootFile, report); if (l) schemaErrors(V.loot, l, lootFile, report); }
+    // the PCs' exploration activities
+    const exploreFile = path.join(save, 'exploration.json');
+    if (fs.existsSync(exploreFile)) { const l = readJson(exploreFile, report); if (l) schemaErrors(V.exploration, l, exploreFile, report); }
     const dir = path.join(save, 'maps');
     if (!fs.existsSync(dir)) report.error(save, 'save has no maps/ folder');
     else {

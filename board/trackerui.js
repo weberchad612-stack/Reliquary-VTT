@@ -133,9 +133,12 @@ export async function mountTracker(o) {
     let none = 0;
     for (const id of ids) {
       const p = await prepared(id);
-      const st = p && I.statistic(p, 'perception');
-      if (!st) { none++; continue; }
-      const w = rollWrites(id, p, 'perception', st, 'normal');
+      const hint = p && o.initiativeHint ? await o.initiativeHint(id).catch(() => null) : null;
+      const slug = hint && hint.stat && I.statistic(p, hint.stat) ? hint.stat : 'perception';
+      const st0 = p && I.statistic(p, slug);
+      if (!st0) { none++; continue; }
+      const st = hint && hint.add && hint.add.length ? Engine.adjustCheck(st0, { add: hint.add }, { stacks: I.stacks }) : st0;
+      const w = rollWrites(id, p, slug, st, 'normal');
       if (!(await commit(w.action, [w.write, w.dice]))) return;
     }
     if (none) o.toast(`${none} creature(s) have no game data: type their initiative in (the row's ⋮ menu).`);
@@ -152,6 +155,12 @@ export async function mountTracker(o) {
     const el = document.createElement('div');
     el.className = 'rolldlg'; el.setAttribute('role', 'dialog'); el.tabIndex = -1;
     dlg = { el, id, p, slug: 'perception', flip: new Set(), add: [], mode: 'normal' };
+    // the PC's exploration activity: a statistic to roll instead (Avoid Notice: Stealth) and the party's bonuses (Scout)
+    const hint = o.initiativeHint ? await o.initiativeHint(id).catch(() => null) : null;
+    if (hint) {
+      if (hint.stat && I.statistics(p).some((s) => s.slug === hint.stat)) dlg.slug = hint.stat;
+      dlg.add = (hint.add || []).map((a) => ({ ...a }));
+    }
     const pr = panel.el.getBoundingClientRect();
     el.style.left = `${Math.max(8, Math.min(window.innerWidth - 380, pr.left - 372))}px`;
     el.style.top = `${Math.max(8, Math.min(window.innerHeight - 420, pr.top + 40))}px`;
@@ -351,6 +360,7 @@ export async function mountTracker(o) {
     if (a === 'resume') return commit({ type: 'resume', token: id });
     if (a === 'roll-all') return rollMany('all');
     if (a === 'roll-npc') return rollMany('npc');
+    if (a === 'begin' && o.beforeBegin) return Promise.resolve(o.beforeBegin(ENC)).catch(() => {}).then(() => commit({ type: a }));   // exploration's requests first (Defend's shield)
     if (['begin', 'next', 'previous', 'next-round', 'previous-round', 'delay'].includes(a)) return commit({ type: a });
     if (a === 'end') return commit({ type: 'end' });
   });

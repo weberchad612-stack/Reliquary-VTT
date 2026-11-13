@@ -120,7 +120,8 @@ test('content records: keys and paths both ways', () => {
   for (const k of required) assert.ok(content[k], `required ${k}`);
   // beyond the required: only the feats' and features' descriptions characters show
   const extra = Object.keys(content).filter((k) => k !== 'glossary/traits' && !required.has(k));
-  assert.ok(extra.length && extra.every((k) => /^([a-z-]+:)?feat\//.test(k)), extra.join(' '));
+  assert.ok(extra.length && extra.every((k) => /^([a-z-]+:)?feat\//.test(k) || /^actions:action\//.test(k)), extra.join(' '));
+  assert.ok(content['actions:action/defend'], 'the system\'s exploration activities ride along (their rules text for the Exploration tab)');
   assert.ok(content['class-features:feat/arcane-bond'], "Pip's Arcane Bond rides along");
   // a key naming its source
   assert.equal(contentPath('pathfinder-monster-core:creature/goblin-warrior'), 'content/pathfinder-monster-core.creature.goblin-warrior');
@@ -282,6 +283,6 @@ test('open content: only ORC and OGL documents in public mode; the validator che
   fs.rmSync(t, { recursive: true, force: true });
   // a pack lists open sources; its own content overrides them; a missing source is an error
   assert.throws(() => readContent({ content: ['pf2e/no-such-source'] }, PACK, {}), /no open content "pf2e\/no-such-source"/);
-  assert.deepEqual(Object.keys(readContent({}, PACK, { a: { base: 'creature/rat' }, b: { items: [{ ref: 'item/dagger' }] } })), ['creature/rat', 'item/dagger', 'glossary/traits'], 'only what the creatures use, and the trait glossary');
+  assert.deepEqual(Object.keys(readContent({}, PACK, { a: { base: 'creature/rat' }, b: { items: [{ ref: 'item/dagger' }] } })).filter((k) => !k.startsWith('actions:action/')), ['creature/rat', 'item/dagger', 'glossary/traits'], 'only what the creatures use, the trait glossary (and the exploration activities\' rules text)');
   assert.throws(() => readContent({}, PACK, { a: { base: 'creature/no-such' } }), /content not found: creature\/no-such/);
 });

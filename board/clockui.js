@@ -16,7 +16,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
  */
 export async function mountClock(o) {
   const el = document.getElementById('clock'), dlg = document.getElementById('clock-panel');
-  if (!el || !dlg || !o.cal) return { render() {}, clock: () => null };
+  if (!el || !dlg || !o.cal) return { render() {}, clock: () => null, advance() {} };
   let CLOCK = await o.store.get('state/clock').catch(() => null), ENC = await o.store.get('state/encounter').catch(() => null);
   const gm = () => o.getView() === 'gm' && !o.readOnly;
 
@@ -111,5 +111,12 @@ export async function mountClock(o) {
   o.store.watch('state/clock', (c) => { CLOCK = c; render(); if (!dlg.hidden && !document.activeElement.closest('form')) open(); });
   o.store.watch('state/encounter', (e) => { ENC = e; render(); });
   render();
-  return { render, clock: () => CLOCK };
+  return {
+    render, clock: () => CLOCK,
+    /** Move the clock on (the GM's travel box): running effects out as the clock's own changes do. */
+    advance(seconds, words) {
+      if (!CLOCK) { o.toast('Set the date and time first (the clock in the title line).'); return; }
+      return write({ ...CLOCK, now: CLOCK.now + Math.round(seconds) }, (b, n) => `${words}: ${clockLabel(o.T, o.cal, b)} → ${clockLabel(o.T, o.cal, n)}`);
+    },
+  };
 }

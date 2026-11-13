@@ -14,6 +14,7 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 | `actorstate.schema.json` | What is happening to a creature now: HP, temporary HP, resources, a raised shield, situation tags, the coins it carries | save: `actorstate/<id>.json` |
 | `chat.schema.json` | The chat: narration, rulings, NPC lines, initiative, check and damage cards (retired kinds `event` and `log` still load) | save: `chat.json` |
 | `audit.schema.json` | The GM's audit log: every change, in words | save: `audit.json` |
+| `exploration.schema.json` | The PCs' exploration activities while travelling: an activity from the system's list with its choices, or a note | save: `exploration.json` |
 | `loot.schema.json` | The party's stash (items carried by nobody, each a library item or a custom one, with what the party knows of it and where it was found) and its purse | save: `loot.json` |
 | `ledger.schema.json` | The campaign ledger, the GM's memory: improvisations (who invented each: Claude, or which player through which character), secrets, rulings, threads, quests, timed events, session summaries | save: `ledger.json` |
 | `dice.schema.json` | Every die rolled, for the Dice statistics | save: `dice.json` |

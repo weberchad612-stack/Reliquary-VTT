@@ -69,6 +69,7 @@ export function loadGame(packDir, saveDir, records = null) {
   if (!sys || !sys.actors) throw new Error(`the ruleset "${c.campaign.ruleset}" has no creature rules`);
   const game = { tokens, actors, states, content: contentView(lib), lib, onBoard, sys, ruleset: sys.actors, clock, encounter, pack: c.pack, campaign: c.campaign };
   game.auras = null;   // worked out when first needed (auraEffects)
+  game.records = records || {};   // the board's records as given (other tools read their own collections from them)
   return game;
 }
 

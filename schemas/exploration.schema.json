@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "exploration.schema.json",
+  "title": "The PCs' exploration activities (saves/<campaign>/exploration.json)",
+  "description": "What each PC keeps doing while the party travels (board/explore.js): an activity from the system's exploration rules (system.exploration) with its choices, or a note. On the board each is a record explore/<token id>.",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "choices": {
+      "type": "object",
+      "propertyNames": { "pattern": "^tok-[0-9a-z]{8}$" },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "activity": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]*$", "description": "an activity id from the system's list; null: just travelling" },
+          "options": { "type": "object", "additionalProperties": { "type": "string", "maxLength": 80 }, "description": "the activity's choices: who is followed, a skill, a spell" },
+          "note": { "type": "string", "maxLength": 200, "description": "what the character does, in words (systems without exploration rules)" },
+          "at": { "type": "string" },
+          "by": { "enum": ["gm", "player", "claude"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

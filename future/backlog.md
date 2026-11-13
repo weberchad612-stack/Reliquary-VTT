@@ -562,3 +562,11 @@ resolves it, as for actions) and how it reaches the chat and the replay.
 record. A search inside the board needs a small searchable item index shipped with it (name, level, rarity, price,
 Bulk and key per item, a few hundred KB) and a way for the board to write the full content record it then needs (the
 board holds only the content the campaign uses).
+
+## FR-33: Exploration follow-ups
+
+**Raised while building the Exploration tab (2026-11-13):** Follow the Expert's bonus applied to the follower's
+rolls by the tools (today Claude adds it); travel fatigue past 8 hours a day and forced marches; marching order
+(FR-1) feeding who meets a trap first; Detect Magic's 30-foot check against magic items on the map; the activities'
+choices for a spell drawn from the character's spells once characters keep spell lists; class and feat exploration
+activities (Pursue a Lead, Assume a Role) when a character has them.

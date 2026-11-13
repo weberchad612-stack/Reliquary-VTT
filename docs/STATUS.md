@@ -9,13 +9,13 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Party loot).
 | Area | What exists | Read |
 |---|---|---|
 | Engine (`engine/`) | Walls and doors, sight and fog, light (daylight, colour, intensity, animation), movement (paths, Stride ranges, waypoints), terrain, measurement and height, areas, tokens (Tiny layout, occupancy), visual effects, the rules machinery, dice, time (calendar, clock, durations, encounters). System-free. | [engine/README.md](../engine/README.md), the best-practices guides |
-| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge, loot (coins, Bulk, identifying, selling). | [game-data.md](best-practices/game-data.md) |
+| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge, loot (coins, Bulk, identifying, selling), exploration (activities, pace, combat-start requests). | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
-| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`); the campaign ledger (`ledger.mjs`) and the campaign's players (`players.mjs`); party loot (`loot.mjs`: find, add, identify, appraise, move, buy, sell, coins). | [tools/README.md](../tools/README.md) |
+| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`); the campaign ledger (`ledger.mjs`) and the campaign's players (`players.mjs`); party loot (`loot.mjs`: find, add, identify, appraise, move, buy, sell, coins); exploration (`exploration.mjs`: activities, pace, travel, reminders). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
 | GM guides (`docs/gm/`, `rulesets/pf2e/gm.md`) | How Claude runs a game: secrecy, narration, the ledger, dice, foes, exploration, combat, time, loot, quests, preparing an area, sessions, house rules, a pre-flight checklist; the PF2E guide adds the system's secret checks, reactions, conditions, healing and rulings. Reviewed rule by rule with the user (2026-11-13). | [running-a-game.md](gm/running-a-game.md) |
-| Tests | `npm test` (about 480) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
+| Tests | `npm test` (about 500) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
 ## The board today
 
@@ -35,7 +35,8 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Party loot).
 | Chat | Built: Claude's narration (the heart of it), rulings, NPC lines, initiative, check and damage cards (no events: those are the GM's audit log's) |
 | Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; roll details per view; narration steps right after the actions they tell; combat, exploration and social icons; reaction stops) |
 | Encounter | Built: initiative (roll dialog, drag to reorder), turns and rounds with the turn rules, hide, defeated, target, ping |
-| Actions, Exploration | Placeholders ("coming soon") |
+| Actions | Placeholder ("coming soon") |
+| Exploration | Built: each PC's activity while travelling (players and GM; from the system's list, what a PC cannot do greyed with why; options such as who to follow), the party's pace from the rules, the GM's travel box moving the clock, the GM's reminders for a new area, Defend, Scout and Avoid Notice applied when combat starts, a badge on each PC token outside encounters (`tools/exploration.mjs` for Claude) |
 | Party loot | Built: total party wealth (coins and the items' known values in the stash and on the characters; the GM also the true wealth), the purse (split evenly, breaking larger coins so shares come out even; hand coins over), the stash (carried by nobody; take, with how many), each PC's coins and items with how they are carried, invested, put back and give, a Bulk bar with encumbered put on and taken off automatically; every item's kind, usage and level on its row, and details that unfold in place (traits with their glossary words, stats by kind, description, source, where it was found; the GM: identify DC and sale price), filters by kind and unidentified; players see vague names and only what a look can tell until items are identified, and values once known; the GM adds custom items, identifies, appraises, removes (`tools/loot.mjs` for Claude: library items, buying and selling) |
 | Notes | Built: add, list, hover highlights the pin, edit, remove |
 | Quest log | Placeholder |
@@ -71,7 +72,7 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Party loot).
   adventure importer making areas ready for play (FR-21, FR-22), reactions on the tracker (FR-24), XP on the
   characters (FR-26), and the Quest log tab (FR-30).
 - Party loot next: using consumables from the tab (FR-31) and adding library items from the board (FR-32).
-- The placeholder tabs: Actions, Exploration, Quest log.
+- The placeholder tabs: Actions, Quest log.
 - The board rolling attacks, saves and damage itself (its own check and damage cards; today only initiative rolls on
   the board, and Claude's rolls come from `tools/check.mjs`, `tools/dice.mjs` and `tools/actor.mjs`).
 - From play: shields in the turn rules and Shield Block (FR-17), weapon traits applied by the tools (FR-18), healing

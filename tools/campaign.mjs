@@ -32,7 +32,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { campaignRecords, saveFromRecords, contentKey, auditFromLog } from '../board/records.js';
 import { SYSTEMS, systemConfig } from '../rulesets/systems.js';
-import { contentLibrary, referencedContent, referencedKeys, optionalGroups, traitGlossary, GLOSSARY_KEY } from './library.mjs';
+import { contentLibrary, referencedContent, referencedKeys, optionalGroups, systemContentKeys, traitGlossary, GLOSSARY_KEY } from './library.mjs';
 
 export const BACKUPS = 5;
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -49,6 +49,9 @@ export function readContent(pack, packDir, actors, tokens = {}, loot = null) {
   // and the trait glossary (Token Quick-View's descriptions), always
   const glossary = traitGlossary(pack.ruleset || 'pf2e');
   if (glossary) content[GLOSSARY_KEY] = glossary;
+  // and the documents the system's board features show (the exploration activities' rules text), where found
+  const lib = contentLibrary(pack, packDir);
+  for (const k of systemContentKeys(systemConfig(pack.ruleset || 'pf2e'))) { if (content[k]) continue; try { const d = lib.get(k); if (d) content[k] = d; } catch { /* not in the library */ } }
   return content;
 }
 
@@ -105,10 +108,13 @@ export function readCampaign(packDir, saveDir) {
   // the party's stash and purse (loot.json: {purse, items: [{id, ...item}]})
   const lootFile = path.join(saveDir, 'loot.json');
   const loot = fs.existsSync(lootFile) ? (({ $schema: _s, ...l }) => l)(readJson(lootFile)) : null;
+  // the PCs' exploration activities (exploration.json: {choices: {token id: choice}})
+  const exploreFile = path.join(saveDir, 'exploration.json');
+  const exploration = fs.existsSync(exploreFile) ? (({ $schema: _s, ...x }) => x)(readJson(exploreFile)) : null;
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
   const content = readContent(pack, packDir, actors, tokens, loot);
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays, ledger, loot };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays, ledger, loot, exploration };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
@@ -129,7 +135,7 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const campFile = path.join(saveDir, 'campaign.json');
   const base = fs.existsSync(campFile) ? readJson(campFile) : {};
   if (fs.existsSync(campFile)) backup(saveDir, now);
-  const { campaign, mapStates, actors, actorStates, chat, audit, dice, replays, ledger, loot } = saveFromRecords(records, base);
+  const { campaign, mapStates, actors, actorStates, chat, audit, dice, replays, ledger, loot, exploration } = saveFromRecords(records, base);
   campaign.saved_at = now.toISOString();
   const written = [];
   const write = (f, obj) => {
@@ -167,6 +173,10 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const lootFile = path.join(saveDir, 'loot.json');
   if (loot) write(lootFile, { $schema: '../../../schemas/loot.schema.json', ...loot });
   else if (fs.existsSync(lootFile)) fs.rmSync(lootFile);
+  // the PCs' exploration activities
+  const exploreFile = path.join(saveDir, 'exploration.json');
+  if (exploration) write(exploreFile, { $schema: '../../../schemas/exploration.schema.json', ...exploration });
+  else if (fs.existsSync(exploreFile)) fs.rmSync(exploreFile);
   // one file per creature; files of creatures no longer on the board are removed (the backup keeps them)
   for (const [dir, docs] of [['actors', actors], ['actorstate', actorStates]]) {
     const d = path.join(saveDir, dir);
@@ -181,7 +191,7 @@ function backup(saveDir, now) {
   const dest = path.join(saveDir, 'backups', stamp);
   fs.mkdirSync(dest, { recursive: true });
   fs.copyFileSync(path.join(saveDir, 'campaign.json'), path.join(dest, 'campaign.json'));
-  for (const f of ['chat.json', 'audit.json', 'dice.json', 'replays.json', 'ledger.json', 'loot.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
+  for (const f of ['chat.json', 'audit.json', 'dice.json', 'replays.json', 'ledger.json', 'loot.json', 'exploration.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
   for (const sub of ['maps', 'actors', 'actorstate']) if (fs.existsSync(path.join(saveDir, sub))) fs.cpSync(path.join(saveDir, sub), path.join(dest, sub), { recursive: true });
   const all = fs.readdirSync(path.join(saveDir, 'backups')).sort();
   for (const old of all.slice(0, Math.max(0, all.length - BACKUPS))) fs.rmSync(path.join(saveDir, 'backups', old), { recursive: true, force: true });
@@ -207,11 +217,11 @@ export function roundTrip(packDir, saveDir) {
     out.push(...diff({ map: id, ...strip(c.mapStates[id] || {}) }, strip(back.mapStates[id] || {}), `maps/${id}`));
   }
   out.push(...diff(strip(c.actors), strip(back.actors), 'actors'), ...diff(strip(c.actorStates), strip(back.actorStates), 'actorstate'));
-  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'), ...diff(strip(c.dice), strip(back.dice), 'dice'), ...diff(strip(c.replays), strip(back.replays), 'replays'), ...diff(strip(c.ledger), strip(back.ledger), 'ledger'), ...diff(strip(c.loot || {}), strip(back.loot || {}), 'loot'));
+  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'), ...diff(strip(c.dice), strip(back.dice), 'dice'), ...diff(strip(c.replays), strip(back.replays), 'replays'), ...diff(strip(c.ledger), strip(back.ledger), 'ledger'), ...diff(strip(c.loot || {}), strip(back.loot || {}), 'loot'), ...diff(strip(c.exploration || {}), strip(back.exploration || {}), 'exploration'));
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice', 'replay', 'ledger', 'loot'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice', 'replay', 'ledger', 'loot', 'explore'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 
@@ -238,6 +248,7 @@ export function tidyOps(records) {
   const of = (coll) => Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith(`${coll}/`)).map(([p, d]) => [p.slice(coll.length + 1), d]));
   const used = referencedKeys(of('actors'), of('tokens'), Object.values(of('loot')));
   used.add(GLOSSARY_KEY);   // the trait glossary stays
+  for (const k of systemContentKeys(systemConfig((records['board/meta'] || {}).ruleset || 'pf2e'))) used.add(k);   // the system's own documents (exploration activities)
   // and the feats' and features' descriptions characters show (any of each one's candidate keys)
   const meta = records['board/meta'] || {};
   for (const g of optionalGroups(of('actors'), systemConfig(meta.ruleset || 'pf2e'))) for (const k of g) used.add(k);
@@ -261,7 +272,7 @@ export function verifySave(records, packDir, saveDir) {
   const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
   for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
   out.push(...diff(strip(fromDb.actors), strip(disk.actors), 'actors'), ...diff(strip(fromDb.actorStates), strip(disk.actorStates), 'actorstate'));
-  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'), ...diff(strip(fromDb.dice), strip(disk.dice), 'dice'), ...diff(strip(fromDb.replays), strip(disk.replays), 'replays'), ...diff(strip(fromDb.ledger), strip(disk.ledger), 'ledger'), ...diff(strip(fromDb.loot || {}), strip(disk.loot || {}), 'loot'));
+  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'), ...diff(strip(fromDb.dice), strip(disk.dice), 'dice'), ...diff(strip(fromDb.replays), strip(disk.replays), 'replays'), ...diff(strip(fromDb.ledger), strip(disk.ledger), 'ledger'), ...diff(strip(fromDb.loot || {}), strip(disk.loot || {}), 'loot'), ...diff(strip(fromDb.exploration || {}), strip(disk.exploration || {}), 'exploration'));
   return out;
 }
 

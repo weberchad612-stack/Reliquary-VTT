@@ -35,6 +35,8 @@ import { mountAudit } from './auditui.js';
 import { mountLedger } from './ledgerui.js';
 import { mountLoot } from './lootui.js';
 import { lootRules, encumberedEffects } from './loot.js';
+import { mountExplore } from './exploreui.js';
+import { EXPLORE, exploreRules, initiativeHint, startRequests, badgeFor } from './explore.js';
 import { clockLabel } from './clock.js';
 import { mountDice } from './diceui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
@@ -179,7 +181,9 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null;
+  let EXPLORE_CHOICES = {};   // the PCs' exploration activities (explore/ records), for the badges, the tab and initiative
+  const exploreBadges = { on() { try { return localStorage.getItem('reliquary.exploreBadges') !== '0'; } catch { return true; } }, set(v) { try { localStorage.setItem('reliquary.exploreBadges', v ? '1' : '0'); } catch { /* this page only */ } } };   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   const glides = new Map(), flashes = new Map();   // replay: tokens sliding ({pts, t0, ms}) and rings ({colour, until}) by id
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
@@ -1186,6 +1190,11 @@ export async function start(store, { build = null } = {}) {
       if (seen && !t0.dead && concealedNow(F, id) && !hasStoredConcealed(t0)) badgeQueue.push((c) => drawConcealBadge(c, F, id, P(t.x), P(t.y), P(size)));
       badgeQueue.push((c) => drawBadges(c, id, t0, P(t.x), P(t.y), P(size)));
       if (t0.elevation && !t0.dead) badgeQueue.push((c) => drawElevation(c, t0.elevation, cx, P(t.y)));
+      // the PC's exploration activity: a round chip at the bottom-right, outside encounters, if this screen shows them
+      if (t0.kind === 'pc' && !t0.dead && seen && exploreBadges.on() && !(trackerUi && trackerUi.encounter() && trackerUi.encounter().ended == null && trackerUi.encounter().round > 0)) {
+        const eb = badgeFor(exploreRules(SYS), nm(t0), EXPLORE_CHOICES[id]);
+        if (eb) badgeQueue.push((c) => drawExploreBadge(c, id, eb, P(t.x), P(t.y), P(size)));
+      }
     }
     badgeDraws = badgeQueue;
     // "hidden" markers the GM placed: where the party thinks an unseen creature is (not shown through a foe's eyes)
@@ -1230,6 +1239,18 @@ export async function start(store, { build = null } = {}) {
       ctx.restore();
       badgeHits.push({ x, y, w: s, h: s, text: bd.text });
     });
+  }
+  /** The exploration activity's chip: a circle at the token's bottom-right, its icon; hovering tells, clicking opens the tab. */
+  function drawExploreBadge(c, id, eb, left, top, spacePx) {
+    const r = Math.max(BADGE_MIN_PX / scale, spacePx / 5) * 0.55, x = left + spacePx - r * 1.05, y = top + spacePx - r * 1.05;
+    c.save();
+    c.fillStyle = '#16332f'; c.strokeStyle = '#4fb3a5'; c.lineWidth = Math.max(1 / scale, r * 0.14);
+    c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); c.stroke();
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `${r * 1.15}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`;
+    c.fillText(eb.icon, x, y + r * 0.06);
+    c.restore();
+    badgeHits.push({ x: x - r, y: y - r, w: r * 2, h: r * 2, text: `${eb.text} (click: the Exploration tab)`, explore: id });
   }
   /** "+15 ft" above the token, as Foundry shows elevation (on the overlay, with the badges). */
   function drawElevation(c, v, cx, top) {
@@ -1429,6 +1450,8 @@ export async function start(store, { build = null } = {}) {
     if (ev.button === 2) { ev.preventDefault(); startPan(ev, false, true); return; }   // right button: pan, hand cursor
     if (ev.button !== 0) return;
     const p = cellAt(ev);
+    const xb = badgeAt(p);   // an exploration badge: open the tab at that PC's card
+    if (xb && xb.explore && !aim && !noting) { sidebar.select('exploration'); if (exploreUi) exploreUi.highlight(xb.explore); return; }
     if (hudFor) closeHud();
     if (noting) { setNoting(false); openNoteEditor({ at: notePoint(p[0], p[1]) }); return; }   // Add note: the editor opens here
     if (aim) { aimMove(p); placeTemplate(); return; }
@@ -2622,6 +2645,7 @@ export async function start(store, { build = null } = {}) {
   if (auditUi) auditUi.render();
   if (diceUi) diceUi.render();
   if (lootUi) lootUi.render();
+  if (exploreUi) exploreUi.render();
   if (shellReady) syncFxPanel();
   document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
@@ -3230,7 +3254,7 @@ export async function start(store, { build = null } = {}) {
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
   // the sidebar (board/sidebar.js): chat, the encounter tracker, replay, the dice statistics, visual effects, notes, and
-  // the GM's lighting, walls and audit log (actions, exploration and the quest log not built yet)
+  // the GM's lighting, walls and audit log (actions and the quest log not built yet)
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12; Replay moved up under Chat the same night)
     { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
@@ -3249,17 +3273,38 @@ export async function start(store, { build = null } = {}) {
     players: () => TABLE.players || [],
     pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
     name: (id) => (S.tokens[id] ? S.tokens[id].name : null) });
+  // a trait in the system's words, with its glossary entry (the glossary built into the board for this system)
+  const traitWords = (slug) => {
+    const g = (typeof GLOSSARIES !== 'undefined' && GLOSSARIES && GLOSSARIES[META.ruleset] && GLOSSARIES[META.ruleset].entries) || {};
+    const T = SYS.traits, e = T && T.entry ? T.entry(slug, g) : g[slug];
+    return { label: T && T.label ? T.label(slug) : String(slug).replace(/-/g, ' '), text: e ? `${e.name || ''}: ${String(e.text || '').replace(/\s+/g, ' ').slice(0, 400)}` : '' };
+  };
+  // the PCs on this map with their numbers, for exploration's needs, pace and combat requests
+  async function exploreParty() {
+    const out = [];
+    for (const [id, t] of Object.entries(S.tokens)) {
+      if (t.kind !== 'pc') continue;
+      const actor = await store.get(`actors/${id}`).catch(() => null);
+      if (!actor) continue;
+      const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+      let prepared = null;
+      try { prepared = SYS.actors ? Engine.prepareActor({ actor, state, effects: t.effects || [], content: await qvContent(quickViewKeys(actor, t, SYS)), ruleset: SYS.actors }) : null; } catch { prepared = null; }
+      out.push({ id, name: t.name || id, actor, prepared, dead: !!t.dead });
+    }
+    return out;
+  }
+  // Exploration (board/explore.js): each PC's activity while travelling, the party's pace, the GM's travel box, the
+  // reminders; the activities' combat requests reach the tracker (initiativeHint, beforeBegin) and the badges the map
+  exploreUi = mountExplore({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('exploration').body, sidebar, tab: 'exploration', sys: SYS,
+    party: exploreParty, choices: () => EXPLORE_CHOICES, content: (keys) => qvContent(keys), trait: traitWords, log: (text) => logChange(text),
+    advance: (secs, words) => clockUi && clockUi.advance(secs, words), badges: exploreBadges, onBadges: () => draw() });
+  store.watchCollection(EXPLORE, (l) => { EXPLORE_CHOICES = Object.fromEntries(l.map((e) => [e.id, e.data])); draw(); if (exploreUi) exploreUi.refresh(); });
   // Party loot (board/loot.js): the stash, the purse, and each PC's coins and load; the encumbered condition follows
   // a character's Bulk (only the one the loot tab put on is ever taken off)
   lootUi = mountLoot({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('loot').body, sidebar, tab: 'loot', sys: SYS,
     pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
     content: (keys) => qvContent(keys), log: (text) => logChange(text), map: () => MAP_ID,
-    // a trait in the system's words, with its glossary entry (the glossary built into the board for this system)
-    trait: (slug) => {
-      const g = (typeof GLOSSARIES !== 'undefined' && GLOSSARIES && GLOSSARIES[META.ruleset] && GLOSSARIES[META.ruleset].entries) || {};
-      const T = SYS.traits, e = T && T.entry ? T.entry(slug, g) : g[slug];
-      return { label: T && T.label ? T.label(slug) : String(slug).replace(/-/g, ' '), text: e ? `${e.name || ''}: ${String(e.text || '').replace(/\s+/g, ' ').slice(0, 400)}` : '' };
-    },
+    trait: traitWords,
     gameNow: () => { const c = clockUi && clockUi.clock(); if (!c || typeof c.now !== 'number') return null; const label = SYS.time && SYS.time.calendar ? clockLabel({ readClock: Engine.readClock, adventureDay: Engine.adventureDay }, SYS.time.calendar, c) : null; return { now: c.now, ...(label ? { label } : {}) }; },
     setEncumbered: (id, on) => {
       const t = S.tokens[id];
@@ -3281,6 +3326,16 @@ export async function start(store, { build = null } = {}) {
   if (!READONLY) store.list('chat').then((l) => { for (const e of l) if (e.data && e.data.kind === 'log') store.set(`audit/${e.id}`, auditFromLog(e.data)).then(() => store.remove(`chat/${e.id}`)).catch(() => {}); }).catch(() => {});
   trackerUi = await mountTracker({
     store, Engine, SYS, readOnly: READONLY, view: () => S.view, tokens: () => S.tokens,
+    // exploration: a PC's initiative statistic and bonuses (Avoid Notice, Scout), and what happens before the first turn (Defend)
+    initiativeHint: async (id) => (S.tokens[id] && S.tokens[id].kind === 'pc' ? initiativeHint(exploreRules(SYS), id, await exploreParty(), EXPLORE_CHOICES) : null),
+    beforeBegin: async (enc) => {
+      const reqs = startRequests(exploreRules(SYS), await exploreParty(), EXPLORE_CHOICES, ((enc && enc.combatants) || []).map((c) => c.token));
+      for (const q of reqs) {
+        if (q.kind === 'state') await store.update(`actorstate/${q.token}`, q.patch).catch(() => {});
+        if (q.kind === 'effect' && S.tokens[q.token]) { setEffects(q.token, [...(S.tokens[q.token].effects || []), q.effect]); schedulePersist(); }
+        logChange(q.label);
+      }
+    },
     seen: (id) => S.view === 'gm' || shown().seen.has(id) || (S.tokens[id] && S.tokens[id].kind === 'pc'),
     partySees: (id) => !!(view && view.seen && view.seen.has(id)),
     name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id), publicName: (id) => (S.tokens[id] ? pubName(S.tokens[id]) || S.tokens[id].name : id) || id,

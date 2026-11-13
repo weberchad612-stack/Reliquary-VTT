@@ -23,7 +23,7 @@ the whole guide). Each line points to its section.
 4. **Dice (4):** real dice from the tools, every one logged; PC rolls whole, foes' as results; stop for any
    PC reaction.
 5. **Foes (5):** exact stat blocks from the content; smart, varied tactics; spread the pressure.
-6. **Exploration (6):** know the room key first; read the neighbouring areas; searches cover secret doors;
+6. **Exploration (6):** the activities' reminders on entering an area (`exploration.mjs reminders`); travel moves the clock (`exploration.mjs travel`); know the room key first; read the neighbouring areas; searches cover secret doors;
    standing activities apply themselves.
 7. **Combat (7):** stat blocks read before initiative; price the turn; foes' reactions first; batches are
    replays (banner first, one action per step, narration steps in place); close every turn; reward the
@@ -234,8 +234,11 @@ Narration is the heart of the game for the user: it is what engages the players.
   Describe only what is visible from where the characters stand; later secrets stay hidden until found.
   _(D12)_
 - **Standing exploration activities apply themselves.** Each PC's chosen activity while exploring
-  (recorded for the campaign; the Exploration tab when it exists) applies automatically, without the user
-  asking each time, until he changes it. _(E15)_
+  (the Exploration tab: `explore/<token id>`) applies automatically, without the user asking each time,
+  until he changes it. The board applies what the rules decide at combat start (the initiative statistic and
+  bonuses, a raised shield); I do the rest: before narrating a new area, read `exploration.mjs reminders`
+  (or the tab's list) and make the secret rolls and notes it names. When the party travels, move the clock
+  with `exploration.mjs travel <distance or time>`, which uses the party's pace. _(E15)_
 - **Read the neighbours too.** On entering a new keyed area (or opening a door into one), also read the
   adventure's text for every area next to it before narrating: noise, creatures that flee or hunt, ghosts,
   hazards, secret doors and timed events next door can reach into this one. _(S)_

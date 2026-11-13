@@ -43,6 +43,9 @@ The table rules (secrecy, narration, the ledger, tactics, rulings) are in the GM
   for what the party finds (`find "words"` gives the key), `identify`, `appraise`, `sell`, `buy`, `coins`, `list`;
   players move things themselves on the Party loot tab. A character's carried items take `carry` (a stowed item is
   not in use for the rules) and its coins are in `actorstate/<id>.coins` ([board.md](board.md), Party loot).
+- **Exploration:** `node tools/exploration.mjs <pack> <save> --records FILE list` (activities, pace, reminders),
+  `set <PC> <activity>`, `travel 3 mi` (the clock moves at the party's pace), `reminders` before narrating a new
+  area; `encounter.mjs roll` and `begin` apply Avoid Notice, Scout and Defend ([board.md](board.md), Exploration).
 
 
 - **Know a creature's numbers:** `node tools/actor.mjs <pack> <save> show "Kerra"`. Every number comes with

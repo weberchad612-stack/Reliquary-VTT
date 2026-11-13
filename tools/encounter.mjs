@@ -42,6 +42,9 @@ import { resolveToken, publicName } from '../board/names.js';
 import { loadGame, creature } from './actor.mjs';
 import { runTurnRules, randomSource } from './turns.mjs';
 import { describeClock } from './clock.mjs';
+import { adjustCheck } from '../engine/rules/check.js';
+import { exploreRules, initiativeHint, startRequests } from '../board/explore.js';
+import { partyOf, choicesOf } from './exploration.mjs';
 
 const sideOf = (t) => (['pc', 'npc', 'foe'].includes(t.kind) ? t.kind : 'foe');
 
@@ -102,15 +105,19 @@ export function runEncounter(game, cmd, args, opts = {}) {
     return done(E.setInitiative(enc, id, n, tb), [`${name(id)}: initiative ${n}`]);
   }
   if (cmd === 'roll') {
-    const id = who(args[0]), c = creature(game, id), slug = opts.stat || 'perception', I = game.sys.initiative;
+    const id = who(args[0]), c = creature(game, id), I = game.sys.initiative;
     if (!I) throw new Error('this game system has no initiative rules');
-    const st = I.statistic(c.prepared, slug);
+    // the PC's exploration activity: Avoid Notice rolls Stealth, Scout gives the party a bonus (board/explore.js)
+    const hint = game.tokens[id].kind === 'pc' ? initiativeHint(exploreRules(game.sys), id, partyOf(game), choicesOf(game.records)) : { stat: null, add: [] };
+    const slug = opts.stat || (hint.stat && I.statistic(c.prepared, hint.stat) ? hint.stat : 'perception');
+    const st0 = I.statistic(c.prepared, slug);
+    const st = st0 && hint.add.length ? adjustCheck(st0, { add: hint.add }, { stacks: I.stacks }) : st0;
     if (!st) throw new Error(`${name(id)} has no ${slug}`);
     const r = rollCheck(st, { mode: opts.mode || 'normal', rng, dice: opts.roll !== undefined ? [Number(opts.roll)] : null, sides: I.die });
     const label = (I.statistics(c.prepared).find((x) => x.slug === slug) || {}).label || slug;
     const parts = countedParts(st), notes = notesFor(c.prepared.notes, I.noteSelectors(slug), c.prepared.tags, c.prepared.facts);
     const roll = { dice: r.dice, kept: r.kept, mode: r.mode, sides: r.sides, mod: r.mod, parts };
-    const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
+    const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}${hint.add.length ? `; ${hint.add.map((a) => `${a.label} ${a.value > 0 ? '+' : ''}${a.value}`).join(', ')}` : ''}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
     const gm = !!(enc.combatants.find((x) => x.token === id) || {}).hidden || !!game.tokens[id].hidden;
     out.writes.push({ op: 'set', path: chatPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm }) });
     // the dice, for the Dice tab's statistics (board/dice.js)
@@ -136,7 +143,21 @@ export function runEncounter(game, cmd, args, opts = {}) {
   if (cmd === 'next-round') { const r = E.nextRound(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'previous-round') { const r = E.previousRound(enc, now0, T.roundSeconds); return done(r.encounter, [`back to the start of round ${r.encounter.round}`], [], r.now); }
   if (cmd === 'previous') { const r = E.previous(enc, now0, T.roundSeconds); return done(r.encounter, [E.acting(r.encounter) ? `back to ${name(E.acting(r.encounter))}'s turn` : 'already at the first turn'], [], r.now); }
-  if (cmd === 'begin') { const r = E.begin(enc, now0); return done(r.encounter, ['The encounter begins'], r.events, r.now); }
+  if (cmd === 'begin') {
+    // the exploration activities that act before the first turn (Defend's raised shield): into the live state first,
+    // so the first turn's rules see them (a raised shield lowers at its owner's turn start)
+    const reqs = startRequests(exploreRules(game.sys), partyOf(game), choicesOf(game.records), enc.combatants.map((c) => c.token));
+    const pre = [];
+    for (const q of reqs) {
+      if (q.kind === 'state') { game.states[q.token] = { ...(game.states[q.token] || {}), ...q.patch }; pre.push({ op: 'update', path: `actorstate/${q.token}`, data: q.patch }); }
+      if (q.kind === 'effect') { const t = game.tokens[q.token]; game.tokens[q.token] = { ...t, effects: [...(t.effects || []), q.effect] }; pre.push({ op: 'update', path: `tokens/${q.token}`, data: { effects: game.tokens[q.token].effects } }); }
+    }
+    const r = E.begin(enc, now0);
+    const out = done(r.encounter, ['The encounter begins', ...reqs.map((q) => q.label)], r.events, r.now);
+    const later = new Set(out.writes.map((w) => w.path));
+    out.writes.splice(1, 0, ...pre.filter((w) => !later.has(w.path)));   // the turn rules' own write of the same record wins
+    return out;
+  }
   if (cmd === 'next') { const r = E.next(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'delay') { const id = E.acting(enc); const r = E.delay(enc, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} delays`], r.events, r.now); }
   if (cmd === 'resume') { const id = who(args[0]); const r = E.resume(enc, id, now0); return done(r.encounter, [`${name(id)} stops delaying`], r.events, r.now); }

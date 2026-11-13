@@ -6,10 +6,10 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `ledger/` (the campaign ledger, the GM's memory), `loot/` and `state/purse` (the party's stash and coins), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `ledger/` (the campaign ledger, the GM's memory), `loot/` and `state/purse` (the party's stash and coins), `explore/` (the PCs' exploration activities), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
-| The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`, `actors/`, `actorstate/`, `chat.json`, `audit.json`, `dice.json`, `replays.json`, `ledger.json`, `loot.json` for the party's stash and purse) and its `backups/` (the last five) | Claude, through the desktop app |
+| The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`, `actors/`, `actorstate/`, `chat.json`, `audit.json`, `dice.json`, `replays.json`, `ledger.json`, `loot.json` for the party's stash and purse, `exploration.json` for the PCs' activities) and its `backups/` (the last five) | Claude, through the desktop app |
 | The pack (`examples/sample-pack`, or a private `packs/<id>`) | Maps, walls, terrain and lighting, and optionally its own visual effects (`effects.json`): never changed by play | The importer; Claude for effects |
 
 The database is the truth during play; the PC save is the truth between sessions and for any campaign that is not loaded. `saves/` and `packs/` are private and git-ignored: book content goes only onto the user's own private board, never into the repository or anything shared.
@@ -36,7 +36,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice`, `replay`, `ledger`, `loot` (`state` holds the purse; `SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice`, `replay`, `ledger`, `loot`, `explore` (`state` holds the purse; `SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -48,7 +48,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `replay`, `ledger`, `loot`, `fx`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `replay`, `ledger`, `loot`, `explore`, `fx`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -504,6 +504,54 @@ about, with the encumbered condition on the token; using consumables comes next 
   tip over must count it. Library items are Claude's to add because the board holds only the content the campaign
   uses (FR-32 for a search in the board). Keep the item shape one shape: moving between the stash and a character is
   then a copy, not a conversion.
+
+### Exploration (2026-11-13)
+
+What each PC keeps doing while the party travels, the party's pace, travel turned into time on the clock, and the
+activities applied when combat starts. The user's design (questionnaires, 2026-11-13): players and the GM set
+activities; Defend, Scout and Avoid Notice apply themselves at combat start; unavailable activities greyed with the
+reason; activity options; travel and the clock; a token badge and the GM's reminders; only activities done while
+travelling (tasks done in place wait for the Actions tab). The old board's panel (a dropdown per PC, a typed-in list,
+`exploration/<id> = {act}`, everything applied by hand under GM rule E15) is the model it improves on.
+
+- **System-free by contract** (the user asked, 2026-11-13): the board, the tracker and the tools know no activity.
+  The system's `exploration` (`rulesets/pf2e/exploration.js`) gives the activities (id, name, the content key of its
+  rules text, group, icon, pace), each one's needs (`requires(ctx)` -> `{text, soft}`: hard ones greyed for players,
+  soft ones allowed with a warning), choices (`options`: a PC to follow, a skill, free text), a check of the choices,
+  the reminders for Claude, the pace rules (`groupPace`, the travel table, the limit on Hustling) and what each asks
+  for when combat starts, in four kinds the board carries out: `initiative-stat` (roll with another statistic),
+  `initiative-mod` (a modifier for some PCs or the party), `state` (merge into `actorstate/<id>`) and `effect` (put
+  on the token). A system without it gets `PLAIN_EXPLORATION`: a note per PC, pace from Speed, no requests.
+  `tests/board-explore.test.mjs` fails if the board's exploration code names a Pathfinder activity.
+- **Records:** `explore/<token id>` `{activity (or null: just travelling), options, note, at, by}`; saved as
+  `exploration.json` (`schemas/exploration.schema.json`). The activities' rules text (`actions:action/<slug>`) comes
+  with the campaign's content (`systemContentKeys` in tools/library.mjs) and stays through `tidy`; for a board loaded
+  before, `tools/exploration.mjs content` gives the records to write once.
+- **The Exploration tab** (everyone; between Actions and Party loot): **Party pace** (the slowest PC's Speed from the
+  rules, armor and encumbered included; halved when anyone is on a half-speed activity, doubled only when everyone
+  Hustles; Follow the Expert takes the expert's pace; feet per minute, miles per hour, miles a day; how long a Hustle
+  lasts), the GM's **Travel** box (feet, miles, minutes or hours, and terrain: the clock moves on by the time at the
+  pace, running effects out as the clock's own changes do, with an audit line), the GM's **On entering a new area**
+  reminders (who Searches, Detects Magic, Investigates, Avoids Notice, Follows), this screen's **Show activity badges**
+  switch (localStorage `reliquary.exploreBadges`), and a card per PC on this map: its Speed, the activity picker
+  (grouped; what it cannot do greyed with why, the GM can still pick it), the options, the summary and any warning,
+  and **Rules text** unfolding in place (traits with the glossary). Every change writes an audit line.
+- **Combat start:** the tracker asks the board for a PC's initiative hint (`initiativeHint`) when its roll dialog
+  opens and on Roll All: Avoid Notice picks Stealth, Scout adds "+1 Scout" (circumstance) to every PC, shown as a row
+  of the dialog and on the roll card. **Begin Encounter** first carries out the start requests for the PCs in it
+  (`beforeBegin`: Defend's `shieldRaised`), so the first turn's rules see it; PF2E's turn rules now lower a raised
+  shield at its owner's turn start (Raise a Shield lasts until then), so Defend helps until the PC's first turn as the
+  rule says. `tools/encounter.mjs roll` and `begin` do the same for Claude (`--stat` still wins).
+- **The badge:** a round teal chip at a PC token's bottom-right with the activity's icon (the system's), drawn only
+  outside encounters and when this screen's switch is on; hovering tells the activity, its pace and summary;
+  clicking opens the Exploration tab at that PC's card (flashed). Nothing chosen, no badge.
+- **Claude's tool:** `node tools/exploration.mjs <pack> <save> --records FILE list | activities | set <PC> <id|none>
+  [--expert PC] [--skill S] [--spell S] [--effect E] [--note N] | pace | travel <n> ft|mi|min|hr [--terrain normal|
+  difficult|greater] | reminders | requests | content`. `travel` writes the clock (and effects that ran out) through
+  `clock.mjs advance`.
+- **Lessons:** the old rule E15 lived only in Claude's memory; now the board applies what the rules decide and Claude
+  keeps the judgement calls (the secret Seek, the magic in range). Who acts first matters: if a Defending PC wins
+  initiative, its shield lowers at once, which is the rule.
 
 ### Replay and "Claude is thinking" (2026-11-12)
 

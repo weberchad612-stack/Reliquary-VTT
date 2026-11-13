@@ -155,15 +155,20 @@ words and numbers. Reviewed with the user rule by rule on 2026-11-13; the old ru
 ## 6. Exploration
 
 - **The exploration activities, applied automatically** (the general rule "Standing exploration
-  activities apply themselves"). _(E15)_
-  - Defend: the shield is raised when combat starts (an effect, +2 AC), until the start of the PC's first
-    turn.
-  - Search: on entering a new area, a free secret Seek for hidden doors, hazards and objects.
-  - Detect Magic: a one-line in-world note of whether magic is present within 30 feet (only what the
+  activities apply themselves"; the rules in `rulesets/pf2e/exploration.js`). _(E15)_
+  - Defend: the board raises the shield when the encounter begins (`shieldRaised`, its AC bonus); it lowers
+    at the start of the PC's first turn.
+  - Scout: the board adds +1 circumstance to every PC's initiative (the roll dialog, Roll All,
+    `encounter.mjs roll`).
+  - Avoid Notice: the board rolls Stealth for initiative.
+  - Search (mine): on entering a new area, a free secret Seek for hidden doors, hazards and objects.
+  - Detect Magic (mine): a one-line in-world note of whether magic is present within 30 feet (only what the
     adventure places; nothing at all if none).
-  - Scout: +1 circumstance bonus to every PC's initiative in the next encounter.
-  - Avoid Notice: Stealth for initiative.
-  - All of these are half-speed activities, so travel is at half speed.
+  - Investigate (mine): a secret Recall Knowledge with the chosen skill on the area's clues.
+  - Follow the Expert: +2/+3/+4 circumstance (the expert's rank) to the follower's check, level added if
+    untrained; the tab warns when the one followed is not expert.
+  - Pace: the slowest Speed, halved for any half-speed activity, doubled only when all Hustle (Constitution
+    x 10 minutes, at least 10); difficult terrain halves travel, greater difficult terrain cuts it to a third.
 
 ## 7. Rulings
 

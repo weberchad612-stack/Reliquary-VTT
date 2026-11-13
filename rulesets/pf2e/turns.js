@@ -1,7 +1,8 @@
 // What PF2E does at turn boundaries and when time passes (Player Core, paraphrased), answering the encounter
 // engine's events (engine/time/encounter.js) and the clock's:
 //   end of a turn     persistent damage, then a DC 15 flat check to end it; frightened goes down by 1
-//   start of a turn   fast healing and regeneration; temporary HP that renews each turn; a dying creature's
+//   start of a turn   a raised shield is lowered (Raise a Shield lasts until the start of the next turn); fast
+//                     healing and regeneration; temporary HP that renews each turn; a dying creature's
 //                     recovery check
 //   any boundary      effects whose duration has run out are removed, with the conditions they granted
 //   encounter end     effects that last for the encounter end
@@ -90,6 +91,12 @@ export function turnRules(ctx) {
     }
     if (ev.type === 'turn-start') {
       const id = ev.token, t = tok(id);
+      // Raise a Shield (and Defend's raised shield) lasts until the start of the creature's next turn
+      if (t && st(id).shieldRaised) {
+        const { shieldRaised: _r, ...rest } = st(id);
+        states[id] = rest;
+        lines.push(`${name(id)}'s shield is lowered (a raised shield lasts until the start of the turn)`);
+      }
       if (t && !t.dead) {
         const p = ctx.prepare(id, t, st(id));
         if (p) {

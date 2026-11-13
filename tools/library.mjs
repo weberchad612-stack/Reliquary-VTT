@@ -84,6 +84,12 @@ export function referencedKeys(actors, tokens = {}, loot = []) {
   return keys;
 }
 
+/** The documents a system's own board features show (its exploration activities' rules text): content keys. */
+export function systemContentKeys(system) {
+  const ex = system && system.exploration;
+  return ex ? (ex.activities || []).map((a) => a.ref).filter(Boolean) : [];
+}
+
 /**
  * The optional documents creatures show (a character's feats' and features' descriptions), as the system says
  * (system.content.actorContent): a list of candidate-key groups, the first key found in each being the one.

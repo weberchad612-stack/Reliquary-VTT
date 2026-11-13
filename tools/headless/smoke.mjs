@@ -166,6 +166,39 @@ const CHECKS = {
       && weaponsOnly.length === 1 && weaponsOnly[0] === '0mwe00001-0dagg';
     return ok(pass, `player sees idol as stranger: ${/A strange idol/.test(playerSees)}; Kerra took a dagger: ${kerraItems.length}; purse ${JSON.stringify(purse)}, Pip ${JSON.stringify(pipCoins)}; Pip encumbered ${pipEnc} (${bar}) then ${pipAfter}; idol identified ${idol.identified}; ${audit.length} audit lines; details player "${playerDetails.slice(0, 40)}", GM "${gmDetails.slice(0, 40)}"; weapons filter ${weaponsOnly.join(',')}`);
   },
+  async exploration({ page }) {
+    // players set activities; the pace follows; the GM travels (the clock moves on); combat start applies them
+    const LYRA = 'tok-s85mkapz';
+    await asPlayer(page);
+    await writeRecord(page, 'state/clock', { now: 149136906012, start: 149136904200 });
+    await writeRecord(page, 'state/encounter', { round: 0, turn: null, started: 0, ended: 1, combatants: [] });
+    await openTab(page, 'exploration'); await page.waitForTimeout(800);
+    const pick = async (id, v) => { await page.selectOption(`[data-pane=exploration] .ex-pc[data-pc="${id}"] [data-f=activity]`, v); await page.waitForTimeout(400); };
+    await pick(KERRA, 'defend'); await pick(PIP, 'avoid-notice'); await pick(LYRA, 'scout');
+    const ex = Object.fromEntries((await records(page, 'explore')).map((e) => [e.id, e.data.activity]));
+    const pace = await page.$eval('[data-pane=exploration] .ex-pacebox', (x) => x.textContent);
+    const badge = await page.evaluate(() => [...document.querySelectorAll('#tokhud, body')].length);   // the page is up
+    await asGM(page); await page.waitForTimeout(400);
+    const rem = await page.$eval('[data-pane=exploration] .ex-rem', (x) => x.textContent);
+    await page.fill('[data-pane=exploration] .ex-tform input[name=v]', '600');
+    await page.click('[data-pane=exploration] .ex-tform button'); await page.waitForTimeout(800);
+    const clock = (await records(page, 'state')).find((e) => e.id === 'clock').data.now;
+    // combat: Roll All, then Begin
+    await writeRecord(page, 'state/encounter', { round: 0, turn: null, started: 0, combatants: [{ token: KERRA, side: 'pc', initiative: null }, { token: PIP, side: 'pc', initiative: null }, { token: OGRE, side: 'foe', initiative: 40 }] });
+    await openTab(page, 'encounter'); await page.waitForTimeout(400);
+    await page.evaluate(() => document.querySelector('.tracker [data-a=roll-all]').click()); await page.waitForTimeout(1500);
+    const cards = (await records(page, 'chat')).filter((e) => e.data.kind === 'roll' && e.data.check === 'initiative').map((e) => e.data);
+    const pipCard = cards.filter((c) => c.token === PIP).pop(), kerraCard = cards.filter((c) => c.token === KERRA).pop();
+    await page.evaluate(() => document.querySelector('.tracker [data-a=begin]').click()); await page.waitForTimeout(1200);
+    const shield = ((await records(page, 'actorstate')).find((e) => e.id === KERRA) || { data: {} }).data.shieldRaised;
+    const audit = (await records(page, 'audit')).map((e) => e.data.text);
+    await page.evaluate(() => { const b = document.querySelector('.tracker [data-a=end]'); if (b) b.click(); }); await page.waitForTimeout(300);
+    await asPlayer(page);
+    const pass = ex[KERRA] === 'defend' && ex[PIP] === 'avoid-notice' && ex[LYRA] === 'scout' && /half speed/.test(pace) && /125 ft/.test(pace) && /Avoiding Notice/.test(rem)
+      && clock === 149136906012 + 288 && pipCard && pipCard.stat.slug === 'stealth' && JSON.stringify(pipCard).includes('Scout') && kerraCard && JSON.stringify(kerraCard).includes('Scout')
+      && (shield === true || audit.some((t) => /Kerra's shield is lowered/.test(t))) && audit.some((t) => /party travels 600 feet/.test(t)) && audit.some((t) => /Defend: Kerra/.test(t)) && badge;
+    return ok(pass, `choices ${JSON.stringify(ex)}; pace "${pace.slice(0, 60)}"; clock +${clock - 149136906012}s; Pip rolled ${pipCard && pipCard.stat.slug}; Scout on cards ${!!(pipCard && JSON.stringify(pipCard).includes('Scout'))}; Kerra's shield ${shield} (lowered at her turn if she acts first)`);
+  },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());
     return ok(n > 0 && n < 30, `${n} listeners (the platform caps about 40)`);
