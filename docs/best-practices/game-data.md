@@ -91,13 +91,19 @@ write a number into an actor that the rules can work out. The board and the tool
 
 ## 2c. Replays: resolving a batch (Claude)
 
-When several actions resolve together (the foes' turns, a round of fighting, a trap going off), resolve them as a
+**Raise the banner first, for any adjudication**: `node tools/think.mjs start --what "..."` (write what it prints;
+`--what` goes to the GM's audit log only) puts "Claude is thinking" on every screen; `ping` keeps it up, `stop` takes
+it down. Use it for anything that is not a replay too: an exploration check, a social scene, a rest. A replay begun
+while it is up carries on with it, and the replay's `end` takes it down.
+
+When several actions resolve together (the foes' turns, a round of fighting, a trap going off, a search of an area), resolve them as a
 **replay** (`tools/replay.mjs`, built 2026-11-12): the table watches them step by step on the board, and nothing
 lands early.
 
 1. **Read the board** (`db_list` of `tokens`, `actors`, `actorstate`, `state` and `replay`, into one `{path: data}`
-   file) and **open a draft**: `node tools/replay.mjs begin --records board.json --title "The goblins' turn" --map
-   sample-keep`. Write what it prints: `state/adjudicating` puts the **"Claude is adjudicating" banner** over every
+   file) and **open a draft**: `node tools/replay.mjs begin --records board.json --title "The goblins' turn" --kind combat --map
+   sample-keep`. The title names what is being resolved ("Round 2", "Searching the southern grounds"); `--kind`
+   (combat, exploration, social) is its icon on the board. Write what it prints: `state/adjudicating` puts the **"Claude is adjudicating" banner** over every
    screen, and the audit log notes the start. Replays not yet revealed are applied to the working copy first.
 2. **Resolve each action with the usual tools, against the working copy**: `--records $(node tools/replay.mjs
    records)`. Save each tool's JSON to a file; do **not** write its writes to the board.

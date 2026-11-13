@@ -5,10 +5,12 @@
 // writes the replay, and each step's changes reach the game only when someone reveals it.
 //
 // Usage: node tools/replay.mjs [--draft FILE] <command> ...
-//   begin --records FILE [--title T] [--map M] [--resume | --discard]
+//   begin --records FILE --title T [--kind combat|exploration|social] [--map M] [--resume | --discard]
 //                       open a draft on the board's records ({path: data}, as db_list gives them); replays not yet
 //                       revealed are applied to the working copy first. Prints the "Claude is adjudicating" record
 //                       and an audit line to write. --resume carries on a draft left open; --discard drops it.
+//                       The title says what is being resolved ("Round 2", "Searching the southern grounds"); the
+//                       kind is its icon on the board. A banner already up (tools/think.mjs start) carries on.
 //   records             the working copy's file, for the other tools' --records
 //   get <path>          one record from the working copy (an effect.mjs input, say)
 //   step --side pc|npc|env --text T [--actor ID] [--who NAME] [--gm] [--focus ID,ID|X:Y,...]
@@ -32,7 +34,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REPLAY, ADJ_PATH, POSTS, replayId, diffRecord, applyChange, checkReplay } from '../board/replay.js';
+import { REPLAY, KINDS, ADJ_PATH, POSTS, replayId, diffRecord, applyChange, checkReplay } from '../board/replay.js';
 import { auditPath, auditEntry } from '../board/audit.js';
 import { publicName, resolveToken } from '../board/names.js';
 
@@ -138,6 +140,7 @@ const SIDE_OK = ['pc', 'npc', 'env'];
 export function replayRecord(d, now = Date.now()) {
   const rep = { title: d.title || 'Resolved actions', by: 'claude', created: new Date(now).toISOString(), steps: d.steps, narration: d.narration || [], n: 0, revealed: [] };
   if (d.map) rep.map = d.map;
+  if (d.kind) rep.kind = d.kind;
   if (d.stop) rep.stop = d.stop;
   const problems = checkReplay(rep);
   if (problems.length) throw new Error(problems.join('; '));
@@ -154,6 +157,10 @@ function saveDraft(f, d) {
   fs.writeFileSync(f, JSON.stringify(d));
   fs.writeFileSync(recordsFile(f), JSON.stringify(d.records));
 }
+// the standalone banner's state (tools/think.mjs): {since}, beside the draft
+export const thinkFile = (draftFile) => path.join(path.dirname(draftFile), 'think.json');
+export function readThink(draftFile) { try { return JSON.parse(fs.readFileSync(thinkFile(draftFile), 'utf8')); } catch { return null; } }
+export function clearThink(draftFile) { if (fs.existsSync(thinkFile(draftFile))) fs.rmSync(thinkFile(draftFile)); }
 function dropDraft(f) { for (const x of [f, recordsFile(f)]) if (fs.existsSync(x)) fs.rmSync(x); }
 
 /** Run a command: {lines, writes}. */
@@ -171,7 +178,10 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
     }
     if (!opts.records) throw new Error('begin needs --records FILE (the board\'s records, as db_list gives them)');
     const { records, pending } = project(readRecords(JSON.parse(fs.readFileSync(opts.records, 'utf8'))));
-    const d = { id: replayId(now), title: opts.title || 'Resolved actions', map: opts.map || null, started: new Date(now).toISOString(), records, steps: [], narration: [], stop: null };
+    if (opts.kind && !KINDS[opts.kind]) throw new Error(`--kind is one of ${Object.keys(KINDS).join(', ')}`);
+    const think = readThink(draftFile);   // a banner already up (think.mjs start): the same adjudication goes on
+    const d = { id: replayId(now), title: opts.title || 'Resolved actions', kind: opts.kind || null, map: opts.map || null, started: think ? think.since : new Date(now).toISOString(), records, steps: [], narration: [], stop: null };
+    clearThink(draftFile);
     saveDraft(draftFile, d);
     lines.push(`draft "${d.title}" open${pending ? `; ${pending} replay(s) not yet revealed applied to the working copy` : ''}`, `working copy: ${recordsFile(draftFile)} (give it to the other tools as --records)`);
     writes.push(adjWrite(d, now), audit(`Claude began resolving: ${d.title}`, now, d.map));

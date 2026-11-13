@@ -215,3 +215,22 @@ test('roll details: the tools give the rolls in parts (check.mjs, dice.mjs)', ()
   assert.equal(d.total, d.roll.total);
   assert.equal(d.roll.damageType, 'slashing');
 });
+
+test('think.mjs: the banner on its own, carried on by a replay begun while it is up', async () => {
+  const { runThink } = await import('../tools/think.mjs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'think-'));
+  const draftFile = path.join(dir, 'draft.json'), recFile = path.join(dir, 'records.json');
+  fs.writeFileSync(recFile, '{}');
+  const t0 = Date.parse('2026-11-12T10:00:00Z');
+  const s = runThink('start', { what: 'searching' }, { draftFile, now: t0 });
+  assert.equal(s.writes[0].data.since, '2026-11-12T10:00:00.000Z');
+  assert.equal(runThink('ping', {}, { draftFile, now: t0 + 5000 }).writes[0].data.since, '2026-11-12T10:00:00.000Z');
+  const b = runReplay('begin', [], { records: recFile, title: 'Searching', kind: 'exploration' }, { draftFile, now: t0 + 9000 });
+  assert.equal(b.writes[0].data.since, '2026-11-12T10:00:00.000Z', 'the same adjudication goes on');
+  assert.throws(() => runThink('ping', {}, { draftFile }), /not up/);
+  assert.throws(() => runReplay('begin', [], { records: recFile, kind: 'dance' }, { draftFile: path.join(dir, 'other.json') }), /kind is one of/);
+  fs.writeFileSync(path.join(dir, 'o.json'), JSON.stringify({ op: 'set', path: 'chat/x', data: { kind: 'event', text: 'found it' } }));
+  runReplay('step', [], { side: 'pc', text: 'Lyra searches', in: [path.join(dir, 'o.json')] }, { draftFile });
+  assert.equal(runReplay('end', [], {}, { draftFile }).writes[0].data.kind, 'exploration');
+  assert.equal(runThink('stop', {}, { draftFile }).writes[0].op, 'delete');
+});

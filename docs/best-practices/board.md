@@ -401,6 +401,9 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   the token leaving the map until it arrives), and the actor gets the **highlight ring in its side's colour** (PC
   blue, NPC red, event gold). Its fx records play as every fx record does. Clicking a revealed step plays it again
   on this screen (slide, ring and effects).
+- **The title** names what is being resolved ("Round 2", "Searching the southern grounds"; the user, 2026-11-12),
+  with an **icon for its kind**: ⚔️ combat, 🧭 exploration, 💬 social (`KINDS` in `board/replay.js`; none when no kind
+  is given).
 - **The tab**: the replay shown is the **oldest not finished** (later batches were resolved as if it had happened),
   else the newest; "N more waiting" when there are more. Players see the revealed steps and "Next: an NPC action…";
   the GM sees the coming steps dimmed. A stop shows "Waiting for reactions". A new replay selects the tab on every

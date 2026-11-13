@@ -8,7 +8,8 @@
 // counter is shared, so every screen follows.
 //
 // A replay, replay/<id>:
-//   {title, by, created (ISO), map?, steps: [step], narration: [text], stop?: text (waiting for reactions),
+//   {title (what is being resolved: "Round 2", "Searching the southern grounds"), kind? ('combat' | 'exploration' |
+//    'social': its icon), by, created (ISO), map?, steps: [step], narration: [text], stop?: text (waiting for reactions),
 //    n (steps revealed), revealed: [{at (ISO), key}] (one per revealed step: when and by whose press)}
 // A step:
 //   {side: 'pc' | 'npc' | 'env', actor? (token id), who? (shown name), text, gm? (the GM's only: players see
@@ -22,6 +23,8 @@
 // step write the same records.
 
 export const REPLAY = 'replay';
+/** What a replay resolves (the user, 2026-11-12): shown as an icon before its title. Kinds of scene any game has. */
+export const KINDS = Object.freeze({ combat: { icon: '⚔️', label: 'Combat' }, exploration: { icon: '🧭', label: 'Exploration' }, social: { icon: '💬', label: 'Social' } });
 export const SIDES = Object.freeze(['pc', 'npc', 'env']);
 export const POSTS = Object.freeze(['chat', 'dice', 'audit', 'fx']);
 export const CLAIM_WAIT = 700;   // ms a board waits after claiming a step before it reads the claim back
@@ -154,6 +157,7 @@ export function checkReplay(rep) {
   const out = [];
   if (!rep || typeof rep !== 'object') return ['a replay is an object'];
   if (!Array.isArray(rep.steps) || !rep.steps.length) out.push('a replay needs at least one step');
+  if (rep.kind !== undefined && !KINDS[rep.kind]) out.push(`kind is one of ${Object.keys(KINDS).join(', ')}`);
   (rep.steps || []).forEach((s, i) => {
     const at = `step ${i + 1}`;
     if (!SIDES.includes(s.side)) out.push(`${at}: side is one of ${SIDES.join(', ')}`);

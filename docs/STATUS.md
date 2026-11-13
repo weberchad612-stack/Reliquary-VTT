@@ -25,7 +25,8 @@ line here in the same commit. Last brought up to date: 2026-11-12.
   status effects, templates; left column: height, Enter Combat, the GM's Hide), Token Quick-View (double-click),
   pings and visual effects, Stride ranges during an encounter. Hidden tokens never reach players.
 - **"Claude is adjudicating"**: a banner over the map on every screen while Claude resolves a batch
-  (`tools/replay.mjs`); "Still working on it" after 5 quiet minutes, gone after 30; the GM can clear it.
+  (`tools/replay.mjs`, or `tools/think.mjs` for anything else): one random line and the time elapsed; "still thinking" after
+  5 quiet minutes, gone after 30; the GM can clear it.
 - **Sidebar tabs, top to bottom** (each pops out as a window; GM-only ones are absent in the player view):
 
 | Tab | State |
