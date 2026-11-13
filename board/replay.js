@@ -9,10 +9,10 @@
 //
 // A replay, replay/<id>:
 //   {title (what is being resolved: "Round 2", "Searching the southern grounds"), kind? ('combat' | 'exploration' |
-//    'social': its icon), by, created (ISO), map?, steps: [step], narration: [text], stop?: text (waiting for reactions),
+//    'social': its icon), by, created (ISO), map?, steps: [step], stop?: text (waiting for reactions),
 //    n (steps revealed), revealed: [{at (ISO), key}] (one per revealed step: when and by whose press)}
 // A step:
-//   {side: 'pc' | 'npc' | 'env', actor? (token id), who? (shown name), text, gm? (the GM's only: players see
+//   {side: 'pc' | 'npc' | 'env' | 'story', actor? (token id), who? (shown name), text, gm? (the GM's only: players see
 //    "Something happens…"), focus? [token ids or [x, y]] (the camera's points; else the actor, the moves and fx),
 //    changes: [change], posts: [{c: 'chat' | 'dice' | 'audit' | 'fx', data}], moves: [{token, from, to, via?}]}
 // A change to one record, by its top-level fields:
@@ -25,7 +25,7 @@
 export const REPLAY = 'replay';
 /** What a replay resolves (the user, 2026-11-12): shown as an icon before its title. Kinds of scene any game has. */
 export const KINDS = Object.freeze({ combat: { icon: '⚔️', label: 'Combat' }, exploration: { icon: '🧭', label: 'Exploration' }, social: { icon: '💬', label: 'Social' } });
-export const SIDES = Object.freeze(['pc', 'npc', 'env']);
+export const SIDES = Object.freeze(['pc', 'npc', 'env', 'story']);
 export const POSTS = Object.freeze(['chat', 'dice', 'audit', 'fx']);
 export const CLAIM_WAIT = 700;   // ms a board waits after claiming a step before it reads the claim back
 
@@ -97,7 +97,12 @@ export function postData(p, at) {
   return d;
 }
 
-/** The narration as chat messages, revealed with the last step. */
+// Narration is a step of its own (the user, 2026-11-12): side 'story', its text the paragraph, its one post the chat's
+// narration message, its focus the creatures it is about; revealed with its own Next, right after the actions it
+// tells. A replay made before then carries `narration: [text]`, posted with its last step.
+export const isStory = (s) => !!s && s.side === 'story';
+
+/** An older replay's narration (rep.narration) as chat messages, revealed with the last step. */
 export function narrationPosts(rep) {
   return (rep.narration || []).filter((t) => String(t || '').trim()).map((text) => ({ c: 'chat', data: { by: 'claude', kind: 'narration', text: String(text).trim(), ...(rep.map ? { map: rep.map } : {}) } }));
 }

@@ -123,8 +123,12 @@ lands early.
    (the user, 2026-11-12): a condition, a death or a new round is told by the cards and the narration. `--crit` on the damage roll
    doubles it: give its `total` to `actor.mjs damage ... --crit`. A situational modifier is `check.mjs --bonus "1
    backswing"`, so its name shows.
-4. **Narration** for the end: `replay.mjs narrate "..."` (one call per paragraph); it is posted to the chat when
-   the last step is revealed.
+4. **Narration is a step** (the user, 2026-11-12: narration is what engages the players): after the actions a beat
+   of story tells, `replay.mjs narrate "..." --focus "Kerra,Scar-Browed Ogre"` adds a narration step right there. The
+   table reveals it with its own Next; it posts the paragraph to the chat as narration, frames and rings the
+   creatures it names, and Auto lingers on it for reading. Tell each beat close to its actions (a creature's turn,
+   a find, a reply), and **end with a narration step** that ties together whatever the others did not tell. `--gm`
+   for a note only the GM should read. Good narration is the point of the replay: give it the care the rolls get.
 5. **Reactions:** stop the batch before a step where a PC could react: `replay.mjs stop "Can anyone react to the
    ogre's swing?"`, `end`, and ask. The next batch (a new `begin`) starts from the board plus this one.
 6. **End**: `node tools/replay.mjs end` prints the `replay/<id>` record, the banner's delete and an audit line:

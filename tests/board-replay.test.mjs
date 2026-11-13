@@ -120,9 +120,16 @@ test('replay tool: a draft changes a working copy step by step, and end writes t
   assert.deepEqual([working['tokens/ogre'].x, working['tokens/ogre'].y], [3, 4]);
   fs.writeFileSync(out, JSON.stringify({ op: 'update', path: 'actorstate/kerra', data: { hp: 6 } }));
   run('step', [], { side: 'npc', actor: 'ogre', text: 'Again', in: [out] });
-  run('narrate', ['Thud.']);
+  run('narrate', ['Thud.'], { focus: ['Ogre'] });
   const e = run('end');
   const rep = e.writes[0].data;
+  // narration is a step of its own, right after the actions it tells (the user, 2026-11-12)
+  const story = rep.steps.at(-1);
+  assert.equal(story.side, 'story');
+  assert.deepEqual(story.focus, ['ogre']);
+  assert.deepEqual(story.posts, [{ c: 'chat', data: { by: 'claude', kind: 'narration', text: 'Thud.', map: 'm' } }]);
+  assert.equal(rep.narration, undefined);
+  rep.steps.pop();
   assert.equal(e.writes[0].path.split('/')[0], 'replay');
   assert.deepEqual(e.writes.slice(1).map((w) => w.op), ['delete', 'set']);
   assert.equal(rep.steps.length, 2);
@@ -261,4 +268,12 @@ test('damage cards: the dice, the doubling and the adjustments for a PC\'s; the 
   assert.equal(strip(damageCardHtml(foe, { gm: false, isPc, names })), 'Damage 11 bludgeoning to Kerra');
   assert.match(strip(damageCardHtml(foe, { gm: true, isPc, names })), /1d10\+7 = \(4\)\+7 = 11/);
   assert.throws(() => cm({ kind: 'damage', token: 'x' }), /needs its rolls/);
+});
+
+test('a narration step: no changes, its paragraph posted to the chat when it is revealed', () => {
+  const rep = { ...REP, narration: undefined, steps: [REP.steps[0], { side: 'story', text: 'The club falls.', focus: ['kerra'], changes: [], posts: [{ c: 'chat', data: { by: 'claude', kind: 'narration', text: 'The club falls.' } }], moves: [] }] };
+  assert.deepEqual(checkReplay(rep), []);
+  const w = stepWrites(rep, 1, {}, { at: 0, key: 'k' });
+  assert.deepEqual(w.ops.map((o) => [o.path.split('/')[0], o.data.kind]), [['chat', 'narration']]);
+  assert.deepEqual(focusOf(rep.steps[1]), ['kerra']);
 });

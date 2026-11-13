@@ -18,8 +18,10 @@ import { auditPath, auditEntry } from './audit.js';
 import { rollLines } from './rolldetail.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const SIDE_WORDS = { pc: 'PC', npc: 'NPC', env: 'Event' };
-const NEXT_WORDS = { pc: 'a PC action', npc: 'an NPC action', env: 'an event' };
+const SIDE_WORDS = { pc: 'PC', npc: 'NPC', env: 'Event', story: 'Story' };
+const NEXT_WORDS = { pc: 'a PC action', npc: 'an NPC action', env: 'an event', story: 'the story' };
+// Auto lingers on a narration step for reading: about 15 characters a second on top of the pace, at most 20 s more
+const readMs = (s) => (s && s.side === 'story' ? Math.min(20000, Math.round(String(s.text || '').length / 15 * 1000)) : 0);
 const PREF = 'reliquary.replay';   // per browser: {cam, pace}
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -37,7 +39,12 @@ export function mountReplay(o) {
   // ---------- the tab ----------
   // a step for the GM's eyes only (a hidden creature's) is not shown to players at all, nor counted
   const shows = (s) => gm() || !s.gm;
+  function storyHtml(s, i, last) {
+    return `<li class="rp-step story${last ? ' last' : ''}${s.gm && gm() ? ' gm-only' : ''}" data-step="${i}" tabindex="0" title="Show who it is about again">
+      <blockquote class="rp-story">${esc(s.text).replace(/\n+/g, '<br>')}</blockquote></li>`;
+  }
   function stepHtml(s, i, rep, last) {
+    if (s.side === 'story') return storyHtml(s, i, last);
     const side = s.side, who = s.who || (s.actor ? h.name(s.actor) : ''), text = s.text;
     // the rolls behind it: a PC's whole, another creature's as results (the GM sees all); a roll without a roller is the actor's
     const rl = rollLines((s.rolls || []).map((r) => (r && !r.token && r.type !== 'applied' ? { ...r, token: s.actor } : r)), { gm: gm(), isPc: (id) => !!id && h.kind(id) === 'pc' });
@@ -65,10 +72,10 @@ export function mountReplay(o) {
     if (left) {
       const nx = rep.steps.slice(n).find(shows);
       after = gm()
-        ? rep.steps.slice(n).map((s, j) => `<li class="rp-step pending ${s.side}"><div class="rp-head"><span class="rp-chip ${s.side}">${SIDE_WORDS[s.side]}</span><span class="rp-who">${esc(s.who || '')}</span><span class="rp-no">#${n + j + 1}</span></div><div class="rp-text">${esc(s.text)}</div></li>`).join('')
+        ? rep.steps.slice(n).map((s, j) => s.side === 'story' ? `<li class="rp-step pending story"><blockquote class="rp-story">${esc(s.text)}</blockquote></li>` : `<li class="rp-step pending ${s.side}"><div class="rp-head"><span class="rp-chip ${s.side}">${SIDE_WORDS[s.side]}</span><span class="rp-who">${esc(s.who || '')}</span><span class="rp-no">#${n + j + 1}</span></div><div class="rp-text">${esc(s.text)}</div></li>`).join('')
         : nx ? `<li class="rp-step pending ${nx.side}"><div class="rp-text">Next: ${NEXT_WORDS[nx.side]}…</div></li>` : '';
     } else if (rep.stop) after = `<li class="rp-stop"><b>Waiting for reactions.</b> ${esc(rep.stop)}</li>`;
-    else after = `<li class="rp-end">The end of this replay${(rep.narration || []).length ? ': the story goes on in the chat' : ''}.</li>`;
+    else after = '<li class="rp-end">The end of this replay.</li>';
     const kind = KINDS[rep.kind];
     pane.innerHTML = `<div class="rp-top"><div class="rp-title">${kind ? `<span class="rp-kind" title="${esc(kind.label)}" aria-label="${esc(kind.label)}">${kind.icon}</span>` : ''}${esc(rep.title || 'Resolved actions')}</div><p class="rp-status">${esc(status)}${behind ? ` <span class="rp-behind">${behind} more replay${behind === 1 ? '' : 's'} waiting after this one</span>` : ''}</p>${ctl}${opts}</div><ol class="rp-list">${done}${after}</ol>`;
     const last = pane.querySelector('.rp-step.last'); if (last && last.scrollIntoView) last.scrollIntoView({ block: 'nearest' });
@@ -134,8 +141,9 @@ export function mountReplay(o) {
     const tick = async () => {
       if (!auto) return;
       if (!cur || remaining(cur.data) === 0) { stopAuto(); return; }
+      const k = cur.data.n || 0, step = cur.data.steps[k];
       await next();
-      if (auto) auto = setTimeout(tick, pref.pace * 1000);
+      if (auto) auto = setTimeout(tick, pref.pace * 1000 + readMs(step));
     };
     tick();
   }
@@ -151,6 +159,8 @@ export function mountReplay(o) {
     let longest = 0;
     for (const m of s.moves || []) if (h.visible(m.token)) longest = Math.max(longest, h.glide(m.token, m.from, m.to, m.via) || 0);
     if (s.actor && h.visible(s.actor)) h.ring(s.actor, s.side);
+    // a narration step: a soft ring on the creatures it is about
+    if (s.side === 'story') for (const id of (s.focus || []).filter((p) => !Array.isArray(p) && h.visible(p))) h.ring(id, 'story');
     if (local) {
       await wait(longest);
       (s.posts || []).filter((p) => p.c === 'fx').forEach((p, i) => setTimeout(() => h.playFx({ ...p.data, ts: Date.now() }), i * 220));

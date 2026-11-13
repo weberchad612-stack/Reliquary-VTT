@@ -21,7 +21,11 @@
 //                       the outputs' rolls in parts (check.mjs, dice.mjs, actor.mjs damage) become the step's
 //                       details, in the order given: give the check, then the damage roll, then actor.mjs damage.
 //                       Prints the refreshed "adjudicating" record (write it: the banner times out without it).
-//   narrate "text"      a paragraph of narration, posted to the chat when the last step is revealed
+//   narrate "text" [--focus WHO,WHO] [--gm]
+//                       a narration step, right after the actions it tells (the user, 2026-11-12: narration is the
+//                       heart of the game): revealed with its own Next, it posts the paragraph to the chat and the
+//                       camera frames the creatures it names (--focus: names or ids). End with a narration step that
+//                       ties together whatever the others did not tell.
 //   stop "text"         end the batch here, waiting for reactions ("Can anyone react to the ogre's swing?")
 //   ping                the refreshed "adjudicating" record (before a long think)
 //   show                the draft so far
@@ -138,7 +142,7 @@ const SIDE_OK = ['pc', 'npc', 'env'];
 
 /** The replay record for a finished draft. */
 export function replayRecord(d, now = Date.now()) {
-  const rep = { title: d.title || 'Resolved actions', by: 'claude', created: new Date(now).toISOString(), steps: d.steps, narration: d.narration || [], n: 0, revealed: [] };
+  const rep = { title: d.title || 'Resolved actions', by: 'claude', created: new Date(now).toISOString(), steps: d.steps, n: 0, revealed: [] };
   if (d.map) rep.map = d.map;
   if (d.kind) rep.kind = d.kind;
   if (d.stop) rep.stop = d.stop;
@@ -180,7 +184,7 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
     const { records, pending } = project(readRecords(JSON.parse(fs.readFileSync(opts.records, 'utf8'))));
     if (opts.kind && !KINDS[opts.kind]) throw new Error(`--kind is one of ${Object.keys(KINDS).join(', ')}`);
     const think = readThink(draftFile);   // a banner already up (think.mjs start): the same adjudication goes on
-    const d = { id: replayId(now), title: opts.title || 'Resolved actions', kind: opts.kind || null, map: opts.map || null, started: think ? think.since : new Date(now).toISOString(), records, steps: [], narration: [], stop: null };
+    const d = { id: replayId(now), title: opts.title || 'Resolved actions', kind: opts.kind || null, map: opts.map || null, started: think ? think.since : new Date(now).toISOString(), records, steps: [], stop: null };
     clearThink(draftFile);
     saveDraft(draftFile, d);
     lines.push(`draft "${d.title}" open${pending ? `; ${pending} replay(s) not yet revealed applied to the working copy` : ''}`, `working copy: ${recordsFile(draftFile)} (give it to the other tools as --records)`);
@@ -205,16 +209,27 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
   if (cmd === 'show') {
     lines.push(`"${d.title}" begun ${d.started}: ${d.steps.length} step(s)`);
     d.steps.forEach((s, i) => lines.push(`  ${i + 1}. [${s.side}] ${s.who ? s.who + ': ' : ''}${s.text}${s.gm ? ' (GM only)' : ''}`));
-    if (d.narration.length) lines.push(`narration: ${d.narration.length} paragraph(s)`);
     if (d.stop) lines.push(`stops for reactions: ${d.stop}`);
     return { lines, writes: [] };
   }
-  if (cmd === 'narrate' || cmd === 'stop') {
+  if (cmd === 'narrate') {
     const text = args.join(' ').trim();
-    if (!text) throw new Error(`${cmd} needs text`);
-    if (cmd === 'narrate') d.narration.push(text); else d.stop = text;
+    if (!text) throw new Error('narrate needs text');
+    const tokens = Object.fromEntries(Object.entries(d.records).filter(([p]) => p.startsWith('tokens/')).map(([p, t]) => [p.slice(7), t]));
+    const focus = (opts.focus || []).map((f) => (Array.isArray(f) ? f : resolveToken(tokens, f)));
+    const step = { side: 'story', text, changes: [], posts: [{ c: 'chat', data: { by: 'claude', kind: 'narration', text, ...(d.map ? { map: d.map } : {}), ...(opts.gm ? { gm: true } : {}) } }], moves: [] };
+    if (focus.length) step.focus = focus;
+    if (opts.gm) step.gm = true;
+    d.steps.push(step);
     saveDraft(draftFile, d);
-    return { lines: [cmd === 'narrate' ? `narration ${d.narration.length} added` : `stops for reactions: ${text}`], writes: [adjWrite(d, now)] };
+    return { lines: [`step ${d.steps.length}: narration (${text.length} characters)${focus.length ? `, about ${focus.join(', ')}` : ''}`], writes: [adjWrite(d, now)] };
+  }
+  if (cmd === 'stop') {
+    const text = args.join(' ').trim();
+    if (!text) throw new Error('stop needs text');
+    d.stop = text;
+    saveDraft(draftFile, d);
+    return { lines: [`stops for reactions: ${text}`], writes: [adjWrite(d, now)] };
   }
   if (cmd === 'step') {
     const inputs = (opts.in || []).map((x) => { const m = /^([^=\/]+\/[^=]+)=(.+)$/.exec(x); return m ? { at: m[1], out: readJson(m[2]) } : { out: readJson(x) }; });
@@ -226,7 +241,8 @@ export function runReplay(cmd, args, opts, { draftFile = DEFAULT_DRAFT, now = Da
     const rep = replayRecord(d, now);
     writes.push({ op: 'set', path: `${REPLAY}/${d.id}`, data: rep }, { op: 'delete', path: ADJ_PATH }, audit(`Claude finished resolving: ${rep.title} (${rep.steps.length} step(s), waiting to be revealed)`, now, d.map));
     dropDraft(draftFile);
-    lines.push(`replay ${REPLAY}/${d.id}: ${rep.steps.length} step(s)${rep.narration.length ? `, ${rep.narration.length} paragraph(s) of narration` : ''}${rep.stop ? '; stops for reactions' : ''}`);
+    const told = rep.steps.filter((s) => s.side === 'story').length;
+    lines.push(`replay ${REPLAY}/${d.id}: ${rep.steps.length} step(s)${told ? `, ${told} of them narration` : ', no narration step: add one (narrate) before end'}${rep.stop ? '; stops for reactions' : ''}`);
     return { lines, writes };
   }
   throw new Error(`unknown command "${cmd}"`);

@@ -1669,7 +1669,7 @@ export async function start(store, { build = null } = {}) {
   // ---- replay: tokens sliding along their path, and the acting creature's ring (board/replayui.js) ----
   // A slide is drawn on the overlay: the token leaves the map until it arrives (the map redraws then). The ring is the
   // highlight standard (board/highlight.js) in the step's side colour, for one pulse or so.
-  const SIDE_COLOUR = { pc: kindColour('pc'), npc: kindColour('foe'), env: '#e3b341' };
+  const SIDE_COLOUR = { pc: kindColour('pc'), npc: kindColour('foe'), env: '#e3b341', story: '#e3b341' };
   function glideToken(id, from, to, via) {
     const t = S.tokens[id];
     if (!t || REDUCED || !from || !to || (from[0] === to[0] && from[1] === to[1])) return 0;

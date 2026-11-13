@@ -382,7 +382,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### Replay and "Claude is adjudicating" (2026-11-12)
 
 The user's design (questionnaire, 2026-11-12): **the board applies the steps**, **anyone can press Next**, the
-narration reaches the chat **at the end**, with Camera follows, Auto with a pace, reaction stops and replaying a
+narration is **a step of its own** (2026-11-12: revealed with its own Next right after the actions it tells, full
+text in story style in the tab, the camera on the creatures it names, a final narration step to tie up the rest), with Camera follows, Auto with a pace, reaction stops and replaying a
 revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
 
 - **Records** (`board/replay.js`, pure): `replay/<id>` holds the steps, each with its **changes** (per record, by
@@ -394,8 +395,8 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   key}`), waits 0.7 s and reads it back. The screen whose claim stood writes the step: each change applied over the
   record **as it is now** (fields the step does not touch stay; a field someone changed since is overwritten and an
   audit warning says so), the posts at **paths made from the reveal's time and key** (so two screens revealing at
-  once write the same records; time-ordered with the rest of the chat), the fx after the slides. The last step also
-  posts the narration. **Show all** reveals the rest quietly (no slides, no effects). No Back or Restart: a revealed
+  once write the same records; time-ordered with the rest of the chat), the fx after the slides. A narration step
+  (side `story`) posts its paragraph; a replay made before narration steps posts its `narration` with its last step. **Show all** reveals the rest quietly (no slides, no effects). No Back or Restart: a revealed
   step is real game state.
 - **Playing** (every screen, as `n` moves): 1 s after the claim (time for the changes to land), the camera frames
   the step (per viewer, "Camera follows"; only points this view may see), moved tokens **slide along their path**
