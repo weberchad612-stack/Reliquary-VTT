@@ -103,7 +103,7 @@ lands early.
 1. **Read the board** (`db_list` of `tokens`, `actors`, `actorstate`, `state` and `replay`, into one `{path: data}`
    file) and **open a draft**: `node tools/replay.mjs begin --records board.json --title "The goblins' turn" --kind combat --map
    sample-keep`. The title names what is being resolved ("Round 2", "Searching the southern grounds"); `--kind`
-   (combat, exploration, social) is its icon on the board. Write what it prints: `state/adjudicating` puts the **"Claude is adjudicating" banner** over every
+   (combat, exploration, social) is its icon on the board. Write what it prints: `state/adjudicating` puts the **"Claude is thinking" banner** over every
    screen, and the audit log notes the start. Replays not yet revealed are applied to the working copy first.
 2. **Resolve each action with the usual tools, against the working copy**: `--records $(node tools/replay.mjs
    records)`. Save each tool's JSON to a file; do **not** write its writes to the board.
@@ -114,7 +114,7 @@ lands early.
    every other record becomes a change. An output without a path (effect.mjs's token) is `--in tokens/<id>=FILE`;
    `replay.mjs get tokens/<id> > t.json` gives effect.mjs its input. `--move TOKEN:X,Y[:VX,VY;VX,VY]` moves a token
    (the board slides it along its path). `--gm` keeps a step from players altogether (a hidden creature's).
-   Each step prints a refreshed `state/adjudicating`: **write it**, or the banner says "Still working on it" after
+   Each step prints a refreshed `state/adjudicating`: **write it**, or the banner says "Claude is still thinking" after
    5 minutes and goes after 30. Before a long think or long narration, `replay.mjs ping` and write that too.
    **Roll details**: give each action's outputs in order, the check (`check.mjs`), the damage roll (`dice.mjs roll
    1d8+4 --kind damage --type slashing [--crit] --pack P --save S --records W`, so the roller is known) and the

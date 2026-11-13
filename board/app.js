@@ -6,7 +6,7 @@
 // Keeping the table in step with the store (the end of start()):
 // - persist(): after every redraw, the records the board's state implies (tokens, the map's state, the
 //   table's settings) are compared with the last known store values; only changed records are written,
-//   each with an audit-log line saying who changed what (and a chat event for what players should know).
+//   each with an audit-log line saying who changed what (players learn what happened from the chat's cards and Claude's narration).
 // - the watchers: a change arriving from the store (Claude moving a foe, opening a door) is compared the
 //   same way, applied to the board's state and redrawn. Our own writes come back unchanged and are ignored.
 // - the explored area is written a moment after it grows, in chunks.

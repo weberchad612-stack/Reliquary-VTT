@@ -1,4 +1,4 @@
-// The Replay tab and the "Claude is adjudicating" banner (board/replay.js holds the records and the rules). Every screen
+// The Replay tab and the "Claude is thinking" banner (board/replay.js holds the records and the rules). Every screen
 // follows the shared step counter: when a step is revealed, each board frames it (camera follows, per viewer), slides
 // the moved tokens along their path, rings the actor in its side's colour (the highlight standard) and plays its
 // visual effects (written as fx records by the board that revealed it). Anyone may press Next; the board that wins
@@ -207,7 +207,7 @@ export function mountReplay(o) {
 }
 
 /**
- * The "Claude is adjudicating" banner over the map (state/adjudicating; board/replay.js): on every screen, the tactical
+ * The "Claude is thinking" banner over the map (state/adjudicating; board/replay.js): on every screen, the tactical
  * board and the area page alike. One listener. o: {store, view() -> 'gm' | 'player', readOnly, el}.
  */
 export function mountAdjudicating(o) {
@@ -219,7 +219,7 @@ export function mountAdjudicating(o) {
     const now = Date.now(), st = adjState(adj, seen, now);
     if (st === 'stale' && adj && o.view() === 'gm' && !o.readOnly) {
       const was = adj; adj = null;
-      o.store.remove(ADJ_PATH).then(() => o.store.set(auditPath(), auditEntry({ text: `The "Claude is adjudicating" banner timed out: nothing from Claude for ${quietWords(ADJ_STALE)} (begun ${was.since || '?'})`, by: 'gm', level: 'warn' }))).catch(() => {});
+      o.store.remove(ADJ_PATH).then(() => o.store.set(auditPath(), auditEntry({ text: `The "Claude is thinking" banner timed out: nothing from Claude for ${quietWords(ADJ_STALE)} (begun ${was.since || '?'})`, by: 'gm', level: 'warn' }))).catch(() => {});
     }
     if (st === 'off' || st === 'stale') { ban.hidden = true; if (tick) { clearInterval(tick); tick = null; } return; }
     // the elapsed time counts from the start as this screen first saw it (a start in this screen's future counts from now)
@@ -232,7 +232,7 @@ export function mountAdjudicating(o) {
   if (ban) ban.addEventListener('click', (e) => {
     if (!e.target.closest('.adj-clear') || o.view() !== 'gm') return;
     adj = null; paintBanner();
-    o.store.remove(ADJ_PATH).then(() => o.store.set(auditPath(), auditEntry({ text: 'The GM took down the "Claude is adjudicating" banner', by: 'gm' }))).catch(() => {});
+    o.store.remove(ADJ_PATH).then(() => o.store.set(auditPath(), auditEntry({ text: 'The GM took down the "Claude is thinking" banner', by: 'gm' }))).catch(() => {});
   });
   o.store.watch(ADJ_PATH, (d) => {
     const now = Date.now();

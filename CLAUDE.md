@@ -6,6 +6,7 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 
 - **Where things stand:** [docs/STATUS.md](docs/STATUS.md), one page: what is built, the board today, the user's standards, what is next. Start here; keep it current.
 - Best practices for each core feature: [docs/best-practices/](docs/best-practices/README.md). Follow the guide for the feature you are working on.
+- **Running a game on the board:** [docs/best-practices/game-data.md](docs/best-practices/game-data.md) sections 2 to 2c (the thinking banner first; anything with several steps as a replay, narrated step by step) and [docs/best-practices/board.md](docs/best-practices/board.md) (records, chat cards, saving).
 - Design: [docs/design/maps.md](docs/design/maps.md); lighting and vision: [docs/design/lighting.md](docs/design/lighting.md); the board (client): [docs/design/board.md](docs/design/board.md); game data and rules: [docs/design/game-data.md](docs/design/game-data.md).
 - Future ideas, not yet scheduled: [future/](future/README.md). When an idea comes up and is deferred, write it up there.
 - Plan for the whole rebuild: the user's `PF2E_Claude_VTT\future\reimplementation-plan.md` (not in this repo).
@@ -28,8 +29,8 @@ A virtual tabletop framework that Claude uses to run tabletop RPGs. Engine, rule
 | Folder | What |
 |---|---|
 | `engine/` | Walls, doors, sight, light, fog, movement, terrain, measurement, tokens, visual effect primitives, the system-free rules machinery, dice, time (calendar, clock, durations, encounters) (dependency-free JavaScript) |
-| `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout ([guide](docs/best-practices/board.md)) |
-| `schemas/` | JSON schemas for maps, walls, terrain, lighting and map state |
+| `board/` | Reliquary Virtual Tabletop, the board page: modules bundled into one page, its stores and record layout, the sidebar tabs (chat with check and damage cards, replay, encounter, notes, dice, audit log) and the "Claude is thinking" banner ([guide](docs/best-practices/board.md)) |
+| `schemas/` | JSON schemas for maps, walls, terrain, lighting, map state, and the save's campaign, chat, audit log, dice and replays |
 | `rulesets/` | Game-system rules and configuration (PF2E: measurement, areas, conditions, movement, terrain, light and senses, visual effects library, creatures' rules: statistics, damage and healing, rule keys, turn rules, Golarion's calendar, Token Quick-View's stat block, traits, where feats and features are found, initiative, roll kinds, the title line's badge); `systems.js` lists the systems |
 | `tools/` | Validator, sight/move/fog query tools, area templates, tokens, map notes, effect badges and visual effects from chat (`token.mjs`, `area.mjs`, `note.mjs`, `effect.mjs`, `fx.mjs`), creatures' numbers, damage, checks and dice (`actor.mjs`, `check.mjs`, `dice.mjs`), the clock and encounters (`clock.mjs`, `encounter.mjs`), replays and the thinking banner (`replay.mjs`, `think.mjs`), Claude's chat messages and audit lines (`chat.mjs`), the content library (`library.mjs`), the Foundry PF2E importer (`import/`), id conversion (`ids.mjs`), campaign load/save, bundler, wall overlay, map importer (`mapimport/`, Python) |
 | `content/` | Open game content: all of the Foundry PF2E system's open data in our format (ORC and OGL; [NOTICE.md](NOTICE.md)), with the import manifest and report ([content/pf2e/README.md](content/pf2e/README.md)) |

@@ -100,7 +100,6 @@ export function postData(p, at) {
 // Narration is a step of its own (the user, 2026-11-12): side 'story', its text the paragraph, its one post the chat's
 // narration message, its focus the creatures it is about; revealed with its own Next, right after the actions it
 // tells. A replay made before then carries `narration: [text]`, posted with its last step.
-export const isStory = (s) => !!s && s.side === 'story';
 
 /** An older replay's narration (rep.narration) as chat messages, revealed with the last step. */
 export function narrationPosts(rep) {
@@ -175,7 +174,7 @@ export function checkReplay(rep) {
   return out;
 }
 
-// ---------- "Claude is adjudicating" (state/adjudicating) ----------
+// ---------- "Claude is thinking" (state/adjudicating) ----------
 // tools/replay.mjs writes {by, since, at} when Claude starts a batch, refreshes `at` with every step, and deletes it
 // when done. Every screen shows a banner while it is there: "Claude is thinking", one line picked at random for the
 // whole time, and the time elapsed. A screen times it from when it last saw the record

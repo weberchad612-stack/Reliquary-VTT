@@ -12,6 +12,10 @@ JSON schemas (draft 2020-12) for pack and save records. The design is in [docs/d
 | `lighting.schema.json` | Lighting regions (squares open to the sky or with a fixed level, colour, intensity) and static light sources (position, preset or radii, colour, intensity, animation, walls, cone, initial state) | pack: `maps/<id>/lighting.json` |
 | `actor.schema.json` | A creature's game data, the part every system shares (system, kind, base); the ruleset's own schema (`rulesets/<id>/schemas/`) checks the rest | save: `actors/<id>.json` |
 | `actorstate.schema.json` | What is happening to a creature now: HP, temporary HP, resources, a raised shield, situation tags | save: `actorstate/<id>.json` |
+| `chat.schema.json` | The chat: narration, rulings, NPC lines, initiative, check and damage cards (retired kinds `event` and `log` still load) | save: `chat.json` |
+| `audit.schema.json` | The GM's audit log: every change, in words | save: `audit.json` |
+| `dice.schema.json` | Every die rolled, for the Dice statistics | save: `dice.json` |
+| `replay.schema.json` | Replays: batches revealed step by step (changes, posts, moves, roll details, narration steps), the unfinished ones and the last few finished | save: `replays.json` |
 | `map-state.schema.json` | Door states, found secrets, explored outlines, tokens by generated id (`tok-…`) with their names (adjective names, proper names with an alias until learned), type, group and letter, token cells, temporary terrain and terrain switched on or off, sky light, static lights and regions changed in play (on/off, colour, intensity, animation), the table's coloured-light switch and strength and animation switch, carried lights and senses, token effect badges (conditions and custom effects), dead and elevation, placed area templates and map notes (by generated ids, `tpl-…`, `note-…`), area-map places and entrances found, on one map | save: `maps/<id>.json` |
 
 A schema cannot check everything. `tools/validate.mjs` adds the rest: 1/8 cell snapping, grid bounds, unique ids, door and link references, double-door pairs, clear doorways, and proximity distances.

@@ -100,7 +100,7 @@ export function stepCondition(effects, id, dir, conditions = {}) {
   return cur ? list.map((x) => (x.id === id ? { ...x, value } : x)) : [...list, { id, value }];
 }
 
-/** Lines for a token's effects and dead state (the audit log, and chat events): "frightened 2", "no longer prone", "dead". */
+/** Lines for a token's effects and dead state (the GM's audit log): "frightened 2", "no longer prone", "dead". */
 export function describeEffects(name, before = {}, after = {}, conditions = {}) {
   const out = [];
   if (!!before.dead !== !!after.dead) out.push(`${name} ${after.dead ? 'is dead' : 'is no longer dead'}`);

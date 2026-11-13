@@ -2,7 +2,7 @@
 
 A one-page map of what is built, for a new conversation getting its bearings. Each line points at the guide that
 says how to use or change it. Keep this page short and current: when a feature lands, changes or moves, update its
-line here in the same commit. Last brought up to date: 2026-11-12.
+line here in the same commit. Last brought up to date: 2026-11-12 (late: replay, cards, narration steps).
 
 ## The pieces
 
@@ -12,9 +12,9 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 | Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge. | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
-| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft). | [tools/README.md](../tools/README.md) |
+| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
-| Tests | `npm test` (about 450) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
+| Tests | `npm test` (about 460) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
 ## The board today
 
@@ -24,7 +24,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
   light, terrain, area templates, map notes, effect badges, targets (T), the token HUD (right-click: target,
   status effects, templates; left column: height, Enter Combat, the GM's Hide), Token Quick-View (double-click),
   pings and visual effects, Stride ranges during an encounter. Hidden tokens never reach players.
-- **"Claude is adjudicating"**: a banner over the map on every screen while Claude resolves a batch
+- **"Claude is thinking"**: a banner over the map on every screen while Claude resolves a batch
   (`tools/replay.mjs`, or `tools/think.mjs` for anything else): one random line and the time elapsed; "still thinking" after
   5 quiet minutes, gone after 30; the GM can clear it.
 - **Sidebar tabs, top to bottom** (each pops out as a window; GM-only ones are absent in the player view):
@@ -54,6 +54,10 @@ line here in the same commit. Last brought up to date: 2026-11-12.
   in the thing's colour (steady with reduced motion). Selection, targets, the acting ring and pings keep their own.
 - **The chat is the players' story; the audit log is the GM's record.** Every state change goes to the audit log;
   the chat has no events (2026-11-12): players learn what happened from the cards and the narration.
+- **Narration is the heart of the game** (2026-11-12): Claude resolves anything with several steps as a replay, and
+  each beat of story is a narration step right after the actions it tells (narrate as you go; `replay.mjs show`
+  checks the order). The banner goes up before the first change of any adjudication.
+- **Players see a PC's rolls whole and other creatures' as results**; a foe's AC or DC shows as "?"; the GM sees all.
 - **Listeners stay few**: a tab that reads the database for its own pane watches it only while it is seen.
 - **System-free board, engine and tools**: anything a game system defines lives in `rulesets/<system>/`.
 - **Book content never enters the repo or a shared link.**
@@ -61,8 +65,10 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 ## What is next
 
 - The placeholder tabs: Actions, Exploration, Party loot, Quest log.
-- Roll cards and dice for attacks, saves, skill checks and damage (only initiative rolls on the board today; Claude's
-  rolls are logged through `tools/dice.mjs` and `tools/check.mjs`).
+- The board rolling attacks, saves and damage itself (its own check and damage cards; today only initiative rolls on
+  the board, and Claude's rolls come from `tools/check.mjs`, `tools/dice.mjs` and `tools/actor.mjs`).
+- From play: shields in the turn rules and Shield Block (FR-17), weapon traits applied by the tools (FR-18), healing
+  cards and focus points (FR-19), and later spell and action cards with their text.
 - The open backlog in [future/backlog.md](../future/backlog.md): roll visibility (FR-10), several encounters at once
   (FR-11), tracker settings (FR-12), threat and XP (FR-13), aura notes on turns (FR-14), a home for the old
   Selection card's buttons (FR-15), two-finger touchpad panning (FR-16), touch screens (FR-2, FR-5), and the rest.

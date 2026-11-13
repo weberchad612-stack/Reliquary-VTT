@@ -406,3 +406,31 @@ always zooms, for a mouse the guess gets wrong.
 
 **Open questions:** is the guess good enough on the user's machines, or should a setting choose "wheel pans" /
 "wheel zooms"? Should Shift+wheel pan sideways with a mouse?
+
+## FR-17: Shields in the turn rules and Shield Block
+
+**Seen in play (2026-11-12, the keep test's round 2):** a raised shield stays raised (`shieldRaised` in
+`actorstate/`) until someone lowers it: the turn rules do not lower it at the start of its bearer's turn, so Claude
+did it by hand (`actor.mjs shield <who> lower`). And Kerra could not Shield Block the ogre's 14-damage hit: the tools
+have no reaction that reduces damage by the shield's Hardness and damages the shield (its HP, broken threshold).
+
+**Wanted:** the turn rules lower a raised shield at the start of its bearer's turn (rulesets/pf2e/turns.js);
+`actor.mjs damage ... --shield-block` (or a `block` command) reducing the damage by Hardness, putting the rest on the
+shield (`state.shield.hp`), noting broken and destroyed; the damage card showing the block. A replay should stop for
+the reaction where a PC could Shield Block (`replay.mjs stop`).
+
+## FR-18: Weapon traits applied by the tools
+
+**Seen in play (2026-11-12):** the greatclub's backswing (+1 circumstance to the next Strike this turn after a miss)
+and the shortbow's deadly d10 (an extra die on a critical hit, after doubling) were Claude's to remember:
+`check.mjs --bonus "1 backswing"`, and a separate `dice.mjs roll 1d10 --label "Deadly d10"`. Wanted: `check.mjs`
+and the damage roll reading the Strike's traits (backswing, deadly, fatal, agile already counts in the multiple
+attack penalty, forceful, sweep...) from the ruleset, with the bonus or the extra dice shown as named parts on the
+cards. The ruleset decides each trait's rule; the tools stay system-free.
+
+## FR-19: Healing cards and focus points
+
+**Seen in play (2026-11-12):** Treat Wounds healed Lyra for 9, but healing has no chat card (only the replay's
+details and the narration show it), and Pip's Refocus was story only: focus points are not tracked. Wanted: a
+healing card like the damage card (`actor.mjs heal --from <dice.mjs output>`: the dice, the HP restored, to whom), and
+focus points as a creature resource (spend, refocus) with the turn and rest rules the ruleset gives.

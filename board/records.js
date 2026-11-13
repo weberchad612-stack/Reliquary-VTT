@@ -30,7 +30,7 @@
 //   state/session      when this session began, for the dice statistics: {started} (saved as campaign.session)
 //   replay/<id>        a batch of resolved actions the table reveals step by step (board/replay.js); the save keeps the
 //                      ones not finished and the last KEEP_REPLAYS finished (replays.json)
-//   state/adjudicating "Claude is adjudicating": the banner over the map while Claude resolves a batch (not saved)
+//   state/adjudicating "Claude is thinking": the banner over the map while Claude resolves a batch (not saved)
 //   audit/<time36>-<n> the GM's audit log: every change to the game, in words (board/audit.js); part of the save
 //                      (audit.json). A chat message of the retired kind 'log' becomes an audit entry on load and save.
 //

@@ -110,8 +110,6 @@ export function referencedContent(lib, actors, tokens = {}, system = null) {
   return { content, missing };
 }
 
-/** A key is well formed and every part a plain name. */
-export function isKey(key) { try { const p = parseKey(key); return [p.kind, p.slug, ...(p.source ? [p.source] : [])].every((x) => NAME.test(x)); } catch { return false; } }
 
 /** The key of the trait glossary every campaign carries on the board (one record). */
 export const GLOSSARY_KEY = 'glossary/traits';

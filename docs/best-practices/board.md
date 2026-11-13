@@ -379,7 +379,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   canvas (the overlay keeps animating while it is shown), and the CSS class `pointout` with `--hl` for page
   elements. Keep the two matched (period 1.8 s, grows by 30 %); change both together.
 
-### Replay and "Claude is adjudicating" (2026-11-12)
+### Replay and "Claude is thinking" (2026-11-12)
 
 The user's design (questionnaire, 2026-11-12): **the board applies the steps**, **anyone can press Next**, the
 narration is **a step of its own** (2026-11-12: revealed with its own Next right after the actions it tells, full

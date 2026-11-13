@@ -148,8 +148,9 @@ it during a turn.
   resolves the batch in a draft (`tools/replay.mjs`): the tools work on a working copy of the records, so each step
   sees the ones before, and each step keeps its changes (per record, by field, with the values before), its posts
   (chat, dice, audit, fx) and its moves. The board writes a step's changes and posts only when someone reveals it
-  (anyone may press Next; a shared counter with a claim, so every screen follows and a step is written once); the
-  narration goes to the chat with the last step. `state/adjudicating` shows "Claude is adjudicating" on every screen
+  (anyone may press Next; a shared counter with a claim, so every screen follows and a step is written once);
+  narration is a step of its own, right after the actions it tells, and check and damage cards reach the chat with
+  their step. `state/adjudicating` shows "Claude is thinking" on every screen
   while the draft is open. Player actions from the queue will become replay steps the same way. Details:
   docs/best-practices/board.md (Replay), docs/best-practices/game-data.md section 2c.
 

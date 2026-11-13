@@ -7,7 +7,7 @@
 // Usage: node tools/replay.mjs [--draft FILE] <command> ...
 //   begin --records FILE --title T [--kind combat|exploration|social] [--map M] [--resume | --discard]
 //                       open a draft on the board's records ({path: data}, as db_list gives them); replays not yet
-//                       revealed are applied to the working copy first. Prints the "Claude is adjudicating" record
+//                       revealed are applied to the working copy first. Prints the "Claude is thinking" record
 //                       and an audit line to write. --resume carries on a draft left open; --discard drops it.
 //                       The title says what is being resolved ("Round 2", "Searching the southern grounds"); the
 //                       kind is its icon on the board. A banner already up (tools/think.mjs start) carries on.

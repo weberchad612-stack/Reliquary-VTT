@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "chat.schema.json",
   "title": "A campaign's chat (saves/<campaign>/chat.json)",
-  "description": "The chat, oldest first: Claude's narration, rulings and NPC lines, roll cards, and table events the players should know about (board/chat.js). Change-log lines (kind 'log', retired 2026-11-12) are read into the audit log (audit.schema.json). On the board each message is a record chat/<id>.",
+  "description": "The chat, oldest first: Claude's narration, rulings and NPC lines, and roll cards: initiative, check and damage cards (board/chat.js). Table events were retired on 2026-11-12 (they go to the audit log); old ones still load. Change-log lines (kind 'log', retired 2026-11-12) are read into the audit log (audit.schema.json). On the board each message is a record chat/<id>.",
   "type": "object",
   "required": ["messages"],
   "properties": {
@@ -16,7 +16,7 @@
           "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
           "at": { "type": "string" },
           "by": { "enum": ["claude", "gm", "player"] },
-          "kind": { "enum": ["roll", "narration", "ruling", "npc", "event", "log"], "description": "log: retired; read into the audit log" },
+          "kind": { "enum": ["roll", "narration", "ruling", "npc", "check", "damage", "event", "log"], "description": "check, damage: roll cards (their roll, rolls, applied: board/rolldetail.js entries); event: retired 2026-11-12, old ones still show; log: retired; read into the audit log" },
           "gm": { "type": "boolean", "description": "Only the GM sees it." },
           "text": { "type": "string" },
           "map": { "type": "string" },
