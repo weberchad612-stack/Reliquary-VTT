@@ -3180,7 +3180,6 @@ export async function start(store, { build = null } = {}) {
   // ---------- start ----------
   document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('campaign-title').textContent = META.campaign.title;
-  document.getElementById('subtitle').textContent = NOTES.subtitle || `${META.pack.title} · ${map.name || map.id}`;
   document.getElementById('sky').value = S.sky;
   syncColourButton(); syncAnimButton();
   recompute('reset');

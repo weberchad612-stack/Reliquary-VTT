@@ -225,7 +225,6 @@ export async function startArea(store, c) {
   };
   document.title = META.campaign.title + ' · Reliquary Virtual Tabletop';
   document.getElementById('campaign-title').textContent = META.campaign.title;
-  document.getElementById('subtitle').textContent = `${META.pack.title} · area map`;
   shell.startMenu();
   const SYS = Engine.systemConfig(META.ruleset) || {};
   clockUi = await mountClock({
