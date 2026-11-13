@@ -24,7 +24,7 @@ export const begun = (enc) => openEncounter(enc) && enc.round > 0;
  * for it), present (its token is on this map)}.
  */
 export function trackerRows(enc, tokens, { view, seen = () => true, name = (id) => id } = {}) {
-  if (!openEncounter(enc)) return [];
+  if (!openEncounter(enc) || !Array.isArray(enc.combatants)) return [];
   const out = [];
   enc.combatants.forEach((c, i) => {
     const t = tokens[c.token];

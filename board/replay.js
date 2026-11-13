@@ -107,6 +107,8 @@ export function stepWrites(rep, k, current, { at, key }) {
   const step = rep.steps[k], ops = [], warnings = [];
   for (const c of step.changes || []) {
     const now = current[c.path] ?? null, bad = conflicts(now, c);
+    // a record that is gone is not made again from a few of its fields (half a record breaks its readers)
+    if (!now && !c.create && !c.remove) { warnings.push(`${c.path}: the record is gone since the replay was made; this change was skipped`); continue; }
     if (bad.length) warnings.push(`${c.path}: ${bad.join(', ')} changed since the replay was made; the replay's values were applied`);
     const next = applyChange(now, c);
     ops.push(next ? { op: 'set', path: c.path, data: next } : { op: 'remove', path: c.path });

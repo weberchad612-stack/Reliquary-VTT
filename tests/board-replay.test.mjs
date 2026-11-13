@@ -56,6 +56,10 @@ test('replay: revealing a step writes its changes and posts, the same paths for 
   assert.deepEqual(stepWrites(REP, 0, { 'actorstate/kerra': { hp: 20, temp: 0 } }, { at, key: 'abc123' }).ops, a.ops);
   // the HP changed meanwhile: a warning, and the replay's value is applied
   assert.equal(stepWrites(REP, 0, { 'actorstate/kerra': { hp: 18 } }, { at, key: 'k' }).warnings.length, 1);
+  // a record gone since: its change is skipped, not made again from a few fields
+  const gone = stepWrites({ ...REP, steps: [{ ...REP.steps[1], changes: [diffRecord('state/encounter', { turn: 0, combatants: [] }, { turn: 1, combatants: [] })] }] }, 0, {}, { at, key: 'k' });
+  assert.equal(gone.ops.filter((o) => o.path === 'state/encounter').length, 0);
+  assert.match(gone.warnings[0], /gone/);
   // the last step carries the narration
   const last = stepWrites(REP, 1, { 'tokens/kerra': { x: 5 } }, { at, key: 'k' });
   assert.equal(last.ops.at(-1).data.kind, 'narration');

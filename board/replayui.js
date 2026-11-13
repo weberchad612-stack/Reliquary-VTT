@@ -65,7 +65,7 @@ export function mountReplay(o) {
         : nx ? `<li class="rp-step pending ${nx.side}"><div class="rp-text">Next: ${NEXT_WORDS[nx.side]}…</div></li>` : '';
     } else if (rep.stop) after = `<li class="rp-stop"><b>Waiting for reactions.</b> ${esc(rep.stop)}</li>`;
     else after = `<li class="rp-end">The end of this replay${(rep.narration || []).length ? ': the story goes on in the chat' : ''}.</li>`;
-    pane.innerHTML = `<div class="rp-title">${esc(rep.title || 'Resolved actions')}</div><p class="rp-status">${esc(status)}${behind ? ` <span class="rp-behind">${behind} more replay${behind === 1 ? '' : 's'} waiting after this one</span>` : ''}</p>${ctl}${opts}<ol class="rp-list">${done}${after}</ol>`;
+    pane.innerHTML = `<div class="rp-top"><div class="rp-title">${esc(rep.title || 'Resolved actions')}</div><p class="rp-status">${esc(status)}${behind ? ` <span class="rp-behind">${behind} more replay${behind === 1 ? '' : 's'} waiting after this one</span>` : ''}</p>${ctl}${opts}</div><ol class="rp-list">${done}${after}</ol>`;
     const last = pane.querySelector('.rp-step.last'); if (last && last.scrollIntoView) last.scrollIntoView({ block: 'nearest' });
     badge();
   }

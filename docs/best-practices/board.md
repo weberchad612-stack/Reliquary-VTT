@@ -405,6 +405,8 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   else the newest; "N more waiting" when there are more. Players see the revealed steps and "Next: an NPC action…";
   the GM sees the coming steps dimmed. A stop shows "Waiting for reactions". A new replay selects the tab on every
   screen; otherwise its icon counts the steps waiting. Auto presses Next every N seconds (1 to 8; per browser).
+  **The controls stay at the top** and only the steps scroll (the user, 2026-11-12: no scrolling up to reach Next),
+  following the newest step.
 - **The banner** (`mountAdjudicating`, on the battle map and area maps): while `state/adjudicating` exists, a pill
   over the top of the map shows one of 50 lines (`ADJ_LINES`, for any game and any world, never saying what is
   being worked out), a new one every 6 s, pulsing gold (steady with reduced motion). Quiet for **5 minutes**: "Still
@@ -416,6 +418,8 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   the deletes for older ones. `state/adjudicating` is not saved.
 - **Listeners**: two, always (the replay collection and the banner's record), because every screen plays the steps
   and shows the banner whichever tab is open.
+- **A record gone since the replay was made** (the encounter ended, a token deleted) is not made again from the
+  step's few fields (half an encounter broke the tracker): that change is skipped with an audit warning.
 - **Lessons**: the previous board wrote the real state first and *masked* it on each screen (`rpView`), so results
   were in the database (and a player's roster) before they were revealed, and narration was written by whichever
   browser finished first. Here the state is written by the reveal itself. A slide's time follows its length, not
