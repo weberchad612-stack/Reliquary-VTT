@@ -485,11 +485,11 @@ about, with the encumbered condition on the token; using consumables comes next 
   `split`. It prints `{lines, writes}`: the item's content record when a library item is new to the board, the audit
   lines, and the token's effects when a character's Bulk crosses its limit. `--records` needs `loot/`,
   `state/purse`, `tokens/`, `actors/`, `actorstate/`, `content/` and `state/clock` (db_list output is fine).
-- **The Party loot tab** (everyone; between Exploration and Notes): at the top, **Party loot value** (the user,
-  2026-11-13): what the stash and every character's items are worth as far as the party knows (each item whose value
-  is known: appraised, or identified and common; a character's own gear counts as known), split into stash and
-  carried, how many stacks are not appraised, and the total with coins (purse and characters); the GM also sees the
-  true value (`partyValue` in board/loot.js; `tools/loot.mjs list` prints both). Then the purse with **Split evenly**
+- **The Party loot tab** (everyone; between Exploration and Notes): at the top, **Total party wealth** (the user,
+  2026-11-13; renamed from Party loot value): items and coins together, then the items as far as the party knows
+  (each item whose value is known: appraised, or identified and common; a character's own gear counts as known), split
+  into stash and carried with how many stacks are not appraised, and the coins (purse and characters); the GM also
+  sees the true wealth (`partyValue` in board/loot.js; `tools/loot.mjs list` prints both). Then the purse with **Split evenly**
   (coins that do not divide are broken into the next smaller kind, a platinum piece into ten gold, so 1 pp 2 gp 1 cp
   split three ways is 4 gp each and 1 cp stays; the user, 2026-11-13; the GM also adds and takes coins); the stash with a search, each item's value and Bulk
   as the view sees them and **Take** (to which PC, how many); and a card per PC (the current map's PC tokens): its

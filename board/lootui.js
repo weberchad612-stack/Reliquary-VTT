@@ -116,11 +116,10 @@ export function filtersHtml(F, counts, unknownCount) {
  */
 export function valueHtml(pv, L, truth = null) {
   const lab = (n) => L.priceLabel(n);
-  const parts = [`stash ${lab(pv.stash)}`, `carried ${lab(pv.carried)}`];
-  return `<div class="lt-value"><div class="lt-pch"><b>Party loot value</b><span class="lt-coins lt-big">${esc(lab(pv.items))}</span></div>`
-    + `<div class="lt-vsub">${esc(parts.join(' · '))}${pv.unknown ? ` · <span class="lt-dim">${pv.unknown} not appraised</span>` : ''}</div>`
-    + `<div class="lt-vsub">With coins (${esc(lab(pv.coins))}): <b>${esc(lab(pv.total))}</b></div>`
-    + (truth && truth.items !== pv.items ? `<div class="lt-vsub lt-gm">GM: true value ${esc(lab(truth.items))} (with coins ${esc(lab(truth.total))})</div>` : '')
+  return `<div class="lt-value"><div class="lt-pch"><b>Total party wealth</b><span class="lt-coins lt-big">${esc(lab(pv.total))}</span></div>`
+    + `<div class="lt-vsub">Items ${esc(lab(pv.items))} (stash ${esc(lab(pv.stash))} · carried ${esc(lab(pv.carried))})${pv.unknown ? ` · <span class="lt-dim">${pv.unknown} not appraised</span>` : ''}</div>`
+    + `<div class="lt-vsub">Coins ${esc(lab(pv.coins))} (purse and characters)</div>`
+    + (truth && truth.items !== pv.items ? `<div class="lt-vsub lt-gm">GM: true wealth ${esc(lab(truth.total))} (items ${esc(lab(truth.items))})</div>` : '')
     + '</div>';
 }
 

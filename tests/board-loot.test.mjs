@@ -260,7 +260,7 @@ test('tools/loot.mjs: find, add, identify, take, give, put back, carry, coins, s
   // list, as the players see it
   const list = run('list', [], { view: 'player' }).lines.join('\n');
   assert.match(list, /Purse: /);
-  assert.match(list, /Party loot value \(as the players know it\): /);
+  assert.match(list, /Total party wealth \(as the players know it\): /);
   assert.doesNotMatch(list, /Silver toad idol/);
 });
 
@@ -389,9 +389,11 @@ test('the party\'s worth: known values in the stash and on every character, coin
   const tv = partyValue(stash, actors, {}, C, L, 'gm');
   assert.equal(tv.stash, 2000 + 2500, 'the GM knows every value');
   const html = valueHtml(pv, L, tv);
-  assert.match(html, /Party loot value<\/b><span class="lt-coins lt-big">40 gp<\/span>/);
+  assert.match(html, /Total party wealth<\/b><span class="lt-coins lt-big">55 gp 5 sp<\/span>/, 'items and coins');
+  assert.match(html, /Items 40 gp \(stash 33 gp · carried 7 gp\)/);
   assert.match(html, /1 not appraised/);
-  assert.match(html, /GM: true value 52 gp/);
+  assert.match(html, /Coins 15 gp 5 sp/);
+  assert.match(html, /GM: true wealth 57 gp \(items 52 gp\)/);
   assert.doesNotMatch(valueHtml(pv, L, null), /GM/);
 });
 

@@ -126,7 +126,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
   if (cmd === 'list') {
     const pv = partyValue(st.stash, party(game).map((p) => ({ actor: game.actors[p.id], coins: coinsOfPc(p.id) })), st.purse, content, L, 'player');
     const tv = partyValue(st.stash, party(game).map((p) => ({ actor: game.actors[p.id], coins: coinsOfPc(p.id) })), st.purse, content, L, 'gm');
-    lines.push(`Party loot value (as the players know it): ${L.priceLabel(pv.items)} (stash ${L.priceLabel(pv.stash)}, carried ${L.priceLabel(pv.carried)}${pv.unknown ? `, ${pv.unknown} not appraised` : ''}); with coins ${L.priceLabel(pv.total)}${view === 'gm' && tv.items !== pv.items ? `; true value ${L.priceLabel(tv.items)}` : ''}`);
+    lines.push(`Total party wealth (as the players know it): ${L.priceLabel(pv.total)}: items ${L.priceLabel(pv.items)} (stash ${L.priceLabel(pv.stash)}, carried ${L.priceLabel(pv.carried)}${pv.unknown ? `, ${pv.unknown} not appraised` : ''}), coins ${L.priceLabel(pv.coins)}${view === 'gm' && tv.items !== pv.items ? `; true wealth ${L.priceLabel(tv.total)}` : ''}`);
     lines.push(`Purse: ${coinLabel(coinsOf(st.purse, L), L)}`);
     lines.push(`Stash (${st.stash.length}):`);
     for (const e of st.stash) {
