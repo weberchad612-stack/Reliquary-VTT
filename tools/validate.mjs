@@ -39,6 +39,7 @@ const V = {
   actor: schema('actor.schema.json'),
   actorstate: schema('actorstate.schema.json'),
   ledger: schema('ledger.schema.json'),
+  loot: schema('loot.schema.json'),
 };
 /** A ruleset's own schemas (rulesets/<id>/schemas/<name>.schema.json), compiled once. */
 const RULESET_SCHEMAS = new Map();
@@ -518,6 +519,9 @@ export function validate(target, { save = null } = {}) {
     // the campaign ledger (GM only, private like the whole save)
     const ledgerFile = path.join(save, 'ledger.json');
     if (fs.existsSync(ledgerFile)) { const l = readJson(ledgerFile, report); if (l) schemaErrors(V.ledger, l, ledgerFile, report); }
+    // the party's stash and purse
+    const lootFile = path.join(save, 'loot.json');
+    if (fs.existsSync(lootFile)) { const l = readJson(lootFile, report); if (l) schemaErrors(V.loot, l, lootFile, report); }
     const dir = path.join(save, 'maps');
     if (!fs.existsSync(dir)) report.error(save, 'save has no maps/ folder');
     else {

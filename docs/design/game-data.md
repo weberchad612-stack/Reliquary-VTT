@@ -181,7 +181,7 @@ on the PC (`characters/<id>.json`) when one PC moves to another campaign. One pl
 3. The dice service and roll records; Claude's dice tool; the roll log.
 4. Actions: Strike, saving throws, damage and healing for PCs on the board, resolved and queued for Claude.
 5. Replay of queued and NPC actions with effects (NPC and Claude's batches built 2026-11-12; the queue waits for step 4).
-6. Items, inventory and loot; spells and resources; levelling; a character library; a builder; thrown 3-D dice.
+6. Items, inventory and loot (**built 2026-11-13** as Party loot: the stash, the purse, characters' coins, how items are carried, Bulk and encumbered, identifying; board/loot.js, rulesets/pf2e/loot.js); spells and resources; levelling; a character library; a builder; thrown 3-D dice.
 
 ### 3.8 Decisions (the user, 2026-11-12)
 

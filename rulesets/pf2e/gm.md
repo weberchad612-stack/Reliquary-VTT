@@ -26,6 +26,12 @@ words and numbers. Reviewed with the user rule by rule on 2026-11-13; the old ru
   old exception that showed Recall Knowledge and Identify Magic rolls. _(A9)_
 - **Knowledge checks have four degrees.** Recall Knowledge, Identify Magic and similar checks: a critical
   failure gives false information the character believes (the general rule "Unknown stays unknown"). _(A8)_
+- **Identifying items** (Identify Magic or Identify Alchemy, secret, 10 minutes; DC by the item's level and
+  rarity): success `loot.mjs identify <item>`; failure, the item stays unknown (a retry needs a new day or new
+  information, as the action says); critical failure `loot.mjs identify <item> --as "False name"` with a ledger
+  secret. Appraising gems and art (Society or Crafting) is `loot.mjs appraise <item>`. Bulk, the encumbered
+  condition (over 5 + Str), carried armor's extra Bulk, backpacks and the 10 invested items are the board's
+  (`rulesets/pf2e/loot.js`). _(A8, H2)_
 
 ## 2. Dice, checks and reactions
 

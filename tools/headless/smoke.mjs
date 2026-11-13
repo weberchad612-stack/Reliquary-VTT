@@ -20,7 +20,7 @@ const CHECKS = {
     await asGM(page);
     const gm = await tabs();
     await asPlayer(page);
-    return ok(!player.includes('audit') && !player.includes('ledger') && !player.includes('lighting') && gm.includes('audit') && gm.includes('ledger') && gm.includes('walls'), `player tabs ${player.length}, GM tabs ${gm.length}`);
+    return ok(!player.includes('audit') && !player.includes('ledger') && !player.includes('lighting') && player.includes('loot') && gm.includes('audit') && gm.includes('ledger') && gm.includes('walls'), `player tabs ${player.length}, GM tabs ${gm.length}`);
   },
   async drag({ page }) {
     const k = await screenAt(page, KERRA);
@@ -120,6 +120,42 @@ const CHECKS = {
     const playerRows = await page.$$eval('[data-pane=ledger] .lg-row', (r) => r.length);
     return ok(mine && mine.data.by === 'gm' && mine.data.source === 'added' && shown === 1 && closed === 'done' && /The story so far/.test(story) && playerRows === 0,
       `GM entry ${mine ? mine.data.by : 'missing'}; subject filter ${shown} row; thread ${closed}; player rows ${playerRows}`);
+  },
+  async loot({ page }) {
+    // a player takes from the stash and splits the purse; the GM identifies; Bulk puts encumbered on Pip
+    await asPlayer(page);
+    await writeRecord(page, 'loot/0mwe00000-0idol', { name: 'Silver toad idol', price: { cp: 2500 }, bulk: 1, identified: false, mystery: 'A strange idol', text: 'Cursed.' });
+    await writeRecord(page, 'loot/0mwe00001-0dagg', { ref: 'item/dagger', qty: 2 });
+    await writeRecord(page, 'loot/0mwe00002-0anvl', { name: 'Anvil', bulk: 9 });
+    await writeRecord(page, 'state/purse', { gp: 10, sp: 5 });
+    await openTab(page, 'loot'); await page.waitForTimeout(400);
+    const playerSees = await page.$eval('[data-pane=loot] .lt-stash', (x) => x.textContent);
+    const daggerRow = '[data-pane=loot] .lt-row[data-id="0mwe00001-0dagg"]';
+    await page.selectOption(`${daggerRow} [data-f=to]`, KERRA);
+    await page.click(`${daggerRow} [data-act=take]`); await page.waitForTimeout(400);
+    const kerraItems = (await records(page, 'actors')).find((e) => e.id === KERRA).data.items;
+    await page.click('[data-pane=loot] [data-act=split]'); await page.waitForTimeout(400);
+    const purse = (await records(page, 'state')).find((e) => e.id === 'purse').data;
+    const pipCoins = ((await records(page, 'actorstate')).find((e) => e.id === PIP) || { data: {} }).data.coins;
+    const anvilRow = '[data-pane=loot] .lt-row[data-id="0mwe00002-0anvl"]';
+    await page.selectOption(`${anvilRow} [data-f=to]`, PIP);
+    await page.click(`${anvilRow} [data-act=take]`); await page.waitForTimeout(600);
+    const pipEnc = await page.evaluate((id) => (window.reliquary.state().tokens[id].effects || []).some((e) => e.id === 'encumbered'), PIP);
+    const bar = await page.$eval(`[data-pane=loot] .lt-pc[data-pc="${PIP}"] .lt-bar`, (x) => x.className);
+    await asGM(page); await page.waitForTimeout(300);
+    const gmSees = await page.$eval('[data-pane=loot] .lt-stash', (x) => x.textContent);
+    await page.click('[data-pane=loot] .lt-row[data-id="0mwe00000-0idol"] [data-act=identify]'); await page.waitForTimeout(400);
+    const idol = (await records(page, 'loot')).find((e) => e.id === '0mwe00000-0idol').data;
+    // Pip puts the anvil back: the condition goes
+    const pipCard = `[data-pane=loot] .lt-pc[data-pc="${PIP}"]`;
+    const i = await page.$$eval(`${pipCard} .lt-item`, (li) => li.findIndex((x) => /Anvil/.test(x.textContent)));
+    await page.click(`${pipCard} .lt-item:nth-child(${i + 1}) [data-act=putback]`); await page.waitForTimeout(600);
+    const pipAfter = await page.evaluate((id) => (window.reliquary.state().tokens[id].effects || []).some((e) => e.id === 'encumbered'), PIP);
+    const audit = (await records(page, 'audit')).map((e) => e.data.text).filter((t) => /^loot:/.test(t));
+    const pass = /A strange idol/.test(playerSees) && !/Silver toad/.test(playerSees) && /Silver toad idol/.test(gmSees)
+      && kerraItems.some((it) => it.ref === 'item/dagger' && it.carry === 'stowed') && purse.gp === 1 && purse.sp === 2 && pipCoins && pipCoins.gp === 3
+      && pipEnc && /lt-over|lt-enc/.test(bar) && idol.identified === true && !pipAfter && audit.length >= 4;
+    return ok(pass, `player sees idol as stranger: ${/A strange idol/.test(playerSees)}; Kerra took a dagger: ${kerraItems.length}; purse ${JSON.stringify(purse)}, Pip ${JSON.stringify(pipCoins)}; Pip encumbered ${pipEnc} (${bar}) then ${pipAfter}; idol identified ${idol.identified}; ${audit.length} audit lines`);
   },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());

@@ -6,6 +6,7 @@
 import { collectRules, makeStatistic, modifiersFor, testPredicate } from '../../engine/rules/rules.js';
 import { ATTRIBUTES, ATTRIBUTE_NAMES, SKILLS, SAVES, RANKS, stacks, proficiency, CONDITION_RULES, activeConditions, healthBand } from './rules.js';
 import { PF2E_RULE_HANDLERS } from './rule-keys.js';
+import { inUse } from './loot.js';
 
 const SIZE_ORDER = ['tiny', 'small', 'medium', 'large', 'huge', 'gargantuan'];
 /** Squares a creature of a size takes up across (tiny and small share a square). */
@@ -37,7 +38,7 @@ function resolveItem(it, content) {
 function ruleSources(data, effects, items, content, problems) {
   const out = [];
   for (const f of [...(data.feats || []), ...(data.features || []).filter((x) => typeof x === 'object')]) out.push({ origin: { kind: 'feat', id: f.slug || f.name, label: f.name, ...(f.text ? { text: f.text } : {}) }, level: f.level, rules: f.rules || [] });
-  for (const it of items) if (it.rules && it.equipped !== false) out.push({ origin: { kind: 'item', id: it.slug || it.name, label: it.name }, level: it.level, rules: it.rules });
+  for (const it of items) if (it.rules && inUse(it)) out.push({ origin: { kind: 'item', id: it.slug || it.name, label: it.name }, level: it.level, rules: it.rules });
   if (data.rules) out.push({ origin: { kind: 'creature', id: data.slug || 'own', label: data.name }, rules: data.rules });
   for (const e of effects || []) {
     if (!e || e.id) continue;
@@ -122,8 +123,8 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
   const out = { kind: data.kind, name: data.name, level, traits: traitList, size: sized.at(-1) || data.size || (data.ancestry || {}).size || 'medium', attributes: attrs, problems, options };
 
   // ---- armour and shield (characters) ----
-  const armor = items.find((i) => i.kind === 'armor' && i.equipped !== false) || null;
-  const shield = items.find((i) => i.kind === 'shield' && i.equipped !== false) || null;
+  const armor = items.find((i) => i.kind === 'armor' && inUse(i)) || null;
+  const shield = items.find((i) => i.kind === 'shield' && inUse(i)) || null;
   const meetsStr = !armor || !armor.strength || attrs.str >= armor.strength;
 
   if (isPc) {
@@ -168,7 +169,7 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
       };
     }
     // strikes: every weapon held, and a fist
-    const weapons = items.filter((i) => i.kind === 'weapon' && i.equipped !== false);
+    const weapons = items.filter((i) => i.kind === 'weapon' && inUse(i));
     const fist = { name: 'Fist', slug: 'fist', kind: 'weapon', category: 'unarmed', damage: { dice: 1, die: 'd4', type: 'bludgeoning' }, traits: ['agile', 'finesse', 'nonlethal', 'unarmed'] };
     const feats = (data.features || []).filter((x) => typeof x === 'string');
     // Strikes its features grant (claws, a kineticist's blast) beside its weapons

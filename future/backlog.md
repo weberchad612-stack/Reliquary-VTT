@@ -515,7 +515,18 @@ shuffle bag (every piece once before any repeats, never the same twice in a row)
 for the adventure's named bosses and set pieces. Music had its own header button, volume and Next, kept per browser.
 When music comes: mood from the encounter state, a GM boss override, system-free pieces kept as uploaded assets.
 
-## FR-28: The Party loot tab
+## FR-28: The Party loot tab (BUILT 2026-11-13)
+
+**Built:** the stash (`loot/<id>`, carried by nobody) and the party's purse (`state/purse`), saved as `loot.json`;
+characters' items gain how they are carried (held, worn, stowed), invested, quantities, what is known of them and
+where they were found, and coins (`actorstate/<id>.coins`); the system's rules (`rulesets/pf2e/loot.js`: coins, Bulk
+with containers and carried armor, the encumbered condition set and cleared automatically, the invested limit, vague
+names until identified, false names after a misidentification, values once known, selling); `tools/loot.mjs` (find,
+add, identify, appraise, take, give, put back, carry, invest, remove, sell, buy, coins, split, list); the Party loot
+tab (players move items and coins; the GM also adds custom items, identifies, appraises). Stowed items are no longer
+in use for the rules (armor, shields, strikes, rule elements). Docs: `docs/best-practices/board.md` (Party loot), GM
+guide section 9. Next: using consumables (FR-31) and a library search in the board (FR-32).
+
 
 **The user, 2026-11-13 (GM guide rules H2, H3):** the sidebar's Party loot tab is a placeholder. Wanted: the party's
 shared loot, every item with where it came from (what it was on or in, the area, the game time), its value and sale
@@ -535,3 +546,19 @@ later: a printable sheet built from the character's record, from the board or a 
 placeholder. Wanted: quests and smaller requests (who asked, where, the summary as the party heard it, reward,
 status active, done or failed, progress notes), Active and Completed lists, written by a tool as an NPC makes the
 ask; saved with the game. Until it exists, quests are kept in the campaign ledger.
+
+## FR-31: Using consumables from the Party loot tab
+
+**The user, 2026-11-13 (Party loot questionnaire: "using consumables comes next"):** drinking a potion, throwing a
+bomb, reading a scroll from a character's items: the item is used up (its quantity goes down), and its effect runs
+through the rules (healing through `actor.mjs heal`, an effect document through `effect.mjs apply`, a bomb's attack
+and damage through the check and damage cards). Decide with the user who presses the button (the player, then Claude
+resolves it, as for actions) and how it reaches the chat and the replay.
+
+## FR-32: Adding library items from the board
+
+**Raised while building Party loot (2026-11-13):** the GM can add custom items on the tab, but library items (the
+6,003 open PF2E items) are added by Claude with `tools/loot.mjs add item/<slug>`, which also writes the item's content
+record. A search inside the board needs a small searchable item index shipped with it (name, level, rarity, price,
+Bulk and key per item, a few hundred KB) and a way for the board to write the full content record it then needs (the
+board holds only the content the campaign uses).

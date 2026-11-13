@@ -73,8 +73,9 @@ export function contentView(lib) {
  * The content keys a campaign uses: each creature's base stat block and each item it carries by reference, and
  * each effect on a token that names an effect in the content. `tokens`: {id: token}.
  */
-export function referencedKeys(actors, tokens = {}) {
+export function referencedKeys(actors, tokens = {}, loot = []) {
   const keys = new Set();
+  for (const it of loot || []) if (it && it.ref) keys.add(it.ref);   // the party's stash
   for (const a of Object.values(actors || {})) {
     if (a && a.base) keys.add(a.base);
     for (const it of (a && a.items) || []) if (it && it.ref) keys.add(it.ref);
@@ -96,10 +97,10 @@ export function optionalGroups(actors, system) {
  * The documents the campaign uses, from the library: {content: {key: document}, missing: [key]}. With the
  * system, also the first document found of each optional group (none found is not an error).
  */
-export function referencedContent(lib, actors, tokens = {}, system = null) {
+export function referencedContent(lib, actors, tokens = {}, system = null, loot = []) {
   const content = {}, missing = [];
   const get = (k) => { try { return lib.get(k); } catch { return undefined; } };
-  for (const k of [...referencedKeys(actors, tokens)].sort()) {
+  for (const k of [...referencedKeys(actors, tokens, loot)].sort()) {
     const doc = get(k);
     if (doc) content[k] = doc; else missing.push(k);
   }

@@ -35,6 +35,7 @@ import { applyDamage, applyHealing, setTempHp, recoveryCheck, adjustDamage } fro
 import { PF2E_STAT_BLOCK } from './statblock.js';
 import { PF2E_TRAITS } from './traits.js';
 import { PF2E_INITIATIVE } from './initiative.js';
+import { PF2E_LOOT } from './loot.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
 export const PF2E_SYSTEM = Object.freeze({
@@ -85,6 +86,9 @@ export const PF2E_SYSTEM = Object.freeze({
     }),
   }),
   conditions: PF2E_CONDITIONS,
+  // loot: coins, Bulk, carrying, identifying, appraising and selling items (rulesets/pf2e/loot.js), for the Party loot
+  // tab (board/lootui.js) and tools/loot.mjs
+  loot: PF2E_LOOT,
   // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
   effects: PF2E_EFFECTS,
   // time: the calendar, a round's length, initiative ties (foes before PCs), the rules at turn boundaries

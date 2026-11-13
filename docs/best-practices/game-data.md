@@ -168,8 +168,10 @@ What the board does with it: docs/best-practices/board.md (Replay).
 
 - **A PC** is a build: ancestry (HP, size, Speed, senses), class (HP per level, key attribute), attribute
   modifiers, proficiency ranks (0 untrained to 4 legendary, as they stand at the PC's level), items (references
-  into the content, `{"ref": "item/longsword", "runes": {"potency": 1}}`), feats with rule elements, resources
-  with their maximum. Update the ranks and attributes at level-up until a builder can apply class progressions.
+  into the content, `{"ref": "item/longsword", "runes": {"potency": 1}}`; with Party loot also `carry` (held,
+  worn, stowed: a stowed item is not in use for the rules), `invested`, `qty` and what is known of it; coins in
+  `actorstate/<id>.coins`; move gear with `tools/loot.mjs`, docs/best-practices/board.md, Party loot), feats with
+  rule elements, resources with their maximum. Update the ranks and attributes at level-up until a builder can apply class progressions.
 - **A creature** is `{system, kind: "npc", base: "creature/<slug>"}` plus anything of its own (a stronger
   one's HP, `usesDying: true` for a named NPC who should go down dying rather than dead). Its name is the
   token's. `node tools/actor.mjs <pack> <save> create <token> pathfinder-monster-core:creature/goblin-warrior`

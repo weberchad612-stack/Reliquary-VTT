@@ -33,6 +33,8 @@ import { makeFloating, bringToFront } from './panel.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountLedger } from './ledgerui.js';
+import { mountLoot } from './lootui.js';
+import { lootRules, encumberedEffects } from './loot.js';
 import { clockLabel } from './clock.js';
 import { mountDice } from './diceui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
@@ -177,7 +179,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   const glides = new Map(), flashes = new Map();   // replay: tokens sliding ({pts, t0, ms}) and rings ({colour, until}) by id
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
@@ -2619,6 +2621,7 @@ export async function start(store, { build = null } = {}) {
   if (sidebar) sidebar.refresh();
   if (auditUi) auditUi.render();
   if (diceUi) diceUi.render();
+  if (lootUi) lootUi.render();
   if (shellReady) syncFxPanel();
   document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
@@ -3227,7 +3230,7 @@ export async function start(store, { build = null } = {}) {
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
   // the sidebar (board/sidebar.js): chat, the encounter tracker, replay, the dice statistics, visual effects, notes, and
-  // the GM's lighting, walls and audit log (actions, exploration, party loot and the quest log not built yet)
+  // the GM's lighting, walls and audit log (actions, exploration and the quest log not built yet)
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12; Replay moved up under Chat the same night)
     { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
@@ -3246,6 +3249,18 @@ export async function start(store, { build = null } = {}) {
     players: () => TABLE.players || [],
     pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
     name: (id) => (S.tokens[id] ? S.tokens[id].name : null) });
+  // Party loot (board/loot.js): the stash, the purse, and each PC's coins and load; the encumbered condition follows
+  // a character's Bulk (only the one the loot tab put on is ever taken off)
+  lootUi = mountLoot({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('loot').body, sidebar, tab: 'loot', sys: SYS,
+    pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
+    content: (keys) => qvContent(keys), log: (text) => logChange(text), map: () => MAP_ID,
+    gameNow: () => { const c = clockUi && clockUi.clock(); if (!c || typeof c.now !== 'number') return null; const label = SYS.time && SYS.time.calendar ? clockLabel({ readClock: Engine.readClock, adventureDay: Engine.adventureDay }, SYS.time.calendar, c) : null; return { now: c.now, ...(label ? { label } : {}) }; },
+    setEncumbered: (id, on) => {
+      const t = S.tokens[id];
+      if (!t) { if (on) toast('A character on another map is encumbered: the condition goes on when the map is shown.'); return; }
+      const eff = encumberedEffects(t.effects, on, lootRules(SYS));
+      if (eff) { setEffects(id, eff); schedulePersist(); }
+    } });
   replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
     hooks: {
       name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),

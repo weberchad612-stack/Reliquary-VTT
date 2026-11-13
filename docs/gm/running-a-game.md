@@ -30,7 +30,7 @@ the whole guide). Each line points to its section.
    encounter.
 8. **Time (8):** the clock moves for everything; timed events checked before every night, level-up,
    milestone and return.
-9. **Loot and quests (9, 10):** the adventure's treasure exactly, with its history; quests from people in
+9. **Loot and quests (9, 10):** the adventure's treasure exactly, with its history, into the stash (`loot.mjs add`); quests from people in
    their own words, logged.
 10. **The system's guide** (PF2E: `rulesets/pf2e/gm.md`) for its secret checks, reactions, conditions and
     rulings.
@@ -316,11 +316,19 @@ Narration is the heart of the game for the user: it is what engages the players.
 - **Treasure is the adventure's, exactly.** Rewards are what the adventure lists, items and values, no more
   and no less. I may add flavor items with no value (a stub of candle, a love letter), noted in the
   ledger. _(H1)_
-- **Every item has a history.** A found item records where it came from (what it was on or in, the area,
-  the game time), its value and sale price once known (unknown until identified or appraised, Secrecy). It
-  sits in the party's loot until a character takes it, then moves to that character's items
-  (`actor.mjs give`). Coins too. Until the Party loot tab exists (FR-28), the party's loot is kept in the
-  ledger. _(H2, H3)_
+- **Every item has a history.** Found loot goes into the party's stash with where it came from (what it
+  was on or in, the area; the game time is added): `node tools/loot.mjs <pack> <save> --records FILE add
+  item/<slug> --qty N --from "the bugbear" --area B12` (`find "words"` gives the key; a custom item: `add "Silver
+  toad idol" --value "25 gp" --bulk 1 --text "..." [--unidentified] [--mystery "a strange idol"]`). Coins go
+  into the purse: `coins add "12 gp 4 sp"`. Players take things onto their characters on the Party loot tab,
+  or I do it with `take`, `give`, `putback`, `carry`. _(H2, H3)_
+- **What they know follows Secrecy.** A magic or alchemical item shows players a vague name ("Unidentified
+  Potion") until a successful Identify Magic or Identify Alchemy: `identify <item>`; a critical failure:
+  `identify <item> --as "False name"` (and a ledger secret). Its value shows once identified if common, or
+  after appraisal (`appraise <item>`); treasure (gems, art) only after appraisal. _(A8, H2)_
+- **Buying and selling are mine.** `sell <item>` (half price; treasure full) into the purse, `buy item/<slug>`
+  from the purse (or `--from` a character), each an audit line. Bulk is the board's: a character over 5 +
+  Strength is encumbered automatically; past 10 + Strength the tool and the tab warn. _(H2)_
 - **Level-up: every option, every time.** When a PC levels up, read the class's advancement and offer ALL
   legal choices at each step (feats, skills, spells...) with a one-line effect each, in a plain list,
   never shortened; mark options the build can't take. After the user chooses, update the character's

@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `ledger/` (the campaign ledger, the GM's memory), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `ledger/` (the campaign ledger, the GM's memory), `loot/` and `state/purse` (the party's stash and coins), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -424,6 +424,57 @@ and edit; summaries per session; the old Abomination Vaults ledger is not import
   king's orders, through Kerra), and a quest or a fact can be an improvisation as much as an "improv" entry. Keep
   the ledger for what the chat can't hold; duplicating the story makes it slow to search.
   Subjects are what make it findable: name the people, places and things an entry is about.
+
+### Party loot (2026-11-13)
+
+The party's stash, what each character carries, and the coins (FR-28). The user's design (questionnaire,
+2026-11-13): players move items and coins themselves (take from the stash, hand between PCs, put back, equip or
+stow); selling, buying and identifying stay Claude's; the stash is carried by nobody; Bulk is tracked and warned
+about, with the encumbered condition on the token; using consumables comes next (FR-31).
+
+- **One item shape everywhere** (board/loot.js): `{ref (a library item, its document on the board as
+  content/<kind>.<slug>) or name, text, price, bulk, kind, traits, rarity, level (a custom item's own; a library
+  item's differences), qty, carry ('held' | 'worn' | 'stowed', characters only), invested, identified,
+  misidentified {name, text}, mystery (the GM's vague name), appraised, found {from, where {map, area}, game, link},
+  added}`. The stash is `loot/<time36>-<n>` records; the purse `state/purse`; a character's items stay in
+  `actors/<id>.items` and its coins in `actorstate/<id>.coins`. The stash and purse are saved as `loot.json`
+  (`schemas/loot.schema.json`); the stash's library items come with the campaign's content.
+- **The rules are the system's** (`system.loot`, `rulesets/pf2e/loot.js`; a system without them gets plain
+  coins, no Bulk and everything known): coins and prices, Bulk (light items ten to one, 1,000 coins a Bulk, armor
+  carried rather than worn 1 more, worn containers' first Bulk free), the limits (encumbered over 5 + Str, most
+  10 + Str), the invested limit (10), whether an item needs identifying (magical, alchemical or runed), its vague
+  name by kind and slot ("Unidentified Potion", "Longsword (unidentified)", "Unidentified Cloak"), whether its value
+  is known (appraised, or identified and common; treasure only appraised), and its sale price (half; treasure full).
+  Even the words the board shows ("Bulk", "encumbered", "5 gp") come from there.
+- **Secrecy:** a player sees the vague name (or the false name after a misidentification) and no traits, text or
+  rarity until the item is identified, and a value only when the system says it is known; the GM sees the truth
+  and "Players see: ..." under it. A character's own gear with no `identified` is known; an unknown item taken
+  from the stash is marked `identified: false`, and a known one put back `identified: true`, so it stays known.
+- **Items in use:** stowed items are not in use for the rules (no armor, shield, strike or rule element); armor
+  works worn; an invested item works worn and invested (rulesets/pf2e/actor.js through `inUse`). Items with no
+  `carry` (older characters) are in use, so nothing changed for them.
+- **Claude's tool:** `node tools/loot.mjs <pack> <save> --records FILE <command>`: `list [--view player]`, `find
+  "words"`, `add item/<slug> | "Custom name" [--qty] [--to PC] [--from] [--area] [--value] [--bulk] [--text]
+  [--unidentified] [--mystery]`, `identify <item> [--as "False name"]`, `unidentify`, `appraise`, `take <item>
+  <PC>`, `putback <PC> <item>`, `give <PC> <item> <PC2>`, `carry <PC> <item> held|worn|stowed`, `invest <PC> <item>
+  on|off`, `remove`, `sell <item> [--pc] [--price]`, `buy item/<slug> [--from PC] [--to PC]`, `coins add|take|move`,
+  `split`. It prints `{lines, writes}`: the item's content record when a library item is new to the board, the audit
+  lines, and the token's effects when a character's Bulk crosses its limit. `--records` needs `loot/`,
+  `state/purse`, `tokens/`, `actors/`, `actorstate/`, `content/` and `state/clock` (db_list output is fine).
+- **The Party loot tab** (everyone; between Exploration and Notes): the purse with **Split evenly** (what does not
+  split stays in the purse; the GM also adds and takes coins); the stash with a search, each item's value and Bulk
+  as the view sees them and **Take** (to which PC, how many); and a card per PC (the current map's PC tokens): its
+  coins, a Bulk bar with the encumbered mark (green, amber when encumbered, red past the most it can carry), the
+  invested count, warnings, and each item with how it is carried (a select), **invested**, **Stash** (put back),
+  **Give to...** and how many; and a coin form (to the purse or another PC; the GM: add or take away). The GM adds
+  custom items (**+ Custom item**: name, quantity, value, Bulk, words, needs identifying, the players' name for it,
+  found on), and identifies, unidentifies, appraises and removes (two clicks). Every change writes an audit line.
+  The encumbered condition the tab or the tool put on (its source "Bulk") is taken off when the load drops; one the
+  GM set stays. The tab listens only while it is showing (2 records and 2 per PC).
+- **Lessons:** the backpack matters: a character's stowed things lose its 2 Bulk, so a test that expects a load to
+  tip over must count it. Library items are Claude's to add because the board holds only the content the campaign
+  uses (FR-32 for a search in the board). Keep the item shape one shape: moving between the stash and a character is
+  then a copy, not a conversion.
 
 ### Replay and "Claude is thinking" (2026-11-12)
 

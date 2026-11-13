@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "loot.schema.json",
+  "title": "The party's stash and purse (saves/<campaign>/loot.json)",
+  "description": "Party loot (board/loot.js): the items the party holds in common, carried by nobody (no Bulk counts), oldest first, and the party's shared coins. On the board each item is a record loot/<id> and the coins are state/purse. Characters carry items in actors/<id>.items (the same item shape, with carry and invested) and coins in actorstate/<id>.coins. Saves stay private (saves/ is git-ignored).",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "purse": {
+      "$ref": "#/$defs/coins"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#/$defs/item",
+        "required": [
+          "id"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "coins": {
+      "type": "object",
+      "description": "Coins by the system's kinds (PF2E: pp, gp, sp, cp).",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "item": {
+      "type": "object",
+      "description": "An item: a library item by reference (its own differences over it) or a custom one with its own name, words and numbers.",
+      "anyOf": [
+        {
+          "required": [
+            "ref"
+          ]
+        },
+        {
+          "required": [
+            "name"
+          ]
+        }
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-z]{9}-[0-9a-z]+$",
+          "description": "the stash record's id (loot/<id>); stash items only"
+        },
+        "ref": {
+          "type": "string",
+          "pattern": "^(?:[a-z0-9][a-z0-9-]*:)?item/[a-z0-9][a-z0-9-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "price": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "bulk": {
+          "type": "number",
+          "minimum": 0
+        },
+        "kind": {
+          "type": "string"
+        },
+        "rarity": {
+          "enum": [
+            "uncommon",
+            "rare",
+            "unique"
+          ]
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "usage": {
+          "type": "string"
+        },
+        "runes": {
+          "type": "object"
+        },
+        "qty": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "how many (missing: 1)"
+        },
+        "identified": {
+          "type": "boolean",
+          "description": "missing: known unless the item needs identifying (magical or alchemical)"
+        },
+        "misidentified": {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "description": "a critical failure's false identification: what the players believe it is"
+        },
+        "mystery": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "the GM's own vague name for it, shown to players until it is identified"
+        },
+        "appraised": {
+          "type": "boolean"
+        },
+        "found": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "from": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "who or what it came from (the bugbear, the chest)"
+            },
+            "where": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "map": {
+                  "type": "string"
+                },
+                "area": {
+                  "type": "string"
+                }
+              }
+            },
+            "game": {
+              "type": "object",
+              "required": [
+                "now"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "now": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            },
+            "link": {
+              "type": "string",
+              "description": "a record path: chat/<id>, ledger/<id>"
+            }
+          }
+        },
+        "added": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "type": "string"
+            },
+            "by": {
+              "enum": [
+                "gm",
+                "claude",
+                "player"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
