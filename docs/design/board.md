@@ -649,7 +649,7 @@ The user's decisions:
 | Music | Regenerated and renamed (no adventure names), then performed with recorded orchestral samples (VSCO 2 CE, CC0): 49 pieces in 6 moods and 24 styles, plus 13 stings. |
 | Scope | Effect sounds, music by game state, ambient sounds on maps, table cues. |
 | Sync | The same piece at the same moment on every screen. |
-| Controls | A Sound tab only, no header button. |
+| Controls | A Sound tab only, no header button. Each channel mutes on its own as well as Mute all (the user, 2026-11-13). |
 | Boss | Automatic, by the system's rule, with GM and Claude overrides. |
 | Listener | The party's PCs in the player view, the middle of the screen in the GM view. A single selected token overrides both (the user, 2026-11-13), in the player view only one they can see. Effects follow the same rule for walls. |
 | Ambient placement | Claude only, with a tool. |

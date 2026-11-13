@@ -3327,6 +3327,7 @@ export async function start(store, { build = null } = {}) {
     const prefs = soundPrefs(localStorage), P0 = prefs.get();
     const mixer = new Engine.SoundMixer({ base: MANIFEST.replace(/[^/]*$/, ''), volumes: P0.volumes || {} });
     mixer.muted = !!P0.muted;
+    for (const c of P0.mutedChannels || []) mixer.setChannelMuted(c, true);
     const R = soundRules(SYS);
     const LOCAL = {}, PLAYED = [];   // PLAYED: the last sounds started here (for tests)
     let MAN = EMPTY_MANIFEST, REC = null, AMB = [], ENC = null, FACTS = { encounter: false, boss: false }, PLAYING = { mood: null, why: '', piece: null }, ui = null;

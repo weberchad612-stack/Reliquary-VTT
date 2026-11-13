@@ -142,6 +142,7 @@ export function pickVariant(list, r = Math.random()) {
 export class SoundMixer {
   constructor({ base = '', volumes = {}, AudioContextClass = null, fetchFn = null } = {}) {
     this.base = base; this.vol = { ...DEFAULT_VOLUMES, ...volumes }; this.muted = false;
+    this.off = new Set();   // channels muted on their own (their volumes are kept for when they come back)
     this.Ctx = AudioContextClass || (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) || null;
     this.fetch = fetchFn || (typeof fetch !== 'undefined' ? fetch.bind(globalThis) : null);
     this.ctx = null; this.buffers = new Map(); this.loops = new Map(); this.music = null; this.unlocked = false;
@@ -168,8 +169,11 @@ export class SoundMixer {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.master.gain.setTargetAtTime(this.muted ? 0 : this.vol.master, t, 0.05);
-    for (const c of CHANNELS) this.bus[c].gain.setTargetAtTime(this.vol[c], t, 0.05);
+    for (const c of CHANNELS) this.bus[c].gain.setTargetAtTime(this.off.has(c) ? 0 : this.vol[c], t, 0.05);
   }
+  /** Mute or unmute one channel (music, ambience, effects, interface); the master mute is setMuted. */
+  setChannelMuted(ch, m) { if (!CHANNELS.includes(ch)) return; if (m) this.off.add(ch); else this.off.delete(ch); this.applyVolumes(); }
+  channelMuted(ch) { return this.off.has(ch); }
   url(file) { return /^(https?:|data:|blob:|\/)/.test(file) ? file : this.base + file; }
   async buffer(file) {
     if (!this.ctx || !this.fetch) return null;

@@ -44,7 +44,7 @@ A system without sound rules never switches to boss music by itself.
 **For everyone:**
 - A note until the first click. Browsers only start audio after a click or key, and the board unlocks on the first one.
 - Now playing: the piece's title, the mood and why.
-- This screen's mixer: Master, Music, Ambience, Effects, Interface and Mute all. These are kept per browser (`reliquary.sound`).
+- This screen's mixer: Master, Music, Ambience, Effects and Interface, each channel with its own mute (🔊/🔇: the slider keeps its level for when it comes back), and Mute all. These are kept per browser (`reliquary.sound`: volumes, muted, mutedChannels). Music muted on one screen keeps its place in the shared run, so unmuting rejoins the piece in step.
 - The ambient sounds on this map, and who the screen hears from.
 
 **For the GM:**

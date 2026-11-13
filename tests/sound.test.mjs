@@ -10,7 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { bagIndex, musicAt, chooseMood, falloff, hearing, activeAt, screenPan, pickVariant, seeded, CROSSFADE, MUFFLE } from '../engine/sound/sound.js';
+import { bagIndex, musicAt, chooseMood, falloff, hearing, activeAt, screenPan, pickVariant, seeded, CROSSFADE, MUFFLE, SoundMixer, DEFAULT_VOLUMES } from '../engine/sound/sound.js';
 import { effectSound, cueSound, stingSound, moodsIn, musicRecord, encounterFacts, ambientRecord, listeners, ambientMix, diceCue, soundRules, PLAIN_SOUND, CUES, nowPlaying, soundPrefs } from '../board/sound.js';
 import { mixerHtml, musicHtml, ambientHtml } from '../board/soundui.js';
 import { PF2E_SOUND } from '../rulesets/pf2e/sound.js';
@@ -200,6 +200,9 @@ test('dice cues: a natural 20, a natural 1, other dice; prefs kept per browser',
 test('the Sound tab\'s HTML: the mixer, the GM\'s moods and boss switch, the ambient list', () => {
   const mx = mixerHtml({ master: 0.8, music: 0.5, ambience: 0.7, effects: 0.8, interface: 0.5 }, true);
   assert.match(mx, /data-vol="music" value="50"/); assert.match(mx, /data-f="mute" checked/);
+  assert.equal((mx.match(/data-cmute=/g) || []).length, 4, 'a mute per channel (not the master: that is Mute all)');
+  const mx2 = mixerHtml({ music: 0.5 }, false, ['music']);
+  assert.match(mx2, /data-cmute="music" aria-pressed="true"/); assert.match(mx2, /sd-row sd-off/); assert.match(mx2, /data-cmute="effects" aria-pressed="false"/);
   const m = musicHtml({ rec: { mood: 'town', boss: true, themes: { m1: 'town' } }, encounter: true, map: 'm1' }, { ...MAN, music: { ...MAN.music, town: [{ file: 't', secs: 9 }] } });
   assert.match(m, /data-mood="town" aria-pressed="true"/); assert.match(m, /data-boss="on" aria-pressed="true"/); assert.match(m, /<option value="town" selected>/);
   assert.ok(!/data-boss/.test(musicHtml({ rec: {}, encounter: false, map: 'm1' }, MAN)), 'the boss switch only while an encounter runs');
@@ -268,6 +271,21 @@ test('the save: ambient sources with the map\'s state, the music with the campai
   assert.ok(!ajv.validate(ambS, { 'amb-abcdefgh': { sound: 'campfire', at: [1, 1], radius: 0, by: 'claude' } }));
   assert.ok(ajv.validate(musS, music), JSON.stringify(ajv.errors));
   assert.ok(!ajv.validate(musS, { mood: 'disco' }));
+});
+
+test('the mixer mutes one channel and keeps its volume for when it comes back', () => {
+  const gains = {};
+  const param = (k) => ({ setTargetAtTime: (v) => { gains[k] = v; } });
+  class Ctx { constructor() { this.currentTime = 0; this.state = 'running'; this.destination = {}; this.n = 0; } createGain() { const k = this.n++; return { gain: param(k), connect() {}, k }; } }
+  const m = new SoundMixer({ AudioContextClass: Ctx, volumes: { music: 0.4 } });
+  m.unlock();
+  const k = (ch) => m.bus[ch].k;
+  assert.equal(gains[k('music')], 0.4);
+  m.setChannelMuted('music', true);
+  assert.equal(gains[k('music')], 0); assert.equal(m.channelMuted('music'), true); assert.equal(gains[k('effects')], DEFAULT_VOLUMES.effects);
+  m.setVolume('music', 0.7); assert.equal(gains[k('music')], 0, 'a muted channel stays silent when its slider moves');
+  m.setChannelMuted('music', false); assert.equal(gains[k('music')], 0.7);
+  m.setChannelMuted('nonsense', true); assert.equal(m.off.size, 0);
 });
 
 test('the board\'s sound code is free of any one game system', () => {

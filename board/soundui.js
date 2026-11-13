@@ -17,8 +17,13 @@ const BOARD = [['sting:victory', '🏆 Victory'], ['sting:defeat', '💀 Defeat'
   [CUES.encounterStart, '⚔️ To arms'], [CUES.levelUp, '⭐ Level up'], [CUES.doorOpen, '🚪 Door'], [CUES.coins, '🪙 Coins'], [CUES.round, '🔔 Bell']];
 
 /** The mixer rows (pure). */
-export function mixerHtml(vol, muted) {
-  return `<div class="sd-mix">${SLIDERS.map(([k, l]) => `<label class="sd-row"><span>${l}</span><input type="range" min="0" max="100" step="1" data-vol="${k}" value="${Math.round((vol[k] ?? 0) * 100)}" aria-label="${l} volume"><output>${Math.round((vol[k] ?? 0) * 100)}</output></label>`).join('')}`
+export function mixerHtml(vol, muted, off = []) {
+  const chan = (k) => k !== 'master';
+  return `<div class="sd-mix">${SLIDERS.map(([k, l]) => {
+    const isOff = chan(k) && off.includes(k);
+    const btn = chan(k) ? `<button type="button" class="sd-cmute" data-cmute="${k}" aria-pressed="${isOff}" title="${isOff ? `Unmute ${l.toLowerCase()}` : `Mute ${l.toLowerCase()}`} (this screen)" aria-label="${isOff ? 'Unmute' : 'Mute'} ${l}">${isOff ? '🔇' : '🔊'}</button>` : '<span class="sd-cmute-sp"></span>';
+    return `<div class="sd-row${isOff ? ' sd-off' : ''}"><span>${l}</span><input type="range" min="0" max="100" step="1" data-vol="${k}" value="${Math.round((vol[k] ?? 0) * 100)}" aria-label="${l} volume"><output>${Math.round((vol[k] ?? 0) * 100)}</output>${btn}</div>`;
+  }).join('')}`
     + `<label class="sd-mute"><input type="checkbox" data-f="mute"${muted ? ' checked' : ''}> Mute all sound <span class="lt-dim">(this screen)</span></label></div>`;
 }
 
@@ -66,7 +71,7 @@ export function mountSound(o) {
     if (!shown) return;
     const v = o.prefs.get();
     renderNow();
-    mixEl.innerHTML = mixerHtml({ ...o.mixer.vol, ...(v.volumes || {}) }, !!v.muted);
+    mixEl.innerHTML = mixerHtml({ ...o.mixer.vol, ...(v.volumes || {}) }, !!v.muted, v.mutedChannels || []);
     const st = o.status(), man = o.man();
     gmEl.innerHTML = gm() && write() ? `<div class="lt-sh"><h3>Music</h3><span class="lt-sub">every screen plays the same piece</span></div>${musicHtml(st, man)}`
       + `<div class="lt-sh"><h3>Soundboard</h3><span class="lt-sub">every screen hears it</span></div><div class="lt-controls sd-board">${BOARD.map(([k, l]) => `<button type="button" data-play="${esc(k)}">${l}</button>`).join('')}</div>` : '';
@@ -89,6 +94,13 @@ export function mountSound(o) {
     const b = ev.target.closest('button');
     if (!b) return;
     o.mixer.unlock();
+    if (b.dataset.cmute) {
+      const k = b.dataset.cmute, cur = new Set(o.prefs.get().mutedChannels || []), on = !cur.has(k);
+      if (on) cur.add(k); else cur.delete(k);
+      o.mixer.setChannelMuted(k, on); o.prefs.set({ mutedChannels: [...cur] });
+      say(`${k[0].toUpperCase() + k.slice(1)} ${on ? 'muted' : 'on'} (this screen).`);
+      return render();
+    }
     if (b.dataset.mood) { o.setMusic({ mood: b.dataset.mood }); say(b.dataset.mood === 'auto' ? 'The music follows the game again.' : `Music: ${MOOD_WORDS[b.dataset.mood]}.`); }
     else if (b.dataset.boss) { o.setMusic({ boss: b.dataset.boss === 'auto' ? null : b.dataset.boss === 'on' }); say(`Boss music: ${b.dataset.boss === 'auto' ? 'automatic' : b.dataset.boss}.`); }
     else if (b.dataset.a === 'next') { o.setMusic({ restart: true }); say('Next piece.'); }

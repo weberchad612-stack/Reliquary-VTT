@@ -211,10 +211,14 @@ const CHECKS = {
     const music = (await records(page, 'state')).find((e) => e.id === 'music');
     const sfx = await records(page, 'sfx'), amb = (await records(page, 'ambient')).find((e) => e.id === 'amb-smoke001');
     const sliders = await page.$$eval('[data-pane=sound] [data-vol]', (x) => x.length);
+    await page.click('[data-pane=sound] [data-cmute=music]'); await page.waitForTimeout(200);
+    const chMuted = await page.evaluate(() => JSON.parse(localStorage.getItem('reliquary.sound') || '{}').mutedChannels || []);
+    const chPressed = await page.$eval('[data-pane=sound] [data-cmute=music]', (b) => b.getAttribute('aria-pressed'));
+    await page.click('[data-pane=sound] [data-cmute=music]'); await page.waitForTimeout(200);
     await asPlayer(page);
     const playerMoods = await page.$$eval('[data-pane=sound] [data-mood]', (x) => x.length);
-    return ok(music && music.data.mood === 'combat' && sfx.some((e) => e.data.name === 'sting:victory') && amb && amb.data.off === true && sliders === 5 && playerMoods === 0,
-      `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; player mood buttons ${playerMoods}`);
+    return ok(music && music.data.mood === 'combat' && sfx.some((e) => e.data.name === 'sting:victory') && amb && amb.data.off === true && sliders === 5 && playerMoods === 0 && chMuted.includes('music') && chPressed === 'true',
+      `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; music muted alone ${chMuted.join(',')} (${chPressed}); player mood buttons ${playerMoods}`);
   },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());
