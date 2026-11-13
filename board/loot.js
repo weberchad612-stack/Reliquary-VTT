@@ -358,12 +358,43 @@ export function takeCoins(have, want, L) {
   return { left, taken };
 }
 
-/** Split coins evenly between n: {each, left} (what does not split stays). */
+/**
+ * Split coins evenly between n: {each, left}. Larger coins that do not divide are broken into the next smaller
+ * kind (a platinum piece into ten gold) so each share gets as much as it can; only what is left of the smallest coin
+ * stays. 1 pp 2 gp 1 cp between 3: 4 gp each, 1 cp left.
+ */
 export function splitCoins(have, n, L) {
   const h = coinsOf(have, L), each = coinsOf({}, L), left = coinsOf({}, L);
   if (!(n >= 1)) throw new Error('nobody to split between');
-  for (const k of L.coins) { each[k.id] = Math.floor(h[k.id] / n); left[k.id] = h[k.id] - each[k.id] * n; }
+  let carry = 0;   // coins of the kind above, broken into this kind
+  L.coins.forEach((k, i) => {
+    const total = h[k.id] + carry;
+    each[k.id] = Math.floor(total / n);
+    const rest = total - each[k.id] * n, next = L.coins[i + 1];
+    if (next && rest) carry = rest * (k.cp / next.cp); else { carry = 0; left[k.id] = rest; }
+  });
   return { each, left };
+}
+
+/**
+ * What the party's things are worth (pure): the stash and every character's items, counting each item whose value
+ * the view knows (appraised, or identified and common: the system's valueKnown; the GM knows all). Returns {stash,
+ * carried, items (their sum), unknown (how many stacks have a value the view does not know), coins (purse and
+ * characters, in the smallest coin), total}. actors: [{actor, coins}].
+ */
+export function partyValue(stash, actors, purse, content, L, view = 'player') {
+  let stashV = 0, carriedV = 0, unknown = 0, coins = coinValue(purse || {}, L);
+  const add = (item, carriedBy) => {
+    const v = lootView(carriedBy ? asCarried(item) : item, content, view, L);
+    if (v.value === null) { if (resolveLoot(item, content).doc.price) unknown += 1; return 0; }
+    return Math.round(v.value * (v.qty || 1));
+  };
+  for (const e of stash || []) stashV += add(e.data || e, false);
+  for (const a of actors || []) {
+    for (const it of (a.actor && a.actor.items) || []) { if (!STAT_BLOCK.has(resolveLoot(it, content).doc.kind)) carriedV += add(it, true); }
+    coins += coinValue(a.coins || {}, L);
+  }
+  return { stash: stashV, carried: carriedV, items: stashV + carriedV, unknown, coins, total: stashV + carriedV + coins };
 }
 
 // ---- carrying ----

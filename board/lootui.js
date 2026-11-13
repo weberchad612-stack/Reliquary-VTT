@@ -13,7 +13,7 @@
 
 import {
   LOOT, PURSE, lootRules, lootPath, lootItem, lootView, lootDetails, lootGroup, resolveLoot, stashMerge, takeLoot, putBack, giveLoot, setCarry, setInvested,
-  coinsOf, coinLabel, coinValue, addCoins, parseCoins, takeCoins, splitCoins, carried, itemWords,
+  coinsOf, coinLabel, coinValue, addCoins, parseCoins, takeCoins, splitCoins, carried, itemWords, partyValue,
 } from './loot.js';
 
 const wordsOf = (L) => L.words || { bulk: 'weight', encumbered: 'overloaded', invested: 'attuned', coins: '5', value: '25' };
@@ -110,6 +110,20 @@ export function filtersHtml(F, counts, unknownCount) {
     + (unknownCount ? `<button type="button" class="lt-chip${F.unknown ? ' on' : ''}" data-unknown="1" aria-pressed="${!!F.unknown}">Unidentified <span>${unknownCount}</span></button>` : '');
 }
 
+/**
+ * The party's worth at the top of the tab (pure). pv: partyValue as this view knows it; truth: the GM's (all values
+ * known), or null.
+ */
+export function valueHtml(pv, L, truth = null) {
+  const lab = (n) => L.priceLabel(n);
+  const parts = [`stash ${lab(pv.stash)}`, `carried ${lab(pv.carried)}`];
+  return `<div class="lt-value"><div class="lt-pch"><b>Party loot value</b><span class="lt-coins lt-big">${esc(lab(pv.items))}</span></div>`
+    + `<div class="lt-vsub">${esc(parts.join(' · '))}${pv.unknown ? ` · <span class="lt-dim">${pv.unknown} not appraised</span>` : ''}</div>`
+    + `<div class="lt-vsub">With coins (${esc(lab(pv.coins))}): <b>${esc(lab(pv.total))}</b></div>`
+    + (truth && truth.items !== pv.items ? `<div class="lt-vsub lt-gm">GM: true value ${esc(lab(truth.items))} (with coins ${esc(lab(truth.total))})</div>` : '')
+    + '</div>';
+}
+
 /** The GM's custom item form (pure). */
 export function addFormHtml(L = {}) {
   const W = wordsOf(L), choices = L.bulkChoices || [['', 'No weight']];
@@ -123,12 +137,12 @@ export function addFormHtml(L = {}) {
 
 export function mountLoot(o) {
   const pane = o.pane, L = lootRules(o.sys);
-  pane.innerHTML = '<div class="lt-purse"><div class="lt-pch"><b>Party purse</b><span class="lt-coins lt-pursecoins"></span></div><div class="lt-pacts"></div></div>'
+  pane.innerHTML = '<div class="lt-valuebox"></div><div class="lt-purse"><div class="lt-pch"><b>Party purse</b><span class="lt-coins lt-pursecoins"></span></div><div class="lt-pacts"></div></div>'
     + '<div class="lt-sh"><h3>Stash</h3><span class="lt-sub">carried by nobody</span><button type="button" class="lt-addbtn" data-act="add">+ Custom item</button></div>'
     + '<div class="lt-formbox"></div><input type="search" class="lt-q" placeholder="Search the stash" aria-label="Search the stash"><div class="lt-filters" role="group" aria-label="Show"></div><ol class="lt-stash"></ol>'
     + '<div class="lt-sh"><h3>The party</h3></div><div class="lt-pcs"></div><p class="lt-msg" role="status"></p>';
   const $ = (s) => pane.querySelector(s);
-  const stashEl = $('.lt-stash'), filtersEl = $('.lt-filters'), pcsEl = $('.lt-pcs'), purseEl = $('.lt-pursecoins'), pactsEl = $('.lt-pacts'), formBox = $('.lt-formbox'), q = $('.lt-q'), msg = $('.lt-msg');
+  const stashEl = $('.lt-stash'), filtersEl = $('.lt-filters'), valueEl = $('.lt-valuebox'), pcsEl = $('.lt-pcs'), purseEl = $('.lt-pursecoins'), pactsEl = $('.lt-pacts'), formBox = $('.lt-formbox'), q = $('.lt-q'), msg = $('.lt-msg');
   let STASH = [], PURSE_C = {}, ACTORS = {}, STATES = {}, CONTENT = {}, armed = null, armTimer = null, Q = '', F = { group: '', unknown: false };
   const OPEN = new Set();   // the rows opened to show their details (s:<stash id>, p:<pc>:<i>)
   const gm = () => o.view() === 'gm';
@@ -154,6 +168,10 @@ export function mountLoot(o) {
   function render() {
     const view = gm() ? 'gm' : 'player', C = content(), write = canWrite();
     purseEl.textContent = coinLabel(PURSE_C, L);
+    // what the party's things are worth: values this view knows (appraised, or identified and common); the GM also the truth
+    const party = pcs().filter((p) => ACTORS[p.id]).map((p) => ({ actor: ACTORS[p.id], coins: coinsOfPc(p.id) }));
+    const known = partyValue(STASH, party, PURSE_C, C, L, 'player');
+    valueEl.innerHTML = valueHtml(known, L, gm() ? partyValue(STASH, party, PURSE_C, C, L, 'gm') : null);
     pactsEl.innerHTML = write ? `<button type="button" data-act="split"${coinValue(PURSE_C, L) && pcs().length ? '' : ' disabled'}>Split evenly</button>${gm() ? `<form class="lt-pform"><input name="amt" placeholder="${esc(wordsOf(L).coins)}" aria-label="Coins"><button type="submit" name="op" value="+">Add</button><button type="submit" name="op" value="-">Take</button></form>` : ''}` : '';
     $('.lt-addbtn').hidden = !(gm() && write);
     const ctx = { gm: gm(), view, write, pcs: pcs(), armed, L, content: C, open: (k) => OPEN.has(k), trait: o.trait };

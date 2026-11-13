@@ -160,7 +160,7 @@ const CHECKS = {
     const pipAfter = await page.evaluate((id) => (window.reliquary.state().tokens[id].effects || []).some((e) => e.id === 'encumbered'), PIP);
     const audit = (await records(page, 'audit')).map((e) => e.data.text).filter((t) => /^loot:/.test(t));
     const pass = /A strange idol/.test(playerSees) && !/Silver toad/.test(playerSees) && /Silver toad idol/.test(gmSees)
-      && kerraItems.filter((it) => it.ref === 'item/dagger').length === 1 && kerraItems.find((it) => it.ref === 'item/dagger').qty === 2 && purse.gp === 1 && purse.sp === 2 && pipCoins && pipCoins.gp === 3
+      && kerraItems.filter((it) => it.ref === 'item/dagger').length === 1 && kerraItems.find((it) => it.ref === 'item/dagger').qty === 2 && purse.gp === 0 && purse.sp === 0 && pipCoins && pipCoins.gp === 3 && pipCoins.sp === 5
       && pipEnc && /lt-over|lt-enc/.test(bar) && idol.identified === true && !pipAfter && audit.length >= 4
       && /Not identified/.test(playerDetails) && !/Cursed/.test(playerDetails) && /Cursed/.test(gmDetails) && /Identify/.test(gmDetails)
       && weaponsOnly.length === 1 && weaponsOnly[0] === '0mwe00001-0dagg';

@@ -46,7 +46,7 @@ import { resolveToken } from '../board/names.js';
 import { gameNow } from './ledger.mjs';
 import {
   LOOT, PURSE, lootRules, lootPath, lootItem, resolveLoot, lootView, takeLoot, putBack, giveLoot, setCarry, setInvested,
-  splitQty, asCarried, stashMerge, coinsOf, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, itemWords,
+  splitQty, asCarried, stashMerge, partyValue, coinsOf, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, itemWords,
 } from '../board/loot.js';
 
 const KEY_RE = /^(?:[a-z0-9][a-z0-9-]*:)?item\/[a-z0-9][a-z0-9-]*$/;
@@ -124,6 +124,9 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
   const qty = o.qty !== undefined ? Number(o.qty) : undefined;
 
   if (cmd === 'list') {
+    const pv = partyValue(st.stash, party(game).map((p) => ({ actor: game.actors[p.id], coins: coinsOfPc(p.id) })), st.purse, content, L, 'player');
+    const tv = partyValue(st.stash, party(game).map((p) => ({ actor: game.actors[p.id], coins: coinsOfPc(p.id) })), st.purse, content, L, 'gm');
+    lines.push(`Party loot value (as the players know it): ${L.priceLabel(pv.items)} (stash ${L.priceLabel(pv.stash)}, carried ${L.priceLabel(pv.carried)}${pv.unknown ? `, ${pv.unknown} not appraised` : ''}); with coins ${L.priceLabel(pv.total)}${view === 'gm' && tv.items !== pv.items ? `; true value ${L.priceLabel(tv.items)}` : ''}`);
     lines.push(`Purse: ${coinLabel(coinsOf(st.purse, L), L)}`);
     lines.push(`Stash (${st.stash.length}):`);
     for (const e of st.stash) {

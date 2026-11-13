@@ -10,10 +10,10 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import {
   PLAIN_LOOT, lootRules, lootItem, resolveLoot, lootView, stackKey, mergeInto, stashMerge, splitQty, takeLoot, putBack, giveLoot, setCarry,
-  setInvested, lootDetails, lootGroup, coinsOf, coinValue, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, asCarried,
+  setInvested, lootDetails, lootGroup, partyValue, coinsOf, coinValue, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, asCarried,
 } from '../board/loot.js';
 import { PF2E_LOOT as L, bulkTotal, mysteryName, needsIdentify, valueKnown, sellCp, inUse, priceLabel, bulkLabel, levelDC, seenTraits, itemKind, itemUsage, itemStats, unitCp } from '../rulesets/pf2e/loot.js';
-import { stashRowHtml, pcCardHtml, detailsHtml, summaryHtml, filtersHtml } from '../board/lootui.js';
+import { stashRowHtml, pcCardHtml, detailsHtml, summaryHtml, filtersHtml, valueHtml } from '../board/lootui.js';
 import { runLoot } from '../tools/loot.mjs';
 import { loadGame } from '../tools/actor.mjs';
 import { campaignRecords, saveFromRecords } from '../board/records.js';
@@ -149,7 +149,10 @@ test('coins: words, parsing, change from larger coins, splitting evenly', () => 
   assert.deepEqual(takeCoins({ gp: 2, sp: 40 }, { gp: 5 }, L), { left: { pp: 0, gp: 0, sp: 10, cp: 0 }, taken: { pp: 0, gp: 2, sp: 30, cp: 0 } });
   assert.deepEqual(takeCoins({ pp: 1 }, { sp: 3, cp: 5 }, L).left, { pp: 0, gp: 9, sp: 6, cp: 5 }, 'a platinum piece broken down');
   assert.throws(() => takeCoins({ gp: 1 }, { gp: 2 }, L), /not enough/);
-  assert.deepEqual(splitCoins({ gp: 10, sp: 5 }, 3, L), { each: { pp: 0, gp: 3, sp: 1, cp: 0 }, left: { pp: 0, gp: 1, sp: 2, cp: 0 } });
+  assert.deepEqual(splitCoins({ gp: 10, sp: 5 }, 3, L), { each: { pp: 0, gp: 3, sp: 5, cp: 0 }, left: { pp: 0, gp: 0, sp: 0, cp: 0 } }, 'the gold left over is broken into silver');
+  assert.deepEqual(splitCoins({ pp: 1, gp: 2, cp: 1 }, 3, L), { each: { pp: 0, gp: 4, sp: 0, cp: 0 }, left: { pp: 0, gp: 0, sp: 0, cp: 1 } }, 'the user\'s purse, 2026-11-13');
+  assert.deepEqual(splitCoins({ gp: 1 }, 3, L), { each: { pp: 0, gp: 0, sp: 3, cp: 3 }, left: { pp: 0, gp: 0, sp: 0, cp: 1 } });
+  assert.deepEqual(splitCoins({ gp: 6 }, 3, L).each, { pp: 0, gp: 2, sp: 0, cp: 0 }, 'nothing broken when it divides');
 });
 
 test('a character\'s load: Bulk, limits, warnings, invested count; the encumbered condition follows it', () => {
@@ -236,14 +239,14 @@ test('tools/loot.mjs: find, add, identify, take, give, put back, carry, coins, s
   // coins: into the purse, split three ways, moved between PCs
   run('coins', ['add', '10 gp 5 sp']);
   out = run('split', []);
-  assert.match(out.lines.at(-1), /3 gp 1 sp each/);
-  assert.deepEqual(records['state/purse'], { pp: 0, gp: 1, sp: 2, cp: 0 });
+  assert.match(out.lines.at(-1), /3 gp 5 sp each/);
+  assert.deepEqual(records['state/purse'], { pp: 0, gp: 0, sp: 0, cp: 0 });
   run('coins', ['move', '2 gp'], { from: 'Kerra', to: 'Pip' });
   assert.equal(records['actorstate/tok-rf053o2i'].coins.gp, 5);
   // sell the idol (half of 25 gp) to the purse; buy a rope for Pip from the purse
   out = run('sell', ['Silver toad idol']);
   assert.match(out.lines[0], /12 gp 5 sp/);
-  assert.equal(records['state/purse'].gp, 13);
+  assert.equal(records['state/purse'].gp, 12);
   out = run('buy', ['item/backpack'], { to: 'Pip' });
   assert.match(out.lines[0], /Bought Backpack for 1 sp/);
   assert.equal(records['actors/tok-rf053o2i'].items.at(-1).carry, 'worn');
@@ -257,6 +260,7 @@ test('tools/loot.mjs: find, add, identify, take, give, put back, carry, coins, s
   // list, as the players see it
   const list = run('list', [], { view: 'player' }).lines.join('\n');
   assert.match(list, /Purse: /);
+  assert.match(list, /Party loot value \(as the players know it\): /);
   assert.doesNotMatch(list, /Silver toad idol/);
 });
 
@@ -371,5 +375,23 @@ test('moves stack: a taken item joins the character\'s matching stack, a put-bac
   assert.equal(stashMerge(stash, kp.stashItem, CC, L).id, null);
   // give: onto the other's matching stack
   assert.deepEqual(giveLoot([{ ref: 'item/dagger', carry: 'held' }], 0, [{ ref: 'item/dagger', carry: 'stowed' }], 1, L, CC).to, [{ ref: 'item/dagger', carry: 'stowed', qty: 2 }]);
+});
+
+test('the party\'s worth: known values in the stash and on every character, coins, and the GM\'s truth', () => {
+  const stash = [{ id: 'a', data: { ref: 'item/healing-potion-minor', qty: 3 } }, { id: 'b', data: { ref: 'item/healing-potion-minor', qty: 2, identified: true } }, { id: 'c', data: { name: 'Idol', price: { cp: 2500 }, identified: false, appraised: true } }];
+  const actors = [{ actor: { items: [{ ref: 'item/chain-mail' }, { ref: 'item/rope', qty: 2 }] }, coins: { gp: 5 } }];
+  const pv = partyValue(stash, actors, { gp: 10, sp: 5 }, C, L, 'player');
+  assert.equal(pv.stash, 800 + 2500, 'two known potions and the appraised idol; three unknown potions do not count');
+  assert.equal(pv.carried, 600 + 100, 'a character\'s own gear is known: chain mail and two ropes');
+  assert.equal(pv.unknown, 1);
+  assert.equal(pv.coins, 1550);
+  assert.equal(pv.total, pv.items + 1550);
+  const tv = partyValue(stash, actors, {}, C, L, 'gm');
+  assert.equal(tv.stash, 2000 + 2500, 'the GM knows every value');
+  const html = valueHtml(pv, L, tv);
+  assert.match(html, /Party loot value<\/b><span class="lt-coins lt-big">40 gp<\/span>/);
+  assert.match(html, /1 not appraised/);
+  assert.match(html, /GM: true value 52 gp/);
+  assert.doesNotMatch(valueHtml(pv, L, null), /GM/);
 });
 

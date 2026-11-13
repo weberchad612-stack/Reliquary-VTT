@@ -485,8 +485,13 @@ about, with the encumbered condition on the token; using consumables comes next 
   `split`. It prints `{lines, writes}`: the item's content record when a library item is new to the board, the audit
   lines, and the token's effects when a character's Bulk crosses its limit. `--records` needs `loot/`,
   `state/purse`, `tokens/`, `actors/`, `actorstate/`, `content/` and `state/clock` (db_list output is fine).
-- **The Party loot tab** (everyone; between Exploration and Notes): the purse with **Split evenly** (what does not
-  split stays in the purse; the GM also adds and takes coins); the stash with a search, each item's value and Bulk
+- **The Party loot tab** (everyone; between Exploration and Notes): at the top, **Party loot value** (the user,
+  2026-11-13): what the stash and every character's items are worth as far as the party knows (each item whose value
+  is known: appraised, or identified and common; a character's own gear counts as known), split into stash and
+  carried, how many stacks are not appraised, and the total with coins (purse and characters); the GM also sees the
+  true value (`partyValue` in board/loot.js; `tools/loot.mjs list` prints both). Then the purse with **Split evenly**
+  (coins that do not divide are broken into the next smaller kind, a platinum piece into ten gold, so 1 pp 2 gp 1 cp
+  split three ways is 4 gp each and 1 cp stays; the user, 2026-11-13; the GM also adds and takes coins); the stash with a search, each item's value and Bulk
   as the view sees them and **Take** (to which PC, how many); and a card per PC (the current map's PC tokens): its
   coins, a Bulk bar with the encumbered mark (green, amber when encumbered, red past the most it can carry), the
   invested count, warnings, and each item with how it is carried (a select), **invested**, **Stash** (put back),
