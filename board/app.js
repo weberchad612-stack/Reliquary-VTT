@@ -1036,7 +1036,8 @@ export async function start(store, { build = null } = {}) {
     const wp = (drag.waypoints || []).length;
     const hint = drag.waypoints ? (wp ? ` · ${wp} waypoint${wp > 1 ? 's' : ''} (Backspace removes)` : ' · Space: waypoint') : '';
     ctx.font = '600 13px IBM Plex Sans, sans-serif';
-    const tw = ctx.measureText(label + hint).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
+    // above the goal square; above the height label ("+50 ft", drawn over the token's top) when it has one
+    const tw = ctx.measureText(label + hint).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22 - (t.elevation && !t.dead ? 20 : 0);
     const good = !shared.length && drag.route && drag.route.feet <= t.speed;
     ctx.fillStyle = good ? '#1f2a22' : '#2b2418';
     ctx.fillRect(lx, ly, tw, 20);
