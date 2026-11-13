@@ -75,15 +75,11 @@ export async function boot(seed, build = null) {
   return start(store, { build });
 }
 
-/** The version badge beside the title: the build's date and time; its tooltip says which commit. */
-export function showBuild(build) {
-  const b = document.getElementById('bver');
-  if (!b || !build) return;
-  b.textContent = build.version;
-  const when = build.built_at ? new Date(build.built_at).toLocaleString() : '';
-  b.title = `Board version ${build.version}, built ${when} from ${build.commit ? 'commit ' + build.commit : 'no commit'}${build.dirty ? ' + uncommitted changes' : ''}.`;
-  b.hidden = false;
-}
+/** The build, for the Board info panel (it was a badge beside the title until 2026-11-12). */
+let BUILD = null;
+export function showBuild(build) { BUILD = build || null; }
+/** The build in words: "v26.11.12-1942 · 05babc71" (+ "uncommitted" for a dirty build). */
+const buildText = () => (BUILD ? `${BUILD.version}${BUILD.commit ? ' · ' + BUILD.commit.slice(0, 8) : ''}${BUILD.dirty ? ' + uncommitted' : ''}` : 'unknown');
 
 
 /** Show a message in place of the map. */
@@ -421,9 +417,8 @@ export async function start(store, { build = null } = {}) {
 
   function fit() {
     const stage = document.getElementById('stage');
-    const hudH = document.getElementById('hud').offsetHeight || 20;
     const availW = Math.max(260, stage.clientWidth - 32);
-    const availH = Math.max(220, stage.clientHeight - 32 - 10 - hudH);
+    const availH = Math.max(220, stage.clientHeight - 32);   // the Board info panel floats over the map's corner
     baseScale = Math.min(1.6, availW / W, window.innerWidth > 860 ? availH / H : Infinity);
     scale = baseScale * zoom;
     document.getElementById('z-lab').textContent = Math.round(zoom * 100) + '%';
@@ -1326,7 +1321,21 @@ export async function start(store, { build = null } = {}) {
     parts.push(`explored <b>${S.explored.length}</b> rings · <b>${(bytes / 1024).toFixed(1)}</b> KiB`);
     parts.push(focusId() ? `view <b>${esc(nm(S.tokens[focusId()]))} only</b>` : `lookers <b>${view.lookers.length}</b>`);
     parts.push(`<span id="animstat">${animStatText()}</span>`);
-    document.getElementById('hud').innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
+    parts.push(`<span id="lstat">${listenText()}</span>`);
+    parts.push(`board <b>${esc(buildText())}</b>`);
+    const el = document.getElementById('hud');
+    if (!el.hidden) el.innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
+  }
+  // the database listeners this page holds (the platform caps them; docs/best-practices/board.md, Listeners)
+  const listenText = () => { const n = store.listeners ? store.listeners() : null; return n == null ? 'listeners <b>?</b>' : `listeners <b>${n}</b>`; };
+  // Board info: a see-through panel in the map's lower-left corner, collapsed or open (remembered per browser)
+  {
+    const KEY = 'reliquary.boardinfo', t = document.getElementById('dbg-t'), body = document.getElementById('hud');
+    let open = false; try { open = localStorage.getItem(KEY) === 'open'; } catch { /* no storage */ }
+    const set = (on) => { open = on; t.setAttribute('aria-expanded', String(on)); body.hidden = !on; document.getElementById('dbg').classList.toggle('open', on); try { localStorage.setItem(KEY, on ? 'open' : 'closed'); } catch { /* no storage */ } if (on && view) hud(); };
+    t.addEventListener('click', () => set(!open));
+    set(open);
+    setInterval(() => { const l = document.getElementById('lstat'); if (l && !body.hidden) l.innerHTML = listenText(); }, 2000);
   }
 
   function panel() {

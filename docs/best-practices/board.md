@@ -86,9 +86,13 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Printed numbers:** most adventure maps number their locations on the image. Centre each pin on the printed marker, size it to ring it (a little larger than the marker), and copy the number into `number`. Check the result on the board: every number must stay readable when its pin is hovered or selected. To remove a number that gives a secret away, see [map-importer.md section 5b](map-importer.md) (`tools/mapimport/strip_numbers.py`, and what it can and cannot do).
 - **Building one** from a book: an area map is written by hand, not by the importer. The image goes into the private pack; each place gets a paraphrased, player-safe `note` and, if needed, a `gm_note`. Mark anything the players should not know yet `public: false`. Validate with `tools/validate.mjs`.
 
-## 7. The version badge and publishing
+## 7. Board info, the build stamp and publishing
 
-- The bundler stamps every build (`/*@BUILD@*/`): the badge shows the version, the tooltip the commit and whether there were uncommitted changes. Commit before publishing when you can, so the badge points at real code.
+- **Board info** (the user, 2026-11-12): a see-through panel in the map's lower-left corner, collapsed to "ⓘ Board info" by default and remembered open or closed per browser (`reliquary.boardinfo`); it floats over the map, so the map keeps the whole height. It replaced the strip under the map and the version badge beside the title. Everyone sees it; the GM-only lines stay GM-only. Lines, top to bottom:
+  - while the pointer is over a square: **square** (x,y), **fog** (visible / explored / hidden in this view), **light** and **glow** (the light level, and how strongly lamp light reaches it, 0-100%; when lighting is on, and for players not on hidden squares), **region** (GM: the lighting regions over it), **terrain** (its kind and DC; for players not on hidden squares);
+  - always: **explored** (the explored area's rings and KiB), **lookers** (how many creatures' eyes make the view, or "view *X* only"), **animation** (animated lights, ms per frame, fps), **listeners** (the database listeners this page holds; refreshed every 2 s; the platform caps them at about 40) and **board** (the build's version and commit, "+ uncommitted" for a dirty build).
+  - Add a line in `hud()` (`board/app.js`); keep each to one short line.
+- The bundler stamps every build (`/*@BUILD@*/`): Board info shows the version and commit, and whether there were uncommitted changes. Commit before publishing when you can, so it points at real code.
 - **Build the published board with the trait glossaries:** `node tools/campaign.mjs glossaries --out /tmp/glossaries.json`
   then `node tools/bundle.mjs board/index.html <out.html> --data glossaries=/tmp/glossaries.json`. The file holds
   every system's glossary keyed by ruleset id (Pathfinder's is about 160 KB); the board uses only the campaign's
