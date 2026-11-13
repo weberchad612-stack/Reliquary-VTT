@@ -1,8 +1,8 @@
 // The Dice tab: statistics of every die rolled at the table (board/dice.js), for everyone (players do not count the
-// GM's secret rolls). Filters in one row: who (everyone, the party, monsters and NPCs), when (this session, all
+// GM's secret rolls). Filters in one row: who (everyone, the PCs, the NPCs: every creature that is not a PC), when (this session, all
 // time) and the kind of roll (the ruleset's roll kinds). A table by die with a luck bar against a fair die, the
 // chosen die's faces as a histogram with the fair count marked, and a table by roller. The GM starts a new session
-// (state/session). Docs: docs/best-practices/board.md (dice statistics).
+// (state/session) and resets the statistics: this session's dice, or all of them (the records are deleted). Docs: docs/best-practices/board.md (dice statistics).
 //
 // o: {store, view() -> 'gm' | 'player', readOnly, pane, kinds: [{id, label}] (the ruleset's; may be empty)}.
 // Returns {render()}.
@@ -11,12 +11,12 @@ import { DICE, filterDice, diceStats, sessionStart } from './dice.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const f1 = (x) => (Number.isFinite(x) ? x.toFixed(1) : '–');
-const SIDES = [['all', 'Everyone'], ['party', 'Party'], ['others', 'Monsters & NPCs']];
+const SIDES = [['all', 'Everyone'], ['party', 'PCs'], ['others', 'NPCs']];
 const WHEN = [['session', 'This session'], ['all', 'All time']];
 
 export function mountDice(o) {
   const pane = o.pane;
-  let LIST = [], session = null, side = 'all', when = 'session', kind = 'all', pick = 20;
+  let LIST = [], session = null, side = 'all', when = 'session', kind = 'all', pick = 20, armed = null;
   const gm = () => o.view() === 'gm' && !o.readOnly;
   const kindLabel = (id) => ((o.kinds || []).find((k) => k.id === id) || {}).label || (id.charAt(0).toUpperCase() + id.slice(1));
 
@@ -34,8 +34,13 @@ export function mountDice(o) {
     const filters = `<div class="dc-filters">${seg('side', SIDES, side)}${seg('when', WHEN, when)}
       <label class="dc-kind">Kind <select data-kind>${[['all', 'All rolls'], ...kinds.map((k) => [k, kindLabel(k)])].map(([v, l]) => `<option value="${esc(v)}"${v === kind ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
       ${gm() ? '<button type="button" class="dc-new" data-newsession="1" title="This session\'s statistics start from now">New session</button>' : ''}</div>`;
+    // the GM's resets: they delete the dice records (this session's, or every one), whatever the filters show
+    const nSession = all.filter((d) => d.at >= sessionStart(session)).length;
+    const resets = gm() && all.length ? `<div class="dc-reset">
+      <button type="button" data-reset="session"${nSession ? '' : ' disabled'}>${armed === 'session' ? `Delete this session's ${nSession} rolls? Click again` : 'Reset this session'}</button>
+      <button type="button" data-reset="all">${armed === 'all' ? `Delete all ${all.length} rolls? Click again` : 'Reset all time'}</button></div>` : '';
     const sinceWords = when === 'session' ? ` since ${new Date(since).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
-    if (!s.dice) { pane.innerHTML = `${filters}<p class="dc-empty">No dice rolled${sinceWords || ' yet'}${side !== 'all' || kind !== 'all' ? ' for this filter' : ''}.</p>`; return; }
+    if (!s.dice) { pane.innerHTML = `${filters}${resets}<p class="dc-empty">No dice rolled${sinceWords || ' yet'}${side !== 'all' || kind !== 'all' ? ' for this filter' : ''}.</p>`; return; }
     if (!s.byDie.some((d) => d.sides === pick)) pick = (s.byDie.find((d) => d.sides === 20) || s.byDie[0]).sides;
     // by die: the luck bar runs from the die's lowest face to its highest; the tick is a fair die's average and the
     // fill reaches from it to this die's average (to the right: rolling high)
@@ -56,7 +61,7 @@ export function mountDice(o) {
       <div class="dc-axis" aria-hidden="true">${faces.map((_, i) => `<span>${pick <= 20 || (i + 1) % 5 === 0 || i === 0 ? i + 1 : ''}</span>`).join('')}</div>`;
     const who = s.byRoller(pick);
     const rollers = `<table class="dc-table"><caption>d${pick} by roller</caption><thead><tr><th scope="col">Who</th><th scope="col">Dice</th><th scope="col">Avg</th><th scope="col">Best</th><th scope="col">Worst</th><th scope="col" title="How often the highest face came up">${pick}s</th><th scope="col">1s</th></tr></thead><tbody>${who.map((r) => `<tr><th scope="row">${esc(r.who)}</th><td>${r.n}</td><td>${f1(r.avg)}</td><td>${r.best}</td><td>${r.worst}</td><td>${r.top}</td><td>${r.one}</td></tr>`).join('')}</tbody></table>`;
-    pane.innerHTML = `${filters}<p class="dc-sum">${s.rolls} roll${s.rolls === 1 ? '' : 's'}, ${s.dice} dice${sinceWords}. The tick on each luck bar is a fair die's average.</p>${table}${hist}${rollers}`;
+    pane.innerHTML = `${filters}<p class="dc-sum">${s.rolls} roll${s.rolls === 1 ? '' : 's'}, ${s.dice} dice${sinceWords}. The tick on each luck bar is a fair die's average.</p>${table}${hist}${rollers}${resets}`;
   }
   pane.addEventListener('click', (e) => {
     const b = e.target.closest('button, tr[data-pick]');
@@ -65,6 +70,13 @@ export function mountDice(o) {
     else if (b.dataset.when) when = b.dataset.when;
     else if (b.dataset.pick) pick = Number(b.dataset.pick);
     else if (b.dataset.newsession && gm()) { o.store.set('state/session', { started: new Date().toISOString() }).catch(() => {}); when = 'session'; }
+    else if (b.dataset.reset && gm()) {
+      const which = b.dataset.reset;
+      if (armed !== which) { armed = which; render(); setTimeout(() => { if (armed === which) { armed = null; render(); } }, 4000); return; }
+      armed = null;
+      const since = sessionStart(session);
+      for (const e of LIST) if (which === 'all' || e.data.at >= since) o.store.remove(`${DICE}/${e.id}`).catch(() => {});
+    }
     else return;
     render();
   });

@@ -341,7 +341,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### Dice statistics (2026-11-12)
 
 - **The Dice tab** (everyone; pops out like every tab) shows statistics of every die rolled at the table, as the
-  previous board's Dice statistics panel did: filters in one row (**Everyone / Party / Monsters & NPCs**, **This
+  previous board's Dice statistics panel did: filters in one row (**Everyone / PCs / NPCs**, **This
   session / All time**, and the **kind** of roll, the ruleset's `rollKinds`), a **By die** table (dice rolled, the
   average, a fair die's average, and a **luck bar**: the tick is the fair average, the fill runs to this die's
   average, amber above, grey below), the chosen die's **faces** as a histogram (a fair die's count dashed across;
@@ -353,6 +353,9 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   gm?}), apart from the chat, so clearing the chat keeps the statistics. It is part of the save (`dice.json`).
 - **This session** starts when the GM presses **New session** (`state/session` {started}, saved as
   `campaign.session`); until the GM first does, it is today (from local midnight).
+- **Resets** (the GM's, 2026-11-12): **Reset this session** and **Reset all time** delete the dice records (this
+  session's, or every one), whatever the filters show; each asks for a second click. The deletion reaches the save
+  at the next save.
 - **What writes dice:** the board's initiative rolls (the tracker's roll dialog, Roll all / Roll NPCs),
   `tools/encounter.mjs roll`, the turn rules' own rolls (persistent damage, the flat check to end it, recovery
   checks: `turnRules` returns `dice`, and the board and `tools/turns.mjs` log them), `tools/check.mjs` (the d20s

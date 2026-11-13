@@ -584,6 +584,7 @@ chosen die's faces, a by-roller table). The user's decisions:
 | Where, who | A **Dice tab** in the sidebar (pops out like every tab), **for everyone**; players do not count the GM's secret rolls. |
 | Source | **Its own dice log** (`dice/` records, `dice.json` in the save), so clearing the chat never wipes the statistics. |
 | Roll twice, keep one | **Both dice count**: every die that landed. |
+| Names and resets (2026-11-12) | The sides read **PCs** and **NPCs** (every creature that is not a PC). The GM **resets** this session's statistics or all of them; a reset **deletes** the dice records. |
 | Added | A **session filter** (This session / All time; the GM's New session marks the start, else today) and a **kind of roll** filter (the ruleset's roll kinds). |
 
 Records: `dice/<time36>-<n>` {at, by, who, token?, side ('party' | 'others'), kind, dice: [{sides, v}], gm?};
