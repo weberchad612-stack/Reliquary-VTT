@@ -7,7 +7,9 @@
 //   node tools/actor.mjs <pack-dir> <save-dir> [--records FILE] <command> ...
 //     list                                     every creature: HP, temporary HP, conditions, health band
 //     show <who> [--all]                       statistics with breakdowns (--all: every skill)
-//     damage <who> <amount> [type] [--crit] [--nonlethal] [--parts "5 fire, 3 slashing"]
+//     damage <who> <amount> [type] [--crit] [--nonlethal] [--parts "5 fire, 3 slashing"] [--from DICE.json,...]
+//                                       (also writes the damage card for the chat; --from: the tools/dice.mjs
+//                                       damage rolls it came from, shown on the card)
 //     heal <who> <amount>
 //     temp <who> <amount>                      temporary HP (the larger amount is kept)
 //     recover <who> --roll N                   a recovery check while dying (N: the d20)
@@ -36,6 +38,7 @@ import { systemConfig } from '../rulesets/systems.js';
 import { readCampaign } from './campaign.mjs';
 import { contentLibrary, contentView, parseKey } from './library.mjs';
 import { contentPath, contentKey } from '../board/records.js';
+import { chatPath, chatMessage } from '../board/chat.js';
 import { spaceDistance } from '../engine/measure/measure.js';
 import { resolveToken, nameFor, publicName } from '../board/names.js';
 
@@ -243,8 +246,12 @@ export function runCommand(game, cmd, args, opts = {}) {
     const writes = [stateWrite(c.id, r.state)];
     if (JSON.stringify(r.effects) !== JSON.stringify(c.effects) || r.dead) writes.push(tokenWrite(c, r.effects, r.dead || undefined));
     const after = R.healthBand(r.state.hp, p.hp.max.value, r.dead);
-    // the damage taken, for a replay step's details (board/rolldetail.js)
+    // the damage taken, for a replay step's details (board/rolldetail.js), and the damage card for the chat: the
+    // damage rolls it came from (opts.from: tools/dice.mjs outputs) and what was taken
     const roll = { type: 'applied', token: c.id, who: c.shown, amount: parts.reduce((t, x) => t + x.amount, 0), adjust: r.adjust || [], taken: r.total };
+    const rolls = (opts.from || []).map((o) => o.roll).filter((x) => x && x.type === 'damage');
+    const dealer = rolls.length && rolls[0].token ? game.tokens[rolls[0].token] : null;
+    writes.push({ op: 'set', path: chatPath(), data: chatMessage({ kind: 'damage', by: 'claude', token: rolls.length ? rolls[0].token || undefined : undefined, name: rolls.length ? rolls[0].who : c.shown, rolls, applied: roll, gm: !!c.token.hidden || !!(dealer && dealer.hidden) }) });
     return { lines: [`${c.shown}: ${r.lines.join('; ')}`, `players see: ${after}`], roll, writes };
   }
   if (cmd === 'heal') {
@@ -290,8 +297,10 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
-    const rec = opt('--records'), parts = opt('--parts'), roll = opt('--roll'), name = opt('--name');
-    const o = { crit: flag('--crit'), nonlethal: flag('--nonlethal'), all: flag('--all'), parts, roll, name };
+    const rec = opt('--records'), parts = opt('--parts'), roll = opt('--roll'), name = opt('--name'), fromFiles = opt('--from');
+    // --from a.json,b.json: the tools/dice.mjs damage rolls this damage came from (for the damage card)
+    const from = fromFiles ? fromFiles.split(',').map((f) => JSON.parse(fs.readFileSync(f.trim(), 'utf8'))) : [];
+    const o = { crit: flag('--crit'), nonlethal: flag('--nonlethal'), all: flag('--all'), parts, roll, name, from };
     const [pack, save, cmd, ...rest] = args;
     if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);

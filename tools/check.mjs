@@ -10,8 +10,8 @@
 //
 // --attack is which attack this turn (1, 2, 3: the multiple attack penalty); --bonus adds a situational
 // modifier given by Claude, with what it is ("1 backswing", "2 cover"). Prints JSON {total, dc, degree, lines, roll,
-// writes} (writes: the d20s, for the Dice tab's statistics: write them; roll: the roll in parts, which
-// tools/replay.mjs puts in a step's details). Docs: docs/best-practices/game-data.md.
+// writes} (writes: the d20s, for the Dice tab's statistics, and the check card for the chat: write them; roll: the
+// roll in parts, which tools/replay.mjs puts in a step's details). Docs: docs/best-practices/game-data.md.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,6 +20,7 @@ import { degreeOf, describeStatistic } from '../engine/rules/rules.js';
 import { loadGame, creature, prepareAt } from './actor.mjs';
 import { dicePath, diceRecord, sideOf } from '../board/dice.js';
 import { publicName } from '../board/names.js';
+import { chatPath, chatMessage } from '../board/chat.js';
 
 const DEGREE = { 'critical-success': 'critical success', success: 'success', failure: 'failure', 'critical-failure': 'critical failure' };
 
@@ -116,6 +117,8 @@ export function runCheck(game, o) {
   const d20 = dice.filter((v) => Number.isInteger(v) && v >= 1 && v <= 20).slice(0, twice ? 2 : 1);
   const rollKind = { strike: 'attack', 'spell-attack': 'attack', save: 'save', perception: 'perception', skill: 'skill', lore: 'skill' }[kind] || 'other';
   if (d20.length && c.token) r.writes = [{ op: 'set', path: dicePath(), data: diceRecord({ who: publicName(c.token) || c.token.name || c.id, token: c.id, side: sideOf(c.token), kind: rollKind, dice: d20.map((v) => ({ sides: 20, v })), by: 'claude', gm: !!c.token.hidden }) }];
+  // the check card in the chat (board/chat.js): each view sees as much of it as it may (a hidden roller's: the GM's only)
+  if (c.token && d20.length) (r.writes = r.writes || []).push({ op: 'set', path: chatPath(), data: chatMessage({ kind: 'check', by: 'claude', token: c.id, name: publicName(c.token) || c.token.name || c.id, roll: r.roll, gm: !!c.token.hidden }) });
   return r;
 }
 

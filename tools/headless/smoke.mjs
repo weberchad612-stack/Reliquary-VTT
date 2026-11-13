@@ -51,10 +51,12 @@ const CHECKS = {
     await page.evaluate(() => document.querySelector('.tracker [data-a=begin]').click()); await page.waitForTimeout(800);
     await page.evaluate(() => document.querySelector('.tracker [data-a=next]').click()); await page.waitForTimeout(800);
     await page.evaluate(() => document.querySelector('.tracker .trk-row:nth-child(2) [data-a=defeated]').click()); await page.waitForTimeout(800);
-    const chat = (await records(page, 'chat')).map((e) => e.data.text);
+    const chat = (await records(page, 'chat')).map((e) => e.data.text).filter(Boolean);
+    const audit = (await records(page, 'audit')).map((e) => e.data.text);
     const dead = await page.evaluate((id) => !!window.reliquary.state().tokens[id].dead, OGRE);
     await asPlayer(page);
-    return ok(chat.includes('The encounter begins') && chat.includes('Round 1') && dead, `chat events: ${chat.filter(Boolean).join(' | ')}; ogre dead: ${dead}`);
+    // events are the GM's audit log's (the user, 2026-11-12): none in the chat
+    return ok(audit.includes('The encounter begins') && audit.includes('Round 1') && !chat.length && dead, `audit: ${audit.slice(-4).join(' | ')}; chat: ${chat.length}; ogre dead: ${dead}`);
   },
   async dice({ page }) {
     await writeRecord(page, 'dice/0mwe00000-0smoke', { at: new Date().toISOString(), by: 'claude', who: 'Kerra', side: 'party', kind: 'attack', dice: [{ sides: 20, v: 17 }] });
@@ -89,7 +91,7 @@ const CHECKS = {
     const pip = await page.evaluate((id) => window.reliquary.state().tokens[id], PIP);
     await writeRecord(page, 'replay/0mwe00000-smok', { title: 'Smoke', by: 'claude', n: 0, revealed: [], narration: ['Pip ducks.'], steps: [
       { side: 'pc', actor: PIP, text: 'Pip steps west', changes: [{ path: `tokens/${PIP}`, to: { x: pip.x - 2 }, from: { x: pip.x } }],
-        posts: [{ c: 'chat', data: { by: 'claude', kind: 'event', text: 'Pip moves' } }], moves: [{ token: PIP, from: [pip.x, pip.y], to: [pip.x - 2, pip.y] }] }] });
+        posts: [{ c: 'chat', data: { by: 'claude', kind: 'ruling', text: 'Pip moves' } }], moves: [{ token: PIP, from: [pip.x, pip.y], to: [pip.x - 2, pip.y] }] }] });
     await page.waitForTimeout(400);
     await page.click('[data-pane=replay] [data-rp=next]');
     await page.waitForTimeout(2500);

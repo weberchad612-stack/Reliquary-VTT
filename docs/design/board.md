@@ -71,7 +71,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
-| `chat/<time36>-<n>` | A chat message, the players' story: Claude's narration, a ruling, an NPC speaking, a roll card, or an event players should know about (a condition, damage, a death, a round); `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
+| `chat/<time36>-<n>` | A chat message, the players' story: Claude's narration, a ruling, an NPC speaking, or a roll card (initiative, check, damage; events were retired 2026-11-12 and go to the audit log); `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
 | `dice/<time36>-<n>` | A roll's dice for the Dice tab's statistics: who, side (party or others), kind (the ruleset's roll kinds), every die that landed, `gm` for a secret roll (board/dice.js). Part of the save (`dice.json`) | Whoever rolled (the board's tracker, `tools/encounter.mjs`, the turn rules), Claude (`tools/dice.mjs`, `tools/check.mjs`) |
 | `state/session` | When the GM started this session, for the Dice tab's "This session" (saved in `campaign.json` as `session`) | The GM view (New session) |
 | `audit/<time36>-<n>` | The GM's audit log: every change to the game in words, by whom and when, and the board's warnings (board/audit.js). Players never see it. Part of the save (`audit.json`) | The board (every change it writes), Claude (`tools/chat.mjs audit`, `tools/encounter.mjs`) |
@@ -410,9 +410,8 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at
   0) or removes a plain one (Foundry PF2E's way). Dead switches the token's dead state. Hovering a tile
   shows its name and rules line.
-- **Saving:** each change writes the token record (shared at once), an audit line and a chat event ("Lyra
-  frightened 3 (was 2)", "Lyra no longer prone", "Scar-Browed Ogre is dead"; the GM's only for a creature the
-  party does not see or an effect only the GM sees).
+- **Saving:** each change writes the token record (shared at once) and an audit line ("Lyra frightened 3 (was 2)",
+  "Lyra no longer prone", "Scar-Browed Ogre is dead"); the chat has no events since 2026-11-12.
 - The HUD floats over the page and stays inside the window; it follows the token, the zoom and scrolling.
 - **It scales with the zoom**, as Foundry's does (asked for 2026-11-11): normal size when a square is 48 px
   on screen, never below 0.7x or above 1.5x, by a CSS transform (no re-layout, so it keeps up with the wheel).
@@ -569,17 +568,19 @@ a collapse/expand control does the same. The user's decisions:
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **events** players should know about. Typed messages, whispers and the chat box come later. |
 | Chat and audit log (the user, 2026-11-12) | **The chat holds everything important to the players, above all Claude's story narration**: the narration, rulings and NPC lines, the dice rolled by and for the PCs, the NPC rolls players should know about, and **events**: combat rolls' results, damage, conditions applied, deaths, the encounter beginning and ending, new rounds. **An audit log only the GM sees shows every underlying state change** (moves, doors, lights, templates, notes, terrain, the clock, initiative, hiding) and the board's warnings. The change log and the table log are **removed** from the board, the database and the code. |
+| Events and cards (the user, 2026-11-12) | **Events go to the GM's audit log only** (the encounter beginning and ending, rounds, the turn rules, conditions, deaths); the chat keeps narration, rulings, NPC lines and roll cards. Roll cards for actions, as Foundry PF2e has them (its check types: attack, save, skill, Perception, initiative, flat, counteract; damage roll and damage taken): a **check card** and a **damage card** (roll and damage taken in one, since Claude applies at once), shown to each view by the Replay tab's rules. Later: spell and action cards with their text, area cards, buttons. |
 | Chat not showing | When the Chat tab is not open (collapsed or another tab), a new card **pops up beside the sidebar** and fades, and the **Chat icon counts unread** messages. |
 | Keeping | **In the save**: the chat is part of the campaign, saved and loaded with it (`chat.json` in the save). |
 | Deleting | **GM only**: a trash icon on each message, and clearing the whole chat. |
 
 Records: `chat/<time36>-<n>` {at, by ('claude' | 'gm' | 'player'), kind ('roll' | 'narration' | 'ruling' | 'npc' |
-'event'), speaker, token?, text?, gm? (GM only), and for a roll the card's fields (stat, dice, kept, mode, sides,
+'check' | 'damage'; 'event' retired), speaker, token?, text?, gm? (GM only), for a check card its roll and for a
+damage card its rolls and the damage applied (board/rolldetail.js's entries), and for an initiative roll the card's fields (stat, dice, kept, mode, sides,
 mod, parts, notes, total)}; `audit/<time36>-<n>` {at, by, text, map?, level? ('warn' | 'ok')}, saved as
 `audit.json`. They replace `rolls/` (the roll log), `log/` (the first change log) and the chat's change-log lines
-(kind 'log', moved to the audit log when found). Claude posts with `tools/chat.mjs` (narration, ruling, npc, event,
-audit). Next for the chat: roll cards for every check, attack and damage roll (Claude's `tools/check.mjs` and the
-board's), not only initiative. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
+(kind 'log', moved to the audit log when found). Claude posts with `tools/chat.mjs` (narration, ruling, npc,
+audit); `tools/check.mjs` and `tools/actor.mjs damage` post the check and damage cards. Next for the chat: the board's
+own rolls as cards when it rolls attacks and damage. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
 "Speaking in Taldane" is the system's), the formatting bar.
 
 ## Dice statistics (designed and built 2026-11-12)

@@ -18,15 +18,20 @@
 const sign = (v) => (v < 0 ? `−${-v}` : `+${v}`);
 const partText = (p) => `${sign(p.value)} ${p.label}`;
 
+/** Whether a view sees a roll whole: the GM always; players a PC's. */
+export function seesWhole(e, { gm = false, isPc = () => false } = {}) { return gm || !!(e && isPc(e.token)); }
+/** What a roll was against, as a view may see it: " vs AC 17", or " vs AC ?" for a defence that is not a PC's. */
+export function vsWords(vs, { gm = false, isPc = () => false } = {}) {
+  if (!vs) return '';
+  const show = gm || (vs.token && isPc(vs.token));
+  return ` vs ${vs.label} ${show && Number.isFinite(vs.value) ? vs.value : '?'}`;
+}
+
 /** Display lines for a step's rolls: [{cls, text}]. o: {gm: boolean, isPc(tokenId) -> boolean}. */
 export function rollLines(rolls, { gm = false, isPc = () => false } = {}) {
   const out = [];
-  const full = (e) => gm || isPc(e.token);
-  const vsText = (vs) => {
-    if (!vs) return '';
-    const show = gm || (vs.token && isPc(vs.token));
-    return ` vs ${vs.label} ${show && Number.isFinite(vs.value) ? vs.value : '?'}`;
-  };
+  const full = (e) => seesWhole(e, { gm, isPc });
+  const vsText = (vs) => vsWords(vs, { gm, isPc });
   (rolls || []).forEach((e, i) => {
     if (!e || !e.type) return;
     if (e.type === 'check') {

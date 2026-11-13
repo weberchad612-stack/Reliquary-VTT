@@ -10,7 +10,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 /**
  * o: {store, T (the engine's time functions), cal (the ruleset's calendar), roundSeconds, getView() -> 'gm' |
- * 'player', readOnly (a preview: nothing is written), toast(msg), logChange(what) (the GM's audit log), postEvent(text, pub, token) (an event in the chat), names(id, token) -> name,
+ * 'player', readOnly (a preview: nothing is written), toast(msg), logChange(what) (the GM's audit log), names(id, token) -> name,
  * applyLocal(changed: {id: effects}) -> the ids it handled (tokens on this page)}.
  * Returns {render(), clock()}.
  */
@@ -80,12 +80,8 @@ export async function mountClock(o) {
       await o.store.set(`tokens/${id}`, data).catch((e) => o.toast(`Could not update a token (${e.message || e}).`));
     }
     // the page logs its own tokens' changes as it writes them; these are the others
-    // (effects running out: the GM's audit log, and an event in the chat, public for a PC's)
-    for (const line of r.lines) {
-      if (handled.has(line.id)) continue;
-      o.logChange(line.text);
-      if (o.postEvent) o.postEvent(line.text, !!(tokens[line.id] && tokens[line.id].kind === 'pc'), line.id);
-    }
+    // (effects running out: the GM's audit log)
+    for (const line of r.lines) if (!handled.has(line.id)) o.logChange(line.text);
   }
   const moved = (b, n) => `the clock moves on: ${clockLabel(o.T, o.cal, b)} → ${clockLabel(o.T, o.cal, n)}`;
 

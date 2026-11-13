@@ -185,7 +185,10 @@ test('the actor tool: list, show, damage, heal, temporary HP, resources, shield,
   // damage to the named NPC: lines use the name players know
   const d = runCommand(game, 'damage', ['Varsha Kell', '25', 'slashing']);
   assert.match(d.lines[0], /^Hooded Cultist: .*knocked out: dying 1/, 'uses the dying rules; named as players know her');
-  assert.deepEqual(d.writes.map((w) => w.path), ['actorstate/tok-u1t8r9h7', 'tokens/tok-u1t8r9h7']);
+  assert.deepEqual(d.writes.map((w) => w.path.split('/')[0]), ['actorstate', 'tokens', 'chat']);
+  const card = d.writes[2].data;
+  assert.equal(card.kind, 'damage', 'the damage card for the chat');
+  assert.equal(card.applied.taken, 25);
   // a rat dies
   const r = runCommand(game, 'damage', ['Wet-Nosed Rat', '3']);
   assert.equal(r.writes.find((w) => w.path.startsWith('tokens/')).data.dead, true);

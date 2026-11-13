@@ -5,7 +5,7 @@
 //
 // o: {store, Engine, SYS, readOnly, view() -> 'gm' | 'player', tokens() -> {id: token} (this map's),
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
-//   logChange(what) (the GM's audit log), postEvent(text, pub, token) (an event in the players' chat), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
+//   logChange(what) (the GM's audit log), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
 //   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null), onEncounter(underWay) (an encounter began or ended),
 //   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), setDead(id, dead) (the token's dead look on the map), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js)}
@@ -56,10 +56,8 @@ export async function mountTracker(o) {
       const r = applyAction(enc0, action, { E: Engine, T: TT, now: now0, view: o.view(), tokens: o.tokens(), name: o.publicName });
       // each line is public unless it is about a creature the players do not see (hidden, or out of sight)
       const secret = (id) => { const c = r.encounter.combatants.find((x) => x.token === id), t = o.tokens()[id]; return !!(c && c.hidden) || !!(t && t.kind !== 'pc' && !o.partySees(id)); };
-      // every line goes to the GM's audit log; the ones players should know about (the encounter beginning or ending,
-      // a new round, what the turn rules did: damage, conditions, recovery) also go to the chat as events
-      const startStop = action.type === 'begin' || action.type === 'end';
-      const lines = r.lines.map((text) => ({ text, pub: !(action.token && secret(action.token)), event: startStop })), turnWords = eventLines(r.events.filter((ev) => !ev.token || !secret(ev.token)), o.publicName);
+      // every line goes to the GM's audit log (the user, 2026-11-12: events are the GM's only, not the players' chat)
+      const lines = r.lines.map((text) => ({ text })), turnWords = eventLines(r.events.filter((ev) => !ev.token || !secret(ev.token)), o.publicName);
       const tokChanged = {}, stateChanged = {};
       if (r.events.length && Tm.turnRules) {
         const all = Object.fromEntries((await store.list('tokens')).map((e) => [e.id, e.data]));
@@ -68,11 +66,10 @@ export async function mountTracker(o) {
         const prepare = (id, token, state) => { const c = cre[id]; if (!c) return null; try { return Engine.prepareActor({ actor: c.actor, state: state || {}, effects: (token && token.effects) || [], content: c.content, ruleset: SYS.actors }); } catch { return null; } };
         const names = Object.fromEntries(Object.keys(all).map((id) => [id, o.publicName(id)]));
         for (const ev of r.events) {
-          const pub = !ev.token || !secret(ev.token);
-          if (ev.type === 'round-start') lines.push({ text: `Round ${ev.round}`, pub: true, event: true });
-          if (ev.type === 'turn-start') lines.push({ text: `${o.publicName(ev.token)}'s turn`, pub });
+          if (ev.type === 'round-start') lines.push({ text: `Round ${ev.round}` });
+          if (ev.type === 'turn-start') lines.push({ text: `${o.publicName(ev.token)}'s turn` });
           const res = Tm.turnRules({ events: [ev], now: ev.type === 'turn-end' || ev.type === 'round-end' ? now0 : r.now, encounter: r.encounter, tokens: all, states, names, roundSeconds: TT.roundSeconds, rng: Math.random, prepare });
-          lines.push(...res.lines.map((text) => ({ text, pub, event: true })));
+          lines.push(...res.lines.map((text) => ({ text })));
           // the dice the rules rolled (persistent damage, flat and recovery checks): the Dice tab counts them
           for (const d of res.dice || []) extra.push({ path: dicePath(), data: diceRecord({ who: o.publicName(d.token), token: d.token, side: sideOf(all[d.token]), kind: d.kind, dice: d.dice, by: o.view() === 'gm' ? 'gm' : 'player', gm: secret(d.token) }) });
           for (const [id, t] of Object.entries(res.tokens || {})) { all[id] = { ...all[id], ...t }; tokChanged[id] = { effects: t.effects || [], dead: !!t.dead }; }
@@ -97,7 +94,7 @@ export async function mountTracker(o) {
         await store.set(`actorstate/${id}`, data);
       }
       for (const w of extra) await store.set(w.path, w.data);
-      for (const l of lines) { o.logChange(l.text); if (l.event && o.postEvent) o.postEvent(l.text, l.pub, null); }
+      for (const l of lines) o.logChange(l.text);
       if (turnWords.length) o.toast(turnWords.join(' · '));
       render();
       return true;

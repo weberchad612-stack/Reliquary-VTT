@@ -30,7 +30,6 @@ import { mountChat } from './chatui.js';
 import { mountSidebar } from './sidebar.js';
 import { mountReplay } from './replayui.js';
 import { makeFloating, bringToFront } from './panel.js';
-import { chatPath, eventMessage } from './chat.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountDice } from './diceui.js';
@@ -2786,7 +2785,7 @@ export async function start(store, { build = null } = {}) {
   }
   let persistT = null;
   function schedulePersist() { if (!persistT) persistT = setTimeout(persist, 0); }
-  /** Write every record the board's state changed, each with an audit line (and a chat event for what players should know). */
+  /** Write every record the board's state changed, each with an audit line. */
   function persist() {
     persistT = null;
     if (READONLY) return;   // a preview writes nothing
@@ -2796,13 +2795,7 @@ export async function start(store, { build = null } = {}) {
       const before = knownData.get(p);
       known.set(p, c); knownData.set(p, v);
       sending(p, store.set(p, v)).catch((e) => toast(`Could not save a change (${e.message || e}).`));
-      const [coll, rid] = p.split('/');
-      const pub = coll === 'tokens' ? !!(S.tokens[rid] && (S.tokens[rid].kind === 'pc' || (view && view.seen && view.seen.has(rid)))) : undefined;
-      for (const what of describe(p, before, v)) {
-        if (typeof what === 'string') { logChange(what); continue; }
-        logChange(what.text);
-        if (what.event) postEvent(what.text, pub && !what.gmOnly, coll === 'tokens' ? rid : null);
-      }
+      for (const what of describe(p, before, v)) logChange(what);
     }
   }
 
@@ -2810,7 +2803,7 @@ export async function start(store, { build = null } = {}) {
   const lampLabel = (id) => { const l = (LIGHTING.lights || []).find((x) => x.id === id); return (l && l.label) || id; };
   const regionLabel = (id) => { const r = (LIGHTING.regions || []).find((x) => x.id === id); return (r && r.label) || id; };
   const changedKeys = (a = {}, b = {}) => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((k) => canon(a[k]) !== canon(b[k]));
-  /** What changed in a record, in words, for the audit log; {text, event: true} for what the chat also tells the players (conditions, deaths). */
+  /** What changed in a record, in words, for the GM's audit log (conditions and deaths too: the players' chat has no events since 2026-11-12). */
   function describe(p, before = {}, after = {}) {
     const [coll, id] = p.split('/');
     if (coll === 'tokens') {
@@ -2819,8 +2812,8 @@ export async function start(store, { build = null } = {}) {
       const lb = before.light || {}, la = after.light || {};
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);
       for (const k of ['colour', 'intensity', 'animation']) if (canon(lb[k]) !== canon(la[k])) out.push(`${name}'s light ${k}: ${typeof la[k] === 'object' ? canon(la[k]) : la[k]}`);
-      // conditions and death: the chat tells the table too (the GM's only for an effect only the GM sees)
-      out.push(...describeEffects(name, before, after, CONDS).map((text) => ({ text, event: true, gmOnly: / \(GM only\)$/.test(text) })));
+      // conditions and death (the GM's audit log; an effect only the GM sees says so)
+      out.push(...describeEffects(name, before, after, CONDS));
       if (!!before.hidden !== !!after.hidden) out.push(after.hidden ? `${name} hidden from players` : `${name} shown to players`);
       if ((before.elevation || 0) !== (after.elevation || 0)) out.push(after.elevation ? `${name} elevation ${elevText(after.elevation)} ${SYS.measurement.unit}` : `${name} back to the ground (elevation 0)`);
       for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead', 'elevation', 'hidden'].includes(k))) out.push(`${name}: ${k} changed`);
@@ -2867,15 +2860,6 @@ export async function start(store, { build = null } = {}) {
     if (READONLY) return;
     store.set(auditPath(), auditEntry({ text: what, by: by(), map: MAP_ID })).catch(() => {});
   }
-  /**
-   * An event in the chat (board/chat.js) the players should know about: a condition on or off, a death, damage, a
-   * round. `pub`: players may see it (about a PC or a creature the party sees); otherwise it is the GM's only.
-   */
-  function postEvent(text, pub, token = null) {
-    if (READONLY) return;
-    store.set(chatPath(), eventMessage({ text, by: by(), map: MAP_ID, token, public: !!pub })).catch(() => {});
-  }
-
   // the explored area: written a moment after it grows
   let exploredT = null, exploredPaths = new Set(ex.length ? (await store.list('explored')).filter((e) => e.data.map === MAP_ID).map((e) => e.path) : []);
   let exploredV = EXPLORED0 ? EXPLORED0.v || 1 : 0, exploredCanon = EXPLORED0 ? canon(EXPLORED0.polys) : canon([]);
@@ -3218,7 +3202,7 @@ export async function start(store, { build = null } = {}) {
   // the game clock in the title line; the GM view edits it (board/clockui.js)
   clockUi = await mountClock({
     store, T: { readClock: Engine.readClock, adventureDay: Engine.adventureDay, clockAt: Engine.clockAt, parseAmount: Engine.parseAmount, unitSeconds: Engine.unitSeconds, expireEffects: Engine.expireEffects }, cal: (SYS.time || {}).calendar, roundSeconds: (SYS.time || {}).roundSeconds || 6,
-    getView: () => S.view, readOnly: READONLY, toast, logChange, postEvent,
+    getView: () => S.view, readOnly: READONLY, toast, logChange,
     names: (id, t) => publicName(S.tokens[id] || t) || (S.tokens[id] || t).name || id,
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
@@ -3252,7 +3236,7 @@ export async function start(store, { build = null } = {}) {
     seen: (id) => S.view === 'gm' || shown().seen.has(id) || (S.tokens[id] && S.tokens[id].kind === 'pc'),
     partySees: (id) => !!(view && view.seen && view.seen.has(id)),
     name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id), publicName: (id) => (S.tokens[id] ? pubName(S.tokens[id]) || S.tokens[id].name : id) || id,
-    colour: kindColour, toast, logChange, postEvent,
+    colour: kindColour, toast, logChange,
     loadCreature: async (id) => {
       const actor = await store.get(`actors/${id}`).catch(() => null);
       if (!actor) return null;

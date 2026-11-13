@@ -35,7 +35,7 @@ import { fileURLToPath } from 'node:url';
 import * as E from '../engine/time/encounter.js';
 import { rollCheck, countedParts, notesFor } from '../engine/rules/check.js';
 import { rollRecord } from '../board/rolls.js';
-import { chatPath, eventMessage } from '../board/chat.js';
+import { chatPath } from '../board/chat.js';
 import { auditPath, auditEntry } from '../board/audit.js';
 import { dicePath, diceRecord, checkDice, sideOf as diceSide } from '../board/dice.js';
 import { resolveToken, publicName } from '../board/names.js';
@@ -61,25 +61,19 @@ export function runEncounter(game, cmd, args, opts = {}) {
   const now0 = game.clock ? game.clock.now : 0;
   const who = (w) => resolveToken(game.tokens, w);
   const name = (id) => game.tokens[id].name || publicName(game.tokens[id]) || id;
-  // a creature the players do not see (hidden token or combatant): its events are the GM's only
-  const secret = (id, e) => !!id && (!!(game.tokens[id] || {}).hidden || !!((e.combatants || []).find((c) => c.token === id) || {}).hidden);
-  const done = (e, lines, events = [], now = now0, { event = false } = {}) => {
-    // each event in turn, so the log reads in order: the end of one turn, the new round, the next turn
+  const done = (e, lines, events = [], now = now0) => {
+    // each event in turn, so the log reads in order: the end of one turn, the new round, the next turn; every line
+    // goes to the GM's audit log, as the board does (the players' chat has no events since 2026-11-12)
     const out = [...lines], changed = new Map();
-    // the chat gets what players should know (a new round, what the turn rules did; the encounter beginning or
-    // ending); every line also goes to the GM's audit log, as the board does
-    const chat = event ? lines.map((text) => ({ text, pub: true })) : [];
     for (const ev of events) {
-      if (ev.type === 'round-start') { out.push(`— round ${ev.round} —`); chat.push({ text: `Round ${ev.round}`, pub: true }); }
+      if (ev.type === 'round-start') out.push(`— round ${ev.round} —`);
       if (ev.type === 'turn-start') out.push(`${name(ev.token)}'s turn`);
       const r = runTurnRules(game, [ev], { now: ev.type === 'turn-end' || ev.type === 'round-end' ? now0 : now, encounter: e, rng });
       out.push(...r.lines);
-      chat.push(...r.lines.map((text) => ({ text, pub: !secret(ev.token, e) })));
       for (const w of r.writes) changed.set(w.path, w);
     }
     const writes = [{ op: 'set', path: 'state/encounter', data: e }];
     for (const text of out) writes.push({ op: 'set', path: auditPath(), data: auditEntry({ text: text.replace(/^— (.*) —$/, '$1'), by: 'claude', map: (game.campaign || {}).current_map || null }) });
-    for (const c of chat) writes.push({ op: 'set', path: chatPath(), data: eventMessage({ text: c.text, by: 'claude', public: c.pub }) });
     if (now !== now0) writes.push({ op: 'set', path: 'state/clock', data: { ...(game.clock || {}), now } });
     game.encounter = e;
     if (game.clock) game.clock = { ...game.clock, now };
@@ -128,7 +122,6 @@ export function runEncounter(game, cmd, args, opts = {}) {
     const id = who(args[0]), out = done(E.setFlags(enc, id, { defeated: !opts.undo }), [`${name(id)}: ${opts.undo ? 'no longer ' : ''}defeated`]);
     if (game.tokens[id]) {
       out.writes.push({ op: 'update', path: `tokens/${id}`, data: { dead: opts.undo ? { __delete__: true } : true } });
-      out.writes.push({ op: 'set', path: chatPath(), data: eventMessage({ text: `${publicName(game.tokens[id]) || name(id)} ${opts.undo ? 'is no longer dead' : 'is dead'}`, by: 'claude', token: id, public: !secret(id, enc) }) });
       if (opts.undo) delete game.tokens[id].dead; else game.tokens[id].dead = true;
     }
     return out;
@@ -143,12 +136,12 @@ export function runEncounter(game, cmd, args, opts = {}) {
   if (cmd === 'next-round') { const r = E.nextRound(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'previous-round') { const r = E.previousRound(enc, now0, T.roundSeconds); return done(r.encounter, [`back to the start of round ${r.encounter.round}`], [], r.now); }
   if (cmd === 'previous') { const r = E.previous(enc, now0, T.roundSeconds); return done(r.encounter, [E.acting(r.encounter) ? `back to ${name(E.acting(r.encounter))}'s turn` : 'already at the first turn'], [], r.now); }
-  if (cmd === 'begin') { const r = E.begin(enc, now0); return done(r.encounter, ['The encounter begins'], r.events, r.now, { event: true }); }
+  if (cmd === 'begin') { const r = E.begin(enc, now0); return done(r.encounter, ['The encounter begins'], r.events, r.now); }
   if (cmd === 'next') { const r = E.next(enc, now0, T.roundSeconds); return done(r.encounter, [], r.events, r.now); }
   if (cmd === 'delay') { const id = E.acting(enc); const r = E.delay(enc, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} delays`], r.events, r.now); }
   if (cmd === 'resume') { const id = who(args[0]); const r = E.resume(enc, id, now0); return done(r.encounter, [`${name(id)} stops delaying`], r.events, r.now); }
   if (cmd === 'remove') { const id = who(args[0]); const r = E.removeCombatant(enc, id, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} leaves the encounter`], r.events, r.now); }
-  if (cmd === 'end') { const r = E.end(enc, now0); return done(r.encounter, [`The encounter ends after ${enc.round} round(s)`], r.events, r.now, { event: true }); }
+  if (cmd === 'end') { const r = E.end(enc, now0); return done(r.encounter, [`The encounter ends after ${enc.round} round(s)`], r.events, r.now); }
   throw new Error('commands: show, start, add, init, roll, defeat, hide, begin, next, previous, next-round, previous-round, delay, resume, remove, end');
 }
 

@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chatMessage, chatPath, chatVisible, eventMessage, timeAgo, messageHtml, speakerOf } from '../board/chat.js';
+import { chatMessage, chatPath, chatVisible, timeAgo, messageHtml, speakerOf } from '../board/chat.js';
 import { auditPath, auditEntry, auditRows, auditHtml } from '../board/audit.js';
 import { chatPost } from '../tools/chat.mjs';
 import { campaignRecords, saveFromRecords } from '../board/records.js';
@@ -23,7 +23,7 @@ test('messages: kinds, paths, who sees them', () => {
   assert.throws(() => chatMessage({ kind: 'narration', text: ' ' }), /text/);
   const n = chatMessage({ kind: 'narration', text: 'The door creaks.', at: 'T' });
   assert.deepEqual(n, { at: 'T', by: 'claude', kind: 'narration', text: 'The door creaks.' });
-  const secret = eventMessage({ text: 'Varsha is frightened 1', by: 'gm' }), open = eventMessage({ text: 'Kerra is prone', by: 'player', public: true });
+  const secret = chatMessage({ kind: 'ruling', text: 'Varsha is frightened 1', gm: true }), open = chatMessage({ kind: 'ruling', text: 'Kerra is prone' });
   assert.equal(chatVisible(secret, 'player'), false);
   assert.equal(chatVisible(secret, 'gm'), true);
   assert.equal(chatVisible(open, 'player'), true);
@@ -52,7 +52,9 @@ test('message HTML: speakers by view, read-aloud, rulings, NPCs by alias, GM del
   const roll = chatMessage({ kind: 'roll', token: 'tok-a', name: 'Hooded Cultist', check: 'initiative', total: 14, mod: 4, dice: [10], kept: 10 });
   assert.equal(speakerOf(roll, 'gm', (id) => (id === 'tok-a' ? 'Varsha Kell' : null)), 'Varsha Kell');
   assert.match(strip(messageHtml(roll, {})), /Hooded Cultist .* Initiative: Perception .* 1d20 \+ 4 14/);
-  assert.match(messageHtml(eventMessage({ text: 'Varsha is dead' }), { view: 'gm' }), /class="cm cm-event gm"/);
+  // an old event message (retired 2026-11-12) still shows; new ones cannot be made
+  assert.match(messageHtml({ at: 'T', by: 'gm', kind: 'event', text: 'Varsha is dead', gm: true }, { view: 'gm' }), /class="cm cm-event gm"/);
+  assert.throws(() => chatMessage({ kind: 'event', text: 'Round 1' }), /kind/, 'events go to the audit log');
   assert.throws(() => chatMessage({ kind: 'log', text: 'moved' }), /kind/, 'the change-log kind is retired');
 });
 
@@ -67,10 +69,10 @@ test('the audit log: entries, newest first, warnings marked', () => {
   assert.match(auditHtml({ by: 'claude', text: '<b>', at: '2026-11-12T12:00:00Z' }), /&lt;b&gt;/);
 });
 
-test('Claude\'s tool: events and audit lines', () => {
+test('Claude\'s tool: events are audit lines, and audit lines', () => {
   const e = chatPost('event', ['Kerra', 'takes', '7', 'damage'], {});
-  assert.deepEqual([e.data.kind, e.data.text, e.data.gm], ['event', 'Kerra takes 7 damage', undefined]);
-  assert.equal(chatPost('event', ['secret'], { gm: true }).data.gm, true);
+  assert.match(e.path, /^audit\//, 'events go to the GM\'s audit log (the user, 2026-11-12)');
+  assert.equal(e.data.text, 'Kerra takes 7 damage');
   const a = chatPost('audit', ['HP', '31', '->', '24'], { warn: true, map: 'm' });
   assert.match(a.path, /^audit\//);
   assert.deepEqual([a.data.by, a.data.text, a.data.level, a.data.map], ['claude', 'HP 31 -> 24', 'warn', 'm']);
@@ -90,7 +92,7 @@ test('Claude\'s tool: narration, rulings, an NPC by its token (alias until known
 test('the chat and the audit log are part of the save: records and back, chat.json and audit.json', () => {
   const pack = path.join(ROOT, 'examples/sample-pack'), keep = path.join(ROOT, 'examples/campaigns/keep-test');
   const c = readCampaign(pack, keep);
-  const chat = [{ id: '00000001a-0aaaa', ...chatMessage({ kind: 'narration', text: 'Hello', at: 'A' }) }, { id: '00000003c-0cccc', ...eventMessage({ text: 'Round 1', public: true, at: 'C' }) }];
+  const chat = [{ id: '00000001a-0aaaa', ...chatMessage({ kind: 'narration', text: 'Hello', at: 'A' }) }, { id: '00000003c-0cccc', ...chatMessage({ kind: 'ruling', text: 'Round 1', at: 'C' }) }];
   const audit = [{ id: '00000002b-0bbbb', ...auditEntry({ text: 'Kerra moved to 3,4', by: 'player', at: 'B' }) }];
   const records = campaignRecords({ ...c, chat, audit, now: 'x' });
   assert.equal(records['chat/00000001a-0aaaa'].text, 'Hello');

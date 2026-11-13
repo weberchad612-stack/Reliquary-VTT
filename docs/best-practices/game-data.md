@@ -108,7 +108,7 @@ lands early.
 2. **Resolve each action with the usual tools, against the working copy**: `--records $(node tools/replay.mjs
    records)`. Save each tool's JSON to a file; do **not** write its writes to the board.
 3. **Make it a step**: `node tools/replay.mjs step --side npc --actor "Gap-Toothed Ogre" --text "The ogre clubs
-   Kerra: a hit, 12 bludgeoning." --in damage.json --in event.json --in dice.json --in fx.json --move
+   Kerra: a hit, 12 bludgeoning." --in check.json --in dice.json --in damage.json --in fx.json --move
    "Gap-Toothed Ogre:10,10"`. One action per step; a condition goes on the step that causes it. Chat messages,
    dice, audit lines and visual effects become the step's posts, written (with fresh times) when it is revealed;
    every other record becomes a change. An output without a path (effect.mjs's token) is `--in tokens/<id>=FILE`;
@@ -118,7 +118,9 @@ lands early.
    5 minutes and goes after 30. Before a long think or long narration, `replay.mjs ping` and write that too.
    **Roll details**: give each action's outputs in order, the check (`check.mjs`), the damage roll (`dice.mjs roll
    1d8+4 --kind damage --type slashing [--crit] --pack P --save S --records W`, so the roller is known) and the
-   damage applied (`actor.mjs damage`); the step shows them as the table's roll details. `--crit` on the damage roll
+   damage applied (`actor.mjs damage ... --from dd.json`, which also writes the damage card); the step shows them as the
+   table's roll details, and their check and damage cards reach the chat when the step is revealed. No chat events
+   (the user, 2026-11-12): a condition, a death or a new round is told by the cards and the narration. `--crit` on the damage roll
    doubles it: give its `total` to `actor.mjs damage ... --crit`. A situational modifier is `check.mjs --bonus "1
    backswing"`, so its name shows.
 4. **Narration** for the end: `replay.mjs narrate "..."` (one call per paragraph); it is posted to the chat when
@@ -139,7 +141,7 @@ Lessons from the first live replay (2026-11-12, a round of the keep test):
   does not (its flag is for the dying rule).
 - **Mind the weapon traits**: a greatclub's backswing gives +1 to the next Strike after a miss (`check.mjs
   --bonus "1 backswing"`); the tools do not track it.
-- **One chat event per step reads best first**: put the step's own event before what the turn rules add ("is
+- (Retired 2026-11-12: steps post check and damage cards, not chat events.) **One chat event per step read best first**: the step's own event before what the turn rules added ("is
   dead", "Round 2"), so the chat reads in story order.
 - Put each turn's `encounter.mjs next` in that creature's last step, so the tracker moves on as the table watches.
 

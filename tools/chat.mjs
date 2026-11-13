@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Claude's messages in the board's chat (board/chat.js): narration (read-aloud text: the chat's heart), rulings, an
-// NPC speaking (players see its alias until they learn its name), and table events the players should know about
-// (damage, a condition, a death). Also the GM's audit log (board/audit.js): a line for every change Claude makes.
+// NPC speaking (players see its alias until they learn its name). Also the GM's audit log (board/audit.js): a line for
+// every change Claude makes, and the table's events (damage, a condition, a death: the GM's only since 2026-11-12;
+// players learn them from the check and damage cards and the narration).
 // Prints the record to write with db_write; the board shows it in the Chat tab (or the GM's Audit tab), and the
 // save keeps it (chat.json, audit.json).
 //
@@ -9,14 +10,14 @@
 //        node tools/chat.mjs ruling "text" [--gm]
 //        node tools/chat.mjs npc <who> "text" --pack <pack-dir> --save <save-dir> [--records FILE] [--gm]
 //        node tools/chat.mjs npc --as "Name" [--alias "What players call it"] "text" [--gm]
-//        node tools/chat.mjs event "Kerra takes 7 slashing damage" [--gm]
+//        node tools/chat.mjs event "Kerra takes 7 slashing damage"   (an audit line, as audit)
 //        node tools/chat.mjs audit "Kerra: HP 31 -> 24 (Ogre's club)" [--map <map id>] [--warn]
 // --gm makes it the GM's only. <who> is a token's name, alias or id. Docs: docs/best-practices/board.md (chat).
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chatMessage, chatPath, eventMessage } from '../board/chat.js';
+import { chatMessage, chatPath } from '../board/chat.js';
 import { auditEntry, auditPath } from '../board/audit.js';
 import { resolveToken } from '../board/names.js';
 
@@ -36,9 +37,9 @@ export function chatPost(kind, args, opts = {}, game = null) {
     }
     return { path: chatPath(), data: chatMessage({ kind: 'npc', by: 'claude', token, speaker, alias, text, gm: !!opts.gm }) };
   }
-  if (kind === 'event') return { path: chatPath(), data: eventMessage({ text: args.join(' '), by: 'claude', public: !opts.gm }) };
-  if (kind === 'audit') return { path: auditPath(), data: auditEntry({ text: args.join(' '), by: 'claude', map: opts.map || null, level: opts.warn ? 'warn' : null }) };
-  throw new Error('kinds: narration, ruling, npc, event, audit');
+  // events went to the GM's audit log on 2026-11-12 (the user): `event` is an audit line now
+  if (kind === 'audit' || kind === 'event') return { path: auditPath(), data: auditEntry({ text: args.join(' '), by: 'claude', map: opts.map || null, level: opts.warn ? 'warn' : null }) };
+  throw new Error('kinds: narration, ruling, npc, audit (event: an audit line)');
 }
 
 async function main(argv) {

@@ -38,7 +38,7 @@ const REP = {
   title: 'The ogre', by: 'claude', created: '2026-11-12T00:00:00Z', n: 0, revealed: [], narration: ['The club falls.'],
   steps: [
     { side: 'npc', actor: 'ogre', text: 'Clubs Kerra', changes: [diffRecord('actorstate/kerra', { hp: 20 }, { hp: 11 })],
-      posts: [{ c: 'chat', data: { by: 'claude', kind: 'event', text: 'Kerra takes 9' } }, { c: 'fx', data: { map: 'm', name: 'club', from: 'ogre', to: 'kerra', by: 'claude', ts: 1 } }],
+      posts: [{ c: 'chat', data: { by: 'claude', kind: 'narration', text: 'Kerra takes 9' } }, { c: 'fx', data: { map: 'm', name: 'club', from: 'ogre', to: 'kerra', by: 'claude', ts: 1 } }],
       moves: [{ token: 'ogre', from: [1, 1], to: [3, 3] }] },
     { side: 'pc', actor: 'kerra', text: 'Kerra falls prone', changes: [diffRecord('tokens/kerra', { x: 5 }, { x: 5, effects: [{ id: 'prone' }] })], posts: [], moves: [] },
   ],
@@ -113,7 +113,7 @@ test('replay tool: a draft changes a working copy step by step, and end writes t
   assert.deepEqual(b.writes.map((w) => w.path.split('/')[0]), ['state', 'audit']);
   assert.throws(() => run('begin', [], { records: recFile }), /a draft is open/);
   const out = path.join(dir, 'o.json');
-  fs.writeFileSync(out, JSON.stringify({ lines: [], writes: [{ op: 'update', path: 'actorstate/kerra', data: { hp: 11 } }, { op: 'set', path: 'chat/x', data: { kind: 'event', text: 'ow' } }] }));
+  fs.writeFileSync(out, JSON.stringify({ lines: [], writes: [{ op: 'update', path: 'actorstate/kerra', data: { hp: 11 } }, { op: 'set', path: 'chat/x', data: { kind: 'ruling', text: 'ow' } }] }));
   run('step', [], { side: 'npc', actor: 'Ogre', text: 'Clubs Kerra', in: [out], move: ['ogre:3,4'] });
   const working = JSON.parse(fs.readFileSync(path.join(dir, 'draft.records.json'), 'utf8'));
   assert.equal(working['actorstate/kerra'].hp, 11);   // step 2 sees step 1
@@ -129,7 +129,7 @@ test('replay tool: a draft changes a working copy step by step, and end writes t
   assert.equal(rep.steps[0].who, 'Ogre');
   assert.deepEqual(rep.steps[0].changes.find((c) => c.path === 'actorstate/kerra').from, { hp: 20 });
   assert.deepEqual(rep.steps[1].changes[0].from, { hp: 11 });
-  assert.deepEqual(rep.steps[0].posts, [{ c: 'chat', data: { kind: 'event', text: 'ow' } }]);
+  assert.deepEqual(rep.steps[0].posts, [{ c: 'chat', data: { kind: 'ruling', text: 'ow' } }]);
   assert.deepEqual(rep.steps[0].moves, [{ token: 'ogre', from: [1, 1], to: [3, 4] }]);
   assert.equal(fs.existsSync(draftFile), false);
   // a later draft starts from the board plus the replay not yet revealed
@@ -229,8 +229,36 @@ test('think.mjs: the banner on its own, carried on by a replay begun while it is
   assert.equal(b.writes[0].data.since, '2026-11-12T10:00:00.000Z', 'the same adjudication goes on');
   assert.throws(() => runThink('ping', {}, { draftFile }), /not up/);
   assert.throws(() => runReplay('begin', [], { records: recFile, kind: 'dance' }, { draftFile: path.join(dir, 'other.json') }), /kind is one of/);
-  fs.writeFileSync(path.join(dir, 'o.json'), JSON.stringify({ op: 'set', path: 'chat/x', data: { kind: 'event', text: 'found it' } }));
+  fs.writeFileSync(path.join(dir, 'o.json'), JSON.stringify({ op: 'set', path: 'chat/x', data: { kind: 'ruling', text: 'found it' } }));
   runReplay('step', [], { side: 'pc', text: 'Lyra searches', in: [path.join(dir, 'o.json')] }, { draftFile });
   assert.equal(runReplay('end', [], {}, { draftFile }).writes[0].data.kind, 'exploration');
   assert.equal(runThink('stop', {}, { draftFile }).writes[0].op, 'delete');
+});
+
+
+// ---------- check and damage cards in the chat (board/chat.js; the user, 2026-11-12) ----------
+import { chatMessage as cm, checkCardHtml, damageCardHtml, messageHtml as mh } from '../board/chat.js';
+const strip = (h) => h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+test('check cards: a PC\'s whole for everyone (a foe\'s AC as ?), a foe\'s as total and result; the GM sees all', () => {
+  const pc = cm({ kind: 'check', token: 'kerra', name: 'Kerra', roll: KERRA_HITS[0] });
+  const see = { gm: false, isPc };
+  assert.match(strip(checkCardHtml(pc, see)), /Longsword Strike \(attack 2\) Strength \+4 .* 1d20 \+ 8 · 12 20 vs AC \? success/);
+  assert.match(strip(checkCardHtml(pc, { gm: true, isPc })), /vs AC 17/);
+  const foe = cm({ kind: 'check', token: 'ogre', name: 'Ogre', roll: OGRE_HITS[0] });
+  assert.equal(strip(checkCardHtml(foe, see)), 'Greatclub Strike 24 vs AC 20 success');
+  assert.match(strip(checkCardHtml(foe, { gm: true, isPc })), /stat block \+12 1d20 \+ 12 · 12 24 vs AC 20/);
+  assert.throws(() => cm({ kind: 'check', token: 'x' }), /needs its roll/);
+  // in the chat: the roller speaks; the view decides
+  assert.match(strip(mh(foe, { view: 'player', kindOf: (id) => (id === 'kerra' ? 'pc' : 'foe'), names: () => null })), /^O Ogre .* Greatclub Strike 24 vs AC 20 success$/);
+});
+
+test('damage cards: the dice, the doubling and the adjustments for a PC\'s; the amount taken for a foe\'s', () => {
+  const pc = cm({ kind: 'damage', token: 'kerra', name: 'Kerra', rolls: [KERRA_HITS[1]], applied: KERRA_HITS[2] });
+  const names = (id) => ({ ogre: 'Scar-Browed Ogre', kerra: 'Kerra' }[id]);
+  assert.equal(strip(damageCardHtml(pc, { gm: false, isPc, names })), 'Damage 1d8+4 = (8)+4 = 12 · doubled 24 (critical) 24 slashing: resistance 5 → 19 19 slashing to Scar-Browed Ogre');
+  const foe = cm({ kind: 'damage', token: 'ogre', name: 'Ogre', rolls: [OGRE_HITS[1]], applied: OGRE_HITS[2] });
+  assert.equal(strip(damageCardHtml(foe, { gm: false, isPc, names })), 'Damage 11 bludgeoning to Kerra');
+  assert.match(strip(damageCardHtml(foe, { gm: true, isPc, names })), /1d10\+7 = \(4\)\+7 = 11/);
+  assert.throws(() => cm({ kind: 'damage', token: 'x' }), /needs its rolls/);
 });

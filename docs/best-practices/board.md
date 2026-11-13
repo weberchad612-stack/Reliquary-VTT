@@ -17,8 +17,8 @@ The database is the truth during play; the PC save is the truth between sessions
 ## 2. During play
 
 - **Read before you write.** Get the record (`db_get`, or `db_list` for a collection) for its version, then write with `ifVersion`. A token the player has been dragging changes version on every move (Pip reached version 41 in one test), so read it right before writing.
-- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add an audit line in the same call (and a chat event when players should know: damage, a condition, a death). The board redraws every open page within a moment.
-- **Audit lines and chat events use the board's own format**, so they sort and show correctly: make them with `tools/chat.mjs audit "..."` and `tools/chat.mjs event "..."` (or `board/audit.js` `auditPath`/`auditEntry` and `board/chat.js` `chatPath`/`eventMessage`). An audit entry is `audit/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `audit/0mwbam9my-0clde`) and data `{at: <ISO time>, by: "claude", text: "<one line>", map: <map id>, level?: "warn"}`. (An entry with an id lacking the leading zero sorts last.)
+- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add an audit line in the same call (conditions, damage and deaths too: the players' chat has no events since 2026-11-12). The board redraws every open page within a moment.
+- **Audit lines and chat messages use the board's own format**, so they sort and show correctly: make them with `tools/chat.mjs audit "..."` (`event "..."` is an audit line too) and the tools' own records (or `board/audit.js` `auditPath`/`auditEntry` and `board/chat.js` `chatPath`/`chatMessage`). An audit entry is `audit/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `audit/0mwbam9my-0clde`) and data `{at: <ISO time>, by: "claude", text: "<one line>", map: <map id>, level?: "warn"}`. (An entry with an id lacking the leading zero sorts last.)
 - **Read the audit log to see what the player did** since you last looked (moves, doors, lights, conditions). In the GM view the user reads the same log to audit Claude.
 - **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (the Notes tab's Add note, or N over the map; edited and removed on the map or in the tab), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat (a ruling) and in the audit log.
 - **Claude's tools at the table** (each prints the record to write with `db_write`; details in section 12):
@@ -324,16 +324,17 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   database and the code.
 - **Chat** holds what matters to the players, and **above all Claude's story narration**: narration (read-aloud,
   gold rule), rulings ("Ruling"), NPC lines (the NPC's disc and name; players see its alias until they learn the
-  name), **roll cards** (the players' rolls, the rolls Claude makes for them, and the NPC rolls players should know
-  about), and **events**: what happens at the table that players should know (a condition on or off, damage and
-  healing, a death, the encounter beginning or ending, a new round, what the turn rules did). Events are short
-  lines with an amber edge; they do not pop up. Each message shows how long ago ("36m 39s ago", kept current). The
+  name), and **roll cards**: initiative cards, and since 2026-11-12 **check cards** (attacks, saves, skills,
+  Perception, flat checks: `tools/check.mjs`) and **damage cards** (the dice with the doubling on a critical, and the
+  damage taken with its resistance and weakness lines: `tools/actor.mjs damage --from <dice.mjs output>`). A check or
+  damage card shows players a PC's roll whole, another creature's as its total and result (a foe's AC or DC as "?",
+  its damage as the amount taken); the GM sees all (`board/rolldetail.js` decides, as in the Replay tab). **No
+  events** (the user, 2026-11-12): what happens at the table (a condition, a death, a round, the turn rules) goes to
+  the GM's audit log only; players learn it from the cards, their badges, the tracker and Claude's narration. Old
+  event messages still show (short lines with an amber edge). Each message shows how long ago ("36m 39s ago", kept current). The
   GM view sees every message, GM-only ones marked GM; players see the rest. The GM deletes a message with its trash
-  icon, or all of them with **Clear chat** (click twice). When the Chat tab is not showing, a new message (not an
-  event) **pops up beside the sidebar** for 12 seconds (click it to open the chat) and the Chat icon counts unread;
+  icon, or all of them with **Clear chat** (click twice). When the Chat tab is not showing, a new message **pops up beside the sidebar** for 12 seconds (click it to open the chat) and the Chat icon counts unread;
   opening the tab clears both.
-- **An event is public** when it is about a PC or a creature the party sees, and not a GM-only effect; otherwise it
-  is the GM's (`postEvent(text, pub, token)` on the battle map; the tracker and the clock call it too).
 - **The audit log** (`audit/<time36>-<n>`, the **Audit log** tab, GM only, newest first, the newest 200 drawn; the
   save keeps all) records **every change to the game's state** in words, by whom and when: moves (with the distance
   when dragged, "Kerra moved 35 ft to 26,46"), doors, lights, the sky, terrain, templates, notes, hiding, the clock,
@@ -343,9 +344,10 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   by `persist()` (`describe()`), when its record is written: do not add a second line for the same change. Players
   never see it (its tab and window are the GM view's only). The GM clears it with **Clear audit log** (twice).
 - **Claude posts** with `tools/chat.mjs`: `narration "text"` (the chat's heart: tell the story here), `ruling "text"`,
-  `npc <who> "text" --pack P --save S` (or `npc --as "Name" [--alias A]`), `event "text"` (damage, a condition, a
-  death), and `audit "text" [--map M] [--warn]` for the audit line of every change Claude makes; `--gm` makes a chat
-  message the GM's only. Write the record it prints. `tools/encounter.mjs` writes its own audit lines and events.
+  `npc <who> "text" --pack P --save S` (or `npc --as "Name" [--alias A]`), and `audit "text" [--map M] [--warn]` for
+  the audit line of every change Claude makes (`event "text"` is the same: an audit line); `--gm` makes a chat message
+  the GM's only. Write the record it prints. `check.mjs` and `actor.mjs damage` write their cards;
+  `tools/encounter.mjs` writes its own audit lines.
 - **Both are in the save** (`chat.json` and `audit.json`, oldest first) and load with the campaign. An older save's
   or board's change-log lines (chat messages of kind `log`) move to the audit log, on load, on save, and when a
   board page opens (same ids, so two pages doing it at once agree).
@@ -357,7 +359,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Lessons:** the page's main row was sized by its content, and the old side panel's long content had been hiding
   that: `main` now takes the grid's stretching row (`grid-row: 3`). Check a panel's height with little in it.
 - Built in `board/sidebar.js` (the strip, tabs, collapse, resize, a panel per tab), `board/panel.js` (docked or
-  floating, moved, resized, remembered), `board/chat.js` (pure: messages, events, visibility, HTML),
+  floating, moved, resized, remembered), `board/chat.js` (pure: messages, cards, visibility, HTML),
   `board/chatui.js` (the Chat tab, pop-ups, unread, delete), `board/audit.js` (pure: audit entries, rows, HTML) and
   `board/auditui.js` (the Audit tab), `tests/board-chat.test.mjs`, `tools/chat.mjs`, `schemas/chat.schema.json`,
   `schemas/audit.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
@@ -507,7 +509,7 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   acting creature from its row's ⋮ menu; **Act now** on a delaying row brings it back. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
   runs the system's turn rules on the board (frightened going down, persistent damage, effects running out...)
   and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; every line goes to the audit
-  log, what players should know (the new round, damage, conditions) also to the chat as events, and a toast says whose turn it is.
+  log (not the chat), and a toast says whose turn it is.
 - **Changing the order** (the user, 2026-11-12): the GM clicks a row's initiative to **type a new number** (Enter
   sets it, Escape cancels; the GM's roll card is in the ⋮ menu); rows can be **dragged**: the GM any row up or down,
   a player only their PCs and **only down**. The dropped creature's initiative is worked out from its new

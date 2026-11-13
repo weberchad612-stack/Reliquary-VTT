@@ -12,7 +12,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 | Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge. | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
-| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, events and audit lines; replays (`replay.mjs`: resolve a batch in a draft). | [tools/README.md](../tools/README.md) |
+| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
 | Tests | `npm test` (about 450) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
@@ -31,7 +31,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 
 | Tab | State |
 |---|---|
-| Chat | Built: Claude's narration (the heart of it), rulings, NPC lines, roll cards, table events |
+| Chat | Built: Claude's narration (the heart of it), rulings, NPC lines, initiative, check and damage cards (no events: those are the GM's audit log's) |
 | Encounter | Built: initiative (roll dialog, drag to reorder), turns and rounds with the turn rules, hide, defeated, target, ping |
 | Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; narration at the end; reaction stops) |
 | Actions, Exploration, Party loot | Placeholders ("coming soon") |
@@ -53,7 +53,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 - **The highlight standard**: hovering or focusing a list entry points its thing out on the map with a pulsing ring
   in the thing's colour (steady with reduced motion). Selection, targets, the acting ring and pings keep their own.
 - **The chat is the players' story; the audit log is the GM's record.** Every state change goes to the audit log;
-  only what players should know goes to the chat as an event.
+  the chat has no events (2026-11-12): players learn what happened from the cards and the narration.
 - **Listeners stay few**: a tab that reads the database for its own pane watches it only while it is seen.
 - **System-free board, engine and tools**: anything a game system defines lives in `rulesets/<system>/`.
 - **Book content never enters the repo or a shared link.**

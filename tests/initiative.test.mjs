@@ -108,7 +108,8 @@ test('Claude\'s tool: roll with a statistic, the roll card record, defeat and hi
   const d = runEncounter(g, 'defeat', ['Pip'], {});
   assert.ok(d.writes[0].data.combatants.find((c) => c.defeated));
   assert.ok(d.writes.some((w) => /^tokens\//.test(w.path) && w.data.dead === true), 'the token shows dead');
-  assert.ok(d.writes.some((w) => /^chat\//.test(w.path) && w.data.kind === 'event' && /is dead/.test(w.data.text)), 'the chat tells the table');
+  assert.ok(!d.writes.some((w) => /^chat\//.test(w.path)), 'no chat event: the GM\'s audit log has it (the user, 2026-11-12)');
+  assert.ok(d.writes.some((w) => /^audit\//.test(w.path) && /defeated/.test(w.data.text)));
   assert.ok(d.writes.some((w) => /^audit\//.test(w.path) && /defeated/.test(w.data.text)), 'the audit log has it');
   assert.ok(runEncounter(g, 'defeat', ['Pip'], { undo: true }).writes.some((w) => /^tokens\//.test(w.path) && w.data.dead.__delete__), 'and back');
   runEncounter(g, 'defeat', ['Pip'], {});
