@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `log/`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (roll cards, Claude's messages and the change log), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -17,10 +17,10 @@ The database is the truth during play; the PC save is the truth between sessions
 ## 2. During play
 
 - **Read before you write.** Get the record (`db_get`, or `db_list` for a collection) for its version, then write with `ifVersion`. A token the player has been dragging changes version on every move (Pip reached version 41 in one test), so read it right before writing.
-- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add a log entry in the same call. The board redraws every open page within a moment.
-- **Log entries use the board's own format**, so they sort and show correctly in the change log:
-  path `log/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `log/0mwbam9my-0clde`), and data `{by: "claude", at: <ISO time>, map: <map id>, what: "<one line>"}`. (An entry first written as `{t, text}` with an id lacking the leading zero showed wrongly and sorted last.)
-- **Read the log to see what the player did** since you last looked (moves, doors, lights). In GM view the user can read the same log to audit Claude.
+- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add a change-log line in the same call. The board redraws every open page within a moment.
+- **Change-log lines are chat messages of kind `log`** (the old `log/` collection is gone, 2026-11-12), in the board's own format so they sort and show correctly:
+  path `chat/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `chat/0mwbam9my-0clde`), and data `{at: <ISO time>, by: "claude", kind: "log", text: "<one line>", map: <map id>}`, with `gm: true` when players must not see it (a hidden or unseen creature). `board/chat.js` (`chatPath`, `logMessage`) makes both; Claude's narration, rulings and NPC lines come from `tools/chat.mjs`. (An entry with an id lacking the leading zero sorts last.)
+- **Read the chat's log lines to see what the player did** since you last looked (moves, doors, lights). In GM view the user can read the same log to audit Claude.
 - **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (Map ▸ Add note, N), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat and in the log.
 - **Claude's tools at the table** (each prints the record to write with `db_write`; details in section 12):
 

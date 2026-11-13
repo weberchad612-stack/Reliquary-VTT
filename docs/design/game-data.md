@@ -134,7 +134,7 @@ it during a turn.
 ### 3.4 Dice, actions and the queue
 
 - **One dice service** for every way of rolling: Claude's rolls (a tool, like `fx.mjs`), the board's automated
-  rolls, and a player's thrown virtual die (animated, later). Every roll is a record (`rolls/<id>`: who, what,
+  rolls, and a player's thrown virtual die (animated, later). Every roll is a record (a `chat/<time36>-<n>` message of kind `roll`, since 2026-11-12: who, what,
   dice, result, who may see it), so the log and replay show the same thing.
 - **Actions are ruleset data:** a check (attack roll against AC, save against a DC), degrees of success, and
   what each degree does (damage, conditions). The engine resolves; the ruleset supplies the rules.

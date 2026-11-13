@@ -276,7 +276,7 @@ different id scheme. The previous board solved names with rule D1 (a unique adje
 - **Format:** a type prefix and 8 random base-36 characters (`tok-k3x9q2m7`, `note-…`, `tpl-…`), from one
   shared id maker (replacing `templateId`, `noteId` and hand-picked token ids).
 - **Scope: game objects only** (tokens, notes, templates and future objects such as items, journal entries,
-  quests). Streams keep time-sortable ids (`log/<time36>-…`, `fx/<time>-<n>`): they are read in order and never
+  quests). Streams keep time-sortable ids (`chat/<time36>-…`, `fx/<time>-<n>`): they are read in order and never
   pointed at. Map chunks keep their map names (`walls/<map>.<n>`, `explored/<map>.<n>`). Maps and packs keep
   their authored ids (`sample-keep`, `sample-pack`).
 - **PCs get generated ids too** (one rule for everything).

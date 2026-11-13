@@ -1,6 +1,6 @@
 // Ids for game objects: a type prefix and 8 random base-36 characters (tok-k3x9q2m7, note-..., tpl-...).
 // One maker for everything Claude or the board creates that other records point at. Streams keep time-sortable
-// ids (log/<time36>-..., fx/<time>-<n>), map pieces keep their map's name (walls/<map>.<n>), and maps and packs
+// ids (chat/<time36>-..., fx/<time>-<n>), map pieces keep their map's name (walls/<map>.<n>), and maps and packs
 // keep their authored ids. Docs: docs/design/board.md section 3 (ids), future/backlog.md FR-10.
 
 export const ID_PREFIX = Object.freeze({ token: 'tok', note: 'note', template: 'tpl' });
