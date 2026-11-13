@@ -3210,8 +3210,8 @@ export async function start(store, { build = null } = {}) {
   // the sidebar (board/sidebar.js): chat, the encounter tracker, replay, the dice statistics, visual effects, notes, and
   // the GM's lighting, walls and audit log (actions, exploration, party loot and the quest log not built yet)
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
-    // the user's order (2026-11-12)
-    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'replay', label: 'Replay' },
+    // the user's order (2026-11-12; Replay moved up under Chat the same night)
+    { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
     { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },

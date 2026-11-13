@@ -32,8 +32,8 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 | Tab | State |
 |---|---|
 | Chat | Built: Claude's narration (the heart of it), rulings, NPC lines, initiative, check and damage cards (no events: those are the GM's audit log's) |
+| Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; roll details per view; narration steps right after the actions they tell; combat, exploration and social icons; reaction stops) |
 | Encounter | Built: initiative (roll dialog, drag to reorder), turns and rounds with the turn rules, hide, defeated, target, ping |
-| Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; narration at the end; reaction stops) |
 | Actions, Exploration, Party loot | Placeholders ("coming soon") |
 | Notes | Built: add, list, hover highlights the pin, edit, remove |
 | Quest log | Placeholder |
