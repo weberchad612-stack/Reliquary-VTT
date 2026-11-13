@@ -297,6 +297,45 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .au-empty { color: var(--muted); }
 .au-foot { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 8px; }
 .au-more { font-size: 11px; color: var(--muted); }
+/* the campaign ledger (board/ledgerui.js): the GM's memory */
+.lg-head { display: grid; gap: 6px; }
+.lg-q { width: 100%; padding: 6px 9px; background: rgba(0,0,0,.25); color: var(--ink); border: 1px solid var(--line); border-radius: 7px; font: 13px var(--font-body); }
+.lg-kinds { display: flex; flex-wrap: wrap; gap: 4px; }
+.lg-kchip { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--ink); font: 11.5px var(--font-body); cursor: pointer; }
+.lg-kchip span { color: var(--muted); }
+.lg-kchip.on { border-color: var(--accent); background: rgba(227,164,67,.16); }
+.lg-tools { display: flex; gap: 6px; }
+.lg-tools button { flex: 1; padding: 5px 8px; border-radius: 7px; border: 1px dashed #8a7656; background: rgba(227,164,67,.08); color: var(--ink); font: 600 12.5px var(--font-body); cursor: pointer; }
+.lg-tools .lg-storybtn[aria-pressed="true"] { border-style: solid; border-color: var(--accent); background: rgba(227,164,67,.2); }
+.lg-form { display: grid; gap: 5px; margin: 8px 0; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); }
+.lg-form input, .lg-form textarea, .lg-form select { width: 100%; padding: 5px 7px; background: rgba(0,0,0,.25); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; font: 12.5px var(--font-body); box-sizing: border-box; }
+.lg-form textarea { resize: vertical; }
+.lg-frow { display: flex; gap: 5px; }
+.lg-frow button { flex: 1; padding: 5px; border-radius: 6px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--ink); cursor: pointer; font: 600 12.5px var(--font-body); }
+.lg-frow .lg-save { border-color: var(--accent); background: rgba(227,164,67,.18); }
+.lg-err { margin: 0; color: #e36b5b; font-size: 12px; }
+.lg-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 5px; overflow: auto; }
+.lg-row { padding: 6px 8px 6px 10px; border-radius: 6px; background: rgba(255,255,255,.03); border-left: 3px solid var(--line); }
+.lg-k-summary { border-left-color: #c9a56b; } .lg-k-thread, .lg-k-quest, .lg-k-event { border-left-color: var(--accent); }
+.lg-k-improv { border-left-color: #b69cf6; } .lg-k-secret { border-left-color: #e36b5b; } .lg-k-ruling { border-left-color: #6fb1e3; } .lg-k-fact { border-left-color: #5fbf83; }
+.lg-closed { opacity: .62; }
+.lg-top { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.lg-status { padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); }
+.lg-status.lg-open { color: var(--accent); border-color: var(--accent); } .lg-status.lg-done { color: #5fbf83; } .lg-status.lg-failed { color: #e36b5b; }
+.lg-ctl { margin-left: auto; display: flex; gap: 2px; }
+.lg-ctl button { padding: 0 5px; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; }
+.lg-ctl button:hover { color: var(--ink); } .lg-ctl button.armed { color: #e36b5b; font-weight: 700; }
+.lg-title { display: block; margin-top: 2px; font-size: 13px; }
+.lg-text { margin: 2px 0 0; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lg-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.lg-subj, .lg-link { padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--ink); font: 11px var(--font-body); cursor: pointer; }
+.lg-link { border-style: dashed; color: var(--accent); }
+.lg-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: 10.5px; color: var(--muted); }
+.lg-src.lg-added { color: #b69cf6; } .lg-by.lg-gm { color: var(--accent); } .lg-by.lg-claude { color: #b69cf6; }
+.lg-sec { margin-top: 6px; font: 600 12px var(--font-body); color: var(--accent); }
+.lg-sec span, .lg-more { color: var(--muted); font-weight: 400; font-size: 11px; }
+.lg-none { color: var(--muted); font-size: 12px; }
+.cm-flash { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; transition: outline-color .4s; }
 .cm-read { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: rgba(227,164,67,.07); font: italic 15px/1.5 Georgia, serif; color: var(--ink); }
 .cm-ruling { font-size: 14px; line-height: 1.45; }
 .cm-ruling b { color: var(--accent); margin-right: 4px; }
@@ -727,6 +766,7 @@ ul.try b { color: var(--ink); font-weight: 500; }
         <section class="sb-pane" data-pane="notes" aria-label="Notes" hidden><div id="notes-tab"></div></section>
         <section class="sb-pane" data-pane="quests" aria-label="Quest log" hidden><p class="soon"><b>The quest log</b> is coming soon: the party's quests, leads and promises.</p></section>
         <section class="sb-pane" data-pane="replay" aria-label="Replay" hidden></section>
+        <section class="sb-pane" data-pane="ledger" aria-label="Ledger (GM)" hidden></section>
         <section class="sb-pane" data-pane="audit" aria-label="Audit log (GM)" hidden></section>
       </div>
       <!-- retired from the side panel (2026-11-12): kept off screen so older code paths have somewhere to write -->

@@ -48,10 +48,11 @@ export const DEFAULT_DRAFT = path.join(ROOT, 'saves', 'replay-draft.json');
 const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 const recordsFile = (draftFile) => draftFile.replace(/\.json$/, '') + '.records.json';
 
-/** The board's records from a file: {path: data}, or a db_list result ([{path|id, data}]). */
+/** The board's records from a file: {path: data}, {records: {path: data}} (a save's records), or a db_list result ([{path|id, data}]). */
 export function readRecords(raw) {
   if (Array.isArray(raw)) return Object.fromEntries(raw.map((e) => [e.path || e.id, e.data]));
   if (raw && Array.isArray(raw.documents)) return readRecords(raw.documents);
+  if (raw && raw.records && typeof raw.records === 'object' && !Array.isArray(raw.records) && !raw.records.data) return raw.records;
   return raw || {};
 }
 

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ledger.schema.json",
+  "title": "A campaign's ledger (saves/<campaign>/ledger.json)",
+  "description": "The campaign ledger, the GM's memory, oldest first: improvisations by Claude or the user, GM secrets, rulings, threads, quests, timed events and session summaries (board/ledger.js). On the board each entry is a record ledger/<id>; players never see it. Saves stay private (saves/ is git-ignored).",
+  "type": "object",
+  "required": ["entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "at", "by", "kind", "text"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
+          "at": { "type": "string", "description": "real time it was written (ISO)" },
+          "by": { "enum": ["claude", "gm"], "description": "who wrote it: Claude, or the user in the GM view" },
+          "kind": { "enum": ["summary", "thread", "quest", "event", "improv", "fact", "secret", "ruling"] },
+          "title": { "type": "string" },
+          "text": { "type": "string", "maxLength": 4000 },
+          "subjects": { "type": "array", "items": { "type": "string" }, "description": "people, places and things it is about, for search" },
+          "where": { "type": "object", "properties": { "map": { "type": "string" }, "area": { "type": "string", "description": "the adventure's area key" } }, "additionalProperties": false },
+          "game": { "type": "object", "required": ["now"], "properties": { "now": { "type": "number", "description": "the game clock (state/clock now)" }, "label": { "type": "string" } }, "additionalProperties": false },
+          "source": { "enum": ["adventure", "added"], "description": "from the book, or invented at the table" },
+          "status": { "enum": ["open", "done", "failed"], "description": "threads, quests and timed events only" },
+          "links": { "type": "array", "items": { "type": "string" }, "description": "record paths: chat/<id>, replay/<id>, ledger/<id>, notes/<id>" },
+          "updated": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -435,7 +435,12 @@ details and the narration show it), and Pip's Refocus was story only: focus poin
 healing card like the damage card (`actor.mjs heal --from <dice.mjs output>`: the dice, the HP restored, to whom), and
 focus points as a creature resource (spend, refocus) with the turn and rest rules the ruleset gives.
 
-## FR-20: The GM's campaign ledger
+## FR-20: The GM's campaign ledger (BUILT 2026-11-13)
+
+**Built:** records `ledger/<id>` (GM only, saved as `ledger.json`), `tools/ledger.mjs` (add, summary, edit, close,
+reopen, remove, find with `--chat`, story, subjects) and the GM's Ledger tab (search, kind filters, story so far,
+add, edit, close, remove). Docs: `docs/best-practices/board.md` (the ledger), GM guide rule B5. The stop-gap
+`saves/<campaign>/ledger.md` below is no longer used.
 
 **The user, 2026-11-13 (GM guide rule B5): "SUPER important"** for running a consistent game. Any Claude
 conversation must be able to find quickly what has happened in the story and every improvisation, by Claude or by

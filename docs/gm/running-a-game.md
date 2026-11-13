@@ -18,7 +18,7 @@ the whole guide). Each line points to its section.
    lists or unread languages; secret checks rolled with `--gm` and never mentioned.
 2. **Narration (2):** the board's chat carries the story; my reply here is short mechanics plus effect
    callouts; read-aloud in my own words (page reference if long); new rooms end with their exits.
-3. **The ledger (2):** read it before answering about the past or returning to a place; write every new
+3. **The ledger (2, `ledger.mjs`):** read it before answering about the past or returning to a place; write every new
    detail, improvisation, ruling, secret and thread the same turn.
 4. **Dice (4):** real dice from the tools, every one logged; PC rolls whole, foes' as results; stop for any
    PC reaction.
@@ -119,12 +119,19 @@ Narration is the heart of the game for the user: it is what engages the players.
   happened, and every improvisation, by me or by the user (room details, items, characters, plots,
   conversations, an NPC's claim, a name or nickname, a rumor, a ruling), tagged ADVENTURE (from the book)
   or ADDED (invented, and by whom). Read the ledger before answering anything about the past or narrating a
-  return to a place, and always expect the players to bring up earlier events. It is GM-only and never
-  committed: for now a file in the campaign's save (`saves/<campaign>/ledger.md`); a ledger on the board,
-  saved with the game, is planned (future/backlog.md FR-20). The ledger also holds the GM-only side of
-  every scene, keyed by place (the adventure's area key) so a return visit starts from it: secret rolls
-  with their DC and result, what a search would have found, NPC motives and promises, unresolved threads.
-  _(B5, J2, J3)_
+  return to a place, and always expect the players to bring up earlier events. The ledger also holds the
+  GM-only side of every scene, keyed by place (the adventure's area key) so a return visit starts from it:
+  secret rolls with their DC and result, what a search would have found, NPC motives and promises,
+  unresolved threads. _(B5, J2, J3)_
+  - **How:** the ledger lives on the board (records `ledger/<id>`, GM only, saved with the game as
+    `ledger.json`; the GM view's Ledger tab, where the user reads, searches and adds his own). Write with
+    `tools/ledger.mjs add <kind> "text" --subjects "..." --area <key>` (kinds: improv, fact, secret, ruling,
+    thread, quest, event, summary; `--source adventure` for the book's own facts; `--link chat/<id>` for the
+    message it came from); the game time is stamped from the board's clock. Read with `ledger.mjs find
+    "words"` (`--chat` searches the board's chat too, `--kind open` lists open threads, quests and timed
+    events) and `ledger.mjs story`. Close a thread, quest or event with `ledger.mjs close <id>`. Every
+    command takes `--records FILE` with the board's `ledger/` records (and `state/clock`, `board/meta`;
+    `chat/` for `--chat`). The user's entries in the tab are as binding as mine.
 - **Show the adventure's art at the right moment.** When the party first sees a creature, NPC, room, item
   or set piece the adventure illustrates, show the picture (SendUserFile, rendered) from the private pack.
   Never early: if showing it would spoil something unseen, say I'm holding one back. The map and adventure
@@ -351,13 +358,16 @@ hand.
 
 ## 12. Sessions
 
-- **Starting a session.** Read this guide and the system's, `docs/STATUS.md`, and the campaign's ledger (the
-  story so far, open threads, timed events); check the board is on the right campaign. Every PC starts with
+- **Starting a session.** Read this guide and the system's, `docs/STATUS.md`, and the campaign's ledger
+  (`ledger.mjs story`: the story so far, timed events due, open quests and threads); check the board is on the
+  right campaign. Every PC starts with
   the system's per-session resources (PF2E: 1 Hero Point).
 - **Ending a session** ("wrap up"; offer it when the user says he's done): _(X)_
   1. Close what's open: no replay left unrevealed, the banner cleared, the encounter ended or noted as
      ongoing.
-  2. Bring the ledger up to date: the story so far, open threads, timed events, XP, loot.
+  2. Bring the ledger up to date: open threads, quests and timed events, XP, loot; then write the session's
+     summary (`ledger.mjs summary "..." --title "Session N"`): what happened, in a short paragraph or two, for
+     a new conversation to start from.
   3. Save the game ([board.md](../best-practices/board.md) section 3): the database to `saves/<campaign>`
      on the PC, checked.
   4. Any rule or ruling agreed during the session goes into the guides (with his approval).

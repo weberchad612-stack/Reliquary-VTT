@@ -41,6 +41,7 @@ line here in the same commit. Last brought up to date: 2026-11-12 (late: replay,
 | Visual effects | Built: this screen's switch; the GM's preview library |
 | Lighting (GM), Walls (GM) | Built |
 | Dice statistics | Built: by die, faces, roller; PCs and NPCs, this session or all time, kind of roll; the GM's resets |
+| Ledger (GM) | Built: the campaign ledger, the GM's memory: improvisations, secrets, rulings, threads, quests, timed events, session summaries; search, kind filters, story so far, the GM's own entries (`tools/ledger.mjs` for Claude) |
 | Audit log (GM) | Built: every state change and the board's warnings |
 
 - **Board info** (GM only): a collapsible see-through panel in the map's lower-left corner: the square under the
@@ -65,7 +66,7 @@ line here in the same commit. Last brought up to date: 2026-11-12 (late: replay,
 
 ## What is next
 
-- From the GM guide review (2026-11-13): the campaign ledger on the board (FR-20, "SUPER important"), the
+- From the GM guide review (2026-11-13; the campaign ledger, FR-20, is built): the
   adventure importer making areas ready for play (FR-21, FR-22), reactions on the tracker (FR-24), XP on the
   characters (FR-26), and the Party loot and Quest log tabs (FR-28, FR-30).
 - The placeholder tabs: Actions, Exploration, Party loot, Quest log.

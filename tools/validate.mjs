@@ -38,6 +38,7 @@ const V = {
   campaign: schema('campaign.schema.json'),
   actor: schema('actor.schema.json'),
   actorstate: schema('actorstate.schema.json'),
+  ledger: schema('ledger.schema.json'),
 };
 /** A ruleset's own schemas (rulesets/<id>/schemas/<name>.schema.json), compiled once. */
 const RULESET_SCHEMAS = new Map();
@@ -514,6 +515,9 @@ export function validate(target, { save = null } = {}) {
         for (const id of camp.discovered || []) if (!maps.has(id)) report.error(campFile, `discovered: no map "${id}" in the pack`);
       }
     }
+    // the campaign ledger (GM only, private like the whole save)
+    const ledgerFile = path.join(save, 'ledger.json');
+    if (fs.existsSync(ledgerFile)) { const l = readJson(ledgerFile, report); if (l) schemaErrors(V.ledger, l, ledgerFile, report); }
     const dir = path.join(save, 'maps');
     if (!fs.existsSync(dir)) report.error(save, 'save has no maps/ folder');
     else {

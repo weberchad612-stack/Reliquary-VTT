@@ -20,7 +20,7 @@ const CHECKS = {
     await asGM(page);
     const gm = await tabs();
     await asPlayer(page);
-    return ok(!player.includes('audit') && !player.includes('lighting') && gm.includes('audit') && gm.includes('walls'), `player tabs ${player.length}, GM tabs ${gm.length}`);
+    return ok(!player.includes('audit') && !player.includes('ledger') && !player.includes('lighting') && gm.includes('audit') && gm.includes('ledger') && gm.includes('walls'), `player tabs ${player.length}, GM tabs ${gm.length}`);
   },
   async drag({ page }) {
     const k = await screenAt(page, KERRA);
@@ -99,6 +99,27 @@ const CHECKS = {
     const chat = (await records(page, 'chat')).map((e) => e.data.text);
     const gone = await page.$eval('#adj', (b) => b.hidden);
     return ok(banner && gone && x === pip.x - 2 && chat.includes('Pip moves') && chat.includes('Pip ducks.'), `banner shown then gone: ${banner}/${gone}; Pip ${pip.x} -> ${x}; chat ${chat.slice(-2).join(' | ')}`);
+  },
+  async ledger({ page }) {
+    await asGM(page);
+    await writeRecord(page, 'ledger/0mwe00000-0lgsmk', { at: new Date().toISOString(), by: 'claude', kind: 'thread', title: 'Boot prints', text: 'Prints lead to the west postern.', subjects: ['postern'], status: 'open' });
+    await openTab(page, 'ledger'); await page.waitForTimeout(300);
+    await page.click('[data-pane=ledger] [data-act=add]');
+    await page.selectOption('[data-pane=ledger] select[name=kind]', 'improv');
+    await page.fill('[data-pane=ledger] textarea[name=text]', 'The innkeeper is called Brennan.');
+    await page.fill('[data-pane=ledger] input[name=subjects]', 'Brennan');
+    await page.click('[data-pane=ledger] .lg-save'); await page.waitForTimeout(500);
+    const mine = (await records(page, 'ledger')).find((e) => e.data.text === 'The innkeeper is called Brennan.');
+    await page.click('[data-pane=ledger] [data-subject=postern]'); await page.waitForTimeout(150);
+    const shown = await page.$$eval('[data-pane=ledger] .lg-row', (r) => r.length);
+    await page.click('[data-pane=ledger] .lg-row [data-act=close]'); await page.waitForTimeout(500);
+    const closed = (await records(page, 'ledger')).find((e) => e.data.title === 'Boot prints').data.status;
+    await page.click('[data-pane=ledger] [data-act=story]'); await page.waitForTimeout(150);
+    const story = await page.$eval('[data-pane=ledger] .lg-list', (x) => x.textContent);
+    await asPlayer(page);
+    const playerRows = await page.$$eval('[data-pane=ledger] .lg-row', (r) => r.length);
+    return ok(mine && mine.data.by === 'gm' && mine.data.source === 'added' && shown === 1 && closed === 'done' && /The story so far/.test(story) && playerRows === 0,
+      `GM entry ${mine ? mine.data.by : 'missing'}; subject filter ${shown} row; thread ${closed}; player rows ${playerRows}`);
   },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());

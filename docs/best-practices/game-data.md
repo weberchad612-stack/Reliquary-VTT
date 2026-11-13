@@ -35,6 +35,10 @@ write a number into an actor that the rules can work out. The board and the tool
 The table rules (secrecy, narration, the ledger, tactics, rulings) are in the GM guides:
 [docs/gm/running-a-game.md](../gm/running-a-game.md) and [rulesets/pf2e/gm.md](../../rulesets/pf2e/gm.md). This section is the tools.
 
+- **The ledger** (the GM's memory: improvisations, secrets, rulings, threads, quests, timed events, session
+  summaries): `node tools/ledger.mjs add <kind> "text" --subjects "..." --records FILE`, `find`, `story`
+  ([board.md](board.md), the ledger). Write it the same turn; read it before answering about the past.
+
 
 - **Know a creature's numbers:** `node tools/actor.mjs <pack> <save> show "Kerra"`. Every number comes with
   how it is made up ("AC 18 = 10 base + 1 Dexterity (capped at 1) + 5 medium armour (trained) + 4 Chain Mail

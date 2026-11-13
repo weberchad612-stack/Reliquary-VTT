@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `ledger/` (the campaign ledger, the GM's memory), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -36,7 +36,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice`, `replay` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice`, `replay`, `ledger` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -48,7 +48,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `replay`, `fx`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `replay`, `ledger`, `fx`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -288,7 +288,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
   The battle map's tabs, top to bottom (the user's order, 2026-11-12): **Chat**, **Replay**, **Encounter**, **Actions**,
-  **Exploration**, **Party loot**, **Notes**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
+  **Exploration**, **Party loot**, **Notes**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Ledger** (GM), **Audit log** (GM);
   an area map's: **Place**, **Chat**, **Party loot**, **Quest log**, **Dice statistics** and the GM's **Audit log**. Clicking the open tab's icon collapses the
   sidebar to its strip (so does the » control at the bottom of the strip, which also expands it); **dragging the
   inner edge resizes it** (double-click the edge for the usual width). Each browser remembers the tab, the width
@@ -378,6 +378,40 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **One look, two forms** (`board/highlight.js`): `pointOutRing(ctx, {cx, cy, r, colour, now, reduced, unit})` on a
   canvas (the overlay keeps animating while it is shown), and the CSS class `pointout` with `--hl` for page
   elements. Keep the two matched (period 1.8 s, grows by 30 %); change both together.
+
+### The ledger (2026-11-13)
+
+The campaign ledger is the GM's memory of the campaign (FR-20; the user: "SUPER important"; GM guide rule B5):
+what the chat can't hold. The told story is the chat's; the ledger keeps every improvisation by Claude or the user
+(room details, items, characters, plots, an NPC's claim, names), GM secrets (secret rolls and their DCs, what a
+search would have found, motives, who has been alerted), rulings, open threads and quests, timed events with their
+triggers, and a "story so far" summary per session, written at wrap-up, so a new conversation can start from it.
+The user's design (questionnaire, 2026-11-13): what the chat can't, plus summaries; a GM tab to read, search, add
+and edit; summaries per session; the old Abomination Vaults ledger is not imported.
+
+- **Records:** `ledger/<time36>-<n>` {at, by ('claude' | 'gm'), kind ('summary' | 'thread' | 'quest' | 'event' |
+  'improv' | 'fact' | 'secret' | 'ruling'), text, title?, subjects? (names, for search), where? {map, area (the
+  adventure's area key)}, game? {now, label} (the game clock when written), source? ('adventure' | 'added';
+  improvisations are 'added'), status? ('open' | 'done' | 'failed'; threads, quests and timed events only),
+  links? (record paths: `chat/<id>`, `replay/<id>`, ...), updated?}. Pure functions in `board/ledger.js`; saved
+  as `ledger.json` (`schemas/ledger.schema.json`, checked by the validator). Players never see it: the tab is
+  GM-only and is never drawn, or watched, in the player view.
+- **Claude writes it with `tools/ledger.mjs`** the same turn something enters the story: `add <kind> "text"
+  --subjects "..." --area <key> [--source adventure] [--link chat/<id>]` (the game time comes from `state/clock`
+  in `--records`), `summary "..." --title "Session N"` at wrap-up, `edit`, `close [--failed]`, `reopen`,
+  `remove`. Reads: `find "words" [--kind <kind>|open] [--subject S] [--area A] [--chat]` (`--chat` searches the
+  board's chat too) and `story` (the summaries, timed events due, open quests and threads: the session-start
+  read), `subjects` (every name in the ledger). Every command takes `--records FILE` with the board's `ledger/`
+  records (and `state/clock`, `board/meta`; `chat/` for `--chat`).
+- **The Ledger tab** (GM; between Dice statistics and the Audit log): a search box (every word must match: text,
+  title, subjects, place, game time), kind chips with counts (**Open** picks every open thread, quest and timed
+  event), **+ Add entry** (kind, source, title, text, subjects, area; the map and the game time are added; the
+  entry is "by GM"), **📜 Story so far** (the summaries oldest first, then what is open). Each entry shows its kind,
+  status, subjects (click one to search for it), links ("in the chat" scrolls the chat to the message and outlines
+  it; "in the replay" opens Replay), where and when, its source and author, and the GM's edit (✎), done or reopen
+  (✓ / ↺) and remove (✕, two clicks). Every change from the tab writes an audit line.
+- **Lessons:** keep the ledger for what the chat can't hold; duplicating the story makes it slow to search.
+  Subjects are what make it findable: name the people, places and things an entry is about.
 
 ### Replay and "Claude is thinking" (2026-11-12)
 

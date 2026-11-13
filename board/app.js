@@ -32,6 +32,8 @@ import { mountReplay } from './replayui.js';
 import { makeFloating, bringToFront } from './panel.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
+import { mountLedger } from './ledgerui.js';
+import { clockLabel } from './clock.js';
 import { mountDice } from './diceui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
@@ -175,7 +177,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   const glides = new Map(), flashes = new Map();   // replay: tokens sliding ({pts, t0, ms}) and rings ({colour, until}) by id
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
@@ -2855,6 +2857,23 @@ export async function start(store, { build = null } = {}) {
     }
     return [`${p} changed`];
   }
+  /** Show a record a ledger entry links to: a chat message (scrolled to and pointed out), a replay, a map note. */
+  function showRecord(p) {
+    const [coll, id] = String(p).split('/');
+    if (coll === 'chat') {
+      sidebar.select('chat');
+      setTimeout(() => {
+        const el = sidebar.panel('chat').body.querySelector(`[data-id="${CSS.escape(id || '')}"]`);
+        if (!el) { toast('That message is no longer in the chat.'); return; }
+        el.scrollIntoView({ block: 'center' });
+        el.classList.add('cm-flash');
+        setTimeout(() => el.classList.remove('cm-flash'), 2600);
+      }, 60);
+    } else if (coll === 'replay') sidebar.select('replay');
+    else if (coll === 'notes') sidebar.select('notes');
+    else toast(`No view for ${p}.`);
+  }
+
   /** A line in the GM's audit log: every change to the game, in words (board/audit.js). */
   function logChange(what) {
     if (READONLY) return;
@@ -3215,10 +3234,15 @@ export async function start(store, { build = null } = {}) {
     { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
-    { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+    { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
+  // the campaign ledger, the GM's memory (board/ledger.js): new entries carry the game time and the map
+  ledgerUi = mountLedger({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('ledger').body, sidebar, tab: 'ledger',
+    map: () => MAP_ID, log: (text) => logChange(text),
+    gameNow: () => { const c = clockUi && clockUi.clock(); if (!c || typeof c.now !== 'number') return null; const label = SYS.time && SYS.time.calendar ? clockLabel({ readClock: Engine.readClock, adventureDay: Engine.adventureDay }, SYS.time.calendar, c) : null; return { now: c.now, ...(label ? { label } : {}) }; },
+    showLink: (p) => showRecord(p) });
   replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
     hooks: {
       name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),
