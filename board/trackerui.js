@@ -363,6 +363,9 @@ export async function mountTracker(o) {
     if (a === 'end') return commit({ type: 'end' });
   });
   panel.el.addEventListener('mouseover', (e) => { const li = e.target.closest('.trk-row'); hover(li ? li.dataset.id : null); });
+  // the keyboard too: a row whose button has the focus points its token out (the highlight standard)
+  panel.el.addEventListener('focusin', (e) => { const li = e.target.closest('.trk-row'); hover(li ? li.dataset.id : null); });
+  panel.el.addEventListener('focusout', (e) => { if (!panel.el.contains(e.relatedTarget)) hover(null); });
   panel.el.addEventListener('mouseleave', () => hover(null));
   panel.el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuFor) { closeMenu(); } });
   if (o.openButton) o.openButton.addEventListener('click', () => panel.open());

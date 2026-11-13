@@ -22,6 +22,7 @@ import { wheelZoomFactor, pinchStep, isDrag } from './gestures.js';
 import { kindColour, SELECTED_COLOUR, toggleTarget, markSquare, chevrons } from './targeting.js';
 import { NOTE_MAX, authorName, noteColour, noteVisible, canEditNote, cleanText, notePoint, noteRecord, noteGist, collapsedStore } from './notes.js';
 import { removeButton } from './ui.js';
+import { pointOutRing } from './highlight.js';
 import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
 import { mountChat } from './chatui.js';
@@ -1712,12 +1713,14 @@ export async function start(store, { build = null } = {}) {
       tctx.save(); tctx.strokeStyle = '#ffd166'; tctx.lineWidth = 3; tctx.setLineDash([7, 4]);
       tctx.beginPath(); tctx.arc(P(sp.x) + r, P(sp.y) + r, r + 3, 0, Math.PI * 2); tctx.stroke(); tctx.restore();
     }
-    if (trk) { const sp = space(trk); strokeBox(tctx, { m: markSquare(sp, Engine.isTiny(S.tokens[trk]), false), colour: '#ffd166' }); }
+    // the tracker row under the mouse or the keyboard: the highlight standard (board/highlight.js), a ring round the
+    // token in its kind's colour
+    if (trk) { const [cx, cy, r] = discOf(trk); pointOutRing(tctx, { cx, cy, r, colour: kindColour(S.tokens[trk].kind), now, reduced: REDUCED, unit: 1 / scale }); }
     for (const f of badgeDraws) f(tctx);   // effect and concealment badges: above every square, under the labels
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     drawBadgeTip(tctx);
-    if (marks.length && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
+    if ((marks.length || trk) && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
   }
 
   // ---- the selection box and group moves ----
@@ -1988,8 +1991,9 @@ export async function start(store, { build = null } = {}) {
   const notesTab = document.getElementById('notes-tab');
   let tabEditing = null;   // the note being edited in the tab
   function highlightNote(id) {
-    for (const p of notesEl.querySelectorAll('.pin.hl')) p.classList.remove('hl');
-    if (id) { const p = notesEl.querySelector(`.pin[data-note="${CSS.escape(id)}"]`); if (p) p.classList.add('hl'); }
+    // the highlight standard (board/highlight.js): the pin in its note's colour
+    for (const p of notesEl.querySelectorAll('.pin.pointout')) p.classList.remove('pointout');
+    if (id) { const p = notesEl.querySelector(`.pin[data-note="${CSS.escape(id)}"]`); if (p) { p.style.setProperty('--hl', noteColour(MAPNOTES[id])); p.classList.add('pointout'); } }
   }
   function centreOnPoint([x, y]) {
     const stage = document.getElementById('stage'), sr = stage.getBoundingClientRect(), r = canvas.getBoundingClientRect();
@@ -2050,6 +2054,7 @@ export async function start(store, { build = null } = {}) {
     notesTab.addEventListener('pointerover', (e) => { const row = e.target.closest('.nt-row[data-id]'); highlightNote(row ? row.dataset.id : null); });
     notesTab.addEventListener('pointerleave', () => highlightNote(null));
     notesTab.addEventListener('focusin', (e) => { const row = e.target.closest('.nt-row[data-id]'); if (row) highlightNote(row.dataset.id); });
+    notesTab.addEventListener('focusout', (e) => { if (!notesTab.contains(e.relatedTarget)) highlightNote(null); });
   }
   /** A pin: click hides or shows its bubble (this browser only); the author drags it to move the note. */
   function wirePin(pin, id, mine) {

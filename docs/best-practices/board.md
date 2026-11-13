@@ -163,7 +163,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Notes are page elements, not canvas drawings** (`#notes`, `renderNotes`): text needs wrapping, editing and focus, which a canvas does badly. Place them from map cells with the map's scale (`notePx`), and re-place them in `fit()` so they follow the zoom. They never call `draw()`.
 - **Keys in the editor stay in the editor:** its textarea stops key events, and the board's key handlers ignore inputs and textareas, so typing "t" or "n" in a note never targets or opens another note.
 - **Which bubbles are collapsed is per browser** (localStorage, guarded with try/catch: a preview or private window may refuse storage; then it lasts as long as the page).
-- **The Notes tab** (the user, 2026-11-12; below Party loot): **Add note** (the same note mode as N), and every note this view may see, newest first, with its author. **Hovering a note highlights its pin on the map** (a pulsing ring, `.pin.hl`); clicking it scrolls the map to it; its author, or the GM, **edits it in place** (✎: text, and GM only for the GM; Enter saves, Escape cancels) or **removes it** (the shared remove button, two clicks). It has no database listener of its own: `renderNotes()` redraws it from the notes the board already holds. The Map menu (Add note's old home) is gone, with Reload the board, Measure, Show walls and Turn view (never built).
+- **The Notes tab** (the user, 2026-11-12; below Party loot): **Add note** (the same note mode as N), and every note this view may see, newest first, with its author. **Hovering a note highlights its pin on the map** (the highlight standard: a pulsing ring, `pointout`); clicking it scrolls the map to it; its author, or the GM, **edits it in place** (✎: text, and GM only for the GM; Enter saves, Escape cancels) or **removes it** (the shared remove button, two clicks). It has no database listener of its own: `renderNotes()` redraws it from the notes the board already holds. The Map menu (Add note's old home) is gone, with Reload the board, Measure, Show walls and Turn view (never built).
 - **Names clash in `start()`:** `NOTES` already meant the table's tips (`TABLE.notes`); map notes are `MAPNOTES`. Search before naming a new top-level constant in `app.js`.
 
 ### Effect badges
@@ -349,6 +349,21 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   `board/chatui.js` (the Chat tab, pop-ups, unread, delete), `board/audit.js` (pure: audit entries, rows, HTML) and
   `board/auditui.js` (the Audit tab), `tests/board-chat.test.mjs`, `tools/chat.mjs`, `schemas/chat.schema.json`,
   `schemas/audit.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
+
+### The highlight standard (2026-11-12)
+
+- **"This one is over there"**: hovering or keyboard-focusing an entry in a sidebar list points its thing out on the
+  map with **a ring in the thing's own colour, glowing and pulsing slowly** (the user's standard; first built for
+  the Notes tab). Used now by the **Notes tab** (the note's pin, in its author's colour) and the **encounter
+  tracker** (the token, in its PC or NPC colour; it replaced a flat yellow square). New lists that name things on
+  the map use it too (loot, quests, roll cards).
+- **This screen only**, and only while the entry is hovered or focused. **Reduced motion** (the system setting):
+  a steady ring, no pulse.
+- **Not for states that stay on**: the selection square, the target triangles and the acting creature's ring keep
+  their own looks, and the **ping** (everyone's screen, "look here!") is a visual effect, not this.
+- **One look, two forms** (`board/highlight.js`): `pointOutRing(ctx, {cx, cy, r, colour, now, reduced, unit})` on a
+  canvas (the overlay keeps animating while it is shown), and the CSS class `pointout` with `--hl` for page
+  elements. Keep the two matched (period 1.8 s, grows by 30 %); change both together.
 
 ### Dice statistics (2026-11-12)
 

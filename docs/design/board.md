@@ -593,3 +593,10 @@ Records: `dice/<time36>-<n>` {at, by, who, token?, side ('party' | 'others'), ki
 `state/session` {started}. Written by the board's initiative rolls, the turn rules' rolls, and Claude's
 `tools/encounter.mjs`, `tools/check.mjs` and `tools/dice.mjs`. Next: roll cards and dice from the board for attacks,
 saves and damage once the board rolls them.
+
+## The highlight standard (decided and built 2026-11-12)
+
+Hovering or focusing a sidebar entry points its thing out on the map: a ring in the thing's own colour, glowing and
+pulsing slowly (steady with reduced motion), on this screen only. First built for the Notes tab and adopted by the
+user as the standard; the encounter tracker's hover moved to it from a flat yellow square. States that stay on
+(selection, targets, the acting creature) and the shared ping keep their own looks. `board/highlight.js`.
