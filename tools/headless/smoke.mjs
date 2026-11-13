@@ -207,6 +207,10 @@ const CHECKS = {
     await page.waitForTimeout(300);
     await page.click('[data-pane=sound] [data-mood=combat]'); await page.waitForTimeout(300);
     await page.click('[data-pane=sound] [data-play="sting:victory"]'); await page.waitForTimeout(300);
+    await page.click('[data-pane=sound] [data-a=pause]'); await page.waitForTimeout(300);
+    const paused = !!((await records(page, 'state')).find((e) => e.id === 'music') || { data: {} }).data.paused;
+    const resumeBtn = await page.$('[data-pane=sound] [data-a=resume]');
+    if (resumeBtn) { await resumeBtn.click(); await page.waitForTimeout(300); }
     await page.click('[data-pane=sound] [data-id=amb-smoke001] [data-a=amute]'); await page.waitForTimeout(400);
     const music = (await records(page, 'state')).find((e) => e.id === 'music');
     const sfx = await records(page, 'sfx'), amb = (await records(page, 'ambient')).find((e) => e.id === 'amb-smoke001');
@@ -217,8 +221,8 @@ const CHECKS = {
     await page.click('[data-pane=sound] [data-cmute=music]'); await page.waitForTimeout(200);
     await asPlayer(page);
     const playerMoods = await page.$$eval('[data-pane=sound] [data-mood]', (x) => x.length);
-    return ok(music && music.data.mood === 'combat' && sfx.some((e) => e.data.name === 'sting:victory') && amb && amb.data.off === true && sliders === 5 && playerMoods === 0 && chMuted.includes('music') && chPressed === 'true',
-      `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; music muted alone ${chMuted.join(',')} (${chPressed}); player mood buttons ${playerMoods}`);
+    return ok(music && music.data.mood === 'combat' && sfx.some((e) => e.data.name === 'sting:victory') && amb && amb.data.off === true && sliders === 5 && playerMoods === 0 && chMuted.includes('music') && chPressed === 'true' && paused && !!resumeBtn && !music.data.paused,
+      `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; music muted alone ${chMuted.join(',')} (${chPressed}); paused ${paused} then resumed ${!music.data.paused}; player mood buttons ${playerMoods}`);
   },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());

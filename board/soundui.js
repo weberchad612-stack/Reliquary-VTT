@@ -36,7 +36,7 @@ export function musicHtml(st, man) {
   const theme = (rec.themes || {})[st.map] || '';
   return `<div class="sd-line"><b>Mood</b></div><div class="lt-controls sd-moods">${btn('auto')}${MOODS.map(btn).join('')}${btn('silence')}</div>${boss}`
     + `<div class="sd-line"><label>This map out of combat <select data-f="theme" aria-label="This map's music out of combat"><option value=""${theme ? '' : ' selected'}>Exploring (the default)</option>${MOODS.filter((m) => m !== 'combat' && m !== 'boss' && m !== 'explore').map((m) => `<option value="${m}"${theme === m ? ' selected' : ''}>${esc(MOOD_WORDS[m])}</option>`).join('')}</select></label></div>`
-    + '<div class="lt-controls"><button type="button" data-a="next" title="Start a different piece now (every screen)">⏭ Next piece</button></div>';
+    + `<div class="lt-controls">${rec.paused ? '<button type="button" data-a="resume" aria-pressed="true" title="Carry on where the music stopped (every screen)">▶ Resume music</button>' : '<button type="button" data-a="pause" title="Pause the music on every screen">⏸ Pause music</button>'}<button type="button" data-a="next" title="Start a different piece now (every screen)">⏭ Next piece</button></div>`;
 }
 
 /** The ambient list (pure). */
@@ -64,7 +64,7 @@ export function mountSound(o) {
     const st = o.status();
     unlockEl.hidden = !!st.unlocked;
     nowEl.innerHTML = `<div class="lt-pch"><b>Now playing</b><span class="lt-coins">${esc(MOOD_WORDS[st.mood] || st.mood || '')}</span></div>`
-      + `<div class="lt-vsub">${esc(nowPlaying(st.rec, st.mood, st.piece))}</div><div class="lt-vsub">Why: ${esc(st.why || '')}</div>`;
+      + `<div class="lt-vsub">${esc(nowPlaying(st.rec, st.mood, st.piece))}</div><div class="lt-vsub">Why: ${esc(st.rec && st.rec.paused ? 'paused by the GM' : st.why || '')}</div>`;
     hearEl.textContent = st.listener ? `heard from ${st.listener}` : '';
   }
   function render() {
@@ -104,6 +104,7 @@ export function mountSound(o) {
     if (b.dataset.mood) { o.setMusic({ mood: b.dataset.mood }); say(b.dataset.mood === 'auto' ? 'The music follows the game again.' : `Music: ${MOOD_WORDS[b.dataset.mood]}.`); }
     else if (b.dataset.boss) { o.setMusic({ boss: b.dataset.boss === 'auto' ? null : b.dataset.boss === 'on' }); say(`Boss music: ${b.dataset.boss === 'auto' ? 'automatic' : b.dataset.boss}.`); }
     else if (b.dataset.a === 'next') { o.setMusic({ restart: true }); say('Next piece.'); }
+    else if (b.dataset.a === 'pause' || b.dataset.a === 'resume') { o.setMusic({ paused: b.dataset.a === 'pause' }); say(b.dataset.a === 'pause' ? 'Music paused on every screen.' : 'Music resumed.'); }
     else if (b.dataset.play) o.play(b.dataset.play);
     else if (b.dataset.a === 'amute' || b.dataset.a === 'aremove') {
       const id = b.closest('[data-id]').dataset.id, cur = o.ambient().find((e) => e.id === id);

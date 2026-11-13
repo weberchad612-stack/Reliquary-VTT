@@ -118,6 +118,15 @@ test('the music record: moods checked, a new mood or Next starts a new run, the 
   const r3 = musicRecord(r2, { theme: { map: 'town-map', mood: 'town' } }, { now: 4000 });
   assert.deepEqual(r3.themes, { 'town-map': 'town' });
   assert.deepEqual(musicRecord(r3, { theme: { map: 'town-map', mood: null } }).themes, {});
+  const p1 = musicRecord(r3, { paused: true }, { now: 10000 });
+  assert.deepEqual(p1.paused, { at: 10000 }); assert.equal(p1.since, r3.since);
+  assert.deepEqual(musicRecord(p1, { paused: true }, { now: 12000 }).paused, { at: 10000 }, 'pausing twice keeps the first time');
+  const p2 = musicRecord(p1, { paused: false }, { now: 16000 });
+  assert.ok(!p2.paused); assert.equal(p2.since, r3.since + 6000, 'resuming moves the run on by the pause, so the piece carries on');
+  const pieces = [{ file: 'a', secs: 100 }, { file: 'b', secs: 100 }];
+  assert.deepEqual(musicAt(pieces, p2, 16000).offset, musicAt(pieces, r3, 10000).offset);
+  assert.deepEqual(musicRecord(p1, { mood: 'town' }, { now: 20000 }).paused, { at: 20000 }, 'a new mood while paused stays paused');
+  assert.match(nowPlaying({ paused: { at: 1 } }, 'explore', { title: 'A' }), /^Paused: A/);
   assert.throws(() => musicRecord(null, { mood: 'disco' }), /mood/);
   assert.throws(() => musicRecord(null, { boss: 'yes' }), /boss/);
   assert.throws(() => musicRecord(null, { theme: { mood: 'town' } }), /map/);
@@ -206,6 +215,7 @@ test('the Sound tab\'s HTML: the mixer, the GM\'s moods and boss switch, the amb
   const m = musicHtml({ rec: { mood: 'town', boss: true, themes: { m1: 'town' } }, encounter: true, map: 'm1' }, { ...MAN, music: { ...MAN.music, town: [{ file: 't', secs: 9 }] } });
   assert.match(m, /data-mood="town" aria-pressed="true"/); assert.match(m, /data-boss="on" aria-pressed="true"/); assert.match(m, /<option value="town" selected>/);
   assert.ok(!/data-boss/.test(musicHtml({ rec: {}, encounter: false, map: 'm1' }, MAN)), 'the boss switch only while an encounter runs');
+  assert.match(musicHtml({ rec: {}, map: 'm1' }, MAN), /data-a="pause"/); assert.match(musicHtml({ rec: { paused: { at: 1 } }, map: 'm1' }, MAN), /data-a="resume"/);
   const a = ambientHtml([{ id: 'amb-1', data: { sound: 'campfire', radius: 20, when: 'night', off: true } }], true, true);
   assert.match(a, /sd-off/); assert.match(a, /night only/); assert.match(a, /data-a="aremove"/);
   assert.ok(!/data-a=/.test(ambientHtml([{ id: 'amb-1', data: { sound: 'campfire', radius: 20 } }], false, true)), 'players only see the list');
@@ -226,6 +236,10 @@ test('Claude\'s tool: status, mood, boss, next, theme, cue, ambient add/set/remo
   assert.equal(runSound(game, 'boss', ['on'], { man: MAN }).writes[0].data.boss, true);
   assert.throws(() => runSound(game, 'boss', ['maybe'], {}), /auto, on or off/);
   assert.notEqual(runSound(game, 'next', [], { man: MAN }).writes[0].data.seed, game.records['state/music'].seed);
+  const pz = runSound(game, 'pause', [], { man: MAN }).writes[0].data;
+  assert.ok(pz.paused); game.records['state/music'] = pz;
+  assert.match(runSound(game, 'status', [], { man: MAN }).lines[0], /PAUSED/);
+  assert.ok(!runSound(game, 'resume', [], { man: MAN }).writes[0].data.paused);
   assert.deepEqual(runSound(game, 'theme', ['here', 'town'], { man: MAN }).writes[0].data.themes, { 'sample-keep': 'town' });
   const cue = runSound(game, 'cue', ['victory'], { man: MAN });
   assert.match(cue.writes[0].path, /^sfx\//); assert.equal(cue.writes[0].data.name, 'sting:victory');

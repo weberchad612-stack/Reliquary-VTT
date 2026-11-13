@@ -3395,13 +3395,14 @@ export async function start(store, { build = null } = {}) {
         REC = musicRecord(REC, { playing: m.mood }, { by: by() });
         store.set(MUSIC_PATH, REC).catch(() => {});
       }
-      if (m.mood === 'silence') { mixer.stopMusic(3); return; }
+      if (m.mood === 'silence' || (REC && REC.paused)) { mixer.stopMusic(REC && REC.paused ? 1.5 : 3); if (REC && REC.paused) PLAYING.why = 'paused by the GM'; if (m.mood === 'silence' || !(REC && REC.paused)) return; }
       const pieces = (MAN.music || {})[m.mood] || [];
       // no shared run for this mood yet (no GM screen has written one): this screen keeps its own until one comes
       const run = REC && REC.playing === m.mood ? REC : (LOCAL[m.mood] = LOCAL[m.mood] || { since: Date.now(), seed: `${m.mood}/${Date.now()}` });
       const now = Engine.musicAt(pieces, run, Date.now());
       if (!now) { mixer.stopMusic(3); return; }
       PLAYING.piece = now.piece;
+      if (REC && REC.paused) return;
       if (mixer.running) mixer.playMusic(now.piece.file, now.offset);
     }
     // ---- ambient: each source's loop, steered to how the listener hears it ----
@@ -3477,7 +3478,7 @@ export async function start(store, { build = null } = {}) {
     ui = mountSound({ view: () => S.view, readOnly: READONLY, pane: sidebar.panel('sound').body, sidebar, tab: 'sound', mixer, prefs,
       man: () => MAN,
       status: () => ({ ...PLAYING, rec: REC, encounter: FACTS.encounter, listener: mixer.running ? lis().why : null, unlocked: mixer.running, map: MAP_ID }),
-      setMusic: (change) => { REC = musicRecord(REC, change, { by: by() }); if (change.mood !== undefined || change.boss !== undefined || change.restart) REC.playing = moodNow().mood; store.set(MUSIC_PATH, REC).catch(() => {}); tick(); logChange(change.mood ? `Music: ${change.mood}` : change.boss !== undefined ? `Boss music: ${change.boss === null ? 'automatic' : change.boss ? 'on' : 'off'}` : change.restart ? 'Music: next piece' : 'Music: this map\'s theme'); },
+      setMusic: (change) => { REC = musicRecord(REC, change, { by: by() }); if (change.mood !== undefined || change.boss !== undefined || change.restart) REC.playing = moodNow().mood; store.set(MUSIC_PATH, REC).catch(() => {}); tick(); logChange(change.mood ? `Music: ${change.mood}` : change.boss !== undefined ? `Boss music: ${change.boss === null ? 'automatic' : change.boss ? 'on' : 'off'}` : change.paused !== undefined ? (change.paused ? 'Music paused' : 'Music resumed') : change.restart ? 'Music: next piece' : 'Music: this map\'s theme'); },
       play: (name) => { const rec = { map: MAP_ID, name, by: by(), ts: Date.now() }; if (READONLY) return cue(name); store.set(`sfx/${fxId()}`, rec).catch(() => cue(name)); },
       ambient: () => AMB.filter((e) => e.data && e.data.map === MAP_ID && (S.view === 'gm' || !e.data.gm_only)),
       setAmbient: (id, d) => { if (d === null) store.remove(`${AMBIENT}/${id}`).catch(() => {}); else store.set(`${AMBIENT}/${id}`, d).catch(() => {}); } });

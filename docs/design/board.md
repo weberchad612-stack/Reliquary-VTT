@@ -672,7 +672,7 @@ The user's decisions:
 - `tools/headless/soundcheck.mjs`.
 
 **Records:**
-- `state/music` (`campaign.music`): {mood, since, seed, boss, themes, playing, by, at}.
+- `state/music` (`campaign.music`): {mood, since, seed, boss, themes, playing, paused?: {at}, by, at}.
 - `ambient/<amb-id>` (the map state's `ambient`): {map, sound, at, radius, inner?, when, volume?, label?, off?, gm_only?, by}.
 - `sfx/<time>-<n>`: {map, name, by, ts, gm?}, played once by every screen and removed after ten minutes, like `fx/`.
 

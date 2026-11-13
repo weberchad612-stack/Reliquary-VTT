@@ -10,6 +10,7 @@
 //   mood <auto|explore|combat|boss|town|tension|rest|silence>
 //   boss <auto|on|off>                   boss music for the running encounter
 //   next                                 a different piece now (every screen)
+//   pause | resume                       stop the music on every screen, then carry on where it stopped
 //   theme <map|here> <mood|none>         a map's music out of combat (a town, a tavern, a camp)
 //   cue <name> [--gm]                    a cue or sting every screen hears: victory, defeat, discovery, danger,
 //                                        rested (stings), or a cue: dice, door_open, coins, level_up, round...
@@ -59,7 +60,7 @@ export function runSound(game, cmd, args, o = {}) {
   };
   if (cmd === 'status') {
     const m = moodNow();
-    lines.push(`Music: ${MOOD_WORDS[m.mood] || m.mood} (${m.why})${rec && rec.mood && rec.mood !== 'auto' ? `; set to ${rec.mood}` : '; automatic'}${rec && rec.boss !== null && rec.boss !== undefined ? `; boss switch ${rec.boss ? 'on' : 'off'}` : ''}`);
+    lines.push(`Music: ${rec && rec.paused ? 'PAUSED, ' : ''}${MOOD_WORDS[m.mood] || m.mood} (${m.why})${rec && rec.mood && rec.mood !== 'auto' ? `; set to ${rec.mood}` : '; automatic'}${rec && rec.boss !== null && rec.boss !== undefined ? `; boss switch ${rec.boss ? 'on' : 'off'}` : ''}`);
     if (m.facts.encounter) lines.push(m.facts.boss ? `Boss check: yes, ${m.facts.why || m.facts.who}` : 'Boss check: no foe counts as a boss (the GM or Claude can switch boss music on)');
     const themes = (rec && rec.themes) || {};
     if (Object.keys(themes).length) lines.push(`Map music: ${Object.entries(themes).map(([k, v]) => `${k} ${v}`).join(', ')}`);
@@ -81,6 +82,7 @@ export function runSound(game, cmd, args, o = {}) {
     return { lines, writes };
   }
   if (cmd === 'next') { setMusic({ restart: true }, 'Music: next piece'); return { lines, writes }; }
+  if (cmd === 'pause' || cmd === 'resume') { setMusic({ paused: cmd === 'pause' }, cmd === 'pause' ? 'Music paused' : 'Music resumed'); return { lines, writes }; }
   if (cmd === 'theme') {
     const map = mapOf(args[0]), mood = args[1];
     if (!map || !mood) throw new Error('give a map (or here) and a mood (or none)');

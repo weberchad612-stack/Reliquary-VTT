@@ -94,6 +94,13 @@ try {
   const want = d.facts.boss ? 'boss' : 'combat';
   d = await until((x) => x.music && x.playing.mood === want && x.rec && x.rec.playing === want && (x.music.file || '').includes(`music/${want}-`), 10000);
   check('mood', d.playing.mood === want && (d.music.file || '').includes(`music/${want}-`), `${d.playing.mood} (${d.playing.why}): ${d.music && d.music.file}`);
+  await page.evaluate(() => document.querySelector('.sb-strip [data-tab=sound]').click()); await page.waitForTimeout(300);
+  await page.evaluate(() => document.querySelector('[data-pane=sound] [data-a=pause]').click());
+  d = await until((x) => x.rec && x.rec.paused && !x.music, 6000);
+  const pausedOk = !!(d.rec && d.rec.paused) && !d.music, at = d.playing.piece && d.playing.piece.file;
+  await page.evaluate(() => document.querySelector('[data-pane=sound] [data-a=resume]').click());
+  d = await until((x) => x.music && !x.music.paused && !(x.rec && x.rec.paused), 8000);
+  check('pause', pausedOk && !!d.music && d.music.file === at, `paused ${pausedOk}; resumed ${d.music && d.music.file} (was ${at})`);
   await writeRecord(page, 'state/music', { ...d.rec, mood: 'silence', playing: 'silence', since: Date.now() });
   d = await until((x) => x.playing.mood === 'silence' && !x.music, 6000);
   check('silence', d.playing.mood === 'silence' && !d.music, `mood ${d.playing.mood}, music ${d.music ? d.music.file : 'none'}`);

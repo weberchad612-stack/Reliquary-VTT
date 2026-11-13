@@ -51,6 +51,7 @@ A system without sound rules never switches to boss music by itself.
 - Mood buttons: Automatic, the six moods (in italics when the set has no music for one), Silence.
 - The boss switch while an encounter runs.
 - This map's music out of combat.
+- ⏸ Pause music and ▶ Resume music: the music stops on every screen and later carries on in the same piece, at the same place (`paused: {at}`; resuming moves the run's `since` on by the pause). A mood change while paused stays paused.
 - ⏭ Next piece.
 - The soundboard.
 - A mute and a remove per ambient source.
@@ -63,6 +64,7 @@ node tools/sound.mjs <pack> <save> [--records FILE] status
 node tools/sound.mjs ... mood <auto|explore|combat|boss|town|tension|rest|silence>
 node tools/sound.mjs ... boss <auto|on|off>          # a set piece the rule misses, or a big foe that isn't one
 node tools/sound.mjs ... next
+node tools/sound.mjs ... pause | resume
 node tools/sound.mjs ... theme <map|here> <town|tension|rest|none>
 node tools/sound.mjs ... cue <victory|defeat|discovery|danger|rested|dice|door_open|coins|level_up|round|...> [--gm]
 node tools/sound.mjs ... sounds [fx|cues|ambient|music|stings]

@@ -4,7 +4,8 @@
 // (tools/sound.mjs). Docs: docs/design/board.md (Sound), docs/best-practices/sound.md.
 //
 // Records:
-//   state/music     {mood: 'auto' | a mood | 'silence', since (ms), seed, boss: null | true | false (the GM's or Claude's
+//   state/music     {mood: 'auto' | a mood | 'silence', since (ms), seed, paused?: {at} (the GM paused the music for
+//                   everyone; resuming moves since on by the pause, so the piece continues where it stopped), boss: null | true | false (the GM's or Claude's
 //                   boss switch for the running encounter), themes: {map id: mood} (a map's music out of combat),
 //                   playing: mood (the mood the run is for), by, at}. Saved with the campaign (campaign.music).
 //   ambient/<id>    {map, sound (an ambient loop's name), at: [x, y] cells, radius (ft), inner (ft)?, when ('always' |
@@ -92,7 +93,10 @@ export function musicRecord(prev = {}, change = {}, { by = 'claude', now = Date.
     out.themes = { ...(out.themes || {}) };
     if (mood === null) delete out.themes[map]; else out.themes[map] = mood;
   }
-  if (change.restart || change.mood !== undefined || change.playing !== undefined) { out.since = now; out.seed = fresh(); }
+  if (change.restart || change.mood !== undefined || change.playing !== undefined) { out.since = now; out.seed = fresh(); if (out.paused) out.paused = { at: now }; }
+  // pause: every screen stops the music; resume: the run picks up where it stopped (since moves on by the pause)
+  if (change.paused === true && !out.paused) out.paused = { at: now };
+  if (change.paused === false && out.paused) { out.since += Math.max(0, now - out.paused.at); delete out.paused; }
   if (change.playing !== undefined) out.playing = change.playing;
   out.by = by; out.at = new Date(now).toISOString();
   return out;
@@ -204,6 +208,7 @@ export function diceCue(msg) {
 /** The music line for the Sound tab: what plays and why. */
 export function nowPlaying(rec, mood, piece) {
   if (mood === 'silence') return 'Silence';
+  if (rec && rec.paused) return `Paused${piece ? `: ${piece.title || piece.file}` : ''}`;
   if (!piece) return `${MOOD_WORDS[mood] || mood}: no music for this mood`;
   return `${piece.title || piece.file}: ${MOOD_WORDS[mood] || mood}`;
 }
