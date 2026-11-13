@@ -33,8 +33,8 @@ engine running against a campaign's data, kept in sync with Claude, who runs the
 7. **A deliberate GM switch.** The board always opens in the player view. The GM view sits behind a clearly
    marked button that asks for confirmation ("This reveals unseen foes, secret doors and other
    spoilers") and is dropped on reload. The user uses it to audit how Claude runs the game, so the GM view
-   shows exactly what Claude's tools see, and a **change log**: every change, Claude's and the player's,
-   with who made it and when.
+   shows exactly what Claude's tools see, and the **audit log** (the GM's only, since 2026-11-12; first called the
+   change log): every change, Claude's and the player's, with who made it and when.
 8. **The Sample Keep is the first campaign;** the Sample Crypt is the second, to prove switching. The user's
    running Abomination Vaults campaign is not migrated from the old board for now; it can start fresh on
    this board later.
@@ -71,7 +71,8 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
-| `chat/<time36>-<n>` | A chat message: a roll card, Claude's narration, a ruling, an NPC speaking, or a change-log line; `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
+| `chat/<time36>-<n>` | A chat message, the players' story: Claude's narration, a ruling, an NPC speaking, a roll card, or an event players should know about (a condition, damage, a death, a round); `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
+| `audit/<time36>-<n>` | The GM's audit log: every change to the game in words, by whom and when, and the board's warnings (board/audit.js). Players never see it. Part of the save (`audit.json`) | The board (every change it writes), Claude (`tools/chat.mjs audit`, `tools/encounter.mjs`) |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
@@ -89,7 +90,7 @@ Map pieces keep their map's name (`walls/<map>.<n>`), and maps and packs keep th
 ("Wet-Nosed Rat"), never a number (the previous board's rule D1); PCs keep their names; a proper name ("Djarek
 Evergloam", "Chillwind") is never changed or made generic. A named NPC the party has not met has an `alias` (an
 adjective name, "Hooded Cultist") that players see until Claude sets `known: true`; the GM view always shows the
-name. Everything players can read later (the change log, a template's caster) uses the public name, whichever
+name. Everything players can read later (the chat, a template's caster) uses the public name, whichever
 view wrote it. `type` (`giant-rat`) says what kind of creature it is (art and stat blocks will be looked up by
 it); `group` is its encounter set (`cellar-rats`); `short` is the letter drawn when a token has no image, the
 first letter of its adjective, unique within its group. Duplicate names and letters are warnings, never errors.
@@ -167,7 +168,7 @@ map, fitted to the window, its places as pins.
   Clicking a pin shows its card (kind of place, name, address, a short description; for the GM also the GM
   note and whether it is GM-only). Places do not link to battle maps: the map menu is the way there.
 - **Requests:** the card's "The party goes here" leaves one pending request (`state/request`), shown as a
-  red dot on the pin and in the change log. A new request replaces it (with a confirmation); the player
+  red dot on the pin and in the audit log. A new request replaces it (with a confirmation); the player
   can withdraw it. The board cannot message Claude: the user tells Claude in chat, Claude rules, narrates
   and clears it.
 - The shared pieces (menus, travel, preview, version banner) are `board/shell.js`, used by both views.
@@ -289,7 +290,7 @@ board's part is `board/templates.js` and the templates section of `board/app.js`
   `templates`). Each has its own palette colour (the first free of ten), drawn as filled squares with an
   outline, above the fog and under the tokens. Each has the shared remove button (below) just past its start, above the target triangles; its
   tooltip names the template. The player view removes the templates it placed; the GM view removes any
-  (templates this view may not remove have no button). Placing and removing are in the change log.
+  (templates this view may not remove have no button). Placing and removing are in the audit log.
 - **Claude** places templates from chat with `tools/area.mjs` (section 3: `templates/<id>`), and reads who
   is in one from its output.
 - **Later:** who an area may affect (creatures, enemies, allies) when spells and actions arrive (FR-4).
@@ -311,7 +312,7 @@ player notes). Helpers in `board/notes.js`; the notes section of `board/app.js`.
 - **Changing:** the player view edits, moves and deletes the notes it wrote; the GM view any note, Claude's
   included. Click the bubble's text to edit (saving it empty deletes); drag the pin to move (Shift: the
   centre of a square); the bubble's shared remove button (below) removes it.
-- **Data:** each note is a record (section 3), written as it changes, in the change log (added, edited,
+- **Data:** each note is a record (section 3), written as it changes, in the audit log (added, edited,
   moved, deleted, with the note's first line), and saved with the campaign (map state `notes`).
 - **Drawing:** pins, bubbles and the editor are page elements in a layer over the map (`#notes`), placed by
   the map's scale; they follow zoom and pan, never redraw the map, and sit above the target triangles and
@@ -401,8 +402,9 @@ HUD). The token HUD section of `board/app.js` (`openHud`, `statusPalette`).
   plain condition and adds a valued one at 1 or raises it; right-click lowers a valued one (removing it at
   0) or removes a plain one (Foundry PF2E's way). Dead switches the token's dead state. Hovering a tile
   shows its name and rules line.
-- **Saving:** each change writes the token record (shared at once) and a change-log line ("Lyra frightened
-  3 (was 2)", "Lyra no longer prone", "Scar-Browed Ogre is dead").
+- **Saving:** each change writes the token record (shared at once), an audit line and a chat event ("Lyra
+  frightened 3 (was 2)", "Lyra no longer prone", "Scar-Browed Ogre is dead"; the GM's only for a creature the
+  party does not see or an effect only the GM sees).
 - The HUD floats over the page and stays inside the window; it follows the token, the zoom and scrolling.
 - **It scales with the zoom**, as Foundry's does (asked for 2026-11-11): normal size when a square is 48 px
   on screen, never below 0.7x or above 1.5x, by a CSS transform (no re-layout, so it keeps up with the wheel).
@@ -484,7 +486,7 @@ Map ▸ Add note since 2026-11-11). The Export DB item of the
 
 1. `board/` from the demo, as modules, bundled; the board running from an in-memory store so it can be
    tested headless.
-2. The database store: loading, listening, writing, the change log; the GM switch.
+2. The database store: loading, listening, writing, the audit log; the GM switch.
 3. `tools/campaign.mjs`: pack and save to records and back, with a round-trip check.
 4. Publish the board; load the Sample Keep as a campaign; play-test moves, doors, fog and Claude's changes.
 5. Save to the PC and switch to the Sample Crypt and back.
@@ -553,16 +555,19 @@ a collapse/expand control does the same. The user's decisions:
 |---|---|
 | Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
 | Pop-out windows | **Every tab pops out** as a floating window (the user's standard for all sidebar tabs, 2026-11-12), **resizable**, and each **remembers its position** and size (and whether it is out) per browser. |
-| Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Walls** (GM only, from 2026-11-12: Show walls moved from the header), **Change log**, **Table log**, and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
+| Tabs now | **Chat**, **Encounter** (the tracker), **Lighting** (GM only), **Walls** (GM only, from 2026-11-12: Show walls moved from the header), **Audit log** (GM only, from 2026-11-12: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
-| Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **change-log lines** as small grey lines. Typed messages, whispers and the chat box come later. |
-| Change-log lines | **The GM sees every line; players see the public ones**: about PCs, about creatures the party sees, rounds and turns (not hidden combatants). The same lines are the Change log tab. |
+| Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **events** players should know about. Typed messages, whispers and the chat box come later. |
+| Chat and audit log (the user, 2026-11-12) | **The chat holds everything important to the players, above all Claude's story narration**: the narration, rulings and NPC lines, the dice rolled by and for the PCs, the NPC rolls players should know about, and **events**: combat rolls' results, damage, conditions applied, deaths, the encounter beginning and ending, new rounds. **An audit log only the GM sees shows every underlying state change** (moves, doors, lights, templates, notes, terrain, the clock, initiative, hiding) and the board's warnings. The change log and the table log are **removed** from the board, the database and the code. |
 | Chat not showing | When the Chat tab is not open (collapsed or another tab), a new card **pops up beside the sidebar** and fades, and the **Chat icon counts unread** messages. |
 | Keeping | **In the save**: the chat is part of the campaign, saved and loaded with it (`chat.json` in the save). |
 | Deleting | **GM only**: a trash icon on each message, and clearing the whole chat. |
 
 Records: `chat/<time36>-<n>` {at, by ('claude' | 'gm' | 'player'), kind ('roll' | 'narration' | 'ruling' | 'npc' |
-'log'), speaker, token?, text?, gm? (GM only), and for a roll the card's fields (stat, dice, kept, mode, sides, mod,
-parts, notes, total)}. They replace `rolls/` (the roll log) and `log/` (the change log). Claude posts with a new
-tool, `tools/chat.mjs`. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
+'event'), speaker, token?, text?, gm? (GM only), and for a roll the card's fields (stat, dice, kept, mode, sides,
+mod, parts, notes, total)}; `audit/<time36>-<n>` {at, by, text, map?, level? ('warn' | 'ok')}, saved as
+`audit.json`. They replace `rolls/` (the roll log), `log/` (the first change log) and the chat's change-log lines
+(kind 'log', moved to the audit log when found). Claude posts with `tools/chat.mjs` (narration, ruling, npc, event,
+audit). Next for the chat: roll cards for every check, attack and damage roll (Claude's `tools/check.mjs` and the
+board's), not only initiative. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
 "Speaking in Taldane" is the system's), the formatting bar.

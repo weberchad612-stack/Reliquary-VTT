@@ -4,7 +4,7 @@
 // - A creature or NPC without a proper name is named by a unique adjective and its type ("Wet-Nosed Rat"),
 //   never a number. PCs keep their names. A proper name ("Djarek Evergloam", "Chillwind") is never changed.
 // - alias: what players see until the party learns the proper name (known: true). The GM view always shows
-//   the name. Anything players can read (the change log, effects, area summaries) uses the public name.
+//   the name. Anything players can read (the chat, effects, area summaries) uses the public name.
 // - short: the token's letter, shown only when it has no image: the first letter of the adjective (of the
 //   alias, else the name), unique within its group (the encounter set; no group: a group of one).
 // - type: what kind of creature (giant-rat): art and stat blocks are looked up by it.

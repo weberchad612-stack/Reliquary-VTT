@@ -1,6 +1,7 @@
-// Chat messages: the records (chat/<time36>-<n>), who may see them, and their HTML. One stream carries roll cards,
-// Claude's messages (narration, rulings, an NPC speaking) and the change log's lines; it is part of the save
-// (chat.json). Pure; board/chatui.js draws it, the tools write it. Docs: docs/design/board.md (the sidebar and
+// Chat messages: the records (chat/<time36>-<n>), who may see them, and their HTML. The chat is the players' story:
+// Claude's narration first of all, rulings, NPCs speaking, roll cards, and the events at the table they should know
+// about (conditions, damage and healing, deaths, rounds); it is part of the save (chat.json). Every other change to
+// the game goes to the GM's audit log (board/audit.js), not here. Pure; board/chatui.js draws it, the tools write it. Docs: docs/design/board.md (the sidebar and
 // chat), docs/best-practices/board.md (chat).
 //
 // A message: {at, by ('claude' | 'gm' | 'player'), kind, gm? (the GM's only), map?, ...}
@@ -9,10 +10,10 @@
 //   narration  read-aloud text from Claude: {text}
 //   ruling     a ruling from Claude: {text}
 //   npc        an NPC speaking: {token?, speaker (its name), alias? (what players call it until known), text}
-//   log        a change-log line: {text}
+//   event      something at the table the players should know about (a condition on, damage, a round): {text, token?}
 
 export const CHAT = 'chat';
-export const KINDS = Object.freeze(['roll', 'narration', 'ruling', 'npc', 'log']);
+export const KINDS = Object.freeze(['roll', 'narration', 'ruling', 'npc', 'event']);
 
 let seq = 0;
 /** A time-sortable path for a new message: chat/<time36>-<n><random>. */
@@ -32,9 +33,9 @@ export function chatMessage(o) {
 /** Whether a view may see a message: the GM every one, players those not marked the GM's. */
 export const chatVisible = (msg, view) => view === 'gm' || !(msg && msg.gm);
 
-/** A change-log line as a message (public: players may see it). */
-export function logMessage({ text, by = 'gm', map = null, public: pub = false, at }) {
-  return chatMessage({ kind: 'log', text, by, map: map || undefined, gm: !pub, at });
+/** A table event as a message (public: players may see it; otherwise the GM's only). */
+export function eventMessage({ text, by = 'gm', map = null, token = null, public: pub = false, at }) {
+  return chatMessage({ kind: 'event', text, by, map: map || undefined, token: token || undefined, gm: !pub, at });
 }
 
 /** How long ago, in words: "just now", "45s ago", "36m 39s ago", "2h 5m ago", "3d ago". */
@@ -95,7 +96,7 @@ export function messageHtml(msg, o = {}) {
   const gmTag = msg.gm ? '<span class="cm-gm" title="Only the GM sees this">GM</span>' : '';
   const del = o.canDelete ? `<button type="button" class="cm-del" data-del="${esc(o.id)}" title="Delete this message" aria-label="Delete this message">${TRASH}</button>` : '';
   const when = `<time datetime="${esc(msg.at)}" title="${esc(new Date(msg.at).toLocaleString())}">${esc(timeAgo(msg.at, now))}</time>`;
-  if (msg.kind === 'log') return `<li class="cm cm-log${msg.gm ? ' gm' : ''}" data-id="${esc(o.id)}">${gmTag}<span class="cm-logtext">${esc(msg.text)}</span>${when}${del}</li>`;
+  if (msg.kind === 'event') return `<li class="cm cm-event${msg.gm ? ' gm' : ''}" data-id="${esc(o.id)}">${gmTag}<span class="cm-eventtext">${esc(msg.text)}</span>${when}${del}</li>`;
   const who = speakerOf(msg, view, o.names || (() => null));
   const kind = msg.token && o.kindOf ? o.kindOf(msg.token) : msg.kind === 'npc' ? 'npc' : null;
   const disc = msg.kind === 'roll' || msg.kind === 'npc'
@@ -111,11 +112,6 @@ export function messageHtml(msg, o = {}) {
 }
 
 const TRASH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
-
-/** The change log's rows (the log lines this view may see, newest first): [{at, by, text, gm}]. */
-export function changeLog(list, view, limit = 80) {
-  return list.filter((e) => e.data.kind === 'log' && chatVisible(e.data, view)).slice(-limit).reverse().map((e) => e.data);
-}
 
 /** A record list ({id, data}) as the save keeps it: [{id, ...message}], oldest first. */
 export function chatForSave(list) {

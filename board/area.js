@@ -13,7 +13,8 @@ import { mountClock } from './clockui.js';
 import { publicName } from './names.js';
 import { mountSidebar } from './sidebar.js';
 import { mountChat } from './chatui.js';
-import { chatPath, logMessage, changeLog } from './chat.js';
+import { auditPath, auditEntry } from './audit.js';
+import { mountAudit } from './auditui.js';
 import { kindColour } from './targeting.js';
 
 /** The places a view may see, with what the pin and card need. */
@@ -42,7 +43,7 @@ export async function startArea(store, c) {
   let TABLE = c.table;
   let found = (c.mapState && c.mapState.places_found) || [];
   let request = await store.get('state/request');
-  let view = 'player', selected = null, clockUi = null, chatUi = null;
+  let view = 'player', selected = null, clockUi = null, chatUi = null, auditUi = null;
   const tokensHere = {};
   for (const e of await store.list('tokens')) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
 
@@ -61,8 +62,8 @@ export async function startArea(store, c) {
   card.className = 'card place-card';
   card.id = 'place-card';
   document.getElementById('pane-place').prepend(card);
-  // the sidebar (board/sidebar.js): the place, the chat and the change log
-  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'changes', label: 'Change log' }] });
+  // the sidebar (board/sidebar.js): the place, the chat and the GM's audit log
+  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
 
   const toastEl = document.getElementById('toast');
   let toastT = null;
@@ -71,10 +72,10 @@ export async function startArea(store, c) {
     clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2400);
   }
   const by = () => (view === 'gm' ? 'gm' : 'player');
-  /** A change-log line into the chat: public when `pub` (by default, a player's own changes). */
-  function logChange(what, pub) {
+  /** A line in the GM's audit log (board/audit.js). */
+  function logChange(what) {
     if (PAGE.readOnly) return;
-    store.set(chatPath(), logMessage({ text: what, by: by(), map: map.id, public: pub ?? by() === 'player' })).catch(() => {});
+    store.set(auditPath(), auditEntry({ text: what, by: by(), map: map.id })).catch(() => {});
   }
 
   // ---- fit the picture to the window ----
@@ -166,7 +167,7 @@ export async function startArea(store, c) {
     document.getElementById('v-player').setAttribute('aria-pressed', String(v === 'player'));
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
     sidebar.refresh();
-    changeLogCard();
+    if (auditUi) auditUi.render();
     if (chatUi) chatUi.render();
     if (selected && !places().find((p) => p.id === selected)) selected = null;
     shell.setView(v);
@@ -183,16 +184,6 @@ export async function startArea(store, c) {
     dlg.querySelector('[data-a=yes]').onclick = () => { dlg.hidden = true; setView('gm'); };
     dlg.querySelector('[data-a=no]').onclick = () => { dlg.hidden = true; };
   };
-  const WHO = { claude: 'Claude', gm: 'GM view', player: 'Player' };
-  function changeLogCard() {
-    const el = document.getElementById('changelog');
-    const rows = changeLog(chatUi ? chatUi.messages() : [], view).map((d) => {
-      const t = d.at ? new Date(d.at) : null;
-      const time = t ? t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
-      return `<li${d.gm ? ' class="gmline"' : ''}><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || esc(d.by)}</b> ${esc(d.text)}</li>`;
-    });
-    el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
-  }
 
   // ---- keeping in step with the store ----
   function reloadBoard(why) { toast(why + ' Reloading the board...'); setTimeout(() => location.reload(), 900); }
@@ -220,7 +211,7 @@ export async function startArea(store, c) {
     });
     chatUi = mountChat({ store, view: () => view, readOnly: PAGE.readOnly, sidebar, pane: sidebar.panel('chat').body,
       names: (id) => (tokensHere[id] ? (view === 'gm' ? tokensHere[id].name : publicName(tokensHere[id])) : null), colour: kindColour, kindOf: (id) => (tokensHere[id] ? tokensHere[id].kind : null) });
-    chatUi.onChange(() => changeLogCard());
+    auditUi = mountAudit({ store, view: () => view, readOnly: PAGE.readOnly, pane: sidebar.panel('audit').body });
   }
 
   // ---- start ----

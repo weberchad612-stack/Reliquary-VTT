@@ -63,7 +63,7 @@ test('the status palette: click toggles or raises, right-click lowers or removes
   assert.throws(() => stepCondition([], 'nope', 1, C), /not a condition/);
 });
 
-test('change-log lines for effects', () => {
+test('audit and chat lines for effects', () => {
   assert.deepEqual(describeEffects('Lyra', {}, { effects: [{ id: 'frightened', value: 2 }] }, C), ['Lyra frightened 2']);
   assert.deepEqual(describeEffects('Lyra', { effects: [{ id: 'frightened', value: 2 }] }, { effects: [{ id: 'frightened', value: 1 }] }, C), ['Lyra frightened 1 (was 2)']);
   assert.deepEqual(describeEffects('Lyra', { effects: [{ id: 'prone' }] }, {}, C), ['Lyra no longer prone']);

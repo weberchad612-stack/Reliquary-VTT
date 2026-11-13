@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (roll cards, Claude's messages and the change log), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -17,11 +17,10 @@ The database is the truth during play; the PC save is the truth between sessions
 ## 2. During play
 
 - **Read before you write.** Get the record (`db_get`, or `db_list` for a collection) for its version, then write with `ifVersion`. A token the player has been dragging changes version on every move (Pip reached version 41 in one test), so read it right before writing.
-- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add a change-log line in the same call. The board redraws every open page within a moment.
-- **Change-log lines are chat messages of kind `log`** (the old `log/` collection is gone, 2026-11-12), in the board's own format so they sort and show correctly:
-  path `chat/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `chat/0mwbam9my-0clde`), and data `{at: <ISO time>, by: "claude", kind: "log", text: "<one line>", map: <map id>}`, with `gm: true` when players must not see it (a hidden or unseen creature). `board/chat.js` (`chatPath`, `logMessage`) makes both; Claude's narration, rulings and NPC lines come from `tools/chat.mjs`. (An entry with an id lacking the leading zero sorts last.)
-- **Read the chat's log lines to see what the player did** since you last looked (moves, doors, lights). In GM view the user can read the same log to audit Claude.
-- **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (Map ▸ Add note, N), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat and in the log.
+- **Change one record at a time** for small changes (`update` a token's `x`/`y`, `merge` a door into `mapstate/<map>`), and add an audit line in the same call (and a chat event when players should know: damage, a condition, a death). The board redraws every open page within a moment.
+- **Audit lines and chat events use the board's own format**, so they sort and show correctly: make them with `tools/chat.mjs audit "..."` and `tools/chat.mjs event "..."` (or `board/audit.js` `auditPath`/`auditEntry` and `board/chat.js` `chatPath`/`eventMessage`). An audit entry is `audit/<time36>-<n><rand>` with `time36 = Date.now().toString(36).padStart(9, '0')` (for example `audit/0mwbam9my-0clde`) and data `{at: <ISO time>, by: "claude", text: "<one line>", map: <map id>, level?: "warn"}`. (An entry with an id lacking the leading zero sorts last.)
+- **Read the audit log to see what the player did** since you last looked (moves, doors, lights, conditions). In the GM view the user reads the same log to audit Claude.
+- **What the player does on the board:** moves their PCs, opens doors they can see, toggles their own light, targets (T, a targeting box, or right-click a token), places and removes their own area templates (right-click a PC, Area template), adds and changes their own map notes (Map ▸ Add note, N), and sets status effects on their own PCs (right-click, Assign status effects). Everything else is Claude's (or the GM view's). Do not undo a player's change silently: say why in chat (a ruling) and in the audit log.
 - **Claude's tools at the table** (each prints the record to write with `db_write`; details in section 12):
 
   | To | Use | Writes |
@@ -37,7 +36,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -49,7 +48,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `log`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -80,7 +79,7 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 
 ### Area maps (towns)
 
-- **Requests.** A player's "The party goes to …" is in `state/request` (`{by, at, map, place, what, status}`) and in the change log. When the user next writes, read it, rule, narrate, then **delete `state/request`** (with its version) so the pin's waiting dot clears. One at a time: a new request replaces the old.
+- **Requests.** A player's "The party goes to …" is in `state/request` (`{by, at, map, place, what, status}`) and in the audit log. When the user next writes, read it, rule, narrate, then **delete `state/request`** (with its version) so the pin's waiting dot clears. One at a time: a new request replaces the old.
 - **Reveal a GM-only place** (the party finds the hideout): add its id to `places_found` in `mapstate/<area map>`. Public places need nothing.
 - **A scene that needs a battle map** (the graveyard): the players take it from the map menu (its starting area, or a known entrance), or you move the PCs yourself, as for any move (their `map`, `x`, `y`, then `current_map` last). Places never link to battle maps.
 - **PCs on an area map** keep their last square but are not drawn. When the party leaves for a battle map, they arrive on its starting area or on the chosen entrance's squares.
@@ -193,7 +192,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   is not one of the party's lookers either. **Players cannot select or catch one**: a click on its square, a selection
   box around it, a targeting box (T held while dragging), T over its square and an area template over it all pass it by (the seen set, also through one creature's own view; the
   box's own PC check; `setSelection` drops it), and a token hidden while a player holds it is let go. **The GM view draws it transparent** (35%).
-- The change log says "<name> hidden from players" (the GM's line) and "<name> shown to players".
+- The audit log says "<name> hidden from players" and "<name> shown to players".
 
 ### The token HUD
 
@@ -213,7 +212,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Never change a proper name.** A named NPC ("Djarek Evergloam", "Chillwind", "Xinthe Y'Baine") keeps its name exactly. If the party has not learned it, give the token an `alias` by the adjective rule (`--alias "Grey-Cloaked Stranger"`): players see the alias on hover, in the log and everywhere else until `node tools/token.mjs reveal --state … "Grey-Cloaked Stranger"` sets `known: true`. In chat, use the name the players know.
 - **Refer to tokens by name** in the tools (`--to "Wet-Nosed Rat"`, `--caster "Lyra"`, with `--state`); a name that matches two tokens is refused, and then the id is needed. `token.mjs find` shows a token's id, name and what players see.
 - **Give creatures a `type` and a `group`:** the type (`rat`, `hill-giant`) is what art and stat blocks will be looked up by, shared by every rat; the group is the encounter set (`cellar-rats`), within which each token's letter is unique (the letter shows only when a token has no image). `token.mjs add` picks a free letter (the adjective's initial, then another word's, then two letters). Duplicate names and letters are warnings only; `token.mjs check` lists them.
-- **Anything players can read later uses the public name**, whichever view writes it: the board's change log and a template's caster name use the alias of a creature whose name the party has not learned. Check this whenever a new feature writes a name.
+- **Anything players can read later uses the public name**, whichever view writes it: the chat's events, the audit log and a template's caster name use the alias of a creature whose name the party has not learned. Check this whenever a new feature writes a name.
 - **Lesson (2026-11-12):** three rats all named "Rat" could not be told apart on the board, in the log or in chat. The previous board solved it with adjective names (its rule D1) and kept plain numbered ids behind them; this board keeps the names and makes ids generated and unique, so that nothing has to be renamed when a creature is renamed, moved or killed.
 
 ### Elevation
@@ -268,11 +267,11 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   creature of a type; these are per creature and computed.
 - **A creature without game data** says so; give it some with `tools/actor.mjs create`.
 
-### The sidebar and chat (2026-11-12)
+### The sidebar, the chat and the audit log (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs: **Chat**, **Encounter**, **Lighting** and **Walls** (GM view only), **Change log**, **Table log**; an area
-  map's: **Place**, **Chat**, **Change log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
+  The battle map's tabs: **Chat**, **Encounter**, and the GM view's **Lighting**, **Walls** and **Audit log**; an area
+  map's: **Place**, **Chat** and the GM's **Audit log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
   the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
   (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
   collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar changes size.
@@ -296,22 +295,36 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Retired** from the old side panel (the user, 2026-11-12): the Selection card, "Try this" and the wall legend.
   Their elements are kept off screen (`#sel`, `#try`, `#legend`) so older code still has somewhere to write; the
   Selection card's buttons (light a carried light, mark a hidden foe for players) need a new home (FR-15).
-- **Chat** carries roll cards, Claude's narration (read-aloud, gold rule), rulings ("Ruling") and NPC lines (the NPC's
-  disc and name; players see its alias until they learn the name), and the change log's lines as small grey lines.
-  Each shows how long ago ("36m 39s ago", kept current). The GM view sees every message, GM-only ones marked GM;
-  players see the rest. The GM deletes a message with its trash icon, or all of them with **Clear chat** (click
-  twice). When the Chat tab is not showing, a new message (not a log line) **pops up beside the sidebar** for 12
-  seconds (click it to open the chat) and the Chat icon counts unread; opening the tab clears both.
-- **Change-log lines** (`logChange(what, pub)` on both pages): the GM sees every line; players see the public ones.
-  A line is public when it is about a PC or a creature the party sees (token changes), the clock, templates, a
-  note that is not GM-only, travel, a player's own change, or rounds and turns (not of hidden or unseen
-  creatures). Anything else is the GM's: pass `pub` when adding a new kind of line.
-- **The Change log tab** lists the same lines (newest first, this view's), and the **Table log** tab keeps this
-  screen's own notes ("comes into view").
-- **Claude posts** with `tools/chat.mjs`: `narration "text"`, `ruling "text"`, `npc <who> "text" --pack P --save S`
-  (or `npc --as "Name" [--alias A]`), `--gm` for the GM's eyes only; write the record it prints.
-- **The chat is in the save** (`chat.json`, oldest first; `chat/` records on the board) and loads with the campaign.
-  It replaces the roll log (`rolls/`) and the change log (`log/`), which are gone.
+- **Two streams** (the user's decision, 2026-11-12): the **chat is the players' story**, and the **audit log is the
+  GM's record of every change**. They replaced the change log and the table log, which are gone from the board, the
+  database and the code.
+- **Chat** holds what matters to the players, and **above all Claude's story narration**: narration (read-aloud,
+  gold rule), rulings ("Ruling"), NPC lines (the NPC's disc and name; players see its alias until they learn the
+  name), **roll cards** (the players' rolls, the rolls Claude makes for them, and the NPC rolls players should know
+  about), and **events**: what happens at the table that players should know (a condition on or off, damage and
+  healing, a death, the encounter beginning or ending, a new round, what the turn rules did). Events are short
+  lines with an amber edge; they do not pop up. Each message shows how long ago ("36m 39s ago", kept current). The
+  GM view sees every message, GM-only ones marked GM; players see the rest. The GM deletes a message with its trash
+  icon, or all of them with **Clear chat** (click twice). When the Chat tab is not showing, a new message (not an
+  event) **pops up beside the sidebar** for 12 seconds (click it to open the chat) and the Chat icon counts unread;
+  opening the tab clears both.
+- **An event is public** when it is about a PC or a creature the party sees, and not a GM-only effect; otherwise it
+  is the GM's (`postEvent(text, pub, token)` on the battle map; the tracker and the clock call it too).
+- **The audit log** (`audit/<time36>-<n>`, the **Audit log** tab, GM only, newest first, the newest 200 drawn; the
+  save keeps all) records **every change to the game's state** in words, by whom and when: moves (with the distance
+  when dragged, "Kerra moved 35 ft to 26,46"), doors, lights, the sky, terrain, templates, notes, hiding, the clock,
+  the encounter (joins, initiative, turns), conditions, deaths, travel, and the board's **warnings** in amber
+  ("moved 40 ft, beyond its Speed", "no legal route (GM call)", "is locked", "GM view: spoilers are shown").
+  `logChange(what)` writes a line on both pages; `log(msg, 'warn')` a warning. A state change is described once,
+  by `persist()` (`describe()`), when its record is written: do not add a second line for the same change. Players
+  never see it (its tab and window are the GM view's only). The GM clears it with **Clear audit log** (twice).
+- **Claude posts** with `tools/chat.mjs`: `narration "text"` (the chat's heart: tell the story here), `ruling "text"`,
+  `npc <who> "text" --pack P --save S` (or `npc --as "Name" [--alias A]`), `event "text"` (damage, a condition, a
+  death), and `audit "text" [--map M] [--warn]` for the audit line of every change Claude makes; `--gm` makes a chat
+  message the GM's only. Write the record it prints. `tools/encounter.mjs` writes its own audit lines and events.
+- **Both are in the save** (`chat.json` and `audit.json`, oldest first) and load with the campaign. An older save's
+  or board's change-log lines (chat messages of kind `log`) move to the audit log, on load, on save, and when a
+  board page opens (same ids, so two pages doing it at once agree).
 - **Lessons:** the map is centred in its area and its overlay canvases (hover squares, rings, labels, effects) and
   layers (notes, template buttons) are placed to match it in `fit()`. Anything that changes the area's size must
   refit: the board watches the stage with a ResizeObserver, and the sidebar dispatches a resize when it restores a
@@ -320,9 +333,10 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Lessons:** the page's main row was sized by its content, and the old side panel's long content had been hiding
   that: `main` now takes the grid's stretching row (`grid-row: 3`). Check a panel's height with little in it.
 - Built in `board/sidebar.js` (the strip, tabs, collapse, resize, a panel per tab), `board/panel.js` (docked or
-  floating, moved, resized, remembered), `board/chat.js` (pure: messages, visibility,
-  HTML, the change log, `tests/board-chat.test.mjs`), `board/chatui.js` (the Chat tab, pop-ups, unread, delete),
-  `tools/chat.mjs`, `schemas/chat.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
+  floating, moved, resized, remembered), `board/chat.js` (pure: messages, events, visibility, HTML),
+  `board/chatui.js` (the Chat tab, pop-ups, unread, delete), `board/audit.js` (pure: audit entries, rows, HTML) and
+  `board/auditui.js` (the Audit tab), `tests/board-chat.test.mjs`, `tools/chat.mjs`, `schemas/chat.schema.json`,
+  `schemas/audit.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
 
 ### The encounter tracker (2026-11-12)
 
@@ -354,8 +368,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   turn and the round; the rest of the round's turns are skipped, so their turn rules do not run). The GM delays the
   acting creature from its row's ⋮ menu; **Act now** on a delaying row brings it back. A player whose PC is acting gets **End turn** and **Delay**. Each turn change
   runs the system's turn rules on the board (frightened going down, persistent damage, effects running out...)
-  and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; the lines go to the change log
-  and a toast says whose turn it is.
+  and a new round moves the clock one round, exactly as `tools/encounter.mjs` does; every line goes to the audit
+  log, what players should know (the new round, damage, conditions) also to the chat as events, and a toast says whose turn it is.
 - **Changing the order** (the user, 2026-11-12): the GM clicks a row's initiative to **type a new number** (Enter
   sets it, Escape cancels; the GM's roll card is in the ⋮ menu); rows can be **dragged**: the GM any row up or down,
   a player only their PCs and **only down**. The dropped creature's initiative is worked out from its new

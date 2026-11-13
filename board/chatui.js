@@ -1,11 +1,11 @@
-// The chat on the board: the Chat tab's log of messages (roll cards, Claude's narration, rulings and NPC lines,
-// change-log lines), a card popping up beside the sidebar and an unread count on the Chat icon when the tab is not
+// The chat on the board: the Chat tab's log of messages (Claude's narration, rulings and NPC lines, roll cards, and
+// the table's events), a card popping up beside the sidebar and an unread count on the Chat icon when the tab is not
 // showing, and the GM's delete and clear. The messages and their HTML are board/chat.js. Docs:
 // docs/best-practices/board.md (chat).
 //
 // o: {store, view() -> 'gm' | 'player', readOnly, sidebar (board/sidebar.js), pane (the Chat pane), names(token) ->
 // the name this view uses for a token on the map or null, colour(kind), kindOf(token) -> kind or null}.
-// Returns {latest(token, check) -> message or null, show(message), render(), changes() -> [log rows]}.
+// Returns {latest(token, check) -> message or null, show(message), render(), messages(), onChange(fn)}.
 
 import { CHAT, chatVisible, messageHtml, timeAgo } from './chat.js';
 
@@ -31,7 +31,7 @@ export function mountChat(o) {
     const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
     const shown = visible.slice(-SHOWN);
     list.innerHTML = (visible.length > SHOWN ? `<li class="cm-older">${visible.length - SHOWN} older message(s) are kept in the save.</li>` : '')
-      + (shown.length ? shown.map((e) => html(e)).join('') : '<li class="cm-empty">No messages yet. Rolls, Claude\'s narration and the table\'s changes appear here.</li>');
+      + (shown.length ? shown.map((e) => html(e)).join('') : '<li class="cm-empty">No messages yet. Claude\'s narration, rolls and what happens at the table appear here.</li>');
     if (atBottom || first) list.scrollTop = list.scrollHeight;
     foot.innerHTML = gm() && visible.length ? `<button type="button" class="cm-clear" data-clear="1">${armed ? 'Clear every message? Click again' : 'Clear chat'}</button>` : '';
     for (const fn of listeners) fn();
@@ -72,7 +72,7 @@ export function mountChat(o) {
     for (const e of LIST) {
       if (seen.has(e.id)) continue;
       seen.add(e.id);
-      if (first || Date.parse(e.data.at) < startedAt || !chatVisible(e.data, o.view()) || e.data.kind === 'log') continue;
+      if (first || Date.parse(e.data.at) < startedAt || !chatVisible(e.data, o.view()) || e.data.kind === 'event') continue;   // events wait in the log: they would pop up every turn
       if (!o.sidebar.showing('chat')) { show(e.data, e.id); unread++; o.sidebar.setBadge('chat', unread); }
     }
     render();

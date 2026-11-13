@@ -34,7 +34,7 @@ export function noteRecord({ map, text, at, by, gmOnly = false, updated = new Da
   return r;
 }
 
-/** A short form of a note for the change log: its first line, at most 40 characters. */
+/** A short form of a note for the audit log: its first line, at most 40 characters. */
 export function noteGist(text) {
   const first = String(text || '').split('\n')[0].trim();
   return first.length > 40 ? first.slice(0, 39) + '…' : first;

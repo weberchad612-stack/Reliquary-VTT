@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit.schema.json",
+  "title": "A campaign's audit log (saves/<campaign>/audit.json)",
+  "description": "The GM's audit log, oldest first: every change to the game, in words, and the board's warnings (board/audit.js). On the board each entry is a record audit/<id>; players never see it.",
+  "type": "object",
+  "required": ["entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "at", "by", "text"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
+          "at": { "type": "string" },
+          "by": { "enum": ["claude", "gm", "player"] },
+          "text": { "type": "string" },
+          "map": { "type": "string" },
+          "level": { "enum": ["warn", "ok"], "description": "a warning (the GM's call) or a success, shown in colour" }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

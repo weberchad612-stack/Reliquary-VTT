@@ -141,7 +141,7 @@ export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = 
       if ('hidden' in f) words.push(f.hidden ? 'hidden from players' : 'shown to players');
       return done(E.setFlags(live, action.token, f), [`${name(action.token)}: ${words.join(', ')}`]);
     }
-    case 'begin': gmOnly(); { const r = E.begin(live || enc, now); return done(r.encounter, ['the encounter begins'], r.events, r.now); }
+    case 'begin': gmOnly(); { const r = E.begin(live || enc, now); return done(r.encounter, ['The encounter begins'], r.events, r.now); }
     case 'next': {
       if (!begun(live)) throw new Error('the encounter has not begun');
       const acting = E.acting(live);
@@ -166,7 +166,7 @@ export function applyAction(enc, action, { E, T, now = 0, view = 'gm', tokens = 
       const r = E.resume(live, action.token, now);
       return done(r.encounter, [`${name(action.token)} stops delaying`], r.events, r.now);
     }
-    case 'end': gmOnly(); { if (!live) throw new Error('there is no encounter'); const r = E.end(live, now); return done(r.encounter, [`the encounter ends after ${live.round} round(s)`], r.events, r.now); }
+    case 'end': gmOnly(); { if (!live) throw new Error('there is no encounter'); const r = E.end(live, now); return done(r.encounter, [`The encounter ends after ${live.round} round(s)`], r.events, r.now); }
     default: throw new Error(`no encounter action "${action.type}"`);
   }
 }

@@ -123,10 +123,6 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .lrow button { padding: 2px 6px; font-size: 11px; }
 .lsub { font: 600 12px var(--font-display); color: var(--muted); margin-top: 6px; }
 .board-message { margin: 40px auto; max-width: 520px; color: var(--muted); font-size: 16px; text-align: center; }
-.changes { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 13px; max-height: 320px; overflow: auto; }
-.changes .when { color: var(--muted); font: 11px var(--font-mono); }
-.changes .who-claude { color: #b69cf6; } .changes .who-gm { color: var(--accent); } .changes .who-player { color: var(--pc); }
-.changes .muted { color: var(--muted); }
 /* modal dialogs (Show the GM view?, the clock, travel): above every window, pop-out and card, however many were raised */
 .gm-confirm { position: fixed; inset: 0; background: rgba(5, 6, 9, .6); display: grid; place-items: center; z-index: 2147483000; }
 .gm-confirm[hidden] { display: none; }
@@ -188,9 +184,20 @@ aside { border-left: 1px solid var(--line); background: var(--panel); overflow: 
 .cm-del:hover { color: #ff8a7a; }
 .cm-del svg { width: 100%; height: 100%; }
 .cm-gm { font: 700 10px var(--font-body); background: #54166e; color: #fff; padding: 1px 5px; border-radius: 3px; }
-.cm-log { background: none; border: 0; padding: 0 2px; display: flex; gap: 6px; align-items: baseline; font-size: 12px; color: var(--muted); }
-.cm-log .cm-logtext { flex: 1; }
-.cm-log .cm-del { width: 16px; height: 16px; }
+.cm-event { background: rgba(255,255,255,.03); border: 0; border-left: 2px solid #8a7656; border-radius: 4px; padding: 3px 6px; display: flex; gap: 6px; align-items: baseline; font-size: 12.5px; color: #e8dcc6; }
+.cm-event .cm-eventtext { flex: 1; }
+.cm-event .cm-del { width: 16px; height: 16px; }
+.au-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.au-head h2 { margin: 0; }
+.au-note { font-size: 11px; color: var(--muted); }
+.au-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; overflow: auto; }
+.au-list time { color: var(--muted); font: 11px var(--font-mono); }
+.au-who.au-claude { color: #b69cf6; } .au-who.au-gm { color: var(--accent); } .au-who.au-player { color: var(--pc); }
+.au-row.au-warn .au-text { color: #e3a443; }
+.au-row.au-ok .au-text { color: #5fbf83; }
+.au-empty { color: var(--muted); }
+.au-foot { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 8px; }
+.au-more { font-size: 11px; color: var(--muted); }
 .cm-read { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: rgba(227,164,67,.07); font: italic 15px/1.5 Georgia, serif; color: var(--ink); }
 .cm-ruling { font-size: 14px; line-height: 1.45; }
 .cm-ruling b { color: var(--accent); margin-right: 4px; }
@@ -349,11 +356,6 @@ ul.try { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--mu
 ul.try b { color: var(--ink); font-weight: 500; }
 .legend { display: grid; grid-template-columns: 18px 1fr; gap: 6px 8px; align-items: center; font-size: 13px; color: var(--muted); }
 .sw { width: 18px; height: 4px; border-radius: 2px; }
-ol.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; max-height: 240px; overflow: auto; }
-ol.log li { padding: 4px 8px; border-left: 3px solid var(--line); background: #1b1e24; border-radius: 0 4px 4px 0; }
-ol.log li.warn { border-left-color: var(--warn); }
-ol.log li.ok { border-left-color: var(--ok); }
-ol.log li.foe { border-left-color: var(--foe); }
 .toast {
   position: absolute; left: 50%; top: 24px; transform: translateX(-50%);
   background: #2b2418; color: var(--ink); border: 1px solid var(--warn); border-radius: 8px;
@@ -591,8 +593,7 @@ ol.log li.foe { border-left-color: var(--foe); }
           <!-- the GM's wall controls (moved from the header, 2026-11-12): the Walls tab is the GM view's only -->
           <div class="lt-controls"><button id="b-walls" aria-pressed="false" title="Draw the walls, doors and windows the engine uses over the map">Show walls</button></div>
         </section>
-        <section class="sb-pane" data-pane="changes" aria-label="Change log" hidden><section class="card" id="changelog"></section></section>
-        <section class="sb-pane" data-pane="tablelog" aria-label="Table log" hidden><h2>Table log</h2><ol class="log" id="log"></ol></section>
+        <section class="sb-pane" data-pane="audit" aria-label="Audit log (GM)" hidden></section>
       </div>
       <!-- retired from the side panel (2026-11-12): kept off screen so older code paths have somewhere to write -->
       <div hidden><section id="sel"></section><ul id="try"></ul><div id="legend"></div></div>

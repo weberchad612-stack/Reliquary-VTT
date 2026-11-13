@@ -6,7 +6,7 @@
 // Keeping the table in step with the store (the end of start()):
 // - persist(): after every redraw, the records the board's state implies (tokens, the map's state, the
 //   table's settings) are compared with the last known store values; only changed records are written,
-//   each with a change-log entry saying who changed what.
+//   each with an audit-log line saying who changed what (and a chat event for what players should know).
 // - the watchers: a change arriving from the store (Claude moving a foe, opening a door) is compared the
 //   same way, applied to the board's state and redrawn. Our own writes come back unchanged and are ignored.
 // - the explored area is written a moment after it grows, in chunks.
@@ -14,7 +14,7 @@
 
 import { MemoryStore } from './store.js';
 import { platformStore } from './platform.js';
-import { mapFromRecords, exploredFromRecords, exploredRecords, contentPath } from './records.js';
+import { mapFromRecords, exploredFromRecords, exploredRecords, contentPath, auditFromLog } from './records.js';
 import { quickViewAccess, quickViewTitle, quickViewBody, quickViewKeys } from './quickview.js';
 import { makeShell, pageMap } from './shell.js';
 import { startArea } from './area.js';
@@ -27,7 +27,9 @@ import { mountTracker } from './trackerui.js';
 import { mountChat } from './chatui.js';
 import { mountSidebar } from './sidebar.js';
 import { makeFloating, bringToFront } from './panel.js';
-import { chatPath, logMessage, changeLog } from './chat.js';
+import { chatPath, eventMessage } from './chat.js';
+import { auditPath, auditEntry } from './audit.js';
+import { mountAudit } from './auditui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
@@ -168,7 +170,7 @@ export async function start(store, { build = null } = {}) {
   });
   let S = START();
   // Names (board/names.js): the screen shows this view's name (the GM view the real one, players the alias of a
-  // creature whose name they have not learned); anything players can read later (the change log, a template's
+  // creature whose name they have not learned); anything players can read later (the chat, a template's
   // caster) uses the public name, whichever view wrote it.
   const nm = (t) => nameFor(t, S.view);
   const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -176,11 +178,12 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null;   // the encounter tracker, the chat and the sidebar (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
-  let selected = null, drag = null, hoverCell = null, lastSeen = PCS();
+  let selected = null, drag = null, hoverCell = null;
+  const moveWords = new Map();   // a token's last dragged move in words ("35 ft"), for its audit line
   // Several tokens selected (a box, or Ctrl+click): this screen only. While it holds two or more, `selected`
   // is null, so the map shows the party's view with no movement outlines (as with nothing selected).
   let multi = new Set();
@@ -347,14 +350,6 @@ export async function start(store, { build = null } = {}) {
       seen: view.seen, concealedFrom: view.concealedFrom || {},
       at: LIT ? (x, y) => !!view.perceived.at(x, y) : inPolys(view.visible),
     };
-    // announce foes that come into or leave view
-    for (const t of tokenList()) {
-      if (t.kind === 'pc') continue;
-      const was = lastSeen.has(t.id), now = view.seen.has(t.id);
-      if (!was && now) log(`${pubName(t)} comes into view.`, 'foe');
-      if (was && !now && reason !== 'reset') log(`${pubName(t)} is out of sight.`);
-    }
-    lastSeen = new Set(view.seen);
     if (trackerUi) trackerUi.tokensChanged();   // rows follow who is seen, conditions and deaths
     S.explored = explored;
     draw();
@@ -388,11 +383,10 @@ export async function start(store, { build = null } = {}) {
       const info = doorInfo(s);
       if (s.t === 'secret' && !info.found) {
         for (const l of leaves) S.doors[l.door.id] = { ...(S.doors[l.door.id] || {}), found: true };
-        log(`GM: ${s.door.label} marked found. Players now see a closed door.`, 'ok'); return recompute();
+        return recompute();
       }
       const next = { closed: 'open', open: 'locked', locked: 'closed' }[info.st];
       for (const l of leaves) S.doors[l.door.id] = { ...(S.doors[l.door.id] || {}), state: next };
-      log(`GM: ${leaves.map((l) => l.door.label).join(' and ')} ${leaves.length > 1 ? 'are' : 'is'} now ${next}.`, 'ok');
       return recompute();
     }
     const want = doorInfo(s).st === 'open' ? 'closed' : 'open';
@@ -410,7 +404,6 @@ export async function start(store, { build = null } = {}) {
       changed.push(l.door.label);
     }
     if (!changed.length) return draw();
-    log(`${changed.join(' and ')} ${want === 'open' ? 'opened' : 'closed'}.`, 'ok');
     recompute();
   }
 
@@ -725,7 +718,6 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('b-anim').onclick = () => {
     S.light_animation = { ...S.light_animation, on: !S.light_animation.on };
     syncAnimButton();
-    log(`GM: light animation ${S.light_animation.on ? 'on' : 'off'} for the whole table.`, 'ok');
     draw();
   };
   /** Animation controls under a lamp's or a carried light's row: type, speed, intensity, reverse. */
@@ -745,7 +737,6 @@ export async function start(store, { build = null } = {}) {
       el.onchange = () => {
         const f = el.dataset.a, v = f === 'type' ? el.value : f === 'reverse' ? el.checked : Number(el.value);
         set({ ...Engine.ANIMATION_DEFAULTS, ...(get() || {}), [f]: v });
-        log(`GM: ${name} animation ${f} ${v}.`, 'ok');
         draw();
       };
     }
@@ -774,7 +765,7 @@ export async function start(store, { build = null } = {}) {
       ${regs.length ? `<div class="lsub">Regions</div>${regs.join('')}` : ''}`;
     el.querySelector('#colour-strength').onchange = (e) => {
       S.light_colour = { ...S.light_colour, strength: Number(e.target.value) };
-      log(`GM: colour strength ${S.light_colour.strength}%.`, 'ok'); lightingCard(); draw();
+      lightingCard(); draw();
     };
     for (const row of el.querySelectorAll('.lrow[data-id]')) {
       const { kind, id } = row.dataset, store = kind === 'lamp' ? S.lights : S.regions;
@@ -783,12 +774,12 @@ export async function start(store, { build = null } = {}) {
       row.querySelector('[data-f=on]').onchange = (e) => {
         if (kind === 'lamp') set('on', e.target.checked);
         else S.regions_off = e.target.checked ? S.regions_off.filter((x) => x !== id) : [...S.regions_off, id];
-        log(`GM: ${name} ${e.target.checked ? 'on' : 'off'}.`, 'ok'); lightingCard(); recompute();
+        lightingCard(); recompute();
       };
-      row.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${name} colour ${e.target.value}.`, 'ok'); lightingCard(); relight(); };
-      row.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${name} uncoloured.`, 'ok'); lightingCard(); relight(); };
+      row.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); lightingCard(); relight(); };
+      row.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); lightingCard(); relight(); };
       row.querySelector('[data-f=intensity]').oninput = (e) => { row.querySelector('.pct').textContent = e.target.value + '%'; };
-      row.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${name} intensity ${e.target.value}%.`, 'ok'); lightingCard(); relight(); };
+      row.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); lightingCard(); relight(); };
       if (kind === 'lamp') {
         const l = LIGHTING.lights.find((x) => x.id === id);
         wireAnimRow(el.querySelector(`[data-anim-for="${id}"]`), () => staticSpec(l).animation, (a) => set('animation', a), name);
@@ -1366,24 +1357,23 @@ export async function start(store, { build = null } = {}) {
     const cr = el.querySelector('.lrow[data-kind=carried]');
     if (cr) {
       const set = (k, v) => { t.light = { ...t.light, [k]: v }; };
-      cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); log(`${pubName(t)} ${e.target.checked ? 'lights' : 'puts out'} the light.`, 'ok'); panel(); recompute(); };
-      cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); log(`GM: ${pubName(t)}'s light colour ${e.target.value}.`, 'ok'); panel(); relight(); };
-      cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); log(`GM: ${pubName(t)}'s light uncoloured.`, 'ok'); panel(); relight(); };
+      cr.querySelector('[data-f=on]').onchange = (e) => { set('on', e.target.checked); panel(); recompute(); };
+      cr.querySelector('[data-f=colour]').onchange = (e) => { set('colour', e.target.value); panel(); relight(); };
+      cr.querySelector('[data-f=nocolour]').onclick = () => { set('colour', 'none'); panel(); relight(); };
       cr.querySelector('[data-f=intensity]').oninput = (e) => { cr.querySelector('.pct').textContent = e.target.value + '%'; };
-      cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); log(`GM: ${pubName(t)}'s light intensity ${e.target.value}%.`, 'ok'); panel(); relight(); };
+      cr.querySelector('[data-f=intensity]').onchange = (e) => { set('intensity', Number(e.target.value)); panel(); relight(); };
       wireAnimRow(el.querySelector('[data-anim-for="carried"]'), () => Engine.lightSpec(t.light).animation, (a) => set('animation', a), `${pubName(t)}'s light`);
     }
     const bl = document.getElementById('b-light');
     if (bl) bl.onclick = () => {
       const on = t.light.on === false;
       t.light = { ...t.light, on };
-      log(`${pubName(t)} ${on ? 'lights' : 'puts out'} the ${((Engine.LIGHT_PRESETS[t.light.preset] || {}).label || 'light').toLowerCase()}.`, 'ok');
       panel(); recompute();
     };
     const bm = document.getElementById('b-mark');
     if (bm) bm.onclick = () => {
-      if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; log(`GM: hidden marker for ${pubName(t)} cleared.`, 'ok'); }
-      else { S.hiddenMarks[selected] = [t.x, t.y]; log(`GM: the party knows something is at ${t.x},${t.y} (${pubName(t)}, hidden).`, 'ok'); }
+      if (S.hiddenMarks[selected]) { delete S.hiddenMarks[selected]; }
+      else { S.hiddenMarks[selected] = [t.x, t.y]; }
       panel(); draw();
     };
   }
@@ -1486,7 +1476,6 @@ export async function start(store, { build = null } = {}) {
     if (lamp && !tokenDiscAt(p)) {
       const on = !staticOn(lamp);
       S.lights[lamp.id] = { ...(S.lights[lamp.id] || {}), on };
-      log(`GM: ${lamp.label || lamp.id} ${on ? 'lit' : 'put out'}.`, 'ok');
       lightingCard();
       return recompute();
     }
@@ -1505,7 +1494,6 @@ export async function start(store, { build = null } = {}) {
     if (area) {
       const on = S.terrain_on.includes(area.id);
       S.terrain_on = on ? S.terrain_on.filter((x) => x !== area.id) : [...S.terrain_on, area.id];
-      log(`GM: ${area.label || area.id} ${on ? 'switched off' : 'now applies'} (${TERRAIN_LOOK[area.kind].name}).`, 'ok');
       return recompute();
     }
     // Empty floor: a left drag draws a selection box; a click clears the selection (on release).
@@ -1776,14 +1764,11 @@ export async function start(store, { build = null } = {}) {
       dy = Math.max(-t.y, Math.min(G.rows - size - t.y, dy));
     }
     if (!dx && !dy) return;
-    const moved = [];
     for (const id of ids) {
       const t = S.tokens[id];
       t.x += dx; t.y += dy;
       delete t.slot;
-      moved.push(pubName(t));
     }
-    if (moved.length) log(`${moved.join(', ')} moved together.`);
     panel(); recompute();
   }
 
@@ -2492,7 +2477,7 @@ export async function start(store, { build = null } = {}) {
     else if (route.feet > t.speed) { toast(`${route.feet} ft is more than ${nm(t)}'s ${t.speed} ft Speed.`); log(`${pubName(t)} moved ${route.feet} ft, beyond its Speed.`, 'warn'); }
     else {
       const tn = routeNotes(id, route);
-      log(`${pubName(t)} moved ${route.feet} ft to ${goal[0]},${goal[1]}${tn.extraFt ? `, ${tn.extraFt} ft of it for difficult terrain` : ''}.`);
+      moveWords.set(id, `${route.feet} ft${tn.extraFt ? `, ${tn.extraFt} ft of it difficult terrain` : ''}`);   // for the audit line persist() writes
       for (const n of tn.notes) log(`${pubName(t)}: ${n}.`, 'warn');
     }
     t.x = goal[0]; t.y = goal[1];
@@ -2513,8 +2498,7 @@ export async function start(store, { build = null } = {}) {
     const entered = terrain.entered(t.x, t.y, t.x + k[0], t.y + k[1], mspace(selected).size);
     const stepOk = Engine.canStepInto(entered, moverOf(selected));
     t.x += k[0]; t.y += k[1]; delete t.slot;
-    if (stepOk) log(`${pubName(t)} steps to ${t.x},${t.y}.`);
-    else log(`${pubName(t)} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
+    if (!stepOk) log(`${pubName(t)} moves to ${t.x},${t.y}: difficult terrain, so this is a Stride, not a Step.`, 'warn');
     panel(); recompute();
   });
 
@@ -2527,7 +2511,7 @@ export async function start(store, { build = null } = {}) {
     if (v === 'player' && selected && !view.seen.has(selected)) selected = null;
     if (v === 'player' && multi.size) setSelection([...multi].filter((id) => S.tokens[id] && S.tokens[id].kind === 'pc'));
   if (sidebar) sidebar.refresh();
-  changeLogCard();
+  if (auditUi) auditUi.render();
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
@@ -2549,7 +2533,6 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('b-colour').onclick = () => {
     S.light_colour = { ...S.light_colour, on: !S.light_colour.on };
     syncColourButton();
-    log(`GM: coloured light ${S.light_colour.on ? 'on' : 'off'} for the whole table.`, 'ok');
     draw();
   };
   const wallsBtn = document.getElementById('b-walls');
@@ -2564,13 +2547,12 @@ export async function start(store, { build = null } = {}) {
       bl.setAttribute('aria-pressed', String(LIT));
       bl.textContent = LIT ? 'Lighting on' : 'Lighting off';
       document.getElementById('sky-wrap').hidden = !(LIT && HAS_SKY);
-      log(LIT ? 'Lighting on: light, darkness and senses apply.' : 'Lighting off: everything counts as bright (sight is walls only).', 'ok');
       panel(); lightingCard(); recompute();
     };
   }
   if (HAS_SKY) {
     document.getElementById('sky-wrap').hidden = false;
-    document.getElementById('sky').onchange = (e) => { S.sky = e.target.value; log(`GM: the sky is now ${S.sky} (${{ bright: 'day', dim: 'dusk', dark: 'night' }[S.sky]}).`, 'ok'); recompute(); };
+    document.getElementById('sky').onchange = (e) => { S.sky = e.target.value; recompute(); };
   }
 
   let toastT = 0;
@@ -2579,10 +2561,10 @@ export async function start(store, { build = null } = {}) {
     el.textContent = msg; el.classList.add('show');
     clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2400);
   }
+  /** A line in the GM's audit log (board/audit.js): what changed, and the board's warnings ('warn') and GM calls. */
   function log(msg, cls = '') {
-    const li = document.createElement('li'); li.textContent = msg; if (cls) li.className = cls;
-    const ol = document.getElementById('log'); ol.prepend(li);
-    while (ol.children.length > 30) ol.lastChild.remove();
+    if (READONLY || !store) return;
+    try { store.set(auditPath(), auditEntry({ text: msg, by: S.view === 'gm' ? 'gm' : 'player', map: MAP_ID, level: cls || null })).catch(() => {}); } catch { /* no text */ }
   }
 
   // ---------- zoom ----------
@@ -2696,7 +2678,7 @@ export async function start(store, { build = null } = {}) {
   }
   let persistT = null;
   function schedulePersist() { if (!persistT) persistT = setTimeout(persist, 0); }
-  /** Write every record the board's state changed, each with a change-log entry. */
+  /** Write every record the board's state changed, each with an audit line (and a chat event for what players should know). */
   function persist() {
     persistT = null;
     if (READONLY) return;   // a preview writes nothing
@@ -2708,7 +2690,11 @@ export async function start(store, { build = null } = {}) {
       sending(p, store.set(p, v)).catch((e) => toast(`Could not save a change (${e.message || e}).`));
       const [coll, rid] = p.split('/');
       const pub = coll === 'tokens' ? !!(S.tokens[rid] && (S.tokens[rid].kind === 'pc' || (view && view.seen && view.seen.has(rid)))) : undefined;
-      for (const what of describe(p, before, v)) logChange(what, pub);
+      for (const what of describe(p, before, v)) {
+        if (typeof what === 'string') { logChange(what); continue; }
+        logChange(what.text);
+        if (what.event) postEvent(what.text, pub && !what.gmOnly, coll === 'tokens' ? rid : null);
+      }
     }
   }
 
@@ -2716,16 +2702,17 @@ export async function start(store, { build = null } = {}) {
   const lampLabel = (id) => { const l = (LIGHTING.lights || []).find((x) => x.id === id); return (l && l.label) || id; };
   const regionLabel = (id) => { const r = (LIGHTING.regions || []).find((x) => x.id === id); return (r && r.label) || id; };
   const changedKeys = (a = {}, b = {}) => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((k) => canon(a[k]) !== canon(b[k]));
-  /** What changed in a record, in words, for the change log. */
+  /** What changed in a record, in words, for the audit log; {text, event: true} for what the chat also tells the players (conditions, deaths). */
   function describe(p, before = {}, after = {}) {
     const [coll, id] = p.split('/');
     if (coll === 'tokens') {
       const name = pubName(after) || id, out = [];
-      if (before.x !== after.x || before.y !== after.y) out.push(`${name} moved to ${after.x},${after.y}`);
+      if (before.x !== after.x || before.y !== after.y) { const n = moveWords.get(id); moveWords.delete(id); out.push(`${name} moved ${n ? n + ' ' : ''}to ${after.x},${after.y}`); }
       const lb = before.light || {}, la = after.light || {};
       if ((lb.on !== false) !== (la.on !== false) && after.light) out.push(`${name} ${la.on === false ? 'put out' : 'lit'} the light`);
       for (const k of ['colour', 'intensity', 'animation']) if (canon(lb[k]) !== canon(la[k])) out.push(`${name}'s light ${k}: ${typeof la[k] === 'object' ? canon(la[k]) : la[k]}`);
-      out.push(...describeEffects(name, before, after, CONDS));
+      // conditions and death: the chat tells the table too (the GM's only for an effect only the GM sees)
+      out.push(...describeEffects(name, before, after, CONDS).map((text) => ({ text, event: true, gmOnly: / \(GM only\)$/.test(text) })));
       if (!!before.hidden !== !!after.hidden) out.push(after.hidden ? `${name} hidden from players` : `${name} shown to players`);
       if ((before.elevation || 0) !== (after.elevation || 0)) out.push(after.elevation ? `${name} elevation ${elevText(after.elevation)} ${SYS.measurement.unit}` : `${name} back to the ground (elevation 0)`);
       for (const k of changedKeys(before, after).filter((k) => !['x', 'y', 'light', 'slot', 'effects', 'dead', 'elevation', 'hidden'].includes(k))) out.push(`${name}: ${k} changed`);
@@ -2767,13 +2754,18 @@ export async function start(store, { build = null } = {}) {
     }
     return [`${p} changed`];
   }
-  /**
-   * A change-log line, into the chat (board/chat.js): the GM sees every line; players see it when `pub` (about a PC
-   * or a creature the party sees, the clock, rounds and turns); by default a player's own changes are public.
-   */
-  function logChange(what, pub) {
+  /** A line in the GM's audit log: every change to the game, in words (board/audit.js). */
+  function logChange(what) {
     if (READONLY) return;
-    store.set(chatPath(), logMessage({ text: what, by: by(), map: MAP_ID, public: pub ?? by() === 'player' })).catch(() => {});
+    store.set(auditPath(), auditEntry({ text: what, by: by(), map: MAP_ID })).catch(() => {});
+  }
+  /**
+   * An event in the chat (board/chat.js) the players should know about: a condition on or off, a death, damage, a
+   * round. `pub`: players may see it (about a PC or a creature the party sees); otherwise it is the GM's only.
+   */
+  function postEvent(text, pub, token = null) {
+    if (READONLY) return;
+    store.set(chatPath(), eventMessage({ text, by: by(), map: MAP_ID, token, public: !!pub })).catch(() => {});
   }
 
   // the explored area: written a moment after it grows
@@ -3034,23 +3026,13 @@ export async function start(store, { build = null } = {}) {
   fxPanel.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); fxPanel.hidden = true; } });
   canvas.addEventListener('pointermove', () => { if (hoverId) fxLastHover = hoverId; });
 
-  // ---------- the GM switch and the change log ----------
+  // ---------- the GM switch ----------
   function confirmGM() {
     const dlg = document.getElementById('gm-confirm');
     dlg.hidden = false;
     dlg.querySelector('[data-a=yes]').focus();
     dlg.querySelector('[data-a=yes]').onclick = () => { dlg.hidden = true; setView('gm'); log('GM view: unseen foes, secret doors and other spoilers are shown.', 'warn'); };
     dlg.querySelector('[data-a=no]').onclick = () => { dlg.hidden = true; };
-  }
-  const WHO = { claude: 'Claude', gm: 'GM view', player: 'Player' };
-  function changeLogCard() {
-    const el = document.getElementById('changelog');
-    const rows = changeLog(chatUi ? chatUi.messages() : [], S.view).map((d) => {
-      const t = d.at ? new Date(d.at) : null;
-      const time = t ? t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
-      return `<li${d.gm ? ' class="gmline"' : ''}><span class="when">${time}</span> <b class="who who-${d.by}">${WHO[d.by] || d.by}</b> ${String(d.text || '').replace(/</g, '&lt;')}</li>`;
-    });
-    el.innerHTML = `<h2>Change log</h2><ol class="changes">${rows.join('') || '<li class="muted">No changes yet.</li>'}</ol>`;
   }
 
   // ---------- the page around the map (board/shell.js): menus, travel, preview, version ----------
@@ -3112,7 +3094,6 @@ export async function start(store, { build = null } = {}) {
   document.getElementById('subtitle').textContent = NOTES.subtitle || `${META.pack.title} · ${map.name || map.id}`;
   document.getElementById('sky').value = S.sky;
   syncColourButton(); syncAnimButton();
-  if (NOTES.intro) log(NOTES.intro);
   recompute('reset');
   panel();
   lightingCard();
@@ -3123,25 +3104,28 @@ export async function start(store, { build = null } = {}) {
   // the game clock in the title line; the GM view edits it (board/clockui.js)
   clockUi = await mountClock({
     store, T: { readClock: Engine.readClock, adventureDay: Engine.adventureDay, clockAt: Engine.clockAt, parseAmount: Engine.parseAmount, unitSeconds: Engine.unitSeconds, expireEffects: Engine.expireEffects }, cal: (SYS.time || {}).calendar, roundSeconds: (SYS.time || {}).roundSeconds || 6,
-    getView: () => S.view, readOnly: READONLY, toast, logChange,
+    getView: () => S.view, readOnly: READONLY, toast, logChange, postEvent,
     names: (id, t) => publicName(S.tokens[id] || t) || (S.tokens[id] || t).name || id,
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
-  // the sidebar (board/sidebar.js): chat, the encounter tracker, the GM's lighting, the change log, the table log
+  // the sidebar (board/sidebar.js): chat, the encounter tracker, the GM's lighting, walls and audit log
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
     { id: 'walls', label: 'Walls (GM)', gm: true },
-    { id: 'changes', label: 'Change log' }, { id: 'tablelog', label: 'Table log' }] });
+    { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
-  chatUi.onChange(() => changeLogCard());
+  auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body });
+  // an older board's change-log lines (chat messages of kind 'log') move to the audit log: same ids, so two pages
+  // doing it at once write the same records
+  if (!READONLY) store.list('chat').then((l) => { for (const e of l) if (e.data && e.data.kind === 'log') store.set(`audit/${e.id}`, auditFromLog(e.data)).then(() => store.remove(`chat/${e.id}`)).catch(() => {}); }).catch(() => {});
   trackerUi = await mountTracker({
     store, Engine, SYS, readOnly: READONLY, view: () => S.view, tokens: () => S.tokens,
     seen: (id) => S.view === 'gm' || shown().seen.has(id) || (S.tokens[id] && S.tokens[id].kind === 'pc'),
     partySees: (id) => !!(view && view.seen && view.seen.has(id)),
     name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id), publicName: (id) => (S.tokens[id] ? pubName(S.tokens[id]) || S.tokens[id].name : id) || id,
-    colour: kindColour, toast, logChange,
+    colour: kindColour, toast, logChange, postEvent,
     loadCreature: async (id) => {
       const actor = await store.get(`actors/${id}`).catch(() => null);
       if (!actor) return null;
