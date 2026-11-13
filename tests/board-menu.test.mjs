@@ -4,20 +4,14 @@ import assert from 'node:assert/strict';
 import { MENU, menuForView, menuIndex, activeMenus, moveIndex } from '../board/menu.js';
 
 test('menu: every id is used once, and every menu on the bar has items', () => {
-  const idx = menuIndex(MENU);
-  assert.ok(idx.size >= 4);
   for (const e of MENU) if (e.items) assert.ok(e.items.some((i) => !i.sep), e.id);
   assert.throws(() => menuIndex([{ id: 'x', label: 'X' }, { id: 'm', label: 'M', items: [{ id: 'x', label: 'again' }] }]), /used twice/);
 });
 
-test('menu: the previous board\'s groups are all there, with a sub-menu', () => {
+test('menu: the top menu is empty: everything moved to the sidebar (2026-11-12)', () => {
   const idx = menuIndex(MENU);
-  for (const id of ['menu-play', 'narration', 'actions', 'exploration']) {
-    assert.ok(idx.has(id), id);
-  }
-  // moved to the sidebar (2026-11-12): party loot, quest log, dice, replay, the visual effects, notes; the Map menu is gone
-  for (const id of ['menu-records', 'loot', 'quests', 'dice', 'replay', 'fx-on', 'fx-preview', 'menu-map', 'add-note', 'measure', 'walls', 'turn-view', 'reload']) assert.equal(idx.get(id), undefined, id);
-  assert.equal(idx.get('tpl-cone'), undefined, 'templates moved to the token menu');
+  assert.equal(idx.size, 0);
+  for (const id of ['menu-play', 'narration', 'actions', 'exploration', 'menu-records', 'loot', 'quests', 'dice', 'replay', 'fx-on', 'fx-preview', 'menu-map', 'add-note', 'reload']) assert.equal(idx.get(id), undefined, id);
 });
 
 test('menu: GM-only entries are hidden from players, with empty menus and stray separators', () => {

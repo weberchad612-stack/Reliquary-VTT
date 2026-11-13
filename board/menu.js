@@ -26,13 +26,10 @@
  * disabled: true (shown, not chosen), dim: true (shown greyed but still chosen).
  * The same builder makes the map menu on the current map's name (board/travel.js): a bar of one menu.
  */
-export const MENU = [
-  { id: 'menu-play', label: 'Play', items: [
-    { id: 'actions', label: 'Actions', kind: 'command', hint: 'The selected creature\'s actions' },
-    { id: 'exploration', label: 'Exploration', kind: 'command', hint: 'Exploration activities' },
-  ] },
-  { id: 'narration', label: 'Narration', kind: 'button', badge: true, hint: 'The story so far' },
-];
+// Empty since 2026-11-12: everything the top menu held moved to the sidebar's tabs (Actions and Exploration under
+// Replay; Narration is the chat). The builder stays for the map menu on the current map's name, and for any menu
+// added later; an empty bar is hidden (board/shell.js).
+export const MENU = [];
 
 const isMenu = (e) => Array.isArray(e && e.items);
 const isItem = (e) => e && !e.sep;

@@ -70,7 +70,9 @@ export function makeShell(o) {
 
   /** The top menu: the page answers the items it has built (o.onCommand returns true); the rest say they are not built yet. */
   function startMenu() {
-    menu = buildMenuBar(document.getElementById('menubar'), {
+    const bar = document.getElementById('menubar');
+    bar.hidden = !MENU.length;   // nothing on the top menu: no bar
+    menu = buildMenuBar(bar, {
       view: o.view(),
       def: MENU,
       onSelect: (id, item, state) => {

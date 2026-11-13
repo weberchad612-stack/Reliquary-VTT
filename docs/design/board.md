@@ -469,9 +469,9 @@ lightning at a flyer); every open board draws it once, on its own canvas over th
 
 **The top menu** (`board/menu.js`), modelled on the previous board's top bar and on Foundry's menus:
 
-- **Bar:** Play (Actions, Exploration), and Narration straight on the bar, which can show a count. The Map menu went
-  on 2026-11-12: Add note to the Notes tab, Reload the board dropped, Measure, Show walls and Turn view (never built)
-  dropped with it. Records (Party loot, Quest log, Dice), Replay and the visual effects moved to
+- **Bar:** empty since 2026-11-12, and hidden: the Map menu went (Add note to the Notes tab; Reload the board,
+  Measure, Show walls and Turn view dropped), Play's Actions and Exploration became sidebar tabs under Replay, and
+  Narration went (the chat holds the story). The menu builder stays for the map menu and any menu added later. Records (Party loot, Quest log, Dice), Replay and the visual effects moved to
   the sidebar's tabs on 2026-11-12.
 - **Behaviour:** click a menu to open it; once one is open, pointing at another opens that one; one menu
   open at a time; picking an item, clicking outside or Escape closes it. A menu shows as active (amber)
@@ -559,7 +559,7 @@ a collapse/expand control does the same. The user's decisions:
 |---|---|
 | Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
 | Pop-out windows | **Every tab pops out** as a floating window (the user's standard for all sidebar tabs, 2026-11-12), **resizable**, and each **remembers its position** and size (and whether it is out) per browser. |
-| Tabs now | Top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter** (the tracker), **Replay**, **Party loot**, **Notes** (every map note: add, highlight on hover, edit, remove), **Quest log** (Replay, Party loot and Quest log moved from the top menu on 2026-11-12; to be built), **Visual effects** (this screen's switch, and the GM's preview), **Lighting** (GM only), **Walls** (GM only: Show walls moved from the header), **Dice statistics**, **Audit log** (GM only: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
+| Tabs now | Top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter** (the tracker), **Replay**, **Actions**, **Exploration** (moved from the Play menu; to be built), **Party loot**, **Notes** (every map note: add, highlight on hover, edit, remove), **Quest log** (Replay, Party loot and Quest log moved from the top menu on 2026-11-12; to be built), **Visual effects** (this screen's switch, and the GM's preview), **Lighting** (GM only), **Walls** (GM only: Show walls moved from the header), **Dice statistics**, **Audit log** (GM only: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **events** players should know about. Typed messages, whispers and the chat box come later. |
 | Chat and audit log (the user, 2026-11-12) | **The chat holds everything important to the players, above all Claude's story narration**: the narration, rulings and NPC lines, the dice rolled by and for the PCs, the NPC rolls players should know about, and **events**: combat rolls' results, damage, conditions applied, deaths, the encounter beginning and ending, new rounds. **An audit log only the GM sees shows every underlying state change** (moves, doors, lights, templates, notes, terrain, the clock, initiative, hiding) and the board's warnings. The change log and the table log are **removed** from the board, the database and the code. |

@@ -163,7 +163,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Notes are page elements, not canvas drawings** (`#notes`, `renderNotes`): text needs wrapping, editing and focus, which a canvas does badly. Place them from map cells with the map's scale (`notePx`), and re-place them in `fit()` so they follow the zoom. They never call `draw()`.
 - **Keys in the editor stay in the editor:** its textarea stops key events, and the board's key handlers ignore inputs and textareas, so typing "t" or "n" in a note never targets or opens another note.
 - **Which bubbles are collapsed is per browser** (localStorage, guarded with try/catch: a preview or private window may refuse storage; then it lasts as long as the page).
-- **The Notes tab** (the user, 2026-11-12; below Party loot): **Add note** (the same note mode as N), and every note this view may see, newest first, with its author. **Hovering a note highlights its pin on the map** (the highlight standard: a pulsing ring, `pointout`); clicking it scrolls the map to it; its author, or the GM, **edits it in place** (✎: text, and GM only for the GM; Enter saves, Escape cancels) or **removes it** (the shared remove button, two clicks). It has no database listener of its own: `renderNotes()` redraws it from the notes the board already holds. The Map menu (Add note's old home) is gone, with Reload the board, Measure, Show walls and Turn view (never built).
+- **The Notes tab** (the user, 2026-11-12; below Party loot): **Add note** (the same note mode as N), and every note this view may see, newest first, with its author. **Hovering a note highlights its pin on the map** (the highlight standard: a pulsing ring, `pointout`); clicking it scrolls the map to it; its author, or the GM, **edits it in place** (✎: text, and GM only for the GM; Enter saves, Escape cancels) or **removes it** (the shared remove button, two clicks). It has no database listener of its own: `renderNotes()` redraws it from the notes the board already holds. The Map menu (Add note's old home) is gone, with Reload the board, Measure, Show walls and Turn view (never built); the Play menu and Narration went too (Actions and Exploration are tabs, narration is the chat), so the top menu is empty and its bar is hidden.
 - **Names clash in `start()`:** `NOTES` already meant the table's tips (`TABLE.notes`); map notes are `MAPNOTES`. Search before naming a new top-level constant in `app.js`.
 
 ### Effect badges
@@ -275,14 +275,14 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The sidebar, the chat and the audit log (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs, top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter**, **Replay**, **Party
-  loot**, **Notes**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
+  The battle map's tabs, top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter**, **Replay**, **Actions**,
+  **Exploration**, **Party loot**, **Notes**, **Quest log**, **Visual effects**, **Lighting** (GM), **Walls** (GM), **Dice statistics**, **Audit log** (GM);
   an area map's: **Place**, **Chat**, **Party loot**, **Quest log**, **Dice statistics** and the GM's **Audit log**. Clicking the open tab's icon collapses the
   sidebar to its strip (so does the » control at the bottom of the strip, which also expands it); **dragging the
   inner edge resizes it** (double-click the edge for the usual width). Each browser remembers the tab, the width
   and whether it is collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar
   changes size.
-- **Moved from the top menu** (the user, 2026-11-12): Party loot, the Quest log and Replay are sidebar tabs, each
+- **Moved from the top menu** (the user, 2026-11-12): Party loot, the Quest log, Replay, Actions and Exploration are sidebar tabs, each
   saying what it will hold until it is built; the Records menu and the Replay button are gone. The **Visual effects**
   tab holds this screen's switch ("Show visual effects on this screen", everyone; remembered per browser) and the
   GM's **preview** of every effect (search, hit / crit / miss, text, n; it plays from the selected token to the

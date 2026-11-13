@@ -3203,6 +3203,7 @@ export async function start(store, { build = null } = {}) {
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12)
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'replay', label: 'Replay' },
+    { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
