@@ -6,9 +6,10 @@
 // Usage (--records FILE: the board's records, {path: data} or a db_list result; the ledger collection, and the
 // state/clock and board/meta records for the game time; --chat also searches chat/ records in the same file):
 //   node tools/ledger.mjs add <kind> "text" [--title T] [--subjects "Grukk, lantern lady"] [--area B12] [--map M]
-//        [--source adventure|added] [--by gm] [--link chat/<id>]... [--game "Day 3, 2:20 PM"] [--records FILE]
+//        [--source adventure|added] [--added-by user|claude] [--by gm] [--link chat/<id>]... [--game "Day 3, 2:20 PM"]
+//        [--records FILE]   (--added-by user: the user invented it, at the table or as a player; implies --source added)
 //   node tools/ledger.mjs summary "what happened this session" [--title "Session 4"] [--records FILE]
-//   node tools/ledger.mjs edit <id> [--text T] [--title T] [--subjects S] [--area A] [--source S] [--link L]
+//   node tools/ledger.mjs edit <id> [--text T] [--title T] [--subjects S] [--area A] [--source S] [--added-by W] [--link L]
 //        --records FILE
 //   node tools/ledger.mjs close <id> [--failed] --records FILE      (a thread, quest or timed event is over)
 //   node tools/ledger.mjs reopen <id> --records FILE
@@ -57,7 +58,7 @@ const entryOf = (records, id) => {
 export function runLedger(cmd, args, opts = {}, records = {}) {
   const now = opts.now || new Date().toISOString();
   const game = opts.game ? { now: (gameNow(records) || { now: 0 }).now, label: opts.game } : gameNow(records);
-  const fields = () => ({ title: opts.title, subjects: opts.subjects, where: { map: opts.map, area: opts.area }, source: opts.source, links: opts.link || [] });
+  const fields = () => ({ title: opts.title, subjects: opts.subjects, where: { map: opts.map, area: opts.area }, source: opts.addedBy && !opts.source ? 'added' : opts.source, addedBy: opts.addedBy, links: opts.link || [] });
   if (cmd === 'add' || cmd === 'summary') {
     const kind = cmd === 'summary' ? 'summary' : args[0];
     const text = (cmd === 'summary' ? args : args.slice(1)).join(' ');
@@ -70,10 +71,11 @@ export function runLedger(cmd, args, opts = {}, records = {}) {
     let changes;
     if (cmd === 'edit') {
       changes = {};
-      for (const k of ['text', 'title', 'subjects', 'source']) if (opts[k] !== undefined) changes[k] = opts[k];
+      for (const k of ['text', 'title', 'subjects', 'source', 'addedBy']) if (opts[k] !== undefined) changes[k] = opts[k];
+      if (opts.addedBy && !opts.source) changes.source = 'added';
       if (opts.area !== undefined || opts.map !== undefined) changes.where = { ...(e.data.where || {}), ...(opts.area !== undefined ? { area: opts.area } : {}), ...(opts.map !== undefined ? { map: opts.map } : {}) };
       if (opts.link && opts.link.length) changes.links = [...(e.data.links || []), ...opts.link];
-      if (!Object.keys(changes).length) throw new Error('edit what? --text, --title, --subjects, --area, --map, --source or --link');
+      if (!Object.keys(changes).length) throw new Error('edit what? --text, --title, --subjects, --area, --map, --source, --added-by or --link');
     } else {
       if (!e.data.status) throw new Error(`a ${e.data.kind} has no status: only threads, quests and timed events close`);
       changes = { status: cmd === 'reopen' ? 'open' : opts.failed ? 'failed' : 'done' };
@@ -117,7 +119,7 @@ async function main(argv) {
   try {
     const rec = opt('--records');
     const o = {
-      title: opt('--title'), subjects: opt('--subjects'), area: opt('--area'), map: opt('--map'), source: opt('--source'),
+      title: opt('--title'), subjects: opt('--subjects'), area: opt('--area'), map: opt('--map'), source: opt('--source'), addedBy: opt('--added-by'),
       by: opt('--by'), game: opt('--game'), text: opt('--text'), kind: opt('--kind'), subject: opt('--subject'),
       limit: Number(opt('--limit')) || undefined, link: opts('--link'), failed: flag('--failed'), chat: flag('--chat'),
     };

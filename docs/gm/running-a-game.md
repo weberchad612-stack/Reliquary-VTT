@@ -126,8 +126,9 @@ Narration is the heart of the game for the user: it is what engages the players.
   - **How:** the ledger lives on the board (records `ledger/<id>`, GM only, saved with the game as
     `ledger.json`; the GM view's Ledger tab, where the user reads, searches and adds his own). Write with
     `tools/ledger.mjs add <kind> "text" --subjects "..." --area <key>` (kinds: improv, fact, secret, ruling,
-    thread, quest, event, summary; `--source adventure` for the book's own facts; `--link chat/<id>` for the
-    message it came from); the game time is stamped from the board's clock. Read with `ledger.mjs find
+    thread, quest, event, summary; `--source adventure` for the book's own facts; `--added-by user` for anything
+    the user invented, at the table or through his characters, whatever the kind of entry; `--link chat/<id>`
+    for the message it came from); the game time is stamped from the board's clock. Read with `ledger.mjs find
     "words"` (`--chat` searches the board's chat too, `--kind open` lists open threads, quests and timed
     events) and `ledger.mjs story`. Close a thread, quest or event with `ledger.mjs close <id>`. Every
     command takes `--records FILE` with the board's `ledger/` records (and `state/clock`, `board/meta`;

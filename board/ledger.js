@@ -7,8 +7,8 @@
 // tools/ledger.mjs writes and searches it. Docs: docs/best-practices/board.md (the ledger), docs/gm/running-a-game.md.
 //
 // An entry: {at (real time), by ('claude' | 'gm'), kind, text, title?, subjects?: [names], where?: {map?, area?},
-//            game?: {now (clock seconds), label}, source? ('adventure' | 'added'), status? ('open' | 'done' |
-//            'failed'), links?: [record paths], updated?}
+//            game?: {now (clock seconds), label}, source? ('adventure' | 'added'), addedBy? ('claude' | 'user': who
+//            invented it, for 'added'), status? ('open' | 'done' | 'failed'), links?: [record paths], updated?}
 
 export const LEDGER = 'ledger';
 export const TEXT_MAX = 4000;
@@ -28,6 +28,8 @@ export const KIND_IDS = Object.freeze(Object.keys(KINDS));
 export const STATUSES = Object.freeze(['open', 'done', 'failed']);
 export const SOURCES = Object.freeze(['adventure', 'added']);
 export const AUTHORS = Object.freeze(['claude', 'gm']);
+/** Who invented an added detail: Claude, or the user (as a player or as the GM). */
+export const INVENTORS = Object.freeze(['claude', 'user']);
 /** Kinds with a status: open until closed. */
 export const hasStatus = (kind) => !!(KINDS[kind] && KINDS[kind].status);
 
@@ -42,9 +44,10 @@ const list = (v) => [...new Set((Array.isArray(v) ? v : String(v || '').split(',
 
 /**
  * An entry record, checked: a known kind and some text; drops empty fields. Threads, quests and timed events start
- * open. An improvisation is 'added' unless said otherwise.
+ * open. An improvisation is 'added' unless said otherwise; an added detail says who invented it (addedBy: by default
+ * whoever wrote the entry, the GM view's entries being the user's).
  */
-export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects = [], where = null, game = null, source = null, status = null, links = [], at = null, updated = null }) {
+export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects = [], where = null, game = null, source = null, addedBy = null, status = null, links = [], at = null, updated = null }) {
   if (!KINDS[kind]) throw new Error(`kind must be one of ${KIND_IDS.join(', ')}`);
   const t = clean(text);
   if (!t) throw new Error('a ledger entry needs text');
@@ -58,6 +61,11 @@ export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects 
   if (game && typeof game.now === 'number') out.game = { now: game.now, ...(clean(game.label) ? { label: clean(game.label) } : {}) };
   const src = source || (kind === 'improv' ? 'added' : null);
   if (src) { if (!SOURCES.includes(src)) throw new Error(`source must be one of ${SOURCES.join(', ')}`); out.source = src; }
+  if (src === 'added') {
+    const inv = addedBy || (by === 'gm' ? 'user' : 'claude');
+    if (!INVENTORS.includes(inv)) throw new Error(`addedBy must be one of ${INVENTORS.join(', ')}`);
+    out.addedBy = inv;
+  } else if (addedBy) throw new Error('addedBy is for an added detail (source added)');
   if (hasStatus(kind)) {
     const st = status || 'open';
     if (!STATUSES.includes(st)) throw new Error(`status must be one of ${STATUSES.join(', ')}`);
@@ -74,6 +82,7 @@ export function editEntry(old, changes, now = new Date().toISOString()) {
   const merged = { ...old };
   for (const [k, v] of Object.entries(changes)) { if (v === null || v === undefined) { if (v === null) delete merged[k]; } else merged[k] = v; }
   if (!hasStatus(merged.kind)) delete merged.status;
+  if (merged.source !== 'added') delete merged.addedBy;
   return ledgerEntry({ ...merged, updated: now });
 }
 
@@ -126,7 +135,7 @@ const WHO = { claude: 'Claude', gm: 'GM' };
 /** An entry in words, one line (for the tool and the audit log): "🧵 Thread (open): The boot prints — ...". */
 export function entryLine(e, max = 160) {
   const k = KINDS[e.kind] || { label: e.kind, icon: '' };
-  const head = `${k.icon} ${k.label}${e.status ? ` (${e.status})` : ''}${e.source ? ` [${e.source}]` : ''}`;
+  const head = `${k.icon} ${k.label}${e.status ? ` (${e.status})` : ''}${e.source ? ` [${e.source === 'added' ? `added by ${e.addedBy === 'user' ? 'the user' : 'Claude'}` : e.source}]` : ''}`;
   const body = `${e.title ? `${e.title}: ` : ''}${e.text}`.replace(/\s+/g, ' ');
   return `${head}: ${body.length > max ? `${body.slice(0, max - 1)}…` : body}`;
 }
@@ -140,7 +149,7 @@ export function ledgerHtml(e, { editable = false, armed = null } = {}) {
   const meta = [
     e.where && (e.where.area || e.where.map) ? `<span class="lg-where">${esc([e.where.area, e.where.map].filter(Boolean).join(' · '))}</span>` : '',
     e.game && e.game.label ? `<span class="lg-when">${esc(e.game.label)}</span>` : '',
-    e.source ? `<span class="lg-src lg-${esc(e.source)}">${e.source === 'added' ? 'added' : 'adventure'}</span>` : '',
+    e.source ? `<span class="lg-src lg-${esc(e.source)}${e.addedBy ? ` lg-by-${esc(e.addedBy)}` : ''}" title="${e.source === 'added' ? 'Invented at the table' : 'From the adventure'}">${e.source === 'added' ? `✨ added by ${e.addedBy === 'user' ? 'you' : 'Claude'}` : 'adventure'}</span>` : '',
     `<span class="lg-by lg-${esc(e.by)}">${esc(WHO[e.by] || e.by)}</span>`,
   ].filter(Boolean).join(' ');
   const subj = (e.subjects || []).map((s) => `<button type="button" class="lg-subj" data-subject="${esc(s)}">${esc(s)}</button>`).join('');

@@ -7,7 +7,7 @@
 // map() -> the current map id, showLink(path), log(text) (an audit line)}. Returns {render(), entries(), listening(),
 // filter(f)}.
 
-import { LEDGER, KINDS, KIND_IDS, SOURCES, ledgerEntry, editEntry, ledgerPath, ledgerRows, storySoFar, hasStatus, entryLine, ledgerHtml } from './ledger.js';
+import { LEDGER, KINDS, KIND_IDS, ledgerEntry, editEntry, ledgerPath, ledgerRows, storySoFar, hasStatus, entryLine, ledgerHtml } from './ledger.js';
 
 const SHOWN = 300;
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -16,7 +16,9 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 export function formHtml(e = null) {
   const v = e || {};
   const kinds = KIND_IDS.map((k) => `<option value="${k}"${(v.kind || 'improv') === k ? ' selected' : ''}>${KINDS[k].icon} ${esc(KINDS[k].label)}</option>`).join('');
-  const src = ['', ...SOURCES].map((s) => `<option value="${s}"${(v.source || '') === s ? ' selected' : ''}>${s ? (s === 'added' ? 'Added at the table' : 'From the adventure') : 'Source: not said'}</option>`).join('');
+  const cur = v.source === 'added' ? `added-${v.addedBy || 'user'}` : (v.source || '');
+  const src = [['', 'Source: not said'], ['adventure', 'From the adventure'], ['added-user', 'Added by me (the user)'], ['added-claude', 'Added by Claude']]
+    .map(([s, l]) => `<option value="${s}"${cur === s ? ' selected' : ''}>${l}</option>`).join('');
   return `<form class="lg-form" data-edit="${esc(e ? e.id : '')}">`
     + `<div class="lg-frow"><select name="kind" aria-label="Kind">${kinds}</select><select name="source" aria-label="Source">${src}</select></div>`
     + `<input name="title" placeholder="Title (optional)" value="${esc(v.title || '')}" maxlength="120">`
@@ -78,13 +80,14 @@ export function mountLedger(o) {
     const f = ev.target, val = (n) => f.elements[n].value;
     const err = f.querySelector('.lg-err');
     try {
-      const fields = { kind: val('kind'), title: val('title') || null, text: val('text'), subjects: val('subjects'), source: val('source') || null };
+      const sv = val('source');
+      const fields = { kind: val('kind'), title: val('title') || null, text: val('text'), subjects: val('subjects'), source: sv ? (sv.startsWith('added') ? 'added' : sv) : null, addedBy: sv.startsWith('added-') ? sv.slice(6) : null };
       const old = editing ? find(editing) : null;
       const where = { ...((old && old.where) || {}), area: val('area') };
       if (!old && o.map) where.map = o.map();
       if (old) {
         const { id, ...prev } = old;
-        const data = editEntry(prev, { ...fields, title: fields.title, source: fields.source, where }, new Date().toISOString());
+        const data = editEntry(prev, { ...fields, where }, new Date().toISOString());
         o.store.set(`${LEDGER}/${id}`, data).catch(() => {});
         if (o.log) o.log(`ledger entry changed: ${entryLine(data, 80)}`);
       } else {

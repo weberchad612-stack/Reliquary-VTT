@@ -21,8 +21,14 @@ test('entries: a known kind and text; status for threads, quests and timed event
   assert.throws(() => ledgerEntry({ kind: 'fact', text: 'x', status: 'open' }), /no status/);
   assert.deepEqual(ledgerEntry({ kind: 'thread', text: 'Boot prints', at: 'T' }), { at: 'T', by: 'claude', kind: 'thread', text: 'Boot prints', status: 'open' });
   const e = ledgerEntry({ kind: 'improv', text: 'Grukk calls them shiny-eyes', subjects: 'Grukk, lantern lady, Grukk', where: { map: 'm', area: '' }, game: { now: 5, label: 'Day 1' }, links: ['chat/a'], by: 'gm', at: 'T' });
-  assert.deepEqual(e, { at: 'T', by: 'gm', kind: 'improv', text: 'Grukk calls them shiny-eyes', subjects: ['Grukk', 'lantern lady'], where: { map: 'm' }, game: { now: 5, label: 'Day 1' }, source: 'added', links: ['chat/a'] });
+  assert.deepEqual(e, { at: 'T', by: 'gm', kind: 'improv', text: 'Grukk calls them shiny-eyes', subjects: ['Grukk', 'lantern lady'], where: { map: 'm' }, game: { now: 5, label: 'Day 1' }, source: 'added', addedBy: 'user', links: ['chat/a'] });
   assert.equal(ledgerEntry({ kind: 'fact', text: 'x', source: 'adventure' }).source, 'adventure');
+  // who invented an added detail: the writer by default (the GM view's entries are the user's), or said outright
+  assert.equal(ledgerEntry({ kind: 'improv', text: 'x' }).addedBy, 'claude');
+  assert.equal(ledgerEntry({ kind: 'quest', text: 'The king\'s orders', source: 'added', addedBy: 'user' }).addedBy, 'user', 'a player\'s improvisation, logged by Claude');
+  assert.throws(() => ledgerEntry({ kind: 'fact', text: 'x', source: 'adventure', addedBy: 'user' }), /addedBy/);
+  assert.throws(() => ledgerEntry({ kind: 'improv', text: 'x', addedBy: 'gm' }), /addedBy/);
+  assert.equal(editEntry(ledgerEntry({ kind: 'improv', text: 'x' }), { source: 'adventure' }, 'T').addedBy, undefined);
   assert.deepEqual(KIND_IDS.filter(hasStatus), ['thread', 'quest', 'event']);
   assert.match(ledgerPath(1000000), /^ledger\/[0-9a-z]{9}-[0-9a-z]+$/);
 });
@@ -83,6 +89,9 @@ test('HTML: escaped; kind, status, subjects and links; controls only when editab
   assert.match(ed, /data-act="edit"/);
   assert.match(ledgerHtml(e, { editable: true, armed: 'x' }), /Remove\?/);
   assert.match(ledgerHtml({ ...e, status: 'done' }, { editable: true }), /data-act="reopen"/);
+  assert.match(ledgerHtml({ ...e, source: 'added', addedBy: 'user' }), /✨ added by you/);
+  assert.match(ledgerHtml({ ...e, source: 'added', addedBy: 'claude' }), /✨ added by Claude/);
+  assert.match(formHtml({ id: 'k', ...ledgerEntry({ kind: 'quest', text: 'x', source: 'added', addedBy: 'user' }) }), /<option value="added-user" selected>/);
   assert.match(entryLine(LIST[1].data), /^🧵 Thread \(open\): Boot prints: Prints lead/);
   assert.match(formHtml(), /Add to the ledger/);
   const f = formHtml({ id: 'q1', ...LIST[2].data });
@@ -105,6 +114,10 @@ test('the tool: add carries the game time; summary; edit, close and reopen; remo
   assert.deepEqual([a.writes[0].data.text, a.writes[0].data.source, a.writes[0].data.where.area, a.writes[0].data.game.now], ['The innkeeper is Brennan', 'added', 'A1', 149136906012]);
   assert.equal(runLedger('add', ['fact', 'x'], { game: 'Day 2, 9:00 AM' }, RECORDS).writes[0].data.game.label, 'Day 2, 9:00 AM');
   assert.equal(runLedger('summary', ['We', 'met', 'Grukk.'], { title: 'Session 2' }, RECORDS).writes[0].data.kind, 'summary');
+  const user = runLedger('add', ['quest', 'The', 'king\'s', 'orders'], { addedBy: 'user' }, RECORDS).writes[0].data;
+  assert.deepEqual([user.source, user.addedBy], ['added', 'user'], '--added-by user implies an added detail');
+  const flagged = runLedger('edit', ['000000004-d'], { addedBy: 'user' }, RECORDS).writes[0].data;
+  assert.deepEqual([flagged.source, flagged.addedBy], ['added', 'user'], 'an entry flagged afterwards as the user\'s invention');
   assert.throws(() => runLedger('add', ['gossip', 'x'], {}, RECORDS), /kind/);
   const c = runLedger('close', ['000000002-b'], { now: 'N' }, RECORDS);
   assert.deepEqual([c.writes[0].path, c.writes[0].data.status, c.writes[0].data.updated], ['ledger/000000002-b', 'done', 'N']);
@@ -121,7 +134,7 @@ test('the tool: add carries the game time; summary; edit, close and reopen; remo
 test('the tool: find (with the chat), story and subjects', () => {
   const f = runLedger('find', ['grukk'], {}, RECORDS).lines;
   assert.equal(f.length, 1);
-  assert.match(f[0], /^000000003-c .*Improvised \[added\]: Grukk calls/);
+  assert.match(f[0], /^000000003-c .*Improvised \[added by Claude\]: Grukk calls/);
   const fc = runLedger('find', ['lantern', 'lady'], { chat: true, kind: 'secret' }, RECORDS).lines;
   assert.match(fc[0], /^000000005-e/);
   assert.ok(fc.some((l) => /^chat\/0000000aa-1 +npc Scar-Browed Ogre: Lantern lady give Grukk sheep/.test(l)), 'the chat is searched too');
