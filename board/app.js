@@ -478,8 +478,9 @@ export async function start(store, { build = null } = {}) {
       ctx.fillRect(P(x0), P(y0), P(x1 - x0), P(y1 - y0) + CS);
     }
 
-    // movement range of the selected token: one, two and three Strides (a player's PC, or any token for the GM)
-    if (selected && canDrag(selected)) drawMoveBands(F);
+    // movement range of the selected token: one, two and three Strides (a player's PC, or any token for the GM),
+    // only while an encounter is under way (begun and not ended): outside combat the bands are clutter
+    if (encounterOn && selected && canDrag(selected)) drawMoveBands(F);
 
     if (S.walls || full) drawWalls(full && !S.walls);
     drawDoors(gm, full);
@@ -940,6 +941,7 @@ export async function start(store, { build = null } = {}) {
     { colour: '#2f9a48', dash: [0.13, 0.13] },   // three: dark green, short dashes
   ];
   const BAND_ALPHA = 0.5;   // see-through, so the map under the outlines stays readable
+  let encounterOn = false;   // an encounter has begun and not ended (the tracker says): the Stride bands show
   let bandCache = null;
   function moveBands(id) {
     const key = id + '|' + gen;
@@ -3116,6 +3118,7 @@ export async function start(store, { build = null } = {}) {
     },
     hover: (id) => { if (trkHover !== id) { trkHover = id; targetsChanged(); } },
     onActing: (id) => { actingId = id; targetsChanged(); },
+    onEncounter: (on) => { encounterOn = on; bandCache = null; draw(); },
     setHidden: (id, hidden) => setHidden(id, hidden),
     // the tracker's Defeated marks the token dead on the map (faded, red cross) and back; its hit points are not touched
     setDead: (id, dead) => { const t = S.tokens[id]; if (t && !!t.dead !== !!dead) setDead(id, dead); },

@@ -6,7 +6,7 @@
 // o: {store, Engine, SYS, readOnly, view() -> 'gm' | 'player', tokens() -> {id: token} (this map's),
 //   seen(id), name(id) (this view's name), publicName(id) (the name players use), colour(kind), toast(msg),
 //   logChange(what), loadCreature(id) -> {actor, state, content} | null, applyTokens({id: {effects, dead}}) -> ids
-//   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null),
+//   handled on this page, target(id, add) (target this token alone, or add it with Shift), ping(id), hover(id | null), onActing(id | null), onEncounter(underWay) (an encounter began or ended),
 //   reveal(id), setHidden(id, hidden) (the GM hides a token from the players), setDead(id, dead) (the token's dead look on the map), conditionWords(token) -> [words this view may see], rolls (the chat: {show, latest}), panel (the
 //   Encounter tab's panel, board/panel.js), openButton}
 
@@ -431,8 +431,11 @@ export async function mountTracker(o) {
       marking.delete(id);
     }
   }
-  store.watch('state/encounter', (e) => { ENC = e; render(); markDefeated(); });
-  render();
+  // the board shows the Stride bands only while an encounter is under way (begun, not ended)
+  let wasOn = null;
+  const tellBoard = () => { const on = begun(ENC); if (on !== wasOn) { wasOn = on; if (o.onEncounter) o.onEncounter(on); } };
+  store.watch('state/encounter', (e) => { ENC = e; render(); markDefeated(); tellBoard(); });
+  render(); tellBoard();
   return {
     render: () => { lastKey = ''; render(); },
     encounter: () => ENC,

@@ -202,6 +202,8 @@ map, fitted to the window, its places as pins.
   another. A single token's move into a full square still warns. (The user's choice, 2026-11-11, after
   weighing overflow to the nearest free square, a warning, and refusing the move.)
 - Ctrl+click (Cmd+click on a Mac) adds a token to the selection or takes it away (players: their PCs only).
+- The selected token's Stride outlines (one, two and three Strides) show only while an encounter is under way
+  (begun and not ended, 2026-11-12); outside combat a selected token shows none.
 - Dragging any selected token moves the whole selection together, keeping its spacing. No route or cost is
   shown, and no warnings are given for walls, taken squares or Speed (the GM decides). The arrow keys step
   the whole selection one square. Group moves never use marching order (FR-1).
