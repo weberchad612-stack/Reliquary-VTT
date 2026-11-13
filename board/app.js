@@ -30,6 +30,7 @@ import { makeFloating, bringToFront } from './panel.js';
 import { chatPath, eventMessage } from './chat.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
+import { mountDice } from './diceui.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
@@ -178,7 +179,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
@@ -2512,6 +2513,7 @@ export async function start(store, { build = null } = {}) {
     if (v === 'player' && multi.size) setSelection([...multi].filter((id) => S.tokens[id] && S.tokens[id].kind === 'pc'));
   if (sidebar) sidebar.refresh();
   if (auditUi) auditUi.render();
+  if (diceUi) diceUi.render();
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
@@ -3109,14 +3111,15 @@ export async function start(store, { build = null } = {}) {
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
-  // the sidebar (board/sidebar.js): chat, the encounter tracker, the GM's lighting, walls and audit log
+  // the sidebar (board/sidebar.js): chat, the encounter tracker, the dice statistics, the GM's lighting, walls and audit log
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
-    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
+    { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'dice', label: 'Dice statistics' }, { id: 'lighting', label: 'Lighting (GM)', gm: true },
     { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body });
+  diceUi = mountDice({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('dice').body, kinds: SYS.rollKinds || [] });
   // an older board's change-log lines (chat messages of kind 'log') move to the audit log: same ids, so two pages
   // doing it at once write the same records
   if (!READONLY) store.list('chat').then((l) => { for (const e of l) if (e.data && e.data.kind === 'log') store.set(`audit/${e.id}`, auditFromLog(e.data)).then(() => store.remove(`chat/${e.id}`)).catch(() => {}); }).catch(() => {});

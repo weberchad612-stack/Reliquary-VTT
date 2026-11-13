@@ -13,6 +13,7 @@
 import { trackerRows, applyAction, needInitiative, initiativeText, begun, openEncounter, newlyDefeated, eventLines, dropInitiative, canDrag } from './tracker.js';
 import { rollRecord } from './rolls.js';
 import { chatPath } from './chat.js';
+import { dicePath, diceRecord, checkDice, sideOf } from './dice.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const sgn = (v) => (v < 0 ? `−${-v}` : `+${v}`);
@@ -72,6 +73,8 @@ export async function mountTracker(o) {
           if (ev.type === 'turn-start') lines.push({ text: `${o.publicName(ev.token)}'s turn`, pub });
           const res = Tm.turnRules({ events: [ev], now: ev.type === 'turn-end' || ev.type === 'round-end' ? now0 : r.now, encounter: r.encounter, tokens: all, states, names, roundSeconds: TT.roundSeconds, rng: Math.random, prepare });
           lines.push(...res.lines.map((text) => ({ text, pub, event: true })));
+          // the dice the rules rolled (persistent damage, flat and recovery checks): the Dice tab counts them
+          for (const d of res.dice || []) extra.push({ path: dicePath(), data: diceRecord({ who: o.publicName(d.token), token: d.token, side: sideOf(all[d.token]), kind: d.kind, dice: d.dice, by: o.view() === 'gm' ? 'gm' : 'player', gm: secret(d.token) }) });
           for (const [id, t] of Object.entries(res.tokens || {})) { all[id] = { ...all[id], ...t }; tokChanged[id] = { effects: t.effects || [], dead: !!t.dead }; }
           for (const [id, s] of Object.entries(res.states || {})) { states[id] = s; stateChanged[id] = s; }
         }
@@ -121,7 +124,9 @@ export async function mountTracker(o) {
     const c = openEncounter(ENC) ? ENC.combatants.find((x) => x.token === id) : null, t = o.tokens()[id];
     const secret = !!(c && c.hidden) || !!(t && t.kind !== 'pc' && !o.partySees(id));
     const rec = rollRecord({ by: o.view() === 'gm' ? 'gm' : 'player', token: id, name: o.publicName(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: secret });
-    return { action: { type: 'initiative', token: id, initiative: r.total, extra: { stat: slug, roll } }, write: { path: chatPath(), data: rec } };
+    // every die that landed goes to the dice statistics too (board/dice.js)
+    const diceW = { path: dicePath(), data: diceRecord({ who: o.publicName(id), token: id, side: sideOf(t), kind: 'initiative', dice: checkDice(r), by: rec.by, gm: secret }) };
+    return { action: { type: 'initiative', token: id, initiative: r.total, extra: { stat: slug, roll } }, write: { path: chatPath(), data: rec }, dice: diceW };
   }
   /** Roll All / Roll NPCs: Perception, no dialog, for everyone who still needs it. */
   async function rollMany(which) {
@@ -134,7 +139,7 @@ export async function mountTracker(o) {
       const st = p && I.statistic(p, 'perception');
       if (!st) { none++; continue; }
       const w = rollWrites(id, p, 'perception', st, 'normal');
-      if (!(await commit(w.action, [w.write]))) return;
+      if (!(await commit(w.action, [w.write, w.dice]))) return;
     }
     if (none) o.toast(`${none} creature(s) have no game data: type their initiative in (the row's ⋮ menu).`);
   }
@@ -204,7 +209,7 @@ export async function mountTracker(o) {
       const { st } = dialogStat(), d = dlg;
       const w = rollWrites(d.id, d.p, d.slug, st, d.mode);
       closeDialog();
-      commit(w.action, [w.write]);
+      commit(w.action, [w.write, w.dice]);
     }
   }
   function onDialogChange(e) {

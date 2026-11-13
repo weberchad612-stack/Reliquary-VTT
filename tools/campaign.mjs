@@ -93,10 +93,13 @@ export function readCampaign(packDir, saveDir) {
   const auditFile = path.join(saveDir, 'audit.json');
   const chat = chatAll.filter((m) => m.kind !== 'log');
   const audit = [...(fs.existsSync(auditFile) ? (readJson(auditFile).entries || []) : []), ...chatAll.filter((m) => m.kind === 'log').map(({ id, ...m }) => ({ id, ...auditFromLog(m) }))].sort((a, b) => (a.id < b.id ? -1 : 1));
+  // the dice statistics (dice.json: {rolls: [{id, ...record}]}), oldest first
+  const diceFile = path.join(saveDir, 'dice.json');
+  const dice = fs.existsSync(diceFile) ? (readJson(diceFile).rolls || []) : [];
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
   const content = readContent(pack, packDir, actors, tokens);
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
@@ -117,7 +120,7 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const campFile = path.join(saveDir, 'campaign.json');
   const base = fs.existsSync(campFile) ? readJson(campFile) : {};
   if (fs.existsSync(campFile)) backup(saveDir, now);
-  const { campaign, mapStates, actors, actorStates, chat, audit } = saveFromRecords(records, base);
+  const { campaign, mapStates, actors, actorStates, chat, audit, dice } = saveFromRecords(records, base);
   campaign.saved_at = now.toISOString();
   const written = [];
   const write = (f, obj) => {
@@ -139,6 +142,10 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const auditFile = path.join(saveDir, 'audit.json');
   if (audit.length) write(auditFile, { $schema: '../../../schemas/audit.schema.json', entries: audit });
   else if (fs.existsSync(auditFile)) fs.rmSync(auditFile);
+  // the dice statistics, whole
+  const diceFile = path.join(saveDir, 'dice.json');
+  if (dice.length) write(diceFile, { $schema: '../../../schemas/dice.schema.json', rolls: dice });
+  else if (fs.existsSync(diceFile)) fs.rmSync(diceFile);
   // one file per creature; files of creatures no longer on the board are removed (the backup keeps them)
   for (const [dir, docs] of [['actors', actors], ['actorstate', actorStates]]) {
     const d = path.join(saveDir, dir);
@@ -153,7 +160,7 @@ function backup(saveDir, now) {
   const dest = path.join(saveDir, 'backups', stamp);
   fs.mkdirSync(dest, { recursive: true });
   fs.copyFileSync(path.join(saveDir, 'campaign.json'), path.join(dest, 'campaign.json'));
-  for (const f of ['chat.json', 'audit.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
+  for (const f of ['chat.json', 'audit.json', 'dice.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
   for (const sub of ['maps', 'actors', 'actorstate']) if (fs.existsSync(path.join(saveDir, sub))) fs.cpSync(path.join(saveDir, sub), path.join(dest, sub), { recursive: true });
   const all = fs.readdirSync(path.join(saveDir, 'backups')).sort();
   for (const old of all.slice(0, Math.max(0, all.length - BACKUPS))) fs.rmSync(path.join(saveDir, 'backups', old), { recursive: true, force: true });
@@ -179,11 +186,11 @@ export function roundTrip(packDir, saveDir) {
     out.push(...diff({ map: id, ...strip(c.mapStates[id] || {}) }, strip(back.mapStates[id] || {}), `maps/${id}`));
   }
   out.push(...diff(strip(c.actors), strip(back.actors), 'actors'), ...diff(strip(c.actorStates), strip(back.actorStates), 'actorstate'));
-  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'));
+  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'), ...diff(strip(c.dice), strip(back.dice), 'dice'));
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 
@@ -230,7 +237,7 @@ export function verifySave(records, packDir, saveDir) {
   const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
   for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
   out.push(...diff(strip(fromDb.actors), strip(disk.actors), 'actors'), ...diff(strip(fromDb.actorStates), strip(disk.actorStates), 'actorstate'));
-  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'));
+  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'), ...diff(strip(fromDb.dice), strip(disk.dice), 'dice'));
   return out;
 }
 

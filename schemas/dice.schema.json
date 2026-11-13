@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dice.schema.json",
+  "title": "A campaign's dice log (saves/<campaign>/dice.json)",
+  "description": "Every roll's dice, oldest first, for the Dice tab's statistics (board/dice.js). On the board each roll is a record dice/<id>. Kept apart from the chat, so clearing the chat keeps the statistics.",
+  "type": "object",
+  "required": ["rolls"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "rolls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "at", "by", "who", "side", "kind", "dice"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
+          "at": { "type": "string" },
+          "by": { "enum": ["claude", "gm", "player"] },
+          "who": { "type": "string", "description": "The roller's public name" },
+          "token": { "type": "string" },
+          "side": { "enum": ["party", "others"] },
+          "kind": { "type": "string", "description": "One of the ruleset's roll kinds (rollKinds), else 'other'" },
+          "gm": { "type": "boolean", "description": "A roll players must not know about: only the GM view counts it" },
+          "dice": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["sides", "v"],
+              "additionalProperties": false,
+              "properties": { "sides": { "type": "integer", "minimum": 2 }, "v": { "type": "integer", "minimum": 1 } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

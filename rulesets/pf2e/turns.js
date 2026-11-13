@@ -27,10 +27,11 @@ export function persistentParts(effect) {
 /**
  * Answer a list of events. ctx: {events, now, encounter, tokens: {id: token}, states: {id: state},
  * prepare(id, token, state) -> prepared or null (no game data), roundSeconds, rng}.
- * Returns {tokens: {id: token} (changed ones), states: {id: state} (changed ones), lines}.
+ * Returns {tokens: {id: token} (changed ones), states: {id: state} (changed ones), lines, dice: [{token, kind, dice:
+ * [{sides, v}]}] (the dice rolled, for the dice statistics)}.
  */
 export function turnRules(ctx) {
-  const tokens = {}, states = {}, lines = [];
+  const tokens = {}, states = {}, lines = [], dice = [];
   const tok = (id) => tokens[id] || ctx.tokens[id];
   const st = (id) => states[id] || ctx.states[id] || {};
   const setTok = (id, t) => { tokens[id] = t; };
@@ -59,6 +60,7 @@ export function turnRules(ctx) {
           const p = ctx.prepare(id, tok(id), st(id));
           if (parts.length && p) {
             const rolled = parts.map((x) => ({ ...x, roll: rollFormula(x.formula, rng) }));
+            dice.push({ token: id, kind: 'damage', dice: rolled.flatMap((x) => x.roll.rolls.flatMap((r) => r.results.map((v) => ({ sides: Number(r.die.slice(1)), v })))) });
             const hit = applyDamage(p, st(id), tok(id).effects || [], { parts: rolled.map((x) => ({ amount: x.roll.total, type: x.type })) });
             states[id] = hit.state;
             setTok(id, { ...tok(id), effects: hit.effects, ...(hit.dead ? { dead: true } : {}) });
@@ -68,6 +70,7 @@ export function turnRules(ctx) {
             const left = [];
             for (const x of parts) {
               const die = rollDie(20, rng), ok = die >= 15;
+              dice.push({ token: id, kind: 'flat', dice: [{ sides: 20, v: die }] });
               lines.push(`${name(id)}: flat check to end ${x.formula} ${x.type} persistent damage: ${die} against DC 15, ${ok ? 'it ends' : 'it continues'}`);
               if (!ok) left.push(`${x.formula} ${x.type}`);
             }
@@ -93,6 +96,7 @@ export function turnRules(ctx) {
           // a dying creature attempts its recovery check
           if (valueOf(t.effects, 'dying')) {
             const die = rollDie(20, rng), r = recoveryCheck(p, t.effects || [], die);
+            dice.push({ token: id, kind: 'recovery', dice: [{ sides: 20, v: die }] });
             setTok(id, { ...t, effects: r.effects, ...(r.dead ? { dead: true } : {}) });
             lines.push(`${name(id)}: recovery check ${die}: ${r.lines.join('; ')}`);
           }
@@ -118,5 +122,5 @@ export function turnRules(ctx) {
     }
     if (['turn-start', 'turn-end', 'round-end', 'encounter-end', 'time'].includes(ev.type)) expire(ev);
   }
-  return { tokens, states, lines };
+  return { tokens, states, lines, dice: dice.filter((d) => d.dice.length) };
 }

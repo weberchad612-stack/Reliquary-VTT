@@ -6,7 +6,7 @@ For Claude, when running a game on the board (Reliquary Virtual Tabletop) and wh
 
 | Place | What | Who writes it |
 |---|---|---|
-| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
+| The board's database | The **active** campaign only, as small two-part records (`board/meta`, `maps/`, `walls/`, `terrain/`, `lighting/`, `state/table`, `mapstate/`, `tokens/`, `explored/`, `templates/`, `notes/`, `targets/`, `chat/` (Claude's narration and messages, roll cards, table events), `audit/` (the GM's audit log), `dice/` (the dice statistics), `state/encounter`, `actors/`, `actorstate/`, `content/`, `fxlib/pack`, and `fx/` while effects play; layout in the design, section 3) | Claude; the board for the player's moves, doors, lights, the GM view and the explored area |
 | The board's own record, `app/build` | The version of the board last published (section 7); not part of any campaign | Claude, after each publish |
 | The board's file storage | Map images, uploaded once and reused across switches (matched by SHA-256) | Claude |
 | The PC: `saves/<campaign>/` in the user's Reliquary-VTT folder | Every campaign's save (`campaign.json`, `maps/<id>.json`) and its `backups/` (the last five) | Claude, through the desktop app |
@@ -36,7 +36,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -48,7 +48,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -270,8 +270,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 ### The sidebar, the chat and the audit log (2026-11-12)
 
 - **The sidebar** is Foundry's (v13): a strip of tab icons down the right panel's inner edge and the open tab's pane.
-  The battle map's tabs: **Chat**, **Encounter**, and the GM view's **Lighting**, **Walls** and **Audit log**; an area
-  map's: **Place**, **Chat** and the GM's **Audit log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
+  The battle map's tabs: **Chat**, **Encounter**, **Dice**, and the GM view's **Lighting**, **Walls** and **Audit log**;
+  an area map's: **Place**, **Chat**, **Dice** and the GM's **Audit log**. Clicking the open tab's icon collapses the sidebar to its strip (so does
   the » control at the bottom of the strip, which also expands it); **dragging the inner edge resizes it**
   (double-click the edge for the usual width). Each browser remembers the tab, the width and whether it is
   collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar changes size.
@@ -337,6 +337,34 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   `board/chatui.js` (the Chat tab, pop-ups, unread, delete), `board/audit.js` (pure: audit entries, rows, HTML) and
   `board/auditui.js` (the Audit tab), `tests/board-chat.test.mjs`, `tools/chat.mjs`, `schemas/chat.schema.json`,
   `schemas/audit.schema.json`, and the save in `board/records.js` and `tools/campaign.mjs`.
+
+### Dice statistics (2026-11-12)
+
+- **The Dice tab** (everyone; pops out like every tab) shows statistics of every die rolled at the table, as the
+  previous board's Dice statistics panel did: filters in one row (**Everyone / Party / Monsters & NPCs**, **This
+  session / All time**, and the **kind** of roll, the ruleset's `rollKinds`), a **By die** table (dice rolled, the
+  average, a fair die's average, and a **luck bar**: the tick is the fair average, the fill runs to this die's
+  average, amber above, grey below), the chosen die's **faces** as a histogram (a fair die's count dashed across;
+  hover a bar for its count), with how often the highest face and 1 came up, and a **by roller** table (dice,
+  average, best, worst, highest faces, 1s). Click a die's row to choose it (the d20 by default).
+- **Every die that landed counts**, both dice of a roll twice and keep one (the user, 2026-11-12). Players never
+  count a roll marked `gm` (a hidden creature's, or one the party does not see); the GM view counts everything.
+- **The dice log is its own stream** (`dice/<time36>-<n>`: {at, by, who, token?, side, kind, dice: [{sides, v}],
+  gm?}), apart from the chat, so clearing the chat keeps the statistics. It is part of the save (`dice.json`).
+- **This session** starts when the GM presses **New session** (`state/session` {started}, saved as
+  `campaign.session`); until the GM first does, it is today (from local midnight).
+- **What writes dice:** the board's initiative rolls (the tracker's roll dialog, Roll all / Roll NPCs),
+  `tools/encounter.mjs roll`, the turn rules' own rolls (persistent damage, the flat check to end it, recovery
+  checks: `turnRules` returns `dice`, and the board and `tools/turns.mjs` log them), `tools/check.mjs` (the d20s
+  given with `--roll`: write its `writes`), and **`tools/dice.mjs`** for everything else Claude rolls:
+  `roll <formula> --who NAME --kind damage` rolls and logs, `log --who NAME --kind attack d20=14` logs dice rolled
+  elsewhere (a player's own dice). With `--pack`/`--save` it finds the roller's token (public name, side); `--gm`
+  for a roll players must not know about. **Log every roll Claude makes**, or the statistics are only part of the
+  story.
+- **Roll kinds are the ruleset's** (`rollKinds` in `rulesets/<system>/system.js`: Pathfinder's are initiative,
+  attack, save, skill, perception, damage, flat, recovery, other); the board shows a kind it does not know by its
+  id. Built in `board/dice.js` (pure), `board/diceui.js` (the tab), `tools/dice.mjs`, `schemas/dice.schema.json`,
+  `tests/board-dice.test.mjs`.
 
 ### The encounter tracker (2026-11-12)
 

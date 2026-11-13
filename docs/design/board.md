@@ -72,6 +72,8 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md) | Claude (loading, `tools/actor.mjs`) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield | Claude |
 | `chat/<time36>-<n>` | A chat message, the players' story: Claude's narration, a ruling, an NPC speaking, a roll card, or an event players should know about (a condition, damage, a death, a round); `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
+| `dice/<time36>-<n>` | A roll's dice for the Dice tab's statistics: who, side (party or others), kind (the ruleset's roll kinds), every die that landed, `gm` for a secret roll (board/dice.js). Part of the save (`dice.json`) | Whoever rolled (the board's tracker, `tools/encounter.mjs`, the turn rules), Claude (`tools/dice.mjs`, `tools/check.mjs`) |
+| `state/session` | When the GM started this session, for the Dice tab's "This session" (saved in `campaign.json` as `session`) | The GM view (New session) |
 | `audit/<time36>-<n>` | The GM's audit log: every change to the game in words, by whom and when, and the board's warnings (board/audit.js). Players never see it. Part of the save (`audit.json`) | The board (every change it writes), Claude (`tools/chat.mjs audit`, `tools/encounter.mjs`) |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
@@ -571,3 +573,20 @@ mod, parts, notes, total)}; `audit/<time36>-<n>` {at, by, text, map?, level? ('w
 audit). Next for the chat: roll cards for every check, attack and damage roll (Claude's `tools/check.mjs` and the
 board's), not only initiative. Later: roll modes (FR-10), typed messages and whispers, speaking languages (PF2E's
 "Speaking in Taldane" is the system's), the formatting bar.
+
+## Dice statistics (designed and built 2026-11-12)
+
+From the previous board's Dice statistics panel (Everyone / Party / Monsters, a by-die table with a luck bar, a
+chosen die's faces, a by-roller table). The user's decisions:
+
+| Question | Decision |
+|---|---|
+| Where, who | A **Dice tab** in the sidebar (pops out like every tab), **for everyone**; players do not count the GM's secret rolls. |
+| Source | **Its own dice log** (`dice/` records, `dice.json` in the save), so clearing the chat never wipes the statistics. |
+| Roll twice, keep one | **Both dice count**: every die that landed. |
+| Added | A **session filter** (This session / All time; the GM's New session marks the start, else today) and a **kind of roll** filter (the ruleset's roll kinds). |
+
+Records: `dice/<time36>-<n>` {at, by, who, token?, side ('party' | 'others'), kind, dice: [{sides, v}], gm?};
+`state/session` {started}. Written by the board's initiative rolls, the turn rules' rolls, and Claude's
+`tools/encounter.mjs`, `tools/check.mjs` and `tools/dice.mjs`. Next: roll cards and dice from the board for attacks,
+saves and damage once the board rolls them.

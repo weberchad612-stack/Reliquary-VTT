@@ -45,6 +45,19 @@ export const PF2E_SYSTEM = Object.freeze({
   // initiative: the statistics a creature may roll, with initiative's modifiers and notes (rulesets/pf2e/initiative.js)
   initiative: PF2E_INITIATIVE,
   traits: PF2E_TRAITS,
+  // the kinds of roll the Dice tab (board/dice.js) sorts dice into, in the order its filter lists them; a roll of
+  // another kind is 'other'
+  rollKinds: Object.freeze([
+    Object.freeze({ id: 'initiative', label: 'Initiative' }),
+    Object.freeze({ id: 'attack', label: 'Attack rolls' }),
+    Object.freeze({ id: 'save', label: 'Saving throws' }),
+    Object.freeze({ id: 'skill', label: 'Skill checks' }),
+    Object.freeze({ id: 'perception', label: 'Perception checks' }),
+    Object.freeze({ id: 'damage', label: 'Damage' }),
+    Object.freeze({ id: 'flat', label: 'Flat checks' }),
+    Object.freeze({ id: 'recovery', label: 'Recovery checks' }),
+    Object.freeze({ id: 'other', label: 'Other' }),
+  ]),
   measurement: Object.freeze({
     unit: 'ft',
     squareFeet: 5,

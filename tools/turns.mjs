@@ -5,11 +5,12 @@ import { randomInt } from 'node:crypto';
 import { seededRandom } from '../engine/rules/dice.js';
 import { prepareAt, auraEffects } from './actor.mjs';
 import { publicName } from '../board/names.js';
+import { dicePath, diceRecord, sideOf } from '../board/dice.js';
 
 /** A random source: seeded (repeatable) or from the operating system. */
 export const randomSource = (seed) => (seed !== undefined && seed !== null && seed !== '' ? seededRandom(Number(seed)) : () => randomInt(0, 2 ** 32) / 2 ** 32);
 
-/** Answer events with the ruleset's turn rules: {lines, writes, tokens, states} (writes: tokens/ and actorstate/). */
+/** Answer events with the ruleset's turn rules: {lines, writes, tokens, states} (writes: tokens/, actorstate/ and the dice rolled, dice/). */
 export function runTurnRules(game, events, { now, encounter, rng }) {
   const T = game.sys.time;
   if (!T || !T.turnRules || !events.length) return { lines: [], writes: [], tokens: {}, states: {} };
@@ -27,6 +28,11 @@ export function runTurnRules(game, events, { now, encounter, rng }) {
     const data = Object.fromEntries(Object.entries(s).filter(([k, v]) => v !== undefined && v !== null && !(k === 'temp' && v === 0)));
     writes.push({ op: 'set', path: `actorstate/${id}`, data });
     game.states[id] = s;
+  }
+  // the dice the rules rolled (persistent damage, flat and recovery checks), for the Dice tab's statistics
+  for (const d of r.dice || []) {
+    const t = game.tokens[d.token] || {}, gm = !!t.hidden || !!((encounter && encounter.combatants) || []).find((c) => c.token === d.token && c.hidden);
+    writes.push({ op: 'set', path: dicePath(), data: diceRecord({ who: publicName(t) || t.name || d.token, token: d.token, side: sideOf(t), kind: d.kind, dice: d.dice, by: 'claude', gm }) });
   }
   game.auras = null;
   // a creature starting its turn inside an aura: say so (saves and abilities with no automatic effect)

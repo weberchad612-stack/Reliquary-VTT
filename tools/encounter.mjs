@@ -37,6 +37,7 @@ import { rollCheck, countedParts, notesFor } from '../engine/rules/check.js';
 import { rollRecord } from '../board/rolls.js';
 import { chatPath, eventMessage } from '../board/chat.js';
 import { auditPath, auditEntry } from '../board/audit.js';
+import { dicePath, diceRecord, checkDice, sideOf as diceSide } from '../board/dice.js';
 import { resolveToken, publicName } from '../board/names.js';
 import { loadGame, creature } from './actor.mjs';
 import { runTurnRules, randomSource } from './turns.mjs';
@@ -116,7 +117,10 @@ export function runEncounter(game, cmd, args, opts = {}) {
     const parts = countedParts(st), notes = notesFor(c.prepared.notes, I.noteSelectors(slug), c.prepared.tags, c.prepared.facts);
     const roll = { dice: r.dice, kept: r.kept, mode: r.mode, sides: r.sides, mod: r.mod, parts };
     const out = done(E.setInitiative(enc, id, r.total, tb, { stat: slug, roll }), [`${name(id)}: initiative ${r.dice.join('/')} ${r.mod < 0 ? '−' : '+'} ${Math.abs(r.mod)} (${label}) = ${r.total}`, ...notes.map((n) => `  ${n.from}: ${n.text}`)]);
-    out.writes.push({ op: 'set', path: chatPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm: !!(enc.combatants.find((x) => x.token === id) || {}).hidden }) });
+    const gm = !!(enc.combatants.find((x) => x.token === id) || {}).hidden || !!game.tokens[id].hidden;
+    out.writes.push({ op: 'set', path: chatPath(), data: rollRecord({ by: 'claude', token: id, name: publicName(game.tokens[id]) || name(id), check: 'initiative', stat: { slug, label }, roll: r, mod: r.mod, total: r.total, parts, notes, gm }) });
+    // the dice, for the Dice tab's statistics (board/dice.js)
+    out.writes.push({ op: 'set', path: dicePath(), data: diceRecord({ who: publicName(game.tokens[id]) || name(id), token: id, side: diceSide(game.tokens[id]), kind: 'initiative', dice: checkDice(r), by: 'claude', gm }) });
     return out;
   }
   if (cmd === 'defeat') {

@@ -41,6 +41,7 @@ write a number into an actor that the rules can work out. The board and the tool
   --defense perception --roll 4`; Strikes with `--strike Longsword --attack 2` (the multiple attack penalty)
   `--against <target>` (its AC). `--bonus` adds a situational modifier you rule (cover, Aid). Until the dice
   service exists (step 3), roll the d20 yourself and give it.
+- **Log the dice:** `check.mjs` prints `writes` with the d20s given (`--roll`); write them so the board's Dice tab counts them. Every other roll Claude makes goes through `tools/dice.mjs` (`roll 2d6+3 --who Kerra --kind damage`).
 - **Damage and healing:** `actor.mjs damage <who> <amount> [type] [--crit] [--nonlethal]` (or `--parts "5
   fire, 3 slashing"`), `heal`, `temp`, `recover --roll N`, `resource <who> heroPoints -1`, `shield <who> raise`.
   Each prints `{lines, writes}`: write every record (`db_write`; read first for its version) and tell the story

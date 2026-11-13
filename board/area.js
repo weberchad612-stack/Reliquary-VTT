@@ -15,6 +15,7 @@ import { mountSidebar } from './sidebar.js';
 import { mountChat } from './chatui.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
+import { mountDice } from './diceui.js';
 import { kindColour } from './targeting.js';
 
 /** The places a view may see, with what the pin and card need. */
@@ -43,7 +44,7 @@ export async function startArea(store, c) {
   let TABLE = c.table;
   let found = (c.mapState && c.mapState.places_found) || [];
   let request = await store.get('state/request');
-  let view = 'player', selected = null, clockUi = null, chatUi = null, auditUi = null;
+  let view = 'player', selected = null, clockUi = null, chatUi = null, auditUi = null, diceUi = null;
   const tokensHere = {};
   for (const e of await store.list('tokens')) if (e.data.map === map.id) { const { map: _m, ...t } = e.data; tokensHere[e.id] = t; }
 
@@ -62,8 +63,8 @@ export async function startArea(store, c) {
   card.className = 'card place-card';
   card.id = 'place-card';
   document.getElementById('pane-place').prepend(card);
-  // the sidebar (board/sidebar.js): the place, the chat and the GM's audit log
-  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+  // the sidebar (board/sidebar.js): the place, the chat, the dice statistics and the GM's audit log
+  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
 
   const toastEl = document.getElementById('toast');
   let toastT = null;
@@ -168,6 +169,7 @@ export async function startArea(store, c) {
     document.getElementById('v-gm').setAttribute('aria-pressed', String(v === 'gm'));
     sidebar.refresh();
     if (auditUi) auditUi.render();
+    if (diceUi) diceUi.render();
     if (chatUi) chatUi.render();
     if (selected && !places().find((p) => p.id === selected)) selected = null;
     shell.setView(v);
@@ -212,6 +214,7 @@ export async function startArea(store, c) {
     chatUi = mountChat({ store, view: () => view, readOnly: PAGE.readOnly, sidebar, pane: sidebar.panel('chat').body,
       names: (id) => (tokensHere[id] ? (view === 'gm' ? tokensHere[id].name : publicName(tokensHere[id])) : null), colour: kindColour, kindOf: (id) => (tokensHere[id] ? tokensHere[id].kind : null) });
     auditUi = mountAudit({ store, view: () => view, readOnly: PAGE.readOnly, pane: sidebar.panel('audit').body });
+    diceUi = mountDice({ store, view: () => view, readOnly: PAGE.readOnly, pane: sidebar.panel('dice').body, kinds: (Engine.systemConfig(META.ruleset) || {}).rollKinds || [] });
   }
 
   // ---- start ----
