@@ -50,7 +50,7 @@ export async function startArea(store, c) {
 
   // ---- the page: hide the battle map's own controls and cards ----
   for (const id of ['map', 'anim', 'hud']) { const n = document.getElementById(id); if (n) n.hidden = true; }
-  for (const sel of ['.zoom', '#sky-wrap', '#b-lighting', '#b-colour', '#b-anim', '#b-walls', '#b-enc']) { const n = document.querySelector(sel); if (n) n.hidden = true; }
+  for (const sel of ['.zoom', '#sky-wrap', '#b-lighting', '#b-colour', '#b-anim', '#b-walls']) { const n = document.querySelector(sel); if (n) n.hidden = true; }
   const stage = document.getElementById('stage');
   stage.classList.add('area-stage');
   const box = document.createElement('div');

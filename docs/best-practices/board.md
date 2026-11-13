@@ -407,8 +407,8 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 - **Getting in:** right-click a token and choose **Enter Combat** (the crossed swords); the GM's choice adds every
   selected token with it, and a player adds their own PC. The first creature in makes the encounter. **Leave
-  combat** on the same button takes one out. The tracker is the sidebar's **Encounter** tab; the ⚔ button in the
-  title line opens it and shows the round.
+  combat** on the same button takes one out. The tracker is the sidebar's **Encounter** tab (the ⚔ button in the
+  title line was removed on 2026-11-12: it served no purpose).
 - **The panel** is the Encounter tab's, and pops out like every tab's (see the sidebar).
 - **Rows** (as Foundry's): a letter disc in the creature's colour, the name this view uses, the initiative (click
   it for its roll card) or the die to roll, and buttons: for the GM **hide from players** (eye), **reveal the
