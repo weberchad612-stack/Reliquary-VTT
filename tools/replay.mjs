@@ -15,7 +15,9 @@
 //        [--in FILE | --in PATH=FILE ...] [--move ID:X,Y[:VX,VY;VX,VY]] ...
 //                       one step: the other tools' outputs (--in; - is stdin; PATH= for an output without a path,
 //                       such as effect.mjs's token) and moves (--move token:to[:waypoints]) change the working copy;
-//                       chat, dice, audit and fx records become the step's posts, written when it is revealed.
+//                       chat, dice, audit and fx records become the step's posts, written when it is revealed;
+//                       the outputs' rolls in parts (check.mjs, dice.mjs, actor.mjs damage) become the step's
+//                       details, in the order given: give the check, then the damage roll, then actor.mjs damage.
 //                       Prints the refreshed "adjudicating" record (write it: the banner times out without it).
 //   narrate "text"      a paragraph of narration, posted to the chat when the last step is revealed
 //   stop "text"         end the batch here, waiting for reactions ("Can anyone react to the ogre's swing?")
@@ -96,7 +98,10 @@ export function runStep(d, { side, text, actor, who, gm, focus, inputs = [], mov
   const touch = (p) => { if (!(p in before)) before[p] = clone(recs[p] ?? null); };
   const tokens = () => Object.fromEntries(Object.entries(recs).filter(([p]) => p.startsWith('tokens/')).map(([p, t]) => [p.slice(7), t]));
   const tokenId = (ref) => resolveToken(tokens(), ref);
+  const rolls = [];
   for (const { at, out } of inputs) {
+    // the rolls in parts (check.mjs, dice.mjs, actor.mjs damage), for the step's details on the board
+    for (const o of [].concat(out)) if (o && typeof o === 'object') { if (o.roll) rolls.push(o.roll); if (Array.isArray(o.rolls)) rolls.push(...o.rolls); }
     for (const w of writesOf(out, at)) {
       const coll = String(w.path).split('/')[0];
       if (POSTS.includes(coll)) { if (w.op === 'set' || !w.op) posts.push({ c: coll, data: clone(w.data) }); continue; }
@@ -118,6 +123,7 @@ export function runStep(d, { side, text, actor, who, gm, focus, inputs = [], mov
   const step = { side, text: String(text).trim(), changes, posts, moves: stepMoves };
   if (actorId) step.actor = actorId;
   if (shown) step.who = shown;
+  if (rolls.length) step.rolls = rolls;
   if (gm) step.gm = true;
   if (focus && focus.length) step.focus = focus;
   d.steps.push(step);

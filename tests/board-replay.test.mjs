@@ -157,3 +157,57 @@ test('replay: the save keeps every unfinished replay and the last few finished; 
   const del = tidyOps(records).flat().map((o) => o.path).filter((p) => p.startsWith('replay/'));
   assert.equal(del.length, 3);
 });
+
+// ---------- roll details (board/rolldetail.js; the user's decisions, 2026-11-12) ----------
+import { rollLines } from '../board/rolldetail.js';
+import { runCheck } from '../tools/check.mjs';
+import { runDice } from '../tools/dice.mjs';
+import { loadGame } from '../tools/actor.mjs';
+
+const KERRA_HITS = [
+  { type: 'check', token: 'kerra', who: 'Kerra', label: 'Longsword Strike (attack 2)', dice: [12], kept: 12, mod: 8, parts: [{ label: 'Strength', value: 4 }, { label: 'multiple attack', value: -5 }, { label: 'backswing', value: 1 }], total: 20, vs: { label: 'AC', value: 17, token: 'ogre' }, result: 'success' },
+  { type: 'damage', token: 'kerra', who: 'Kerra', label: 'Damage', text: '1d8+4 = (8)+4 = 12', crit: true, total: 24, damageType: 'slashing' },
+  { type: 'applied', token: 'ogre', who: 'Ogre', amount: 24, adjust: ['24 slashing: resistance 5 → 19'], taken: 19 },
+];
+const OGRE_HITS = [
+  { type: 'check', token: 'ogre', who: 'Ogre', label: 'Greatclub Strike', dice: [12], kept: 12, mod: 12, parts: [{ label: 'stat block', value: 12 }], total: 24, vs: { label: 'AC', value: 20, token: 'kerra' }, result: 'success' },
+  { type: 'damage', token: 'ogre', who: 'Ogre', label: 'Damage', text: '1d10+7 = (4)+7 = 11', total: 11, damageType: 'bludgeoning' },
+  { type: 'applied', token: 'kerra', who: 'Kerra', amount: 11, adjust: [], taken: 11 },
+];
+const isPc = (id) => id === 'kerra';
+
+test('roll details: a PC\'s rolls are whole for everyone, the foe\'s AC hidden from players', () => {
+  const p = rollLines(KERRA_HITS, { gm: false, isPc }).map((l) => l.text);
+  assert.deepEqual(p, [
+    'Longsword Strike (attack 2) +8 (+4 Strength, −5 multiple attack, +1 backswing) · d20 12 = 20 vs AC ? · success',
+    'Damage 1d8+4 = (8)+4 = 12 · doubled: 24 (critical) slashing',
+    '24 slashing: resistance 5 → 19',
+  ]);
+  assert.match(rollLines(KERRA_HITS, { gm: true, isPc })[0].text, /vs AC 17/);
+});
+
+test('roll details: a foe\'s rolls are results only for players (a PC\'s AC shown), whole for the GM', () => {
+  assert.deepEqual(rollLines(OGRE_HITS, { gm: false, isPc }).map((l) => l.text), ['Greatclub Strike: 24 vs AC 20 · success', 'Damage: 11 bludgeoning']);
+  const gm = rollLines(OGRE_HITS, { gm: true, isPc }).map((l) => l.text);
+  assert.equal(gm[0], 'Greatclub Strike +12 (+12 stat block) · d20 12 = 24 vs AC 20 · success');
+  assert.equal(gm[1], 'Damage 1d10+7 = (4)+7 = 11 bludgeoning');
+  // rolling twice: both dice, the one kept
+  assert.match(rollLines([{ ...OGRE_HITS[0], token: 'kerra', dice: [3, 15], kept: 15 }], { isPc })[0].text, /d20 3 and 15, kept 15/);
+  assert.deepEqual(rollLines(null), []);
+});
+
+test('roll details: the tools give the rolls in parts (check.mjs, dice.mjs)', () => {
+  const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+  const game = loadGame(path.join(ROOT, 'examples/sample-pack'), path.join(ROOT, 'examples/campaigns/keep-test'));
+  const r = runCheck(game, { who: 'Kerra', strike: 'Longsword', attack: 2, against: 'Scar-Browed Ogre', roll: '12', bonus: 1, bonusLabel: 'backswing' });
+  assert.equal(r.roll.type, 'check');
+  assert.equal(r.roll.total, r.total);
+  assert.equal(r.roll.mod, r.roll.parts.reduce((t, x) => t + x.value, 0), 'the parts add up');
+  assert.ok(r.roll.parts.some((x) => x.label === 'backswing' && x.value === 1));
+  assert.ok(r.roll.parts.some((x) => x.label === 'multiple attack' && x.value === -5));
+  assert.equal(r.roll.vs.label, 'AC');
+  const d = runDice('roll', ['1d8+4'], { who: 'Kerra', kind: 'damage', crit: true, type: 'slashing', seed: 3 });
+  assert.equal(d.roll.total, d.roll.rolled * 2);
+  assert.equal(d.total, d.roll.total);
+  assert.equal(d.roll.damageType, 'slashing');
+});

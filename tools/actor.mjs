@@ -243,7 +243,9 @@ export function runCommand(game, cmd, args, opts = {}) {
     const writes = [stateWrite(c.id, r.state)];
     if (JSON.stringify(r.effects) !== JSON.stringify(c.effects) || r.dead) writes.push(tokenWrite(c, r.effects, r.dead || undefined));
     const after = R.healthBand(r.state.hp, p.hp.max.value, r.dead);
-    return { lines: [`${c.shown}: ${r.lines.join('; ')}`, `players see: ${after}`], writes };
+    // the damage taken, for a replay step's details (board/rolldetail.js)
+    const roll = { type: 'applied', token: c.id, who: c.shown, amount: parts.reduce((t, x) => t + x.amount, 0), adjust: r.adjust || [], taken: r.total };
+    return { lines: [`${c.shown}: ${r.lines.join('; ')}`, `players see: ${after}`], roll, writes };
   }
   if (cmd === 'heal') {
     const r = R.applyHealing(p, c.state, c.effects, Number(args[1]), { dead: !!c.token.dead });

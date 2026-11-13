@@ -3238,6 +3238,7 @@ export async function start(store, { build = null } = {}) {
   replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
     hooks: {
       name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),
+      kind: (id) => (S.tokens[id] ? S.tokens[id].kind : null),
       visible: (id) => !!S.tokens[id] && (S.view === 'gm' || (!S.tokens[id].hidden && (S.tokens[id].kind === 'pc' || shown().seen.has(id)))),
       frame: frameCells, glide: glideToken, ring: ringToken, toast,
       playFx: (rec) => playFx(rec, { local: true }),

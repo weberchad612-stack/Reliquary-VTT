@@ -9,8 +9,9 @@
 //   node tools/check.mjs <pack-dir> <save-dir> [--records FILE] --who NAME --strike Longsword [--attack 2] --against NAME --roll N
 //
 // --attack is which attack this turn (1, 2, 3: the multiple attack penalty); --bonus adds a situational
-// modifier given by Claude (cover, aid). Prints JSON {total, dc, degree, lines, writes} (writes: the d20s, for the
-// Dice tab's statistics: write them). Docs: docs/best-practices/game-data.md.
+// modifier given by Claude, with what it is ("1 backswing", "2 cover"). Prints JSON {total, dc, degree, lines, roll,
+// writes} (writes: the d20s, for the Dice tab's statistics: write them; roll: the roll in parts, which
+// tools/replay.mjs puts in a step's details). Docs: docs/best-practices/game-data.md.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -54,16 +55,17 @@ export function resolveCheck({ mod, dc, roll, bonus = 0, label = 'check', dcLabe
  */
 export function runCheck(game, o) {
   const R = game.ruleset, c = creature(game, o.who), p = c.prepared;
-  let st, label, extra = 0, kind, slug;
+  let st, label, extra = 0, kind, slug, rollLabel;
   if (o.strike) {
     const s = p.strikes.find((x) => x.name.toLowerCase() === String(o.strike).toLowerCase());
     if (!s) throw new Error(`${c.name} has no Strike "${o.strike}" (${p.strikes.map((x) => x.name).join(', ')})`);
     const n = o.attack || 1;
     st = s.attack; extra = s.map[Math.max(0, Math.min(2, n - 1))]; label = `${c.shown}: ${s.name} Strike${n > 1 ? ` (attack ${n}, ${extra})` : ''}`;
+    rollLabel = `${s.name} Strike${n > 1 ? ` (attack ${n})` : ''}`;
     kind = 'strike'; slug = String(s.slug || s.name).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   } else {
     if (!o.stat) throw new Error('give --stat or --strike');
-    st = statOf(p, o.stat); label = `${c.shown}: ${st.label}`;
+    st = statOf(p, o.stat); label = `${c.shown}: ${st.label}`; rollLabel = st.label;
     const n = String(o.stat).toLowerCase();
     kind = p.saves[n] ? 'save' : n === 'perception' ? 'perception' : p.skills[n] ? 'skill' : /-lore$/.test(n) ? 'lore' : n === 'spell-attack' ? 'spell-attack' : 'other';
     slug = n.replace(/-lore$/, '');
@@ -79,7 +81,7 @@ export function runCheck(game, o) {
     if (dice.length < 2) notes.push(`${c.shown} rolls twice and keeps the ${twice.keep} (${twice.origin.label}): give both dice, --roll A,B`);
     else { roll = twice.keep === 'lower' ? Math.min(dice[0], dice[1]) : Math.max(dice[0], dice[1]); notes.push(`rolls twice (${dice[0]} and ${dice[1]}) and keeps the ${twice.keep}: ${roll} (${twice.origin.label})`); }
   }
-  let dc = o.dc, dcLabel = '';
+  let dc = o.dc, dcLabel = '', vs = Number.isFinite(o.dc) ? { label: 'DC', value: o.dc } : null;
   if (o.against) {
     const t = creature(game, o.against);
     // one-roll effects on the target for this roll (an attack against an off-guard target)
@@ -93,6 +95,7 @@ export function runCheck(game, o) {
     const def = statOf(tp, o.defense || (o.strike ? 'ac' : ''));
     dc = def.slug === 'ac' || /dc/.test(def.slug) ? def.value : 10 + def.value;
     dcLabel = ` (${t.shown}'s ${def.label}${def.slug === 'ac' || /dc/.test(def.slug) ? '' : ' DC'})`;
+    vs = { label: def.slug === 'ac' ? def.label : `${def.label}${/dc/.test(def.slug) ? '' : ' DC'}`, value: dc, token: t.id };
   }
   const r = resolveCheck({ mod: st.value + extra, dc, roll, bonus: o.bonus || 0, label, dcLabel });
   // degree of success changes ("a success becomes a critical success")
@@ -102,6 +105,13 @@ export function runCheck(game, o) {
     if (a.degree !== r.degree) { r.lines.push(...a.by); r.degree = a.degree; r.lines[0] = r.lines[0].replace(/: [a-z ]+( \(natural \d+\))?$/, `: ${DEGREE[a.degree]}$1`); }
   }
   r.lines.push(...notes, describeStatistic(st));
+  // the roll in parts, for a replay step's details (board/rolldetail.js): what the board shows each view
+  const parts = [...(st.parts || []).map((x) => ({ label: x.label, value: x.value })),
+    ...(st.modifiers || []).filter((m) => m.applied).map((m) => ({ label: `${m.label || m.slug}${m.type && m.type !== 'untyped' ? ` (${m.type})` : ''}`, value: m.value }))];
+  if (!parts.length && st.value) parts.push({ label: 'base', value: st.value });
+  if (extra) parts.push({ label: 'multiple attack', value: extra });
+  if (o.bonus) parts.push({ label: o.bonusLabel || 'situational', value: o.bonus });
+  r.roll = { type: 'check', token: c.id, who: c.shown, label: rollLabel, dice: dice.filter((v) => v >= 1 && v <= 20).slice(0, twice ? 2 : 1), kept: roll, mod: st.value + extra + (o.bonus || 0), parts, total: r.total, ...(vs ? { vs } : {}), result: DEGREE[r.degree], degree: r.degree };
   // the d20s given, for the Dice tab's statistics (board/dice.js): write r.writes with the result
   const d20 = dice.filter((v) => Number.isInteger(v) && v >= 1 && v <= 20).slice(0, twice ? 2 : 1);
   const rollKind = { strike: 'attack', 'spell-attack': 'attack', save: 'save', perception: 'perception', skill: 'skill', lore: 'skill' }[kind] || 'other';
@@ -114,13 +124,17 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   try {
     const num = (v, what) => { if (v === undefined) return undefined; const n = Number(v); if (!Number.isFinite(n)) throw new Error(`${what} is a number`); return n; };
-    const rollRaw = opt('--roll'), roll = rollRaw !== undefined && !String(rollRaw).includes(',') ? num(rollRaw, '--roll') : undefined, bonus = num(opt('--bonus'), '--bonus') || 0, dcOpt = num(opt('--dc'), '--dc'), modOpt = num(opt('--mod'), '--mod');
+    // --bonus "1 backswing": the amount, then what it is (shown in a replay step's details)
+    const bonusRaw = opt('--bonus'), bm = bonusRaw === undefined ? null : /^\s*([+-]?\d+)\s*(.*)$/.exec(String(bonusRaw));
+    if (bonusRaw !== undefined && !bm) throw new Error('--bonus is a number, then optionally what it is: --bonus "1 backswing"');
+    const bonus = bm ? Number(bm[1]) : 0, bonusLabel = bm && bm[2] ? bm[2].trim() : undefined;
+    const rollRaw = opt('--roll'), roll = rollRaw !== undefined && !String(rollRaw).includes(',') ? num(rollRaw, '--roll') : undefined, dcOpt = num(opt('--dc'), '--dc'), modOpt = num(opt('--mod'), '--mod');
     const rec = opt('--records'), who = opt('--who'), statName = opt('--stat'), strike = opt('--strike'), against = opt('--against'), defense = opt('--defense'), attackN = num(opt('--attack'), '--attack') || 1;
     if (modOpt !== undefined) { console.log(JSON.stringify(resolveCheck({ mod: modOpt, dc: dcOpt, roll, bonus }), null, 2)); return 0; }
     const [pack, save] = args;
     if (!pack || !save || !who) throw new Error('give --mod, or a pack folder, a save folder and --who');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
-    const r = runCheck(game, { who, stat: statName, strike, attack: attackN, against, defense, dc: dcOpt, roll: rollRaw, bonus });
+    const r = runCheck(game, { who, stat: statName, strike, attack: attackN, against, defense, dc: dcOpt, roll: rollRaw, bonus, bonusLabel });
     console.log(JSON.stringify(r, null, 2));
     return 0;
   } catch (e) {

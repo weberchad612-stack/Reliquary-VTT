@@ -4,11 +4,13 @@
 // record to write with db_write; the Dice tab's statistics count it, and the save keeps it (dice.json).
 //
 // Usage: node tools/dice.mjs roll <formula> --who NAME [--kind K] [--side party|others] [--gm] [--seed N]
+//          [--crit] [--type T] [--label L]   (damage: --crit doubles the total; --type is the damage type)
 //        node tools/dice.mjs log --who NAME [--kind K] [--side party|others] [--gm] d20=14 2d6=3,5
 //        add --pack <pack-dir> --save <save-dir> [--records FILE] to find the roller's token (its public name and
 //        side); without them --side says the side (default others).
 // --kind is one of the ruleset's roll kinds (initiative, attack, save, skill, perception, damage, flat, recovery,
-// other for Pathfinder); --gm marks a roll players must not know about (a hidden creature's).
+// other for Pathfinder); --gm marks a roll players must not know about (a hidden creature's). The output's `roll` is
+// the roll in parts, which tools/replay.mjs puts in a replay step's details (board/rolldetail.js).
 // Docs: docs/best-practices/board.md (dice statistics).
 
 import fs from 'node:fs';
@@ -42,7 +44,13 @@ export function runDice(cmd, args, opts = {}, game = null) {
     const r = rollFormula(args.join(' '), opts.seed !== undefined ? seededRandom(Number(opts.seed)) : Math.random);
     const dice = formulaDice(r);
     if (!dice.length) throw new Error('the formula rolls no dice');
-    return { lines: [`${who}: ${r.text}`], total: r.total, writes: [{ op: 'set', path: dicePath(), data: rec(dice) }] };
+    // --crit doubles the total (a critical hit's damage); the roll in parts goes in a replay step's details
+    const total = opts.crit ? r.total * 2 : r.total;
+    const damage = (opts.kind || 'other') === 'damage';
+    const roll = damage
+      ? { type: 'damage', token, who, label: opts.label || 'Damage', formula: r.text.split(' = ')[0], text: r.text, rolled: r.total, ...(opts.crit ? { crit: true } : {}), total, ...(opts.type ? { damageType: opts.type } : {}) }
+      : { type: 'roll', token, who, label: opts.label || (opts.kind || 'Roll'), text: r.text, total };
+    return { lines: [`${who}: ${r.text}${opts.crit ? `, doubled: ${total} (critical)` : ''}`], total, roll, writes: [{ op: 'set', path: dicePath(), data: rec(dice) }] };
   }
   if (cmd === 'log') {
     const dice = parseDice(args);
@@ -57,7 +65,7 @@ async function main(argv) {
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
     const pack = opt('--pack'), save = opt('--save'), rec = opt('--records');
-    const opts = { who: opt('--who'), kind: opt('--kind'), side: opt('--side'), seed: opt('--seed'), gm: flag('--gm') };
+    const opts = { who: opt('--who'), kind: opt('--kind'), side: opt('--side'), seed: opt('--seed'), gm: flag('--gm'), crit: flag('--crit'), type: opt('--type'), label: opt('--label') };
     const [cmd, ...rest] = args;
     let game = null;
     if (pack && save) { const { loadGame } = await import('./actor.mjs'); game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null); }

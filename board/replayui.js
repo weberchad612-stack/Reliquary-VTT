@@ -5,7 +5,7 @@
 // the claim writes the step's changes. Docs: docs/best-practices/board.md (replay).
 //
 // o: {store, view() -> 'gm' | 'player', readOnly, pane, sidebar, tab ('replay'), banner (element over the map),
-//     hooks: {name(id), visible(id) (this view may see the token), frame(points), glide(id, from, to, via) -> ms,
+//     hooks: {name(id), kind(id) ('pc' | 'npc' | 'foe': whose rolls show whole), visible(id) (this view may see the token), frame(points), glide(id, from, to, via) -> ms,
 //     ring(id, side), playFx(data), toast(text)}}
 // Listeners: the replay collection and the adjudicating record, always (every screen plays the steps and shows the
 // banner, whichever tab is open): two. mountAdjudicating() is the banner alone (the area page has no Replay tab).
@@ -15,6 +15,7 @@ import {
   focusOf, adjState, adjLine, quietWords,
 } from './replay.js';
 import { auditPath, auditEntry } from './audit.js';
+import { rollLines } from './rolldetail.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const SIDE_WORDS = { pc: 'PC', npc: 'NPC', env: 'Event' };
@@ -38,9 +39,12 @@ export function mountReplay(o) {
   const shows = (s) => gm() || !s.gm;
   function stepHtml(s, i, rep, last) {
     const side = s.side, who = s.who || (s.actor ? h.name(s.actor) : ''), text = s.text;
+    // the rolls behind it: a PC's whole, another creature's as results (the GM sees all); a roll without a roller is the actor's
+    const rl = rollLines((s.rolls || []).map((r) => (r && !r.token && r.type !== 'applied' ? { ...r, token: s.actor } : r)), { gm: gm(), isPc: (id) => !!id && h.kind(id) === 'pc' });
+    const rolls = rl.length ? `<ul class="rp-rolls">${rl.map((l) => `<li class="${l.cls}">${esc(l.text)}</li>`).join('')}</ul>` : '';
     return `<li class="rp-step ${side}${last ? ' last' : ''}${s.gm && gm() ? ' gm-only' : ''}" data-step="${i}" tabindex="0" title="Play this step again">
       <div class="rp-head"><span class="rp-chip ${side}">${SIDE_WORDS[side]}</span><span class="rp-who">${esc(who)}</span><span class="rp-no">#${(cur ? cur.data.steps.slice(0, i + 1).filter(shows).length : i + 1)}</span></div>
-      <div class="rp-text">${esc(text)}</div></li>`;
+      <div class="rp-text">${esc(text)}</div>${rolls}</li>`;
   }
   function render() {
     const rep = cur && cur.data;

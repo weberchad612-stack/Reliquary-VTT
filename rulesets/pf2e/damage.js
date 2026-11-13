@@ -44,7 +44,7 @@ export function adjustDamage(iwr, parts) {
  * @param {Array} effects    the token's effects (conditions)
  * @param {object} hit       {parts: [{amount, type}]} or {amount, type}; critical (from a critical hit or a
  *                           critically failed save); nonlethal
- * @returns {{state, effects, dead, total, lines}}
+ * @returns {{state, effects, dead, total, adjust, lines}}  adjust: the immunity, weakness and resistance lines
  */
 export function applyDamage(prepared, state, effects, hit) {
   const parts = hit.parts || [{ amount: hit.amount, type: hit.type || 'untyped' }];
@@ -71,7 +71,7 @@ export function applyDamage(prepared, state, effects, hit) {
     if (!dead && valueOf(fx, 'dying') >= prepared.dying.max) { dead = true; lines.push(`dying ${valueOf(fx, 'dying')} reaches ${prepared.dying.max}: dies`); }
   }
   if (dead) fx = setEffect(setEffect(fx, 'dying', null), 'unconscious', null);
-  return { state: { ...state, hp, temp }, effects: fx, dead, total: adj.total, lines };
+  return { state: { ...state, hp, temp }, effects: fx, dead, total: adj.total, adjust: adj.lines, lines };
 }
 
 /**

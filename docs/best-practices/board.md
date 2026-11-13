@@ -418,6 +418,14 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
   the deletes for older ones. `state/adjudicating` is not saved.
 - **Listeners**: two, always (the replay collection and the banner's record), because every screen plays the steps
   and shows the banner whichever tab is open.
+- **Roll details** (the user's decisions, 2026-11-12; `board/rolldetail.js`): under each step's text, always shown,
+  the rolls behind it (`step.rolls`, collected by `tools/replay.mjs` from the tools' `roll` outputs). **A PC's rolls
+  are whole for everyone**: the modifier and its parts ("+8 (+4 Strength, −5 multiple attack, +1 backswing)"), the
+  d20 (both dice when rolling twice), the total, what it was against, the result; damage with its dice, the doubling
+  on a critical and the resistance or weakness lines. **Another creature's rolls show players the results only**
+  ("Greatclub Strike: 24 vs AC 20 · success", "Damage: 11 bludgeoning": the amount taken); the GM sees them whole.
+  **A defence or DC that is not a PC's shows "?" to players** ("vs AC ?"). Labels and result words come from the
+  tools (the ruleset), so the board stays system-free. Chat cards for actions come later.
 - **A record gone since the replay was made** (the encounter ended, a token deleted) is not made again from the
   step's few fields (half an encounter broke the tracker): that change is skipped with an audit warning.
 - **Lessons**: the previous board wrote the real state first and *masked* it on each screen (`rpView`), so results
