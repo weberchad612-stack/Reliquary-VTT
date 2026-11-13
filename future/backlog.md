@@ -23,6 +23,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-13 | [Encounter threat and XP](#fr-13-encounter-threat-and-xp) | open | 2026-11-12 |
 | FR-14 | [Aura notes on the board's turns](#fr-14-aura-notes-on-the-boards-turns) | open | 2026-11-12 |
 | FR-15 | [A home for the Selection card's controls](#fr-15-a-home-for-the-selection-cards-controls) | open | 2026-11-12 |
+| FR-16 | [Two-finger touchpad panning](#fr-16-two-finger-touchpad-panning) | open | 2026-11-12 |
 
 ---
 
@@ -387,3 +388,21 @@ button flipped `t.light.on` and recomputed; the GM's carried-light row set `t.li
 `animation` through the same `lightRow`/`animRow` controls the Lighting tab still uses; "Mark hidden for players"
 set or cleared `S.hiddenMarks[id] = [x, y]` (saved as the map state's `hidden_marks`) for a foe the party does not
 see. Claude can still do all of these from chat (`tools/token.mjs`, the map state).
+
+## FR-16: Two-finger touchpad panning
+
+**Asked for:** the user asked whether two-finger dragging pans the map (2026-11-12); a ticket for later.
+
+**What is known:** on a touch screen it already does: two fingers pan and pinch-zoom together (`pinchStep` in
+`board/gestures.js`), and one finger on empty floor pans. On a laptop touchpad it does not: a two-finger swipe reaches
+the page as wheel events, and the board treats every wheel event as zoom (`onWheel` in `board/app.js`), so a swipe
+zooms. A touchpad pinch zooms, as it should. With a mouse, the right button drags to pan.
+
+**Proposed** (not decided): as Figma and Google Maps do, a two-finger swipe pans (both directions), a pinch zooms
+round the pointer (browsers send it as a wheel event with `ctrlKey`), and a mouse wheel keeps zooming. Browsers do
+not say which device sent a wheel event, so tell them apart by how they look: touchpads send small, smooth deltas in
+pixels (`deltaMode` 0), often with sideways movement; a mouse wheel sends larger notched steps or lines. Ctrl+wheel
+always zooms, for a mouse the guess gets wrong.
+
+**Open questions:** is the guess good enough on the user's machines, or should a setting choose "wheel pans" /
+"wheel zooms"? Should Shift+wheel pan sideways with a mouse?

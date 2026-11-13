@@ -61,5 +61,5 @@ line here in the same commit. Last brought up to date: 2026-11-12.
   rolls are logged through `tools/dice.mjs` and `tools/check.mjs`).
 - The open backlog in [future/backlog.md](../future/backlog.md): roll visibility (FR-10), several encounters at once
   (FR-11), tracker settings (FR-12), threat and XP (FR-13), aura notes on turns (FR-14), a home for the old
-  Selection card's buttons (FR-15), touch screens (FR-2, FR-5), and the rest.
+  Selection card's buttons (FR-15), two-finger touchpad panning (FR-16), touch screens (FR-2, FR-5), and the rest.
 - Ideas not yet scheduled: [future/](../future/README.md).
