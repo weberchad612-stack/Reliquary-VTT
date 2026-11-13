@@ -120,6 +120,18 @@ lands early.
    (nothing was applied). A draft left open (a turn that broke off) makes the next `begin` ask for `--resume` or
    `--discard`.
 
+Lessons from the first live replay (2026-11-12, a round of the keep test):
+
+- **Raise the banner before the first change of any adjudication**, initiative included: `begin` first, then
+  roll. The first run rolled initiative straight to the board and the table saw no banner.
+- **A critical hit's damage is doubled by you**: roll the dice, double the total, and give it to `actor.mjs damage
+  ... --crit` (the flag is for the dying rule; it does not double).
+- **Mind the weapon traits**: a greatclub's backswing gives +1 to the next Strike after a miss (`check.mjs
+  --bonus 1`); the tools do not track it.
+- **One chat event per step reads best first**: put the step's own event before what the turn rules add ("is
+  dead", "Round 2"), so the chat reads in story order.
+- Put each turn's `encounter.mjs next` in that creature's last step, so the tracker moves on as the table watches.
+
 What the board does with it: docs/best-practices/board.md (Replay).
 
 ## 3. Writing game data
