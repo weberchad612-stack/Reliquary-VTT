@@ -178,19 +178,43 @@ export function lootGroup(doc) {
   return 'other';
 }
 
-/** Two items stack when they are the same thing known the same way (where they were found does not matter). */
-export function stackKey(item) {
-  const o = Object.fromEntries(Object.entries(item).filter(([k]) => !PLACE.has(k)).sort(([a], [b]) => (a < b ? -1 : 1)));
+/**
+ * Two items stack when they are the same thing known the same way: where they were found, how they are carried and
+ * who added them do not matter. ctx {content, L, carried}: what is known is compared as each place reads it (on a
+ * character no `identified` means known; in the stash it means "as the system says"), so a known dagger in the stash
+ * and a character's own dagger stack.
+ */
+export function stackKey(item, ctx = null) {
+  let it = item;
+  if (ctx && ctx.L && !item.misidentified) {
+    if (ctx.carried) it = asCarried(item);
+    else if (item.identified === undefined) it = { ...item, identified: !ctx.L.needsIdentify(resolveLoot(item, ctx.content || {}).doc) };
+    if (it.identified === true && !(ctx.L.needsIdentify(resolveLoot(item, ctx.content || {}).doc) || item.mystery)) { it = { ...it }; delete it.identified; }
+  }
+  const o = Object.fromEntries(Object.entries(it).filter(([k]) => !PLACE.has(k)).sort(([x], [y]) => (x < y ? -1 : 1)));
   return JSON.stringify(o);
 }
 
-/** A list of items with one more, stacked onto a matching one (same carry, for characters). */
-export function mergeInto(list, item) {
-  const k = stackKey(item), out = list.map((x) => ({ ...x }));
-  const hit = out.find((x) => stackKey(x) === k && (x.carry || null) === (item.carry || null));
+/** A list of items with one more, stacked onto a matching one if there is one (it keeps that stack's carry). */
+export function mergeInto(list, item, ctx = null) {
+  const k = stackKey(item, ctx), out = list.map((x) => ({ ...x }));
+  const hit = out.find((x) => stackKey(x, ctx) === k);
   if (hit) { const n = (hit.qty ?? 1) + (item.qty ?? 1); if (n === 1) delete hit.qty; else hit.qty = n; return out; }
   out.push({ ...item });
   return out;
+}
+
+/**
+ * Where an item put in the stash goes: onto a matching stack ({id, data} to write) or a new record ({id: null,
+ * data}). stash: [{id, data}].
+ */
+export function stashMerge(stash, item, content, L) {
+  const ctx = { content, L, carried: false }, k = stackKey(item, ctx);
+  const hit = (stash || []).find((e) => stackKey(e.data, ctx) === k);
+  if (!hit) return { id: null, data: item };
+  const n = (hit.data.qty ?? 1) + (item.qty ?? 1), data = { ...hit.data };
+  if (n === 1) delete data.qty; else data.qty = n;
+  return { id: hit.id, data };
 }
 
 /** Split n off an item: [the n taken, what is left or null]. */
@@ -232,7 +256,7 @@ export function takeLoot(stashItem, items, n, carry, L, content = {}) {
   const [taken, rest] = splitQty(stashItem, n);
   const { doc } = resolveLoot(taken, content);
   const moved = { ...forCarrier(taken, content, L), carry: carry || defaultCarry(doc, L) };
-  return { stash: rest, items: mergeInto(items || [], moved), moved };
+  return { stash: rest, items: mergeInto(items || [], moved, { content, L, carried: true }), moved };
 }
 
 /** Put n of a character's item i back in the stash: {items, stashItem}. */
@@ -245,14 +269,14 @@ export function putBack(items, i, n, L = PLAIN_LOOT, content = {}) {
 }
 
 /** Hand n of item i from one character to another: {from, to, moved}. */
-export function giveLoot(fromItems, i, toItems, n) {
+export function giveLoot(fromItems, i, toItems, n, L = null, content = {}) {
   if (!fromItems || !fromItems[i]) throw new Error('no such item');
   const [taken, rest] = splitQty(fromItems[i], n);
   const from = fromItems.slice();
   if (rest) from[i] = rest; else from.splice(i, 1);
   const moved = { ...taken, carry: 'stowed' };   // handed over: it goes into the other's pack until they say otherwise
   delete moved.invested;
-  return { from, to: mergeInto(toItems || [], moved), moved };
+  return { from, to: mergeInto(toItems || [], moved, L ? { content, L, carried: true } : null), moved };
 }
 
 /** Change how item i is carried (and invest a worn invested item by default). */

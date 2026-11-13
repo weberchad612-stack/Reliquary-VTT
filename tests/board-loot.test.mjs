@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import {
-  PLAIN_LOOT, lootRules, lootItem, resolveLoot, lootView, stackKey, mergeInto, splitQty, takeLoot, putBack, giveLoot, setCarry,
+  PLAIN_LOOT, lootRules, lootItem, resolveLoot, lootView, stackKey, mergeInto, stashMerge, splitQty, takeLoot, putBack, giveLoot, setCarry,
   setInvested, lootDetails, lootGroup, coinsOf, coinValue, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, asCarried,
 } from '../board/loot.js';
 import { PF2E_LOOT as L, bulkTotal, mysteryName, needsIdentify, valueKnown, sellCp, inUse, priceLabel, bulkLabel, levelDC, seenTraits, itemKind, itemUsage, itemStats, unitCp } from '../rulesets/pf2e/loot.js';
@@ -349,5 +349,27 @@ test('item details: secrecy per view, the GM\'s identify DC and sale price, item
   assert.match(f, /All <span>3/);
   assert.doesNotMatch(f, /Treasure/, 'only the kinds there are');
   assert.match(f, /Unidentified <span>1/);
+});
+
+test('moves stack: a taken item joins the character\'s matching stack, a put-back one the stash\'s (the user, 2026-11-13)', () => {
+  const DAG = { kind: 'weapon', name: 'Dagger', bulk: 0.1, price: { sp: 2 } }, CC = { ...C, 'item/dagger': DAG };
+  // Kerra's own dagger (no carry: in use) and a dagger from the stash
+  const t = takeLoot({ ref: 'item/dagger', qty: 2, found: { from: 'the cultist' } }, [{ ref: 'item/dagger' }], 1, null, L, CC);
+  assert.deepEqual(t.items, [{ ref: 'item/dagger', qty: 2 }], 'one line, the stack keeps its carry');
+  // a known healing potion from the stash joins a character's own potions
+  const k = takeLoot({ ref: 'item/healing-potion-minor', identified: true }, [{ ref: 'item/healing-potion-minor', carry: 'stowed' }], 1, null, L, CC);
+  assert.equal(k.items.length, 1);
+  assert.equal(k.items[0].qty, 2);
+  // an unknown one does not join known ones
+  assert.equal(takeLoot({ ref: 'item/healing-potion-minor' }, [{ ref: 'item/healing-potion-minor' }], 1, null, L, CC).items.length, 2);
+  // put back: onto the stash's matching stack, whoever added it and wherever it was found
+  const stash = [{ id: 'a', data: { ref: 'item/dagger', found: { from: 'the cultist' }, added: { at: 'T', by: 'claude' } } }, { id: 'b', data: { ref: 'item/healing-potion-minor' } }];
+  const back = putBack([{ ref: 'item/dagger', qty: 2, carry: 'held' }], 0, 2, L, CC);
+  assert.deepEqual(stashMerge(stash, back.stashItem, CC, L), { id: 'a', data: { ref: 'item/dagger', qty: 3, found: { from: 'the cultist' }, added: { at: 'T', by: 'claude' } } });
+  // a character's known potion does not join the stash's unknown ones
+  const kp = putBack([{ ref: 'item/healing-potion-minor' }], 0, 1, L, CC);
+  assert.equal(stashMerge(stash, kp.stashItem, CC, L).id, null);
+  // give: onto the other's matching stack
+  assert.deepEqual(giveLoot([{ ref: 'item/dagger', carry: 'held' }], 0, [{ ref: 'item/dagger', carry: 'stowed' }], 1, L, CC).to, [{ ref: 'item/dagger', carry: 'stowed', qty: 2 }]);
 });
 

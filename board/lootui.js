@@ -12,7 +12,7 @@
 // trait and its glossary entry)}. Returns {render(), state()}.
 
 import {
-  LOOT, PURSE, lootRules, lootPath, lootItem, lootView, lootDetails, lootGroup, resolveLoot, takeLoot, putBack, giveLoot, setCarry, setInvested,
+  LOOT, PURSE, lootRules, lootPath, lootItem, lootView, lootDetails, lootGroup, resolveLoot, stashMerge, takeLoot, putBack, giveLoot, setCarry, setInvested,
   coinsOf, coinLabel, coinValue, addCoins, parseCoins, takeCoins, splitCoins, carried, itemWords,
 } from './loot.js';
 
@@ -245,7 +245,8 @@ export function mountLoot(o) {
       const id = card.dataset.pc, C = content();
       const r = putBack(ACTORS[id].items, Number(li.dataset.i), qtyIn(li), L, C);
       setItems(id, r.items);
-      addStash(r.stashItem);
+      const m = stashMerge(STASH, r.stashItem, C, L);   // onto a matching stack in the stash, if there is one
+      if (m.id) setStash(m.id, m.data); else addStash(m.data);
       log(`${nameOf(id)} put ${itemWords(r.stashItem, C)} in the stash`);
       loadCheck(id);
       render();
@@ -264,7 +265,7 @@ export function mountLoot(o) {
         log(`${nameOf(id)} ${t.checked ? 'invested' : 'uninvested'} ${itemWords(ACTORS[id].items[i], C)}`);
       } else if (t.dataset.f === 'giveto' && t.value) {
         const to = t.value;
-        const r = giveLoot(ACTORS[id].items, i, (ACTORS[to] || {}).items || [], qtyIn(li));
+        const r = giveLoot(ACTORS[id].items, i, (ACTORS[to] || {}).items || [], qtyIn(li), L, C);
         setItems(id, r.from); setItems(to, r.to);
         log(`${nameOf(id)} gave ${itemWords(r.moved, C)} to ${nameOf(to)}`);
         loadCheck(to);

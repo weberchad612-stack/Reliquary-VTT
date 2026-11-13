@@ -453,6 +453,12 @@ about, with the encumbered condition on the token; using consumables comes next 
 - **Items in use:** stowed items are not in use for the rules (no armor, shield, strike or rule element); armor
   works worn; an invested item works worn and invested (rulesets/pf2e/actor.js through `inUse`). Items with no
   `carry` (older characters) are in use, so nothing changed for them.
+- **Moves stack** (the user, 2026-11-13): an item taken from the stash or handed over joins the character's
+  matching stack (one line, the stack keeps its carry), and one put back (or bought into the stash) joins the
+  stash's matching stack. Same thing known the same way stacks (`stackKey` with the place's reading of `identified`:
+  a known dagger in the stash and a character's own dagger stack; an unknown potion and a known one do not); where
+  it was found, how it is carried and who added it do not matter. New finds added by Claude stay their own lines,
+  each with its provenance.
 - **Item details** (the user, 2026-11-13: more metadata for players and the GM): every row, in the stash and on
   the PC cards, has a line under its name with what kind of thing it is, how it is used and its level ("Martial
   weapon · Sword · 1 hand · level 2"), the rarity badge and, on a PC's item doing nothing (stowed armor, a weapon in

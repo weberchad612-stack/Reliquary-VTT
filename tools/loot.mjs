@@ -46,7 +46,7 @@ import { resolveToken } from '../board/names.js';
 import { gameNow } from './ledger.mjs';
 import {
   LOOT, PURSE, lootRules, lootPath, lootItem, resolveLoot, lootView, takeLoot, putBack, giveLoot, setCarry, setInvested,
-  splitQty, asCarried, coinsOf, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, itemWords,
+  splitQty, asCarried, stashMerge, coinsOf, coinLabel, addCoins, parseCoins, takeCoins, splitCoins, carried, encumberedEffects, itemWords,
 } from '../board/loot.js';
 
 const KEY_RE = /^(?:[a-z0-9][a-z0-9-]*:)?item\/[a-z0-9][a-z0-9-]*$/;
@@ -230,7 +230,8 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
     const id = pc(who), i = pcItem(id, rest.join(' '));
     const r = putBack(itemsOf(id), i, qty, L, content);
     setItems(id, r.items);
-    addStash(r.stashItem);
+    const m = stashMerge(st.stash, r.stashItem, content, L);   // onto a matching stack, if there is one
+    if (m.id) setStash(st.stash.find((e) => e.id === m.id), m.data); else addStash(m.data);
     lines.push(`${nameOf(id)} puts ${itemWords(r.stashItem, content)} back in the stash.`);
     audit(`loot: ${nameOf(id)} put ${itemWords(r.stashItem, content)} in the stash`);
     loadCheck(id);
@@ -240,7 +241,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
     const [who, ref, to] = args;
     const a = pc(who), b = pc(to), i = pcItem(a, ref);
     if (a === b) throw new Error('give it to someone else');
-    const r = giveLoot(itemsOf(a), i, itemsOf(b), qty);
+    const r = giveLoot(itemsOf(a), i, itemsOf(b), qty, L, content);
     setItems(a, r.from); setItems(b, r.to);
     lines.push(`${nameOf(a)} hands ${itemWords(r.moved, content)} to ${nameOf(b)}.`);
     audit(`loot: ${nameOf(a)} gave ${itemWords(r.moved, content)} to ${nameOf(b)}`);
@@ -311,7 +312,7 @@ export function runLoot(game, records, saveLoot, cmd, args, o = {}) {
       carrier = pc(o.to);
       const r = takeLoot(item, itemsOf(carrier), undefined, o.carry, L, content);
       setItems(carrier, r.items);
-    } else addStash(item);
+    } else { const m = stashMerge(st.stash, item, content, L); if (m.id) setStash(st.stash.find((e) => e.id === m.id), m.data); else addStash(m.data); }
     lines.push(`Bought ${itemWords(item, content)} for ${coinLabel(pay, L)}${o.from ? ` (${nameOf(pc(o.from))} pays)` : ' (from the purse)'}${o.to ? `; ${nameOf(pc(o.to))} carries it` : '; into the stash'}.`);
     audit(`loot: bought ${itemWords(item, content)} for ${coinLabel(pay, L)}`);
     if (carrier) loadCheck(carrier);
