@@ -28,6 +28,7 @@ import { mountClock } from './clockui.js';
 import { mountTracker } from './trackerui.js';
 import { mountChat } from './chatui.js';
 import { mountSidebar } from './sidebar.js';
+import { mountReplay } from './replayui.js';
 import { makeFloating, bringToFront } from './panel.js';
 import { chatPath, eventMessage } from './chat.js';
 import { auditPath, auditEntry } from './audit.js';
@@ -175,7 +176,8 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null;   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
+  const glides = new Map(), flashes = new Map();   // replay: tokens sliding ({pts, t0, ms}) and rings ({colour, until}) by id
   let actingId = null, trkHover = null;   // the acting creature, and the tracker row under the mouse (drawn on the overlay)
   let notesReady = false;   // the notes layer is wired near the end of start()   // the shell (menus) is made near the end of start()
   let mask = EXPLORED0 ? Engine.ExploredMask.fromExplored(EXPLORED0, G) : new Engine.ExploredMask(G);
@@ -1151,6 +1153,7 @@ export async function start(store, { build = null } = {}) {
     for (const [id, t0] of order) {
       const seen = F.seen.has(id);
       if (!full && !seen) continue;
+      if (glides.has(id)) continue;   // a replay slide draws it on the overlay until it arrives
       const sp = preview ? Engine.spaceOf(preview.list.find((t) => t.id === id), L) : space(id);
       const t = { ...t0, ...sp };
       // Medium tokens leave a 5 px margin in their square; Small ones are 3/4 of that token; Tiny a 2 px margin
@@ -1622,7 +1625,7 @@ export async function start(store, { build = null } = {}) {
     const hoverName = hoverId && S.tokens[hoverId] && !drag;
     const F0 = F, isShown = (id) => !!S.tokens[id] && (fullGM() || F0.seen.has(id) || S.tokens[id].kind === 'pc');
     const acting = actingId && isShown(actingId) ? actingId : null, trk = trkHover && isShown(trkHover) ? trkHover : null;
-    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge && !badgeDraws.length && !acting && !trk) return;
+    if (!marks.length && !dist && !hoverBox && !hoverName && !(aim && aim.cur) && !hoverBadge && !badgeDraws.length && !acting && !trk && !glides.size && !flashes.size) return;
     tctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0); tctx.translate(OX, OY);
     drawAimOverlay(tctx);
     if (dist) drawDistanceLine(tctx, dist);
@@ -1656,11 +1659,89 @@ export async function start(store, { build = null } = {}) {
     // the tracker row under the mouse or the keyboard: the highlight standard (board/highlight.js), a ring round the
     // token in its kind's colour
     if (trk) { const [cx, cy, r] = discOf(trk); pointOutRing(tctx, { cx, cy, r, colour: kindColour(S.tokens[trk].kind), now, reduced: REDUCED, unit: 1 / scale }); }
+    const live = drawReplayLayer(tctx, now || performance.now());
     for (const f of badgeDraws) f(tctx);   // effect and concealment badges: above every square, under the labels
     if (hoverId && S.tokens[hoverId] && !drag) drawNameLabel(tctx, hoverId);
     if (dist) drawDistanceLabel(tctx, dist);
     drawBadgeTip(tctx);
-    if ((marks.length || trk) && !REDUCED) tgtRaf = requestAnimationFrame(drawTargets);
+    if (((marks.length || trk) && !REDUCED) || live) tgtRaf = requestAnimationFrame(drawTargets);
+  }
+
+  // ---- replay: tokens sliding along their path, and the acting creature's ring (board/replayui.js) ----
+  // A slide is drawn on the overlay: the token leaves the map until it arrives (the map redraws then). The ring is the
+  // highlight standard (board/highlight.js) in the step's side colour, for one pulse or so.
+  const SIDE_COLOUR = { pc: kindColour('pc'), npc: kindColour('foe'), env: '#e3b341' };
+  function glideToken(id, from, to, via) {
+    const t = S.tokens[id];
+    if (!t || REDUCED || !from || !to || (from[0] === to[0] && from[1] === to[1])) return 0;
+    let pts = null;
+    try {
+      if (!Engine.isTiny(t)) {
+        const ms0 = Engine.moveSpaceOf({ id, ...t, x: from[0], y: from[1] });
+        const r = via && via.length ? Engine.pathVia(moveWalls, ms0, [...via, to], moveOpts(id)) : Engine.path(moveWalls, ms0, to[0], to[1], moveOpts(id));
+        if (r && r.path && r.path.length) pts = r.path.map((p) => [p[0], p[1]]);
+      }
+    } catch { pts = null; }
+    if (!pts) pts = [from, ...(via || []), to];
+    if (pts[0][0] !== from[0] || pts[0][1] !== from[1]) pts.unshift(from);
+    const last = pts.at(-1); if (last[0] !== to[0] || last[1] !== to[1]) pts.push(to);
+    let cells = 0; for (let i = 1; i < pts.length; i++) cells += Math.max(Math.abs(pts[i][0] - pts[i - 1][0]), Math.abs(pts[i][1] - pts[i - 1][1]));
+    const ms = Math.min(1600, Math.max(400, 250 + 110 * cells));   // no route (a closed door, say): a straight slide
+    glides.set(id, { pts, t0: performance.now(), ms });
+    draw(); targetsChanged();
+    return ms;
+  }
+  function glideAt(g, now) {
+    const k = Math.min(1, (now - g.t0) / g.ms), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;   // ease in and out
+    if (g.pts.length < 2) return g.pts[0];
+    const len = (i) => Math.hypot(g.pts[i + 1][0] - g.pts[i][0], g.pts[i + 1][1] - g.pts[i][1]);
+    let total = 0; for (let i = 0; i < g.pts.length - 1; i++) total += len(i);
+    let d = e * total, i = 0;
+    while (i < g.pts.length - 2 && d > len(i)) { d -= len(i); i++; }
+    const u = len(i) ? Math.min(1, d / len(i)) : 1;
+    return [g.pts[i][0] + (g.pts[i + 1][0] - g.pts[i][0]) * u, g.pts[i][1] + (g.pts[i + 1][1] - g.pts[i][1]) * u];
+  }
+  function ringToken(id, side) { if (S.tokens[id]) { flashes.set(id, { colour: SIDE_COLOUR[side] || SIDE_COLOUR.env, until: performance.now() + 1900 }); targetsChanged(); } }
+  /** The slides and rings, on the overlay; true while any is still running. */
+  function drawReplayLayer(c, now) {
+    let ended = false;
+    for (const [id, g] of glides) {
+      const t0 = S.tokens[id];
+      if (!t0 || now - g.t0 >= g.ms) { glides.delete(id); ended = true; continue; }
+      const [x, y] = glideAt(g, now), size = Engine.isTiny(t0) ? 0.5 : t0.size || 1;
+      const r = (P(size) / 2 - (size < 1 ? 2 : 5)) * Engine.drawScale(t0), cx = P(x + size / 2), cy = P(y + size / 2);
+      c.save();
+      c.fillStyle = t0.kind === 'pc' ? '#5b93ff' : '#e5615a';
+      c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+      c.lineWidth = 2; c.strokeStyle = '#0d0f12'; c.stroke();
+      c.fillStyle = '#fff'; c.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
+      c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(letterOf(t0), cx, cy + 1);
+      c.restore();
+    }
+    for (const [id, f] of flashes) {
+      if (!S.tokens[id] || now >= f.until) { flashes.delete(id); continue; }
+      if (glides.has(id)) continue;   // the ring once it arrives
+      const [cx, cy, r] = discOf(id);
+      pointOutRing(c, { cx, cy, r, colour: f.colour, now, reduced: REDUCED, unit: 1 / scale });
+    }
+    if (ended) draw();
+    return glides.size > 0 || flashes.size > 0;
+  }
+  /** Frame points (token ids or [x, y] cells) in the view; true when the view moved. */
+  function frameCells(pts) {
+    const cells = pts.map((p) => (Array.isArray(p) ? [p[0] + 0.5, p[1] + 0.5] : (S.tokens[p] ? (() => { const sp = space(p); return [sp.x + sp.size / 2, sp.y + sp.size / 2]; })() : null))).filter(Boolean);
+    const stage = document.getElementById('stage');
+    if (!cells.length || !stage) return false;
+    const xs = cells.map((c) => c[0]), ys = cells.map((c) => c[1]);
+    const mx = (Math.min(...xs) + Math.max(...xs)) / 2, my = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const sr = stage.getBoundingClientRect(), r = canvas.getBoundingClientRect();
+    const left = stage.scrollLeft + r.left - sr.left + (OX + mx * CS) * scale - stage.clientWidth / 2;
+    const top = stage.scrollTop + r.top - sr.top + (OY + my * CS) * scale - stage.clientHeight / 2;
+    const maxL = stage.scrollWidth - stage.clientWidth, maxT = stage.scrollHeight - stage.clientHeight;
+    const L = Math.max(0, Math.min(maxL, left)), T = Math.max(0, Math.min(maxT, top));
+    if (Math.abs(L - stage.scrollLeft) < 40 && Math.abs(T - stage.scrollTop) < 40) return false;
+    try { stage.scrollTo({ left: L, top: T, behavior: REDUCED ? 'auto' : 'smooth' }); } catch { stage.scrollLeft = L; stage.scrollTop = T; }
+    return true;
   }
 
   // ---- the selection box and group moves ----
@@ -3102,6 +3183,9 @@ export async function start(store, { build = null } = {}) {
     select: (id) => { setSelection(id ? [id] : []); draw(); },
     selection: () => selectedIds(),
     targets: () => clone(TARGETS),
+    replay: () => (replayUi ? replayUi.current() : null),
+    glides: () => [...glides.keys()],
+    glideInfo: () => [...glides].map(([id, g]) => ({ id, pts: g.pts.length, ms: g.ms })),
     fx: { play: (rec) => playFx(rec, { local: true }), busy: () => fxPlayer.busy, jobs: () => fxPlayer.jobs.map((j) => ({ p: j.p, t0: j.t0, ms: j.ms })), on: () => fxOn, libs: () => FX_LIBS.map((l) => l.via) },
     templates: () => clone(TEMPLATES),
     notes: () => clone(MAPNOTES),
@@ -3139,8 +3223,8 @@ export async function start(store, { build = null } = {}) {
     // tokens on this map change through the page's own state (persist() writes and logs them)
     applyLocal: (changed) => { const here = Object.keys(changed).filter((id) => S.tokens[id]); for (const id of here) setEffects(id, changed[id]); return here; },
   });
-  // the sidebar (board/sidebar.js): chat, the encounter tracker, the dice statistics, visual effects, party loot, the
-  // quest log and replay (the last three not built yet), the GM's lighting, walls and audit log
+  // the sidebar (board/sidebar.js): chat, the encounter tracker, replay, the dice statistics, visual effects, notes, and
+  // the GM's lighting, walls and audit log (actions, exploration, party loot and the quest log not built yet)
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12)
     { id: 'chat', label: 'Chat' }, { id: 'encounter', label: 'Encounter' }, { id: 'replay', label: 'Replay' },
@@ -3151,6 +3235,13 @@ export async function start(store, { build = null } = {}) {
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
+  replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
+    hooks: {
+      name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),
+      visible: (id) => !!S.tokens[id] && (S.view === 'gm' || (!S.tokens[id].hidden && (S.tokens[id].kind === 'pc' || shown().seen.has(id)))),
+      frame: frameCells, glide: glideToken, ring: ringToken, toast,
+      playFx: (rec) => playFx(rec, { local: true }),
+    } });
   diceUi = mountDice({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('dice').body, sidebar, tab: 'dice', kinds: SYS.rollKinds || [] });
   // an older board's change-log lines (chat messages of kind 'log') move to the audit log: same ids, so two pages
   // doing it at once write the same records

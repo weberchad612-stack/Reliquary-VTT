@@ -75,6 +75,8 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `dice/<time36>-<n>` | A roll's dice for the Dice tab's statistics: who, side (party or others), kind (the ruleset's roll kinds), every die that landed, `gm` for a secret roll (board/dice.js). Part of the save (`dice.json`) | Whoever rolled (the board's tracker, `tools/encounter.mjs`, the turn rules), Claude (`tools/dice.mjs`, `tools/check.mjs`) |
 | `state/session` | When the GM started this session, for the Dice tab's "This session" (saved in `campaign.json` as `session`) | The GM view (New session) |
 | `audit/<time36>-<n>` | The GM's audit log: every change to the game in words, by whom and when, and the board's warnings (board/audit.js). Players never see it. Part of the save (`audit.json`) | The board (every change it writes), Claude (`tools/chat.mjs audit`, `tools/encounter.mjs`) |
+| `replay/<id>` | A batch of resolved actions the table reveals step by step: each step's changes, posts and moves, the narration, a reaction stop, the steps revealed and the claims (board/replay.js). The save keeps the unfinished ones and the last 5 finished (`replays.json`) | Claude (`tools/replay.mjs end`); the board that reveals a step (its `n`, `revealed`, and the step's records) |
+| `state/adjudicating` | "Claude is adjudicating": {by, since, at}. While it exists every screen shows the banner. Not saved | Claude (`tools/replay.mjs`); the GM's board deletes a stale one |
 | `state/clock` | The game clock: `{now, start}` in seconds since year 1 of the ruleset's calendar (saved in `campaign.json` as `clock`) | Claude (`tools/clock.mjs`, `tools/encounter.mjs`) |
 | `state/encounter` | The encounter under way: round, turn, combatants in initiative order (saved in `campaign.json` as `encounter`) | Claude (`tools/encounter.mjs`) |
 | `content/<folder>.<slug>` | The game content the campaign's creatures use, only those documents (stat blocks, items...); `content/<source>.<folder>.<slug>` for a key naming its source. Also the descriptions a character's sheet shows (its feats and features, the system's `actorContent`) and the system's trait glossary, `content/glossary.traits` (its `system` says which). Removed after a save once nothing uses it (`tools/campaign.mjs tidy`; the glossary stays) | Claude (loading, `tools/actor.mjs create`/`give`) |
@@ -563,7 +565,7 @@ a collapse/expand control does the same. The user's decisions:
 |---|---|
 | Collapse and size | The sidebar **collapses** to its icon strip and **expands** again (clicking the open tab's icon, or the collapse control), and it is **resized by dragging its inner edge**; each browser remembers the width and whether it is collapsed. |
 | Pop-out windows | **Every tab pops out** as a floating window (the user's standard for all sidebar tabs, 2026-11-12), **resizable**, and each **remembers its position** and size (and whether it is out) per browser. |
-| Tabs now | Top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter** (the tracker), **Replay**, **Actions**, **Exploration** (moved from the Play menu; to be built), **Party loot**, **Notes** (every map note: add, highlight on hover, edit, remove), **Quest log** (Replay, Party loot and Quest log moved from the top menu on 2026-11-12; to be built), **Visual effects** (this screen's switch, and the GM's preview), **Lighting** (GM only), **Walls** (GM only: Show walls moved from the header), **Dice statistics**, **Audit log** (GM only: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
+| Tabs now | Top to bottom (the user's order, 2026-11-12): **Chat**, **Encounter** (the tracker), **Replay** (built 2026-11-12), **Actions**, **Exploration** (moved from the Play menu; to be built), **Party loot**, **Notes** (every map note: add, highlight on hover, edit, remove), **Quest log** (Replay, Party loot and Quest log moved from the top menu on 2026-11-12; loot and quests to be built), **Visual effects** (this screen's switch, and the GM's preview), **Lighting** (GM only), **Walls** (GM only: Show walls moved from the header), **Dice statistics**, **Audit log** (GM only: it replaced the Change log and Table log tabs), and **collapse / expand**. More tabs as features are built (Foundry's: Scenes, Actors, Items, Journal...). |
 | Dropped | The wall legend, the Selection card and "Try this" (Token Quick-View and the token HUD cover the selection). |
 | Chat carries | **Roll cards** (they move from the roll log into chat: portrait, speaker, how long ago, the card), **Claude's messages** of three kinds: **narration** (read-aloud text), **rulings**, and **an NPC speaking** (its alias for players until the name is known); and **events** players should know about. Typed messages, whispers and the chat box come later. |
 | Chat and audit log (the user, 2026-11-12) | **The chat holds everything important to the players, above all Claude's story narration**: the narration, rulings and NPC lines, the dice rolled by and for the PCs, the NPC rolls players should know about, and **events**: combat rolls' results, damage, conditions applied, deaths, the encounter beginning and ending, new rounds. **An audit log only the GM sees shows every underlying state change** (moves, doors, lights, templates, notes, terrain, the clock, initiative, hiding) and the board's warnings. The change log and the table log are **removed** from the board, the database and the code. |
@@ -597,6 +599,24 @@ Records: `dice/<time36>-<n>` {at, by, who, token?, side ('party' | 'others'), ki
 `state/session` {started}. Written by the board's initiative rolls, the turn rules' rolls, and Claude's
 `tools/encounter.mjs`, `tools/check.mjs` and `tools/dice.mjs`. Next: roll cards and dice from the board for attacks,
 saves and damage once the board rolls them.
+
+## Replay and "Claude is adjudicating" (designed and built 2026-11-12)
+
+From the previous board's Replay panel (`game/replay`: the real state written first and masked on each screen until
+revealed; per-browser progress; narration written when a browser reached the end). The user's decisions:
+
+| Question | Decision |
+|---|---|
+| Hiding results | **The board applies steps**: Claude writes only the replay; revealing a step writes its state, chat, dice and audit lines. Nothing exists early, so nothing leaks (beyond the replay record itself, readable like any record). |
+| Pace | **Anyone can press Next**: one shared counter, every screen follows. |
+| Narration | **At the end**, as before: posted to the chat when the last step is revealed. |
+| Extras | **Camera follows** (per viewer), **Auto with a pace**, **reaction stops** (Claude ends a batch where a PC could react; "Waiting for reactions"), **replay a revealed step** (click it). No Back or Restart (a revealed step is real state). |
+| Claude's side | A **draft** (`tools/replay.mjs`): the other tools run on a working copy, so each step sees the ones before; a batch can be as long as needed. |
+| The banner (2026-11-12) | **"Claude is adjudicating"** on every screen while a draft is open: 50 rotating lines for any game and any world that never say what is being worked out. **Banner only** for now (nothing locked). Each tool call refreshes it; **5 quiet minutes**: "Still working on it" with the time; **30**: gone (the GM's board deletes it, with an audit line); the GM can **Clear** it. |
+
+Records: `replay/<id>` and `state/adjudicating` (section 3). Code: `board/replay.js` (pure), `board/replayui.js` (the
+tab, playing, the banner), the slides and rings in `board/app.js`, `tools/replay.mjs`. How to use and change it:
+docs/best-practices/board.md (Replay) and docs/best-practices/game-data.md section 2c.
 
 ## The highlight standard (decided and built 2026-11-12)
 

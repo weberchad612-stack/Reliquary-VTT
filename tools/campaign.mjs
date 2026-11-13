@@ -96,10 +96,13 @@ export function readCampaign(packDir, saveDir) {
   // the dice statistics (dice.json: {rolls: [{id, ...record}]}), oldest first
   const diceFile = path.join(saveDir, 'dice.json');
   const dice = fs.existsSync(diceFile) ? (readJson(diceFile).rolls || []) : [];
+  // the replays not finished and the last few finished (replays.json: {replays: [{id, ...replay}]})
+  const replayFile = path.join(saveDir, 'replays.json');
+  const replays = fs.existsSync(replayFile) ? (readJson(replayFile).replays || []) : [];
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
   const content = readContent(pack, packDir, actors, tokens);
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
@@ -120,7 +123,7 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const campFile = path.join(saveDir, 'campaign.json');
   const base = fs.existsSync(campFile) ? readJson(campFile) : {};
   if (fs.existsSync(campFile)) backup(saveDir, now);
-  const { campaign, mapStates, actors, actorStates, chat, audit, dice } = saveFromRecords(records, base);
+  const { campaign, mapStates, actors, actorStates, chat, audit, dice, replays } = saveFromRecords(records, base);
   campaign.saved_at = now.toISOString();
   const written = [];
   const write = (f, obj) => {
@@ -146,6 +149,10 @@ export function writeSave(records, saveDir, { now = new Date() } = {}) {
   const diceFile = path.join(saveDir, 'dice.json');
   if (dice.length) write(diceFile, { $schema: '../../../schemas/dice.schema.json', rolls: dice });
   else if (fs.existsSync(diceFile)) fs.rmSync(diceFile);
+  // the replays (not finished, and the last few finished)
+  const replayFile = path.join(saveDir, 'replays.json');
+  if (replays.length) write(replayFile, { $schema: '../../../schemas/replay.schema.json', replays });
+  else if (fs.existsSync(replayFile)) fs.rmSync(replayFile);
   // one file per creature; files of creatures no longer on the board are removed (the backup keeps them)
   for (const [dir, docs] of [['actors', actors], ['actorstate', actorStates]]) {
     const d = path.join(saveDir, dir);
@@ -160,7 +167,7 @@ function backup(saveDir, now) {
   const dest = path.join(saveDir, 'backups', stamp);
   fs.mkdirSync(dest, { recursive: true });
   fs.copyFileSync(path.join(saveDir, 'campaign.json'), path.join(dest, 'campaign.json'));
-  for (const f of ['chat.json', 'audit.json', 'dice.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
+  for (const f of ['chat.json', 'audit.json', 'dice.json', 'replays.json']) if (fs.existsSync(path.join(saveDir, f))) fs.copyFileSync(path.join(saveDir, f), path.join(dest, f));
   for (const sub of ['maps', 'actors', 'actorstate']) if (fs.existsSync(path.join(saveDir, sub))) fs.cpSync(path.join(saveDir, sub), path.join(dest, sub), { recursive: true });
   const all = fs.readdirSync(path.join(saveDir, 'backups')).sort();
   for (const old of all.slice(0, Math.max(0, all.length - BACKUPS))) fs.rmSync(path.join(saveDir, 'backups', old), { recursive: true, force: true });
@@ -186,11 +193,11 @@ export function roundTrip(packDir, saveDir) {
     out.push(...diff({ map: id, ...strip(c.mapStates[id] || {}) }, strip(back.mapStates[id] || {}), `maps/${id}`));
   }
   out.push(...diff(strip(c.actors), strip(back.actors), 'actors'), ...diff(strip(c.actorStates), strip(back.actorStates), 'actorstate'));
-  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'), ...diff(strip(c.dice), strip(back.dice), 'dice'));
+  out.push(...diff(strip(c.chat), strip(back.chat), 'chat'), ...diff(strip(c.audit), strip(back.audit), 'audit'), ...diff(strip(c.dice), strip(back.dice), 'dice'), ...diff(strip(c.replays), strip(back.replays), 'replays'));
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice', 'replay'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 
@@ -220,7 +227,10 @@ export function tidyOps(records) {
   // and the feats' and features' descriptions characters show (any of each one's candidate keys)
   const meta = records['board/meta'] || {};
   for (const g of optionalGroups(of('actors'), systemConfig(meta.ruleset || 'pf2e'))) for (const k of g) used.add(k);
-  return batches(Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))).map((p) => ({ op: 'delete', path: p })));
+  // and finished replays the save no longer keeps (it keeps the last KEEP_REPLAYS)
+  const kept = new Set((records['board/meta'] ? saveFromRecords(records).replays : []).map((x) => `replay/${x.id}`));
+  const oldReplays = Object.keys(records).filter((p) => p.startsWith('replay/') && !kept.has(p));
+  return batches([...Object.keys(records).filter((p) => p.startsWith('content/') && !used.has(contentKey(p))), ...oldReplays].map((p) => ({ op: 'delete', path: p })));
 }
 
 /** Delete ops for a whole-database listing {path: version}. */
@@ -237,7 +247,7 @@ export function verifySave(records, packDir, saveDir) {
   const ids = new Set([...Object.keys(fromDb.mapStates), ...Object.keys(disk.mapStates)]);
   for (const id of ids) out.push(...diff(strip(fromDb.mapStates[id] || {}), strip({ map: id, ...(disk.mapStates[id] || {}) }), `maps/${id}`));
   out.push(...diff(strip(fromDb.actors), strip(disk.actors), 'actors'), ...diff(strip(fromDb.actorStates), strip(disk.actorStates), 'actorstate'));
-  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'), ...diff(strip(fromDb.dice), strip(disk.dice), 'dice'));
+  out.push(...diff(strip(fromDb.chat), strip(disk.chat), 'chat'), ...diff(strip(fromDb.audit), strip(disk.audit), 'audit'), ...diff(strip(fromDb.dice), strip(disk.dice), 'dice'), ...diff(strip(fromDb.replays), strip(disk.replays), 'replays'));
   return out;
 }
 
@@ -260,7 +270,7 @@ function main(argv) {
     const files = writeSave(data.records || data, b);
     const tidy = tidyOps(data.records || data);
     console.log(`wrote ${files.length} file(s) to ${b}`);
-    if (tidy.length) console.log(`${tidy.flat().length} content record(s) on the board no creature uses: node tools/campaign.mjs tidy ${a} gives the delete ops`);
+    if (tidy.length) console.log(`${tidy.flat().length} record(s) on the board the save no longer needs (content no creature uses, old replays): node tools/campaign.mjs tidy ${a} gives the delete ops`);
     return 0;
   }
   if (cmd === 'ops-load' && a && b) {
@@ -294,7 +304,7 @@ function main(argv) {
   console.error('Usage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>' +
     '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
     '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
-    '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses, after a save)' +
+    '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses and old replays, after a save)' +
     '\n       node tools/campaign.mjs glossary <ruleset> [--out FILE]   (the trait glossary record, content/glossary.traits)' +
     '\n       node tools/campaign.mjs glossaries [--out FILE]   (every system\'s trait glossary, for bundle.mjs --data glossaries=FILE)' +
     '\n       node tools/campaign.mjs verify <records-file> <pack-dir> <save-dir>');

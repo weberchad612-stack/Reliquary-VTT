@@ -36,7 +36,7 @@ The database is the truth during play; the PC save is the truth between sessions
 
 ## 3. Save the game (when the user says so, and before every switch)
 
-1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
+1. **Read the save's collections** with their versions: `board`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `actors`, `actorstate`, `chat`, `audit`, `dice`, `replay` (`SAVE_COLLECTIONS` in `tools/campaign.mjs`; when a collection is added there, add it here too). Write them as `{"records": {"<collection>/<id>": data, ...}}`.
 2. **Copy the PC save into the workspace** (stage `saves/<campaign>/` from the PC, or use the identical copy kept in the outputs folder), then
    `node tools/campaign.mjs save records.json <save-copy>`: it backs up the previous save into `backups/<time>/` (keeps 5) and writes the new one.
 3. **Verify:** `node tools/campaign.mjs verify records.json <pack> <save-copy>` must print "save matches the board". Stop if it does not.
@@ -48,7 +48,7 @@ The page cannot write to the PC itself, so saving is always asked of Claude in c
 ## 4. Switch campaigns
 
 1. **Save** the active campaign (section 3) and verify it on the PC.
-2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
+2. **List every record** in the database with its version: every campaign collection (`board`, `maps`, `walls`, `terrain`, `lighting`, `state`, `mapstate`, `tokens`, `explored`, `templates`, `notes`, `targets`, `chat`, `audit`, `dice`, `replay`, `fx`, `actors`, `actorstate`, `content`), including the pack records (not `app/`, the board's own). Build a listing `{path: version}` and run `node tools/campaign.mjs ops-clear listing.json --out clear.json`.
 3. **Clear**, with `board/meta` **first** in the first call, so an open board shows "No campaign is loaded" rather than half a campaign. Every delete needs the record's current version; a call of up to 50 ops commits all or none, so a stale version refuses the whole call and writes nothing: read again and resend. Wait 2 seconds between big calls.
 4. **Build the load:** list the board's uploaded files (`list_assets`, saved as `assets.json`), then
    `node tools/campaign.mjs ops-load <pack> <save> --assets assets.json --out load.json`. Upload every image under `upload` (usually none: images stay uploaded and are matched by SHA-256), then run `ops-load` again so the map records carry the asset ids.
@@ -295,7 +295,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
   and whether it is collapsed (`reliquary.sidebar`, `reliquary.sidebar.area`). The map refits whenever the sidebar
   changes size.
 - **Moved from the top menu** (the user, 2026-11-12): Party loot, the Quest log, Replay, Actions and Exploration are sidebar tabs, each
-  saying what it will hold until it is built; the Records menu and the Replay button are gone. The **Visual effects**
+  saying what it will hold until it is built (Replay is built: see Replay below); the Records menu and the Replay button are gone. The **Visual effects**
   tab holds this screen's switch ("Show visual effects on this screen", everyone; remembered per browser) and the
   GM's **preview** of every effect (search, hit / crit / miss, text, n; it plays from the selected token to the
   targets or the hovered token, on this screen only), which was the Map menu's Visual effects and Effects... items.
@@ -376,6 +376,50 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **One look, two forms** (`board/highlight.js`): `pointOutRing(ctx, {cx, cy, r, colour, now, reduced, unit})` on a
   canvas (the overlay keeps animating while it is shown), and the CSS class `pointout` with `--hl` for page
   elements. Keep the two matched (period 1.8 s, grows by 30 %); change both together.
+
+### Replay and "Claude is adjudicating" (2026-11-12)
+
+The user's design (questionnaire, 2026-11-12): **the board applies the steps**, **anyone can press Next**, the
+narration reaches the chat **at the end**, with Camera follows, Auto with a pace, reaction stops and replaying a
+revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
+
+- **Records** (`board/replay.js`, pure): `replay/<id>` holds the steps, each with its **changes** (per record, by
+  top-level field: `to`, `unset`, and the `from` values), its **posts** (chat, dice, audit and fx records) and its
+  **moves**. Nothing in a step touches the game until it is revealed, so results never sit in the database early.
+  The replay record itself can be read by anyone with access to the database (the same as hidden tokens today); the
+  board never shows a player what is not revealed, nor a `gm` step at all.
+- **Revealing** (`board/replayui.js`): Next reads the replay, writes a **claim** (`n` + 1 and `revealed[k] = {at,
+  key}`), waits 0.7 s and reads it back. The screen whose claim stood writes the step: each change applied over the
+  record **as it is now** (fields the step does not touch stay; a field someone changed since is overwritten and an
+  audit warning says so), the posts at **paths made from the reveal's time and key** (so two screens revealing at
+  once write the same records; time-ordered with the rest of the chat), the fx after the slides. The last step also
+  posts the narration. **Show all** reveals the rest quietly (no slides, no effects). No Back or Restart: a revealed
+  step is real game state.
+- **Playing** (every screen, as `n` moves): 1 s after the claim (time for the changes to land), the camera frames
+  the step (per viewer, "Camera follows"; only points this view may see), moved tokens **slide along their path**
+  (the cheapest route through the waypoints; a straight slide when there is none; up to 1.6 s; drawn on the overlay,
+  the token leaving the map until it arrives), and the actor gets the **highlight ring in its side's colour** (PC
+  blue, NPC red, event gold). Its fx records play as every fx record does. Clicking a revealed step plays it again
+  on this screen (slide, ring and effects).
+- **The tab**: the replay shown is the **oldest not finished** (later batches were resolved as if it had happened),
+  else the newest; "N more waiting" when there are more. Players see the revealed steps and "Next: an NPC action…";
+  the GM sees the coming steps dimmed. A stop shows "Waiting for reactions". A new replay selects the tab on every
+  screen; otherwise its icon counts the steps waiting. Auto presses Next every N seconds (1 to 8; per browser).
+- **The banner** (`mountAdjudicating`, on the battle map and area maps): while `state/adjudicating` exists, a pill
+  over the top of the map shows one of 50 lines (`ADJ_LINES`, for any game and any world, never saying what is
+  being worked out), a new one every 6 s, pulsing gold (steady with reduced motion). Quiet for **5 minutes**: "Still
+  working on it… 12 min". Quiet for **30 minutes**: gone, and the GM's board deletes the record with an audit
+  warning. The GM has a **Clear** button. Each screen times it from when it last saw the record change (clocks differ
+  between machines; a record already there on load counts from its own `at`). The banner lets clicks through to the
+  map, except on Clear. Banner only, for now: nothing is locked while it shows (the user, 2026-11-12).
+- **The save** keeps every unfinished replay and the last 5 finished (`replays.json`); `campaign.mjs tidy` gives
+  the deletes for older ones. `state/adjudicating` is not saved.
+- **Listeners**: two, always (the replay collection and the banner's record), because every screen plays the steps
+  and shows the banner whichever tab is open.
+- **Lessons**: the previous board wrote the real state first and *masked* it on each screen (`rpView`), so results
+  were in the database (and a player's roster) before they were revealed, and narration was written by whichever
+  browser finished first. Here the state is written by the reveal itself. A slide's time follows its length, not
+  the number of path points (a straight fallback slide was a 0.4 s jump before).
 
 ### Dice statistics (2026-11-12)
 

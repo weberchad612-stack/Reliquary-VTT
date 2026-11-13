@@ -80,6 +80,24 @@ const CHECKS = {
     await page.click('#dbg-t'); await asPlayer(page);
     return ok(!player && /listeners \d+/.test(text), `player sees it: ${player}; GM: ${text.split('\n').length} lines`);
   },
+  async replay({ page }) {
+    const now = new Date().toISOString();
+    await writeRecord(page, 'state/adjudicating', { by: 'claude', since: now, at: now });
+    await page.waitForTimeout(300);
+    const banner = await page.$eval('#adj', (x) => !x.hidden && x.textContent.length > 5);
+    await page.evaluate(() => window.reliquary.store.remove('state/adjudicating'));
+    const pip = await page.evaluate((id) => window.reliquary.state().tokens[id], PIP);
+    await writeRecord(page, 'replay/0mwe00000-smok', { title: 'Smoke', by: 'claude', n: 0, revealed: [], narration: ['Pip ducks.'], steps: [
+      { side: 'pc', actor: PIP, text: 'Pip steps west', changes: [{ path: `tokens/${PIP}`, to: { x: pip.x - 2 }, from: { x: pip.x } }],
+        posts: [{ c: 'chat', data: { by: 'claude', kind: 'event', text: 'Pip moves' } }], moves: [{ token: PIP, from: [pip.x, pip.y], to: [pip.x - 2, pip.y] }] }] });
+    await page.waitForTimeout(400);
+    await page.click('[data-pane=replay] [data-rp=next]');
+    await page.waitForTimeout(2500);
+    const x = await page.evaluate((id) => window.reliquary.state().tokens[id].x, PIP);
+    const chat = (await records(page, 'chat')).map((e) => e.data.text);
+    const gone = await page.$eval('#adj', (b) => b.hidden);
+    return ok(banner && gone && x === pip.x - 2 && chat.includes('Pip moves') && chat.includes('Pip ducks.'), `banner shown then gone: ${banner}/${gone}; Pip ${pip.x} -> ${x}; chat ${chat.slice(-2).join(' | ')}`);
+  },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());
     return ok(n > 0 && n < 30, `${n} listeners (the platform caps about 40)`);

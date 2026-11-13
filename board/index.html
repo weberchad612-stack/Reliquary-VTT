@@ -69,7 +69,7 @@ button:hover { background: #333842; }
 button[aria-pressed="true"] { background: var(--accent); color: #1a1408; }
 button:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 main { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; min-height: 0; grid-row: 3; }   /* the row that fills the window (the preview bar, when shown, takes row 2) */
-.stage { position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.stage { grid-area: 1 / 1; position: relative; padding: 16px; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 canvas#map { margin: 0 auto; flex: none; }
 .selbox { position: absolute; border: 1px dashed var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); pointer-events: none; z-index: 5; }
 .selbox.targeting { border: 2px dashed #f4ecd6; background: rgba(229, 97, 90, .12); }
@@ -91,6 +91,46 @@ canvas#fxc { position: absolute; pointer-events: none; z-index: 4; }   /* visual
 .fx-on { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer; }
 .fx-on + .fxhint { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
 .soon { color: var(--muted); font-size: 13px; line-height: 1.5; }
+/* replay (board/replayui.js): the tab's steps, PC blue, NPC red, events gold */
+.rp-title { font-weight: 700; color: var(--accent); margin: 0 0 2px; }
+.rp-status { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+.rp-behind { display: block; color: #e3b341; }
+.rp-empty { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.rp-ctl { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 8px; }
+.rp-ctl button { min-height: 28px; padding: 2px 10px; font-size: 13px; }
+.rp-ctl .rp-go { background: var(--accent); color: #14161b; border-color: var(--accent); font-weight: 700; }
+.rp-ctl button:disabled { opacity: .45; cursor: default; }
+.rp-opts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin: 0 0 8px; align-items: center; }
+.rp-opts input[type=range] { width: 90px; vertical-align: middle; }
+.rp-list { list-style: none; margin: 0; padding: 0; }
+.rp-step { border-left: 4px solid #888; border-radius: 6px; padding: 5px 9px; margin: 0 0 7px; background: rgba(128,128,128,.08); cursor: pointer; }
+.rp-step.pc { border-left-color: #5b93ff; background: rgba(91,147,255,.09); }
+.rp-step.npc { border-left-color: #e5615a; background: rgba(229,97,90,.11); }
+.rp-step.env { border-left-color: #e3b341; background: rgba(227,179,65,.09); }
+.rp-step.last { box-shadow: 0 0 0 1px var(--accent); }
+.rp-step.pending { opacity: .55; border-left-style: dashed; cursor: default; font-style: italic; }
+.rp-step.gm-only .rp-who::after { content: ' · GM only'; color: var(--muted); font-weight: 400; }
+.rp-step:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rp-head { display: flex; gap: 8px; align-items: center; margin: 0 0 2px; }
+.rp-chip { font-size: 10px; font-weight: 800; letter-spacing: .06em; padding: 0 6px; border-radius: 9px; color: #fff; background: #5b93ff; text-transform: uppercase; }
+.rp-chip.npc { background: #c94a44; } .rp-chip.env { background: #a8801f; }
+.rp-who { font-weight: 700; } .rp-no { margin-left: auto; font-size: 11px; color: var(--muted); }
+.rp-text { white-space: pre-wrap; font-size: 13px; line-height: 1.4; }
+.rp-stop { border: 1px solid #e3b341; border-radius: 6px; padding: 6px 9px; font-size: 13px; color: #f2d58a; }
+.rp-end { font-size: 12px; color: var(--muted); padding: 2px 0; }
+/* "Claude is adjudicating": over the top of the map, every screen */
+.adj { grid-area: 1 / 1; align-self: start; justify-self: center; z-index: 7; margin-top: 10px; max-width: calc(100% - 40px); display: flex; align-items: center; gap: 10px;
+  padding: 7px 14px; border-radius: 20px; background: rgba(20,22,27,.9); border: 1px solid #e3b341; color: #f4ecd6; font-size: 14px;
+  box-shadow: 0 0 0 0 rgba(227,179,65,.5); animation: adj-pulse 2.4s ease-in-out infinite; }
+.adj[hidden] { display: none; }
+.adj { pointer-events: none; } .adj .adj-clear { pointer-events: auto; }   /* the map stays clickable under it */
+.adj .adj-mark { color: #e3b341; font-size: 16px; }
+.adj.slow { border-color: #8a8270; }
+.adj .adj-time { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.adj .adj-clear { font-size: 12px; padding: 1px 8px; min-height: 0; }
+@keyframes adj-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(227,179,65,.45); } 50% { box-shadow: 0 0 14px 2px rgba(227,179,65,.35); } }
+@media (prefers-reduced-motion: reduce) { .adj { animation: none; box-shadow: 0 0 10px 1px rgba(227,179,65,.3); } }
+
 .soon b { color: var(--ink); }
 .fxpanel input[type=search], .fxpanel input[type=text] { width: 100%; box-sizing: border-box; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
 .fxpanel .fxopts { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 12px; }
@@ -612,6 +652,7 @@ ul.try b { color: var(--ink); font-weight: 500; }
       <div class="notes" id="notes" aria-label="Map notes"></div>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
+    <div class="adj" id="adj" hidden></div>
     <section class="dbg" id="dbg" aria-label="Board info"><button type="button" class="dbg-t" id="dbg-t" aria-expanded="false" aria-controls="hud" title="Board info: the square under the pointer, and the engine's numbers">ⓘ <span>Board info</span></button><div class="hud" id="hud" hidden></div></section>
     <aside id="sidebar" aria-label="Sidebar">
       <div class="sb-resize" title="Drag to resize the sidebar (double-click: the usual width)" aria-hidden="true"></div>
@@ -662,7 +703,7 @@ ul.try b { color: var(--ink); font-weight: 500; }
         <section class="sb-pane" data-pane="loot" aria-label="Party loot" hidden><p class="soon"><b>Party loot</b> is coming soon: the party's coins and treasure, shared with everyone.</p></section>
         <section class="sb-pane" data-pane="notes" aria-label="Notes" hidden><div id="notes-tab"></div></section>
         <section class="sb-pane" data-pane="quests" aria-label="Quest log" hidden><p class="soon"><b>The quest log</b> is coming soon: the party's quests, leads and promises.</p></section>
-        <section class="sb-pane" data-pane="replay" aria-label="Replay" hidden><p class="soon"><b>Replay</b> is coming soon: step through a batch of resolved actions on the map.</p></section>
+        <section class="sb-pane" data-pane="replay" aria-label="Replay" hidden></section>
         <section class="sb-pane" data-pane="audit" aria-label="Audit log (GM)" hidden></section>
       </div>
       <!-- retired from the side panel (2026-11-12): kept off screen so older code paths have somewhere to write -->

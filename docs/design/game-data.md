@@ -17,7 +17,7 @@ How to use it: [best practices: game data](../best-practices/game-data.md). The 
 - **Player tokens:** the client runs much of the combat automation for a player's actions; the results are
   queued for Claude to game-master and narrate.
 - **NPC tokens:** Claude runs them completely.
-- **Replay:** batches of Claude-driven combat actions are played out step by step (a feature to build soon).
+- **Replay:** batches of Claude-driven combat actions are played out step by step (built 2026-11-12: `replay/<id>`, below).
 
 **Dice**
 - Several ways to roll: Claude rolls its own dice; the client rolls for its automated mechanics; a player
@@ -144,7 +144,14 @@ it during a turn.
 - **How Claude learns of it:** the platform cannot message this chat, so the queue is read at the start of
   every turn during play (a standing rule), and the board's queue badge tells the user to send any message
   ("go") when they want it resolved. (A scheduled check is possible but slow and costly; not proposed.)
-- **Replay** (soon) plays queue and NPC action records step by step, with the visual effects.
+- **Replay** (built 2026-11-12) plays a batch of resolved actions step by step, with the visual effects. Claude
+  resolves the batch in a draft (`tools/replay.mjs`): the tools work on a working copy of the records, so each step
+  sees the ones before, and each step keeps its changes (per record, by field, with the values before), its posts
+  (chat, dice, audit, fx) and its moves. The board writes a step's changes and posts only when someone reveals it
+  (anyone may press Next; a shared counter with a claim, so every screen follows and a step is written once); the
+  narration goes to the chat with the last step. `state/adjudicating` shows "Claude is adjudicating" on every screen
+  while the draft is open. Player actions from the queue will become replay steps the same way. Details:
+  docs/best-practices/board.md (Replay), docs/best-practices/game-data.md section 2c.
 
 ### 3.5 Where a PC's build lives (research answer)
 
@@ -172,7 +179,7 @@ on the PC (`characters/<id>.json`) when one PC moves to another campaign. One pl
    on the board waits.
 3. The dice service and roll records; Claude's dice tool; the roll log.
 4. Actions: Strike, saving throws, damage and healing for PCs on the board, resolved and queued for Claude.
-5. Replay of queued and NPC actions with effects.
+5. Replay of queued and NPC actions with effects (NPC and Claude's batches built 2026-11-12; the queue waits for step 4).
 6. Items, inventory and loot; spells and resources; levelling; a character library; a builder; thrown 3-D dice.
 
 ### 3.8 Decisions (the user, 2026-11-12)

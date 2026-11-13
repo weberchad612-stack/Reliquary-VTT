@@ -12,7 +12,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 | Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge. | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
-| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, events and audit lines. | [tools/README.md](../tools/README.md) |
+| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, events and audit lines; replays (`replay.mjs`: resolve a batch in a draft). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
 | Tests | `npm test` (about 450) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
@@ -24,13 +24,16 @@ line here in the same commit. Last brought up to date: 2026-11-12.
   light, terrain, area templates, map notes, effect badges, targets (T), the token HUD (right-click: target,
   status effects, templates; left column: height, Enter Combat, the GM's Hide), Token Quick-View (double-click),
   pings and visual effects, Stride ranges during an encounter. Hidden tokens never reach players.
+- **"Claude is adjudicating"**: a banner over the map on every screen while Claude resolves a batch
+  (`tools/replay.mjs`); "Still working on it" after 5 quiet minutes, gone after 30; the GM can clear it.
 - **Sidebar tabs, top to bottom** (each pops out as a window; GM-only ones are absent in the player view):
 
 | Tab | State |
 |---|---|
 | Chat | Built: Claude's narration (the heart of it), rulings, NPC lines, roll cards, table events |
 | Encounter | Built: initiative (roll dialog, drag to reorder), turns and rounds with the turn rules, hide, defeated, target, ping |
-| Replay, Actions, Exploration, Party loot | Placeholders ("coming soon") |
+| Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; narration at the end; reaction stops) |
+| Actions, Exploration, Party loot | Placeholders ("coming soon") |
 | Notes | Built: add, list, hover highlights the pin, edit, remove |
 | Quest log | Placeholder |
 | Visual effects | Built: this screen's switch; the GM's preview library |
@@ -56,7 +59,7 @@ line here in the same commit. Last brought up to date: 2026-11-12.
 
 ## What is next
 
-- The placeholder tabs: Replay, Actions, Exploration, Party loot, Quest log.
+- The placeholder tabs: Actions, Exploration, Party loot, Quest log.
 - Roll cards and dice for attacks, saves, skill checks and damage (only initiative rolls on the board today; Claude's
   rolls are logged through `tools/dice.mjs` and `tools/check.mjs`).
 - The open backlog in [future/backlog.md](../future/backlog.md): roll visibility (FR-10), several encounters at once

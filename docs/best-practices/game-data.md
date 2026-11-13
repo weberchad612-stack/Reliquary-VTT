@@ -89,6 +89,39 @@ write a number into an actor that the rules can work out. The board and the tool
   when the creature rolls twice (`--roll 12,7`), and makes a target off-guard (or similar) for a Strike when the
   attacker's rules say so.
 
+## 2c. Replays: resolving a batch (Claude)
+
+When several actions resolve together (the foes' turns, a round of fighting, a trap going off), resolve them as a
+**replay** (`tools/replay.mjs`, built 2026-11-12): the table watches them step by step on the board, and nothing
+lands early.
+
+1. **Read the board** (`db_list` of `tokens`, `actors`, `actorstate`, `state` and `replay`, into one `{path: data}`
+   file) and **open a draft**: `node tools/replay.mjs begin --records board.json --title "The goblins' turn" --map
+   sample-keep`. Write what it prints: `state/adjudicating` puts the **"Claude is adjudicating" banner** over every
+   screen, and the audit log notes the start. Replays not yet revealed are applied to the working copy first.
+2. **Resolve each action with the usual tools, against the working copy**: `--records $(node tools/replay.mjs
+   records)`. Save each tool's JSON to a file; do **not** write its writes to the board.
+3. **Make it a step**: `node tools/replay.mjs step --side npc --actor "Gap-Toothed Ogre" --text "The ogre clubs
+   Kerra: a hit, 12 bludgeoning." --in damage.json --in event.json --in dice.json --in fx.json --move
+   "Gap-Toothed Ogre:10,10"`. One action per step; a condition goes on the step that causes it. Chat messages,
+   dice, audit lines and visual effects become the step's posts, written (with fresh times) when it is revealed;
+   every other record becomes a change. An output without a path (effect.mjs's token) is `--in tokens/<id>=FILE`;
+   `replay.mjs get tokens/<id> > t.json` gives effect.mjs its input. `--move TOKEN:X,Y[:VX,VY;VX,VY]` moves a token
+   (the board slides it along its path). `--gm` keeps a step from players altogether (a hidden creature's).
+   Each step prints a refreshed `state/adjudicating`: **write it**, or the banner says "Still working on it" after
+   5 minutes and goes after 30. Before a long think or long narration, `replay.mjs ping` and write that too.
+4. **Narration** for the end: `replay.mjs narrate "..."` (one call per paragraph); it is posted to the chat when
+   the last step is revealed.
+5. **Reactions:** stop the batch before a step where a PC could react: `replay.mjs stop "Can anyone react to the
+   ogre's swing?"`, `end`, and ask. The next batch (a new `begin`) starts from the board plus this one.
+6. **End**: `node tools/replay.mjs end` prints the `replay/<id>` record, the banner's delete and an audit line:
+   write them. Then tell the user it is ready to watch (the Replay tab opens on every screen); don't narrate the
+   results in this chat before the table has seen them. `replay.mjs show` lists the draft; `abort` drops it
+   (nothing was applied). A draft left open (a turn that broke off) makes the next `begin` ask for `--resume` or
+   `--discard`.
+
+What the board does with it: docs/best-practices/board.md (Replay).
+
 ## 3. Writing game data
 
 - **A PC** is a build: ancestry (HP, size, Speed, senses), class (HP per level, key attribute), attribute

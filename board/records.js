@@ -28,6 +28,9 @@
 //                      (board/chat.js); part of the save (chat.json)
 //   dice/<time36>-<n>  a roll's dice, for the dice statistics (board/dice.js); part of the save (dice.json)
 //   state/session      when this session began, for the dice statistics: {started} (saved as campaign.session)
+//   replay/<id>        a batch of resolved actions the table reveals step by step (board/replay.js); the save keeps the
+//                      ones not finished and the last KEEP_REPLAYS finished (replays.json)
+//   state/adjudicating "Claude is adjudicating": the banner over the map while Claude resolves a batch (not saved)
 //   audit/<time36>-<n> the GM's audit log: every change to the game, in words (board/audit.js); part of the save
 //                      (audit.json). A chat message of the retired kind 'log' becomes an audit entry on load and save.
 //
@@ -36,6 +39,7 @@
 export const SCHEMA = 1;
 export const WALL_CHUNK = 400;
 export const EXPLORED_CHUNK = 200;
+export const KEEP_REPLAYS = 5;   // finished replays a save keeps (every unfinished one is kept)
 
 /** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
 const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored', 'templates', 'notes']);
@@ -60,7 +64,7 @@ const pad = (n) => String(n).padStart(3, '0');
  * @param {string} [c.now]      ISO time for board/meta
  * @returns {object}  {path: data}
  */
-export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, actors = {}, actorStates = {}, content = {}, chat = [], audit = [], dice = [], now = new Date().toISOString() }) {
+export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, actors = {}, actorStates = {}, content = {}, chat = [], audit = [], dice = [], replays = [], now = new Date().toISOString() }) {
   if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
     throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
   }
@@ -92,6 +96,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
   for (const { id, ...m } of chat) { if (m.kind === 'log') r[`audit/${id}`] = auditFromLog(m); else r[`chat/${id}`] = m; }
   for (const { id, ...e } of audit) r[`audit/${id}`] = e;
   for (const { id, ...d } of dice) r[`dice/${id}`] = d;
+  for (const { id, ...d } of replays) r[`replay/${id}`] = d;
   if (effects && effects.effects && Object.keys(effects.effects).length) r['fxlib/pack'] = { palette: effects.palette || {}, effects: effects.effects, fallbacks: effects.fallbacks || [] };
   r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
   if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
@@ -174,7 +179,7 @@ export function saveFromRecords(records, base = {}) {
   const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
   for (const k of ['clock', 'encounter', 'session']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
-  const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [];
+  const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [];
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {
     const [coll] = p.split('/');
@@ -187,16 +192,20 @@ export function saveFromRecords(records, base = {}) {
     if (coll === 'chat') { if (d.kind === 'log') audit.push({ id: p.split('/')[1], ...auditFromLog(d) }); else chat.push({ id: p.split('/')[1], ...d }); }
     if (coll === 'audit') audit.push({ id: p.split('/')[1], ...d });
     if (coll === 'dice') dice.push({ id: p.split('/')[1], ...d });
+    if (coll === 'replay') replays.push({ id: p.split('/')[1], ...d });
   }
   chat.sort((a, b) => (a.id < b.id ? -1 : 1));
   audit.sort((a, b) => (a.id < b.id ? -1 : 1));
   dice.sort((a, b) => (a.id < b.id ? -1 : 1));
+  replays.sort((a, b) => (a.id < b.id ? -1 : 1));
+  const done = replays.filter((x) => (x.n || 0) >= (x.steps || []).length), keep = new Set(done.slice(-KEEP_REPLAYS).map((x) => x.id));
+  const savedReplays = replays.filter((x) => (x.n || 0) < (x.steps || []).length || keep.has(x.id));
   for (const id of meta.maps || []) {
     const ex = Object.entries(records).filter(([p, d]) => p.startsWith('explored/') && d.map === id).map(([, d]) => d);
     if (ex.length) ensure(id).explored = exploredFromRecords(ex);
   }
   for (const st of Object.values(mapStates)) delete st.$schema;
-  return { campaign, mapStates, actors, actorStates, chat, audit, dice };
+  return { campaign, mapStates, actors, actorStates, chat, audit, dice, replays: savedReplays };
 }
 
 /** A chat message of the retired kind 'log' (a change-log line) as an audit entry. */

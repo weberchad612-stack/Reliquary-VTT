@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "replay.schema.json",
+  "title": "A campaign's replays (saves/<campaign>/replays.json)",
+  "description": "Batches of resolved actions the table reveals step by step (board/replay.js): every replay not yet finished and the last few finished. On the board each is a record replay/<id>. A step's changes reach the game only when it is revealed.",
+  "type": "object",
+  "required": ["replays"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "replays": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "steps", "n"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[0-9a-z]{9}-[0-9a-z]+$" },
+          "title": { "type": "string" },
+          "by": { "enum": ["claude", "gm", "player"] },
+          "created": { "type": "string" },
+          "map": { "type": "string" },
+          "narration": { "type": "array", "items": { "type": "string" }, "description": "Posted to the chat when the last step is revealed" },
+          "stop": { "type": "string", "description": "The batch ends here, waiting for reactions" },
+          "n": { "type": "integer", "minimum": 0, "description": "Steps revealed" },
+          "revealed": {
+            "type": "array",
+            "items": { "type": "object", "required": ["at", "key"], "properties": { "at": { "type": "string" }, "key": { "type": "string" }, "quiet": { "type": "boolean" } } }
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["side", "text", "changes"],
+              "properties": {
+                "side": { "enum": ["pc", "npc", "env"] },
+                "actor": { "type": "string" },
+                "who": { "type": "string" },
+                "text": { "type": "string" },
+                "gm": { "type": "boolean", "description": "The GM's only: players see 'Something happens'" },
+                "focus": { "type": "array" },
+                "changes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["path", "to"],
+                    "properties": {
+                      "path": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+                      "to": { "type": "object" },
+                      "from": { "type": "object" },
+                      "unset": { "type": "array", "items": { "type": "string" } },
+                      "fromUnset": { "type": "array", "items": { "type": "string" } },
+                      "create": { "type": "boolean" },
+                      "remove": { "type": "boolean" }
+                    }
+                  }
+                },
+                "posts": {
+                  "type": "array",
+                  "items": { "type": "object", "required": ["c", "data"], "properties": { "c": { "enum": ["chat", "dice", "audit", "fx"] }, "data": { "type": "object" } } }
+                },
+                "moves": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["token", "from", "to"],
+                    "properties": { "token": { "type": "string" }, "from": { "type": "array" }, "to": { "type": "array" }, "via": { "type": "array" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

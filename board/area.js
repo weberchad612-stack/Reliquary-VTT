@@ -16,6 +16,7 @@ import { mountChat } from './chatui.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountDice } from './diceui.js';
+import { mountAdjudicating } from './replayui.js';
 import { showSystemBadge } from './sysbadge.js';
 import { kindColour } from './targeting.js';
 
@@ -216,6 +217,7 @@ export async function startArea(store, c) {
       names: (id) => (tokensHere[id] ? (view === 'gm' ? tokensHere[id].name : publicName(tokensHere[id])) : null), colour: kindColour, kindOf: (id) => (tokensHere[id] ? tokensHere[id].kind : null) });
     auditUi = mountAudit({ store, view: () => view, readOnly: PAGE.readOnly, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
     diceUi = mountDice({ store, view: () => view, readOnly: PAGE.readOnly, pane: sidebar.panel('dice').body, sidebar, tab: 'dice', kinds: (Engine.systemConfig(META.ruleset) || {}).rollKinds || [] });
+    mountAdjudicating({ store, view: () => view, readOnly: PAGE.readOnly, el: document.getElementById('adj') });   // "Claude is adjudicating", as on the map
   }
 
   // ---- start ----
