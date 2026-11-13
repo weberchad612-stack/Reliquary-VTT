@@ -134,6 +134,10 @@ python3 tools/sound/render.py audition                   # a few of each, to lis
   - **Claude's clones skip the audio:** clone with `GIT_LFS_SKIP_SMUDGE=1`, then `git lfs pull --include "sounds/fx/strike_slash.mp3"` for only the files a change needs, or `git lfs pull` for the whole set when publishing it.
   - **Re-render only what changed.** Every new version of a file is kept in LFS: one tweaked effect adds about 150 KB, a music piece about 2.3 MB, everything about 150 MB.
   - Before committing, check that `git lfs status` lists the mp3s as LFS objects, not plain git.
+  - **Claude's session can't upload large LFS files.** Its network drops uploads to GitHub's LFS storage after about 2.4 MB (seen 2026-11-13), so effects, cues and ambient loops push from the session, but music pieces (2.3–2.9 MB) don't. When music changes, push through the user's PC:
+    1. Make a bundle of the new commits (`git bundle create x.bundle origin/main..main`) and pack the new LFS objects from `.git/lfs/objects`, in 2 MB parts.
+    2. Write both into the user's checkout with `device_commit_files`. It refuses `.git` and anything over a few MB, so write to a folder in the checkout, then move them into `.git` and unpack with `device_bash`.
+    3. The user runs `git fetch .git/<bundle> main`, `git merge --ff-only FETCH_HEAD` and `git push origin main` in their own Git. The PC workspace shell has neither git-lfs nor a GitHub login.
 
 **Effects line up with their visuals.**
 - An attack's sound lands its impact at the visual effect's own `impact` (ms, from the effects library).
