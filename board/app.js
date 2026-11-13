@@ -1324,18 +1324,20 @@ export async function start(store, { build = null } = {}) {
     parts.push(`<span id="lstat">${listenText()}</span>`);
     parts.push(`board <b>${esc(buildText())}</b>`);
     const el = document.getElementById('hud');
-    if (!el.hidden) el.innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
+    if (!el.hidden && S.view === 'gm') el.innerHTML = parts.map((p) => `<span>${p}</span>`).join('');
   }
   // the database listeners this page holds (the platform caps them; docs/best-practices/board.md, Listeners)
   const listenText = () => { const n = store.listeners ? store.listeners() : null; return n == null ? 'listeners <b>?</b>' : `listeners <b>${n}</b>`; };
-  // Board info: a see-through panel in the map's lower-left corner, collapsed or open (remembered per browser)
+  // Board info (the GM view's only): a see-through panel in the map's lower-left corner, collapsed or open
+  // (remembered per browser)
   {
     const KEY = 'reliquary.boardinfo', t = document.getElementById('dbg-t'), body = document.getElementById('hud');
     let open = false; try { open = localStorage.getItem(KEY) === 'open'; } catch { /* no storage */ }
     const set = (on) => { open = on; t.setAttribute('aria-expanded', String(on)); body.hidden = !on; document.getElementById('dbg').classList.toggle('open', on); try { localStorage.setItem(KEY, on ? 'open' : 'closed'); } catch { /* no storage */ } if (on && view) hud(); };
     t.addEventListener('click', () => set(!open));
     set(open);
-    setInterval(() => { const l = document.getElementById('lstat'); if (l && !body.hidden) l.innerHTML = listenText(); }, 2000);
+    document.getElementById('dbg').hidden = S.view !== 'gm';
+    setInterval(() => { const l = document.getElementById('lstat'); if (l && !body.hidden && S.view === 'gm') l.innerHTML = listenText(); }, 2000);
   }
 
   function panel() {
@@ -2522,6 +2524,7 @@ export async function start(store, { build = null } = {}) {
   if (auditUi) auditUi.render();
   if (diceUi) diceUi.render();
   if (shellReady) syncFxPanel();
+  document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
     document.getElementById('b-anim').hidden = !(HAS_LIGHTING && v === 'gm');
     panel(); lightingCard(); draw();
