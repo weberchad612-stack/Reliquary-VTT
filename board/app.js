@@ -3242,7 +3242,10 @@ export async function start(store, { build = null } = {}) {
   ledgerUi = mountLedger({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('ledger').body, sidebar, tab: 'ledger',
     map: () => MAP_ID, log: (text) => logChange(text),
     gameNow: () => { const c = clockUi && clockUi.clock(); if (!c || typeof c.now !== 'number') return null; const label = SYS.time && SYS.time.calendar ? clockLabel({ readClock: Engine.readClock, adventureDay: Engine.adventureDay }, SYS.time.calendar, c) : null; return { now: c.now, ...(label ? { label } : {}) }; },
-    showLink: (p) => showRecord(p) });
+    showLink: (p) => showRecord(p),
+    players: () => TABLE.players || [],
+    pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
+    name: (id) => (S.tokens[id] ? S.tokens[id].name : null) });
   replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
     hooks: {
       name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),

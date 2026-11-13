@@ -7,7 +7,10 @@
 // state/clock and board/meta records for the game time; --chat also searches chat/ records in the same file):
 //   node tools/ledger.mjs add <kind> "text" [--title T] [--subjects "Grukk, lantern lady"] [--area B12] [--map M]
 //        [--source adventure|added] [--added-by user|claude] [--by gm] [--link chat/<id>]... [--game "Day 3, 2:20 PM"]
-//        [--records FILE]   (--added-by user: the user invented it, at the table or as a player; implies --source added)
+//        [--player NAME] [--character PC] [--records FILE]
+//        (--added-by user: the user invented it, at the table or through a character; implies --source added.
+//         --character names the PC who brought it into the story, and implies --added-by user; --player is a name from
+//         the campaign's players (tools/players.mjs), found from the character, or the only player, when not given)
 //   node tools/ledger.mjs summary "what happened this session" [--title "Session 4"] [--records FILE]
 //   node tools/ledger.mjs edit <id> [--text T] [--title T] [--subjects S] [--area A] [--source S] [--added-by W] [--link L]
 //        --records FILE
@@ -31,6 +34,8 @@ import { clockLabel } from '../board/clock.js';
 import { readClock, adventureDay } from '../engine/time/calendar.js';
 import { systemConfig } from '../rulesets/systems.js';
 import { readRecords } from './replay.mjs';
+import { introducer, findPlayer } from '../board/players.js';
+import { resolveToken } from '../board/names.js';
 
 /** The ledger's entries in a set of records: [{id, data}]. */
 export const ledgerList = (records) => Object.entries(records).filter(([p]) => p.startsWith(`${LEDGER}/`)).map(([p, data]) => ({ id: p.slice(LEDGER.length + 1), data }));
@@ -54,34 +59,58 @@ const entryOf = (records, id) => {
   return { path: p, data: records[p] };
 };
 
+/** Names for the tool's lines: players and tokens by id. */
+const whoWords = (records) => {
+  const players = (records['state/table'] || {}).players || [];
+  return { player: (id) => (findPlayer(players, id) || {}).name, character: (id) => (records[`tokens/${id}`] || {}).name };
+};
+
+/** Who invented it, from --added-by, --player and --character: {addedBy, player, character} (all null if not said). */
+export function whoOf(records, opts) {
+  if (!opts.addedBy && !opts.player && !opts.character) return { addedBy: null, player: null, character: null };
+  if (opts.addedBy && opts.addedBy !== 'user') {
+    if (opts.player || opts.character) throw new Error('--player and --character are for a detail the user added');
+    return { addedBy: opts.addedBy, player: null, character: null };
+  }
+  const tokens = Object.fromEntries(Object.entries(records).filter(([p]) => p.startsWith('tokens/')).map(([p, t]) => [p.slice(7), t]));
+  let character = null;
+  if (opts.character) {
+    if (!Object.keys(tokens).length) throw new Error('--character needs the board\'s tokens/ records in --records');
+    character = resolveToken(tokens, opts.character);
+  }
+  const players = (records['state/table'] || {}).players || [];
+  return { addedBy: 'user', ...introducer(players, { player: opts.player || null, character }) };
+}
+
 /** Run one command: {lines, writes} (writes for add, summary, edit, close, reopen, remove). */
 export function runLedger(cmd, args, opts = {}, records = {}) {
   const now = opts.now || new Date().toISOString();
   const game = opts.game ? { now: (gameNow(records) || { now: 0 }).now, label: opts.game } : gameNow(records);
-  const fields = () => ({ title: opts.title, subjects: opts.subjects, where: { map: opts.map, area: opts.area }, source: opts.addedBy && !opts.source ? 'added' : opts.source, addedBy: opts.addedBy, links: opts.link || [] });
+  const who = whoOf(records, opts);
+  const fields = () => ({ title: opts.title, subjects: opts.subjects, where: { map: opts.map, area: opts.area }, source: who.addedBy && !opts.source ? 'added' : opts.source, addedBy: who.addedBy, player: who.player, character: who.character, links: opts.link || [] });
   if (cmd === 'add' || cmd === 'summary') {
     const kind = cmd === 'summary' ? 'summary' : args[0];
     const text = (cmd === 'summary' ? args : args.slice(1)).join(' ');
     const data = ledgerEntry({ kind, text, by: opts.by || 'claude', game, at: now, ...fields() });
     const p = ledgerPath(Date.parse(now) || Date.now());
-    return { lines: [`${p}: ${entryLine(data)}`], writes: [{ op: 'set', path: p, data }] };
+    return { lines: [`${p}: ${entryLine(data, 160, whoWords(records))}`], writes: [{ op: 'set', path: p, data }] };
   }
   if (cmd === 'edit' || cmd === 'close' || cmd === 'reopen') {
     const e = entryOf(records, args[0]);
     let changes;
     if (cmd === 'edit') {
       changes = {};
-      for (const k of ['text', 'title', 'subjects', 'source', 'addedBy']) if (opts[k] !== undefined) changes[k] = opts[k];
-      if (opts.addedBy && !opts.source) changes.source = 'added';
+      for (const k of ['text', 'title', 'subjects', 'source']) if (opts[k] !== undefined) changes[k] = opts[k];
+      if (who.addedBy) { changes.addedBy = who.addedBy; changes.player = who.player; changes.character = who.character; if (!opts.source) changes.source = 'added'; }
       if (opts.area !== undefined || opts.map !== undefined) changes.where = { ...(e.data.where || {}), ...(opts.area !== undefined ? { area: opts.area } : {}), ...(opts.map !== undefined ? { map: opts.map } : {}) };
       if (opts.link && opts.link.length) changes.links = [...(e.data.links || []), ...opts.link];
-      if (!Object.keys(changes).length) throw new Error('edit what? --text, --title, --subjects, --area, --map, --source, --added-by or --link');
+      if (!Object.keys(changes).length) throw new Error('edit what? --text, --title, --subjects, --area, --map, --source, --added-by, --player, --character or --link');
     } else {
       if (!e.data.status) throw new Error(`a ${e.data.kind} has no status: only threads, quests and timed events close`);
       changes = { status: cmd === 'reopen' ? 'open' : opts.failed ? 'failed' : 'done' };
     }
     const data = editEntry(e.data, changes, now);
-    return { lines: [`${e.path}: ${entryLine(data)}`], writes: [{ op: 'set', path: e.path, data }] };
+    return { lines: [`${e.path}: ${entryLine(data, 160, whoWords(records))}`], writes: [{ op: 'set', path: e.path, data }] };
   }
   if (cmd === 'remove') {
     const p = `${LEDGER}/${String(args[0] || '').replace(/^ledger\//, '')}`;
@@ -91,8 +120,9 @@ export function runLedger(cmd, args, opts = {}, records = {}) {
   const listed = ledgerList(records);
   if (cmd === 'find') {
     const q = args.join(' ');
-    const rows = ledgerRows(listed, { q, kind: opts.kind, subject: opts.subject, area: opts.area, by: opts.by, limit: opts.limit });
-    const lines = rows.map((e) => `${e.id}  ${e.game && e.game.label ? `[${e.game.label}] ` : ''}${e.where && e.where.area ? `{${e.where.area}} ` : ''}${entryLine(e, 400)}${e.subjects ? `  (${e.subjects.join(', ')})` : ''}`);
+    const W = whoWords(records);
+    const rows = ledgerRows(listed, { q, kind: opts.kind, subject: opts.subject, area: opts.area, by: opts.by, limit: opts.limit, words: (e) => [e.player && W.player(e.player), e.character && W.character(e.character)].filter(Boolean) });
+    const lines = rows.map((e) => `${e.id}  ${e.game && e.game.label ? `[${e.game.label}] ` : ''}${e.where && e.where.area ? `{${e.where.area}} ` : ''}${entryLine(e, 400, W)}${e.subjects ? `  (${e.subjects.join(', ')})` : ''}`);
     if (!rows.length) lines.push(`nothing in the ledger${q ? ` for "${q}"` : ''}`);
     if (opts.chat) {
       const chat = Object.entries(records).filter(([p, m]) => p.startsWith('chat/') && m && m.text && matches({ text: m.text, title: m.speaker }, q))
@@ -119,7 +149,7 @@ async function main(argv) {
   try {
     const rec = opt('--records');
     const o = {
-      title: opt('--title'), subjects: opt('--subjects'), area: opt('--area'), map: opt('--map'), source: opt('--source'), addedBy: opt('--added-by'),
+      title: opt('--title'), subjects: opt('--subjects'), area: opt('--area'), map: opt('--map'), source: opt('--source'), addedBy: opt('--added-by'), player: opt('--player'), character: opt('--character'),
       by: opt('--by'), game: opt('--game'), text: opt('--text'), kind: opt('--kind'), subject: opt('--subject'),
       limit: Number(opt('--limit')) || undefined, link: opts('--link'), failed: flag('--failed'), chat: flag('--chat'),
     };

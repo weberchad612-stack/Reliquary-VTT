@@ -8,7 +8,8 @@
 //
 // An entry: {at (real time), by ('claude' | 'gm'), kind, text, title?, subjects?: [names], where?: {map?, area?},
 //            game?: {now (clock seconds), label}, source? ('adventure' | 'added'), addedBy? ('claude' | 'user': who
-//            invented it, for 'added'), status? ('open' | 'done' | 'failed'), links?: [record paths], updated?}
+//            invented it, for 'added'), player? and character? (for the user's: which player, from the campaign's
+//            players, and which of their PCs, a token id), status? ('open' | 'done' | 'failed'), links?: [record paths], updated?}
 
 export const LEDGER = 'ledger';
 export const TEXT_MAX = 4000;
@@ -47,7 +48,7 @@ const list = (v) => [...new Set((Array.isArray(v) ? v : String(v || '').split(',
  * open. An improvisation is 'added' unless said otherwise; an added detail says who invented it (addedBy: by default
  * whoever wrote the entry, the GM view's entries being the user's).
  */
-export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects = [], where = null, game = null, source = null, addedBy = null, status = null, links = [], at = null, updated = null }) {
+export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects = [], where = null, game = null, source = null, addedBy = null, player = null, character = null, status = null, links = [], at = null, updated = null }) {
   if (!KINDS[kind]) throw new Error(`kind must be one of ${KIND_IDS.join(', ')}`);
   const t = clean(text);
   if (!t) throw new Error('a ledger entry needs text');
@@ -65,7 +66,9 @@ export function ledgerEntry({ kind, text, title = null, by = 'claude', subjects 
     const inv = addedBy || (by === 'gm' ? 'user' : 'claude');
     if (!INVENTORS.includes(inv)) throw new Error(`addedBy must be one of ${INVENTORS.join(', ')}`);
     out.addedBy = inv;
-  } else if (addedBy) throw new Error('addedBy is for an added detail (source added)');
+    if (inv === 'user') { if (clean(player)) out.player = clean(player); if (clean(character)) out.character = clean(character); }
+    else if (player || character) throw new Error('player and character are for a detail the user added');
+  } else if (addedBy || player || character) throw new Error('addedBy, player and character are for an added detail (source added)');
   if (hasStatus(kind)) {
     const st = status || 'open';
     if (!STATUSES.includes(st)) throw new Error(`status must be one of ${STATUSES.join(', ')}`);
@@ -83,21 +86,22 @@ export function editEntry(old, changes, now = new Date().toISOString()) {
   for (const [k, v] of Object.entries(changes)) { if (v === null || v === undefined) { if (v === null) delete merged[k]; } else merged[k] = v; }
   if (!hasStatus(merged.kind)) delete merged.status;
   if (merged.source !== 'added') delete merged.addedBy;
+  if (merged.addedBy !== 'user') { delete merged.player; delete merged.character; }
   return ledgerEntry({ ...merged, updated: now });
 }
 
 const norm = (s) => String(s || '').toLowerCase();
 /** Every word of the query appears in the entry's text, title, subjects, place or game time. */
-export function matches(e, query) {
+export function matches(e, query, extra = []) {
   const words = norm(query).split(/\s+/).filter(Boolean);
   if (!words.length) return true;
-  const hay = norm([e.title, e.text, ...(e.subjects || []), e.where && e.where.area, e.where && e.where.map, e.game && e.game.label, KINDS[e.kind] && KINDS[e.kind].label].join(' \n '));
+  const hay = norm([e.title, e.text, ...(e.subjects || []), e.where && e.where.area, e.where && e.where.map, e.game && e.game.label, KINDS[e.kind] && KINDS[e.kind].label, ...extra].join(' \n '));
   return words.every((w) => hay.includes(w));
 }
 
 /**
  * The entries to show, newest first: [{id, ...entry}]. f: {q, kind (an id, or 'open' for every open thread, quest
- * and event), by, subject, area, status, limit}.
+  * and event), by, subject, area, status, limit, words (e -> extra words to match: the introducer's names)}.
  */
 export function ledgerRows(listed, f = {}) {
   const rows = listed.map((e) => ({ id: e.id, ...(e.data || e) })).filter((e) => {
@@ -106,7 +110,7 @@ export function ledgerRows(listed, f = {}) {
     if (f.status && e.status !== f.status) return false;
     if (f.subject && !(e.subjects || []).some((s) => norm(s) === norm(f.subject))) return false;
     if (f.area && norm(e.where && e.where.area) !== norm(f.area)) return false;
-    return matches(e, f.q);
+    return matches(e, f.q, f.words ? f.words(e) : []);
   });
   rows.sort((a, b) => (a.id < b.id ? 1 : -1));
   return f.limit ? rows.slice(0, f.limit) : rows;
@@ -132,10 +136,18 @@ export function subjectsIndex(listed) {
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const WHO = { claude: 'Claude', gm: 'GM' };
 
+/** Who invented an added detail, in words: "you", "Claude", "Chad (as Kerra)". who: {player(id) -> name, character(id) -> name}. */
+export function addedByWords(e, who = {}) {
+  if (e.addedBy !== 'user') return 'Claude';
+  const p = e.player ? ((who.player && who.player(e.player)) || e.player) : (who.you || 'the user');
+  const c = e.character ? ((who.character && who.character(e.character)) || e.character) : null;
+  return c ? `${p} (as ${c})` : p;
+}
+
 /** An entry in words, one line (for the tool and the audit log): "🧵 Thread (open): The boot prints — ...". */
-export function entryLine(e, max = 160) {
+export function entryLine(e, max = 160, who = {}) {
   const k = KINDS[e.kind] || { label: e.kind, icon: '' };
-  const head = `${k.icon} ${k.label}${e.status ? ` (${e.status})` : ''}${e.source ? ` [${e.source === 'added' ? `added by ${e.addedBy === 'user' ? 'the user' : 'Claude'}` : e.source}]` : ''}`;
+  const head = `${k.icon} ${k.label}${e.status ? ` (${e.status})` : ''}${e.source ? ` [${e.source === 'added' ? `added by ${addedByWords(e, who)}` : e.source}]` : ''}`;
   const body = `${e.title ? `${e.title}: ` : ''}${e.text}`.replace(/\s+/g, ' ');
   return `${head}: ${body.length > max ? `${body.slice(0, max - 1)}…` : body}`;
 }
@@ -144,12 +156,12 @@ export function entryLine(e, max = 160) {
  * One entry's HTML (pure): kind, title, text, subjects, where and when, source and author, status; with `editable`
  * its edit, close/reopen and remove controls; links as buttons (data-link).
  */
-export function ledgerHtml(e, { editable = false, armed = null } = {}) {
+export function ledgerHtml(e, { editable = false, armed = null, who = {} } = {}) {
   const k = KINDS[e.kind] || { label: e.kind, icon: '•' };
   const meta = [
     e.where && (e.where.area || e.where.map) ? `<span class="lg-where">${esc([e.where.area, e.where.map].filter(Boolean).join(' · '))}</span>` : '',
     e.game && e.game.label ? `<span class="lg-when">${esc(e.game.label)}</span>` : '',
-    e.source ? `<span class="lg-src lg-${esc(e.source)}${e.addedBy ? ` lg-by-${esc(e.addedBy)}` : ''}" title="${e.source === 'added' ? 'Invented at the table' : 'From the adventure'}">${e.source === 'added' ? `✨ added by ${e.addedBy === 'user' ? 'you' : 'Claude'}` : 'adventure'}</span>` : '',
+    e.source ? `<span class="lg-src lg-${esc(e.source)}${e.addedBy ? ` lg-by-${esc(e.addedBy)}` : ''}" title="${e.source === 'added' ? 'Invented at the table' : 'From the adventure'}">${e.source === 'added' ? `✨ added by ${esc(addedByWords(e, { you: 'you', ...who }))}` : 'adventure'}</span>` : '',
     `<span class="lg-by lg-${esc(e.by)}">${esc(WHO[e.by] || e.by)}</span>`,
   ].filter(Boolean).join(' ');
   const subj = (e.subjects || []).map((s) => `<button type="button" class="lg-subj" data-subject="${esc(s)}">${esc(s)}</button>`).join('');

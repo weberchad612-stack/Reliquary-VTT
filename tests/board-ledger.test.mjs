@@ -171,3 +171,58 @@ test('the ledger is part of the save: records and back, ledger.json, the schema,
   fs.rmSync(dir, { recursive: true });
   assert.ok(SAVE_COLLECTIONS.includes('ledger'), 'saving the game reads the ledger collection');
 });
+
+import { playerRecord, playerId, findPlayer, playerOf, introducer } from '../board/players.js';
+import { runPlayers } from '../tools/players.mjs';
+import { whoOf } from '../tools/ledger.mjs';
+import { addedByWords } from '../board/ledger.js';
+
+const PLAYERS = [{ id: 'chad', name: 'Chad', pcs: ['tok-k', 'tok-l'], gm: true }, { id: 'sam', name: 'Sam', pcs: ['tok-p'] }];
+test('players: records, lookups, and who introduced a detail', () => {
+  assert.equal(playerId('Chad W.'), 'chad-w');
+  assert.deepEqual(playerRecord({ name: ' Chad ', pcs: ['a', 'a', ''], gm: true }), { id: 'chad', name: 'Chad', pcs: ['a'], gm: true });
+  assert.throws(() => playerRecord({ name: '' }), /name/);
+  assert.equal(findPlayer(PLAYERS, 'SAM').id, 'sam');
+  assert.equal(playerOf(PLAYERS, 'tok-l').id, 'chad');
+  assert.deepEqual(introducer(PLAYERS, { character: 'tok-p' }), { player: 'sam', character: 'tok-p' }, 'a character names its player');
+  assert.deepEqual(introducer(PLAYERS, { player: 'chad' }), { player: 'chad', character: null });
+  assert.deepEqual(introducer([PLAYERS[0]], {}), { player: 'chad', character: null }, 'the only player');
+  assert.deepEqual(introducer(PLAYERS, {}), { player: null, character: null });
+  assert.throws(() => introducer(PLAYERS, { player: 'chad', character: 'tok-p' }), /doesn't play/);
+  assert.throws(() => introducer(PLAYERS, { player: 'kim' }), /no player/);
+});
+
+test('the ledger records which player and which character introduced a detail', () => {
+  const e = ledgerEntry({ kind: 'quest', text: 'The king\'s orders', source: 'added', addedBy: 'user', player: 'chad', character: 'tok-k', at: 'T' });
+  assert.deepEqual([e.addedBy, e.player, e.character], ['user', 'chad', 'tok-k']);
+  assert.throws(() => ledgerEntry({ kind: 'improv', text: 'x', player: 'chad' }), /player and character/, 'Claude\'s inventions have no player');
+  assert.equal(editEntry(e, { addedBy: 'claude' }, 'U').player, undefined);
+  const names = { player: (id) => ({ chad: 'Chad' })[id], character: (id) => ({ 'tok-k': 'Kerra' })[id] };
+  assert.equal(addedByWords(e, names), 'Chad (as Kerra)');
+  assert.equal(addedByWords({ addedBy: 'user' }, { you: 'you' }), 'you');
+  assert.equal(addedByWords({ addedBy: 'claude' }), 'Claude');
+  assert.match(ledgerHtml({ id: 'q', ...e }, { who: names }), /✨ added by Chad \(as Kerra\)/);
+  assert.equal(ledgerRows([{ id: 'q', data: e }], { q: 'kerra', words: () => ['Chad', 'Kerra'] }).length, 1, 'searchable by the introducer\'s names');
+  const f = formHtml({ id: 'q', ...e }, { players: PLAYERS, pcs: [{ id: 'tok-k', name: 'Kerra' }] });
+  assert.match(f, /<div class="lg-frow lg-who">/);
+  assert.match(f, /<option value="chad" selected>Chad/);
+  assert.match(f, /<option value="tok-k" selected>As Kerra/);
+  assert.match(formHtml(null, { players: [PLAYERS[0]] }), /lg-who" hidden/);
+});
+
+test('the tools: players.mjs, and ledger.mjs --character / --player', () => {
+  const R = { 'state/table': { players: [] }, 'tokens/tok-k': { name: 'Kerra', kind: 'pc' }, 'tokens/tok-l': { name: 'Lyra', kind: 'pc' }, 'tokens/tok-p': { name: 'Pip', kind: 'pc' } };
+  const a = runPlayers('add', ['Chad'], { pcs: 'Kerra, Lyra', gm: true }, R);
+  assert.deepEqual(a.writes, [{ op: 'merge', path: 'state/table', data: { players: [{ id: 'chad', name: 'Chad', pcs: ['tok-k', 'tok-l'], gm: true }] } }]);
+  R['state/table'] = a.writes[0].data;
+  assert.throws(() => runPlayers('add', ['Sam'], { pcs: 'Kerra' }, R), /already plays/);
+  assert.match(runPlayers('list', [], {}, R).lines[0], /^Chad \(chad\), GM view: Kerra, Lyra$/);
+  assert.deepEqual(runPlayers('set', ['chad'], { pcs: 'Kerra, Lyra, Pip' }, R).writes[0].data.players[0].pcs, ['tok-k', 'tok-l', 'tok-p']);
+  assert.deepEqual(runPlayers('remove', ['Chad'], {}, R).writes[0].data.players, []);
+  assert.deepEqual(whoOf(R, { character: 'Kerra' }), { addedBy: 'user', player: 'chad', character: 'tok-k' });
+  assert.deepEqual(whoOf(R, {}), { addedBy: null, player: null, character: null });
+  assert.throws(() => whoOf(R, { addedBy: 'claude', character: 'Kerra' }), /user added/);
+  const add = runLedger('add', ['quest', 'The', 'king\'s', 'orders'], { character: 'Kerra' }, R);
+  assert.deepEqual([add.writes[0].data.source, add.writes[0].data.addedBy, add.writes[0].data.player, add.writes[0].data.character], ['added', 'user', 'chad', 'tok-k']);
+  assert.match(add.lines[0], /\[added by Chad \(as Kerra\)\]/);
+});

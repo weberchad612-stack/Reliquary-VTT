@@ -393,12 +393,15 @@ and edit; summaries per session; the old Abomination Vaults ledger is not import
   'improv' | 'fact' | 'secret' | 'ruling'), text, title?, subjects? (names, for search), where? {map, area (the
   adventure's area key)}, game? {now, label} (the game clock when written), source? ('adventure' | 'added';
   improvisations are 'added'), addedBy? ('claude' | 'user': who invented an added detail; 2026-11-13, the user: a
-  player's improvisation is flagged as his, whatever kind of entry it is), status? ('open' | 'done' | 'failed'; threads, quests and timed events only),
+  player's improvisation is flagged as his, whatever kind of entry it is), player? and character? (for the user's:
+  which player, from the campaign's players, and which of their PCs, a token id; 2026-11-13, the user: "track which
+  character introduced the idea to the story, but also which user"), status? ('open' | 'done' | 'failed'; threads, quests and timed events only),
   links? (record paths: `chat/<id>`, `replay/<id>`, ...), updated?}. Pure functions in `board/ledger.js`; saved
   as `ledger.json` (`schemas/ledger.schema.json`, checked by the validator). Players never see it: the tab is
   GM-only and is never drawn, or watched, in the player view.
 - **Claude writes it with `tools/ledger.mjs`** the same turn something enters the story: `add <kind> "text"
-  --subjects "..." --area <key> [--source adventure] [--added-by user] [--link chat/<id>]` (the game time comes from `state/clock`
+  --subjects "..." --area <key> [--source adventure] [--added-by user] [--character Kerra] [--player Chad] [--link chat/<id>]`
+  (`--character` implies the user's, and finds the player from the campaign's players) (the game time comes from `state/clock`
   in `--records`), `summary "..." --title "Session N"` at wrap-up, `edit`, `close [--failed]`, `reopen`,
   `remove`. Reads: `find "words" [--kind <kind>|open] [--subject S] [--area A] [--chat]` (`--chat` searches the
   board's chat too) and `story` (the summaries, timed events due, open quests and threads: the session-start
@@ -406,11 +409,16 @@ and edit; summaries per session; the old Abomination Vaults ledger is not import
   records (and `state/clock`, `board/meta`; `chat/` for `--chat`).
 - **The Ledger tab** (GM; between Dice statistics and the Audit log): a search box (every word must match: text,
   title, subjects, place, game time), kind chips with counts (**Open** picks every open thread, quest and timed
-  event), **+ Add entry** (kind, source: from the adventure, added by the user or added by Claude, title, text, subjects, area; the map and the game time are added; the
+  event), **+ Add entry** (kind, source: from the adventure, added by the user or added by Claude; for the user's, which player (when the
+  campaign has more than one) and through which PC, or none; title, text, subjects, area; the map and the game time are added; the
   entry is "by GM"), **📜 Story so far** (the summaries oldest first, then what is open). Each entry shows its kind,
   status, subjects (click one to search for it), links ("in the chat" scrolls the chat to the message and outlines
   it; "in the replay" opens Replay), where and when, its source and author, and the GM's edit (✎), done or reopen
   (✓ / ↺) and remove (✕, two clicks). Every change from the tab writes an audit line.
+- **The campaign's players** (`state/table.players`, saved in `campaign.json`): `{id, name, pcs: [token ids], gm?}`,
+  who plays whom (board/players.js). Claude keeps it with `node tools/players.mjs list | add "Chad" --pcs "Kerra, Lyra"
+  [--gm] | set | remove --records FILE` (prints a merge of `state/table`). An entry shows "added by Chad (as Kerra)";
+  with one player in the campaign, his name is used when none is given.
 - **Lessons:** whoever invents a detail is recorded, not just that it was invented: the user improvises too (the
   king's orders, through Kerra), and a quest or a fact can be an improvisation as much as an "improv" entry. Keep
   the ledger for what the chat can't hold; duplicating the story makes it slow to search.

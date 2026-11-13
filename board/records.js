@@ -9,7 +9,8 @@
 //   walls/<map>.<n>    wall segments in chunks of WALL_CHUNK
 //   terrain/<map>      {map, areas}
 //   lighting/<map>     {map, regions, lights}
-//   state/table        the table's settings: current map, sky, colour and animation switches, notes
+//   state/table        the table's settings: current map, sky, colour and animation switches, notes, the campaign's
+//                      players ({id, name, pcs: [token ids], gm?}: who plays whom; board/players.js)
 //   state/clock        the game clock: {now, start} in seconds since year 1 of the ruleset's calendar
 //   state/encounter    the encounter under way: round, turn, combatants in initiative order (engine/time/encounter.js)
 //   mapstate/<map>     a map's state without its tokens and explored area
@@ -46,7 +47,7 @@ export const KEEP_REPLAYS = 5;   // finished replays a save keeps (every unfinis
 /** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
 const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored', 'templates', 'notes']);
 /** Fields of campaign.json kept in the table state record. */
-export const TABLE_FIELDS = ['current_map', 'discovered', 'sky_light', 'light_colour', 'light_animation', 'notes'];
+export const TABLE_FIELDS = ['current_map', 'discovered', 'sky_light', 'light_colour', 'light_animation', 'notes', 'players'];
 
 const chunks = (arr, n) => {
   const out = [];
