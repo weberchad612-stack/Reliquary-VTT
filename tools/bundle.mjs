@@ -26,7 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ENGINE = path.join(ROOT, 'engine');
 const BOARD = path.join(ROOT, 'board');
 export const BOARD_ENTRIES = ['store.js', 'records.js', 'platform.js', 'app.js'];
-export const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', 'areas/areas.js', 'fx/fx.js', 'rules/expr.js', 'rules/rules.js', 'rules/check.js', 'rules/dice.js', 'time/calendar.js', 'time/clock.js', 'time/encounter.js', 'light/light.js', 'light/daylight.js', 'light/animate.js', '../rulesets/pf2e/system.js', '../rulesets/systems.js', '../rulesets/pf2e/terrain.js', '../rulesets/pf2e/light.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
+export const ENTRIES = ['walls/presets.js', 'doors/leaf.js', 'terrain/terrain.js', 'measure/measure.js', 'areas/areas.js', 'fx/fx.js', 'sound/sound.js', 'rules/expr.js', 'rules/rules.js', 'rules/check.js', 'rules/dice.js', 'time/calendar.js', 'time/clock.js', 'time/encounter.js', 'light/light.js', 'light/daylight.js', 'light/animate.js', '../rulesets/pf2e/system.js', '../rulesets/systems.js', '../rulesets/pf2e/terrain.js', '../rulesets/pf2e/light.js', 'sight/visibility.js', 'movement/movement.js', 'fog/explored.js', 'fog/view.js', 'tokens/tiny.js', 'tokens/occupancy.js', 'tokens/display.js'];
 
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'([^']+)';?\s*$/gm;
 const EXPORT_RE = /^export\s+(?:async\s+)?(const|let|function|class)\s+([A-Za-z_$][\w$]*)/gm;

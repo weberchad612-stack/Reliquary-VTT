@@ -39,6 +39,8 @@ import { PF2E_LOOT } from './loot.js';
 import { PF2E_EXPLORATION } from './exploration.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
+import { PF2E_SOUND } from './sound.js';
+
 export const PF2E_SYSTEM = Object.freeze({
   id: 'pf2e',
   name: 'Pathfinder 2E',
@@ -95,6 +97,8 @@ export const PF2E_SYSTEM = Object.freeze({
   exploration: PF2E_EXPLORATION,
   // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
   effects: PF2E_EFFECTS,
+  // sound: what counts as a boss for the music (board/sound.js)
+  sound: PF2E_SOUND,
   // time: the calendar, a round's length, initiative ties (foes before PCs), the rules at turn boundaries
   time: Object.freeze({ calendar: GOLARION_CALENDAR, roundSeconds: ROUND_SECONDS, tiebreak: (a, b) => (a.side === 'pc') - (b.side === 'pc'), turnRules }),
   // content: the kinds of game content and the folder each is kept in (rulesets/pf2e/content.js)

@@ -39,6 +39,8 @@ import { mountExplore } from './exploreui.js';
 import { EXPLORE, exploreRules, initiativeHint, startRequests, badgeFor } from './explore.js';
 import { clockLabel } from './clock.js';
 import { mountDice } from './diceui.js';
+import { mountSound } from './soundui.js';
+import { MUSIC_PATH, AMBIENT, MANIFEST, EMPTY_MANIFEST, CUES, INTERFACE_CUES, soundRules, effectSound, cueSound, stingSound, musicRecord, encounterFacts, listeners as soundListeners, ambientMix, soundPrefs, diceCue } from './sound.js';
 import { badgesFor, badgeSlot, tokenState, cannotSee, stepCondition, describeEffects, KIND_COLOURS } from './effects.js';
 import { makeId } from './ids.js';
 import { publicName, nameFor, letterOf } from './names.js';
@@ -182,6 +184,7 @@ export async function start(store, { build = null } = {}) {
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
   let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null;
+  let sound = null;           // the board's sound (startSound below): effects, cues, music, ambient
   let EXPLORE_CHOICES = {};   // the PCs' exploration activities (explore/ records), for the badges, the tab and initiative
   const exploreBadges = { on() { try { return localStorage.getItem('reliquary.exploreBadges') !== '0'; } catch { return true; } }, set(v) { try { localStorage.setItem('reliquary.exploreBadges', v ? '1' : '0'); } catch { /* this page only */ } } };   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
   const glides = new Map(), flashes = new Map();   // replay: tokens sliding ({pts, t0, ms}) and rings ({colour, until}) by id
@@ -2646,6 +2649,7 @@ export async function start(store, { build = null } = {}) {
   if (diceUi) diceUi.render();
   if (lootUi) lootUi.render();
   if (exploreUi) exploreUi.render();
+  if (sound) sound.refresh();
   if (shellReady) syncFxPanel();
   document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
     document.getElementById('b-colour').hidden = !(HAS_LIGHTING && v === 'gm');
@@ -3095,6 +3099,7 @@ export async function start(store, { build = null } = {}) {
         o: { ...o, result: t.result, text: t.text }, rng: Engine.makeRng(`${rec.id || 'local' + fxN++}/${k}`),
       });
       fxPlayer.add(jobs, now + k * STAGGER, env);
+      if (sound) sound.effect(found.name, t.result, z.pt, k * STAGGER / 1000);
       k++;
     }
     if (k && !fxRaf) fxRaf = requestAnimationFrame(fxFrame);
@@ -3219,6 +3224,7 @@ export async function start(store, { build = null } = {}) {
     fx: { play: (rec) => playFx(rec, { local: true }), busy: () => fxPlayer.busy, jobs: () => fxPlayer.jobs.map((j) => ({ p: j.p, t0: j.t0, ms: j.ms })), on: () => fxOn, libs: () => FX_LIBS.map((l) => l.via) },
     templates: () => clone(TEMPLATES),
     notes: () => clone(MAPNOTES),
+    sound: () => (sound ? sound.debug() : null),
     badges: () => clone(badgeHits),
     hud: () => hudFor,
     noting: () => noting,
@@ -3259,7 +3265,7 @@ export async function start(store, { build = null } = {}) {
     // the user's order (2026-11-12; Replay moved up under Chat the same night)
     { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
     { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
-    { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' },
+    { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' }, { id: 'sound', label: 'Sound' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
@@ -3312,6 +3318,188 @@ export async function start(store, { build = null } = {}) {
       const eff = encumberedEffects(t.effects, on, lootRules(SYS));
       if (eff) { setEffects(id, eff); schedulePersist(); }
     } });
+  // Sound (board/sound.js, engine/sound/sound.js): each visual effect's sound, the table's cues (dice, turns,
+  // rounds, doors, deaths), music by mood that every screen plays in step from state/music, and the ambient sounds
+  // Claude places on maps, heard from the listener (a single selected token; else the party in the player view,
+  // the middle of the screen in the GM view), muffled through walls that stop sound.
+  sound = startSound();
+  function startSound() {
+    const prefs = soundPrefs(localStorage), P0 = prefs.get();
+    const mixer = new Engine.SoundMixer({ base: MANIFEST.replace(/[^/]*$/, ''), volumes: P0.volumes || {} });
+    mixer.muted = !!P0.muted;
+    const R = soundRules(SYS);
+    const LOCAL = {}, PLAYED = [];   // PLAYED: the last sounds started here (for tests)
+    let MAN = EMPTY_MANIFEST, REC = null, AMB = [], ENC = null, FACTS = { encounter: false, boss: false }, PLAYING = { mood: null, why: '', piece: null }, ui = null;
+    let soundSegs = null, segKey = '', lastDoors = null, lastDead = null, lastRound = null;
+    const seenSfx = new Set(), seenChat = new Set(), seenDice = new Set(), primed = { sfx: false, chat: false, dice: false };
+    const fxDeaths = new Map();   // token id -> when a creature_down effect played (no second sound for the death)
+    // the sound files ride along with the published page; a page opened from disk (tests, previews) has none
+    if (/^https?:$/.test(location.protocol)) fetch(MANIFEST).then((r) => (r.ok ? r.json() : null)).then((m) => { if (m) { MAN = m; tick(); if (ui) ui.refresh(); } }).catch(() => {});
+    const unlock = () => { if (mixer.unlock()) { mixer.applyVolumes(); tick(); if (ui) ui.now(); } };
+    for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, unlock, { capture: true });
+
+    const stage = () => document.getElementById('stage');
+    const blocked = (a, b) => {
+      const key = JSON.stringify(S.doors);
+      if (!soundSegs || key !== segKey) { soundSegs = Engine.prepare(segs, state(), 'sound'); segKey = key; }
+      return !Engine.canSee([a.x, a.y], [b.x, b.y], soundSegs, { feetPerCell: FPC });
+    };
+    const centreOf = (id) => { const sp = space(id); return { x: sp.x + sp.size / 2, y: sp.y + sp.size / 2 }; };
+    const screenCentre = () => {
+      const st = stage(); if (!st) return null;
+      const sr = st.getBoundingClientRect(), r = canvas.getBoundingClientRect();
+      return { x: ((sr.left + st.clientWidth / 2 - r.left) / scale - OX) / CS, y: ((sr.top + st.clientHeight / 2 - r.top) / scale - OY) / CS };
+    };
+    const lis = () => soundListeners({ view: S.view, tokens: S.tokens, selected, centre: screenCentre(), seen: (id) => S.tokens[id].kind === 'pc' || shown().seen.has(id), centreOf });
+    const panOfPx = (pt) => { const st = stage(); if (!st || !pt) return 0; const sr = st.getBoundingClientRect(), r = canvas.getBoundingClientRect(); return Engine.screenPan(r.left + (OX + pt.x) * scale - sr.left, st.clientWidth); };
+    const hourNow = () => { const c = clockUi && clockUi.clock(); return c && typeof c.now === 'number' && SYS.time && SYS.time.calendar ? Engine.readClock(SYS.time.calendar, c.now).hour : (S.sky === 'dark' ? 0 : null); };
+
+    /** Play a file for this screen: how loud it is where it happens (a point in cells), or plain (interface cues). */
+    function at(file, { cell = null, px = null, delay = 0, channel = 'effects', gain = 1 } = {}) {
+      if (!file || !mixer.running) return;
+      const L = lis();
+      // effects carry across the map (the board only plays what the view may see); walls that stop sound muffle them
+      const muffled = !!(cell && L.walls && L.points.length && L.points.every((p) => blocked(cell, p)));
+      const g = gain;
+      const pan = px ? panOfPx(px) : 0;
+      mixer.play(file, { channel, gain: muffled ? g * Engine.MUFFLE.gain : g, pan, lowpass: muffled ? Engine.MUFFLE.lowpass : null, delay });
+      PLAYED.push({ file, channel, muffled, pan: Math.round(pan * 100) / 100, delay }); if (PLAYED.length > 40) PLAYED.shift();
+    }
+    function cue(name, o = {}) {
+      if (String(name).startsWith('sting:')) { const f = stingSound(MAN, name.slice(6)); return f && at(f.file, { channel: 'music', gain: 0.9 }); }
+      const f = cueSound(MAN, name);
+      if (f) at(f.file, { channel: INTERFACE_CUES.has(name) ? 'interface' : 'effects', ...o });
+    }
+    // ---- music: the mood from the game (or the GM's choice), the piece from the shared record's run ----
+    async function encounterActors(enc) {
+      const out = {};
+      for (const c of (enc && enc.combatants) || []) out[c.token] = await store.get(`actors/${c.token}`).catch(() => null);
+      return out;
+    }
+    async function refreshFacts() {
+      FACTS = encounterFacts(ENC, await encounterActors(ENC), R, S.tokens);
+      tick();
+    }
+    function moodNow() {
+      const rec = REC || {};
+      return Engine.chooseMood({ override: rec.mood, encounter: FACTS.encounter, boss: FACTS.boss, bossOverride: rec.boss ?? null, theme: (rec.themes || {})[MAP_ID] || null });
+    }
+    function music() {
+      const m = moodNow();
+      const why = m.why === 'a powerful foe is in the encounter' && FACTS.why ? `${m.why} (${FACTS.why})` : m.why;
+      PLAYING = { mood: m.mood, why, piece: null };
+      // a screen that can write keeps the record's run in step with the mood: a new mood starts a new run
+      if (!READONLY && (!REC || REC.playing !== m.mood) && S.view === 'gm') {
+        REC = musicRecord(REC, { playing: m.mood }, { by: by() });
+        store.set(MUSIC_PATH, REC).catch(() => {});
+      }
+      if (m.mood === 'silence') { mixer.stopMusic(3); return; }
+      const pieces = (MAN.music || {})[m.mood] || [];
+      // no shared run for this mood yet (no GM screen has written one): this screen keeps its own until one comes
+      const run = REC && REC.playing === m.mood ? REC : (LOCAL[m.mood] = LOCAL[m.mood] || { since: Date.now(), seed: `${m.mood}/${Date.now()}` });
+      const now = Engine.musicAt(pieces, run, Date.now());
+      if (!now) { mixer.stopMusic(3); return; }
+      PLAYING.piece = now.piece;
+      if (mixer.running) mixer.playMusic(now.piece.file, now.offset);
+    }
+    // ---- ambient: each source's loop, steered to how the listener hears it ----
+    function ambient() {
+      if (!mixer.running) return;
+      const L = lis();
+      const mix = ambientMix(AMB, L, { map: MAP_ID, view: S.view, hour: hourNow(), feetPerCell: FPC, man: MAN, hear: Engine.hearing, blocked, activeAt: Engine.activeAt });
+      const keep = new Set();
+      for (const m of mix) {
+        keep.add(m.id);
+        if (m.gain <= 0.001 && !mixer.loops.has(m.id)) continue;   // far away: not loaded until it can be heard
+        mixer.loop(m.id, m.file, { gain: m.gain, pan: m.pan, muffled: m.muffled });
+      }
+      for (const k of mixer.loopKeys()) if (!keep.has(k)) mixer.stopLoop(k);
+    }
+    // ---- cues from changes on the map: doors, deaths ----
+    function changes() {
+      const doors = {};
+      for (const d of segs) if (d.door) doors[d.door.id] = ((S.doors || {})[d.door.id] || {}).state || d.door.initial || 'closed';
+      if (lastDoors) {
+        let played = false;   // the leaves of a double door change together: one sound
+        for (const [id, st] of Object.entries(doors)) {
+          if (played || lastDoors[id] === undefined || lastDoors[id] === st) continue;
+          const d = segs.find((x) => x.door && x.door.id === id);
+          const cell = d ? { x: (d.a[0] + d.b[0]) / 2, y: (d.a[1] + d.b[1]) / 2 } : null;
+          if (S.view !== 'gm' && cell && !shown().at(cell.x, cell.y) && !lis().points.some((p) => !blocked(cell, p))) continue;   // a door the party can neither see nor hear
+          cue(st === 'open' ? CUES.doorOpen : st === 'locked' ? CUES.doorLocked : CUES.doorClose, { cell, px: cell ? { x: P(cell.x), y: P(cell.y) } : null });
+          played = true;
+        }
+      }
+      lastDoors = doors;
+      const dead = Object.fromEntries(Object.entries(S.tokens).map(([id, t]) => [id, !!t.dead]));
+      if (lastDead) {
+        for (const [id, d] of Object.entries(dead)) {
+          if (!d || lastDead[id] !== false) continue;
+          const t = S.tokens[id], c = centreOf(id);
+          if (t.kind === 'pc') cue(CUES.pcDown, { cell: c, px: { x: P(c.x), y: P(c.y) } });
+          else if (!(Date.now() - (fxDeaths.get(id) || 0) < 4000) && (S.view === 'gm' || shown().seen.has(id))) cue(CUES.foeDeath, { cell: c, px: { x: P(c.x), y: P(c.y) } });
+        }
+      }
+      lastDead = dead;
+    }
+    function tick() { if (!mixer.running) return; music(); ambient(); }
+    setInterval(() => { if (mixer.running) { changes(); ambient(); const p = PLAYING.piece; music(); if (ui && p !== PLAYING.piece) ui.now(); } else changes(); }, 400);
+
+    store.watch(MUSIC_PATH, (d) => { REC = d || null; tick(); if (ui) ui.refresh(); });
+    store.watch('state/encounter', (d) => {
+      const round = d && d.round;
+      if (lastRound !== null && round > lastRound && lastRound > 0) cue(CUES.round);
+      lastRound = round ?? null;
+      ENC = d || null; refreshFacts();
+    });
+    store.watchCollection(AMBIENT, (l) => { AMB = l; ambient(); if (ui) ui.refresh(); });
+    // sounds every screen hears (the soundboard, Claude's cues): play once each, like visual effects
+    store.watchCollection('sfx', (list) => {
+      const first = !primed.sfx; primed.sfx = true;
+      for (const e of newPlays(list, seenSfx, { first })) if (!e.data.gm || S.view === 'gm') cue(e.data.name);
+      if (!READONLY) for (const e of stale(list)) store.remove(e.path).catch(() => {});
+    });
+    store.watchCollection('chat', (list) => {
+      const first = !primed.chat; primed.chat = true;
+      for (const e of list) {
+        if (seenChat.has(e.id)) continue;
+        seenChat.add(e.id);
+        if (first || (e.data.gm && S.view !== 'gm')) continue;
+        const c = diceCue(e.data); if (c) cue(c);
+      }
+    });
+    store.watchCollection('dice', (list) => {
+      const first = !primed.dice; primed.dice = true;
+      for (const e of list) { if (seenDice.has(e.id)) continue; seenDice.add(e.id); if (!first && (!e.data.gm || S.view === 'gm')) cue(CUES.dice); }
+    });
+    ui = mountSound({ view: () => S.view, readOnly: READONLY, pane: sidebar.panel('sound').body, sidebar, tab: 'sound', mixer, prefs,
+      man: () => MAN,
+      status: () => ({ ...PLAYING, rec: REC, encounter: FACTS.encounter, listener: mixer.running ? lis().why : null, unlocked: mixer.running, map: MAP_ID }),
+      setMusic: (change) => { REC = musicRecord(REC, change, { by: by() }); if (change.mood !== undefined || change.boss !== undefined || change.restart) REC.playing = moodNow().mood; store.set(MUSIC_PATH, REC).catch(() => {}); tick(); logChange(change.mood ? `Music: ${change.mood}` : change.boss !== undefined ? `Boss music: ${change.boss === null ? 'automatic' : change.boss ? 'on' : 'off'}` : change.restart ? 'Music: next piece' : 'Music: this map\'s theme'); },
+      play: (name) => { const rec = { map: MAP_ID, name, by: by(), ts: Date.now() }; if (READONLY) return cue(name); store.set(`sfx/${fxId()}`, rec).catch(() => cue(name)); },
+      ambient: () => AMB.filter((e) => e.data && e.data.map === MAP_ID && (S.view === 'gm' || !e.data.gm_only)),
+      setAmbient: (id, d) => { if (d === null) store.remove(`${AMBIENT}/${id}`).catch(() => {}); else store.set(`${AMBIENT}/${id}`, d).catch(() => {}); } });
+    return {
+      mixer,
+      /** A visual effect played here: its sound, from where it lands, `delay` seconds from now. */
+      effect(name, result, pt, delay = 0) {
+        if (name === 'creature_down' && pt) for (const [id, t] of Object.entries(S.tokens)) { const c = centreOf(id); if (Math.hypot(P(c.x) - pt.x, P(c.y) - pt.y) < CS && t) fxDeaths.set(id, Date.now()); }
+        const f = effectSound(MAN, name, result || 'hit');
+        if (f) at(f.file, { cell: pt ? { x: pt.x / CS, y: pt.y / CS } : null, px: pt, delay });
+      },
+      turn(id) {
+        if (!id || !S.tokens[id]) return;
+        cue(S.tokens[id].kind === 'pc' ? CUES.turnPc : CUES.turnFoe);
+      },
+      encounter(on) { cue(on ? CUES.encounterStart : CUES.encounterEnd); refreshFacts(); },
+      cue,
+      refresh: () => { if (ui) ui.refresh(); tick(); },
+      debug: () => ({ running: mixer.running, manifest: Object.fromEntries(Object.entries(MAN).map(([k, v]) => [k, Object.keys(v).length])), playing: { ...PLAYING }, rec: REC,
+        music: mixer.music ? { file: mixer.music.file, t: mixer.music.el.currentTime, paused: mixer.music.el.paused } : null,
+        loops: [...mixer.loops].map(([id, L]) => ({ id, file: L.file, gain: L.c ? Math.round(L.c.gain.gain.value * 1000) / 1000 : null, pan: L.c && L.c.pan ? Math.round(L.c.pan.pan.value * 100) / 100 : null, lowpass: L.lp ? Math.round(L.lp.frequency.value) : null })),
+        played: PLAYED.slice(), listener: lis(), facts: { ...FACTS } }),
+    };
+  }
   replayUi = mountReplay({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('replay').body, sidebar, tab: 'replay', banner: document.getElementById('adj'),
     hooks: {
       name: (id) => (S.tokens[id] ? nm(S.tokens[id]) : id),
@@ -3362,8 +3550,8 @@ export async function start(store, { build = null } = {}) {
       store.set(`${FX_COLLECTION}/${fxId()}`, rec).catch(() => playFx(rec, { local: true }));
     },
     hover: (id) => { if (trkHover !== id) { trkHover = id; targetsChanged(); } },
-    onActing: (id) => { actingId = id; targetsChanged(); },
-    onEncounter: (on) => { encounterOn = on; bandCache = null; draw(); },
+    onActing: (id) => { actingId = id; targetsChanged(); if (sound) sound.turn(id); },
+    onEncounter: (on) => { encounterOn = on; bandCache = null; draw(); if (sound) sound.encounter(on); },
     setHidden: (id, hidden) => setHidden(id, hidden),
     // the tracker's Defeated marks the token dead on the map (faded, red cross) and back; its hit points are not touched
     setDead: (id, dead) => { const t = S.tokens[id]; if (t && !!t.dead !== !!dead) setDead(id, dead); },

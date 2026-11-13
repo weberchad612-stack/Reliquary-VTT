@@ -632,3 +632,48 @@ Hovering or focusing a sidebar entry points its thing out on the map: a ring in 
 pulsing slowly (steady with reduced motion), on this screen only. First built for the Notes tab and adopted by the
 user as the standard; the encounter tracker's hover moved to it from a flat yellow square. States that stay on
 (selection, targets, the acting creature) and the shared ping keep their own looks. `board/highlight.js`.
+
+## Sound (designed and built 2026-11-13)
+
+**From the old VTT:** a Web Audio recipe per visual effect (about 120, synthesized live) and 20 procedurally
+generated mp3 pieces, played as shuffle bags by mood with a boss mode. **From Foundry (researched 2026-11-13):**
+- ambient sounds with a radius, an easing, walls and a darkness range, heard through the player's controlled tokens;
+- playlists (sequential, shuffle, simultaneous, soundboard, fades);
+- volume channels for music, ambience and the interface.
+
+The user's decisions:
+
+| Question | Decision |
+|---|---|
+| Effects | Rendered offline in layers, recorded percussion and instruments plus synthesis, at first synthesized. After an audition, the user asked for a much larger variety: 97 effects with hit, crit and miss, plus 24 table cues. |
+| Music | Regenerated and renamed (no adventure names), then performed with recorded orchestral samples (VSCO 2 CE, CC0): 49 pieces in 6 moods and 24 styles, plus 13 stings. |
+| Scope | Effect sounds, music by game state, ambient sounds on maps, table cues. |
+| Sync | The same piece at the same moment on every screen. |
+| Controls | A Sound tab only, no header button. |
+| Boss | Automatic, by the system's rule, with GM and Claude overrides. |
+| Listener | The party's PCs in the player view, the middle of the screen in the GM view. A single selected token overrides both (the user, 2026-11-13), in the player view only one they can see. Effects follow the same rule for walls. |
+| Ambient placement | Claude only, with a tool. |
+| Files | Published as the board artifact's own files (`sounds/`, about 150 MB of its 1 GB). Not committed: the generator is. |
+
+**Pieces:**
+- `engine/sound/sound.js` (system-free): `SoundMixer` (Web Audio with channels, buffers, loops, streamed and crossfaded music), `bagIndex`, `musicAt`, `chooseMood`, `falloff`, `hearing`, `screenPan`, `activeAt`.
+- `board/sound.js`: manifest lookups, the music and ambient records, the boss facts, listeners and the ambient mix.
+- `board/soundui.js`: the tab.
+- The sound block in `board/app.js`, which reacts to:
+  - effects as they play;
+  - the tracker's turn and encounter hooks;
+  - `state/encounter` rounds;
+  - door and death changes (a 400 ms check);
+  - chat and Dice rolls;
+  - `sfx/` play records.
+- `rulesets/pf2e/sound.js` (`system.sound.isBoss`).
+- `tools/sound.mjs`.
+- `tools/sound/` (the generator).
+- `tools/headless/soundcheck.mjs`.
+
+**Records:**
+- `state/music` (`campaign.music`): {mood, since, seed, boss, themes, playing, by, at}.
+- `ambient/<amb-id>` (the map state's `ambient`): {map, sound, at, radius, inner?, when, volume?, label?, off?, gm_only?, by}.
+- `sfx/<time>-<n>`: {map, name, by, ts, gm?}, played once by every screen and removed after ten minutes, like `fx/`.
+
+How to use and change it: [docs/best-practices/sound.md](../best-practices/sound.md).

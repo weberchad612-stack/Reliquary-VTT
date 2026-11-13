@@ -2,20 +2,20 @@
 
 A one-page map of what is built, for a new conversation getting its bearings. Each line points at the guide that
 says how to use or change it. Keep this page short and current: when a feature lands, changes or moves, update its
-line here in the same commit. Last brought up to date: 2026-11-13 (Party loot).
+line here in the same commit. Last brought up to date: 2026-11-13 (Sound).
 
 ## The pieces
 
 | Area | What exists | Read |
 |---|---|---|
-| Engine (`engine/`) | Walls and doors, sight and fog, light (daylight, colour, intensity, animation), movement (paths, Stride ranges, waypoints), terrain, measurement and height, areas, tokens (Tiny layout, occupancy), visual effects, the rules machinery, dice, time (calendar, clock, durations, encounters). System-free. | [engine/README.md](../engine/README.md), the best-practices guides |
-| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge, loot (coins, Bulk, identifying, selling), exploration (activities, pace, combat-start requests). | [game-data.md](best-practices/game-data.md) |
+| Engine (`engine/`) | Walls and doors, sight and fog, light (daylight, colour, intensity, animation), movement (paths, Stride ranges, waypoints), terrain, measurement and height, areas, tokens (Tiny layout, occupancy), visual effects, sound (mixer, listeners, music timeline), the rules machinery, dice, time (calendar, clock, durations, encounters). System-free. | [engine/README.md](../engine/README.md), the best-practices guides |
+| Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge, loot (coins, Bulk, identifying, selling), exploration (activities, pace, combat-start requests), sound (what is a boss). | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
-| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`); the campaign ledger (`ledger.mjs`) and the campaign's players (`players.mjs`); party loot (`loot.mjs`: find, add, identify, appraise, move, buy, sell, coins); exploration (`exploration.mjs`: activities, pace, travel, reminders). | [tools/README.md](../tools/README.md) |
+| Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`); the campaign ledger (`ledger.mjs`) and the campaign's players (`players.mjs`); party loot (`loot.mjs`: find, add, identify, appraise, move, buy, sell, coins); exploration (`exploration.mjs`: activities, pace, travel, reminders); sound (`sound.mjs`: mood, boss, cues, ambient sounds; the sound set's generator `tools/sound/`). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
 | GM guides (`docs/gm/`, `rulesets/pf2e/gm.md`) | How Claude runs a game: secrecy, narration, the ledger, dice, foes, exploration, combat, time, loot, quests, preparing an area, sessions, house rules, a pre-flight checklist; the PF2E guide adds the system's secret checks, reactions, conditions, healing and rulings. Reviewed rule by rule with the user (2026-11-13). | [running-a-game.md](gm/running-a-game.md) |
-| Tests | `npm test` (about 500) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
+| Tests | `npm test` (about 510) and the validator; headless browser checks in `tools/headless/`. | [development.md](best-practices/development.md) |
 
 ## The board today
 
@@ -41,6 +41,7 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Party loot).
 | Notes | Built: add, list, hover highlights the pin, edit, remove |
 | Quest log | Placeholder |
 | Visual effects | Built: this screen's switch; the GM's preview library |
+| Sound | Built: this screen's mixer (master, music, ambience, effects, interface, mute), now playing and why; the GM's mood (automatic, six moods, silence), boss switch, Next, this map's music, soundboard (stings and cues for every screen), ambient sounds on the map. Every visual effect has its sound; table cues for dice, turns, rounds, doors and deaths; music in step on every screen by mood; ambient loops heard from the listener through walls (`tools/sound.mjs` for Claude; [sound.md](best-practices/sound.md)) |
 | Lighting (GM), Walls (GM) | Built |
 | Dice statistics | Built: by die, faces, roller; PCs and NPCs, this session or all time, kind of roll; the GM's resets |
 | Ledger (GM) | Built: the campaign ledger, the GM's memory: improvisations (each says who invented it: Claude, or which player through which character, from the campaign's player list), secrets, rulings, threads, quests, timed events, session summaries; search, kind filters, story so far, the GM's own entries (`tools/ledger.mjs` and `tools/players.mjs` for Claude) |

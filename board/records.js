@@ -18,6 +18,8 @@
 //   explored/<map>.<n> the party's explored area on a map, in chunks of EXPLORED_CHUNK rings
 //   templates/<id>     one placed area template, with the map it is on
 //   notes/<id>         one map note, with the map it is on
+//   ambient/<id>       one ambient sound source on a map, with the map it is on (board/sound.js); part of the map's state
+//   state/music        the music's mood, boss switch, run and maps' themes (board/sound.js); campaign.music
 //   actors/<id>        a creature's game data (same id as its token): a PC's build, or a stat block reference
 //                      and its own differences (docs/design/game-data.md)
 //   actorstate/<id>    what is happening to it now: HP, temporary HP, resources spent (written often)
@@ -49,7 +51,7 @@ export const EXPLORED_CHUNK = 200;
 export const KEEP_REPLAYS = 5;   // finished replays a save keeps (every unfinished one is kept)
 
 /** Fields of a map state kept in its mapstate record (tokens and explored have records of their own). */
-const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored', 'templates', 'notes']);
+const MAPSTATE_SKIP = new Set(['$schema', 'tokens', 'explored', 'templates', 'notes', 'ambient']);
 /** Fields of campaign.json kept in the table state record. */
 export const TABLE_FIELDS = ['current_map', 'discovered', 'sky_light', 'light_colour', 'light_animation', 'notes', 'players'];
 
@@ -114,12 +116,14 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
   if (campaign.clock) r['state/clock'] = campaign.clock;
   if (campaign.encounter) r['state/encounter'] = campaign.encounter;
   if (campaign.session) r['state/session'] = campaign.session;
+  if (campaign.music) r['state/music'] = campaign.music;
   for (const [mapId, st] of Object.entries(mapStates)) {
     r[`mapstate/${mapId}`] = Object.fromEntries(Object.entries(st).filter(([k]) => !MAPSTATE_SKIP.has(k)));
     r[`mapstate/${mapId}`].map = mapId;
     for (const [tid, t] of Object.entries(st.tokens || {})) r[`tokens/${tid}`] = { ...t, map: mapId };
     for (const [aid, a] of Object.entries(st.templates || {})) r[`templates/${aid}`] = { ...a, map: mapId };
     for (const [nid, n] of Object.entries(st.notes || {})) r[`notes/${nid}`] = { ...n, map: mapId };
+    for (const [aid, a] of Object.entries(st.ambient || {})) r[`ambient/${aid}`] = { ...a, map: mapId };
     const polys = (st.explored && st.explored.polys) || [];
     if (polys.length) {
       chunks(polys, EXPLORED_CHUNK).forEach((p, n) => { r[`explored/${mapId}.${pad(n)}`] = { map: mapId, n, v: st.explored.v || 1, polys: p }; });
@@ -189,7 +193,7 @@ export function saveFromRecords(records, base = {}) {
   const table = records['state/table'] || {};
   const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
-  for (const k of ['clock', 'encounter', 'session']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
+  for (const k of ['clock', 'encounter', 'session', 'music']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
   const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], lootItems = [], choices = {};
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {
@@ -198,6 +202,7 @@ export function saveFromRecords(records, base = {}) {
     if (coll === 'tokens') { const { map, ...t } = d; (ensure(map).tokens = ensure(map).tokens || {})[p.split('/')[1]] = t; }
     if (coll === 'templates') { const { map, ...t } = d; (ensure(map).templates = ensure(map).templates || {})[p.split('/')[1]] = t; }
     if (coll === 'notes') { const { map, ...n } = d; (ensure(map).notes = ensure(map).notes || {})[p.split('/')[1]] = n; }
+    if (coll === 'ambient') { const { map, ...a } = d; (ensure(map).ambient = ensure(map).ambient || {})[p.split('/')[1]] = a; }
     if (coll === 'actors') actors[p.split('/')[1]] = d;
     if (coll === 'actorstate') actorStates[p.split('/')[1]] = d;
     if (coll === 'chat') { if (d.kind === 'log') audit.push({ id: p.split('/')[1], ...auditFromLog(d) }); else chat.push({ id: p.split('/')[1], ...d }); }

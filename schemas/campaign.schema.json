@@ -55,6 +55,21 @@
         "start": { "type": "integer", "minimum": 0 }
       }
     },
+    "music": {
+      "type": "object",
+      "description": "The music (board/sound.js, state/music): the mood (auto follows the game), the boss switch, the run every screen plays in step, and each map's music out of combat.",
+      "additionalProperties": false,
+      "properties": {
+        "mood": { "enum": ["auto", "silence", "explore", "combat", "boss", "town", "tension", "rest"] },
+        "since": { "type": "number", "description": "When the current run began (ms since 1970)." },
+        "seed": { "type": ["number", "string"], "description": "The run's shuffle-bag seed." },
+        "boss": { "type": ["boolean", "null"], "description": "Boss music for the running encounter: on, off, or null (automatic, by the system's rule)." },
+        "themes": { "type": "object", "additionalProperties": { "enum": ["explore", "town", "tension", "rest", "combat", "boss"] }, "description": "A map's music out of combat, by map id." },
+        "playing": { "type": "string", "description": "The mood the run is for." },
+        "by": { "enum": ["player", "gm", "claude"] },
+        "at": { "type": "string" }
+      }
+    },
     "session": {
       "type": "object",
       "description": "When the GM started this session, for the Dice tab's \"This session\" filter (board/dice.js).",

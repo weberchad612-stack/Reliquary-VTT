@@ -107,6 +107,28 @@
         "strength": { "type": "number", "minimum": 0, "maximum": 100, "default": 25, "description": "Strongest tint, % of full colour (subtle by default)." }
       }
     },
+    "ambient": {
+      "description": "Ambient sounds on this map, by id (board/sound.js): a loop heard within a radius, muffled through walls that stop sound. Claude places them (tools/sound.mjs).",
+      "type": "object",
+      "propertyNames": { "pattern": "^amb-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["sound", "at", "radius", "by"],
+        "additionalProperties": false,
+        "properties": {
+          "sound": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The ambient loop's name in the sound set (sounds.json)." },
+          "at": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Where it is, in cells (fractions allowed)." },
+          "radius": { "type": "number", "exclusiveMinimum": 0, "description": "How far it is heard, in feet." },
+          "inner": { "type": "number", "minimum": 0, "description": "Heard at full volume within this many feet (default a quarter of the radius, at most 10)." },
+          "when": { "enum": ["always", "day", "night"] },
+          "volume": { "type": "number", "minimum": 0, "maximum": 1 },
+          "label": { "type": "string", "maxLength": 80 },
+          "off": { "type": "boolean" },
+          "gm_only": { "type": "boolean" },
+          "by": { "enum": ["player", "gm", "claude"] }
+        }
+      }
+    },
     "notes": {
       "description": "Map notes on this map, by id: reminders pinned to a point, written by the player view, the GM view or Claude.",
       "type": "object",

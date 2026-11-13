@@ -221,7 +221,7 @@ export function roundTrip(packDir, saveDir) {
   return out;
 }
 
-export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice', 'replay', 'ledger', 'loot', 'explore'];
+export const SAVE_COLLECTIONS = ['board', 'state', 'mapstate', 'tokens', 'explored', 'templates', 'notes', 'actors', 'actorstate', 'chat', 'audit', 'dice', 'replay', 'ledger', 'loot', 'explore', 'ambient'];
 const BATCH = 50;
 const batches = (ops) => { const out = []; for (let i = 0; i < ops.length; i += BATCH) out.push(ops.slice(i, i + BATCH)); return out; };
 

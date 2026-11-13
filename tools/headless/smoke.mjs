@@ -199,6 +199,23 @@ const CHECKS = {
       && (shield === true || audit.some((t) => /Kerra's shield is lowered/.test(t))) && audit.some((t) => /party travels 600 feet/.test(t)) && audit.some((t) => /Defend: Kerra/.test(t)) && badge;
     return ok(pass, `choices ${JSON.stringify(ex)}; pace "${pace.slice(0, 60)}"; clock +${clock - 149136906012}s; Pip rolled ${pipCard && pipCard.stat.slug}; Scout on cards ${!!(pipCard && JSON.stringify(pipCard).includes('Scout'))}; Kerra's shield ${shield} (lowered at her turn if she acts first)`);
   },
+  async sound({ page }) {
+    await asGM(page);
+    await openTab(page, 'sound');
+    const map = await page.evaluate(() => window.reliquary.map);
+    await writeRecord(page, 'ambient/amb-smoke001', { map, sound: 'campfire', at: [20, 40], radius: 20, when: 'always', by: 'claude' });
+    await page.waitForTimeout(300);
+    await page.click('[data-pane=sound] [data-mood=combat]'); await page.waitForTimeout(300);
+    await page.click('[data-pane=sound] [data-play="sting:victory"]'); await page.waitForTimeout(300);
+    await page.click('[data-pane=sound] [data-id=amb-smoke001] [data-a=amute]'); await page.waitForTimeout(400);
+    const music = (await records(page, 'state')).find((e) => e.id === 'music');
+    const sfx = await records(page, 'sfx'), amb = (await records(page, 'ambient')).find((e) => e.id === 'amb-smoke001');
+    const sliders = await page.$$eval('[data-pane=sound] [data-vol]', (x) => x.length);
+    await asPlayer(page);
+    const playerMoods = await page.$$eval('[data-pane=sound] [data-mood]', (x) => x.length);
+    return ok(music && music.data.mood === 'combat' && sfx.some((e) => e.data.name === 'sting:victory') && amb && amb.data.off === true && sliders === 5 && playerMoods === 0,
+      `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; player mood buttons ${playerMoods}`);
+  },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());
     return ok(n > 0 && n < 30, `${n} listeners (the platform caps about 40)`);

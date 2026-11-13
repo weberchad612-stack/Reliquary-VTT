@@ -134,6 +134,10 @@ words and numbers. Reviewed with the user rule by rule on 2026-11-13; the old ru
   10 plus 10 per rank (20 trained); a critical failure deals 2d6 to the item. Until FR-17, keep shield HP
   in the campaign ledger. _(F3)_
 
+- **Boss music (the board's rule, `rulesets/pf2e/sound.js`):** a unique creature, or one 2 or more levels above the
+  party's average, in a running encounter brings boss music. A pack of lower-level foes making a severe encounter
+  doesn't trigger it: switch it on with `sound.mjs boss on` when the fight deserves it.
+
 ## 5. Time, rest and healing
 
 - **A full night's rest** is 8 hours: it restores HP equal to Constitution modifier x level (at least 1 x

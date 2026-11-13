@@ -3,7 +3,7 @@
 // ids (chat/<time36>-..., fx/<time>-<n>), map pieces keep their map's name (walls/<map>.<n>), and maps and packs
 // keep their authored ids. Docs: docs/design/board.md section 3 (ids), future/backlog.md FR-10.
 
-export const ID_PREFIX = Object.freeze({ token: 'tok', note: 'note', template: 'tpl' });
+export const ID_PREFIX = Object.freeze({ token: 'tok', note: 'note', template: 'tpl', ambient: 'amb' });
 export const ID_LENGTH = 8;
 const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 

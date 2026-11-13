@@ -473,7 +473,12 @@ so an area arrives ready for play. Collected from the GM guide's "Preparing an a
 - **Locked doors (K3):** every locked, barred or stuck door the adventure puts in the area, locked on the board
   before the party arrives.
 
-## FR-23: Sound for visual effects
+## FR-23: Sound for visual effects (BUILT 2026-11-13)
+
+**Built:** every visual effect in the PF2E library has its sound (hit, crit and miss for attacks, lined up with the
+visual's impact), with table cues, music, ambient sounds and the Sound tab ([docs/best-practices/sound.md](../docs/best-practices/sound.md)).
+The GM guide's "Preparing an area" has the rule to render sounds with new effects and to place ambient sounds (D10).
+
 
 **From the old VTT (GM rule D10, deferred by the user 2026-11-13):** every visual effect had its own sound recipe
 (distinct per effect, with hit, miss and critical variants; a miss makes no impact sound), written at the same time
@@ -507,7 +512,13 @@ character's state (`actorstate`), awarded with a tool (`actor.mjs xp <who|party>
 by default), shown on Quick-View and the sheet with the progress to the next level, and a level-up prompt when it is
 reached (the system says how much XP a level takes: PF2E 1,000).
 
-## FR-27: Music by mood
+## FR-27: Music by mood (BUILT 2026-11-13)
+
+**Built:** 49 pieces in six moods (explore, combat, boss, town, tension, rest) and 24 styles, performed with
+recorded orchestral samples. They play as shuffle bags in step on every screen (`state/music`), the mood comes from the encounter, with
+boss music by the system's rule (GM and Claude override; `tools/sound.mjs`), and maps have themes. Stings play from the GM's soundboard.
+([docs/best-practices/sound.md](../docs/best-practices/sound.md)).
+
 
 **From the old VTT (GM rule E18, deferred by the user 2026-11-13):** the old board played pre-rendered orchestral
 pieces of about two minutes, crossfaded by mood: combat while an encounter runs, exploration otherwise, each mood a

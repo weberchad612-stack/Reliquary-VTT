@@ -291,6 +291,9 @@ Narration is the heart of the game for the user: it is what engages the players.
   banner first, one action per step, narration steps right after the action they describe, and nothing in
   the board's chat or my reply that gives results away before the user steps through
   ([game-data.md](../best-practices/game-data.md) section 2c). _(P, P2)_
+- **Music follows the fight by itself.** An encounter brings combat music, and boss music when the system's rule
+  finds a boss. Switch boss music on for a set piece the rule misses, or off for a big foe that isn't one
+  (`sound.mjs boss on|off`). When the fight is won, `sound.mjs cue victory` if it was hard. _(E18)_
 - **An effect with every action.** Every attack, spell, shield block and the like gets its visual effect
   (`fx.mjs`, or the replay step's posts). _(O)_
 
@@ -366,6 +369,11 @@ hand.
 - **Have the area's art ready.** Every illustration that belongs to the area (creatures, NPCs, items, rooms,
   handouts) is in the private pack with its index entry (which area, what it shows, whether showing it
   would spoil anything). Check it's there; don't search the PDF mid-scene. _(D9)_
+- **Give the area its sounds.** Place its ambient sounds before arrival (`sound.mjs ambient add`). Use fires and
+  braziers on their squares, water along its course, a crowd in a taproom, the room tone of a crypt or cave across
+  it, and night-only creatures with `--when night`. A town or tavern map gets its music once (`sound.mjs theme
+  here town`). Check `sound.mjs ambient list`. New effects need their sounds rendered with them
+  ([sound.md](../best-practices/sound.md) section 4). _(D10)_
 - **Locked doors are set before arrival.** Every locked, barred or stuck door the adventure puts in the
   area is locked on the board before the party gets there, so a try at it answers correctly. _(K3)_
 

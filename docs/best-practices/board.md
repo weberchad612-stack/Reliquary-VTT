@@ -727,6 +727,18 @@ revealed step. Claude's side is docs/best-practices/game-data.md section 2c.
 - **The page's own button styles win over a class on hover** (`button:hover` is more specific than `.rm-btn`): a control with its own colours sets them for `:hover`, `:active` and `:focus` too.
 - **Timers passed around as object methods** must be wrapped (`(f, ms) => setTimeout(f, ms)`): calling `timers.set(...)` with the real `setTimeout` throws "Illegal invocation" in the browser, though it works in Node.
 
+### Sound (2026-11-13)
+
+- **Everything about sound is in [sound.md](sound.md):** what plays and when, the listener (one selected token,
+  else the party for players, the screen's middle for the GM), walls that muffle, the mood and the boss rule, music
+  in step on every screen from `state/music`, the Sound tab, `tools/sound.mjs`, rendering and publishing the files.
+- **Visual effects bring their own sounds:** play the effect and its sound follows (hit, crit and miss), timed to
+  its impact. No separate call.
+- **Set the mood only when the game's own state is wrong for the scene:** a tense sneak (`mood tension`), a set
+  piece that deserves boss music (`boss on`), a town map (`theme here town`, once). Put it back with `mood auto`.
+- **Stings mark moments:** `cue victory` when the last foe falls in a hard fight, `cue discovery` for a real find,
+  `cue danger` when the ambush springs, `cue rested` after a night's rest. Sparingly.
+
 ### Visual effects
 
 - **Play effects for what happens at the table**, after the dice: `node tools/fx.mjs play <effect> --map <party map> --from <id> --to <id|targets|X,Y|template:ID> [--result hit|crit|miss] [--text "-12"]`, then write the printed record (`db_write`, a new path; no read needed). Every open board plays it once. `node tools/fx.mjs list [--search fire] [--pack <pack-dir>]` shows the library.
