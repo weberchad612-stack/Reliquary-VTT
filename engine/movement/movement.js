@@ -220,6 +220,33 @@ export function path(pm, token, gx, gy, opts = {}) {
 }
 
 /**
+ * Cheapest path through waypoints the mover sets (Space while dragging on the board): each leg is the cheapest
+ * path from one point to the next, and the diagonal count carries on from leg to leg as in one continuous move.
+ * `points` lists the waypoints then the goal ([[x, y], ...], top-left cells); the token's own position is the
+ * start. Same options as path().
+ * @returns {{path: Array<[number, number]>, cost: number, feet: number, legs: Array<{to: [number, number],
+ *   cost: number}>} | null}  null when a leg cannot be walked
+ */
+export function pathVia(pm, token, points, opts = {}) {
+  const feetPerCell = opts.feetPerCell ?? 5;
+  const cells = [[token.x, token.y]], legs = [];
+  let at = { x: token.x, y: token.y, p: 0 }, total = 0;
+  for (const [gx, gy] of points) {
+    if (at.x === gx && at.y === gy) { legs.push({ to: [gx, gy], cost: 0 }); continue; }
+    const { end, prev } = search(pm, token, { ...opts, starts: [at] }, [gx, gy]);
+    if (!end) return null;
+    const leg = [];
+    for (let k = end.key; k; k = prev.get(k)) { const [x, y] = k.split(',').map(Number); leg.push([x, y]); }
+    leg.reverse();
+    cells.push(...leg.slice(1));
+    total += end.cost;
+    legs.push({ to: [gx, gy], cost: end.cost });
+    at = { x: gx, y: gy, p: end.p };
+  }
+  return { path: cells, cost: total, feet: total * feetPerCell, legs };
+}
+
+/**
  * Every position a token can reach within `maxFeet`, with the cheapest cost to get there.
  * @returns {Array<{x: number, y: number, feet: number}>}
  */

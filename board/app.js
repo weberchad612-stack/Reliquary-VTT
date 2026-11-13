@@ -1025,18 +1025,24 @@ export async function start(store, { build = null } = {}) {
       drag.route.path.forEach(([x, y], i) => { const px = P(x + size / 2), py = P(y + size / 2); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
       ctx.stroke();
     }
+    // the waypoints (Space): a dot on each
+    ctx.setLineDash([]); ctx.fillStyle = '#e3a443'; ctx.strokeStyle = 'rgba(6, 10, 7, .8)'; ctx.lineWidth = 2;
+    for (const [x, y] of drag.waypoints || []) { ctx.beginPath(); ctx.arc(P(x + size / 2), P(y + size / 2), Math.max(5, P(0.16)), 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
     const shared = Engine.isTiny(t) ? [] : Engine.blockersAt({ id: selected, ...t }, g[0], g[1], raw());
     const tn = routeNotes(selected, drag.route);
     const label = shared.length ? `occupied by ${theName(shared[0])}`
       : drag.route ? `${drag.route.feet} ft${tn.extraFt ? ` (${tn.extraFt} ft terrain)` : ''}${tn.notes.length ? ' · ' + tn.notes.join(' · ') : ''}`
       : 'no route';
+    const wp = (drag.waypoints || []).length;
+    const hint = drag.waypoints ? (wp ? ` · ${wp} waypoint${wp > 1 ? 's' : ''} (Backspace removes)` : ' · Space: waypoint') : '';
     ctx.font = '600 13px IBM Plex Sans, sans-serif';
-    const tw = ctx.measureText(label).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
+    const tw = ctx.measureText(label + hint).width + 12, lx = P(g[0]) + 4, ly = P(g[1]) - 22;
     const good = !shared.length && drag.route && drag.route.feet <= t.speed;
     ctx.fillStyle = good ? '#1f2a22' : '#2b2418';
     ctx.fillRect(lx, ly, tw, 20);
     ctx.fillStyle = good ? '#5fbf83' : '#e3a443';
     ctx.fillText(label, lx + 6, ly + 15);
+    if (hint) { ctx.fillStyle = '#b9b2a4'; ctx.fillText(hint, lx + 6 + ctx.measureText(label).width, ly + 15); }
     ctx.restore();
   }
 
@@ -1499,7 +1505,7 @@ export async function start(store, { build = null } = {}) {
     }
     setSelection([id]); panel();
     if (canDrag(id)) {
-      drag = { id, goal: [S.tokens[id].x, S.tokens[id].y], moved: false };
+      drag = { id, start: [S.tokens[id].x, S.tokens[id].y], goal: [S.tokens[id].x, S.tokens[id].y], waypoints: [], moved: false };
       canvas.setPointerCapture(ev.pointerId);
       canvas.style.cursor = 'grabbing';
     }
@@ -1543,12 +1549,37 @@ export async function start(store, { build = null } = {}) {
       const g = goalFor(drag.id, p);
       if (g[0] !== drag.goal[0] || g[1] !== drag.goal[1]) {
         drag.goal = g; drag.moved = true;
-        const ms = mspace(drag.id), off = Engine.isTiny(S.tokens[drag.id]) ? 0.25 : 0;
-        drag.route = Engine.path(moveWalls, ms, g[0] + off, g[1] + off, moveOpts(drag.id));
+        drag.route = dragRoute(drag);
       }
       draw();
     } else hud();
   });
+  /** The dragged token's route: the cheapest path to the goal, or through the waypoints set with Space, each leg
+   *  the cheapest path from the point before (the diagonal count carrying on, as in one move). */
+  function dragRoute(d) {
+    const ms = mspace(d.id), off = Engine.isTiny(S.tokens[d.id]) ? 0.25 : 0;
+    if (!d.waypoints.length) return Engine.path(moveWalls, ms, d.goal[0] + off, d.goal[1] + off, moveOpts(d.id));
+    return Engine.pathVia(moveWalls, ms, [...d.waypoints, d.goal].map(([x, y]) => [x + off, y + off]), moveOpts(d.id));
+  }
+  // Space while dragging one token drops a waypoint where it is now; Backspace takes the last one back (as the
+  // old board's ruler). This screen's only: nothing is shared until the token is dropped.
+  window.addEventListener('keydown', (e) => {
+    if (!drag || drag.group || !drag.waypoints) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault();
+      if (e.repeat || !drag.moved) return;
+      const last = drag.waypoints.at(-1) || drag.start;
+      if (last[0] === drag.goal[0] && last[1] === drag.goal[1]) return;
+      drag.waypoints.push([...drag.goal]);
+      drag.route = dragRoute(drag); draw();
+    } else if (e.key === 'Backspace' && drag.waypoints.length) {
+      e.preventDefault();
+      drag.waypoints.pop();
+      drag.route = dragRoute(drag); draw();
+    }
+  });
+  window.addEventListener('keyup', (e) => { if (drag && drag.waypoints && (e.key === ' ' || e.code === 'Space')) e.preventDefault(); });   // a focused button would click on Space's release
   function pointerEnd(ev, cancelled) {
     touches.delete(ev.pointerId);
     if (pinch) { if (touches.size < 2) pinch = null; return; }

@@ -317,9 +317,10 @@ Whole squares, not shapes: the PF2E rules count terrain per square entered, and 
 - `gridDistance(dx, dy, diagonalCosts, parity)`: cells to cover a displacement with the ruleset's diagonal pattern (PF2E 5-10-5).
 - `rulerLength(points)`: a ruler through waypoints, the diagonal pattern carrying on from one leg to the next as it does in one continuous move.
 - `spaceDistance(a, b)`: distance between two creatures' spaces for reach and range, from a square of one to the nearest square of the other (adjacent is 5 ft).
+- `pathVia(walls, token, points, opts)` (in `engine/movement/movement.js`): the cheapest path through waypoints, leg by leg, the diagonal count carrying on between legs; the board's Space waypoints while dragging a token use it.
 - `routeCost(walls, token, cells, opts)` (in `engine/movement/movement.js`): the cost of a route the mover chooses through waypoints, rather than the cheapest one, step by step, flagging steps that are not legal moves without refusing them.
 
-The board's ruler tool and drag-through-waypoints movement will use these; Claude's narration and the query tools use the same functions so the board and Claude never disagree about a distance.
+The board's drag-through-waypoints movement uses `pathVia` (a ruler tool would use `rulerLength`); Claude's narration and the query tools use the same functions so the board and Claude never disagree about a distance.
 
 ## 10. Secrecy
 

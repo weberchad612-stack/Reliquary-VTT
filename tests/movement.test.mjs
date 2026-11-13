@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { prepareMove, canStep, fits, path as findPath, reach, strideReach, crossesInterior } from '../engine/movement/movement.js';
+import { prepareMove, canStep, fits, path as findPath, reach, strideReach, pathVia, crossesInterior } from '../engine/movement/movement.js';
 import { loadMap } from '../tools/sight.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -207,4 +207,26 @@ test('Stride bands: a wall is walked round, not through', () => {
   assert.ok(!bands[0].some((c) => c.x >= 7), 'one Stride cannot get past the wall');
   assert.ok(has(bands[1], 8, 11) && !has(bands[1], 8, 5), 'two Strides reach round the end of the wall, not back up behind it');
   assert.ok(has(bands[2], 7, 5), 'three Strides reach the square just behind the wall');
+});
+
+test('waypoints: each leg is the cheapest path, and the diagonal count carries on from leg to leg', () => {
+  const pm = prepareMove([], {}, { cols: 30, rows: 30 });
+  const t = { x: 5, y: 5, size: 1 };
+  // no waypoints: the same as path()
+  const direct = pathVia(pm, t, [[10, 5]]);
+  assert.deepEqual(direct.path, findPath(pm, t, 10, 5).path);
+  // a detour: 3 squares down, then 5 across and 3 up: diagonals 5-10-5 across both legs
+  const via = pathVia(pm, t, [[5, 8], [10, 5]]);
+  assert.deepEqual(via.path[0], [5, 5]);
+  assert.deepEqual(via.path.at(-1), [10, 5]);
+  assert.ok(via.path.some(([x, y]) => x === 5 && y === 8), 'it goes through the waypoint');
+  assert.equal(via.legs.length, 2);
+  assert.equal(via.legs[0].cost, 3);
+  assert.equal(via.feet, (3 + 1 + 2 + 1 + 2) * 5, 'leg 2: three diagonals 5-10-5 then two straight');
+  // the diagonal count carries: one diagonal in leg 1 makes leg 2's first diagonal the 10-ft one
+  const carry = pathVia(pm, t, [[6, 6], [7, 7]]);
+  assert.equal(carry.feet, 15, '5 then 10, not 5 and 5');
+  // a leg that cannot be walked
+  const walled = prepareMove([{ id: 'w', t: 'solid', a: [0, 10], b: [30, 10] }], {}, { cols: 30, rows: 30 });
+  assert.equal(pathVia(walled, t, [[5, 7], [5, 15]]), null);
 });
