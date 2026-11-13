@@ -2154,7 +2154,7 @@ export async function start(store, { build = null } = {}) {
 
   // ---- the token HUD (right-click a token): Target and Assign status effects, as Foundry's Token HUD ----
   const hudEl = document.getElementById('tokhud');
-  const hudLeftEl = document.getElementById('tokhud-left');   // the column on the token's left: elevation
+  const hudLeftEl = document.getElementById('tokhud-left');   // the column on the token's left: elevation, Enter Combat, Hide
   let hudElevEdit = false;   // the elevation box is open for typing
   let hudFor = null;        // the token the HUD is open on
   let hudPanel = null;      // the flyout that is open: 'effects' (status palette) or 'template' (area templates)
@@ -2193,20 +2193,19 @@ export async function start(store, { build = null } = {}) {
       hudEl.replaceChildren();
       const col = document.createElement('div');
       col.className = 'hud-col';
-      const btn = (kind, label, on, act) => {
+      const left = [];   // buttons for the column on the token's left, under the height
+      const btn = (kind, label, on, act, side) => {
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'hud-btn' + (on ? ' on' : ''); b.innerHTML = HUD_ICONS[kind];
         b.title = label; b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(!!on));
         b.addEventListener('click', (e) => { e.stopPropagation(); act(); });
-        col.appendChild(b);
+        if (side === 'left') left.push(b); else col.appendChild(b);
         return b;
       };
       btn('target', myTargets().includes(hudFor) ? 'Untarget' : 'Target', myTargets().includes(hudFor), () => {
         if (t.dead && !myTargets().includes(hudFor)) return toast(`${nm(t)} is dead: it can't be targeted.`);
         setMyTargets(toggleTarget(myTargets(), hudFor)); renderHud();
       });
-      // Hide / Show (the GM's only): a hidden token is never the players'; the GM sees it transparent
-      if (S.view === 'gm') btn(t.hidden ? 'eyeOff' : 'eye', t.hidden ? 'Show to players' : 'Hide from players', !!t.hidden, () => setHidden(hudFor, !t.hidden));
       // Enter Combat (the encounter tracker): the GM for any token (with the others selected), a player for a PC
       if (trackerUi && (S.view === 'gm' || t.kind === 'pc')) {
         const inEnc = trackerUi.inEncounter(hudFor);
@@ -2214,8 +2213,10 @@ export async function start(store, { build = null } = {}) {
           if (inEnc) return trackerUi.leave(hudFor);
           const group = S.view === 'gm' && (multi.has(hudFor) || selected === hudFor) ? [...new Set([hudFor, ...multi])].filter((id) => S.tokens[id]) : [hudFor];
           trackerUi.enter(group).then(() => renderHud());
-        });
+        }, 'left');
       }
+      // Hide / Show (the GM's only), under Enter Combat: a hidden token is never the players'; the GM sees it transparent
+      if (S.view === 'gm') btn(t.hidden ? 'eyeOff' : 'eye', t.hidden ? 'Show to players' : 'Hide from players', !!t.hidden, () => setHidden(hudFor, !t.hidden), 'left');
       const panelBtn = (kind, label, panel) => btn(kind, label, hudPanel === panel, () => { hudPanel = hudPanel === panel ? null : panel; hudShape = null; renderHud(); });
       if (canEditEffects(hudFor)) panelBtn('effects', 'Assign status effects', 'effects');
       if (canEditEffects(hudFor) && AREAS) panelBtn('template', 'Area template', 'template');
@@ -2223,7 +2224,9 @@ export async function start(store, { build = null } = {}) {
       if (hudPanel === 'effects' && canEditEffects(hudFor)) hudEl.appendChild(statusPalette(hudFor));
       if (hudPanel === 'template' && canEditEffects(hudFor) && AREAS) hudEl.appendChild(templatePanel(hudFor));
       hudLeftEl.replaceChildren();
-      hudLeftEl.appendChild(elevationControl(hudFor, canEditEffects(hudFor)));   // read-only where this view may not change it
+      const leftCol = elevationControl(hudFor, canEditEffects(hudFor));   // read-only where this view may not change it
+      for (const b of left) leftCol.appendChild(b);   // then Enter Combat and Hide, as Foundry's left column
+      hudLeftEl.appendChild(leftCol);
     }
     hudEl.hidden = false;
     hudLeftEl.hidden = !hudLeftEl.childElementCount;

@@ -185,7 +185,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 
 ### Hiding tokens (2026-11-12)
 
-- **The GM hides a token** from the token menu (right-click: the eye, **Hide from players** / **Show to players**), from
+- **The GM hides a token** from the token menu (right-click: the eye in the left column, under Enter Combat, **Hide from players** / **Show to players**), from
   the encounter tracker's eye (the same flag), or with `node tools/token.mjs hide|show <who> --state FILE` (and
   `tools/encounter.mjs hide <who> [--undo]`). The token gets `hidden: true`.
 - **Players never see a hidden token**: it is taken out of the party's seen set (`recompute`), so it is not drawn, hovered,
@@ -221,7 +221,7 @@ Design: [board.md](../design/board.md), section 7. Each feature below has a chat
 - **Set it from chat** with `node tools/effect.mjs <token.json> elevation 15` (0 clears it); write the token back and log it. Use it for flying, climbing, ledges and swimming down.
 - **Height counts in distances and areas** (design section 7, Height): use `Engine.creatureDistance3D` / `spaceDistance3D` for range and reach between creatures, and `tokensInArea` (with the area's `height`) for who an area hits; `tools/area.mjs --height` places an airburst and lists `outOfReach`. Movement and sight are still flat: a flyer's route and what it sees over low walls are Claude's to judge.
 - **A creature is as tall as it is wide** (Medium 5 ft): a flyer at +5 ft is right above a Medium creature's head, 5 ft away and in melee reach.
-- The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there.
+- The HUD's left column is its own floating element (`#tokhud-left`), placed with its right edge beside the token and scaled from that corner; add left-side buttons there. It holds, top to bottom, the height, **Enter / Leave Combat** and the GM's **Hide / Show** (2026-11-12, as Foundry's); the right column holds Target, status effects and area templates. In `renderHud`, `btn(..., 'left')` puts a button under the height.
 
 ### Token Quick-View (2026-11-12)
 

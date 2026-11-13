@@ -516,7 +516,7 @@ creature, hover a row to highlight its token, conditions and reactions on each r
 
 | Question | Decision |
 |---|---|
-| Who adds creatures | **The GM** (right-click a token: **Enter Combat**; also for a selection), **Claude** by chat (`tools/encounter.mjs`), and **players for their own PCs** (the same Enter Combat item). The first one in starts the encounter (not yet begun). |
+| Who adds creatures | **The GM** (right-click a token: **Enter Combat**, in the menu's left column under the height, with the GM's Hide / Show below it; also for a selection), **Claude** by chat (`tools/encounter.mjs`), and **players for their own PCs** (the same Enter Combat item). The first one in starts the encounter (not yet begun). |
 | Rolling initiative | **All four:** the board rolls for foes (a row's die, and **Roll NPCs**), **players roll their own PCs** (their row's die), a result can be **typed in** (physical dice), and **Claude rolls** by chat. The board rolls d20 + the statistic, with the breakdown on hover. |
 | Which statistic | **Picked per roll:** the die opens a small menu, Perception first, then the creature's skills (Stealth when Avoiding Notice, Deception...). |
 | The tracker | **Like Foundry's**, either **floating** (draggable, collapsible) or **docked** as a side panel; the user switches between them. |
