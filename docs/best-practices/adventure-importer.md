@@ -211,3 +211,23 @@ Stage that file and pass it as `--pc <file>`. Left out of every sync: caches, ru
   pack; one in play is kept.
 - **A scratch save that was never synced or played** may be deleted and built again; once it has been synced or
   played, only `--update`.
+
+## 11. Missing DCs: the party's level decides (the user's rule, 2026-11-14)
+
+When the book calls for a check but prints no DC, the import uses the game system's DC for the party's expected
+level at that point. For PF2E that is GM Core's DCs by level (level 1: 15, level 2: 16, level 3: 18), from
+`missingDC` in `rulesets/<system>/bookimport.js`. A DC is never left blank, and a secret door is never made
+`auto_find` only because the book gives no DC; `auto_find` is for a door the text says is obvious.
+
+- **The party's level.** Set it in `pack.json` `party_level`: `{"default": N, "<map id or subsystem id>": N}`. Take
+  it from the book's own statements ("Party level 2", "the PCs should reach 3rd level after..."). When a chapter
+  levels the party up partway through and a place can come before or after it, use the lower level.
+- **The step.** `node tools/advimport/dcfill.mjs <pack>` (the pipeline's `dcfill` step, right after the maps) fills
+  the built files: secret and locked doors in `walls.json`, terrain areas of a kind that calls for a check
+  (`CHECK_TERRAIN`: Climb, Swim, Balance) in `terrain.json`, and subsystem checks in `adventure-events.json`. It
+  works on the built files so every source is covered: `import.json`, generated maps and the pack's builders.
+- **Marked.** Each filled DC gets a note ("DC 15: the book gives none; the level-based DC for party level 1"), so the
+  GM sees it is not the book's, and `dc-fills.json` lists them all for the review. A rebuilt map loses its fills and
+  the step puts them back; the pipeline does not count a step's writes to its own inputs as a change.
+- **No level, no guess.** Anything needing a DC where no party level is set is reported and the step fails, so the
+  level is decided once in `pack.json` and not invented per check.

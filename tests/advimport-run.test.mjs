@@ -23,6 +23,18 @@ test('import pipeline: a step is out of date when it changed, an output is missi
   assert.equal(stepState(step, { hash: 'h1', at, status: 'failed', error: 'boom' }).why, 'boom');
 });
 
+test('import pipeline: an input the step wrote itself does not make it out of date; a later change does', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pipe-'));
+  const inp = path.join(dir, 'walls.json');
+  fs.writeFileSync(inp, '{}');
+  const t = fs.statSync(inp).mtimeMs;
+  const step = { id: 'dcfill', run: ['true'], inputs: [inp], outputs: [], review: false, hash: 'h' };
+  const rec = { hash: 'h', at: t - 5000, status: 'ok', seen: { [inp]: t } };
+  assert.equal(stepState(step, rec).state, 'ok');
+  fs.utimesSync(inp, new Date(), new Date(t + 10000));
+  assert.match(stepState(step, rec).why, /walls\.json changed/);
+});
+
 test('import pipeline: map steps run once per map that has import settings; vars are filled in', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pipe-'));
   fs.writeFileSync(path.join(dir, 'pack.json'), JSON.stringify({ id: 'demo', maps: ['landing', 'one', 'two'] }));

@@ -4,6 +4,13 @@
 // saves, HP, Speeds, Strikes) are read and compared with an open-content creature. The verdict: "weak" (everything 2
 // lower and HP down), "elite" (2 higher, HP up), "hp" (only HP), "differs" or "same".
 
+import { levelDC } from './loot.js';
+
+/** A check the book gives no DC for takes the level-based DC (GM Core's DCs by level) for the party's level there. */
+export const missingDC = (partyLevel) => levelDC(partyLevel);
+/** Terrain kinds whose areas call for a check (Climb, Swim, Balance), so they need a DC. */
+export const CHECK_TERRAIN = Object.freeze(['climb', 'swim', 'uneven', 'narrow']);
+
 const HEAD = /^[A-Z][A-Z ,'’-]{3,}(\(\d+\))?$/;
 // headings that are page furniture, not creatures; the book's own running heads come in as `skip`
 const NOT_HEAD = /^(EXPERIENCE POINTS|TREASURE|1 SQUARE|GAME MASTER)/;

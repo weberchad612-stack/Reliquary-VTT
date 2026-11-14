@@ -20,8 +20,8 @@
 //   review   the result needs Claude's look before the import goes on: after a run the step waits for
 //            `approve`; later steps still run, and the table says what is waiting.
 // A step is out of date when it never ran, its definition changed, an output is missing, or an input is newer than
-// its last successful run. A step with no outputs (a check) is out of date the same way. State is kept in
-// <pack>/.pipeline-state.json (private, with the pack).
+// its last successful run (an input the step wrote itself does not count). A step with no outputs (a check) is out
+// of date the same way. State is kept in <pack>/.pipeline-state.json (private, with the pack).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -44,6 +44,7 @@ export function standardPipeline(packId) {
       { id: 'roomcrops', run: 'python3 tools/advimport/roomcrops.py {book} --level {levels} --out {extracted}/roomcrops.json --images {extracted}/markers', inputs: ['{book}', '{maps_pdf}'], outputs: ['{extracted}/roomcrops.json'] },
       { id: 'landing', run: 'python3 tools/advimport/landing.py {pack} --pdf {book} --page 1', inputs: ['{book}'], outputs: ['{pack}/maps/landing/map.json'], review: true, note: 'the cover; ask the user when the book has none' },
       { id: 'map', each: 'map', run: 'python3 tools/mapimport/build.py {pack}/maps/{map}/import.json', inputs: ['{pack}/maps/{map}/import.json', 'tools/mapimport/profiles.json', '{pack}/maps/{map}/rooms.json'], outputs: ['{pack}/maps/{map}/walls.json'], review: true },
+      { id: 'dcfill', run: 'node tools/advimport/dcfill.mjs {pack}', inputs: ['{pack}/pack.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/terrain.json', '{pack}/adventure-events.json'], outputs: ['{pack}/dc-fills.json'], note: 'a check with no DC in the book takes the level-based DC for the party level there (pack.json party_level)' },
       { id: 'mapcheck', each: 'map', run: 'node tools/mapcheck.mjs {pack}/maps/{map}', inputs: ['{pack}/maps/{map}/walls.json', '{pack}/maps/{map}/rooms.json', '{pack}/maps/{map}/import.json'] },
       { id: 'review-sheet', run: 'python3 tools/advimport/reviewsheet.py {pack} --book {book} --crops {extracted}/roomcrops.json --levels {crop_levels}', inputs: ['{pack}/maps/*/walls.json', '{pack}/maps/*/rooms.json', '{extracted}/roomcrops.json'], outputs: ['{pack}/review/*.png'], review: true, note: 'Claude looks at every room beside the book\'s crop' },
       { id: 'cropcheck', run: 'node tools/advimport/cropcheck.mjs {pack} {extracted}/roomcrops.json --levels {crop_levels}', inputs: ['{extracted}/roomcrops.json', '{pack}/maps/*/rooms.json'], note: 'rooms against the book\'s crops' },
@@ -103,7 +104,8 @@ export function stepState(step, rec) {
   for (const i of step.inputs) {
     for (const f of expand(i)) {
       const t = mtime(f);
-      if (t !== null && t > rec.at + 1) return { state: 'stale', why: `${f} changed` };
+      // a step that edits its own inputs (dcfill fills DCs into walls.json) is not out of date by its own writes
+      if (t !== null && t > rec.at + 1 && !(rec.seen && rec.seen[f] === t)) return { state: 'stale', why: `${f} changed` };
     }
   }
   if (step.review && !rec.approved) return { state: 'review', why: 'waiting for review' };
@@ -168,7 +170,9 @@ function main(argv) {
       if (outText) console.log(outText.split('\n').slice(-12).join('\n'));
       if (r.status !== 0) { error = (outText.split('\n').filter(Boolean).pop() || `exit ${r.status}`).slice(0, 160); break; }
     }
-    st[s.id] = { hash: s.hash, at, status: error ? 'failed' : 'ok', ...(error ? { error } : {}), approved: false };
+    // inputs the step wrote itself, with the time it left them
+    const seen = error ? {} : Object.fromEntries(s.inputs.flatMap(expand).map((f) => [f, mtime(f)]).filter(([, t]) => t !== null && t > at + 1));
+    st[s.id] = { hash: s.hash, at, status: error ? 'failed' : 'ok', ...(error ? { error } : {}), ...(Object.keys(seen).length ? { seen } : {}), approved: false };
     saveState(packDir, st);
     if (error) { failed = true; console.log(`!! ${s.id} failed: ${error}`); break; }
   }
