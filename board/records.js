@@ -20,6 +20,8 @@
 //   notes/<id>         one map note, with the map it is on
 //   ambient/<id>       one ambient sound source on a map, with the map it is on (board/sound.js); part of the map's state
 //   state/music        the music's mood, boss switch, run and maps' themes (board/sound.js); campaign.music
+//   state/marching     the party's marching order: {slots: {token id: [col, row]}, extra: [token ids the GM added]}
+//                      (engine/tokens/marching.js, board/marchui.js); campaign.marching
 //   actors/<id>        a creature's game data (same id as its token): a PC's build, or a stat block reference
 //                      and its own differences (docs/design/game-data.md)
 //   actorstate/<id>    what is happening to it now: HP, temporary HP, resources spent (written often)
@@ -130,6 +132,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
   if (campaign.encounter) r['state/encounter'] = campaign.encounter;
   if (campaign.session) r['state/session'] = campaign.session;
   if (campaign.music) r['state/music'] = campaign.music;
+  if (campaign.marching) r['state/marching'] = campaign.marching;
   for (const [mapId, st] of Object.entries(mapStates)) {
     r[`mapstate/${mapId}`] = Object.fromEntries(Object.entries(st).filter(([k]) => !MAPSTATE_SKIP.has(k)));
     r[`mapstate/${mapId}`].map = mapId;
@@ -209,7 +212,7 @@ export function saveFromRecords(records, base = {}) {
   const campaign = { ...rest, id: meta.campaign.id, title: meta.campaign.title,
     ...(meta.packs && meta.packs.length > 1 ? { packs: meta.packs.map((p) => ({ id: p.id, version: p.version })) } : { pack: { id: meta.pack.id, version: meta.pack.version } }), ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
-  for (const k of ['clock', 'encounter', 'session', 'music']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
+  for (const k of ['clock', 'encounter', 'session', 'music', 'marching']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
   const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], lootItems = [], choices = {}, evs = {}, subs = {};
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {

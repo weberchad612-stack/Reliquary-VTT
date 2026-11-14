@@ -324,3 +324,28 @@ export function mergeExplored(explored, visible, grid) {
   if (!m.add(visible)) return { changed: false, explored: base };
   return { changed: true, explored: { v: (base.v || 0) + 1, polys: m.toPolys() } };
 }
+
+/**
+ * A test for squares of an explored area ({polys}, as stored): (x, y) -> whether the square's centre was explored
+ * (even-odd over every ring, as the area is filled). Used by marching order: the party never spills into ground it
+ * has not explored (engine/tokens/marching.js).
+ */
+export function squareExplored(explored) {
+  const rings = ((explored && explored.polys) || []).filter((r) => r && r.length > 2).map((r) => {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const [x, y] of r) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+    return { r, x0, y0, x1, y1 };
+  });
+  return (x, y) => {
+    const px = x + 0.5, py = y + 0.5;
+    let inside = false;
+    for (const { r, x0, y0, x1, y1 } of rings) {
+      if (px < x0 || px > x1 || py < y0 || py > y1) continue;
+      for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+        const [xi, yi] = r[i], [xj, yj] = r[j];
+        if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside;
+      }
+    }
+    return inside;
+  };
+}

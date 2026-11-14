@@ -2,7 +2,7 @@
 
 A one-page map of what is built, for a new conversation getting its bearings. Each line points at the guide that
 says how to use or change it. Keep this page short and current: when a feature lands, changes or moves, update its
-line here in the same commit. Last brought up to date: 2026-11-14 (hand-placed walls and sideways maps in the map importer; two-column books in the adventure importer; missing DCs from the party's level).
+line here in the same commit. Last brought up to date: 2026-11-14 (hand-placed walls and sideways maps in the map importer; two-column books in the adventure importer; missing DCs from the party's level; the party's marching order).
 
 ## The pieces
 
@@ -40,6 +40,7 @@ line here in the same commit. Last brought up to date: 2026-11-14 (hand-placed w
 | Replay | Built: Claude's batches revealed step by step (anyone presses Next; slides, rings, camera, effects; roll details per view; narration steps right after the actions they tell; combat, exploration and social icons; reaction stops) |
 | Encounter | Built: initiative (roll dialog, drag to reorder), turns and rounds with the turn rules, hide, defeated, target, ping |
 | Actions | Placeholder ("coming soon") |
+| Marching order | Built (2026-11-14): the party on a 4 x 4 grid under a forward arrow (anyone moves anyone; the GM adds companions and allies); arrivals and Claude's moves keep it, turned in 8 directions, in column where it does not fit, never onto unexplored ground (`tools/marching.mjs` for Claude) |
 | Exploration | Built: each PC's activity while travelling (players and GM; from the system's list, what a PC cannot do greyed with why; options such as who to follow), the party's pace from the rules, the GM's travel box moving the clock, the GM's reminders for a new area, Defend, Scout and Avoid Notice applied when combat starts, a badge on each PC token outside encounters (`tools/exploration.mjs` for Claude) |
 | Party loot | Built: total party wealth (coins and the items' known values in the stash and on the characters; the GM also the true wealth), the purse (split evenly, breaking larger coins so shares come out even; hand coins over), the stash (carried by nobody; take, with how many), each PC's coins and items with how they are carried, invested, put back and give, a Bulk bar with encumbered put on and taken off automatically; every item's kind, usage and level on its row, and details that unfold in place (traits with their glossary words, stats by kind, description, source, where it was found; the GM: identify DC and sale price), filters by kind and unidentified; players see vague names and only what a look can tell until items are identified, and values once known; the GM adds custom items, identifies, appraises, removes (`tools/loot.mjs` for Claude: library items, buying and selling) |
 | Notes | Built: add, list, hover highlights the pin, edit, remove |

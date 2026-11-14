@@ -87,6 +87,23 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 - **Printed numbers:** most adventure maps number their locations on the image. Centre each pin on the printed marker, size it to ring it (a little larger than the marker), and copy the number into `number`. Check the result on the board: every number must stay readable when its pin is hovered or selected. To remove a number that gives a secret away, see [map-importer.md section 5b](map-importer.md) (`tools/mapimport/strip_numbers.py`, and what it can and cannot do).
 - **Building one** from a book: an area map is written by hand, not by the importer. The image goes into the private pack; each place gets a paraphrased, player-safe `note` and, if needed, a `gm_note`. Mark anything the players should not know yet `public: false`. Validate with `tools/validate.mjs`.
 
+### Marching order (2026-11-14)
+
+- The planner is the engine's (`engine/tokens/marching.js`), shared by the board's arrivals (`board/travel.js`
+  `formationArrival`) and Claude's tool (`tools/marching.mjs`), so the two always agree. The tab is
+  `board/marchui.js`; the record is `state/marching` `{slots: {token id: [col, row]}, extra: [token ids]}`.
+- **Claude moving the party:** `node tools/marching.mjs <save> --records FILE move --to X,Y` (the square the front of
+  the party reaches; `--facing` when the heading is not simply toward it), then write its `tokens/<id>` updates. When
+  it says NOT MOVED, it wrote nothing: someone has no room on explored ground. Choose another square, move them by
+  hand, or ask the user. Never place anyone on unexplored ground.
+- `show`, `set "Name=col,row"`, `add` and `remove` read and set the grid from chat, the same as the tab.
+- **Lessons:** the nearest-square placement alone fits everyone in, but it shuffles the order in a bend. The column has
+  to trail back toward where the party came from, not out from the lead in both directions. And a member's own place
+  in the block is not a spill: it is allowed even where nothing has been explored, so arriving on a new map works.
+  Offsets are taken from the middle of the occupied squares (the bounding box), never the grid's middle: measured
+  from the grid, a column drawn at the right-hand edge walked down one side of the corridor. And a column with no
+  "came from" side (the party starts mid-corridor) breaks the lead's tie toward the facing.
+
 ## 7. Board info, the build stamp and publishing
 
 - **Board info** (the user, 2026-11-12): a see-through panel in the map's lower-left corner, collapsed to "ⓘ Board info" by default and remembered open or closed per browser (`reliquary.boardinfo`); it floats over the map, so the map keeps the whole height. It replaced the strip under the map and the version badge beside the title. **The GM view's only** (the user, 2026-11-12): the player view has no Board info. Lines, top to bottom:

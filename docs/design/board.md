@@ -719,3 +719,35 @@ them and moves to the Party stash with where it was found.
   block movement or get blocked. Quick-View shows the description; the GM also the note, find DC, lock and hazard and
   an "Open to players" switch; the contents with Take and Take everything once open. Taking writes the stash record
   (merged onto a matching stack), the purse for coins, the object's new contents and an audit line.
+
+## The party's marching order (designed and built 2026-11-14)
+
+The user's design (FR-1 in future/backlog.md, decided 2026-11-10 and 2026-11-14).
+
+- **The tab:** "Marching order", right under Actions, in both views. It shows a 4 x 4 grid with an arrow above it
+  pointing the way the party travels, so the front row is at the top. The party's tokens stand on it with their art.
+  **Anyone moves anyone**: drag a token to a square, or tap it and then the square. A token dropped on another swaps
+  with it.
+- **Who is on it:** every living PC. The GM adds others who travel with the party (a companion, an allied NPC on the
+  map) and takes them off. They travel with the party between maps too.
+- **One per campaign**, in its save (`state/marching`, saved as `campaign.marching`), so it carries across an Adventure
+  Path's books. New members fill the middle two columns front to back, then the outer columns.
+- **Only the shape counts** (the user, 2026-11-14): the formation is the bounding box around the occupied squares,
+  wherever on the 4 x 4 grid it was drawn. A column drawn down the right-hand edge plays exactly like one drawn in the
+  middle: centred on the party's position, its frontmost row leading (`marchCentre`).
+- **Turning (8 directions):** the block turns to face the way the party heads. A diagonal lays its rows along the
+  diagonals, each member a diagonal step from its neighbours, so every slot still has a square of its own.
+- **Arriving** through an entrance or at a starting area (`board/travel.js` `formationArrival`). The block faces into
+  the map: from the entrance's squares toward its arrival squares, else toward the map's middle (a starting area faces
+  the middle). A map overrides a wrong guess with `facing` on an entrance or `start_facing`. The rearmost occupied row
+  stands on the way in and the block reaches ahead. Going back to where each PC left a map keeps their own squares.
+- **Claude moving the party in narration** (`tools/marching.mjs move --to X,Y`): the front row reaches the destination,
+  facing from where the party stands toward it.
+- **Where it does not fit** (the user, 2026-11-14): in a narrow passage, a doorway or a bend, the party goes **in
+  column**. In marching order (front row first, left to right), each member takes the next free square back along
+  the way from the lead, toward where the party came from. The passage's width decides how many walk abreast. Only
+  squares that can be walked to are used, never behind a wall.
+- **Never onto unexplored ground** (the user, 2026-11-14). A member may always take its own place in the block. Any
+  other square (spilling over, or the column) must be explored, or be the arrival or destination square itself. With
+  no such room the move does not happen: the board says who has no room, and Claude decides with the user.
+- **Not marching order:** moving several selected tokens together keeps the group's own spacing (FR-1, 2026-11-11).

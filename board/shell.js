@@ -3,7 +3,8 @@
 // the new-version banner, and the confirmation dialog. Docs: docs/design/board.md, section 7.
 
 import { MENU, buildMenuBar } from './menu.js';
-import { travelMenu, parseTravelId, travelPlan, planArrival, gmMovePlan, returnMaps, noSquares, BACK, START } from './travel.js';
+import { exploredFromRecords } from './records.js';
+import { travelMenu, parseTravelId, travelPlan, formationArrival, gmMovePlan, returnMaps, noSquares, BACK, START } from './travel.js';
 
 export const KEEP_GM = 'reliquary-keep-gm';   // set just before a preview reload, so the GM view survives it
 
@@ -117,6 +118,12 @@ export function makeShell(o) {
     if (t.kind === 'bring') return bringParty(t.map, t.link);
   }
 
+  /** Whether a square of a map has been explored (the party never spills onto ground it has not explored). */
+  async function exploredOn(mapId) {
+    const chunks = (await store.list('explored').catch(() => [])).filter((e) => e.data && e.data.map === mapId).map((e) => e.data);
+    return Engine.squareExplored(exploredFromRecords(chunks));
+  }
+
   /** GM: move every living PC on the party's map to another map (after a confirmation); the table follows. */
   async function bringParty(toMap, how) {
     if (o.view() !== 'gm' || o.readOnly) return;
@@ -130,7 +137,8 @@ export function makeShell(o) {
         pm = Engine.prepareMove(segs, (await store.get('mapstate/' + dest.id)) || {}, dest.grid);
         occupants = (await store.list('tokens')).filter((e) => e.data.map === dest.id).map((e) => ({ ...e.data, id: e.id }));
       }
-      const plan = gmMovePlan({ maps: MAPS, from, toMap, how, tokens: o.tokensHere(), pm, occupants, engine: Engine });
+      const marching = (await store.get('state/marching')) || null;
+      const plan = gmMovePlan({ maps: MAPS, from, toMap, how, tokens: o.tokensHere(), pm, occupants, engine: Engine, marching, spill: noSquares(dest) ? null : await exploredOn(dest.id) });
       if (!plan) return;
       if (!plan.travellers.length) return o.toast('No PCs are with the party.');
       const where = how === START ? `the starting area of ${dest.name || dest.id}` : how === BACK ? `where they left ${dest.name || dest.id}` : (dest.name || dest.id);
@@ -170,7 +178,8 @@ export function makeShell(o) {
   /** Player: move the PCs on this map to an entrance or an area map (after a confirmation); the table follows. */
   async function moveParty(toMap, linkId) {
     if (o.view() !== 'player' || o.readOnly) return;
-    const plan = travelPlan({ maps: MAPS, from: o.mapId, toMap, linkId, tokens: o.tokensHere() });
+    const marching = (await store.get('state/marching').catch(() => null)) || null;
+    const plan = travelPlan({ maps: MAPS, from: o.mapId, toMap, linkId, tokens: o.tokensHere(), marching });
     if (!plan) return o.toast('That way does not lead anywhere yet.');
     if (!plan.travellers.length) return o.toast('No PCs are on this map.');
     const dest = plan.target.map, entrance = plan.target.link;
@@ -186,7 +195,8 @@ export function makeShell(o) {
         const dstate = (await store.get('mapstate/' + dest.id)) || {};
         const pm = Engine.prepareMove(segs, dstate, dest.grid);
         const occupants = (await store.list('tokens')).filter((e) => e.data.map === dest.id).map((e) => ({ ...e.data, id: e.id }));
-        const r = planArrival({ pm, cells: plan.cells, travellers: plan.travellers, occupants, engine: Engine });
+        // in marching order, facing into the map; in column where the block does not fit (engine/tokens/marching.js)
+        const r = formationArrival({ pm, cells: plan.cells, travellers: plan.travellers, occupants, engine: Engine, marching, link: plan.target.link, map: dest, start: !!plan.target.start, spill: await exploredOn(dest.id) });
         if (r.unplaced.length) return o.toast(`There is no room at ${where} for ${r.unplaced.join(', ')}. Ask Claude.`);
         placed = r.placed;
       }

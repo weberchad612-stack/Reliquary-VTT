@@ -176,7 +176,7 @@ export function planArrival({ pm, cells, travellers, occupants = [], engine, lim
  *   map id -> entrance ids to add to that map's links_found (the arrival entrance and, when it pairs with
  *   an entrance on the map the party left, that one: the way back).
  */
-export function travelPlan({ maps, from, toMap, linkId, tokens }) {
+export function travelPlan({ maps, from, toMap, linkId, tokens, marching = null }) {
   const fromMap = maps.find((m) => m.id === from);
   let target = null, via = null;
   const area = (id) => noSquares(maps.find((m) => m.id === id));
@@ -190,8 +190,7 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
     // The starting area of a battle map: its own squares; nothing becomes known.
     const m = maps.find((x) => x.id === toMap);
     if (!m || !m.start) return null;
-    const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
-      .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+    const travellers = partyOf(tokens, marching);
     return { target: { map: m, link: null, start: true }, via: null, cells: m.start.map((c) => c.slice()), found: {}, travellers };
   } else {
     const m = maps.find((x) => x.id === toMap);
@@ -199,8 +198,7 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
     if (l) target = { map: m, link: l };
   }
   if (!target) return null;
-  const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
-    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+  const travellers = partyOf(tokens, marching);
   if (!target.link) return { target, via, cells: null, found: {}, travellers };   // an area map: no squares
   // Arrival squares (on the target map): the arrive cells of the link that leads to the target entrance.
   const into = via || (() => {
@@ -212,6 +210,41 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
   const back = target.link.to_map === from && target.link.to_link ? target.link.to_link : via && via.id;
   if (back && target.link.to_map === from) found[from] = [back];
   return { target, via, cells, found, travellers };
+}
+
+/** Who travels with the party: its living PCs and the members the GM added to the marching order, in name order. */
+export function partyOf(tokens, marching = null) {
+  const extra = new Set((marching && marching.extra) || []);
+  return Object.entries(tokens || {}).filter(([id, t]) => t && !t.dead && (t.kind === 'pc' || extra.has(id))).map(([id, t]) => ({ ...t, id }))
+    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+}
+
+/**
+ * The party arriving in marching order (engine/tokens/marching.js): the block faces into the map (away from the
+ * entrance, or from a starting area toward the map's middle; the map's `facing` / `start_facing` wins), its back row on
+ * the way in; where it does not fit, the party comes in column. Without the engine's marching functions (an old engine),
+ * the plain arrival (planArrival).
+ * @param {object} o  {pm, cells, travellers, occupants, engine, marching, link, map, start, spill}: spill (x, y) -> whether a
+ *   member who cannot have its own place may stand there (the map's explored area: never unexplored ground)
+ * @returns {{placed, unplaced, dir?, column?}}
+ */
+export function formationArrival({ pm, cells, travellers, occupants = [], engine, marching = null, link = null, map = null, start = false, spill = null }) {
+  if (!engine.placeFormation || !cells || !cells.length) return planArrival({ pm, cells, travellers, occupants, engine });
+  const slots = engine.marchSlots(travellers.map((t) => t.id), (marching && marching.slots) || {});
+  const dir = engine.marchArrivalFacing({ link: start ? null : link, cells: start ? [] : cells, start: start ? cells : null, grid: map && map.grid,
+    facing: start ? map && map.start_facing : link && link.facing });
+  const mid = cells.reduce((s, c) => [s[0] + c[0] / cells.length, s[1] + c[1] / cells.length], [0, 0]).map(Math.round);
+  const anchor = start ? mid : engine.marchAnchorBehind(mid, dir, slots);
+  const members = travellers.filter((t) => slots[t.id]).map((t) => ({ ...t, slot: slots[t.id] }));
+  const r = engine.placeFormation({ pm, engine, anchor, dir, members, seeds: cells, occupants, spill });
+  // more than 16 members: the rest arrive as before, after the formation
+  const rest = travellers.filter((t) => !slots[t.id]);
+  if (rest.length) {
+    const more = planArrival({ pm, cells, travellers: rest, occupants: [...occupants, ...r.placed.map((p) => ({ ...travellers.find((t) => t.id === p.id), x: p.x, y: p.y }))], engine });
+    const ok = (p) => !spill || cells.some((c) => c[0] === p.x && c[1] === p.y) || spill(p.x, p.y);   // never unexplored ground
+    r.placed.push(...more.placed.filter(ok)); r.unplaced.push(...more.unplaced, ...more.placed.filter((p) => !ok(p)).map((p) => p.id));
+  }
+  return { ...r, dir };
 }
 
 /** Maps the party can be brought back to: every living PC on the party's map has a `last_square` there. */
@@ -230,11 +263,10 @@ export function returnMaps(tokens) {
  * @param {object} o  {maps, from, toMap, how, tokens: {id: token} on the party's map, pm?, occupants?, engine?}
  * @returns {{updates: Array<{id, data}>, unplaced: Array<string>, travellers: Array}|null}
  */
-export function gmMovePlan({ maps, from, toMap, how = null, tokens, pm = null, occupants = [], engine = null }) {
+export function gmMovePlan({ maps, from, toMap, how = null, tokens, pm = null, occupants = [], engine = null, marching = null, spill = null }) {
   const fromMap = maps.find((m) => m.id === from), dest = maps.find((m) => m.id === toMap);
   if (!dest || toMap === from) return null;
-  const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
-    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+  const travellers = partyOf(tokens, marching);
   const keep = (t) => (fromMap && !noSquares(fromMap) ? { ...(t.last_square || {}), [from]: [t.x, t.y] } : (t.last_square || null));
   if (noSquares(dest)) {
     return { travellers, unplaced: [], updates: travellers.map((t) => { const ls = keep(t); return { id: t.id, data: { map: dest.id, ...(ls ? { last_square: ls } : {}) } }; }) };
@@ -245,7 +277,9 @@ export function gmMovePlan({ maps, from, toMap, how = null, tokens, pm = null, o
     : [{ cells: start, list: travellers }];
   for (const g of groups) {
     if (!g.cells.length) { unplaced.push(...g.list.map((t) => t.id)); continue; }
-    const r = planArrival({ pm, cells: g.cells, travellers: g.list, occupants: here, engine });
+    // the whole party at the starting area comes in marching order; each PC going back to its own square does not
+    const r = how === BACK && g.cells !== start ? planArrival({ pm, cells: g.cells, travellers: g.list, occupants: here, engine })
+      : formationArrival({ pm, cells: g.cells, travellers: g.list, occupants: here, engine, marching, map: dest, start: true, spill });
     for (const p of r.placed) { placed.push(p); here.push({ ...g.list.find((t) => t.id === p.id), x: p.x, y: p.y }); }
     unplaced.push(...r.unplaced);
   }

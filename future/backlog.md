@@ -8,7 +8,7 @@ Status: **open** (not started), **designing**, **building**, **done**.
 
 | # | Feature | Status | Raised |
 |---|---|---|---|
-| FR-1 | [Party marching order](#fr-1-party-marching-order) | open (partly decided) | 2026-11-10 |
+| FR-1 | [Party marching order](#fr-1-party-marching-order) | **built 2026-11-14** (docs/design/board.md, "The party's marching order") | 2026-11-10 |
 | FR-2 | [Targeting on touch screens](#fr-2-targeting-on-touch-screens) | open | 2026-11-11 |
 | FR-3 | [Light ranges by the system's measurement](#fr-3-light-ranges-by-the-systems-measurement) | open | 2026-11-11 |
 | FR-4 | [Who an area or effect can affect](#fr-4-who-an-area-or-effect-can-affect) | open | 2026-11-11 |
@@ -30,6 +30,10 @@ Status: **open** (not started), **designing**, **building**, **done**.
 ## FR-1: Party marching order
 
 **Asked for:** a party marching order (2026-11-10).
+
+**Built 2026-11-14:** see docs/design/board.md, "The party's marching order". Decided then: anyone moves anyone; forward
+on arrival is worked out (a map can override it); 8 directions; the living PCs plus whoever the GM adds; one per
+campaign; a column where the block does not fit; never onto unexplored ground.
 
 **Decided so far (the user, 2026-11-10)**
 - A **tool on the board** sets the marching order, at any time during play: both each PC's **position** in

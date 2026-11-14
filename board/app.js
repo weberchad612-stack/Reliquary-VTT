@@ -40,6 +40,7 @@ import { mountLoot } from './lootui.js';
 import { lootRules, encumberedEffects, lootView, lootPath, LOOT as LOOT_COLL, PURSE, stashMerge, addCoins, coinLabel } from './loot.js';
 import { isObject, isOpen, objectView, takeFromObject, takeAllFromObject, foundAt } from './objects.js';
 import { mountExplore } from './exploreui.js';
+import { mountMarching } from './marchui.js';
 import { EXPLORE, exploreRules, initiativeHint, startRequests, badgeFor } from './explore.js';
 import { clockLabel } from './clock.js';
 import { mountDice } from './diceui.js';
@@ -190,7 +191,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null, eventsUi = null, subsystemUi = null;
+  let marchUi = null, trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null, eventsUi = null, subsystemUi = null;
   let sound = null;           // the board's sound (startSound below): effects, cues, music, ambient
   let EXPLORE_CHOICES = {};   // the PCs' exploration activities (explore/ records), for the badges, the tab and initiative
   const exploreBadges = { on() { try { return localStorage.getItem('reliquary.exploreBadges') !== '0'; } catch { return true; } }, set(v) { try { localStorage.setItem('reliquary.exploreBadges', v ? '1' : '0'); } catch { /* this page only */ } } };   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
@@ -2779,6 +2780,7 @@ export async function start(store, { build = null } = {}) {
   if (diceUi) diceUi.render();
   if (lootUi) lootUi.render();
   if (exploreUi) exploreUi.render();
+  if (marchUi) marchUi.render();
   if (eventsUi) eventsUi.render();
   if (subsystemUi) subsystemUi.render();
   if (sound) sound.refresh();
@@ -3182,7 +3184,7 @@ export async function start(store, { build = null } = {}) {
         if (multi.has(id)) setSelection([...multi].filter((x) => x !== id));
         changed = true;
       }
-      if (changed) remoteChanged();
+      if (changed) { remoteChanged(); if (marchUi) marchUi.refresh(); }
     };
     store.watchCollection('tokens', onTokens);
     store.watchCollection('targets', (list) => {
@@ -3461,7 +3463,7 @@ export async function start(store, { build = null } = {}) {
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12; Replay moved up under Chat the same night)
     { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
-    { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
+    { id: 'actions', label: 'Actions' }, { id: 'marching', label: 'Marching order' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' }, { id: 'sound', label: 'Sound' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'events', label: 'Events (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
@@ -3508,6 +3510,11 @@ export async function start(store, { build = null } = {}) {
     party: exploreParty, choices: () => EXPLORE_CHOICES, content: (keys) => qvContent(keys), trait: traitWords, log: (text) => logChange(text),
     advance: (secs, words) => clockUi && clockUi.advance(secs, words), badges: exploreBadges, onBadges: () => draw() });
   store.watchCollection(EXPLORE, (l) => { EXPLORE_CHOICES = Object.fromEntries(l.map((e) => [e.id, e.data])); draw(); if (exploreUi) exploreUi.refresh(); });
+  // Marching order (board/marchui.js): the party on a 4 x 4 grid, forward up; arrivals (board/travel.js) and Claude's moves
+  // (tools/marching.mjs) keep it. Everyone moves anyone; the GM adds companions and allies who travel with the party
+  marchUi = mountMarching({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('marching').body, E: Engine,
+    tokens: () => S.tokens, colour: (t) => kindColour(t), log: (text) => logChange(text),
+    art: (t) => { const a = t && t.art && ART[t.art] && (ART[t.art].token || ART[t.art].full); return a ? store.assetUrl(a.asset) : null; } });
   // Party loot (board/loot.js): the stash, the purse, and each PC's coins and load; the encumbered condition follows
   // a character's Bulk (only the one the loot tab put on is ever taken off)
   lootUi = mountLoot({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('loot').body, sidebar, tab: 'loot', sys: SYS,
