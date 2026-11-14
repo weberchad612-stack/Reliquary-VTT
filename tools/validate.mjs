@@ -20,6 +20,7 @@ import { nameProblems } from '../board/names.js';
 import { prepareActor, BASE_RULE_KEYS } from '../engine/rules/rules.js';
 import { parseExpr } from '../engine/rules/expr.js';
 import { contentLibrary, contentView } from './library.mjs';
+import { checkEvents, splitEvents } from '../engine/events/events.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -41,6 +42,7 @@ const V = {
   ledger: schema('ledger.schema.json'),
   loot: schema('loot.schema.json'),
   exploration: schema('exploration.schema.json'),
+  events: schema('events.schema.json'),
 };
 /** A ruleset's own schemas (rulesets/<id>/schemas/<name>.schema.json), compiled once. */
 const RULESET_SCHEMAS = new Map();
@@ -539,6 +541,17 @@ export function validate(target, { save = null } = {}) {
     // the PCs' exploration activities
     const exploreFile = path.join(save, 'exploration.json');
     if (fs.existsSync(exploreFile)) { const l = readJson(exploreFile, report); if (l) schemaErrors(V.exploration, l, exploreFile, report); }
+    // the adventure's events and the flags: the schema, then the engine's own check (conditions, stage links, a
+    // running event's stage)
+    const eventsFile = path.join(save, 'events.json');
+    if (fs.existsSync(eventsFile)) {
+      const l = readJson(eventsFile, report);
+      if (l && schemaErrors(V.events, l, eventsFile, report)) {
+        const { defs, states } = splitEvents(l.events || {});
+        for (const m of checkEvents(defs)) report.error(eventsFile, m);
+        for (const d of defs) if (states[d.id].stage && !(d.stages || []).some((s) => s.id === states[d.id].stage)) report.error(eventsFile, `${d.id} is at unknown stage "${states[d.id].stage}"`);
+      }
+    }
     const dir = path.join(save, 'maps');
     if (!fs.existsSync(dir)) report.error(save, 'save has no maps/ folder');
     else {
