@@ -89,6 +89,23 @@ words, default scoring and shape; `tools/subsystem.mjs` runs them; the save keep
   success +2, success +1, failure 0, critical failure -1 (Research never below 0); Infiltration: +2 and +1 Infiltration
   Points, failure 1 and critical failure 2 Awareness Points, and 1 more at the end of each round.
 
+## 2d. Generated battle maps
+
+A fight the book sets somewhere with no battle map (a churchyard, a road, a rooftop) gets one made from the book's
+description (the user's decision): `python3 tools/genmap/genmap.py <spec.json> packs/<pack>/maps/<id>`.
+
+- **The spec is Claude's, in its own words:** size in squares, ground, the party's start, and features: buildings
+  (walls with doors and windows), walls, low walls (with gaps where paths cross), rocks and pillars, trees,
+  undergrowth, rubble, mud, water (deep is Swim), graves, paths, fires and lights, hazards. The tool paints original
+  art from it and writes the walls, terrain and light from the same spec, so they agree. Full list: the tool's header.
+- **Place it like the book's:** put the map in the private pack (`maps/<id>`), add it to `pack.json` and the
+  adventure's `maps`, run `campaign.mjs --update` (it adds the map and keeps play), and point the event's
+  `{"do": "map", "map": "<id>"}` at it. The spec stays beside the map as `genmap.json`, so it can be made again after
+  a change.
+- Read the spec against the book's description once more before the fight: what stands where, what blocks sight
+  (walls and rocks do; trees and headstones do not, they give cover by ruling), what is difficult terrain.
+- Same spec, same picture (seeded from the map id). Check it on the board before the party arrives.
+
 ## 3. Lessons
 
 - Keep the definition and the state in one record per event: the GM tab shows both, and `--update` refreshes the
@@ -99,5 +116,6 @@ words, default scoring and shape; `tools/subsystem.mjs` runs them; the save keep
 - A new sidebar tab needs its `<section class="sb-pane" data-pane="...">` in board/index.html as well as its entry in app.js's tab list; without it `sidebar.panel()` is null and the board fails to start (the headless check caught it).
 - A value of 0 is a real game time: test `=== undefined`, never truthiness (a threshold reached at time 0 looked unreached until a test caught it).
 - Every export of an engine module lands in one flat `Engine` object on the board: names must be unique across the engine (`subsystemRound`, not `nextRound`).
+- Generated maps: scattered features (graves) stay off paths and structures, and a rock's own outline is its wall (drawing the wall line over it made it read as a hut); terrain `cause` must be a slug (`low-wall`).
 - Party level is the average of the PCs' levels, rounded; the party's areas are every keyed room a living PC stands in
   on the current map.

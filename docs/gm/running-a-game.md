@@ -411,8 +411,8 @@ happens. Details: [events.md](../best-practices/events.md).
   start it (with `--show` once the players should see the card), roll each PC's check through `subsystem.mjs check`
   so the points come from the roll, `round` at each new round, `reveal` what the characters learn. A threshold's
   flag moves its event on. Never say a DC or an unrevealed threshold.
-- **A fight with no battle map** gets one generated from the book's description before it starts (future work:
-  until then, the nearest map with a note).
+- **A fight with no battle map** gets one generated from the book's description before it starts
+  (`tools/genmap/genmap.py`; events.md section 2d), placed in the pack and checked on the board first.
 - **Repeats.** An event that can happen again cools down after it finishes; it is due again only when its trigger
   holds after the cooldown, and only if the GM wants it (ask before running a repeat).
 
