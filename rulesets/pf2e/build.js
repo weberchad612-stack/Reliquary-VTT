@@ -494,6 +494,7 @@ export function deriveCharacter(build, get, opts = {}) {
   // ---- the content's own rules: "pick one", "you gain this", proficiency upgrades (section 9.6) ----
   const sel = b.selections || {}, unsupported = [], granted = [], actorFlags = {}, waiting = [], formulas = [], langGranted = [];
   let langExtra = 0;
+  let ancestryHp = null;   // set by a rule (a heritage's own ancestry HP), else the ancestry's
   const resolve = opts.resolve || (() => null);
   const camel = (x) => String(x).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
   const tags = new Set();
@@ -636,6 +637,14 @@ export function deriveCharacter(build, get, opts = {}) {
     if (path === 'system.build.languages.max') {
       if (typeof fr.value === 'number') langExtra += fr.value;
       else formulas.push({ where, fr, target: ['languages', 'max'] });
+      return true;
+    }
+    // the ancestry's Hit Points (a Hold-Scarred Orc's 12, a versatile heritage's)
+    if (path === 'system.attributes.ancestryhp') {
+      const raw = typeof fr.value === 'string' ? fill(fr.value, flags, actorFlags) : fr.value;
+      const v = Number(raw);
+      if (!Number.isFinite(v)) return skip(`ancestry Hit Points of ${JSON.stringify(fr.value)}`);
+      ancestryHp = fr.mode === 'override' ? v : fr.mode === 'upgrade' ? Math.max(ancestryHp ?? ((anc && anc.hp) || 0), v) : (ancestryHp ?? ((anc && anc.hp) || 0)) + v;
       return true;
     }
     const target = pathOf(path);
@@ -892,7 +901,7 @@ export function deriveCharacter(build, get, opts = {}) {
 
   const actor = {
     system: 'pf2e', kind: 'character', name: b.name || 'New character', level: L,
-    ancestry: anc ? { name: anc.name, hp: anc.hp || 0, size: anc.size || 'medium', speed: anc.speed || 25, traits: [...(anc.traits || [])], senses: anc.vision && anc.vision !== 'normal' ? [anc.vision] : [] }
+    ancestry: anc ? { name: anc.name, hp: ancestryHp ?? (anc.hp || 0), size: anc.size || 'medium', speed: anc.speed || 25, traits: [...(anc.traits || [])], senses: anc.vision && anc.vision !== 'normal' ? [anc.vision] : [] }
       : { name: '?', hp: 0, speed: 25 },
     ...(her ? { heritage: her.name } : {}),
     ...(bg ? { background: bg.name } : {}),

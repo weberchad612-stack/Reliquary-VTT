@@ -223,3 +223,10 @@ test('builder: classes come grouped by their role in the party', () => {
   assert.deepEqual([cleric.group, cleric.also, cleric.hp, cleric.key], ['Healer', ['Support'], 8, 'wis']);
   assert.equal(o.find((x) => x.name === 'Psychic').key, 'by subclass');
 });
+
+test('builder: a heritage that sets the ancestry\'s Hit Points (Hold-Scarred Orc: 12, and Diehard)', () => {
+  const r = B.derive({ v: 1, level: 1, ancestry: 'ancestries:ancestry/orc', heritage: 'heritages:heritage/hold-scarred-orc', class: 'classes:class/guardian' });
+  assert.equal(r.actor.ancestry.hp, 12);
+  assert.ok(r.actor.feats.some((f) => f.slug === 'diehard'));
+  assert.equal(B.derive({ v: 1, level: 1, ancestry: 'ancestries:ancestry/orc', heritage: 'heritages:heritage/winter-orc', class: 'classes:class/guardian' }).actor.ancestry.hp, 10);
+});
