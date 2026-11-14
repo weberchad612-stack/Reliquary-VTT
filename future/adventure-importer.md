@@ -18,3 +18,19 @@ Collected while importing the first whole adventure (a Beginner Box adventure, 2
 - **Marker pawns to tokens.** The registered crop markers already give start squares and portrait images; match each marker image to the creature named in the room text (and to the token PDF's pawn) automatically by image similarity.
 - **Stat block matching.** Match each encounter's creature names against the open content (the Beginner Box creatures are in one bestiary with a `-bb` suffix) and propose the content key, flagging adjustments the text asks for (weak or elite).
 - **Token PDF slicing.** Cut each pawn on a token sheet into an image with its printed name, ready for the token art step.
+
+## The user's decisions (2026-11-13)
+
+| # | Feature | Decision |
+|---|---|---|
+| 1 | Straight-wall snapping | **Build now**, and have the tool **propose candidate straight walls itself** for Claude to accept or reject |
+| 2 | Room-interior erase from the room table | **Build now** |
+| 3 | Grid-line suppression | **Build now** |
+| 4 | One check command (sight against the room table's shapes, routes) | **Build now** |
+| 5 | Room table from the book's registered crops | **Build now** |
+| 6 | Map-sheet splitting | Later |
+| 7 | Veil wall type (engine and board) | **Build now** |
+| 8 | Saved mask profiles per art style | **Build now** |
+| 9 | Matching book pawns to creatures | Later |
+| 10 | Stat block matching, with the book's differences flagged | **Build now** (matching and comparison) |
+| 11 | Token-sheet slicing | Later |
