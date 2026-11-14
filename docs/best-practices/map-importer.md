@@ -145,9 +145,7 @@ drop shadow as dark as the wall itself.
   compass confirms it) is turned upright with `source.rotate` (90, 180 or 270, clockwise). Positions from the page's
   text layer must go through the same turn.
 - **The grid found may be every second line.** On a large, faintly gridded map the calibration locked onto 89 px for a
-  44.6 px printed grid. Count printed squares against a feature of known size; give the grid by hand when it is off.
-  The calibration also refuses a faint grid (strength under 2): calibrate with a lower threshold, check two far
-  corners by eye, and give the result by hand.
+  44.6 px printed grid. The grid check (section 4e) now catches this against the book's other maps.
 - **10-ft printed squares on 5-ft board squares:** set `feet_per_cell` 5 and halve `cell_px`, and double every size
   the importer measures in squares (door lengths and thickness, mask areas, `min_ring_cells`), so they keep their
   meaning on the print.
@@ -160,6 +158,25 @@ drop shadow as dark as the wall itself.
   whose wall's far face lies further out (thick walls off the grid lines) gets the next row or column too.
 - **Outdoor rooms** (a bridge, a clearing, a yard) see everything: list `outside` and their neighbours in
   `checks.sees`, with the reason.
+
+## 4e. Grid sanity across a book (2026-11-14)
+
+Strength alone cannot tell a doubled grid from a true one. A map whose lines alternate in weight scores its half
+size at about two thirds of the full size, and so does a map whose true grid is the full size. What tells them apart is
+the book: one PDF prints most of its maps at one scale.
+
+- **Weak grids are found, not refused.** A grid with strength from 1.5 to 2 (regular, square, faint) is returned with
+  `weak: true`. The build prints a warning, and `import-report.json` keeps the strength.
+- **The half grid is always scored.** `import-report.json` `grid.half` is `{cell_px, strength}`, ready to propose.
+- **`tools/advimport/gridcheck.mjs <pack>`** (the pipeline's `gridcheck` step) groups a pack's maps by source PDF. It
+  takes the book's usual square size from the largest group of maps that agree within 5% (two maps or more). It flags
+  a map at about 2x or 3x that size ("locked onto every other line", with the half grid proposed), at about 1/2 or 1/3,
+  and every weak grid.
+- **Clearing a flag.** Look at the map on the review sheet. Count printed squares against a feature of known size, and
+  check two far corners. Give the grid by hand if it is off. Then record what you checked as `grid_checked` in its
+  `import.json`. A map printed at another scale on purpose (a 10-ft town map) is recorded the same way.
+- **Other print scales are not flagged.** A map at 1.4x or 1.5x the usual size (a larger floor plan) is not a multiple
+  and passes.
 
 ## 5. Pitfalls already met
 

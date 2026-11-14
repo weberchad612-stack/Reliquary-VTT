@@ -428,8 +428,11 @@ def build(cfg_path, repo, use_cache=True, room=None):
 
     g = cfg.get("grid", "auto")
     if g == "auto":
-        g = cachemod.memo("grid", lambda: gridmod.calibrate(full()), key_extra=src_key)
+        g = cachemod.memo("grid-v2", lambda: gridmod.calibrate(full()), key_extra=src_key)
         report["grid"] = dict(g, found="auto")
+        if g.get("weak"):
+            print(f"WARNING  weak grid (strength {g['strength']}): check it by eye on the review sheet, then record it "
+                  "in import.json as grid_checked (tools/advimport/gridcheck.mjs)", file=sys.stderr)
     else:
         report["grid"] = dict(g, found="given")
     # Detection runs on a copy at about detect_cell_px per square (default 50): a print-quality map at 200-300 px per

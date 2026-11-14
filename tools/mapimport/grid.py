@@ -47,19 +47,28 @@ class NoGridFound(ValueError):
     """The image shows no clear grid; give the grid by hand in the import settings."""
 
 
-def calibrate(rgb, min_cell=16, max_cell=120, min_strength=2.0):
-    """Find the grid. Returns {cell_px, origin_px, cols, rows, strength}.
+WEAK_STRENGTH = 1.5   # below a clear grid but still regular: found, marked weak, to be checked by eye
+
+
+def calibrate(rgb, min_cell=16, max_cell=120, min_strength=2.0, weak_strength=WEAK_STRENGTH):
+    """Find the grid. Returns {cell_px, origin_px, cols, rows, strength, half, [weak]}.
 
     origin_px is the top-left corner of cell (0, 0) and may be negative (a partial first row or
     column). strength is how much brighter the grid lines are than average (above ~2 is a clear grid).
+    A fainter grid (down to weak_strength) is still returned, with weak: true, for Claude to check by eye.
+    half is the half-size grid's {cell_px, strength}: a map whose lines alternate in weight can lock onto
+    every other line, and only the book's other maps can tell (tools/advimport/gridcheck.mjs).
     """
     w, h = rgb.size
     cols_p, rows_p = _profiles(rgb)
     rough = (_period(cols_p, min_cell, max_cell) + _period(rows_p, min_cell, max_cell)) / 2
     sx, cx, ox = _fit(cols_p, rough)
     sy, cy, oy = _fit(rows_p, rough)
+    weak = False
     if min(sx, sy) < min_strength:
-        raise NoGridFound(f"no clear grid (strength {min(sx, sy):.2f}, need {min_strength}); give the grid by hand")
+        if min(sx, sy) < weak_strength or abs(cx - cy) > 0.5:
+            raise NoGridFound(f"no clear grid (strength {min(sx, sy):.2f}, need {min_strength}); give the grid by hand")
+        weak = True
     if abs(cx - cy) > 0.5:
         raise NoGridFound(f"cells are not square ({cx:.2f} x {cy:.2f} px); give the grid by hand")
     cell = round(float(cx + cy) / 2, 3)
@@ -69,5 +78,12 @@ def calibrate(rgb, min_cell=16, max_cell=120, min_strength=2.0):
     # a row or column that is at least 90% inside the image counts
     cols = int(math.floor((w - ox) / cell + 0.1))
     rows = int(math.floor((h - oy) / cell + 0.1))
-    return {"cell_px": cell, "origin_px": [round(float(ox), 2), round(float(oy), 2)], "cols": cols, "rows": rows,
-            "strength": round(float(min(sx, sy)), 2)}
+    out = {"cell_px": cell, "origin_px": [round(float(ox), 2), round(float(oy), 2)], "cols": cols, "rows": rows,
+           "strength": round(float(min(sx, sy)), 2)}
+    if cell / 2 >= min_cell:
+        hx, hcx, _ = _fit(cols_p, cell / 2)
+        hy, hcy, _ = _fit(rows_p, cell / 2)
+        out["half"] = {"cell_px": round(float(hcx + hcy) / 2, 3), "strength": round(float(min(hx, hy)), 2)}
+    if weak:
+        out["weak"] = True
+    return out
