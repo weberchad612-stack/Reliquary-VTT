@@ -36,3 +36,23 @@ Collected while importing the first whole adventure (a Beginner Box adventure, 2
 | 11 | Token-sheet slicing | Later |
 | 12 | **Wall thickness** (engine, board, importer) | **Built 2026-11-13**; decided: build now (2026-11-13): a wall is a centre line with a width `w` (squares) measured from the drawn wall; sight and movement test its two faces, so walls are solid through and junctions meet at the centre with no gaps; fog reveals a seen wall to its far face; light brightens the lit face. Walls without `w` (outline-traced maps) work as before. Resolves the open question in docs/design/maps.md on wall edges at the limit of sight. |
 | 13 | **Finer wall snap: 1/32 of a square** (was 1/8) | **Built 2026-11-13**; decided: build now, with #12 (2026-11-13): new maps snap endpoints to 1/32 (about 6 px at 200 px a square); each walls.json keeps its own `snap`, so older maps stay at 1/8 and the validator, tools and board read the snap from the file. Comes with **welding** (endpoints within a small distance joined into one point) and the squaring rule from #1, so the finer snap does not let small gaps or tracing wobble through. |
+
+## The second round (the user's decisions, 2026-11-13, after the Unlit Star re-walling)
+
+Proposed from where the time and the misses went on the first import. Build order (the user's choice): **speed
+first** (#20, #22, #23), then #14 to #18 and #21, then #19, then the two smaller ones.
+
+| # | Feature | Decision |
+|---|---|---|
+| 14 | **Area completeness check.** Split the book's text by area key (A1., A2. ...) into a checklist per area: every DC and check, creature, treasure line, door mention, light and terrain word. Flag anything the pack's notes, `adventure.json`, walls or room table do not account for. | **Build now** |
+| 15 | **Proposals from the text for doors, light and terrain.** Read phrases per area ("locked (DC 20 Thievery)", "stuck", "the room is dark", "torches burn", "shallow water") and propose door settings, lighting and terrain for that room's squares or its nearest door, for Claude to review. Builds on #14's per-area text; the words are the game system's and the book's, so the patterns live in the ruleset. | **Build now** (doors, light and terrain) |
+| 16 | **Item and hazard matching.** Like `statmatch.mjs`: match each treasure line and hazard to the open content, compare values (price, level, DCs, damage) and flag the book's differences. | **Build now** |
+| 17 | **Walls hidden by clutter.** Propose joining straight wall pieces that line up on one line with rock, webs or furniture between them; and compare each room's shape on our map with the book's registered room crop, so a missing wall shows as a mismatch. All four hand-listed walls on the first import were this kind. | **Build now** (both parts) |
+| 18 | **Automatic routes and explained leaks.** The map check makes its own routes (through every door from both sides, between neighbouring rooms) and says what sight leaving a room went through: a window, a veil, a doorway or a real gap. | **Build now** |
+| 19 | **Re-importing without losing play.** An update mode for a running campaign: refresh walls, notes and art from the pack, keep tokens (same ids) and their state, door states and explored areas. | **Build now** |
+| 20 | **Rebuild only what changed.** Save each map-import step's result and reuse it while its settings are unchanged; allow rebuilding one room's area. A level A rebuild takes about a minute today. | **Build now** (both parts) |
+| 21 | **Review sheet.** One image per map: each room's book crop beside our walls, doors and room squares, with changes since the last build highlighted. | **Build now, for Claude's checking**; the user sees it only on request |
+| 22 | **One import command with a status table.** Run every step for a pack in order; show what is out of date, what failed and what waits for review. | **Build now** |
+| 23 | **Sync to the user's PC.** One command: pack what changed, send it, check it arrived intact, extract into the checkout (overwrite in place; stale files to `_to_delete`). | **Build now** |
+| 24 | **Face-centred token crops.** Centre each round token on the creature's face. | **Build now** |
+| 25 | **Auto-link stairs and lifts** between levels from the maps' stair and lift markers. | **Build now** |
