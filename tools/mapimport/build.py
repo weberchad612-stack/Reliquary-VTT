@@ -12,9 +12,11 @@ Paths in the settings are relative to the repository root (--repo, default: two 
 this script).
 
 Settings (all optional except source and map):
-  source:     {pdf, page, image?}                       where the map image is
-  map:        {id, name, feet_per_cell?}
-  grid:       "auto" or {cell_px, origin_px, cols, rows}
+  source:     {pdf, page, image?, crop_px?, scale?}     where the map image is; crop_px [x0, y0, x1, y1] (source
+              pixels) cuts one map out of a sheet holding several; scale resizes (1/3 for a 300 ppi print map)
+  map:        {id, name, feet_per_cell?, start?, links?, note?}   start and links are copied into map.json
+  grid:       "auto" or {cell_px, origin_px, cols, rows}   (in the cropped, scaled image's pixels)
+  detect_cell_px: pixels per square for detection (default 50); a sharper image is traced on a smaller copy
   mask:       wall/door/window detection settings, including exclude rectangles (cells);
               an exclude with "hide": true (an inset of another map) also becomes a hidden area
   features:   door, window and slit detection settings
@@ -23,7 +25,8 @@ Settings (all optional except source and map):
   slits:      {reject_near: [[x, y], ...], note}   detected slits to drop (moss, unclear art)
   openings:   [{kind: slit|secret|door|window, at: [x, y], width_cells?, angle_deg?, ...props, note}]
               cut an opening through a wall and put a segment of that kind across it
-  doors:      [{near: [x, y], ...props}]          properties for detected doors
+  doors:      [{near: [x, y], ...props}]          properties for detected doors; {near, drop: true} removes a
+              false detection (a bed's white edge)
   windows:    [{near: [x, y], ...props}]          properties for detected windows
   add:        [{t, a: [x, y], b: [x, y], door?: {...}, ...props, note}]   explicit segments (secret
               doors placed from the adventure's map; pair them with an erase that opens the wall)
@@ -201,7 +204,10 @@ def build(cfg_path, repo):
 
     src = cfg["source"]
     img, chosen = extract.extract_map(os.path.join(repo, src["pdf"]), src["page"], src.get("image"))
-    report["source"] = {"page": src["page"], "image": chosen["num"], "size": list(img.size)}
+    img = extract.crop_scale(img, src.get("crop_px"), src.get("scale"))
+    report["source"] = {"page": src["page"], "image": chosen["num"], "size": list(img.size),
+                        **({"crop_px": src["crop_px"]} if src.get("crop_px") else {}),
+                        **({"scale": src["scale"]} if src.get("scale") else {})}
 
     g = cfg.get("grid", "auto")
     if g == "auto":
@@ -209,6 +215,16 @@ def build(cfg_path, repo):
         report["grid"] = dict(g, found="auto")
     else:
         report["grid"] = dict(g, found="given")
+    # Detection runs on a copy at about detect_cell_px per square (default 50): a print-quality map at 200-300 px per
+    # square takes many minutes and gigabytes to trace and gains nothing, because every result is in cells.
+    # The board still gets the full image and its grid.
+    full_img, full_g = img, g
+    want = cfg.get("detect_cell_px", 50)
+    if g["cell_px"] > want * 1.5:
+        k = want / g["cell_px"]
+        img = img.resize((max(1, round(img.size[0] * k)), max(1, round(img.size[1] * k))), Image.LANCZOS)
+        g = dict(g, cell_px=g["cell_px"] * k, origin_px=[v * k for v in g["origin_px"]])
+        report["detect"] = {"cell_px": round(g["cell_px"], 3), "size": list(img.size)}
     cs = g["cell_px"]
     fpc = cfg["map"].get("feet_per_cell", 5)
 
@@ -268,6 +284,11 @@ def build(cfg_path, repo):
         if best is None or dist_point_seg(p["near"], best["a"], best["b"]) > 1.0:
             raise ValueError(f"no detected door near {p['near']}")
         group = next(o for o in openings if any(x is best for x in o))
+        if p.get("drop"):   # not a door: furniture or art the detector misread (a bed's white edge)
+            door_segs = [s for s in door_segs if not any(s is x for x in group)]
+            openings.remove(group)
+            report["applied"].append({"door_dropped": p["near"], "note": p.get("note", "")})
+            continue
         props = {k: v for k, v in p.items() if k != "near"}
         if len(group) > 1 and "hinge" in props:
             raise ValueError(f"door near {p['near']}: the leaves of a double door hinge at its outer ends; set swing only")
@@ -318,7 +339,9 @@ def build(cfg_path, repo):
                 if not s["door"]["id"]:
                     s["door"]["id"] = f"d{i:02d}" if prefix == "door" else f"s{i:02d}"
                 s["door"].setdefault("initial", "closed")
-            seg = {"id": sid, "a": s["a"], "b": s["b"], "t": s["t"]}
+            # keep every endpoint on the grid (a wall drawn along the map's edge, or extended into a corner)
+            clamp = lambda q: [min(max(q[0], 0), int(g["cols"])), min(max(q[1], 0), int(g["rows"]))]
+            seg = {"id": sid, "a": clamp(s["a"]), "b": clamp(s["b"]), "t": s["t"]}
             for k in SEG_PROPS:
                 if k in s:
                     seg[k] = s[k]
@@ -336,11 +359,11 @@ def build(cfg_path, repo):
 
     mp = cfg["map"]
     img_name = f'{mp["id"]}.webp'
-    img.save(os.path.join(out_dir, img_name), "WEBP", quality=88, method=6)
+    full_img.save(os.path.join(out_dir, img_name), "WEBP", quality=88, method=6)
     map_rec = {
         "id": mp["id"], "name": mp["name"],
-        "image": {"file": img_name, "w": img.size[0], "h": img.size[1]},
-        "grid": {"cell_px": round(float(cs), 3), "origin_px": [float(v) for v in g["origin_px"]],
+        "image": {"file": img_name, "w": full_img.size[0], "h": full_img.size[1]},
+        "grid": {"cell_px": round(float(full_g["cell_px"]), 3), "origin_px": [float(v) for v in full_g["origin_px"]],
                  "cols": int(g["cols"]), "rows": int(g["rows"]), "feet_per_cell": fpc},
         "walls": "walls.json",
     }
@@ -366,6 +389,9 @@ def build(cfg_path, repo):
               for e in (cfg.get("mask") or {}).get("exclude", []) if isinstance(e, dict) and e.get("hide")]
     if hidden:
         map_rec["hidden_areas"] = hidden
+    for k in ("start", "links"):   # chosen by hand from the text: the party's arrival squares, exits to other maps
+        if mp.get(k):
+            map_rec[k] = mp[k]
     if mp.get("note"):
         map_rec["note"] = mp["note"]
     with open(os.path.join(out_dir, "map.json"), "w", encoding="utf-8") as f:

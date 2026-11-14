@@ -28,6 +28,19 @@ def list_images(pdf, page=None):
     return rows
 
 
+def crop_scale(img, crop_px=None, scale=None):
+    """Cut one map out of a page image holding several (crop_px: [x0, y0, x1, y1] in source pixels), then
+    resize (scale: a factor, such as 1/3 for a 300 ppi print map). Cropping happens first, so crop_px is always
+    in the PDF image's own pixels."""
+    if crop_px:
+        x0, y0, x1, y1 = [int(round(v)) for v in crop_px]
+        img = img.crop((x0, y0, x1, y1))
+    if scale and scale != 1:
+        w, h = img.size
+        img = img.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    return img
+
+
 def extract_map(pdf, page, image=None):
     """Return the map image (RGB PIL image) from a PDF page.
 
@@ -56,8 +69,10 @@ def extract_map(pdf, page, image=None):
         path = lambda n: os.path.join(d, f"i-{n - first:03d}.png")
         img = Image.open(path(chosen["num"])).convert("RGB")
         if smask:
-            a = np.asarray(Image.open(path(smask["num"])).convert("L"), dtype=float)[..., None] / 255.0
-            rgb = np.asarray(img, dtype=float)
-            img = Image.fromarray((rgb * a + 255.0 * (1 - a)).round().astype(np.uint8))
+            # Composite onto white with PIL (integer maths): a float copy of a 300 ppi print map runs to gigabytes.
+            a = Image.open(path(smask["num"])).convert("L")
+            if a.size != img.size:
+                a = a.resize(img.size, Image.LANCZOS)
+            img = Image.composite(img, Image.new("RGB", img.size, (255, 255, 255)), a)
         img.load()
         return img, chosen

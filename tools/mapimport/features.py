@@ -25,6 +25,8 @@ DEFAULTS = {
     "door_min_aspect": 1.8,
     "double_door_gap_cells": 0.35,
     "end_into_wall_cells": 0.15,  # how far segment ends reach into the wall
+    "door_reach_cells": 0.6,     # how far past a door bar's end to look for the jamb (lower it where the bars
+                                 # are drawn on the wall line itself, with no gap to a jamb)
     "slit_channel_cells": 0.25,   # width of the channel cut through the wall at a slit
     "slit_min_px": 4,            # smallest bridged gap considered
     "slit_near_ft": 5,            # see through a slit from this close to the wall face
@@ -110,8 +112,8 @@ def find_doors(door_mask, wall, cell_px, cfg=None):
         b0 = group[0]["c"] + d * max(proj)
         # reach into the wall on both ends
         into = s["end_into_wall_cells"] * cell_px
-        ta = _walk_to_wall(wall, a0, -d, cell_px * 0.6)
-        tb = _walk_to_wall(wall, b0, d, cell_px * 0.6)
+        ta = _walk_to_wall(wall, a0, -d, cell_px * s["door_reach_cells"])
+        tb = _walk_to_wall(wall, b0, d, cell_px * s["door_reach_cells"])
         # A double door is one leaf per bar: split the opening halfway across the gap between bars.
         c0 = group[0]["c"]
         spans = sorted((float((g["c"] - c0) @ d) - g["len"] / 2, float((g["c"] - c0) @ d) + g["len"] / 2) for g in group)
