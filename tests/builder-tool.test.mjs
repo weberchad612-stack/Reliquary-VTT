@@ -254,3 +254,12 @@ test('builder: the region\'s books are highlighted after the campaign\'s own, an
   const first = bg.findIndex((o) => !o.campaign);
   assert.ok(first > 0 && bg[first].region, 'the campaign\'s own first, then the region\'s');
 });
+
+test('builder: a choice of linked feats is offered by name and granted (Steadfast Tanuki)', () => {
+  const b = { v: 1, level: 1, ancestry: 'ancestries:ancestry/tanuki', heritage: 'heritages:heritage/steadfast-tanuki', class: 'classes:class/champion', approvals: [{ what: 'ancestries:ancestry/tanuki' }] };
+  const o = B.options(b, '1:choice.steadfast-tanuki.steadfastTanuki').options;
+  assert.deepEqual(o.map((x) => [x.value, x.name]), [['feats:feat/everyday-form', 'Everyday Form'], ['feats:feat/teakettle-form', 'Teakettle Form']]);
+  const r = B.derive(B.apply(b, '1:choice.steadfast-tanuki.steadfastTanuki', 'feats:feat/teakettle-form'));
+  assert.deepEqual(r.problems, []);
+  assert.ok(r.actor.feats.some((f) => f.slug === 'teakettle-form' && f.slot === 'granted'));
+});

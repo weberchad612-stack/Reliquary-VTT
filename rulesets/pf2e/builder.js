@@ -370,7 +370,13 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     else if (step === 'tradition') out = [{ value: '-', name: 'chosen with the subclass: make that choice first' }];
     else if (step.startsWith('choice.') && s.choice) {
       const c = s.choice, rolls = new Set(r.rollOptions || []);
-      if (c.options) out = c.options.map((o) => ({ value: o.value, name: o.label, ...(o.predicate && holds(o.predicate, { level: r.actor.level, tags: rolls }) === false ? { blocked: ['not open to this character'] } : {}) })).filter((o) => all || !o.blocked);
+      if (c.options) out = c.options.map((o) => {
+        // an option that is a Foundry link (a feat to pick) is offered as our content key, with its name and summary
+        const k = typeof o.value === 'string' && /^Compendium\./.test(o.value) ? resolve(o.value) : null;
+        const d = k ? get(k) : null;
+        const base = d ? entry(k, d) : { value: o.value, name: o.label || String(o.value) };
+        return { ...base, ...(o.predicate && holds(o.predicate, { level: r.actor.level, tags: rolls }) === false ? { blocked: ['not open to this character'] } : {}) };
+      }).filter((o) => all || !o.blocked);
       else if (c.config) {
         const list = configList(c.config, { weaponGroups: weaponGroups(), deity: b.deity ? get(b.deity) : null });
         out = list ? list.filter((o) => c.config !== 'skills' || all || !P.skills[o.value]).map((o) => ({ value: o.value, name: o.label })) : [{ value: '<value>', name: `a ${c.config} (the builder has no list: the GM names it)` }];

@@ -562,7 +562,7 @@ export function deriveCharacter(build, get, opts = {}) {
       const flag = fr.flag || camel(fr.slug || d.slug);
       const id = `${d.slug}.${flag}`;
       const c = fr.choices;
-      const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { ...(o.value && typeof o.value === 'object' ? { value: slug(foundryLabel(o.label)), label: foundryLabel(o.label), data: o.value } : { value: o.value, label: foundryLabel(o.label).replace(/^Trait /, '').replace(/^None option$/, 'None') }), ...(o.predicate ? { predicate: o.predicate } : {}) } : { value: o, label: String(o) })) }
+      const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { ...(o.value && typeof o.value === 'object' ? { value: slug(foundryLabel(o.label)), label: foundryLabel(o.label), data: o.value } : { value: o.value, label: o.label ? foundryLabel(o.label).replace(/^Trait /, '').replace(/^None option$/, 'None') : String(o.value).split('.').pop() }), ...(o.predicate ? { predicate: o.predicate } : {}) } : { value: o, label: String(o) })) }
         : c && typeof c === 'object' && c.ownedItems ? { owned: { types: c.types || [], ...(c.predicate ? { predicate: c.predicate } : {}) } }
         : c && typeof c === 'object' && c.filter ? { filter: c.filter, ...(c.itemType ? { itemType: c.itemType } : {}) }
         : typeof c === 'string' ? { config: c } : c && c.config ? { config: c.config } : null;
