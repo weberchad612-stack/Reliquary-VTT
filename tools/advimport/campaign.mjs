@@ -10,6 +10,10 @@
 //               creatures: [{name, alias?, ref? (a stat block key), at: [x, y], art?, rules?, stats?, note?, npc?, size?}]}
 //   object:    {id, map, room, at, name, kind: container|feature|hazard, hidden?, items?, coins?, hazard?, locked?,
 //               find_dc?, text?, note?, art?}
+//   ambient:   [{map, sound (a loop in sounds/sounds.json), at, radius (ft), inner?, when?, volume?, label?, gm_only?}]
+//   music:     {themes: {map id: mood}}   each map's music out of combat
+//   ledger:    [{kind, title?, text, status?, where?, subjects?}]   the GM's memory from the book (source: adventure)
+//   map_state: {map id: {regions_off?: [...], ...}}   how a map starts (a light region switched off until play turns it on)
 // and writes the save: campaign.json, maps/<map>.json (tokens), actors/<token id>.json. Every creature and object
 // becomes a token (hidden where the adventure hides it), named by the board's rules (board/names.js), with its
 // stat block reference and the adventure's own differences, its art key and its encounter group. Token ids are
@@ -98,14 +102,23 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
       ...(o.find_dc ? { find_dc: o.find_dc } : {}), ...(o.room ? { room: o.room } : {}),
     };
   }
+  const ambient = {};
+  (adv.ambient || []).forEach((a, n) => {
+    if (!maps[a.map]) { problems.push(`ambient ${n}: map "${a.map}" is not in the adventure`); return; }
+    const { map, ...rest } = a;
+    (ambient[map] = ambient[map] || {})[stableId(`${pack.id}:ambient:${n}`).replace('tok-', 'amb-')] = { ...rest, by: 'claude' };
+  });
   const start = adv.start || { map: Object.keys(maps)[0] };
   const campaign = {
     $schema: '../../schemas/campaign.schema.json', v: 1,
     id: id || pack.id, title: title || adv.title || pack.title,
     pack: { id: pack.id, version: pack.version || '0' }, ruleset: pack.ruleset,
     current_map: start.map, discovered: [start.map],
+    ...(adv.music && adv.music.themes ? { music: { mood: 'auto', themes: adv.music.themes } } : {}),
   };
-  return { campaign, maps, actors, problems };
+  const t0 = Date.now();
+  const ledger = (adv.ledger || []).map((e, n) => ({ id: `${t0.toString(36).padStart(9, '0')}-${n.toString(36)}`, at: new Date(t0).toISOString(), by: 'claude', source: 'adventure', ...e }));
+  return { campaign, maps, actors, ambient, ledger, problems };
 }
 
 function main(argv) {
@@ -116,12 +129,13 @@ function main(argv) {
   const [packDir, saveDir] = args;
   if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--force]'); return 2; }
   if (fs.existsSync(path.join(saveDir, 'campaign.json')) && !force) { console.error(`${saveDir} already holds a campaign (use --force to rebuild it)`); return 1; }
-  const { campaign, maps, actors, problems } = buildSave(packDir, { id, title });
+  const { campaign, maps, actors, ambient, ledger, problems } = buildSave(packDir, { id, title });
   for (const p of problems) console.error('PROBLEM', p);
   if (problems.length) return 1;
   if (force) for (const d of ['maps', 'actors']) fs.rmSync(path.join(saveDir, d), { recursive: true, force: true });
   write(path.join(saveDir, 'campaign.json'), campaign);
-  for (const [m, tokens] of Object.entries(maps)) write(path.join(saveDir, 'maps', `${m}.json`), { $schema: '../../../schemas/map-state.schema.json', map: m, tokens });
+  for (const [m, tokens] of Object.entries(maps)) write(path.join(saveDir, 'maps', `${m}.json`), { $schema: '../../../schemas/map-state.schema.json', map: m, tokens, ...(ambient[m] ? { ambient: ambient[m] } : {}), ...(((readJson(path.join(packDir, 'adventure.json')).map_state) || {})[m] || {}) });
+  if (ledger.length) write(path.join(saveDir, 'ledger.json'), { $schema: '../../schemas/ledger.schema.json', entries: ledger });
   for (const [tid, a] of Object.entries(actors)) write(path.join(saveDir, 'actors', `${tid}.json`), a);
   const n = Object.values(maps).reduce((k, t) => k + Object.keys(t).length, 0);
   console.log(`${saveDir}: ${n} tokens on ${Object.keys(maps).length} maps, ${Object.keys(actors).length} actors`);
