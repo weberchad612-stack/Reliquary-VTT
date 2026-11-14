@@ -48,6 +48,28 @@ test('sync: apply.sh writes unchanged files, keeps the user\'s edits, backs up f
 import crypto from 'node:crypto';
 function require_md5(t) { return crypto.createHash('md5').update(t).digest('hex'); }
 
+test('sync: apply.sh joins more than 100 parts in number order, not name order', { skip: spawnSync('python3', ['-V']).status !== 0 && 'no python3' }, () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pc-'));
+  const src = fs.mkdtempSync(path.join(os.tmpdir(), 'src-'));
+  fs.mkdirSync(path.join(src, 'p'));
+  fs.writeFileSync(path.join(src, 'p', 'big.bin'), crypto.randomBytes(20000));
+  const tgz = path.join(src, 'x.tgz');
+  spawnSync('tar', ['czf', tgz, '-C', src, 'p']);
+  const buf = fs.readFileSync(tgz);
+  const here = path.join(root, '_sync', 'S2');
+  fs.mkdirSync(here, { recursive: true });
+  // the old naming (part00 .. part100): name order would put part100 before part11
+  const size = Math.ceil(buf.length / 101);
+  for (let i = 0, n = 0; i < buf.length; i += size, n++) fs.writeFileSync(path.join(here, `sync.tgz.part${String(n).padStart(2, '0')}`), buf.subarray(i, i + size));
+  assert.ok(fs.existsSync(path.join(here, 'sync.tgz.part100')));
+  const md5 = require_md5(fs.readFileSync(path.join(src, 'p', 'big.bin')));
+  fs.writeFileSync(path.join(here, 'manifest.json'), JSON.stringify({ pack: 'p', stamp: 'S2', md5: require_md5(buf), gone: [], send: [{ file: 'p/big.bin', md5, prev: null }] }));
+  fs.writeFileSync(path.join(here, 'apply.sh'), APPLY);
+  const r = spawnSync('bash', [path.join(here, 'apply.sh'), root], { encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.equal(require_md5(fs.readFileSync(path.join(root, 'p', 'big.bin'))), md5);
+});
+
 test('sync: files left out (caches, working candidates) are never treated as gone', () => {
   const p = plan(['p/a'], { 'p/a': '1' }, { 'p/a': '1', 'p/art/candidates/x.png': '9', 'p/maps/m/.cache/detect.pkl': '8' });
   assert.deepEqual(p.gone, []);

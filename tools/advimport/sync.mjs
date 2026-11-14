@@ -60,7 +60,7 @@ export const APPLY = `#!/usr/bin/env bash
 set -u
 ROOT="$1"; HERE="$(cd "$(dirname "$0")" && pwd)"; STAMP="$(basename "$HERE")"
 cd "$HERE" || exit 1
-cat sync.tgz.part* > /tmp/sync-$STAMP.tgz
+ls sync.tgz.part* | sort -V | xargs cat > /tmp/sync-$STAMP.tgz
 WANT=$(python3 -c "import json;print(json.load(open('manifest.json'))['md5'])")
 GOT=$(md5sum /tmp/sync-$STAMP.tgz | cut -d' ' -f1)
 if [ "$WANT" != "$GOT" ]; then echo "BROKEN: the archive arrived damaged ($GOT, expected $WANT)"; exit 1; fi
@@ -128,7 +128,9 @@ function main(argv) {
   const t = spawnSync('tar', ['czf', tgz, '-C', REPO, '-T', list], { encoding: 'utf8' });
   if (t.status !== 0) { console.error(t.stderr); return 1; }
   const buf = fs.readFileSync(tgz);
-  for (let i = 0, n = 0; i < buf.length; i += PART, n++) fs.writeFileSync(path.join(out, `sync.tgz.part${String(n).padStart(2, '0')}`), buf.subarray(i, i + PART));
+  // numbered as wide as the count needs (part000 .. part106), so the names sort in the order the parts join
+  const width = Math.max(2, String(Math.ceil(buf.length / PART) - 1).length);
+  for (let i = 0, n = 0; i < buf.length; i += PART, n++) fs.writeFileSync(path.join(out, `sync.tgz.part${String(n).padStart(width, '0')}`), buf.subarray(i, i + PART));
   fs.rmSync(tgz); fs.rmSync(list);
   fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify({ pack: path.basename(packDir), stamp, md5: crypto.createHash('md5').update(buf).digest('hex'), send: p.send, gone: p.gone }, null, 1));
   fs.writeFileSync(path.join(out, 'apply.sh'), APPLY);

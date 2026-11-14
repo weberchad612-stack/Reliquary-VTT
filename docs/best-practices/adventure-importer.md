@@ -152,6 +152,15 @@ the device bridge can carry, with `manifest.json` and `apply.sh`, and prints the
 1. `device_commit_files` puts every file into `<checkout>/_sync/<stamp>/`.
 2. `device_bash` runs `bash .../apply.sh <checkout>`.
 
+A first sync of a whole book can be large (about 200 MB, more than 100 parts). Two things keep the parts in order:
+
+- Parts are numbered as wide as the count needs (`part000` to `part106`).
+- `apply.sh` joins them in number order (`sort -V`).
+
+Before this was fixed, `part100` sorted before `part11`, and the archive failed its md5 check.
+If `apply.sh` reports BROKEN, compare each part's md5 on both sides before sending anything again. When the parts
+match, the join is at fault, not the transfer.
+
 On the PC, `apply.sh` handles each file like this:
 
 - It checks the archive's md5 first.
