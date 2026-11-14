@@ -30,6 +30,9 @@ engine running against a campaign's data, kept in sync with Claude, who runs the
    see, lights or puts out their own PC's carried light, and selects a PC to look through its eyes.
    Claude, through its tools: everything else (foes and NPCs, secret doors, lights, sky, terrain,
    colour and animation settings, the active campaign). The board warns and never blocks, as now.
+   Veils (a visible magical barrier, docs/design/maps.md section 5) are the GM's: one click in the GM view dispels
+   one or raises it again, with an audit line; a player who clicks a standing veil is told it bars the way. Players
+   see a standing veil as a dark band with a violet edge once either side is explored, and nothing once dispelled.
 7. **A deliberate GM switch.** The board always opens in the player view. The GM view sits behind a clearly
    marked button that asks for confirmation ("This reveals unseen foes, secret doors and other
    spoilers") and is dropped on reload. The user uses it to audit how Claude runs the game, so the GM view

@@ -8,7 +8,7 @@ This document describes how maps work in Reliquary-VTT: what a map is, how walls
 
 | # | Topic | Decision |
 |---|---|---|
-| 1 | Wall precision | Segment endpoints snap to **1/8 cell** (7.5 inches on a 5 ft grid). |
+| 1 | Wall precision | Segment endpoints snap to **1/8 cell** (7.5 inches on a 5 ft grid); maps imported at print resolution use **1/32 cell** (`snap: 0.03125`, 2026-11-13) with nearly-meeting ends welded together. |
 | 2 | Explored area | Stored as **smooth outlines** (polygons) at the same 1/8 cell precision, not as an image. |
 | 3 | Remembered vs. visible | Areas explored earlier but not visible now are shown **dimmed**. Only what a PC can see right now is fully lit. |
 | 4 | Tokens in remembered areas | Foe and NPC tokens are **hidden from players** unless a PC can currently see them. |
@@ -131,7 +131,8 @@ is told in chat.
 
 Rules:
 
-- Every coordinate is a multiple of `snap` (1/8 cell). The validator rejects anything else.
+- Every coordinate is a multiple of `snap` (0.125, or 0.03125 for maps imported at print resolution). The validator rejects anything else.
+- **Thickness** `w` (cells, up to 2): the segment is a wall's centre line and the wall is a box w wide, squared off w/2 past each end. Light, sound and movement meet the box's four faces; sight, from each viewer, stops at the box's far face and its two end caps, so the fog reveals the whole drawn wall and two thick walls meeting at a corner leave no gap. Without `w` a wall is a line. Not allowed on doors, veils, one-way or proximity walls.
 - `id` is stable for the life of the pack. Saves, narration and journal entries refer to segments and doors by id.
 - `t` is a preset (section 5). Any segment may override the four sense values with `move`, `sight`, `light`, `sound`.
 - `dir`: 0 = blocks from both sides (default), 1 = blocks only from the left of a→b, 2 = only from the right.
@@ -155,6 +156,7 @@ Sense values (Foundry's scale): 0 none, 10 limited, 20 normal, 30 proximity, 40 
 | `ethereal` | Ghostly or force barrier you can walk through but not see through | 0 | 20 | 20 | 0 |
 | `door` | Door; closed or locked uses these values, open is 0 for everything | 20 | 20 | 20 | 20 |
 | `secret` | Secret door: behaves as `solid` and has no icon until found, then as `door` | 20 | 20 | 20 | 20 |
+| `veil` | A visible magical barrier (a curtain of darkness, a shimmering ward): door-like, with a `door` id; it stands (`closed`) or is dispelled (`open`, 0 for everything); never locked, no leaf; the GM switches it with one click, players only see it | 20 | 20 | 20 | 0 |
 
 One-way walls are any type with `dir` set. The `light` values are stored now and used when light is built.
 
@@ -168,7 +170,7 @@ For one sense, a ray from source P to target Q:
 4. **10 limited:** the ray passes the first limited segment and stops at a second limited segment or any normal one.
 5. **30 proximity:** treated as none if P is within `prox` feet of the segment, otherwise as normal.
 6. **40 reverse proximity:** the opposite: none if P is farther than `prox` feet, otherwise normal.
-7. **Doors:** open doors are 0 for every sense. Closed and locked doors use their type's values. An unfound secret door uses `solid`.
+7. **Doors:** open doors (and dispelled veils) are 0 for every sense. Closed and locked doors use their type's values. An unfound secret door uses `solid`.
 
 The engine applies the same function to sight, movement and light, and to sound: the board muffles effects and ambient sounds behind walls that stop sound (2026-11-13, docs/best-practices/sound.md).
 
@@ -386,5 +388,5 @@ Maps from commercial adventures, and walls traced from them, are derived from th
 
 - Maps with several floors or heights in one image (balconies, pits).
 - How map images are hosted for the board (published as artifact files, referenced by id from the pack).
-- Wall edges at the limit of sight: visibility stops at a wall's centre line, so half of a drawn wall can stay fogged. The first implementation revealed thin walls whole and thick walls to their middle; decide whether to do the same when the board is built.
+- ~~Wall edges at the limit of sight~~: settled by wall thickness (2026-11-13): a wall with `w` is seen to its far face, so the whole drawn wall is revealed.
 - Whether `links` need conditions beyond `found` (one-way links, links that need a key).

@@ -23,7 +23,7 @@ Settings (all optional except source and map):
   vectorize:  {tolerance_cells, min_ring_cells}
   erase:      [{cells: [x0, y0, x1, y1] | poly: [[x, y], ...], note}]   not walls (stairs, rubble)
   slits:      {reject_near: [[x, y], ...], note}   detected slits to drop (moss, unclear art)
-  openings:   [{kind: slit|secret|door|window, at: [x, y], width_cells?, angle_deg?, ...props, note}]
+  openings:   [{kind: slit|secret|veil|door|window, at: [x, y], width_cells?, angle_deg?, ...props, note}]
               cut an opening through a wall and put a segment of that kind across it
   doors:      [{near: [x, y], ...props}]          properties for detected doors; {near, drop: true} removes a
               false detection (a bed's white edge)
@@ -239,7 +239,7 @@ def straight_walls(lc, mask, g, door_segs, special, cfg, report):
             m["w"] = spec.get("w", 0.06)
             report.setdefault("lines_not_found", []).append(spec)
         kept.append(m)
-    openings = [x for x in door_segs + special if x["t"] in ("door", "secret", "window", "ethereal", "terrain")]
+    openings = [x for x in door_segs + special if x["t"] in ("door", "secret", "veil", "window", "ethereal", "terrain")]
     kept = linesmod.consolidate(kept, lc)
     # a door, window or hand-placed opening on a straight wall sits exactly on its centre line
     aligned = 0
@@ -387,11 +387,11 @@ def build(cfg_path, repo):
     special = []
     for o in cfg.get("openings", []):
         kind = o["kind"]
-        width = o.get("width_cells", {"slit": 0.25, "secret": 1.0, "door": 1.0, "window": 1.0}[kind]) * cs
+        width = o.get("width_cells", {"slit": 0.25, "secret": 1.0, "veil": 1.0, "door": 1.0, "window": 1.0}[kind]) * cs
         a, b, thick = cut_opening(smooth, cells_to_px(o["at"], g), g, width, o.get("angle_deg"))
         seg = {"t": kind}
-        if kind in ("door", "secret"):
-            seg["door"] = {"id": o.get("id"), "label": o.get("label", "Secret door" if kind == "secret" else "Door")}
+        if kind in ("door", "secret", "veil"):
+            seg["door"] = {"id": o.get("id"), "label": o.get("label", {"secret": "Secret door", "veil": "Veil"}.get(kind, "Door"))}
         if kind == "slit":
             near = features.DEFAULTS["slit_near_ft"] + (thick / cs) * fpc / 2
             seg["prox"] = {"sight": round(near * 2) / 2, "light": round(near * 2) / 2}
@@ -469,17 +469,18 @@ def build(cfg_path, repo):
     def order(s):
         return (round((s["a"][1] + s["b"][1]) / 2, 2), round((s["a"][0] + s["b"][0]) / 2, 2))
     out = []
-    other = [s for s in special if s["t"] not in ("slit", "window", "door", "secret")]
+    other = [s for s in special if s["t"] not in ("slit", "window", "door", "secret", "veil")]
     for prefix, group in (("w", walls + other), ("slit", slit_segs + [s for s in special if s["t"] == "slit"]),
                           ("win", win_segs + [s for s in special if s["t"] == "window"]),
                           ("door", door_segs + [s for s in special if s["t"] == "door"]),
-                          ("secret", [s for s in special if s["t"] == "secret"])):
+                          ("secret", [s for s in special if s["t"] == "secret"]),
+                          ("veil", [s for s in special if s["t"] == "veil"])):
         for i, s in enumerate(sorted(group, key=order), 1):
             sid = f"{prefix}{i:04d}" if prefix == "w" else f"{prefix}{i:02d}"
             if s.get("door") is not None:
                 s["door"].setdefault("id", None)
                 if not s["door"]["id"]:
-                    s["door"]["id"] = f"d{i:02d}" if prefix == "door" else f"s{i:02d}"
+                    s["door"]["id"] = {"door": f"d{i:02d}", "veil": f"v{i:02d}"}.get(prefix, f"s{i:02d}")
                 s["door"].setdefault("initial", "closed")
             # keep every endpoint on the grid (a wall drawn along the map's edge, or extended into a corner)
             clamp = lambda q: [min(max(q[0], 0), int(g["cols"])), min(max(q[1], 0), int(g["rows"]))]
@@ -495,6 +496,16 @@ def build(cfg_path, repo):
     if cfg.get("weld_cells", 0.08 if lc else 0):
         report["welded_ends"] = linesmod.weld(out, cfg.get("weld_cells", 0.08), step)
         out = [x for x in out if x["a"] != x["b"]]
+        # welding can fold a traced outline's two sides onto one line: keep one of each plain wall with the same ends
+        seen, kept = set(), []
+        for x in out:
+            key = (x["t"], x.get("w"), tuple(sorted([tuple(x["a"]), tuple(x["b"])])))
+            if x.get("door") is None and key in seen:
+                report["duplicates_dropped"] = report.get("duplicates_dropped", 0) + 1
+                continue
+            seen.add(key)
+            kept.append(x)
+        out = kept
     for x in out:
         x.pop("line", None)
     # Double doors: each leaf names the other (ids are known only now).

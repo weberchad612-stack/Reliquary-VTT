@@ -46,7 +46,7 @@ The user's standing rule:
 | Lighting | The settings' `lighting` block: the level's rule from the text, the outdoors by sealed flood, roofless areas from the terrain, fixed lights with both radii, colour and intensity from the text (see [lighting.md](lighting.md)). Daylight through windows and open doors is automatic. | Plot the regions; list every room the outdoor flood reaches: each must be a drawn opening, or it is a wall gap to fix. |
 | Validate | `node tools/validate.mjs <pack>`. | No errors, no unexplained warnings. **No "walls pinch the doorway" warnings**: every door must be clear to see and walk through when open. |
 | Doorways | Render a zoomed tile of **every** door and secret door with the segments drawn. | Square jambs, nothing crossing or running along the door line, the opening as wide as the gap in the art. |
-| Leak check | From a point inside every room, with every door closed, compute what is visible. | Nothing outside the room is visible except where the drawing shows an opening on purpose. Trace each leak to its gap and fix it. |
+| Leak check | `node tools/mapcheck.mjs <map-dir>` (section 4b): sight from every keyed room with every door closed, and the walking routes in `checks.routes`, in one report. | Nothing outside the room is visible except where the drawing shows an opening on purpose. Trace each leak to its gap and fix it. |
 | Movement | Route a Medium creature through doors and passages. | Doors that should be usable are; 5-ft doors stop Large creatures. |
 | Sight spot checks | Stand beside each special feature. | Arrow slits work only up close; barred door windows only beside the door; stained glass blocks sight; secret doors block until found and opened. |
 | Look at it | Build the demo page on the map and walk it. | It plays the way the adventure reads. |
@@ -59,6 +59,47 @@ The user's standing rule:
 - `features.door_reach_cells`: how far past a door bar to look for its jamb (default 0.6). Lower it to about 0.1 where the bars are drawn on the wall line itself.
 - `doors: [{near, drop: true}]` removes a false door (a bed's white edge); a mask `exclude` stops it being seen at all.
 - `map.start` and `map.links` in the settings are copied into `map.json`.
+
+## 4b. Straight walls, thickness, profiles, veils and the map check (2026-11-13)
+
+Built for the thin-line, grey-stone maps of the first adventure import, and kept general: a map picks a **profile** and
+overrides only what differs.
+
+- **Profiles** (`tools/mapimport/profiles.json`): `"profile": "thin-lines-grey-stone"` in `import.json` merges a saved
+  set of settings (snap, detection size, mask thresholds, grid-line suppression, straight walls, interior erase,
+  squaring, welding) under the map's own; the map's values win. When a new art style needs a different set, save it
+  as a new profile rather than copying numbers between maps.
+- **Grid-line suppression** (`grid_lines.suppress`) removes thin straight runs on the grid lines before tracing, so the
+  printed grid is never read as wall.
+- **Straight walls** (`lines`): with `auto`, the tool proposes every long, straight, solid run in the wall mask (with
+  clear floor on at least one side, so the inside of solid rock is not proposed) and measures its centre line and
+  thickness; `add` lists lines by hand (`{a, b}` in cells, roughly placed; the tool measures the real line nearby, and
+  reports any it cannot find in `lines_not_found`); `reject_near` drops a proposal. Double-edged walls are merged and
+  collinear walls aligned. Doors and windows on a line are moved onto it and cut out of it. Each line becomes one
+  thick segment along its centre (`w`), and its pixels are taken out of the mask, so the tracer only sees what is left
+  (curves, rubble, odd corners).
+- **Interior erase** (`interior_erase`): each keyed room is flooded from its point, bounded by the mask and the known
+  segments; the room's interior (less a margin) is cleared from the mask, which removes furniture, rugs, and grid
+  marks that would otherwise be traced as walls. `clip` keeps a flood inside the room where a doorway is open;
+  `skip` leaves a room alone (a room whose furniture is drawn walls, or whose floor is not closed).
+- **Squaring and welding:** traced walls within `square_up_deg` (3) of the grid's axes are made exactly square. Ends
+  closer than `weld_cells` meet at one point: measured lines never move, an end inside a thick wall is buried on its
+  centre line, square walls stay square, and everything lands on the snap (1/32 for print-resolution maps). Welding
+  can fold a traced outline's two sides onto one line; the importer keeps one of each.
+- **Wall thickness** (`w`, docs/design/maps.md section 4): light, sound and movement meet the drawn wall's faces, and
+  sight reveals the whole drawn wall. Use it for walls on measured lines; leave traced odd shapes as lines.
+- **Veils** (`t: "veil"`, a `door` with an id): a magical barrier the players can see, which the GM dispels in one
+  click (the board) and which blocks movement, sight and light until then. Use it for a curtain of darkness, a ward or
+  anything the text says vanishes when a condition is met; do not model these as secret doors (players would not see
+  them, and they could be "found" and opened). A veil has no leaf, so the doorway pinch check skips it.
+- **The map check** (`tools/mapcheck.mjs <map-dir> [--json] [--thorough]`): sight from every keyed room (`rooms.json`,
+  room squares) with every door closed must stay inside the room, and every route in `checks.routes`
+  (`{from, to, blocked?, note}`) must be walkable with every door open (veils dispelled, secret doors found), except
+  that a route marked `blocked` must fail. Views the text allows (a balcony over a hall, outside through a window) go
+  in `checks.sees` with a reason. Run it after every change to an import; a map is done when it says OK.
+- **Lessons:** a line the eye sees at once may need listing by hand when it lies against rock, webs or a bench; list it
+  in `lines.add` with a note naming what hides it, instead of lowering thresholds for the whole map. Erase boxes near
+  corners eat walls; check with the map check, not by eye.
 
 ## 5. Pitfalls already met
 

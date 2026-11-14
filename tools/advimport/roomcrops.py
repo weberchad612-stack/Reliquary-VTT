@@ -8,6 +8,7 @@ places each creature at the start of the encounter. The marker images themselves
 portraits, a first source of token art.
 
 Usage:
+    python3 tools/advimport/roomcrops.py --refresh <book.pdf> <roomcrops.json>   (captions and centres only)
     python3 tools/advimport/roomcrops.py <book.pdf> --level ID=<maps.pdf>:<page>[:x0,y0,x1,y1] ...
         [--pages 4-35] [--out extracted/<book>/roomcrops.json] [--images extracted/<book>/markers]
 
@@ -111,7 +112,49 @@ def to_cell(pt_page, bbox, crop_wh, reg, g):
     return [round((lx - g["origin_px"][0]) / g["cell_px"], 2), round((ly - g["origin_px"][1]) / g["cell_px"], 2)]
 
 
+CAPTION = re.compile(r"^([A-Z]\d{1,2}[a-z]?)\.\s+(.+)$")
+
+
+def captions(page, bbox):
+    """The area captions printed over a crop ("A1. CRASHED LIFT"): [(key, title)]."""
+    out = []
+    for b in page.get_text("dict")["blocks"]:
+        for l in b.get("lines", []):
+            t = " ".join(x["text"] for x in l["spans"]).strip()
+            x0, y0, x1, y1 = l["bbox"]
+            if bbox[0] - 2 <= x0 and x1 <= bbox[2] + 2 and bbox[1] - 2 <= y0 and y1 <= bbox[3] + 2:
+                for part in re.split(r"\s+&\s+", t):
+                    m = CAPTION.match(part)
+                    if m:
+                        out.append((m.group(1), " ".join(w.capitalize() for w in m.group(2).lower().split())))
+    return out
+
+
+def centre_cell(rec, levels):
+    """Where the middle of a registered crop lands on its level map, in cells."""
+    g = next(l["grid"] for l in levels if l["id"] == rec["level"])
+    M = np.array(rec["transform"])
+    w, h = rec["crop"]["px"]
+    lx, ly = M @ np.array([w / 2, h / 2, 1.0])
+    return [round((lx - g["origin_px"][0]) / g["cell_px"], 2), round((ly - g["origin_px"][1]) / g["cell_px"], 2)]
+
+
+def refresh(book, out_file):
+    """Add captions and centre cells to an existing roomcrops.json (no registration again)."""
+    d = json.load(open(out_file))
+    doc = pymupdf.open(book)
+    for rec in d["pages"]:
+        if not rec.get("level"):
+            continue
+        rec["captions"] = captions(doc[rec["page"] - 1], rec["crop"]["bbox"])
+        rec["centre"] = centre_cell(rec, d["levels"])
+    json.dump(d, open(out_file, "w"), indent=1, default=float)
+
+
 def main(argv):
+    if argv and argv[0] == "--refresh":
+        refresh(argv[1], argv[2])
+        return
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("book")
     ap.add_argument("--level", action="append", required=True)
@@ -167,6 +210,7 @@ def main(argv):
             inside = lambda b: b[0] >= bb[0] - 2 and b[2] <= bb[2] + 2 and b[1] >= bb[1] - 2 and b[3] <= bb[3] + 2
             rec.update(level=lv["id"], inliers=reg["inliers"], err_px=reg["err_px"],
                        transform=[[round(v, 5) for v in row] for row in reg["M"].tolist()])
+            rec["captions"] = captions(page, bb)
             # label: a short key like A1 / B2c printed over the crop
             lab = [w for w in words if re.fullmatch(r"[A-Z]\d{1,2}[a-z]?", w[4]) and inside(w[:4])]
             rec["label"] = [{"text": w[4], "cell": to_cell(((w[0] + w[2]) / 2, (w[1] + w[3]) / 2), bb, rec["crop"]["px"], reg, g)}

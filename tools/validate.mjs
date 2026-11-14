@@ -70,7 +70,7 @@ function contentSchema(ruleset, kind) {
 export const DOORWAY_END_SLACK = 0.4;
 export const DOORWAY_MIN_CELLS = 0.5;
 const PROBE = 0.5;                     // cells either side of the door line
-const BLOCKING = new Set(['solid', 'window', 'slit', 'grate', 'terrain', 'door', 'secret']);
+const BLOCKING = new Set(['solid', 'window', 'slit', 'grate', 'terrain', 'door', 'secret', 'veil']);
 
 function crosses(p1, p2, a, b) {
   const d = (ax, ay, bx, by) => ax * by - ay * bx;
@@ -220,6 +220,8 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
         if (doors.has(d.id)) report.error(file, `${where}: door id "${d.id}" is already used by segment ${doors.get(d.id).seg}`);
         doors.set(d.id, { seg: s.id, t: s.t, initial: d.initial || 'closed' });
         if (s.t === 'secret' && d.initial === 'open') report.warn(file, `${where}: a secret door that starts open is not secret`);
+        if (s.t === 'veil' && d.initial === 'locked') report.error(file, `${where}: a veil cannot be locked; it stands (closed) or is dispelled (open)`);
+        if (s.t === 'veil' && d.pair) report.error(file, `${where}: a veil has no leaves to pair`);
         if (s.t === 'secret' && d.dc === undefined && !d.auto_find) report.warn(file, `${where}: secret door has no dc to find it (set auto_find if it needs none)`);
       }
     }
@@ -243,7 +245,7 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
     if (seg.t !== other.t) report.warn(file, `${where}: leaves of one double door have different types (${seg.t}, ${other.t})`);
   }
   for (const { seg, file } of allSegs) {
-    if (!DOOR_TYPES.includes(seg.t)) continue;
+    if (!DOOR_TYPES.includes(seg.t) || seg.t === 'veil') continue;   // a veil has no leaf to swing
     const { clear, length } = doorwayClearance(seg, allSegs.map((x) => x.seg));
     if (clear < Math.max(DOORWAY_MIN_CELLS, length - DOORWAY_END_SLACK)) {
       report.warn(file, `segment ${seg.id} (door ${seg.door.id}${seg.door.label ? `, "${seg.door.label}"` : ''}): ` +
@@ -322,6 +324,7 @@ export function validateState(file, mapInfo, report = new Report()) {
     const def = doors.get(id);
     if (!def) { report.error(file, `doors.${id}: no such door on map "${map.id}"`); continue; }
     if (d.found !== undefined && def.t !== 'secret') report.warn(file, `doors.${id}: "found" only applies to secret doors`);
+    if (def.t === 'veil' && d.state === 'locked') report.error(file, `doors.${id}: a veil cannot be locked`);
     if (def.t === 'secret' && d.state === 'open' && !d.found) report.error(file, `doors.${id}: a secret door cannot be open before it is found`);
     if (d.state && d.state === def.initial && d.found === undefined) report.warn(file, `doors.${id}: state equals the initial state; the entry can be removed`);
   }

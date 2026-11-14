@@ -24,7 +24,7 @@
         "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 32 },
         "a": { "$ref": "#/$defs/point" },
         "b": { "$ref": "#/$defs/point" },
-        "t": { "enum": ["solid", "terrain", "grate", "window", "slit", "ethereal", "door", "secret"] },
+        "t": { "enum": ["solid", "terrain", "grate", "window", "slit", "ethereal", "door", "secret", "veil"] },
         "w": { "type": "number", "exclusiveMinimum": 0, "maximum": 2, "description": "Wall thickness in cells: a and b are its centre line. Sight, light, sound and movement meet its faces (half w each side, ends squared off w/2 past a and b), so it is solid through and walls meet at their centres; sight sees a wall to its far face, so the fog reveals the whole drawn wall. Not for doors, one-way walls or proximity walls. Missing: a line with no thickness." },
         "move": { "enum": [0, 20] },
         "sight": { "$ref": "#/$defs/sense" },
@@ -64,7 +64,7 @@
       },
       "allOf": [
         {
-          "if": { "properties": { "t": { "enum": ["door", "secret"] } } },
+          "if": { "properties": { "t": { "enum": ["door", "secret", "veil"] } } },
           "then": { "required": ["door"] },
           "else": { "not": { "required": ["door"] } }
         }

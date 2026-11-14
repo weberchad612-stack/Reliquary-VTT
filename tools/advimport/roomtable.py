@@ -4,6 +4,13 @@
 
 Usage:
     python3 tools/advimport/roomtable.py <pack-dir> <spec.json>
+    python3 tools/advimport/roomtable.py <pack-dir> --from-crops <roomcrops.json> --levels A=level-a,B=level-b,C=roof
+        [--overrides <spec.json>] [--write-spec <spec.json>]
+
+--from-crops proposes the spec from the book (tools/advimport/roomcrops.py): a key printed on a labelled level map
+gives its exact point; otherwise a room crop with one caption ("A5. Lavatory") gives its key, title and the crop's
+centre. Crops with several captions (B6 & B7) give titles only. --overrides (the same spec format) corrects or adds
+points, titles, pages and clips (a room open to its neighbours); its entries win. --write-spec saves the merged spec.
 
 spec.json: {"<map id>": {"<key>": {"at": [x, y], "title": "...", "pages": "...", "clip"?: [x0, y0, x1, y1]}}}
 Each room is the squares reachable from `at` without crossing a wall or a closed door (every door counts as closed),
@@ -41,9 +48,60 @@ def rects_of(cells):
     return out
 
 
+PACK_DIR = []
+
+
+def spec_from_crops(crops_file, levels):
+    """{map: {key: {at, title}}} from the registered crops: labels first, then single captions at the crop's centre."""
+    d = json.load(open(crops_file))
+    spec, titles = {}, {}
+    for rec in d["pages"]:
+        for key, title in rec.get("captions") or []:
+            titles.setdefault(key, title)
+    for rec in d["pages"]:
+        m = levels.get(rec.get("level"))
+        if not m:
+            continue
+        for lab in rec.get("label") or []:
+            spec.setdefault(m, {})[lab["text"]] = {"at": lab["cell"], "source": f"label on p {rec['page']}"}
+    for rec in d["pages"]:
+        m = levels.get(rec.get("level"))
+        caps = {k for k, _ in rec.get("captions") or []}
+        if not m or len(caps) != 1 or not rec.get("centre"):
+            continue
+        key = caps.pop()
+        if key not in spec.get(m, {}):
+            spec.setdefault(m, {})[key] = {"at": rec["centre"], "source": f"crop centre, p {rec['page']}"}
+    # a label that falls off its map (a second map printed on the same sheet) is not this map's
+    for m, rooms in spec.items():
+        mf = os.path.join(PACK_DIR[0], "maps", m, "map.json") if PACK_DIR else None
+        if mf and os.path.exists(mf):
+            g = json.load(open(mf))["grid"]
+            for k in [k for k, r in rooms.items() if not (0 <= r["at"][0] < g["cols"] and 0 <= r["at"][1] < g["rows"])]:
+                rooms.pop(k)
+    for m in spec.values():
+        for key, r in m.items():
+            base = key.rstrip("abcdefgh") if key not in titles else key
+            if titles.get(key) or titles.get(base):
+                r.setdefault("title", titles.get(key) or titles.get(base))
+    return spec
+
+
 def main(argv):
-    pack, spec_file = argv[:2]
-    spec = json.load(open(spec_file))
+    pack = argv[0]
+    PACK_DIR.append(pack)
+    if "--from-crops" in argv:
+        opt = lambda k: argv[argv.index(k) + 1] if k in argv else None
+        levels = dict(x.split("=") for x in opt("--levels").split(","))
+        spec = spec_from_crops(opt("--from-crops"), levels)
+        if opt("--overrides"):
+            for m, rooms in json.load(open(opt("--overrides"))).items():
+                for k, r in rooms.items():
+                    spec.setdefault(m, {}).setdefault(k, {}).update(r)
+        if opt("--write-spec"):
+            json.dump(spec, open(opt("--write-spec"), "w"), indent=1)
+    else:
+        spec = json.load(open(argv[1]))
     problems = 0
     for map_id, rooms in spec.items():
         d = os.path.join(pack, "maps", map_id)

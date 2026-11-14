@@ -43,7 +43,7 @@ import math
 import cv2
 import numpy as np
 
-BLOCKS_MOVE = {"solid", "terrain", "grate", "window", "slit", "door", "secret"}
+BLOCKS_MOVE = {"solid", "terrain", "grate", "window", "slit", "door", "secret", "veil"}
 ROOM_MAX_CELLS = 600
 ROOM_REACH = 12
 

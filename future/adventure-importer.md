@@ -23,16 +23,16 @@ Collected while importing the first whole adventure (a Beginner Box adventure, 2
 
 | # | Feature | Decision |
 |---|---|---|
-| 1 | Straight-wall snapping | **Build now**, and have the tool **propose candidate straight walls itself** for Claude to accept or reject; traced segments within about 3° of horizontal or vertical are squared up |
-| 2 | Room-interior erase from the room table | **Build now** |
-| 3 | Grid-line suppression | **Build now** |
-| 4 | One check command (sight against the room table's shapes, routes) | **Build now** |
-| 5 | Room table from the book's registered crops | **Build now** |
+| 1 | Straight-wall snapping | **Built 2026-11-13**; decided: build now, and have the tool **propose candidate straight walls itself** for Claude to accept or reject; traced segments within about 3° of horizontal or vertical are squared up |
+| 2 | Room-interior erase from the room table | **Built 2026-11-13**; decided: build now |
+| 3 | Grid-line suppression | **Built 2026-11-13**; decided: build now |
+| 4 | One check command (sight against the room table's shapes, routes) | **Built 2026-11-13**; decided: build now |
+| 5 | Room table from the book's registered crops | **Built 2026-11-13**; decided: build now |
 | 6 | Map-sheet splitting | Later |
-| 7 | Veil wall type (engine and board) | **Build now** |
-| 8 | Saved mask profiles per art style | **Build now** |
+| 7 | Veil wall type (engine and board) | **Built 2026-11-13**; decided: build now |
+| 8 | Saved mask profiles per art style | **Built 2026-11-13**; decided: build now |
 | 9 | Matching book pawns to creatures | Later |
-| 10 | Stat block matching, with the book's differences flagged | **Build now** (matching and comparison) |
+| 10 | Stat block matching, with the book's differences flagged | **Built 2026-11-13**; decided: build now (matching and comparison) |
 | 11 | Token-sheet slicing | Later |
-| 12 | **Wall thickness** (engine, board, importer) | **Build now** (2026-11-13): a wall is a centre line with a width `w` (squares) measured from the drawn wall; sight and movement test its two faces, so walls are solid through and junctions meet at the centre with no gaps; fog reveals a seen wall to its far face; light brightens the lit face. Walls without `w` (outline-traced maps) work as before. Resolves the open question in docs/design/maps.md on wall edges at the limit of sight. |
-| 13 | **Finer wall snap: 1/32 of a square** (was 1/8) | **Build now, with #12** (2026-11-13): new maps snap endpoints to 1/32 (about 6 px at 200 px a square); each walls.json keeps its own `snap`, so older maps stay at 1/8 and the validator, tools and board read the snap from the file. Comes with **welding** (endpoints within a small distance joined into one point) and the squaring rule from #1, so the finer snap does not let small gaps or tracing wobble through. |
+| 12 | **Wall thickness** (engine, board, importer) | **Built 2026-11-13**; decided: build now (2026-11-13): a wall is a centre line with a width `w` (squares) measured from the drawn wall; sight and movement test its two faces, so walls are solid through and junctions meet at the centre with no gaps; fog reveals a seen wall to its far face; light brightens the lit face. Walls without `w` (outline-traced maps) work as before. Resolves the open question in docs/design/maps.md on wall edges at the limit of sight. |
+| 13 | **Finer wall snap: 1/32 of a square** (was 1/8) | **Built 2026-11-13**; decided: build now, with #12 (2026-11-13): new maps snap endpoints to 1/32 (about 6 px at 200 px a square); each walls.json keeps its own `snap`, so older maps stay at 1/8 and the validator, tools and board read the snap from the file. Comes with **welding** (endpoints within a small distance joined into one point) and the squaring rule from #1, so the finer snap does not let small gaps or tracing wobble through. |

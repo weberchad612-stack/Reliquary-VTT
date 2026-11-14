@@ -388,8 +388,18 @@ export async function start(store, { build = null } = {}) {
     return !!(at(mx + nx, my + ny) || at(mx - nx, my - ny));
   }
   const leafOf = (s) => Engine.leafShapes(s, { partner: Engine.pairOf(s, segs) });
+  /** A veil (a visible magical barrier): one GM click dispels it or raises it again; the players can only look at it. */
+  function clickVeil(s) {
+    const label = s.door.label || 'Veil';
+    if (S.view !== 'gm') { toast(`${label}: a magical barrier bars the way.`); return draw(); }
+    const next = doorInfo(s).st === 'open' ? 'closed' : 'open';
+    S.doors[s.door.id] = { ...(S.doors[s.door.id] || {}), state: next };
+    log(next === 'open' ? `${label} is dispelled.` : `${label} stands again.`);
+    return recompute();
+  }
   /** Click a door leaf. With `both`, a double door's two leaves change together (Shift+click). */
   function clickDoor(s, both = false) {
+    if (s.t === 'veil') return clickVeil(s);
     const partner = Engine.pairOf(s, segs);
     const leaves = both && partner ? [s, partner] : [s];
     if (S.view === 'gm') {
@@ -421,7 +431,7 @@ export async function start(store, { build = null } = {}) {
   }
 
   // ---------- drawing ----------
-  const WALL_COLOURS = { solid: '#d9d2c3', terrain: '#e8913a', grate: '#9aa3ad', window: '#46c6e0', slit: '#d055c8', ethereal: '#9a7cf0', door: '#e5615a', secret: '#e3b330' };
+  const WALL_COLOURS = { solid: '#d9d2c3', terrain: '#e8913a', grate: '#9aa3ad', window: '#46c6e0', slit: '#d055c8', ethereal: '#9a7cf0', door: '#e5615a', secret: '#e3b330', veil: '#7a5cff' };
 
 
   function fit() {
@@ -875,6 +885,7 @@ export async function start(store, { build = null } = {}) {
   const DOOR_LOOK = {
     wood: '#8a5a2e', woodEdge: '#c48b52', stone: '#7b776f', stoneEdge: '#b3ada2', ink: '#140d07',
     open: 'rgba(235, 230, 220, .55)', lock: '#e3a443', secret: '#e3b330',
+    veil: '#b9a6ff', veilEdge: '#7a5cff', veilBody: '#0b0816',
   };
   function leafPath(poly) {
     ctx.beginPath(); ctx.moveTo(P(poly[0][0]), P(poly[0][1]));
@@ -899,11 +910,25 @@ export async function start(store, { build = null } = {}) {
     ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 2.5, 1.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
+  /** A standing veil: a dark band with a violet edge. Once dispelled, only the GM sees a faint dashed trace. */
+  function drawVeil(s, info, gm) {
+    const line = () => { ctx.beginPath(); ctx.moveTo(P(s.a[0]), P(s.a[1])); ctx.lineTo(P(s.b[0]), P(s.b[1])); };
+    ctx.save(); ctx.lineCap = 'butt';
+    if (info.st === 'open') {
+      if (gm) { line(); ctx.setLineDash([3, 4]); ctx.lineWidth = 1.5; ctx.strokeStyle = DOOR_LOOK.veil; ctx.globalAlpha = 0.7; ctx.stroke(); }
+    } else {
+      line(); ctx.lineWidth = Math.max(4, P(0.3)); ctx.strokeStyle = DOOR_LOOK.veilEdge; ctx.stroke();
+      line(); ctx.lineWidth = Math.max(2.5, P(0.3) - 3); ctx.strokeStyle = DOOR_LOOK.veilBody; ctx.stroke();
+      line(); ctx.setLineDash([P(0.12), P(0.1)]); ctx.lineWidth = 1; ctx.strokeStyle = DOOR_LOOK.veil; ctx.globalAlpha = 0.8; ctx.stroke();
+    }
+    ctx.restore();
+  }
   function drawDoors(gm, full) {
     ctx.save(); ctx.lineJoin = 'round';
     for (const s of doorSegs) {
       const info = doorInfo(s);
       if (!full && !doorVisibleToPlayers(s)) continue;
+      if (s.t === 'veil') { drawVeil(s, info, gm); continue; }
       const L = leafOf(s), stone = s.t === 'secret';
       if (!info.found) {                         // GM only: an unfound secret door, outlined
         leafPath(L.closed); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.6; ctx.strokeStyle = DOOR_LOOK.secret; ctx.stroke(); ctx.setLineDash([]);
@@ -1437,6 +1462,11 @@ export async function start(store, { build = null } = {}) {
     let best = null, bd = 0.3;
     for (const s of doorSegs) {
       if (!fullGM() && !doorVisibleToPlayers(s)) continue;
+      if (s.t === 'veil') {
+        const d = distToSeg(p, s.a, s.b);
+        if (d < bd && (fullGM() || doorInfo(s).st !== 'open')) { bd = d; best = s; }
+        continue;
+      }
       const L = leafOf(s);
       let d = distToSeg(p, L.hinge, L.free);
       if (doorInfo(s).st === 'open') d = Math.min(d, distToSeg(p, L.hinge, L.openFree));
@@ -2954,7 +2984,8 @@ export async function start(store, { build = null } = {}) {
       for (const d of changedKeys(before.doors, after.doors)) {
         const a = (after.doors || {})[d] || {}, b = (before.doors || {})[d] || {};
         if (a.found && !b.found) out.push(`${doorLabel(d)} found`);
-        if (a.state !== b.state) out.push(`${doorLabel(d)} ${a.state || 'back to its first state'}`);
+        const veil = (doorSegs.find((x) => x.door.id === d) || {}).t === 'veil';
+        if (a.state !== b.state) out.push(`${doorLabel(d)} ${veil && a.state ? ({ open: 'dispelled', closed: 'standing' })[a.state] : (a.state || 'back to its first state')}`);
       }
       for (const l of changedKeys(before.lights, after.lights)) {
         const a = (after.lights || {})[l] || {}, b = (before.lights || {})[l] || {};

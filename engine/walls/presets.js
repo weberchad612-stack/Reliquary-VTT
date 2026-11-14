@@ -20,6 +20,8 @@ const { NONE: N0, LIMITED: L, NORMAL: X, PROXIMITY: P } = SENSE;
  * Default sense values per wall type. A segment may override any of them.
  * `door` and `secret` values apply while closed or locked; an open door is NONE for every sense.
  * An unfound `secret` behaves exactly like `solid`.
+ * A `veil` is a magical curtain the players can see (a wall of darkness, a shimmering ward): it blocks movement, sight
+ * and light while it stands ("closed") and nothing once the GM dispels it ("open"). It never locks and has no leaf.
  */
 export const WALL_TYPES = Object.freeze({
   solid:    Object.freeze({ move: X,  sight: X,  light: X,  sound: X, label: 'Wall' }),
@@ -30,9 +32,12 @@ export const WALL_TYPES = Object.freeze({
   ethereal: Object.freeze({ move: N0, sight: X,  light: X,  sound: N0, label: 'Ethereal barrier' }),
   door:     Object.freeze({ move: X,  sight: X,  light: X,  sound: X, label: 'Door' }),
   secret:   Object.freeze({ move: X,  sight: X,  light: X,  sound: X, label: 'Secret door' }),
+  veil:     Object.freeze({ move: X,  sight: X,  light: X,  sound: N0, label: 'Veil (a visible magical barrier the GM can dispel)' }),
 });
 
-export const DOOR_TYPES = Object.freeze(['door', 'secret']);
+export const DOOR_TYPES = Object.freeze(['door', 'secret', 'veil']);
+/** Door-like types with no leaf to swing and no lock: the GM raises or dispels them. */
+export const VEIL_TYPES = Object.freeze(['veil']);
 export const DOOR_STATES = Object.freeze(['closed', 'open', 'locked']);
 
 /**
