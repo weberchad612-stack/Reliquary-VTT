@@ -240,3 +240,9 @@ level at that point. For PF2E that is GM Core's DCs by level (level 1: 15, level
   the step puts them back; the pipeline does not count a step's writes to its own inputs as a change.
 - **No level, no guess.** Anything needing a DC where no party level is set is reported and the step fails, so the
   level is decided once in `pack.json` and not invented per check.
+- **Checks in the text, too.** `dcfill.mjs` sees only the doors, terrain and subsystem checks already in the data.
+  The area checklist also finds a check the text calls for without a number ("succeeds at a Thievery check"), with no
+  DC in that sentence or the next. Give it the level-based DC in the area's notes, or explain in `checklist.json` why
+  it needs none: an opposed check against a creature's DC, Treat Disease against the disease's DC, or a rule's
+  effect rather than a check.
+- **On the review page.** "DCs the book does not give" lists every filled DC with its party level.

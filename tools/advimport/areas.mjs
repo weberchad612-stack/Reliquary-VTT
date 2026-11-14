@@ -162,6 +162,11 @@ export function checkArea(area, facts, blocks, idx, explained = []) {
       const evs = [...new Set([k, ...keys, ...family].flatMap((x) => (idx.events || {})[x] || []))];
       if (evs.length) done.push(`event (${evs.map((e) => e.id).join(', ')})`);
       else miss(`a ${f.what} event in the text, and no event in adventure.json for the area`, f, { section: 'events', entry: { id: `${k.toLowerCase()}-${f.what}`, title: 'name it', pages: area.pages.join(','), where: { map: room && room.map, area: k }, trigger: { area: k }, stages: [{ id: 'start', actions: [{ do: 'narrate', text: 'paraphrase' }] }], note: `${k} (${where}): ${f.what} in the text: "${(f.at || '').slice(0, 60)}"` } });
+    } else if (f.kind === 'nodc') {
+      // a check with no DC in the book (the user's rule, adventure-importer.md section 11): the notes give the
+      // level-based DC, dcfill.mjs filled it in the pack, or checklist.json says why none is needed (an opposed check)
+      if (/book gives none|level-based DC/i.test(notes) || /book gives none/.test(json)) done.push(`${f.what} check (level-based DC)`);
+      else miss(`a ${f.what} check with no DC in the text; give it the level-based DC for the party's level (notes) or explain`, f);
     } else if (f.kind === 'treasure') {
       if (objs.some((o) => (o.items && o.items.length) || o.coins) || /treasure|loot/i.test(notes)) done.push('treasure');
       else miss('treasure in the text, and no object holds any', f);

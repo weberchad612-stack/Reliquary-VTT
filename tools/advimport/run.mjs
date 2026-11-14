@@ -58,7 +58,7 @@ export function standardPipeline(packId) {
       { id: 'kickoff', run: 'node tools/advimport/kickoff.mjs {pack} {extracted}/text --pages {pages}', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/adventure-events.json'], review: true, note: 'mandatory: the book\'s way of starting the story, as the kickoff event' },
       { id: 'campaign', run: 'node tools/advimport/campaign.mjs {pack} {save} --update', inputs: ['{pack}/adventure.json', '{pack}/adventure-events.json', '{pack}/pack.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/map.json'], outputs: ['{save}/campaign.json'] },
       { id: 'validate', run: 'node tools/validate.mjs {pack} --save {save}', inputs: ['{pack}/maps/*/walls.json', '{save}/campaign.json'] },
-      { id: 'review-page', run: 'python3 tools/advimport/review.py {pack} --save {save}', inputs: ['{save}/campaign.json', '{pack}/maps/*/walls.json'], outputs: ['{pack}/review.html'] },
+      { id: 'review-page', run: 'python3 tools/advimport/review.py {pack} --save {save}', inputs: ['{save}/campaign.json', '{pack}/maps/*/walls.json', '{pack}/dc-fills.json'], outputs: ['{pack}/review.html'] },
     ],
   };
 }

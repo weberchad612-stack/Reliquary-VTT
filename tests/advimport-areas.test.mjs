@@ -56,6 +56,20 @@ test('area checklist: what the pack lacks is listed, with proposals; explained i
   assert.match(checkArea(a.X1, [], blocks, idx).missing[0].what, /stat block MOSS TROLL/);
 });
 
+test('area checklist: a check the text calls for with no DC asks for the level-based DC', () => {
+  const nodc = (t) => areaFacts(t).filter((x) => x.kind === 'nodc').map((x) => x.what);
+  assert.deepEqual(nodc('A hero who succeeds at a Thievery check opens the hidden latch.'), ['Thievery']);
+  assert.deepEqual(nodc('A hero can attempt an Athletics check to climb the wall. The DC is 20.'), [], 'the DC comes next');
+  assert.deepEqual(nodc('A hero can attempt a DC 18 Athletics check to climb.'), []);
+  assert.deepEqual(nodc('The ogre attempts a +9 Athletics check to Shove.'), [], 'a creature\'s own modifier');
+  assert.deepEqual(nodc('Heroes take a -1 penalty to Stealth checks here.'), [], 'a penalty, not a check');
+  const idx = { rooms: { X1: { map: 'm', at: [1, 1], rects: [[0, 0, 4, 4]] } }, notes: { X1: '## X1' }, encounters: {}, objects: {}, doors: {}, light: {}, lights: {}, terrain: {}, mapLights: {}, base: {}, fpc: { m: 5 }, events: {} };
+  const area = { key: 'X1', pages: [4], text: 'A hero who succeeds at a Thievery check opens the hidden latch.' };
+  assert.match(checkArea(area, areaFacts(area.text), [], idx).missing[0].what, /Thievery check with no DC.*level-based DC/);
+  idx.notes.X1 = '## X1\n- the latch: Thievery DC 16 (the book gives none; level-based DC for party level 2)';
+  assert.deepEqual(checkArea(area, areaFacts(area.text), [], idx).missing, []);
+});
+
 test('area checklist: events in the text, found and checked against adventure.json events', () => {
   const kinds = (t) => areaFacts(t).filter((x) => x.kind === 'event').map((x) => x.what);
   assert.deepEqual(kinds('At night the bell tolls across the yard.'), ['timed']);

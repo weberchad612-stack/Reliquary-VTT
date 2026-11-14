@@ -156,6 +156,14 @@ def main(argv):
         for s in adv["ambient"]:
             out.append(f"<tr><td>{esc(s['map'])}</td><td>{esc(s['sound'])}</td><td>{esc(s['at'])}</td><td>{esc(s['radius'])} ft</td><td>{esc(s.get('label'))}</td></tr>")
         out.append("</table>")
+    fills_path = os.path.join(pack, "dc-fills.json")
+    fills = json.load(open(fills_path)).get("fills", []) if os.path.exists(fills_path) else []
+    if fills:
+        # DCs the book does not give (dcfill.mjs): the level-based DC for the party's level there
+        out.append("<h2>DCs the book does not give</h2><p class=muted>Each takes the level-based DC for the party's level at that point (adventure-importer.md section 11).</p><table><tr><th>File</th><th>Where</th><th>Check</th><th>DC</th><th>Party level</th></tr>")
+        for f in fills:
+            out.append(f"<tr><td>{esc(f.get('file'))}</td><td>{esc(f.get('where'))}</td><td>{esc(f.get('what'))}</td><td>{esc(f.get('dc'))}</td><td>{esc(f.get('level') if f.get('level') is not None else '')}</td></tr>")
+        out.append("</table>")
     if adv.get("ledger"):
         out.append("<h2>Ledger (the GM's memory)</h2><table><tr><th>Kind</th><th>Title</th><th>Text</th></tr>")
         for e in adv["ledger"]:

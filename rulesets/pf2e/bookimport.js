@@ -168,6 +168,13 @@ export function areaFacts(text) {
     out.push({ kind: 'dc', dc: Number(m[1]), what: m[2] || null, at: around(t, m.index) });
   }
   const sentences = t.split(/(?<=[.!?])\s+/);
+  // a check the text calls for with no DC in the sentence or the next (#6): the importer gives it the level-based DC
+  const NODC = new RegExp(`\\b(attempts?|attempting|succeed(?:s|ing)? (?:at|on)|successful|pass(?:es)?|rolls?)\\b(?:\\s+\\S+){0,4}?\\s+(?:[\\w’']+ )?(${SKILLS}) check`, 'i');
+  sentences.forEach((s, i) => {
+    if (/Perception [+-]\d|\bAC \d+;|\bHP \d+/.test(s)) return;
+    const m = NODC.exec(s);
+    if (m && !/\bDCs?\b/.test(s) && !/\bDCs?\b/.test(sentences[i + 1] || '') && !/[+-]\d+ /.test(s.slice(m.index, m.index + 60))) out.push({ kind: 'nodc', what: m[2], at: s.slice(0, 90) });
+  });
   for (const s of sentences) {
     if (/Perception [+-]\d|\bAC \d+;|Speed \d+ feet|\[(one|two|three)-actions?\]|\bHP \d+/.test(s)) continue;   // a stat block's lines
     const door = /\bdoors?\b/i.test(s);

@@ -21,6 +21,8 @@ export const MARK = 'the book gives none';
 const note = (dc, level) => `DC ${dc}: ${MARK}; the level-based DC for party level ${level} (adventure importer rule).`;
 const addNote = (old, text) => (old ? `${old} ${text}` : text);
 const marked = (n) => typeof n === 'string' && n.includes(MARK);
+// the level a DC was filled for, read back from its note
+const noteLevel = (n) => { const m = /party level (\d+)/.exec(n || ''); return m ? Number(m[1]) : null; };
 
 /** The party's level for a map or subsystem id. */
 export function partyLevel(levels, id) {
@@ -36,7 +38,7 @@ export function fillWalls(walls, level, dcFor) {
     const d = s.door;
     if (!d) continue;
     const wants = (s.t === 'secret' && !d.auto_find) || d.initial === 'locked';
-    if (marked(s.note)) out.push({ where: s.id, what: s.t === 'secret' ? 'find' : 'unlock', dc: d.dc, level: null });
+    if (marked(s.note)) out.push({ where: s.id, what: s.t === 'secret' ? 'find' : 'unlock', dc: d.dc, level: noteLevel(s.note) });
     if (!wants || d.dc !== undefined) continue;
     d.dc = dcFor(level);
     s.note = addNote(s.note, note(d.dc, level));
@@ -50,7 +52,7 @@ export function fillTerrain(terrain, level, dcFor, kinds) {
   const out = [];
   for (const a of terrain.areas || []) {
     if (!kinds.includes(a.kind)) continue;
-    if (marked(a.note)) out.push({ where: a.id, what: a.kind, dc: a.dc, level: null });
+    if (marked(a.note)) out.push({ where: a.id, what: a.kind, dc: a.dc, level: noteLevel(a.note) });
     if (a.dc !== undefined) continue;
     a.dc = dcFor(level);
     a.note = addNote(a.note, note(a.dc, level));
@@ -66,7 +68,7 @@ export function fillSubsystems(events, levels, dcFor) {
     for (const part of sub.parts || []) {
       for (const c of part.checks || []) {
         const where = `${sub.id}/${part.id}/${c.skill}`;
-        if (marked(c.note)) out.push({ where, what: c.skill, dc: c.dc, level: null });
+        if (marked(c.note)) out.push({ where, what: c.skill, dc: c.dc, level: noteLevel(c.note) });
         if (c.dc !== undefined) continue;
         const level = partyLevel(levels, sub.id);
         if (level === null) { out.push({ where, what: c.skill, missingLevel: true }); continue; }
