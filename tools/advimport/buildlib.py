@@ -10,7 +10,7 @@ objects, ledger, events and subsystems, paraphrased. Everything the books share 
     enc = [encounter("a1-goblins", "level-a", "A1", "4", 40, [creature("Goblin warrior", MC("goblin-warrior"), [3, 4])])]
     unique_names(enc)                                    # two goblin warriors on one map: "Amber warrior", "Bristling warrior"
     write_adventure("packs/<pack>", title=..., book=..., pages=..., start=..., encounters=enc, objects=..., ledger=...)
-    write_events("packs/<pack>", events, subsystems)
+    write_events("packs/<pack>", events, subsystems)        # a later book: earlier=["<path>-1"] (its subsystems go on)
 
 write_adventure and write_events check what a hand-written builder used to get wrong, and stop before writing: ids
 used twice, a map the pack does not have, a creature with no square, token art that art.json does not list, an
@@ -177,8 +177,9 @@ def write_adventure(pack_dir, **adv):
     return adv
 
 
-def check_events(pack_dir, events, subsystems):
-    """Problems with the events and subsystems before they are written: [str]."""
+def check_events(pack_dir, events, subsystems, earlier=()):
+    """Problems with the events and subsystems before they are written: [str]. earlier: the ids of the campaign's
+    earlier books (an Adventure Path), whose encounters and subsystems this book's events may name."""
     out = [f"event id {i} used twice" for i in _dupes(e["id"] for e in events)]
     out += [f"subsystem id {i} used twice" for i in _dupes(s["id"] for s in subsystems)]
     kick = [e["id"] for e in events if e.get("kickoff")]
@@ -187,6 +188,16 @@ def check_events(pack_dir, events, subsystems):
     af = os.path.join(pack_dir, "adventure.json")
     groups = {e["id"] for e in json.load(open(af)).get("encounters", [])} if os.path.exists(af) else None
     subs = {s["id"] for s in subsystems}
+    for pid in earlier:
+        d = os.path.join(os.path.dirname(os.path.abspath(pack_dir)), pid)
+        a2, e2 = os.path.join(d, "adventure.json"), os.path.join(d, "adventure-events.json")
+        if not os.path.exists(a2):
+            out.append(f"earlier book {pid} not found beside this pack")
+            continue
+        if groups is not None:
+            groups |= {e["id"] for e in json.load(open(a2)).get("encounters", [])}
+        if os.path.exists(e2):
+            subs |= {s["id"] for s in json.load(open(e2)).get("subsystems", [])}
 
     def acts(e):
         for st in e.get("stages", []):
@@ -201,8 +212,8 @@ def check_events(pack_dir, events, subsystems):
     return out
 
 
-def write_events(pack_dir, events, subsystems):
-    probs = check_events(pack_dir, events, subsystems)
+def write_events(pack_dir, events, subsystems, earlier=()):
+    probs = check_events(pack_dir, events, subsystems, earlier)
     if probs:
         raise BuildError("adventure-events.json not written:\n  " + "\n  ".join(probs))
     with open(os.path.join(pack_dir, "adventure-events.json"), "w") as f:

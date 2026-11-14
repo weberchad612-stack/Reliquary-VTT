@@ -95,6 +95,8 @@ docs/design/maps.md section 3c). The first book creates the campaign; each later
   does. A later book can put its creatures, objects and events on an earlier book's map; a returning NPC can stay
   the same token, so their history and ledger follow them.
 - **Sync:** each book's pack with the shared save: `sync.mjs packs/<book> --save saves/<campaign>`.
+- **Hand-off check** (section 14): before a later book joins, `handoff.mjs` lists what it shares with the earlier
+  books (returning NPCs, threads, subsystems, flags) to decide in its `handoff.json`.
 
 ## 3. Start positions from the book's pawns
 
@@ -295,3 +297,27 @@ builders hold only that book's content, paraphrased.
 - **Moving a book over** changed nothing in its output. Book 1's builders swapped their helper definitions for imports
   under the same short names (`c = creature`, `E = encounter`, ...). Its area-map script became a spec read from the
   script itself. The adventure, events and area maps came out identical: same places, a byte-identical image.
+
+## 14. Handing a campaign on to the next book (2026-11-14)
+
+The importer refuses an id clash between books: maps, art keys, events, subsystems. What it cannot see is a returning
+NPC, a thread that goes on, or a subsystem that goes on under a new id, because those make a second copy without a
+clash. `node tools/advimport/handoff.mjs <pack> <save>` (the pipeline's `handoff` step, before `campaign`) compares a
+joining book with the campaign's earlier books:
+
+- **Named creatures** with the same name. Crowds named by `unique_names` (an adjective and a noun) are ignored.
+  - *Same:* the NPC returns. Keep the earlier book's token, so their history and ledger follow them, and do not add
+    the creature again; move or reveal the earlier token from this book's events instead.
+  - *Apart:* a different creature, or a new token on purpose.
+- **Ledger entries** with the same or nearly the same title (most of the shorter title's words, same kind).
+  - *Same:* the earlier entry carries the thread, updated in play; drop this book's copy.
+  - *Apart:* two threads.
+- **Subsystems** like an earlier one under another id.
+  - *Same:* drop this book's copy and use the earlier id in its events, so the points carry over. Build the events with
+    `write_events(..., earlier=["<path>-1"])` so the earlier id is accepted.
+  - *Apart:* a new track.
+- **Flags and events** this book's conditions wait on that no book sets or has. Usually a typo.
+
+Record each decision in `<pack>/handoff.json`: `{"decisions": [{"key": "creature:mayor hollis", "same": true,
+"why": "..."}]}`. The check passes when every finding is decided. For the campaign's first book there is nothing to
+compare.
