@@ -319,5 +319,11 @@ What the board does with it: docs/best-practices/board.md (Replay).
   have none.
 - A content field the builder needs (Foundry's tags) is added in the converter and the release imported again
   (`tools/import/foundry-pf2e.mjs --release`), never written into `content/pf2e/` by hand.
+- Run anything the builder makes through the engine (`prepareActor`) in a test: the builder and the engine must read
+  the same fields (casting proficiency by tradition and `actor.spellcasting` were found this way).
+- A prerequisite the builder cannot read is handed to the GM (`checks`), never guessed met or unmet; a name counts as
+  unmet only when it is a known feat or feature.
+- System facts Foundry's data does not carry (a class's casting attribute, the languages' rarities) go in
+  `rulesets/pf2e/` as small tables, with where they come from.
 - The design and what is built: docs/design/game-data.md section 9.
 

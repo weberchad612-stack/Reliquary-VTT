@@ -25,6 +25,17 @@ export function contentGetter(dir = OPEN) {
   };
 }
 
+/** The names (lower case) of every feat and feature in the open content: prerequisites that name one. */
+export function knownFeatNames(dir = OPEN) {
+  const out = new Set();
+  for (const [source, folder] of [['feats', 'feat'], ['class-features', 'feat'], ['ancestry-features', 'feat'], ['heritages', 'heritage']]) {
+    const d = path.join(dir, source, folder);
+    if (!fs.existsSync(d)) continue;
+    for (const f of fs.readdirSync(d)) out.add(JSON.parse(fs.readFileSync(path.join(d, f), 'utf8')).name.toLowerCase().replace(/[’']/g, "'"));
+  }
+  return out;
+}
+
 const keysIn = (source, folder) => {
   const d = path.join(OPEN, source, folder);
   return fs.existsSync(d) ? fs.readdirSync(d).filter((f) => f.endsWith('.json')).map((f) => `${source}:${folder}/${f.slice(0, -5)}`) : [];
@@ -51,6 +62,8 @@ export function unrunnable(d, { resolve, knows, classFeature = false, className 
   const covered = rules.some((fr) => fr.key === 'MartialProficiency' || /\.rank$/.test(fr.path || ''));
   if (classFeature && !covered) for (const u of textGains(classSection(d.text, className)).unread) out.push({ rule: 'text', why: 'a proficiency gain the player says how to apply', detail: u });
   for (const fr of rules) {
+    // a roll option under a condition of play (a spellshape, a finisher) is set at the table, not at building
+    if (fr.key === 'RollOption') continue;
     if (predicateHolds(fr.predicate, ANY) === null) { out.push({ rule: fr.key, why: 'a condition the builder cannot check', detail: JSON.stringify(fr.predicate) }); continue; }
     if (fr.key === 'ChoiceSet') {
       const c = fr.choices;

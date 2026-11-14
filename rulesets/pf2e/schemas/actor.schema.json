@@ -78,9 +78,168 @@
         "foundry": {
           "type": "object",
           "description": "An imported rule this ruleset does not support yet, kept as it was."
+        },
+        "option": {
+          "type": "string"
+        },
+        "toggleable": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": "boolean"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "add": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remove": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dice": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "die": {
+          "type": "string",
+          "pattern": "^d(4|6|8|10|12|20)$"
+        },
+        "category": {
+          "type": "string"
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "mode": {
+          "enum": [
+            "add",
+            "remove"
+          ]
+        },
+        "traits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "adjust": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "keep": {
+          "enum": [
+            "higher",
+            "lower"
+          ]
+        },
+        "affects": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "onCreate": {
+          "type": "boolean"
+        },
+        "onTurnStart": {
+          "type": "boolean"
+        },
+        "kind": {
+          "enum": [
+            "fast-healing",
+            "regeneration"
+          ]
+        },
+        "deactivatedBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "radius": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "affects"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string"
+              },
+              "affects": {
+                "enum": [
+                  "enemies",
+                  "allies",
+                  "all"
+                ]
+              },
+              "save": {
+                "type": "object"
+              },
+              "includesSelf": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "bright": {
+          "type": "number"
+        },
+        "dim": {
+          "type": "number"
+        },
+        "colour": {
+          "type": "string"
+        },
+        "size": {
+          "enum": [
+            "tiny",
+            "small",
+            "medium",
+            "large",
+            "huge",
+            "gargantuan"
+          ]
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "A rule element: the engine's keys (modifier, resistance, weakness, immunity, speed, sense, note) and PF2E's own (rulesets/pf2e/rule-keys.js), or an imported rule not supported yet (foundry)."
     },
     "character": {
       "type": "object",
@@ -380,6 +539,12 @@
                   },
                   "text": {
                     "type": "string"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "type": "integer"
                   }
                 },
                 "additionalProperties": false
@@ -575,6 +740,13 @@
               }
             }
           }
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The languages the character knows (slugs)."
         }
       }
     },
@@ -774,6 +946,13 @@
               },
               "spells": {
                 "type": "object"
+              },
+              "languages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Languages an Intelligence increase at this level adds."
               }
             }
           }
@@ -819,6 +998,13 @@
         "deity": {
           "type": "string",
           "description": "The deity, a content key (deities:deity/<slug>)."
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Languages chosen at 1st level (rulesets/pf2e/languages.js)."
         }
       }
     }

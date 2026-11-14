@@ -171,7 +171,7 @@ function prepareOnce(data, state, effects, ctx, hpFacts) {
     // strikes: every weapon held, and a fist
     const weapons = items.filter((i) => i.kind === 'weapon' && inUse(i));
     const fist = { name: 'Fist', slug: 'fist', kind: 'weapon', category: 'unarmed', damage: { dice: 1, die: 'd4', type: 'bludgeoning' }, traits: ['agile', 'finesse', 'nonlethal', 'unarmed'] };
-    const feats = (data.features || []).filter((x) => typeof x === 'string');
+    const feats = (data.features || []).map((x) => (typeof x === 'string' ? x : x.slug)).filter(Boolean);
     // Strikes its features grant (claws, a kineticist's blast) beside its weapons
     const granted = rules.grantedStrikes.filter(holds).map((g) => ({ name: g.name, slug: slugOf(g), category: g.category || 'unarmed', group: g.group, traits: g.traits || [], range: g.range || null, damage: { die: g.die, type: g.type, ...(g.dice > 1 ? { dice: g.dice } : {}) } }));
     out.strikes = [...weapons, ...granted, ...(weapons.some((w) => w.category === 'unarmed') || granted.some((w) => w.category === 'unarmed') ? [] : [fist])].map((w) => characterStrike(w, { attrs, P, level, stat, feats }));

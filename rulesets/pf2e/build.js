@@ -12,13 +12,39 @@
 //                     skillIncrease: skill or "lore:<subject>", trained: [skills an Intelligence increase adds],
 //                     selections: {<flag>: value} (the content's choices: section 9.3)}},
 //    deity (a content key), selections: {"<item slug>.<flag>": value} (the answers to the content's "pick one" rules: section 9.6),
-//    approvals: [{what, by, at}] (uncommon and rare options the GM allowed), name, details}
+//    languages: [the languages chosen at 1st level] (levels[n].languages: those an Intelligence increase adds),
+//    approvals: [{what, by, at}] (uncommon and rare options the GM allowed; "language:<slug>" for a language), name, details}
+
+import { LANGUAGES, languageRarity } from './languages.js';
+import { prereqFacts, prereqCheck } from './prereqs.js';
 
 export const ATTRIBUTES = Object.freeze(['str', 'dex', 'con', 'int', 'wis', 'cha']);
 export const SKILLS = Object.freeze(['acrobatics', 'arcana', 'athletics', 'crafting', 'deception', 'diplomacy', 'intimidation', 'medicine', 'nature', 'occultism', 'performance', 'religion', 'society', 'stealth', 'survival', 'thievery']);
 export const BOOST_LEVELS = Object.freeze([5, 10, 15, 20]);
 /** Renamed legacy options a remastered one replaces (by content key): none found yet (section 9.1). */
 export const SUPERSEDED = Object.freeze({});
+
+/**
+ * The attribute each casting class casts with (Player Core and the books after it; Foundry's class data does not
+ * say). "key": the class's key attribute (a psychic's Intelligence or Charisma). The tradition and whether it
+ * prepares or keeps a repertoire are read from the class's spellcasting feature (castingOf). Step 4 (section 9.4)
+ * adds the rest of each caster's casting.
+ */
+export const CASTING_ATTRIBUTE = Object.freeze({ animist: 'wis', bard: 'cha', cleric: 'wis', druid: 'wis', magus: 'int', necromancer: 'int', oracle: 'cha', psychic: 'key', sorcerer: 'cha', summoner: 'cha', witch: 'int', wizard: 'int' });
+
+/**
+ * A casting class's casting: {tradition, attribute, kind} for actor.spellcasting, with tradition null where it comes
+ * from a choice (a sorcerer's bloodline, a witch's patron, a summoner's eidolon), or null for a class that does not
+ * cast from its spellcasting feature.
+ */
+export function castingOf(cls, get, keyAttr) {
+  const at = cls && CASTING_ATTRIBUTE[cls.slug];
+  if (!at) return null;
+  const feat = (cls.features || []).map((f) => f.ref && get(f.ref)).find((d) => d && /spellcasting$/.test(d.slug));
+  const t = (feat && feat.text) || '';
+  const m = /spells of the (arcane|divine|occult|primal) tradition|cast (arcane|divine|occult|primal) spells/i.exec(t);
+  return { tradition: m ? (m[1] || m[2]).toLowerCase() : null, attribute: at === 'key' ? keyAttr : at, kind: /repertoire/i.test(t) ? 'spontaneous' : 'prepared' };
+}
 
 const slug = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const loreSlug = (s) => slug(String(s || '').replace(/\blore\b/i, ''));
@@ -35,7 +61,7 @@ export const maxSkillRank = (level) => (level >= 15 ? 4 : level >= 7 ? 3 : 2);
 // ---- the rules a build runs (section 9.6) ----
 
 /** The Foundry rule elements a build runs: the rest are read at the table, or not at all. */
-export const BUILD_RULES = Object.freeze(['ChoiceSet', 'GrantItem', 'ActiveEffectLike', 'MartialProficiency']);
+export const BUILD_RULES = Object.freeze(['ChoiceSet', 'RollOption', 'GrantItem', 'ActiveEffectLike', 'MartialProficiency']);
 
 /** Foundry's compendium names for the packs a build uses, and our sources for them. */
 export const FOUNDRY_PACKS = Object.freeze({
@@ -141,6 +167,10 @@ export function textGains(text) {
   }
   return { gains, unread };
 }
+
+// the rules a feat or feature keeps on the character: those the engine runs in play. The building rules have run
+// already, and the rest stay in the content (docs/design/game-data.md 9.6)
+const playRules = (d) => { const r = ((d && d.rules) || []).filter((x) => x.key !== 'unsupported'); return r.length ? { rules: r } : {}; };
 
 // terms a predicate tests that are states in play (an effect, a condition, a battle form, a target): while
 // building none of them holds
@@ -254,8 +284,11 @@ export function rankFormula(src, level, rankAt) {
 
 /**
  * The character a build makes. get(key) -> content document (or undefined).
- * opts.resolve(uuid) -> content key: Foundry's links in the content's rules (foundryResolver).
- * @returns {{actor: object, pending: Array<{level, step, text}>, problems: string[], unsupported: Array<{from, rule, why}>}}
+ * opts.resolve(uuid) -> content key: Foundry's links in the content's rules (foundryResolver). opts.knownNames: the
+ * names of every feat and class feature (lower case), so a prerequisite naming one the character lacks is unmet
+ * (knownFeatNames in rulesets/pf2e/builder.js); without it such a prerequisite is left to the GM.
+ * checks: prerequisites the builder cannot read, for the GM.
+ * @returns {{actor: object, pending: Array<{level, step, text}>, problems: string[], unsupported: Array<{from, rule, why}>, checks: Array<{feat, level, prerequisite}>}}
  */
 export function deriveCharacter(build, get, opts = {}) {
   const b = build || {}, L = Math.max(1, Math.min(20, b.level || 1));
@@ -304,17 +337,27 @@ export function deriveCharacter(build, get, opts = {}) {
   if (cls) {
     const ka = cls.keyAttribute || [];
     key = ka.length === 1 ? ka[0] : b.keyAttribute;
-    if (!key) need(1, 'keyAttribute', `Choose the ${cls.name.toLowerCase()}'s key attribute (${ka.join(' or ')}).`);
-    else if (!ka.includes(key)) problems.push(`key attribute ${key} is not one of the ${cls.name}'s (${ka.join(', ')})`);
+    // a class whose key attribute its subclass decides (a psychic's subconscious mind) lists none
+    if (!key) need(1, 'keyAttribute', ka.length ? `Choose the ${cls.name.toLowerCase()}'s key attribute (${ka.join(' or ')}).` : `Choose the ${cls.name.toLowerCase()}'s key attribute (its subclass says which).`);
+    else if (!ATTRIBUTES.includes(key) || (ka.length && !ka.includes(key))) problems.push(`key attribute ${key} is not one of the ${cls.name}'s (${ka.join(', ')})`);
     else raise(key, 1);
   }
   for (const a of boostSet('free', Array.from({ length: 4 }, () => ({ options: [...ATTRIBUTES], free: true })), (b.boosts || {}).free, 1)) raise(a, 1);
   const levels = b.levels || {};
   const intAt1 = mods.int;
+  // an Intelligence modifier that goes up after 1st level brings a trained skill and a language at that level
+  const intGains = {};
   for (const lv of BOOST_LEVELS.filter((x) => x <= L)) {
+    const before = mods.int;
     const picks = boostSet(`level ${lv}`, Array.from({ length: 4 }, () => ({ options: [...ATTRIBUTES], free: true })), (levels[lv] || {}).boosts, lv);
     for (const a of picks) raise(a, lv);
+    if (mods.int > before) intGains[lv] = mods.int - before;
   }
+
+  // the class's casting; its proficiency is kept by tradition, as the engine reads it (by the class's name until the
+  // tradition is known)
+  const casting = cls ? castingOf(cls, get, key) : null;
+  const spellKey = () => (casting && casting.tradition) || (cls && cls.slug) || 'class';
 
   // ---- proficiencies ----
   const P = { perception: 0, fortitude: 0, reflex: 0, will: 0, classDC: 0, armor: {}, weapons: {}, skills: {}, lore: {}, spellcasting: {} };
@@ -322,7 +365,7 @@ export function deriveCharacter(build, get, opts = {}) {
     P.perception = cls.perception || 0;
     for (const s of ['fortitude', 'reflex', 'will']) P[s] = (cls.saves || {})[s] || 0;
     P.classDC = 1;
-    if (cls.spellcasting) P.spellcasting[cls.slug] = cls.spellcasting;
+    if (cls.spellcasting) P.spellcasting[spellKey()] = cls.spellcasting;
     for (const [k, v] of Object.entries(cls.defenses || {})) if (v) P.armor[k] = v;
     for (const [k, v] of Object.entries(cls.attacks || {})) {
       if (k === 'other') { if (v && v.name && v.rank) P.weapons[slug(v.name)] = v.rank; continue; }
@@ -346,12 +389,14 @@ export function deriveCharacter(build, get, opts = {}) {
   for (const l of [...((bg && bg.lore) || []), ...((b.skills || {}).lore || [])]) P.lore[loreSlug(l)] = 1;
   // ---- features and feats ----
   const features = cls ? (cls.features || []).filter((f) => f.level <= L).map((f) => (f.ref ? f.ref.split('/').pop() : slug(f.name))) : [];
+  // the ancestry's own features (a dwarf's Clan Dagger, an elf's or a gnome's low-light vision)
+  for (const f of (anc && anc.features) || []) if ((f.level || 0) <= L) features.push(f.ref ? f.ref.split('/').pop() : slug(f.name));
   const feats = [];
   const featOf = (k, level, slot) => {
     const d = get(k);
     if (!d) { problems.push(`${slot} feat ${k} is not in the content`); return; }
     if (d.level && d.level > level) problems.push(`${d.name} is a level ${d.level} feat, taken at level ${level}`);
-    feats.push({ name: d.name, slug: d.slug, ref: k, level, slot, ...(d.rules && d.rules.length ? { rules: d.rules } : {}) });
+    feats.push({ name: d.name, slug: d.slug, ref: k, level, slot, ...playRules(d) });
   };
   for (const f of (bg && bg.feats) || []) if ((f.level || 1) <= L && f.ref) featOf(f.ref, f.level || 1, 'background');
   if (cls) {
@@ -365,7 +410,8 @@ export function deriveCharacter(build, get, opts = {}) {
   }
 
   // ---- the content's own rules: "pick one", "you gain this", proficiency upgrades (section 9.6) ----
-  const sel = b.selections || {}, unsupported = [], granted = [], actorFlags = {}, waiting = [], formulas = [];
+  const sel = b.selections || {}, unsupported = [], granted = [], actorFlags = {}, waiting = [], formulas = [], langGranted = [];
+  let langExtra = 0;
   const resolve = opts.resolve || (() => null);
   const camel = (x) => String(x).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
   const tags = new Set();
@@ -382,7 +428,6 @@ export function deriveCharacter(build, get, opts = {}) {
     const now = box[k] || 0;
     box[k] = Math.max(0, Math.min(4, mode === 'override' ? rank : mode === 'add' ? now + rank : Math.max(now, rank)));
   };
-  const spellKey = () => (cls && cls.slug) || 'class';
   // a rule's proficiency path: [bag, key] in P, or null
   const pathOf = (p) => {
     let m;
@@ -401,17 +446,19 @@ export function deriveCharacter(build, get, opts = {}) {
     const bag = { skill: P.skills, defense: P.armor, attack: P.weapons }[kind];
     return bag ? (bag[k] || 0) : kind === 'save' ? (P[k] || 0) : 0;
   };
-  const seen = new Set();
+  const seen = new Set(), featureDocs = new Map();
   const queue = [];
   const add = (d, key, level, from, granter) => {
     if (!d || seen.has(key || d.slug)) return;
     seen.add(key || d.slug);
+    if (/feature$/.test(from)) featureDocs.set(d.slug, { name: d.name, slug: d.slug, ...(key ? { ref: key } : {}), level, ...playRules(d) });
     queue.push({ d, key, level, from, granter, flags: {} });
     // the roll options of the choices made on it count from the start, as Foundry's do
     for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[`${d.slug}.${fr.flag || camel(d.slug)}`]); if (o) tags.add(o); }
   };
   add(cls, b.class, 1, 'class'); add(anc, b.ancestry, 1, 'ancestry'); add(her, b.heritage, 1, 'heritage'); add(bg, b.background, 1, 'background');
   for (const f of (cls && cls.features) || []) if (f.level <= L && f.ref) add(get(f.ref), f.ref, f.level, 'class feature');
+  for (const f of (anc && anc.features) || []) if ((f.level || 0) <= L && f.ref) add(get(f.ref), f.ref, Math.max(1, f.level || 0), 'ancestry feature');
   for (const f of feats) add(get(f.ref), f.ref, f.level, `${f.slot} feat`);
 
   // one rule: true when done (or set aside), 'wait' when it needs a flag another item has not set yet
@@ -458,10 +505,18 @@ export function deriveCharacter(build, get, opts = {}) {
       if (seen.has(gk)) return true;
       if (g.kind === 'feat') {
         if (g.category === 'classfeature') { features.push(g.slug); tags.add(`feature:${g.slug}`); }
-        else feats.push({ name: g.name, slug: g.slug, ref: gk, level, slot: 'granted', from: d.name, ...(g.rules && g.rules.length ? { rules: g.rules } : {}) });
+        else feats.push({ name: g.name, slug: g.slug, ref: gk, level, slot: 'granted', from: d.name, ...playRules(g) });
         tags.add(`feat:${g.slug}`);
       } else granted.push({ name: g.name, kind: g.kind, ref: gk, from: d.name });
       add(g, gk, level, g.category === 'classfeature' ? 'class feature' : 'granted', d.slug);
+      return true;
+    }
+    if (fr.key === 'RollOption') {
+      // a standing roll option (Clan Dagger's chosen weapon); one the player toggles in play is not the build's
+      if (fr.toggleable) return true;
+      const o = fill(fr.option, flags, actorFlags);
+      if (o === undefined) return true;
+      if (o) tags.add(String(o).toLowerCase());
       return true;
     }
     if (fr.key === 'MartialProficiency') {
@@ -484,6 +539,12 @@ export function deriveCharacter(build, get, opts = {}) {
     if (path === undefined) return /\{actor\|/.test(fr.path) ? 'wait' : true;
     if (path === null) return skip(`a change to ${fr.path}, which the builder cannot work out`);
     if (/^flags\./.test(path)) { setPath(actorFlags, path.slice(6), fr.value, fr.mode); return true; }
+    if (path === 'system.build.languages.granted') { const v = fr.value && typeof fr.value === 'object' ? fr.value.slug : fr.value; if (v) langGranted.push(String(v)); return true; }
+    if (path === 'system.build.languages.max') {
+      if (typeof fr.value === 'number') langExtra += fr.value;
+      else formulas.push({ where, fr, target: ['languages', 'max'] });
+      return true;
+    }
     const target = pathOf(path);
     if (!target) return true;   // not a proficiency: a play-time effect, read by the rules at the table
     if (!['upgrade', 'override', 'add'].includes(fr.mode)) return skip(`a ${fr.mode} of ${path}`);
@@ -527,6 +588,7 @@ export function deriveCharacter(build, get, opts = {}) {
   for (const { where, fr, target } of formulas) {
     const v = rankFormula(fr.value, L, rankAt);
     if (v === null) unsupported.push({ from: where, rule: fr.key, why: `a rank the builder cannot work out: ${JSON.stringify(fr.value)}` });
+    else if (target[0] === 'languages') langExtra += v;
     else up(target[0], target[1], v, fr.mode);
   }
   // skill increases (after the rules: a skill the class's own choice trains is increased from trained), and the
@@ -539,7 +601,39 @@ export function deriveCharacter(build, get, opts = {}) {
     if (now + 1 > maxSkillRank(lv)) problems.push(`level ${lv}: ${s} cannot go above ${['untrained', 'trained', 'expert', 'master', 'legendary'][maxSkillRank(lv)]} yet`);
     else bag[name] = now + 1;
   }
-  for (const [lv, d] of Object.entries(levels)) for (const s of (d && d.trained) || []) P.skills[s] = Math.max(P.skills[s] || 0, 1);
+  for (const [lv, d] of Object.entries(levels)) {
+    const got = ((d && d.trained) || []);
+    if (got.length > (intGains[lv] || 0)) problems.push(`level ${lv}: ${got.length} skill${got.length > 1 ? 's' : ''} trained for an Intelligence increase, ${intGains[lv] || 0} allowed`);
+    for (const sk of got) {
+      if (!SKILLS.includes(sk)) problems.push(`level ${lv}: ${sk} is not a skill`);
+      else if (P.skills[sk]) problems.push(`level ${lv}: ${sk} is trained already (choose another skill)`);
+      else P.skills[sk] = 1;
+    }
+  }
+  for (const [lv, n] of Object.entries(intGains)) {
+    const left = n - (((levels[lv] || {}).trained) || []).length;
+    if (left > 0) need(Number(lv), 'trained', `Intelligence went up: choose ${left} more skill${left > 1 ? 's' : ''} to become trained in.`);
+  }
+
+  // ---- languages: the ancestry's, those rules grant, and the player's picks (section 9.7) ----
+  const langs = [...new Set(['common', ...((anc && anc.languages) || []), ...langGranted])];
+  const offered = new Set([...LANGUAGES.common, ...(((anc && anc.additionalLanguages) || {}).choices || [])]);
+  const approved = new Set((b.approvals || []).map((x) => x.what));
+  const pickLang = (lv, list, allowed) => {
+    for (const l of list || []) {
+      const r = languageRarity(l);
+      if (!r) { problems.push(`level ${lv}: ${l} is not a language`); continue; }
+      if (langs.includes(l)) { problems.push(`${l} is known already (choose another language)`); continue; }
+      if (r === 'secret') { problems.push(`${l} is a secret language: no character learns it by choosing`); continue; }
+      if (!offered.has(l) && !approved.has(`language:${l}`)) problems.push(`${l} is ${r === 'rare' ? 'a rare' : 'an uncommon'} language: it needs the GM's leave (approvals "language:${l}")`);
+      langs.push(l);
+    }
+    const n = (list || []).length;
+    if (n > allowed) problems.push(`level ${lv}: ${n} languages chosen, ${allowed} allowed`);
+    if (n < allowed) need(lv, 'languages', `Choose ${allowed - n} more language${allowed - n > 1 ? 's' : ''} (common ones freely, or the ${anc ? anc.name.toLowerCase() + '\'s' : 'ancestry\'s'} list; others with the GM's leave).`);
+  };
+  if (anc) pickLang(1, b.languages, (((anc.additionalLanguages || {}).count) || 0) + Math.max(0, intAt1) + langExtra);
+  for (const [lv, n] of Object.entries(intGains)) pickLang(Number(lv), (levels[lv] || {}).languages, n);
 
   for (const k of Object.keys(P.spellcasting)) if (!P.spellcasting[k]) delete P.spellcasting[k];
   if (!Object.keys(P.spellcasting).length) delete P.spellcasting;
@@ -553,11 +647,24 @@ export function deriveCharacter(build, get, opts = {}) {
     class: cls ? { name: cls.name, hp: cls.hp || 0, keyAttribute: key || (cls.keyAttribute || [])[0] || 'str' } : { name: '?', hp: 0, keyAttribute: 'str' },
     attributes: mods,
     proficiencies: P,
-    features,
+    // each feature with its rules, so the engine runs them (Juggernaut's better saves); the name alone where the
+    // content has no document for it
+    features: features.map((sl) => featureDocs.get(sl) || sl),
     feats,
     traits: anc ? [...(anc.traits || [])] : [],
+    languages: langs,
+    ...(casting && casting.tradition ? { spellcasting: casting } : {}),
     ...(granted.length ? { granted } : {}),
     build: b,
   };
-  return { actor, pending, problems, unsupported };
+  // ---- prerequisites of the feats the player chose (section 9.7), against the character as built: exact for the
+  // feats of its newest level, which is when a choice is made ----
+  const checks = [];
+  const pf = { ...prereqFacts(actor, b), knownNames: opts.knownNames };
+  for (const f of feats.filter((x) => !['granted', 'background'].includes(x.slot))) {
+    const r = prereqCheck(get(f.ref), { ...pf, names: new Set([...pf.names].filter((n) => n !== f.name.toLowerCase())) });
+    for (const p of r.unmet) problems.push(`${f.name} (level ${f.level} ${f.slot} feat): prerequisite not met: ${p}`);
+    for (const p of r.unread) checks.push({ feat: f.name, level: f.level, prerequisite: p });
+  }
+  return { actor, pending, problems, unsupported, checks };
 }

@@ -16,6 +16,7 @@ const get = (key) => {
   return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : undefined;
 };
 const ajv = new Ajv2020({ allErrors: true, strict: false });
+const slugs = (list) => list.map((x) => (typeof x === 'string' ? x : x.slug));
 const resolve = foundryResolver(JSON.parse(fs.readFileSync('content/pf2e/import-manifest.json', 'utf8')));
 const checkActor = ajv.compile(JSON.parse(fs.readFileSync('rulesets/pf2e/schemas/actor.schema.json', 'utf8')));
 
@@ -24,7 +25,7 @@ const FIGHTER = {
   ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/versatile-human',
   background: 'backgrounds:background/guard', class: 'classes:class/fighter', keyAttribute: 'str',
   boosts: { ancestry: ['str', 'con'], background: ['str', 'dex'], free: ['str', 'dex', 'con', 'wis'] },
-  skills: { trained: ['acrobatics', 'medicine', 'society'], lore: ['warfare'] },
+  skills: { trained: ['acrobatics', 'medicine', 'society'], lore: ['warfare'] }, languages: ['elven'],
   // the content's own choices: the fighter's skill, Versatile Human's general feat, Natural Ambition's class feat
   selections: { 'fighter.fighterSkill': 'athletics', 'versatile-human.versatileHeritage': 'feats:feat/toughness', 'natural-ambition.naturalAmbition': 'feats:feat/snagging-strike' },
   levels: { 1: { feats: { ancestry: 'feats:feat/natural-ambition', class: 'feats:feat/reactive-shield' } } },
@@ -55,7 +56,7 @@ test('build: a 1st-level human fighter, worked out from the choices', () => {
     ['toughness', 'granted'], ['shield-block', 'granted'], ['snagging-strike', 'granted']], 'the feats the choices grant, and Shield Block from the class feature');
   assert.equal(actor.feats.find((f) => f.slug === 'toughness').from, 'Versatile Human');
   assert.deepEqual(actor.granted, [{ name: 'Reactive Strike', kind: 'action', ref: 'actions:action/reactive-strike', from: 'Reactive Strike' }]);
-  assert.ok(actor.features.includes('reactive-strike') && !actor.features.includes('bravery'), 'level 1 features only');
+  assert.ok(slugs(actor.features).includes('reactive-strike') && !slugs(actor.features).includes('bravery'), 'level 1 features only');
   assert.ok(checkActor(actor), JSON.stringify(checkActor.errors && checkActor.errors.slice(0, 3)));
 });
 
@@ -168,13 +169,14 @@ test('build rules: a cleric doctrine sets the flags its later features grant fro
     selections: { 'doctrine.doctrine': 'class-features:feat/warpriest' } };
   const { actor, unsupported } = deriveCharacter(b, get, { resolve });
   assert.deepEqual(unsupported, []);
-  for (const f of ['warpriest', 'first-doctrine-warpriest', 'second-doctrine-warpriest', 'third-doctrine-warpriest']) assert.ok(actor.features.includes(f), f);
-  assert.ok(!actor.features.includes('fourth-doctrine-warpriest'), 'the fourth doctrine comes at 11th level');
+  for (const f of ['warpriest', 'first-doctrine-warpriest', 'second-doctrine-warpriest', 'third-doctrine-warpriest']) assert.ok(slugs(actor.features).includes(f), f);
+  assert.ok(!slugs(actor.features).includes('fourth-doctrine-warpriest'), 'the fourth doctrine comes at 11th level');
   const P = actor.proficiencies;
   assert.equal(P.fortitude, 2, 'First Doctrine: expert Fortitude');
   assert.deepEqual(P.armor, { unarmored: 1, light: 1, medium: 1 });
   assert.equal(P.weapons.martial, 2, 'Second Doctrine trained, Third Doctrine expert');
-  assert.deepEqual(P.spellcasting, { cleric: 1 });
+  assert.deepEqual(P.spellcasting, { divine: 1 });
+  assert.deepEqual(actor.spellcasting, { tradition: 'divine', attribute: 'wis', kind: 'prepared' });
   assert.ok(actor.feats.some((f) => f.slug === 'shield-block' && f.slot === 'granted'));
 });
 
@@ -192,4 +194,109 @@ test('build rules: the report of what the builder cannot run', () => {
   const r = buildReport();
   assert.ok(r.totals.rules < 120, `${r.totals.rules} rules left`);
   for (const c of ['fighter', 'wizard', 'cleric', 'rogue', 'bard', 'sorcerer', 'witch', 'monk', 'barbarian']) assert.deepEqual(r.classes[c], [], c);
+});
+
+// ---- every class, through the engine (section 9.7) ----
+
+import { SKILLS, ATTRIBUTES, CASTING_ATTRIBUTE } from '../rulesets/pf2e/build.js';
+import { LANGUAGES } from '../rulesets/pf2e/languages.js';
+
+/** A plain build for a class at a level: the basic picks made as a player might, the rest left pending. */
+function plainBuild(classSlug, level) {
+  const cls = get(`classes:class/${classSlug}`);
+  const key = (cls.keyAttribute || ['int'])[0];
+  const order = [key, 'con', 'dex', 'wis', 'str', 'int', 'cha'].filter((a, i, l) => l.indexOf(a) === i);
+  const pickSlots = (slots) => { const out = []; for (const s of slots) { const v = s.fixed || order.find((a) => s.options.includes(a) && !out.includes(a)); out.push(v); } return out; };
+  const b = { v: 1, level, name: `Plain ${classSlug}`, ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/skilled-human', background: 'backgrounds:background/acolyte', class: `classes:class/${classSlug}`, keyAttribute: key,
+    boosts: { ancestry: pickSlots(boostSlots(get('ancestries:ancestry/human'))), background: pickSlots(boostSlots(get('backgrounds:background/acolyte'))), free: order.slice(0, 4) },
+    skills: { trained: [] }, selections: {}, languages: [], levels: {} };
+  for (const lv of [5, 10, 15, 20].filter((x) => x <= level)) b.levels[lv] = { boosts: order.slice(0, 4) };
+  for (let round = 0; round < 6; round++) {
+    const { actor, pending } = deriveCharacter(b, get, { resolve });
+    let changed = false;
+    for (const p of pending) {
+      const n = Number((/Choose (\d+)/.exec(p.text) || [])[1] || 1);
+      if (p.step === 'skills' && p.level === 1) { b.skills.trained.push(...SKILLS.filter((s) => !actor.proficiencies.skills[s]).slice(0, n)); changed = true; }
+      if (p.step === 'languages' && p.level === 1) { b.languages.push(...LANGUAGES.common.filter((l) => !actor.languages.includes(l)).slice(0, n)); changed = true; }
+      if (p.step.startsWith('choice.') && p.choice && p.choice.options && p.choice.options.length) { b.selections[p.step.slice(7)] = p.choice.options[0].value; changed = true; }
+    }
+    if (!changed) break;
+  }
+  return b;
+}
+
+test('build: every class at 1st and 10th level runs in the engine with the numbers the rules give', () => {
+  const content = new Proxy({}, { get: (_, k) => (typeof k === 'string' ? get(k) : undefined) });
+  const prof = (rank, level) => (rank ? rank * 2 + level : 0);
+  for (const f of fs.readdirSync('content/pf2e/classes/class')) {
+    const slug = f.slice(0, -5);
+    for (const level of [1, 10]) {
+      const b = plainBuild(slug, level);
+      const { actor, problems } = deriveCharacter(b, get, { resolve });
+      const where = `${slug} ${level}`;
+      assert.deepEqual(problems, [], where);
+      assert.ok(checkActor(actor), `${where}: ${JSON.stringify(checkActor.errors && checkActor.errors.slice(0, 2))}`);
+      const p = prepareActor({ actor, state: {}, effects: [], content, ruleset: systemConfig('pf2e').actors });
+      const A = actor.attributes, P = actor.proficiencies, cls = get(b.class);
+      assert.equal(p.hp.max.value, 8 + (cls.hp + A.con) * level, `${where}: HP`);
+      for (const s of ['fortitude', 'reflex', 'will']) {
+        const at = { fortitude: 'con', reflex: 'dex', will: 'wis' }[s];
+        assert.equal(p.saves[s].value, A[at] + prof(P[s], level), `${where}: ${s}`);
+      }
+      assert.equal(p.perception.value, A.wis + prof(P.perception, level), `${where}: Perception`);
+      assert.equal(p.ac.value, 10 + A.dex + prof(P.armor.unarmored, level), `${where}: AC unarmoured`);
+      if (CASTING_ATTRIBUTE[slug] && actor.spellcasting) {
+        const sa = actor.spellcasting.attribute;
+        assert.equal(p.spell.dc.value, 10 + A[sa] + prof(P.spellcasting[actor.spellcasting.tradition], level), `${where}: spell DC`);
+        assert.ok(P.spellcasting[actor.spellcasting.tradition] >= 1, `${where}: trained in its casting`);
+      }
+    }
+  }
+});
+
+test('build: languages, and what an Intelligence increase brings', () => {
+  const base = { v: 1, level: 5, ancestry: 'ancestries:ancestry/dwarf', heritage: 'heritages:heritage/rock-dwarf', background: 'backgrounds:background/acolyte', class: 'classes:class/wizard',
+    boosts: { ancestry: [null, null, 'int'], background: ['int', 'wis'], free: ['dex', 'con', 'str', 'wis'] }, levels: { 5: { boosts: ['int', 'dex', 'con', 'str'] } } };
+  const r = deriveCharacter({ ...base, languages: ['elven', 'aklo', 'goblin', 'draconic'] }, get, { resolve });
+  assert.equal(r.actor.attributes.int, 4, 'Int +3 at 1st level, +4 at 5th');
+  assert.match(r.problems.join('\n'), /aklo is an uncommon language: it needs the GM's leave/);
+  assert.match(r.problems.join('\n'), /level 1: 4 languages chosen, 3 allowed/);
+  const ok = deriveCharacter({ ...base, languages: ['elven', 'aklo', 'goblin'], approvals: [{ what: 'language:aklo', by: 'GM', at: '2026-11-14' }] }, get, { resolve });
+  assert.ok(!ok.problems.some((p) => /language/.test(p)), ok.problems.join('\n'));
+  assert.deepEqual(ok.actor.languages, ['common', 'dwarven', 'elven', 'aklo', 'goblin']);
+  const steps = ok.pending.filter((p) => p.level === 5).map((p) => p.step);
+  assert.ok(steps.includes('trained') && steps.includes('languages'), `Int up at 5th level: a skill and a language (${steps})`);
+  const done = deriveCharacter({ ...base, languages: ['elven', 'aklo', 'goblin'], approvals: [{ what: 'language:aklo' }], levels: { 5: { ...base.levels[5], trained: ['occultism'], languages: ['halfling'] } } }, get, { resolve });
+  assert.ok(!done.pending.some((p) => ['trained', 'languages'].includes(p.step)));
+  assert.equal(done.actor.proficiencies.skills.occultism, 1);
+  assert.ok(done.actor.languages.includes('halfling'));
+  // a boost to an Intelligence of +4 or more is partial: no new language until it rises
+  const partial = deriveCharacter({ ...base, boosts: { ...base.boosts, free: ['int', 'con', 'str', 'wis'] }, languages: ['elven', 'goblin', 'draconic', 'gnomish'] }, get, { resolve });
+  assert.ok(!partial.pending.some((p) => p.level === 5 && p.step === 'languages'));
+});
+
+test('build: the ancestry\'s own features run (a dwarf\'s clan dagger)', () => {
+  const r = deriveCharacter({ v: 1, level: 1, ancestry: 'ancestries:ancestry/dwarf', heritage: 'heritages:heritage/rock-dwarf', class: 'classes:class/fighter', selections: { 'clan-dagger.clanWeapon': 'clan-dagger' } }, get, { resolve });
+  assert.ok(slugs(r.actor.features).includes('clan-dagger'));
+  assert.deepEqual(r.actor.granted.filter((g) => g.from === 'Clan Dagger'), [{ name: 'Clan Dagger', kind: 'weapon', ref: 'equipment:item/clan-dagger', from: 'Clan Dagger' }]);
+  assert.ok(r.pending.every((p) => p.step !== 'choice.clan-dagger.clanWeapon'));
+});
+
+import { prereqMet, prereqFacts } from '../rulesets/pf2e/prereqs.js';
+import { knownFeatNames } from '../rulesets/pf2e/builder.js';
+
+test('build: feat prerequisites read from the book\'s words', () => {
+  const f = { names: new Set(['enigma', 'shield block']), knownNames: new Set(['enigma', 'maestro', 'shield block', 'intimidating strike']), P: { skills: { arcana: 1, stealth: 1 }, perception: 2, lore: { warfare: 1 }, weapons: { martial: 1 } },
+    attributes: { str: 3, int: 1, wis: 1 }, traits: new Set(['elf']), languages: new Set(['common']), senses: new Set(['lowlightvision']), deity: false, casts: false, heritage: 'cavern elf' };
+  const cases = { 'trained in Arcana': true, 'expert in Arcana': false, 'trained in Arcana, Nature, Occultism, or Religion': true, 'trained in Stealth and Survival': false,
+    'trained in Warfare Lore': true, 'expert in Perception': true, 'trained in martial weapons': true, 'Strength +2': true, 'Intelligence or Wisdom +2': false,
+    'enigma muse': true, 'maestro muse': false, 'low-light vision': true, 'darkvision': false, 'Shield Block': true, 'Intimidating Strike': false,
+    'Shield Block or Intimidating Strike': true, 'cavern elf heritage': true, 'elf trait': true, 'You speak Aklo': false, 'you follow a deity': false,
+    'redemption cause': null, 'legendary in Arcana or Religion, depending on your chosen tradition': null };
+  for (const [t, want] of Object.entries(cases)) assert.equal(prereqMet(t, f), want, t);
+  // in a build: a feat whose prerequisite the character lacks is a problem
+  const b = { ...FIGHTER, level: 2, levels: { ...FIGHTER.levels, 2: { feats: { class: 'feats:feat/intimidating-strike', skill: 'feats:feat/arcane-sense' } } } };
+  const r = deriveCharacter(b, get, { resolve, knownNames: knownFeatNames() });
+  assert.deepEqual(r.problems, ['Arcane Sense (level 2 skill feat): prerequisite not met: trained in Arcana']);
+  assert.ok(prereqFacts(r.actor, b).names.has('shield block'));
 });

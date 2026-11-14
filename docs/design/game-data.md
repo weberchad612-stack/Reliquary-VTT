@@ -591,7 +591,16 @@ on the board: **Claude walks the player through it in chat, step by step**, and 
 2. **The build rules**: ChoiceSet, GrantItem and ActiveEffectLike's proficiency upgrades, so class features and
    subclasses work; a report of every class, ancestry and background feature they still cannot run.
 3. **The builder tool**: `next`, `options`, `choose`, `preview`, `finish`; the campaign's sources and rarity; remaster
-   over legacy; GM approval for uncommon and rare.
+   over legacy; GM approval for uncommon and rare. Flagged for this step (the user, 2026-11-14):
+   - **Remaster over legacy, decided with the user first** (a questionnaire): Foundry's data has no same-name
+     legacy/remaster pairs (each document is marked `source.remaster` or not), so the rule for telling that a
+     legacy option has a remaster equivalent (a renamed slug, the same text, the remaster book replacing the
+     legacy one) is the user's to choose before it is built.
+   - **The deity** as a step for the classes that need one (cleric, champion and others whose choices or favored
+     weapon read it): the build's `deity` field, its `deity` roll option, the favored weapon and the choices that
+     filter on it.
+   - **Archetype dedications**: a dedication feat taken in a class feat slot, and the rule that two more feats of
+     that archetype come before another dedication; read with the prerequisite reader.
 4. **Spellcasters**: each caster class's casting in the ruleset; spells chosen at creation.
 5. **Equipment** at creation (starting wealth, class kits) and **finishing**: the PC on the board.
 6. **A full level-1 character with the user**, step by step, for each kind of class; then **levelling** (section 9.3,
@@ -676,3 +685,38 @@ on the board: **Claude walks the player through it in chat, step by step**, and 
   martial weapons); every class at 20th level; the report.
 - **Left for step 3:** listing a choice's options (filters with `{actor|...}` in them, the game lists), and the
   choices written only in text (the Guard's lore).
+
+### 9.7 Before step 3 (2026-11-14): ancestry features, languages, prerequisites, every class in the engine
+
+- **Ancestry features** (a dwarf's Clan Dagger) run through the same rules as class features. A standing
+  RollOption rule (not one the player toggles) adds its roll option, so Clan Dagger's choice grants the dagger.
+- **Features carry their rules.** The actor's `features` are objects (`{name, slug, ref, level, rules}`) where the
+  content has a document, so the engine runs their play-time rules (Juggernaut's better Fortitude results). Feats
+  and features keep only the rules the engine runs; the building rules have run, and the rest stay in the content.
+  The actor schema now shares the content's rule definition.
+- **Languages** (`rulesets/pf2e/languages.js`: PF2E's languages by rarity, as Foundry's system lists them): Common,
+  the ancestry's, those rules grant (`system.build.languages.granted`), and the player's picks (`build.languages`):
+  the ancestry's count plus the Intelligence modifier at 1st level plus rule-granted extras
+  (`system.build.languages.max`, Multilingual). A common language or one on the ancestry's list is free; an
+  uncommon or rare one needs the GM's leave (`approvals` `language:<slug>`); a secret one is never chosen.
+- **An Intelligence increase after 1st level** brings a trained skill (`levels[n].trained`) and a language
+  (`levels[n].languages`) at that level, as pending steps; a partial boost (Intelligence at +4 or more) brings none
+  until it rises.
+- **Prerequisites** (`rulesets/pf2e/prereqs.js`): the forms the books use are read: a feat or feature by name,
+  "R in X" (skills, lore, Perception, saves, weapons, armour; "A, B, or C" and "A and B"), attribute scores, a
+  heritage, a trait, a sense, a language, a deity, casting, a subclass ("enigma muse"), and "A or B" lists. A name
+  the character lacks counts as unmet only when it is a known feat or feature (`opts.knownNames`, from
+  `knownFeatNames` in `rulesets/pf2e/builder.js`). The rest come back as `checks`, for the GM. Against a sample
+  fighter about 85 per cent of the open content's 4,800 feat prerequisites are decided. They are checked against
+  the character as built, which is exact for the newest level's feats: the level a choice is made at.
+- **Casting** (found by running every class through the engine): the engine reads casting proficiency by tradition
+  and needs `actor.spellcasting` (`{tradition, attribute, kind}`). The builder now keys it by tradition and sets
+  `spellcasting` from `castingOf`: the casting attribute from `CASTING_ATTRIBUTE` (Foundry's class data does not
+  say it; a magus casts with Intelligence though its key attribute is Strength or Dexterity), the tradition and
+  prepared or repertoire from the class's spellcasting feature. A sorcerer's, witch's or summoner's tradition comes
+  from a choice: step 4.
+- A class whose subclass decides its key attribute (the psychic) lists none: any attribute is taken.
+- **Tested:** every class at 1st and 10th level, given a player's plain picks, derives with no problems, passes the
+  actor schema, and runs in the engine with the HP, saves, Perception, unarmoured AC and spell DC the rules give
+  for its ranks; languages and Intelligence increases; the dwarf's clan dagger; prerequisite forms and a feat whose
+  prerequisite is unmet.
