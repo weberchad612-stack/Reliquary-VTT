@@ -874,7 +874,7 @@ export function deriveCharacter(build, get, opts = {}) {
   const focusSpells = granted.filter((g) => focusOf(g) && !((get(g.ref) || {}).traits || []).includes('cantrip'));
   if (spellOut || granted.some(focusOf)) {
     const fs = granted.filter(focusOf).map((g) => ({ name: g.name, ref: g.ref }));
-    if (fs.length && spellOut) spellOut.focus = fs;
+    if (fs.length && (spellOut || casting)) { spellOut = spellOut || {}; spellOut.focus = fs; }
   }
   // ---- starting gear (section 9.10): GM Core's permanent items for the level, then shopping with the currency ----
   const wealth = CHARACTER_WEALTH[L] || CHARACTER_WEALTH[20];
