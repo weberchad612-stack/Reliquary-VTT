@@ -53,9 +53,10 @@ Every token gets an image. The round token is a square crop (512 px); the Quick-
 ## 6. Lessons from the first import
 
 - **Read every keyed area in full before touching a map.** Doors' states, the veils, the underwater crossings and the blocked hall were all in the text, not the art.
-- **Clean, thin-line maps defeat the wall tracer's defaults.** Sample colours at full resolution (thin black lines read as grey when downscaled), trace at about 150 px a square with a dark threshold, hand-place straight walls on their measured lines, and erase each room's interior so grid lines and floor detail do not become walls.
+- **A barrier the text says vanishes is a `veil`**, not a secret door: players see it, and the GM dispels it in one click when the text's trigger happens.
+- **Clean, thin-line maps defeat the wall tracer's defaults.** Sample colours at full resolution (thin black lines read as grey when downscaled) and use the `thin-lines-grey-stone` profile: detection at 150 px a square, grid lines suppressed, straight walls found and measured by the tool as thick walls, room interiors erased, traced walls squared and welded on the 1/32 snap ([map-importer.md](map-importer.md) section 4b). On the first import this cut the hand corrections on level A from 79 to 21 and removed three sight leaks the hand-built walls had. Walls hidden against rock, webs or furniture still need listing by hand (`lines.add`).
 - **Measure door bars.** Doors drawn on the wall line need `features.door_reach_cells` near 0.1, or every door grows by most of a square.
 - **The labelled map may not be in the PDF** (an inside cover): the per-room crops and the text together still place every key.
-- **The book's simplified stat blocks differ from the open data in small ways** (weak creatures, a young creature's HP, a speed): apply them as the actor's differences and say so in its note.
+- **The book's simplified stat blocks differ from the open data in small ways** (weak creatures, a young creature's HP, a speed): `statmatch.mjs` lists every one; apply them as the actor's differences and say so in its note. It found two that had been missed by reading.
 - **One sheet, two maps:** a level and its roof printed together are imported as two maps with `crop_px`, linked by the lift.
 - Features for the next import are listed in [future/adventure-importer.md](../../future/adventure-importer.md).

@@ -5,7 +5,7 @@ For Claude and for board code using `engine/sight/` and `engine/fog/` (design: [
 ## Sight
 
 - Answer "can X see Y?" with the engine (`tokenCanSee`, or `node tools/sight.mjs`), never by reading the map picture. This is what stops narrating rooms, doors or creatures the party cannot actually see.
-- Pass the save's door states (`prepare(segs, state)`): an open door or a found secret door changes everything behind it.
+- Pass the save's door states (`prepare(segs, state)`): an open door, a found secret door or a dispelled veil changes everything behind it.
 - Tokens see from their whole space (`footprintPoints`, `viewpoints`), and are seen if any part of their space is visible. Do not reduce a creature to its centre point.
 - Vision has no range by default (PF2E has none: walls and darkness limit sight). Pass the map's `grid` so rays that hit nothing stop just past the map's edge. A range, and who can look (unconscious, blinded), come from the ruleset through `partyView` options, not from engine code.
 - On maps with lighting, pass the light map and the ruleset's light rules to `partyView`: what a PC perceives depends on light and senses, and only that joins the explored area (see [lighting.md](lighting.md)).
@@ -22,5 +22,5 @@ For Claude and for board code using `engine/sight/` and `engine/fog/` (design: [
 
 ## Checks
 
-- After any change to wall data, re-run the leak check and look at the fog in the demo page in both views, with nothing selected and with a PC and a foe selected.
+- After any change to wall data, re-run the map check (`node tools/mapcheck.mjs <map-dir>`) and look at the fog in the demo page in both views, with nothing selected and with a PC and a foe selected.
 - Performance: measure a full update for four PCs on the real map. On Gauntlight Ruins (about 700 segments) it is 260 ms today; a spatial index for rays is planned.

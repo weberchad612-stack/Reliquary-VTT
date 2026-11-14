@@ -7,11 +7,12 @@ Write-ups of work we have thought through but not scheduled. Each one says why i
 | Idea | Write-up | Pick up |
 |---|---|---|
 | Faster sight and fog rendering | [sight-performance.md](sight-performance.md) | With the light phase, or if play feels slow (on phones, or for live sight while dragging) |
+| Adventure importer features (decided 2026-11-13; most built) | [adventure-importer.md](adventure-importer.md) | Map-sheet splitting (#6), matching book pawns to creatures (#9) and token-sheet slicing (#11) with the next adventure import |
 
 Other ideas raised but not yet written up (from the comparison with the first implementation, 2026-11-09):
 
-- Removing falsely detected doors in the importer (`remove` on a `doors` correction); needed for Level 2.
-- Showing wall bodies at the edge of sight (thin walls whole, thick walls to their middle), display only.
+- ~~Removing falsely detected doors in the importer~~: built as `doors: [{near, drop: true}]` (2026-11-13).
+- ~~Showing wall bodies at the edge of sight~~: settled by wall thickness (2026-11-13): sight reaches a thick wall's far face.
 - A scouting marker that reveals what can be seen from its square.
 - GM-revealed "known" areas shown as a dimmed, blurred map (the party has a map or a description).
 - A player-facing turn view during combat.

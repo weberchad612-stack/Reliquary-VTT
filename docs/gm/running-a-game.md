@@ -358,9 +358,16 @@ Narration is the heart of the game for the user: it is what engages the players.
 
 ## 11. Preparing an area
 
-Done before the party arrives, never mid-scene (Secrecy: "Prep stays behind the screen"). Most of it will
-be done by the map and adventure importer, with its own guide (future/backlog.md FR-22); until then, by
-hand.
+Done before the party arrives, never mid-scene (Secrecy: "Prep stays behind the screen"). For an imported
+adventure, most of it is already done by the adventure importer
+([adventure-importer.md](../best-practices/adventure-importer.md)): the cast as hidden tokens with their stat
+blocks and art, objects with their treasure, the room table, door states, ambient sounds and music, the
+illustrations' index and the ledger. Then the rules below are checks: confirm each is in place before the party
+arrives, and do by hand what the import left out.
+
+- **Veils come down on the text's trigger.** A barrier the book says vanishes (a curtain of darkness, a ward) is a
+  veil on the map. When its trigger happens in play, dispel it (merge `{doors: {<id>: {state: "open"}}}` into
+  `mapstate/<map>`, with an audit line) and narrate what the party sees beyond it.
 
 - **Place the whole cast before the party arrives.** Every creature the adventure puts in the area gets its
   token: hidden, named (section 5), at its starting spot from the room text, with its actor record pointing

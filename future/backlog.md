@@ -452,14 +452,24 @@ and loaded with the game like the chat and audit log, plus a tool (`ledger.mjs a
 entry (what, where, when in game time, source ADVENTURE or ADDED, by Claude or the user) and searches it by name,
 place or kind. Until it exists, the ledger is a private file in the campaign's save (`saves/<campaign>/ledger.md`).
 
-## FR-21: Adventure art at hand during play
+## FR-21: Adventure art at hand during play (BUILT 2026-11-13)
+
+**Built:** the adventure importer pulls the book's illustrations into the private pack with an index
+(`art/illustrations.json`: file, page, area, what it shows, spoiler, when to show it), and every token's art
+([docs/best-practices/adventure-importer.md](../docs/best-practices/adventure-importer.md)).
 
 **The user, 2026-11-13 (GM guide rule B6):** the map and adventure importer will pull every illustration out of the
 book ahead of time (creatures, NPCs, items, rooms, handouts) into the private pack, with an index saying which area
 each belongs to and whether showing it would spoil something, so Claude can show the right picture at the right
 moment without searching the PDF mid-game.
 
-## FR-22: The adventure importer: an area ready for play
+## FR-22: The adventure importer: an area ready for play (BUILT 2026-11-13)
+
+**Built:** the cast (hidden tokens with stat blocks, art and the book's changes, checked by `statmatch.mjs`), the
+art index, the room table (`rooms.json`, proposed from the book's crops), door states from the text (locked, stuck,
+blocked, secret, veils), objects with treasure, ambient sounds and map music, and the ledger, all from the pack's
+`adventure.json` ([docs/best-practices/adventure-importer.md](../docs/best-practices/adventure-importer.md)). The GM
+guide's "Preparing an area" now checks these instead of doing them by hand.
 
 **The user, 2026-11-13 (GM guide review):** much of what the old GM rules did by hand when a level was prepared
 belongs in the map and adventure importer, with its own guide (alongside `docs/best-practices/map-importer.md`),
