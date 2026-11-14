@@ -861,3 +861,9 @@ As built:
   options (Season of Ghosts' player's guide backgrounds are rare in the books).
 - Claude puts them in every shortlist where they fit and says why: what the option ties the character to in this
   adventure.
+- **The region** (the user, 2026-11-14): books that support the region the adventure is set in are highlighted too,
+  right after the campaign's own. A pack's `region` ("Tian Xia" for Season of Ghosts) or `settings --region`
+  names it; an option from a book whose title contains it ("Pathfinder Lost Omens Tian Xia Character Guide") is
+  marked (`region`; `+` and "REGION:" in the tool's lists), listed after the campaign's own, and allowed whatever
+  the campaign's book list. Unlike the campaign's own, it keeps its rarity: an uncommon or rare regional option
+  still needs the GM's leave. Claude puts them in its shortlists and says why (the adventure is set there).

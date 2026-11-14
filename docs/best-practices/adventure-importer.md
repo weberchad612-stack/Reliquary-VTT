@@ -232,7 +232,8 @@ level at that point. For PF2E that is GM Core's DCs by level (level 1: 15, level
 
 - **The adventure's name.** Set `pack.json` `series` to the adventure as its books name it ("Season of Ghosts",
   "Unlit Star"): the character builder offers the player options from its books (the player's guide, the
-  hardcover) first, as the campaign's own (docs/design/game-data.md 9.12).
+  hardcover) first, as the campaign's own (docs/design/game-data.md 9.12). Set `region` to where it is set, as the
+  region's books name it ("Tian Xia"): their options are highlighted next.
 - **The party's level.** Set it in `pack.json` `party_level`: `{"default": N, "<map id or subsystem id>": N}`. Take
   it from the book's own statements ("Party level 2", "the PCs should reach 3rd level after..."). When a chapter
   levels the party up partway through and a place can come before or after it, use the lower level.

@@ -241,3 +241,16 @@ test('builder: the campaign\'s own player options come first, marked, with acces
   const none = builder().options({ v: 1, level: 1 }, '1:background').options;
   assert.ok(!none.some((o) => o.campaign));
 });
+
+test('builder: the region\'s books are highlighted after the campaign\'s own, and keep their rarity', () => {
+  const sog = builder({ settings: { series: ['Season of Ghosts'], region: ['Tian Xia'], sources: ['Pathfinder Player Core'] } });
+  const anc = sog.options({ v: 1, level: 1 }, '1:ancestry').options;
+  const reg = anc.filter((o) => o.region);
+  assert.ok(reg.some((o) => o.name === 'Yaksha') && reg.every((o) => /Tian Xia/.test(o.region)));
+  assert.deepEqual(anc.slice(0, reg.length).map((o) => !!o.region), reg.map(() => true), 'listed first (no ancestry is the campaign\'s own)');
+  assert.match(reg.find((o) => o.name === 'Yaksha').needs, /GM's leave \(rare\)/, 'still the GM\'s leave');
+  assert.ok(!reg.some((o) => o.blocked), 'allowed whatever the campaign\'s book list');
+  const bg = sog.options({ v: 1, level: 1 }, '1:background').options;
+  const first = bg.findIndex((o) => !o.campaign);
+  assert.ok(first > 0 && bg[first].region, 'the campaign\'s own first, then the region\'s');
+});

@@ -192,7 +192,8 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
   const gate = (key, doc, b) => {
     const book = (doc.source || {}).title;
     if (campaignBook(doc)) return {};
-    if (settings.sources && settings.sources.length && book && !settings.sources.includes(book)) return { out: `not in the campaign's books (${book})` };
+    const regional = !!regionBook(doc);
+    if (!regional && settings.sources && settings.sources.length && book && !settings.sources.includes(book)) return { out: `not in the campaign's books (${book})` };
     if ((doc.traits || []).some((t) => ALIGN_TRAITS.includes(t)) || (doc.prerequisites || []).some((p) => ALIGNED.test(p))) return { out: 'relies on alignment, which the remaster removed' };
     const rarity = doc.rarity || 'common';
     if (rarity !== 'common' && !(b.approvals || []).some((a) => a.what === key)) return { needs: `the GM's leave (${rarity})` };
@@ -203,8 +204,12 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
   // the campaign gives access to them (no GM leave for their rarity): the user, 2026-11-14
   const series = (settings.series || []).map((x) => String(x).toLowerCase()).filter(Boolean);
   const campaignBook = (doc) => { const t = String((doc.source || {}).title || '').toLowerCase(); return series.find((x) => t.includes(x)) ? (doc.source || {}).title : null; };
+  // books of the region the adventure is set in (settings.region: "Tian Xia" matches the Lost Omens Tian Xia Character
+  // Guide and World Guide): highlighted next, after the campaign's own; they keep their rarity (the user, 2026-11-14)
+  const regions = (settings.region || []).map((x) => String(x).toLowerCase()).filter(Boolean);
+  const regionBook = (doc) => { if (campaignBook(doc)) return null; const t = String((doc.source || {}).title || '').toLowerCase(); return regions.find((x) => t.includes(x)) ? (doc.source || {}).title : null; };
   const entry = (key, doc, extra = {}) => ({ value: key, name: doc.name, ...(doc.level !== undefined ? { level: doc.level } : {}), ...(doc.rarity ? { rarity: doc.rarity } : {}),
-    book: (doc.source || {}).title, ...((doc.source || {}).remaster ? {} : { legacy: true }), ...(campaignBook(doc) ? { campaign: campaignBook(doc) } : {}), summary: summary(doc), ...extra });
+    book: (doc.source || {}).title, ...((doc.source || {}).remaster ? {} : { legacy: true }), ...(campaignBook(doc) ? { campaign: campaignBook(doc) } : {}), ...(regionBook(doc) ? { region: regionBook(doc) } : {}), summary: summary(doc), ...extra });
 
   /** The steps still to take, grouped: [{id, level, step, count, text, choice?}] in order. */
   const steps = (b) => {
@@ -386,8 +391,9 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
       } else if (c.owned) out = [{ value: '<item>', name: 'one of the character\'s own items: chosen once the gear is bought (step 5)' }];
     }
     out = out || [];
-    // the campaign's own options first (within a group, when the options are grouped)
-    out = [...out].sort((x, y) => (x.group && y.group && x.group !== y.group ? 0 : (y.campaign ? 1 : 0) - (x.campaign ? 1 : 0)));
+    // the campaign's own options first, then the region's (within a group, when the options are grouped)
+    const rank = (o) => (o.campaign ? 2 : o.region ? 1 : 0);
+    out = [...out].sort((x, y) => (x.group && y.group && x.group !== y.group ? 0 : rank(y) - rank(x)));
     if (search) { const w = search.toLowerCase(); out = out.filter((o) => `${o.name} ${o.summary || ''}`.toLowerCase().includes(w)); }
     return { step: s, options: out };
   };

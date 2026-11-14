@@ -342,7 +342,8 @@ What the board does with it: docs/best-practices/board.md (Replay).
   shortlist from that group and the classes that list it under `also`.
 - **The campaign's own options** (marked `*`, "CAMPAIGN:") go in every shortlist where they fit, with why: the
   adventure built them for its characters (a player's guide background ties the character to its places and
-  people). A pack's `series` names its adventure; set it when importing.
+  people). A pack's `series` names its adventure; set it when importing. Then the region's options (marked `+`,
+  "REGION:"): they fit the place the adventure is set; uncommon and rare ones still need the GM's leave.
 - **Shopping:** suggest gear that fits the build (armour it is trained in, its weapons, an adventurer's pack) within
   the budget, and let the player change it; the coins left go to the character.
 - The design and what is built: docs/design/game-data.md section 9.
