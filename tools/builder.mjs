@@ -144,8 +144,12 @@ export async function run(argv) {
     const { step: s, options } = B.options(d.build, step, { all: !!flags.all, search: typeof flags.search === 'string' ? flags.search : undefined });
     const lim = Number(flags.limit) || (flags.json ? Infinity : 60);
     if (flags.json) return out({ step: s, count: options.length, options: options.slice(0, lim) });
-    const line = (o) => `${o.value}${o.name !== o.value ? ` = ${o.name}` : ''}${o.level !== undefined ? ` [${o.level}]` : ''}${o.rarity ? ` (${o.rarity})` : ''}${o.legacy ? ' (legacy)' : ''}${o.needs ? ` NEEDS ${o.needs}` : ''}${o.gmChecks ? ` GM CHECKS: ${o.gmChecks.join('; ')}` : ''}${o.blocked ? ` BLOCKED: ${o.blocked.join('; ')}` : ''}${o.summary ? `\n    ${o.summary}` : ''}`;
-    return out([`${step}: ${s.text || ''} (${options.length} option${options.length === 1 ? '' : 's'})`, ...options.slice(0, lim).map(line), ...(options.length > lim ? [`... ${options.length - lim} more (--limit, --search)`] : [])].join('\n'));
+    const line = (o) => `${o.value}${o.name !== o.value ? ` = ${o.name}` : ''}${o.hp ? ` (${o.hp} HP, ${o.key})` : ''}${o.also ? ` also ${o.also.join(', ')}` : ''}${o.level !== undefined ? ` [${o.level}]` : ''}${o.rarity ? ` (${o.rarity})` : ''}${o.legacy ? ' (legacy)' : ''}${o.needs ? ` NEEDS ${o.needs}` : ''}${o.gmChecks ? ` GM CHECKS: ${o.gmChecks.join('; ')}` : ''}${o.blocked ? ` BLOCKED: ${o.blocked.join('; ')}` : ''}${o.summary ? `\n    ${o.summary}` : ''}`;
+    // options a system groups (classes by role) are printed under their group's heading
+    const shown = [];
+    let group = null;
+    for (const o of options.slice(0, lim)) { if (o.group && o.group !== group) { group = o.group; shown.push(`-- ${group} --`); } shown.push(line(o)); }
+    return out([`${step}: ${s.text || ''} (${options.length} option${options.length === 1 ? '' : 's'})`, ...shown, ...(options.length > lim ? [`... ${options.length - lim} more (--limit, --search)`] : [])].join('\n'));
   }
   if (cmd === 'choose' || cmd === 'clear') {
     const step = pos[2];

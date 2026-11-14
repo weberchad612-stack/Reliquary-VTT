@@ -838,3 +838,12 @@ As built:
 - **Tested:** a fighter built, shopped for and finished into the party from the tool; a PC benched and brought
   back in another's place with her token as it was; the wealth table's steps and checks for a 3rd-level
   character. Token art from a picture was run by hand (a test pack and save in a temporary folder).
+
+### 9.11 Classes by role (2026-11-14)
+
+- The user's ask: the class step shows the classes grouped by the role each mainly fills, by default.
+  `rulesets/pf2e/classroles.js` places every class under one of Tank, Damage (melee), Damage (ranged), Damage
+  (spells), Healer, Support and Utility, with the other roles it fills well (`also`) and a one-line pitch in this
+  project's own words. The class options carry `group`, `also`, `hp` and `key`, ordered by role; the tool prints a
+  heading for each group. A class from a book added later shows under "Other" until it is placed (a test asks
+  that none is).

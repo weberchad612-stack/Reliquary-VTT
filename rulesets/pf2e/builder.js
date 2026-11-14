@@ -152,6 +152,7 @@ export function markdown(r) {
 import { deriveCharacter, boostSlots, ATTRIBUTES, SKILLS, maxSkillRank, itemMatches, configList, predicateHolds as holds, backgroundLore } from './build.js';
 import { LANGUAGES, languageRarity } from './languages.js';
 import { CHARACTER_WEALTH, priceCp, cpLabel, GEAR_KINDS, isConsumable } from './startgear.js';
+import { ROLES, classRole } from './classroles.js';
 import { prereqFacts, prereqCheck } from './prereqs.js';
 
 const ALIGNED = /\b(lawful|chaotic|good|evil|neutral) alignment\b|\balignment\b/i;
@@ -318,7 +319,15 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     if (step === 'ancestry') out = docOptions(b, folderDocs('ancestries', 'ancestry', cache), all);
     else if (step === 'heritage') out = docOptions(b, folderDocs('heritages', 'heritage', cache).filter(({ doc }) => !doc.ancestry || doc.ancestry.ref === b.ancestry), all);
     else if (step === 'background') out = docOptions(b, folderDocs('backgrounds', 'background', cache), all);
-    else if (step === 'class') out = docOptions(b, folderDocs('classes', 'class', cache), all);
+    else if (step === 'class') {
+      // grouped by the role each class mainly fills (classroles.js), in the roles' order
+      const order = (o) => ROLES.findIndex((x) => x.id === o.roleId);
+      out = docOptions(b, folderDocs('classes', 'class', cache), all).map((o) => {
+        const r = classRole(o.value.split('/').pop());
+        const d = get(o.value) || {};
+        return { ...o, group: r.label, roleId: r.role, ...(r.also ? { also: r.also.map((a) => (ROLES.find((x) => x.id === a) || {}).label) } : {}), ...(r.pitch ? { summary: r.pitch } : {}), hp: d.hp, key: (d.keyAttribute || []).join(' or ') || 'by subclass' };
+      }).sort((x, y) => order(x) - order(y) || x.name.localeCompare(y.name));
+    }
     else if (step === 'deity') out = docOptions(b, folderDocs('deities', 'deity', cache).filter(({ doc }) => !s.choice || !s.choice.filter || itemMatches(s.choice.filter, doc) !== false), all);
     else if (step === 'keyAttribute') { const k = (get(b.class) || {}).keyAttribute || []; out = (k.length ? k : ATTRIBUTES).map((a) => ({ value: a, name: a })); }
     else if (step.startsWith('boosts.')) {

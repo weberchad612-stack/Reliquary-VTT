@@ -338,6 +338,8 @@ What the board does with it: docs/best-practices/board.md (Replay).
 - **Finishing a character:** ask the player and the GM where it goes (the party, in another PC's place, or the
   bullpen) and ask for a picture for its token; never pick for them. Write the `writes` `finish` prints to the board
   when the campaign is loaded, and record who plays it (`tools/players.mjs`).
+- **The class step:** show the classes by role (the tool's groups), and when the player names a role or a concept,
+  shortlist from that group and the classes that list it under `also`.
 - **Shopping:** suggest gear that fits the build (armour it is trained in, its weapons, an adventurer's pack) within
   the budget, and let the player change it; the coins left go to the character.
 - The design and what is built: docs/design/game-data.md section 9.

@@ -212,3 +212,14 @@ test('casting: a witch fills its familiar, a bard learns its compositions, a cle
   const cleric = B.steps({ ...base, class: 'classes:class/cleric', deity: 'deities:deity/pharasma' }).steps;
   assert.ok(!cleric.some((s) => s.step.startsWith('spells.')), 'a cleric prepares from its whole list');
 });
+
+test('builder: classes come grouped by their role in the party', () => {
+  const o = B.options({ v: 1, level: 1 }, '1:class', { all: true }).options;
+  assert.equal(o.length, 29);
+  assert.ok(o.every((x) => x.group && x.group !== 'Other'), `every class has a role: ${o.filter((x) => x.group === 'Other').map((x) => x.name)}`);
+  const groups = [...new Set(o.map((x) => x.group))];
+  assert.deepEqual(groups, ['Tank', 'Damage (melee)', 'Damage (ranged)', 'Damage (spells)', 'Healer', 'Support', 'Utility']);
+  const cleric = o.find((x) => x.name === 'Cleric');
+  assert.deepEqual([cleric.group, cleric.also, cleric.hp, cleric.key], ['Healer', ['Support'], 8, 'wis']);
+  assert.equal(o.find((x) => x.name === 'Psychic').key, 'by subclass');
+});
