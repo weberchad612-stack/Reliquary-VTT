@@ -53,6 +53,16 @@ due and prints each entered stage's actions. Claude carries them out in order (a
 steps), then `next <id>`. Decisions: `decide <id> <point> <choice>` (also a ledger fact). GM rules: running-a-game.md
 section 11b; the pre-flight checklist's item 10.
 
+## 2b. On the board
+
+- **The Events tab (GM only):** every event, running and due first, with its stage; opened, its trigger in words,
+  its stages (the current one marked) with their actions, decisions and history. A badge counts the running and due
+  ones. It only shows: Claude runs events.
+- **The tracker's hook:** the GM's board works out, whenever the encounter, the flags or a creature's state changes,
+  which events tied to a round, a turn or wounds are now due, and marks them (`state/eventsdue`, an audit line, a
+  toast). Each is marked once per run. Conditions the board cannot see (the party's rooms, what they carry) do not hold
+  there; Claude's own `due` covers them. `events.mjs due` lists the marks; `tick` clears them.
+
 ## 3. Lessons
 
 - Keep the definition and the state in one record per event: the GM tab shows both, and `--update` refreshes the
@@ -60,5 +70,6 @@ section 11b; the pre-flight checklist's item 10.
 - `tick` makes a few passes: a stage that sets a flag can make the next stage due at once.
 - A fight's end is a flag with its game time (`ended:<group>`), so a stage chained to it fires only for a fight that
   ended after the stage began.
+- A new sidebar tab needs its `<section class="sb-pane" data-pane="...">` in board/index.html as well as its entry in app.js's tab list; without it `sidebar.panel()` is null and the board fails to start (the headless check caught it).
 - Party level is the average of the PCs' levels, rounded; the party's areas are every keyed room a living PC stands in
   on the current map.

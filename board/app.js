@@ -33,6 +33,8 @@ import { makeFloating, bringToFront } from './panel.js';
 import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountLedger } from './ledgerui.js';
+import { mountEvents } from './eventsui.js';
+import { EVENTS, DUE_PATH, splitRecords, combatDue, combatCondition } from './events.js';
 import { mountLoot } from './lootui.js';
 import { lootRules, encumberedEffects, lootView, lootPath, LOOT as LOOT_COLL, PURSE, stashMerge, addCoins, coinLabel } from './loot.js';
 import { isObject, isOpen, objectView, takeFromObject, takeAllFromObject, foundAt } from './objects.js';
@@ -187,7 +189,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null;
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null, eventsUi = null;
   let sound = null;           // the board's sound (startSound below): effects, cues, music, ambient
   let EXPLORE_CHOICES = {};   // the PCs' exploration activities (explore/ records), for the badges, the tab and initiative
   const exploreBadges = { on() { try { return localStorage.getItem('reliquary.exploreBadges') !== '0'; } catch { return true; } }, set(v) { try { localStorage.setItem('reliquary.exploreBadges', v ? '1' : '0'); } catch { /* this page only */ } } };   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
@@ -2823,6 +2825,70 @@ export async function start(store, { build = null } = {}) {
   }
 
   let toastT = 0;
+  /**
+   * The encounter tracker's hook for events (board/events.js): on the GM's board, whenever the encounter, a fight's
+   * flags or a creature's state changes, events tied to a round, a creature's turn or its wounds that are now due are
+   * marked in state/eventsdue (with an audit line and a toast) for Claude to run (tools/events.mjs tick clears them).
+   * Conditions the board cannot see (the party's rooms, what they carry) do not hold here: Claude's own check covers
+   * those.
+   */
+  function watchCombatEvents() {
+    if (READONLY) return;
+    let ROWS = [], FLAGS = {}, ENCR = null, MARKED = {}, timer = null;
+    const soon = () => { clearTimeout(timer); timer = setTimeout(() => check().catch((e) => console.warn('events', e)), 250); };
+    async function prepared(id) {
+      const t = S.tokens[id], actor = await store.get(`actors/${id}`).catch(() => null);
+      if (!t || !actor || !SYS.actors) return null;
+      const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+      try { return Engine.prepareActor({ actor, state, effects: t.effects || [], content: await qvContent(quickViewKeys(actor, t, SYS)), ruleset: SYS.actors }); } catch { return null; }
+    }
+    async function check() {
+      if (S.view !== 'gm' || !ROWS.length) return;
+      const { defs, states } = splitRecords(ROWS, Engine);
+      const combat = defs.filter((d) => combatCondition(d.trigger) || (d.stages || []).some((s) => combatCondition(s.when) || (s.branches || []).some((b) => combatCondition(b.if))));
+      if (!combat.length) return;
+      const enc = ENCR && ENCR.ended == null && ENCR.round > 0 ? ENCR : null;
+      const clock = clockUi && clockUi.clock();
+      const now = clock && typeof clock.now === 'number' ? clock.now : 0;
+      const encounter = { active: !!enc };
+      const needHp = JSON.stringify(combat).includes('"hp_below"');
+      const pcLevels = [];
+      if (JSON.stringify(combat).includes('"level"')) for (const [id, t] of Object.entries(S.tokens)) if (t.kind === 'pc') { const p = await prepared(id); if (p && Number.isFinite(p.level)) pcLevels.push(p.level); }
+      if (enc) {
+        const groups = new Set(), tot = {};
+        for (const c of enc.combatants) {
+          const t = S.tokens[c.token]; if (!t || !t.group) continue;
+          groups.add(t.group);
+          if (!needHp) continue;
+          const p = await prepared(c.token); if (!p || !p.hp) continue;
+          const g = (tot[t.group] = tot[t.group] || { v: 0, m: 0 });
+          g.v += t.dead || c.defeated ? 0 : Math.max(0, p.hp.value); g.m += p.hp.max.value ?? p.hp.max;
+        }
+        const ac = enc.turn != null ? enc.combatants[enc.turn] : null, at = ac ? S.tokens[ac.token] : null;
+        Object.assign(encounter, { round: enc.round, groups: [...groups], acting: at ? { group: at.group || null, name: at.name || null } : null,
+          hp: Object.fromEntries(Object.entries(tot).filter(([, x]) => x.m > 0).map(([g, x]) => [g, x.v / x.m])) });
+      }
+      const ctx = { now, hour: SYS.time && SYS.time.calendar && clock ? Engine.readClock(SYS.time.calendar, now).hour : 12, level: pcLevels.length ? Math.round(pcLevels.reduce((a, b) => a + b, 0) / pcLevels.length) : null,
+        party: { map: MAP_ID, areas: [], outdoors: !!(MAPDATA && MAPDATA.map && MAPDATA.map.outdoor) }, flags: FLAGS, carrying: [], events: states,
+        ended: Object.fromEntries(Object.entries(FLAGS).filter(([k]) => k.startsWith('ended:')).map(([k, v]) => [k.slice(6), v])), encounter };
+      const due = combatDue(combat, states, ctx, Engine, MARKED);
+      if (!due.length) return;
+      const next = { ...MARKED };
+      for (const d of due) {
+        next[d.id] = { key: d.key, kind: d.kind, to: d.to || null, why: `${d.why}${enc ? ` (round ${enc.round})` : ''}`, at: new Date().toISOString() };
+        logChange(`Event due: ${d.title}: ${d.kind === 'start' ? 'starts' : `to ${d.to}`} (${d.why})`);
+        toast(`Event due: ${d.title}. Claude runs it.`);
+      }
+      MARKED = next;
+      store.set(DUE_PATH, next).catch(() => {});
+    }
+    store.watchCollection(EVENTS, (l) => { ROWS = l; soon(); });
+    store.watch('state/flags', (d) => { FLAGS = d || {}; soon(); });
+    store.watch(DUE_PATH, (d) => { MARKED = d || {}; });
+    store.watch('state/encounter', (d) => { ENCR = d || null; soon(); });
+    store.watchCollection('actorstate', () => soon());
+  }
+
   function toast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
@@ -3395,7 +3461,7 @@ export async function start(store, { build = null } = {}) {
     { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' }, { id: 'sound', label: 'Sound' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
-    { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+    { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'events', label: 'Events (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
@@ -3407,6 +3473,10 @@ export async function start(store, { build = null } = {}) {
     players: () => TABLE.players || [],
     pcs: () => Object.entries(S.tokens).filter(([, t]) => t.kind === 'pc').map(([id, t]) => ({ id, name: t.name })),
     name: (id) => (S.tokens[id] ? S.tokens[id].name : null) });
+  // the adventure's events (board/events.js): the GM's Events tab, and the tracker's hook below
+  eventsUi = mountEvents({ store, view: () => S.view, pane: sidebar.panel('events').body, sidebar, tab: 'events', E: Engine,
+    badge: (n) => sidebar.setBadge('events', n) });
+  watchCombatEvents();
   // a trait in the system's words, with its glossary entry (the glossary built into the board for this system)
   const traitWords = (slug) => {
     const g = (typeof GLOSSARIES !== 'undefined' && GLOSSARIES && GLOSSARIES[META.ruleset] && GLOSSARIES[META.ruleset].entries) || {};

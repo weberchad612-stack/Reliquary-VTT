@@ -107,3 +107,10 @@ test('events tool: run by hand, go, reset, errors', () => {
   runEvents(g, p, 'flag', ['count', '3']); runEvents(g, p, 'unflag', ['bell']);
   assert.deepEqual(g.flags, { count: 3 });
 });
+
+test('events tool: the board tracker\'s marks are reported by due and cleared by tick', () => {
+  const g = game(), p = roomsPack();
+  g.records = { ...g.records, 'state/eventsdue': { bell: { why: 'its trigger holds (round 2)' } } };
+  assert.match(runEvents(g, p, 'due').lines.join('\n'), /bell: the board marked it due \(its trigger holds \(round 2\)\)/);
+  assert.ok(runEvents(g, p, 'tick').writes.some((w) => w.op === 'delete' && w.path === 'state/eventsdue'));
+});

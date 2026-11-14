@@ -4,7 +4,7 @@
 // is due (the user's decision, 2026-11-13) and tells the user afterwards; the GM sees every event in the Events tab.
 //
 // Usage: node tools/events.mjs <pack-dir> <save-dir> [--records FILE] <command> ...
-//   (--records: the board's records: events/, state/flags, state/clock, state/encounter, state/table, tokens/,
+//   (--records: the board's records: events/, state/flags, state/eventsdue (the tracker's marks), state/clock, state/encounter, state/table, tokens/,
 //   actors/, actorstate/, board/meta)
 //   status [id]                    every event (or one) with its state, stage and what it waits on
 //   due                            what is due now and why (run with every move, rest, round and clock change)
@@ -175,8 +175,11 @@ export function runEvents(game, packDir, cmd, args = []) {
     return { lines, writes };
   }
   if (cmd === 'context') { lines.push(JSON.stringify(ctx, null, 2)); return { lines, writes }; }
+  const marks = (game.records && game.records['state/eventsdue']) || {};
   if (cmd === 'due') {
     const due = dueEvents(defs, states, ctx);
+    // what the board's encounter tracker marked due (a round, a turn, wounds): it saw it first
+    for (const [eid, m] of Object.entries(marks)) if (byId[eid]) lines.push(`${eid}: the board marked it due (${m.why})${due.some((d) => d.id === eid) ? '' : ' (no longer due here: check, then tick or clear it with tick)'}`);
     if (!due.length) lines.push('Nothing due.');
     for (const d of due) lines.push(`${d.id}: ${d.kind === 'start' ? 'starts' : d.kind === 'branch' ? `branches to ${d.to}` : `moves to ${d.to}`} (${d.why}) "${d.title}"`);
     if (due.length) lines.push('Run them: tick');
@@ -197,6 +200,8 @@ export function runEvents(game, packDir, cmd, args = []) {
       }
     }
     if (!lines.length) lines.push('Nothing due.');
+    // the board's marks are dealt with
+    if (Object.keys(marks).length) writes.push({ op: 'delete', path: 'state/eventsdue' });
     return ended();
   }
   const [id, a1, a2] = args;
