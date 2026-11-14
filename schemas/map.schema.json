@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/map.schema.json",
   "title": "Map record",
-  "description": "One map in an adventure pack. A battle map (the default) has an image, grid calibration, wall file and links to other maps; an area map (kind \"area\": a town, a region) has an image and places, and no grid. See docs/design/maps.md section 3.",
+  "description": "One map in an adventure pack. A battle map (the default) has an image, grid calibration, wall file and links to other maps; an area map (kind \"area\": a town, a region) has an image and places, and no grid; a landing page (kind \"landing\") is only a picture, such as the adventure's cover, where the party waits as players join. See docs/design/maps.md section 3.",
   "type": "object",
   "required": [
     "id",
@@ -24,10 +24,11 @@
     "kind": {
       "enum": [
         "battle",
-        "area"
+        "area",
+        "landing"
       ],
       "default": "battle",
-      "description": "battle: a grid map with walls, tokens and fog. area: a picture with places (a town), shown fitted to the window; travel and requests only."
+      "description": "battle: a grid map with walls, tokens and fog. area: a picture with places (a town), shown fitted to the window; travel and requests only. landing: a picture only (the adventure's cover), shown fitted to the window, where the party waits while players join; only the GM moves the party on and off it."
     },
     "image": {
       "type": "object",
@@ -306,36 +307,80 @@
       "maxItems": 2
     }
   },
-  "if": {
-    "properties": {
-      "kind": {
-        "const": "area"
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "landing"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grid": false,
+          "walls": false,
+          "links": false,
+          "terrain": false,
+          "lighting": false,
+          "start": false,
+          "places": false,
+          "hidden_areas": false
+        }
       }
     },
-    "required": [
-      "kind"
-    ]
-  },
-  "then": {
-    "required": [
-      "places"
-    ],
-    "properties": {
-      "grid": false,
-      "walls": false,
-      "links": false,
-      "terrain": false,
-      "lighting": false,
-      "start": false
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "area"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "places"
+        ],
+        "properties": {
+          "grid": false,
+          "walls": false,
+          "links": false,
+          "terrain": false,
+          "lighting": false,
+          "start": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "area",
+              "landing"
+            ]
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {},
+      "else": {
+        "required": [
+          "grid",
+          "walls"
+        ],
+        "properties": {
+          "places": false
+        }
+      }
     }
-  },
-  "else": {
-    "required": [
-      "grid",
-      "walls"
-    ],
-    "properties": {
-      "places": false
-    }
-  }
+  ]
 }

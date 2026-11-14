@@ -391,6 +391,8 @@ arrives, and do by hand what the import left out.
   right campaign, and that the campaign's players are recorded (`players.mjs list`: who plays which PCs; if not,
   ask the user once and record it), so the ledger can say who introduced what. Every PC starts with
   the system's per-session resources (PF2E: 1 Hero Point).
+  If the campaign has a landing page, the party waits there while players join; the user moves it on to the
+  session's map from the GM view's map menu (or asks Claude to). Don't narrate the first scene until it has moved.
 - **Ending a session** ("wrap up"; offer it when the user says he's done): _(X)_
   1. Close what's open: no replay left unrevealed, the banner cleared, the encounter ended or noted as
      ongoing.

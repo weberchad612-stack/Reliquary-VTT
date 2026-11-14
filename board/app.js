@@ -131,8 +131,8 @@ export async function start(store, { build = null } = {}) {
   for (const e of await store.list('walls')) if (e.data.map === MAP_ID) recs[e.path] = e.data;
   const MAPDATA = mapFromRecords(recs, MAP_ID);
   if (!MAPDATA) return showMessage(`The map "${MAP_ID}" is not on this board.`);
-  if (MAPDATA.map.kind === 'area') {
-    // A town or region: a picture with places, not a battle map (board/area.js).
+  if (MAPDATA.map.kind === 'area' || MAPDATA.map.kind === 'landing') {
+    // A town or region (a picture with places), or the landing page (the cover alone): not a battle map (board/area.js).
     return startArea(store, { meta: META, table: TABLE, page: PAGE, partyMap: PARTY_MAP, map: MAPDATA.map, mapState: (await store.get(`mapstate/${MAP_ID}`)) || {}, build });
   }
   const DATA = { ...MAPDATA, image: MAPDATA.map.image && MAPDATA.map.image.asset ? store.assetUrl(MAPDATA.map.image.asset) : null };

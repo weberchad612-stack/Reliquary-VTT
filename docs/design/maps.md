@@ -73,6 +73,19 @@ One folder per map: `maps/<map-id>/` with `map.json`, the image, `walls.json` an
   the gate).
 - No namespace strings. Saves key per-map state by `id`.
 
+### 3b. Landing pages (2026-11-13)
+
+A map with `"kind": "landing"` is the adventure's landing page: one picture (the book's cover, or the art the
+user picks when the book has none) where the party waits while players join, instead of starting on a level.
+It has no grid, walls, terrain, lighting, links, places or hidden areas (the schema refuses them), and nothing
+may link to it. A campaign starts on it when the adventure names it (`adventure.json` `"landing"`). Players
+cannot travel to or from it; the GM moves the party off it from the map menu, and back to it later (at a
+break, between sessions). Made by `tools/advimport/landing.py`.
+
+```json
+{ "id": "landing", "name": "Secrets of the ...", "kind": "landing", "image": { "file": "cover.webp", "w": 2400, "h": 1606 } }
+```
+
 ### 3a. Area maps (towns and regions)
 
 A map with `"kind": "area"` is a picture with places, not a battle map: no grid, walls, terrain, lighting,

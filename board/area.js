@@ -7,6 +7,9 @@
 //   shows every place, the GM-only ones marked, with GM notes. The map menu is the way to other maps.
 // - One request at a time, in `state/request`; a new one replaces it. Claude deletes it once ruled on.
 // - Travel, the menus, the preview bar and the version banner are the shell's (board/shell.js).
+// - A landing page (kind "landing", 2026-11-13) runs here too: the adventure's cover alone, fitted to the window,
+//   where the party waits while players join. No pins, no Place tab, no requests; the GM moves the party on
+//   and off it from the map menu.
 
 import { makeShell, confirmBox } from './shell.js';
 import { mountClock } from './clockui.js';
@@ -43,6 +46,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
  */
 export async function startArea(store, c) {
   const { meta: META, page: PAGE, partyMap: PARTY_MAP, map, build } = c;
+  const LANDING = map.kind === 'landing';
   let TABLE = c.table;
   let found = (c.mapState && c.mapState.places_found) || [];
   let request = await store.get('state/request');
@@ -55,6 +59,7 @@ export async function startArea(store, c) {
   for (const sel of ['.zoom', '#sky-wrap', '#b-lighting', '#b-colour', '#b-anim', '#b-walls']) { const n = document.querySelector(sel); if (n) n.hidden = true; }
   const stage = document.getElementById('stage');
   stage.classList.add('area-stage');
+  if (LANDING) stage.classList.add('landing-stage');
   const box = document.createElement('div');
   box.className = 'area-map';
   box.innerHTML = `<img alt="${esc(map.name)}" draggable="false">`;
@@ -64,9 +69,9 @@ export async function startArea(store, c) {
   const card = document.createElement('section');
   card.className = 'card place-card';
   card.id = 'place-card';
-  document.getElementById('pane-place').prepend(card);
+  if (!LANDING) document.getElementById('pane-place').prepend(card);
   // the sidebar (board/sidebar.js): the place, the chat, the dice statistics and the GM's audit log
-  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: 'reliquary.sidebar.area', tabs: [{ id: 'place', label: 'Place' }, { id: 'chat', label: 'Chat' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
+  const sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => view, key: LANDING ? 'reliquary.sidebar.landing' : 'reliquary.sidebar.area', tabs: [...(LANDING ? [] : [{ id: 'place', label: 'Place' }]), { id: 'chat', label: 'Chat' }, { id: 'loot', label: 'Party loot' }, { id: 'quests', label: 'Quest log' }, { id: 'dice', label: 'Dice statistics' }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
 
   const toastEl = document.getElementById('toast');
   let toastT = null;
@@ -92,7 +97,7 @@ export async function startArea(store, c) {
   addEventListener('resize', fit);
 
   // ---- pins and the card ----
-  const places = () => visiblePlaces(map, view, found);
+  const places = () => (LANDING ? [] : visiblePlaces(map, view, found));
   function drawPins() {
     box.querySelectorAll('.pin').forEach((n) => n.remove());
     for (const p of places()) {
@@ -114,6 +119,7 @@ export async function startArea(store, c) {
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && selected && !document.querySelector('.menu-pop:not([hidden])')) select(null); });
 
   function drawCard() {
+    if (LANDING) return;
     const p = places().find((x) => x.id === selected);
     const waiting = request && request.status !== 'done' ? request : null;
     if (!p) {
@@ -222,7 +228,7 @@ export async function startArea(store, c) {
 
   // ---- start ----
   window.reliquary = {
-    store, meta: META, map: map.id, area: true,
+    store, meta: META, map: map.id, area: true, landing: LANDING,
     view: (v) => setView(v), select: (id) => select(id), places: () => places().map((p) => p.id),
     menu: () => shell.menu(), mapMenu: () => shell.mapMenu(), preview: () => (PAGE.readOnly ? map.id : null),
   };

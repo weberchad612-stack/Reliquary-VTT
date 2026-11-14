@@ -5,7 +5,9 @@
 //   node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--force]
 //
 // Reads <pack-dir>/adventure.json:
-//   {title, maps: [map ids], start: {map, room}, encounters: [...], objects: [...]}
+//   {title, maps: [map ids], start: {map, room}, landing?: map id, encounters: [...], objects: [...]}
+//   landing: the landing page (kind "landing", tools/advimport/landing.py): the campaign starts there; the GM moves the party
+//   on to `start` from the map menu.
 //   encounter: {id, map, room, pages, xp, hidden, friendly?, trigger?, tactics?,
 //               creatures: [{name, alias?, ref? (a stat block key), at: [x, y], art?, rules?, stats?, note?, npc?, size?}]}
 //   object:    {id, map, room, at, name, kind: container|feature|hazard, hidden?, items?, coins?, hazard?, locked?,
@@ -49,7 +51,7 @@ function statBlock(repo, ruleset, key) {
 export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
   const pack = readJson(path.join(packDir, 'pack.json'));
   const adv = readJson(path.join(packDir, 'adventure.json'));
-  const maps = Object.fromEntries((adv.maps || pack.maps).map((m) => [m, {}]));
+  const maps = Object.fromEntries([...new Set([...(adv.landing ? [adv.landing] : []), ...(adv.maps || pack.maps)])].map((m) => [m, {}]));
   const actors = {};
   const problems = [];
   const letters = {};
@@ -113,7 +115,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     $schema: '../../schemas/campaign.schema.json', v: 1,
     id: id || pack.id, title: title || adv.title || pack.title,
     pack: { id: pack.id, version: pack.version || '0' }, ruleset: pack.ruleset,
-    current_map: start.map, discovered: [start.map],
+    current_map: adv.landing || start.map, discovered: [start.map],
     ...(adv.music && adv.music.themes ? { music: { mood: 'auto', themes: adv.music.themes } } : {}),
   };
   const t0 = Date.now();

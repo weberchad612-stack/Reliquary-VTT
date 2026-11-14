@@ -170,6 +170,12 @@ logo), the map menu, then the game clock in smaller type; the encounter tracker'
      PCs arrive on the arrival squares (the `arrive` cells of the link leading there) and overflow onto the
      nearest free squares that can be walked to from them; foes and others stay behind. The table follows
      the party to the new map.
+   - **The GM moves the party** (2026-11-13, for the landing page): on every map other than the party's,
+     after a confirmation, "Move the party here" (an area map or the landing page), "Move the party to the
+     starting area" and, when every PC has one there, "Move the party back where it left" (each PC to its own
+     `last_square` on that map, overflowing to the nearest free square). Every living PC on the party's map
+     goes; leaving a battle map, by any route, keeps each PC's square there in `last_square`. Not offered
+     while previewing. The map becomes discovered (a landing page never does).
    - **Starting areas:** every battle map has one (`start`), first in its sub-menu. The GM previews it;
      players travel there from another map (from a town, for instance) and are placed on its squares,
      overflowing as at an entrance.
@@ -177,6 +183,12 @@ logo), the map menu, then the game clock in smaller type; the encounter tracker'
      entrances found (`links_found` in the map's state), by ruling or because the user says so. The one
      exception: arriving through an entrance makes the way back known (the arrival entrance and its
      partner on the map the party left). Entrances pair through `to_link` (docs/design/maps.md, section 3).
+
+**Landing pages** (`board/area.js`; format: docs/design/maps.md, section 3b; the user, 2026-11-13): the
+adventure's cover, fitted to the window, with nothing else on it (no pins, no Place tab, no requests). The
+sidebar keeps the chat, Party loot, Quest log, dice and audit log. Players see the other maps in the map menu
+but cannot choose them ("The GM moves the party from here"), and never see the landing page listed from
+elsewhere.
 
 **Area maps** (`board/area.js`; format: docs/design/maps.md, section 3a), agreed on 2026-11-10 from the
 previous board's separate Otari town page. A town or region loads in the same board in place of a battle

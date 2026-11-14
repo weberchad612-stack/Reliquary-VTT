@@ -206,7 +206,7 @@ test('starting area: first in a battle map\'s sub-menu; players go there from an
     { id: 'crypt', name: 'Crypt', links: [] },
   ];
   const gm = travelMenu({ maps, view: 'gm', current: 'town' })[0].items[0];
-  assert.deepEqual(gm.items.map((i) => i.label), ['Whole map', 'Starting area']);
+  assert.deepEqual(gm.items.map((i) => i.label || '--'), ['Whole map', 'Starting area', '--', 'Move the party to the starting area']);
   assert.deepEqual(parseTravelId(gm.items[1].id), { kind: 'view', map: 'keep', link: START });
   const pl = travelMenu({ maps, view: 'player', current: 'town', discovered: ['keep', 'crypt'] })[0].items;
   assert.deepEqual(pl[0].items.map((i) => [i.label, !!i.disabled]), [['Starting area', false]]);

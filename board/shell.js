@@ -3,7 +3,7 @@
 // the new-version banner, and the confirmation dialog. Docs: docs/design/board.md, section 7.
 
 import { MENU, buildMenuBar } from './menu.js';
-import { travelMenu, parseTravelId, travelPlan, planArrival } from './travel.js';
+import { travelMenu, parseTravelId, travelPlan, planArrival, gmMovePlan, returnMaps, noSquares, BACK, START } from './travel.js';
 
 export const KEEP_GM = 'reliquary-keep-gm';   // set just before a preview reload, so the GM view survives it
 
@@ -83,7 +83,7 @@ export function makeShell(o) {
     });
   }
 
-  const travelDef = () => travelMenu({ maps: MAPS, view: o.view(), current: o.table().current_map || o.partyMap, shown: o.mapId, discovered: o.table().discovered || [], linksFound: LINKS_FOUND });
+  const travelDef = () => travelMenu({ maps: MAPS, view: o.view(), current: o.table().current_map || o.partyMap, shown: o.mapId, discovered: o.table().discovered || [], linksFound: LINKS_FOUND, returns: o.readOnly ? [] : returnMaps(o.tokensHere()), bring: !o.readOnly });
   function travelChanged() {
     if (!mapMenu) return;
     const d = travelDef(), k = JSON.stringify(d);
@@ -114,6 +114,34 @@ export function makeShell(o) {
     if (!t) return;
     if (t.kind === 'view') return previewMap(t.map, t.link);
     if (t.kind === 'go') return moveParty(t.map, t.link);
+    if (t.kind === 'bring') return bringParty(t.map, t.link);
+  }
+
+  /** GM: move every living PC on the party's map to another map (after a confirmation); the table follows. */
+  async function bringParty(toMap, how) {
+    if (o.view() !== 'gm' || o.readOnly) return;
+    const dest = MAPS.find((m) => m.id === toMap);
+    if (!dest) return;
+    const from = o.table().current_map || o.partyMap;
+    try {
+      let pm = null, occupants = [];
+      if (!noSquares(dest)) {
+        const segs = (await store.list('walls')).filter((e) => e.data.map === dest.id).flatMap((e) => e.data.segs || []);
+        pm = Engine.prepareMove(segs, (await store.get('mapstate/' + dest.id)) || {}, dest.grid);
+        occupants = (await store.list('tokens')).filter((e) => e.data.map === dest.id).map((e) => ({ ...e.data, id: e.id }));
+      }
+      const plan = gmMovePlan({ maps: MAPS, from, toMap, how, tokens: o.tokensHere(), pm, occupants, engine: Engine });
+      if (!plan) return;
+      if (!plan.travellers.length) return o.toast('No PCs are with the party.');
+      const where = how === START ? `the starting area of ${dest.name || dest.id}` : how === BACK ? `where they left ${dest.name || dest.id}` : (dest.name || dest.id);
+      if (plan.unplaced.length) return o.toast(`There is no room at ${where} for ${plan.unplaced.join(', ')}.`);
+      const who = plan.travellers.map((t) => t.name || t.id).join(', ');
+      if (!(await confirmBox(`Move the party to ${where}? ${who} will go.`))) return;
+      for (const u of plan.updates) await store.update('tokens/' + u.id, u.data);
+      o.logChange(`GM moved the party to ${where}`, true);
+      const disc = o.table().discovered || [];
+      await store.update('state/table', { current_map: dest.id, ...(dest.kind !== 'landing' && !disc.includes(dest.id) ? { discovered: [...disc, dest.id] } : {}) });   // every board reloads on this
+    } catch (e) { o.toast(`Could not move the party (${e.message || e}).`); }
   }
 
   /** GM: show another map (centred on an entrance) on this screen only. */
@@ -152,7 +180,7 @@ export function makeShell(o) {
     if (!(await confirmBox(text))) return;
     try {
       let placed = plan.travellers.map((t) => ({ id: t.id }));
-      if (dest.kind !== 'area') {
+      if (!noSquares(dest)) {
         // The target map as the engine sees it: its walls and its doors as they stand.
         const segs = (await store.list('walls')).filter((e) => e.data.map === dest.id).flatMap((e) => e.data.segs || []);
         const dstate = (await store.get('mapstate/' + dest.id)) || {};
@@ -163,7 +191,10 @@ export function makeShell(o) {
         placed = r.placed;
       }
       // An area map has no squares: the PCs go with the party and keep their last square.
-      for (const p of placed) await store.update('tokens/' + p.id, p.x === undefined ? { map: dest.id } : { map: dest.id, x: p.x, y: p.y });
+      // Leaving a battle map: each PC's square there is kept, so the GM can bring the party back to it.
+      const fromMap = MAPS.find((m) => m.id === o.mapId), here = o.tokensHere();
+      const keep = (id) => (fromMap && !noSquares(fromMap) && here[id] ? { last_square: { ...(here[id].last_square || {}), [o.mapId]: [here[id].x, here[id].y] } } : {});
+      for (const p of placed) await store.update('tokens/' + p.id, p.x === undefined ? { map: dest.id, ...keep(p.id) } : { map: dest.id, x: p.x, y: p.y, ...keep(p.id) });
       for (const [mid, ids] of Object.entries(plan.found)) {
         const st = (await store.get('mapstate/' + mid)) || { map: mid };
         const have = st.links_found || [];

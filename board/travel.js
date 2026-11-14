@@ -12,6 +12,12 @@
 //   players travel to it (the PCs go with the party, undrawn) and leave it by choosing an entrance of a
 //   battle map, where they arrive on the entrance's own squares. A battle map's entrance may lead to an
 //   area map; taking it goes there.
+// - A landing page (kind "landing": the adventure's cover, where the party waits while players join) is a
+//   picture only. Players never travel to or from it: on it, every other map in their menu is shown but not
+//   offered; elsewhere it is not listed for them. Only the GM moves the party on and off it.
+// - The GM moves the party from the menu too (2026-11-13): on every map other than the party's, "Move the
+//   party here" (an area map or landing page), or to a battle map's starting area or back where the PCs left
+//   it (`last_square` on each PC, kept whenever the party leaves a battle map). Not while previewing.
 // - Every battle map has a starting area (`start`): the first item of its sub-menu. The GM previews it;
 //   players travel there (from another map) and are placed on its squares, overflowing as at an entrance.
 // - Discovery is never automatic: Claude marks maps discovered (state/table `discovered`) and entrances
@@ -37,6 +43,10 @@ export function partnerOf(link, maps) {
 
 /** The link id that stands for a battle map's starting area (pack ids never start with "_"). */
 export const START = '_start';
+/** The link id that stands for "where the PCs left this map" (each PC's `last_square`). */
+export const BACK = '_back';
+/** Maps that are a picture without squares: a town or region, or the landing page. */
+export const noSquares = (m) => !!m && (m.kind === 'area' || m.kind === 'landing');
 
 /** Menu ids for travel entries: 'travel:<view|go>:<map>[:<link>]'. */
 export const travelId = (kind, mapId, linkId) => ['travel', kind, mapId, linkId].filter(Boolean).join(':');
@@ -55,16 +65,26 @@ export function parseTravelId(id) {
  * @param {Array} [o.discovered]  map ids the party has discovered
  * @param {object} [o.linksFound] map id -> ids of entrances found in play
  */
-export function travelMenu({ maps, view, current, shown = current, discovered = [], linksFound = {} }) {
+export function travelMenu({ maps, view, current, shown = current, discovered = [], linksFound = {}, returns = [], bring = true }) {
   const byId = new Map(maps.map((m) => [m.id, m]));
   const name = (id) => (byId.get(id) && byId.get(id).name) || id;
   const gm = view === 'gm';
-  const visible = gm ? maps : maps.filter((m) => m.id === current || discovered.includes(m.id));
+  const onLanding = (byId.get(current) || {}).kind === 'landing';
+  const visible = gm ? maps : maps.filter((m) => m.id === current || (discovered.includes(m.id) && m.kind !== 'landing'));
   const isArea = (id) => (byId.get(id) || {}).kind === 'area';
+  // the GM's "move the party" commands: on maps other than the party's, and not while previewing
+  const bringTo = (m) => gm && bring && m.id !== current;
   const items = visible.map((m) => {
-    if (m.kind === 'area') {
+    if (!gm && onLanding && m.id !== current) return { id: travelId('none', m.id), label: m.name || m.id, kind: 'command', disabled: true, hint: 'The GM moves the party from here' };
+    if (noSquares(m)) {
       const here = m.id === current;
-      if (gm) return { id: travelId('view', m.id), label: m.name || m.id, kind: 'command', tag: here ? 'party here' : m.id === shown ? 'previewing' : undefined, hint: `Preview ${m.name || m.id} on this screen` };
+      const tag = here ? (gm ? 'party here' : 'here') : m.id === shown ? 'previewing' : undefined;
+      if (gm && bringTo(m)) return { id: 'travel-map:' + m.id, label: m.name || m.id, tag, items: [
+        { id: travelId('view', m.id), label: 'Preview', kind: 'command', hint: `Preview ${m.name || m.id} on this screen` },
+        { id: travelId('bring', m.id), label: 'Move the party here', kind: 'command', hint: `Move every PC to ${m.name || m.id}` },
+      ] };
+      if (gm) return { id: travelId('view', m.id), label: m.name || m.id, kind: 'command', tag, hint: `Preview ${m.name || m.id} on this screen` };
+      if (m.kind === 'landing') return { id: travelId('none', m.id), label: m.name || m.id, kind: 'command', disabled: true, tag };
       return { id: travelId('go', m.id), label: m.name || m.id, kind: 'command', disabled: here, tag: here ? 'here' : undefined, hint: here ? undefined : `Move the party to ${m.name || m.id}` };
     }
     const sub = [];
@@ -94,6 +114,11 @@ export function travelMenu({ maps, view, current, shown = current, discovered = 
       sub.push(e);
     }
     if (!gm && !links.length && !m.start) sub.push({ id: travelId('none', m.id), label: 'No known entrances', kind: 'command', disabled: true });
+    if (bringTo(m) && (m.start || returns.includes(m.id))) {
+      sub.push({ sep: true });
+      if (returns.includes(m.id)) sub.push({ id: travelId('bring', m.id, BACK), label: 'Move the party back where it left', kind: 'command', hint: `Every PC returns to its own square on ${m.name || m.id}` });
+      if (m.start) sub.push({ id: travelId('bring', m.id, START), label: 'Move the party to the starting area', kind: 'command', hint: `Every PC to the starting area of ${m.name || m.id}` });
+    }
     const tag = m.id === current ? (gm ? 'party here' : 'here') : m.id === shown ? 'previewing' : undefined;
     return { id: 'travel-map:' + m.id, label: m.name || m.id, tag, items: sub };
   });
@@ -154,7 +179,7 @@ export function planArrival({ pm, cells, travellers, occupants = [], engine, lim
 export function travelPlan({ maps, from, toMap, linkId, tokens }) {
   const fromMap = maps.find((m) => m.id === from);
   let target = null, via = null;
-  const area = (id) => (maps.find((m) => m.id === id) || {}).kind === 'area';
+  const area = (id) => noSquares(maps.find((m) => m.id === id));
   if (toMap === from) {
     // Taking an entrance on this map: through to its partner, or to the area map it leads to.
     via = ((fromMap && fromMap.links) || []).find((l) => l.id === linkId) || null;
@@ -187,4 +212,43 @@ export function travelPlan({ maps, from, toMap, linkId, tokens }) {
   const back = target.link.to_map === from && target.link.to_link ? target.link.to_link : via && via.id;
   if (back && target.link.to_map === from) found[from] = [back];
   return { target, via, cells, found, travellers };
+}
+
+/** Maps the party can be brought back to: every living PC on the party's map has a `last_square` there. */
+export function returnMaps(tokens) {
+  const pcs = Object.values(tokens || {}).filter((t) => t.kind === 'pc' && !t.dead);
+  if (!pcs.length) return [];
+  const sets = pcs.map((t) => Object.keys(t.last_square || {}));
+  return sets[0].filter((id) => sets.every((x) => x.includes(id)));
+}
+
+/**
+ * The GM's move of the party (every living PC on the party's map) to another map, as token changes.
+ * Leaving a battle map keeps each PC's square there in `last_square`. Arriving on a battle map: at the starting
+ * area (how = START) or each at its own last square (how = BACK; a PC without one goes to the starting area),
+ * overflowing onto the nearest free squares that can be walked to. A map without squares keeps the PCs' squares.
+ * @param {object} o  {maps, from, toMap, how, tokens: {id: token} on the party's map, pm?, occupants?, engine?}
+ * @returns {{updates: Array<{id, data}>, unplaced: Array<string>, travellers: Array}|null}
+ */
+export function gmMovePlan({ maps, from, toMap, how = null, tokens, pm = null, occupants = [], engine = null }) {
+  const fromMap = maps.find((m) => m.id === from), dest = maps.find((m) => m.id === toMap);
+  if (!dest || toMap === from) return null;
+  const travellers = Object.entries(tokens).filter(([, t]) => t.kind === 'pc' && !t.dead).map(([id, t]) => ({ ...t, id }))
+    .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+  const keep = (t) => (fromMap && !noSquares(fromMap) ? { ...(t.last_square || {}), [from]: [t.x, t.y] } : (t.last_square || null));
+  if (noSquares(dest)) {
+    return { travellers, unplaced: [], updates: travellers.map((t) => { const ls = keep(t); return { id: t.id, data: { map: dest.id, ...(ls ? { last_square: ls } : {}) } }; }) };
+  }
+  const start = (dest.start || []).map((c) => c.slice());
+  const placed = [], unplaced = [], here = occupants.slice();
+  const groups = how === BACK ? travellers.map((t) => ({ cells: t.last_square && t.last_square[dest.id] ? [t.last_square[dest.id]] : start, list: [t] }))
+    : [{ cells: start, list: travellers }];
+  for (const g of groups) {
+    if (!g.cells.length) { unplaced.push(...g.list.map((t) => t.id)); continue; }
+    const r = planArrival({ pm, cells: g.cells, travellers: g.list, occupants: here, engine });
+    for (const p of r.placed) { placed.push(p); here.push({ ...g.list.find((t) => t.id === p.id), x: p.x, y: p.y }); }
+    unplaced.push(...r.unplaced);
+  }
+  const updates = placed.map((p) => { const t = travellers.find((x) => x.id === p.id), ls = keep(t); return { id: p.id, data: { map: dest.id, x: p.x, y: p.y, ...(ls ? { last_square: ls } : {}) } }; });
+  return { travellers, unplaced, updates };
 }
