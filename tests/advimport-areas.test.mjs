@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { splitAreas, packIndex, checkArea } from '../tools/advimport/areas.mjs';
 import { areaFacts, parseBlocks } from '../rulesets/pf2e/bookimport.js';
+import { spawnSync } from 'node:child_process';
 
 const PAGES = [
   { page: 3, text: 'Adventure overview\nX1. Mossy Gate (page 4)\nX2. Lantern Hall (page 5)\n' },
@@ -77,3 +78,28 @@ test('area checklist: events in the text, found and checked against adventure.js
   assert.deepEqual(ok.missing, []);
   assert.ok(ok.done.includes('event (gate-opens)'));
 });
+
+test('area checklist: a book with capital headings (--caps-headings), its own room names, and explainable room tables', () => {
+  const caps = splitAreas([{ page: 7, text: 'Q1. OLD MILL\nThe millstone is cracked.\nQ2. GRAIN LOFT\nA hatch leads up.\n' }], { caps: true });
+  assert.deepEqual(Object.keys(caps), ['Q1', 'Q2']);
+  assert.deepEqual(Object.keys(splitAreas([{ page: 7, text: 'Q1. OLD MILL\nx\n' }])), [], 'without the option a capital heading is a caption');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'areas-caps-'));
+  const put = (f, d) => { fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true }); fs.writeFileSync(path.join(dir, f), typeof d === 'string' ? d : JSON.stringify(d)); };
+  put('pack.json', { id: 'demo', ruleset: 'pf2e', maps: ['farm'] });
+  put('maps/farm/map.json', { id: 'farm', grid: { feet_per_cell: 5 } });
+  put('maps/farm/rooms.json', { rooms: { 'barn-loft': { at: [1, 1], rects: [[0, 0, 2, 2]] } } });
+  put('notes/n.md', '### Q1. Old Mill\n- a cracked millstone\n');
+  put('adventure.json', { encounters: [], objects: [] });
+  const { idx } = packIndex(dir);
+  const q1 = checkArea(caps.Q1, [], [], idx);
+  assert.deepEqual(q1.missing.map((m) => m.what), ["not in any map's room table (rooms.json)"]);
+  assert.deepEqual(checkArea(caps.Q1, [], [], idx, [{ area: 'Q1', match: 'room table', why: 'a pin on the town map' }]).missing, [], 'a room-table item can be explained');
+  const out = spawnSync(process.execPath, ['tools/advimport/areas.mjs', dir, writePages(dir), '--caps-headings'], { encoding: 'utf8' });
+  assert.ok(!/barn-loft/.test(out.stdout), "Claude's own room names are not looked for in the text");
+});
+
+function writePages(dir) {
+  const t = path.join(dir, 'text'); fs.mkdirSync(t, { recursive: true });
+  fs.writeFileSync(path.join(t, 'p007.txt'), 'Q1. OLD MILL\nThe millstone is cracked.\n');
+  return t;
+}

@@ -119,7 +119,7 @@ async function main(argv) {
   const sys = await systemReader(pack.ruleset);
   let files = fs.readdirSync(textDir).filter((f) => /^p\d+\.txt$/.test(f)).sort();
   if (pages) { const [a, b] = pages.split('-').map(Number); files = files.filter((f) => { const n = Number(f.slice(1, -4)); return n >= a && n <= (b || a); }); }
-  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip: skipArg ? new RegExp(skipArg) : null });
+  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip: skipArg ? new RegExp(skipArg) : null, caps: process.argv.includes('--caps-headings') });
   const adv = readJson(path.join(packDir, 'adventure.json'));
   const ef = path.join(packDir, 'checklist.json');
   const explained = fs.existsSync(ef) ? readJson(ef).explained || [] : [];

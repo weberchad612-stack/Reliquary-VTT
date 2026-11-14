@@ -299,12 +299,16 @@ export function updateSave(packDir, saveDir, opts = {}) {
       if (!was[eid]) report.push(`event ${eid}: new`);
     }
     for (const [eid, e] of Object.entries(was)) if (!next[eid]) { next[eid] = e; if (mine(e)) report.push(`event ${eid} is no longer in the adventure (kept)`); }
-    // subsystems: one already in play is kept as it is (its points, reveals and log are play's); new ones are added
+    // subsystems: one already in play is kept as it is (its points, reveals and log are play's); new ones are added,
+    // and one that has not started yet is refreshed from the pack
     const hadSubs = (hadEvents && hadEvents.subsystems) || {};
     const subs = { ...hadSubs };
     for (const [sid, s] of Object.entries(fresh.subsystems)) {
       if (hadSubs[sid] && !mine(hadSubs[sid])) return { ...fresh, report, problems: [`subsystem "${sid}" is also pack ${hadSubs[sid].pack || firstPack}'s: subsystem ids must be unique across the campaign's packs`] };
-      if (!hadSubs[sid]) { subs[sid] = s; report.push(`subsystem ${sid}: new`); }
+      if (!hadSubs[sid]) { subs[sid] = s; report.push(`subsystem ${sid}: new`); continue; }
+      // never started (still waiting, nothing logged): play has not touched it, so the pack's definition replaces it
+      const untouched = hadSubs[sid].status === 'waiting' && !(hadSubs[sid].log || []).length;
+      if (untouched && JSON.stringify(hadSubs[sid]) !== JSON.stringify(s)) { subs[sid] = s; report.push(`subsystem ${sid}: refreshed (not started yet)`); }
     }
     events = { $schema: '../../schemas/events.schema.json', events: next, ...(hadEvents && hadEvents.flags ? { flags: hadEvents.flags } : {}), ...(Object.keys(subs).length ? { subsystems: subs } : {}) };
   }

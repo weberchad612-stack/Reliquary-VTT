@@ -74,7 +74,7 @@ async function main(argv) {
   const { pack, idx } = packIndex(packDir);
   let files = fs.readdirSync(textDir).filter((f) => /^p\d+\.txt$/.test(f)).sort();
   if (pages) { const [a, b] = pages.split('-').map(Number); files = files.filter((f) => { const n = Number(f.slice(1, -4)); return n >= a && n <= (b || a); }); }
-  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip: skipArg ? new RegExp(skipArg) : null });
+  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip: skipArg ? new RegExp(skipArg) : null, caps: process.argv.includes('--caps-headings') });
   const order = (pack.maps || []).filter((m) => fs.existsSync(path.join(packDir, 'maps', m, 'rooms.json')));
   const ways = waysBetween(areas, idx, order);
   const links = Object.fromEntries(order.map((m) => [m, readJson(path.join(packDir, 'maps', m, 'map.json')).links || []]));

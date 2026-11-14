@@ -28,13 +28,18 @@ def list_images(pdf, page=None):
     return rows
 
 
-def crop_scale(img, crop_px=None, scale=None):
+def crop_scale(img, crop_px=None, scale=None, rotate=None):
     """Cut one map out of a page image holding several (crop_px: [x0, y0, x1, y1] in source pixels), then
     resize (scale: a factor, such as 1/3 for a 300 ppi print map). Cropping happens first, so crop_px is always
     in the PDF image's own pixels."""
     if crop_px:
         x0, y0, x1, y1 = [int(round(v)) for v in crop_px]
         img = img.crop((x0, y0, x1, y1))
+    if rotate:   # clockwise quarter turns, after cropping: a map printed sideways comes out with north up
+        turns = {90: Image.ROTATE_270, 180: Image.ROTATE_180, 270: Image.ROTATE_90}
+        if rotate not in turns:
+            raise ValueError(f"source.rotate must be 90, 180 or 270 (clockwise), not {rotate}")
+        img = img.transpose(turns[rotate])
     if scale and scale != 1:
         w, h = img.size
         img = img.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)

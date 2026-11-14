@@ -96,8 +96,20 @@ def main(argv):
     for mid in adv.get("maps", []):
         rf = os.path.join(pack, "maps", mid, "rooms.json")
         rooms = json.load(open(rf))["rooms"] if os.path.exists(rf) else {}
+        md = os.path.join(pack, "maps", mid)
+        mj = json.load(open(os.path.join(md, "map.json")))
+        if "grid" not in mj:   # a landing page or an area map: the picture and its places, no walls or cast
+            im = Image.open(os.path.join(md, mj["image"]["file"])).convert("RGB")
+            im.thumbnail((900, 900))
+            out.append(f"<h2>{esc(mj['name'])} <small>({esc(mj.get('kind'))})</small></h2><img class=map src='{data_url(im)}' alt='{esc(mj['name'])}'>")
+            if mj.get("places"):
+                out.append("<h3>Places</h3><table><tr><th>No.</th><th>Name</th><th>Public</th><th>Note</th></tr>")
+                for p_ in mj["places"]:
+                    out.append(f"<tr><td>{esc(p_.get('number'))}</td><td>{esc(p_['name'])}</td><td>{'yes' if p_.get('public', True) else 'GM only'}</td><td>{esc(p_.get('note'))}</td></tr>")
+                out.append("</table>")
+            continue
         m, url = map_figure(pack, mid, adv, rooms)
-        imp = json.load(open(os.path.join(pack, "maps", mid, "import.json")))
+        imp = next((json.load(open(os.path.join(md, f))) for f in ("import.json", "genmap.json") if os.path.exists(os.path.join(md, f))), {})
         out.append(f"<h2>{esc(m['name'])}</h2><img class=map src='{url}' alt='{esc(m['name'])}'>")
         out.append("<h3>Rooms</h3><table><tr><th>Key</th><th>Title</th><th>Pages</th><th>Squares</th></tr>")
         for k, r in rooms.items():

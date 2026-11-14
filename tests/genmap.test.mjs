@@ -21,7 +21,7 @@ const SPEC = {
     { type: 'rock', rects: [[13, 8, 2, 2]] },
     { type: 'water', rects: [[0, 0, 3, 2]], deep: true },
     { type: 'rubble', rects: [[11, 6, 2, 1]] },
-    { type: 'hazard', rects: [[4, 9, 1, 1]], label: 'Embers' },
+    { type: 'hazard', rects: [[4, 9, 1, 1]], label: 'Embers', damage: '1d4 fire on entering' },
     { type: 'trees', at: [[14, 2]] },
     { type: 'fire', at: [4.5, 9.5], label: 'Campfire' },
   ],
@@ -47,6 +47,7 @@ test('genmap: a spec becomes a valid battle map whose data matches it', { skip: 
   assert.equal(walls.segs.filter((s) => s.t === 'solid').length, 4 /* shed sides around its openings */ + 2 + 4 /* rock */);
   const kinds = terrain.areas.map((a) => `${a.kind}:${a.cause}`).sort();
   assert.deepEqual(kinds, ['difficult:low-wall', 'difficult:rubble', 'difficult:trees', 'hazardous:hazard', 'swim:water'].sort());
+  assert.equal(terrain.areas.find((a) => a.kind === 'hazardous').damage, '1d4 fire on entering', 'a hazard keeps the damage the spec gives');
   assert.deepEqual(terrain.areas.find((a) => a.cause === 'low-wall').rects, [[2, 4, 5, 2], [9, 4, 5, 2]], 'the gap is left open');
   assert.equal(lighting.lights[0].label, 'Campfire');
   assert.deepEqual(read('genmap.json'), SPEC, 'the spec kept beside the map');

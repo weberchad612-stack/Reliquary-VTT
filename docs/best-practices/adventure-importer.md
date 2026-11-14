@@ -179,3 +179,26 @@ Stage that file and pass it as `--pc <file>`. Left out of every sync: caches, ru
   review sheet, not as a replacement for looking.
 - **Links between levels:** weak on a book that describes its lift outside the keyed areas.
 - **Speed:** level A's rebuild went from 68 s to 5 s.
+
+## 10. A book in two columns with capital headings (2026-11-14)
+
+- **Two kinds of text.** `text/` keeps the page layout (the tools' input for stat blocks); a two-column book interleaves
+  its columns there, so headings never start a line. Also extract the reading order (`pdftotext` without `-layout`,
+  page by page, into `read/`) and run the area, loot and link checks on that.
+- **Capital area headings.** Some books print "B4. PRISON" as the area's heading and have no room crops: pass
+  `--caps-headings` to `areas.mjs`, `lootmatch.mjs` and `links.mjs`.
+- **Maps with no keyed areas** get rooms named for what they are (`farmhouse-kitchen`); the area check does not look
+  for those in the text. Areas that are pins on a town or region map, not rooms, are explained in `checklist.json`
+  ("not in any map's room table" can be explained like any other item).
+- **Town and region maps from a clean image and a text layer.** When the book prints the labels as text over an
+  unlabelled picture (as inside covers often do), take the picture and place one pin per label from the text's
+  positions (`page.get_text('words')` through the image's transform). Nothing needs stripping.
+- **Neighbouring columns leak into an area's text** in reading order too (a stat block or a treasure line from the next
+  column, or the gazetteer's stat lines under the last heading): check each by eye and explain it.
+- **Look-alike creatures:** several unnamed creatures of one kind on a map need unique adjective names
+  (board/names.js); the adventure builder can give them from a list, with first letters that differ inside each
+  encounter.
+- **Subsystems on `--update`:** one that has not started yet (status `waiting`, nothing logged) is refreshed from the
+  pack; one in play is kept.
+- **A scratch save that was never synced or played** may be deleted and built again; once it has been synced or
+  played, only `--update`.

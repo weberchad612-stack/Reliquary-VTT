@@ -24,7 +24,7 @@ battle maps):
      {"type": "graves", "area": [x, y, w, h], "count": n},                       (headstones: art only, cover by ruling)
      {"type": "path", "points": [[x, y], ...], "width": 2},
      {"type": "fire" | "light", "at": [x, y], "bright": 20, "dim": 20, "label": "Bonfire"},
-     {"type": "hazard", "rects": [...], "label": "Embers"}]}                     (hazardous terrain)
+     {"type": "hazard", "rects": [...], "label": "Embers", "damage": "1d6 fire on entering"}]}  (hazardous terrain)
 Coordinates are in squares from the top-left. Writes map.json, <id>.webp, walls.json, terrain.json and, when there
 are lights, lighting.json, and keeps the spec as genmap.json beside them so the map can be made again.
 """
@@ -89,7 +89,7 @@ class Gen:
         s.update(kw)
         self.segs.append(s)
 
-    def area(self, kind, rects, label, cause=None, note=None):
+    def area(self, kind, rects, label, cause=None, note=None, damage=None):
         clipped = []
         for r in rects:
             x, y, w, h = map(int, r)
@@ -103,6 +103,8 @@ class Gen:
             a["cause"] = cause
         if note:
             a["note"] = note
+        if damage:
+            a["damage"] = damage
         self.terrain.append(a)
 
     def path_cells(self, f):
@@ -278,7 +280,7 @@ class Gen:
             elif t == "hazard":
                 for (x, y) in self.cells(f["rects"]):
                     self.noise((self.C(x) + 4, self.C(y) + 4, self.C(x + 1) - 4, self.C(y + 1) - 4), (190, 90, 40), 40)
-                self.area("hazardous", f["rects"], f.get("label", "Hazard"), cause=f.get("cause", "hazard"), note=f.get("note"))
+                self.area("hazardous", f["rects"], f.get("label", "Hazard"), cause=f.get("cause", "hazard"), note=f.get("note"), damage=f.get("damage"))
             elif t == "trees":
                 self.trees(f)
             elif t in ("fire", "light"):

@@ -14,7 +14,10 @@
 // An area covers its sub-areas (B2: B2a to B2d) and Claude's own room splits (A4-east).
 //
 // Areas start at a title-case heading line "A4. The South Hallway" (the book's area titles); an all-caps caption
-// ("A4. THE SOUTH HALLWAY", a map crop's label) does not start one, since crops sit inside other areas' text. What
+// ("A4. THE SOUTH HALLWAY", a map crop's label) does not start one, since crops sit inside other areas' text; with
+// --caps-headings (a book that prints its area headings in capitals and has no room crops) it does.
+// Rooms whose key is not a book key (Claude's names for the rooms of a map with no keyed areas, "farmhouse-kitchen")
+// are not looked for in the text. What
 // counts as a fact is the game system's: rulesets/<ruleset>/bookimport.js `areaFacts` (and `parseBlocks` for stat
 // blocks). Nothing from the book is written anywhere but the run's output.
 
@@ -28,7 +31,7 @@ const HEADING = /^\s*([A-Z]{1,2}\d{1,2}[a-z]?)[.:]\s+(\S.{0,80})$/;
 const PAGE_REF = /\((pages?|pp?\.?)\s*\d/i;   // "A9. Hag Grotto (page 14-15)": a list of areas, not the area
 
 /** The book's text split by area: {key: {key, title, pages: [n], text}}, in the book's order. */
-export function splitAreas(pages, { skip = null } = {}) {
+export function splitAreas(pages, { skip = null, caps = false } = {}) {
   const areas = {};
   let cur = null;
   for (const { page, text } of pages) {
@@ -36,7 +39,7 @@ export function splitAreas(pages, { skip = null } = {}) {
       if (skip && skip.test(line.trim())) continue;
       const m = HEADING.exec(line);
       if (m && PAGE_REF.test(m[2])) { cur = null; continue; }
-      if (m && /[a-z]/.test(m[2]) && !/\s{3,}/.test(m[2])) {
+      if (m && (caps || /[a-z]/.test(m[2])) && !/\s{3,}/.test(m[2])) {
         cur = areas[m[1]] = areas[m[1]] || { key: m[1], title: m[2].trim(), pages: [], text: '' };
       }
       if (!cur) continue;
@@ -114,8 +117,8 @@ export function checkArea(area, facts, blocks, idx, explained = []) {
     missing.push({ area: k, what, where, at: f && f.at });
     if (proposal) proposals.push({ area: k, map: room && room.map, ...proposal });
   };
-  if (!room) missing.push({ area: k, what: 'not in any map\'s room table (rooms.json)', where });
-  if (!notes) missing.push({ area: k, what: 'no section in the notes', where });
+  if (!room) miss('not in any map\'s room table (rooms.json)');   // explainable: an area on a town or region map
+  if (!notes) miss('no section in the notes');
   const json = JSON.stringify({ objs, encs, doors });
   for (const f of facts) {
     if (f.kind === 'dc') {
@@ -179,14 +182,15 @@ async function main(argv) {
   const json = args.includes('--json'); if (json) args.splice(args.indexOf('--json'), 1);
   const pages = opt('--pages'), propFile = opt('--proposals'), only = opt('--area');
   const skipArg = opt('--skip'); const skip = skipArg ? new RegExp(skipArg) : null;
+  const caps = args.includes('--caps-headings'); if (caps) args.splice(args.indexOf('--caps-headings'), 1);
   const [packDir, textDir] = args;
-  if (!packDir || !textDir) { console.error('usage: node tools/advimport/areas.mjs <pack-dir> <text-dir> --pages A-B [--json] [--proposals <file>] [--area KEY]'); return 2; }
+  if (!packDir || !textDir) { console.error('usage: node tools/advimport/areas.mjs <pack-dir> <text-dir> --pages A-B [--json] [--proposals <file>] [--area KEY] [--caps-headings]'); return 2; }
   const { pack, idx } = packIndex(packDir);
   const sys = await systemReader(pack.ruleset);
   if (!sys.areaFacts) { console.error(`the ${pack.ruleset} ruleset has no areaFacts (rulesets/${pack.ruleset}/bookimport.js)`); return 1; }
   let files = fs.readdirSync(textDir).filter((f) => /^p\d+\.txt$/.test(f)).sort();
   if (pages) { const [a, b] = pages.split('-').map(Number); files = files.filter((f) => { const n = Number(f.slice(1, -4)); return n >= a && n <= (b || a); }); }
-  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip });
+  const areas = splitAreas(files.map((f) => ({ page: Number(f.slice(1, -4)), text: fs.readFileSync(path.join(textDir, f), 'utf8') })), { skip, caps });
   const ef = path.join(packDir, 'checklist.json');
   const explained = fs.existsSync(ef) ? readJson(ef).explained || [] : [];
   const results = [];
@@ -195,7 +199,8 @@ async function main(argv) {
     results.push({ key: a.key, title: a.title, pages: a.pages, ...checkArea(a, sys.areaFacts(a.text), sys.parseBlocks(a.text, a.pages[0], { skip }), idx, explained) });
   }
   const covered = new Set(Object.keys(areas).flatMap((k) => roomKeys(k, idx)));
-  for (const k of Object.keys(idx.rooms)) if (!covered.has(k) && !only) results.push({ key: k, title: idx.rooms[k].title, pages: [], done: [], missing: [{ area: k, what: 'in the room table but no area of that key in the text read', where: '' }], proposals: [] });
+  const bookKey = (k) => /^[A-Z]{1,2}\d{1,2}[a-z]?(-.+)?$/.test(k);
+  for (const k of Object.keys(idx.rooms)) if (!covered.has(k) && !only && bookKey(k)) results.push({ key: k, title: idx.rooms[k].title, pages: [], done: [], missing: [{ area: k, what: 'in the room table but no area of that key in the text read', where: '' }], proposals: [] });
   if (propFile) fs.writeFileSync(propFile, JSON.stringify(results.flatMap((r) => r.proposals), null, 1) + '\n');
   if (json) { console.log(JSON.stringify(results, null, 1)); return 0; }
   let nMiss = 0;

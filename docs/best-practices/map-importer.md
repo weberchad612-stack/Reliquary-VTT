@@ -124,6 +124,43 @@ overrides only what differs.
   what the sight went through (an opening by type and id, or a gap in the walls, and where). A route can walk
   with every door closed (`doors: "closed"`), which shows that a hall is blocked even when a way round exists.
 
+## 4d. Hand-placed walls, sideways maps and coarse grids (2026-11-14)
+
+From the first book of an Adventure Path, whose village maps draw thick walls between two black outlines with a soft
+drop shadow as dark as the wall itself.
+
+- **When the shadow is as dark as the wall**, tracing and line measuring both overshoot (walls come out twice as thick
+  and shifted toward the shadow, and the gaps between buildings close). Place every wall by hand instead:
+  `lines.add` entries with `"fixed": true` (`{axis, at, from, to, w}`) are used exactly as given, never measured;
+  `vectorize.min_ring_cells` set very high traces nothing else. The profile `thick-dark-timber` does all of this and
+  keeps only the near-black outlines in the mask, so white door bars are still detected.
+- **Measure before placing:** `python3 tools/mapimport/wallscan.py <map-dir> v:Y0:Y1:X0:X1 h:...` prints the dark runs
+  across a band, in squares. A wall drawn between two outlines shows as two thin runs: the wall is the outer edge of
+  the first to the outer edge of the second; its centre and width follow. Pick a band that crosses no door, window
+  or furniture. End each wall at the outer faces of the walls it meets.
+- **Windows in other colours:** grey, tan or light-blue bars on the wall line. Window detection (cyan glass) is off in
+  this profile; scan for the bars' colour, keep the ones on a wall line, and add them by hand (`add` with `t: window`).
+  Grey also matches stone floors, cushions and barrels: only bars on a wall line count.
+- **Sideways maps:** a map printed rotated on the page (`get_image_rects(..., transform=True)` shows the turn; the
+  compass confirms it) is turned upright with `source.rotate` (90, 180 or 270, clockwise). Positions from the page's
+  text layer must go through the same turn.
+- **The grid found may be every second line.** On a large, faintly gridded map the calibration locked onto 89 px for a
+  44.6 px printed grid. Count printed squares against a feature of known size; give the grid by hand when it is off.
+  The calibration also refuses a faint grid (strength under 2): calibrate with a lower threshold, check two far
+  corners by eye, and give the result by hand.
+- **10-ft printed squares on 5-ft board squares:** set `feet_per_cell` 5 and halve `cell_px`, and double every size
+  the importer measures in squares (door lengths and thickness, mask areas, `min_ring_cells`), so they keep their
+  meaning on the print.
+- **Two maps on one sheet** (two floors side by side): one map each with `source.crop_px`; link the stairs with
+  `map.links` in both.
+- **Diagonal doors** (a building drawn at an angle): the walls beside a door are squared off half their width past
+  their ends, which narrows the doorway; pull each wall end back by half its width so the gap stays the door's width.
+  A secret door in a slanted fence needs a span of about two squares before a creature fits through square to square.
+- **A room's squares must reach its walls' faces:** the map check allows 0.35 of a square past the room, so a room
+  whose wall's far face lies further out (thick walls off the grid lines) gets the next row or column too.
+- **Outdoor rooms** (a bridge, a clearing, a yard) see everything: list `outside` and their neighbours in
+  `checks.sees`, with the reason.
+
 ## 5. Pitfalls already met
 
 - **Page backgrounds** are often the largest image on a page. They are shared across pages; the map is not.

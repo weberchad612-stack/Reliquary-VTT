@@ -4,6 +4,8 @@
 Usage:
     python3 tools/advimport/reviewsheet.py <pack-dir> --book <book.pdf> --crops <roomcrops.json>
         --levels A=level-a,B=level-b [--maps level-a] [--out <dir>] [--px 36]
+    python3 tools/advimport/reviewsheet.py <pack-dir> [--maps a,b]     (a book with no room crops: our tiles only,
+        for every map of the pack that has a rooms.json)
 
 Each room in the map's rooms.json gets a pair of tiles: on the left the book's own crop of that room (the map art the
 book prints beside the room's text, without its pawns), on the right our map over the same squares with:
@@ -152,16 +154,23 @@ def sheet_for(pack, map_id, doc, crops, level_of, px, out_dir):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("pack")
-    ap.add_argument("--book", required=True)
-    ap.add_argument("--crops", required=True)
-    ap.add_argument("--levels", required=True)
+    ap.add_argument("--book")
+    ap.add_argument("--crops")
+    ap.add_argument("--levels")
     ap.add_argument("--maps")
     ap.add_argument("--out")
     ap.add_argument("--px", type=int, default=36)
     a = ap.parse_args(argv)
-    level_of = dict(p.split("=") for p in a.levels.split(","))
-    maps = a.maps.split(",") if a.maps else list(dict.fromkeys(level_of.values()))
-    doc, crops = pymupdf.open(a.book), load(a.crops)
+    level_of = dict(p.split("=") for p in a.levels.split(",")) if a.levels else {}
+    if a.maps:
+        maps = a.maps.split(",")
+    elif level_of:
+        maps = list(dict.fromkeys(level_of.values()))
+    else:
+        mdir = os.path.join(a.pack, "maps")
+        maps = sorted(d for d in os.listdir(mdir) if os.path.exists(os.path.join(mdir, d, "rooms.json")))
+    doc = pymupdf.open(a.book) if a.book else None
+    crops = load(a.crops) if a.crops else {"pages": [], "levels": []}
     for m in maps:
         out, n, k = sheet_for(a.pack, m, doc, crops, level_of, a.px, a.out or os.path.join(a.pack, "review"))
         print(f"wrote {out}: {n} rooms, {k} wall(s) to check")

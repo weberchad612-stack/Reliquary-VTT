@@ -166,3 +166,27 @@ test('multi-pack: the tools take the save folder alone', () => {
   assert.equal(run('tools/campaign.mjs', 'check', save).stdout.trim(), 'round trip OK');
   assert.equal(run('tools/encounter.mjs', a, save, 'show').status, 0, 'the two-folder form still works');
 });
+
+test('campaign --update: a subsystem not started yet is refreshed from the pack; one in play is kept', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'subref-'));
+  const d = path.join(dir, 'book');
+  fs.mkdirSync(d, { recursive: true });
+  fs.writeFileSync(path.join(d, 'pack.json'), JSON.stringify({ id: 'book', title: 'book', version: '1.0.0', ruleset: 'pf2e', maps: ['m'] }));
+  fs.writeFileSync(path.join(d, 'adventure.json'), JSON.stringify({ title: 'book', maps: ['m'], start: { map: 'm' }, objects: [], encounters: [] }));
+  const sub = (goal) => ({ id: 'chores', kind: 'victory', title: 'Chores', goal, thresholds: [{ at: goal, id: 'done', end: 'success' }] });
+  const ev = (goal, extra = []) => JSON.stringify({ events: [{ id: 'k', kickoff: true, title: 'k', pages: '1', trigger: { map: 'm' }, stages: [{ id: 's', actions: [{ do: 'note', text: 'x' }] }] }], subsystems: [sub(goal), ...extra] });
+  fs.writeFileSync(path.join(d, 'adventure-events.json'), ev(5));
+  const save = path.join(dir, 'save');
+  const b = buildSave(d, { id: 'c', title: 'C' });
+  fs.mkdirSync(save, { recursive: true });
+  fs.writeFileSync(path.join(save, 'campaign.json'), JSON.stringify(b.campaign));
+  fs.writeFileSync(path.join(save, 'events.json'), JSON.stringify({ events: b.events, subsystems: b.subsystems }));
+  fs.writeFileSync(path.join(d, 'adventure-events.json'), ev(8));
+  const u = updateSave(d, save, {});
+  assert.equal(u.events.subsystems.chores.tracks.vp.goal, 8, 'not started: the new goal is taken');
+  assert.ok(u.report.some((r) => /subsystem chores: refreshed/.test(r)));
+  const played = { ...u.events.subsystems.chores, status: 'active', log: [{ at: 1, deltas: { vp: 1 } }] };
+  fs.writeFileSync(path.join(save, 'events.json'), JSON.stringify({ ...u.events, subsystems: { chores: played } }));
+  fs.writeFileSync(path.join(d, 'adventure-events.json'), ev(12));
+  assert.equal(updateSave(d, save, {}).events.subsystems.chores.tracks.vp.goal, 8, 'in play: kept as it is');
+});

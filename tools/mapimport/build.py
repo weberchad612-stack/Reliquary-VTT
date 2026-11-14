@@ -235,6 +235,10 @@ def straight_walls(lc, mask, g, door_segs, special, cfg, report):
     report["lines_proposed"] = len(found)
     report["lines_rejected"] = len(found) - len(kept)
     for spec in lc.get("add", []):
+        if spec.get("fixed"):   # placed and sized by hand (the art's outlines measured beforehand): no search
+            kept.append({"axis": spec["axis"], "c": spec["at"], "lo": min(spec["from"], spec["to"]),
+                         "hi": max(spec["from"], spec["to"]), "w": spec.get("w", 0.25), "found": True})
+            continue
         m = linesmod.measure(spec, mask, g, lc)
         if not m["found"]:
             m["w"] = spec.get("w", 0.06)
@@ -406,7 +410,7 @@ def build(cfg_path, repo, use_cache=True, room=None):
 
     src = cfg["source"]
     pdf = os.path.join(repo, src["pdf"])
-    src_key = cachemod.key(cachemod.file_id(pdf), src["page"], src.get("image"), src.get("crop_px"), src.get("scale"))
+    src_key = cachemod.key(cachemod.file_id(pdf), src["page"], src.get("image"), src.get("crop_px"), src.get("scale"), src.get("rotate"))
 
     # The full image is pulled out of the PDF only when something needs it (the first run, a changed source or grid,
     # the board's image missing); otherwise only its size and the smaller detection copy come from the cache.
@@ -415,7 +419,7 @@ def build(cfg_path, repo, use_cache=True, room=None):
     def full():
         if "img" not in _full:
             im, ch = extract.extract_map(pdf, src["page"], src.get("image"))
-            _full["img"], _full["chosen"] = extract.crop_scale(im, src.get("crop_px"), src.get("scale")), ch
+            _full["img"], _full["chosen"] = extract.crop_scale(im, src.get("crop_px"), src.get("scale"), src.get("rotate")), ch
         return _full["img"]
     size, chosen_num = cachemod.memo("source-info", lambda: (full().size, _full["chosen"]["num"]), key_extra=src_key)
     report["source"] = {"page": src["page"], "image": chosen_num, "size": list(size),
