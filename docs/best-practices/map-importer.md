@@ -199,6 +199,24 @@ On art where tracing fails (section 4d), the walls no longer have to be measured
 - **Workflow.** Run `--propose` first. Accept, then delete the furniture, then measure only what is missing with
   `wallscan.py` bands (section 4d).
 
+## 4g. Turn and scale from the page (2026-11-14)
+
+`python3 tools/mapimport/mapsource.py <pdf> <page> [--image N] [--osd]` proposes a map's source settings before it is
+imported. `--check <map-dir>`, the pipeline's `mapsource` step for every map, checks an import.json against its page.
+
+- **Which image.** The same choice as the importer makes: the largest image used on that page only, or `--image N`.
+- **Turned on the page.** When the PDF places the image turned, the turn comes from the image's transform and becomes
+  `source.rotate` (clockwise). This was confirmed on a map printed sideways (90).
+- **Turned inside the art.** A map drawn sideways inside an upright image shows no turn in the PDF. `--osd` asks
+  Tesseract's orientation detection, which reads the art's own lettering, and proposes a turn only at confidence 2
+  or more. On the first book it was confident only where the PDF already showed the turn. Otherwise check the compass
+  and the lettering by eye.
+- **Printed scale.** "1 SQUARE = 10 FEET" (or ONE SQUARE) on the page. A map at 10 ft a square goes on 5-ft board
+  squares (section 4d).
+- **Recording a decision.** When the import departs from the page on purpose (art turned inside the image, a 10-ft
+  print on 5-ft squares), say so in import.json: `"print": {"feet": 10, "rotate": 270, "why": "..."}`. The check
+  accepts it, and the importer ignores the block.
+
 ## 5. Pitfalls already met
 
 - **Page backgrounds** are often the largest image on a page. They are shared across pages; the map is not.
