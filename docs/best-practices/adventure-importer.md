@@ -45,6 +45,15 @@ every run, and the table shows them until then. The table below is what each ste
 | Review page | `python3 tools/advimport/review.py packs/<pack> --save saves/<pack>`: one file, sent to the user. | Everything above on one page. |
 | Review | The campaign opens on the landing page (`campaign.mjs` warns when there is none). Bundle a board on memory (`campaign.mjs seed`, `bundle.mjs --data seed=...`) and walk it in GM view; send it to the user as a file. With "publish", load the campaign into the board as its own campaign. | Tokens show their art, objects open and Take works, lights and doors behave as the notes say. |
 
+## 2b. Events and subsystems
+
+Every event the area checklist finds (a timed beat, reinforcements, something that happens once the party does
+something, a skill challenge or subsystem block) is written into `adventure.json` `events` (and `subsystems`), or
+explained in `checklist.json` when the notes or an encounter already carry it (a room rule, a puzzle's XP, where a
+creature starts). Paraphrase with page references. Then `campaign.mjs --update` and a dry run of each event on a
+scratch copy of the save with a PC placed in its area: due, tick, the subsystem's checks, each branch
+([events.md](events.md)). The first adventure's dry runs found two engine bugs before play.
+
 ## 3. Start positions from the book's pawns
 
 Beginner adventures (and many others) print a crop of the map beside each room with pawn markers laid on top. `roomcrops.py` registers the crop to the level map (ORB features + RANSAC similarity) and converts each marker's centre to a grid cell. The markers are the creature's portrait, saved as candidate art. Creatures the book does not show (a monster that appears later) are placed from the text and noted.

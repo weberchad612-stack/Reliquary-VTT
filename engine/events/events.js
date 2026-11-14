@@ -7,7 +7,8 @@
 // supplies nothing here except, if it likes, the hours of daylight.
 //
 // Definition (from the pack's adventure.json): {id, title, kind?, pages?, where?: {map, area}, trigger, stages:
-//   [{id, title?, when?, actions: [...], branches?: [{if, go}], next?}], repeat?: {cooldown: seconds}, note?}
+//   [{id, title?, when?, actions: [...], branches?: [{if, go}], next?, end?}], repeat?: {cooldown: seconds}, note?}
+//   (a stage with `end`, or with branches and no `next`, is the event's last: it finishes after it)
 // State (play's, kept in the save): {status: 'waiting'|'running'|'done'|'cooldown', stage?, started?, stage_at?,
 //   runs?, last?, history?: [{at, what}], decisions?: {id: choice}}
 // Conditions: {all: [...]}, {any: [...]}, {not: c}, {level: {min?, max?}}, {time: 'night'|'day'}, {after: seconds},
@@ -59,7 +60,8 @@ export function holds(c, ctx, st = {}) {
   if (c.map) ok.push(list(c.map).includes((ctx.party || {}).map));
   if (c.area) ok.push(list(c.area).some((a) => ((ctx.party || {}).areas || []).includes(a)));
   if (c.outdoors !== undefined) ok.push(!!(ctx.party || {}).outdoors === !!c.outdoors);
-  if (c.flag) { const v = (ctx.flags || {})[c.flag]; ok.push('is' in c ? v === c.is : !!v); }
+  // a flag is set unless it is missing, null or false (a game time of 0 counts: flags often hold the time they were set)
+  if (c.flag) { const v = (ctx.flags || {})[c.flag]; ok.push('is' in c ? v === c.is : v !== undefined && v !== null && v !== false); }
   if (c.carrying) ok.push((ctx.carrying || []).some((x) => String(x).toLowerCase() === String(c.carrying).toLowerCase()));
   if (c.event) { const s = (ctx.events || {})[c.event] || { status: 'waiting' }; ok.push(s.status === (c.status || 'done')); }
   if (c.encounter_ended) {
@@ -104,7 +106,8 @@ export function dueEvents(defs, states, ctx) {
     if (!cur) continue;
     const br = (cur.branches || []).find((b) => holds(b.if, ctx, st));
     if (br) { out.push({ id: ev.id, title: ev.title, kind: 'branch', to: br.go, why: `a branch of ${cur.id} holds` }); continue; }
-    const next = cur.next ? stageOf(ev, cur.next) : (ev.stages || [])[(ev.stages || []).indexOf(cur) + 1];
+    const nid = nextStage(ev, st);
+    const next = nid ? stageOf(ev, nid) : null;
     if (next && next.when && holds(next.when, ctx, st)) out.push({ id: ev.id, title: ev.title, kind: 'stage', to: next.id, why: `${next.id}'s condition holds` });
   }
   return out;
@@ -124,11 +127,15 @@ export function moveTo(ev, st, to, now) {
   return note({ ...st, stage: to, stage_at: now }, now, `to ${to}`);
 }
 
-/** The stage that follows the current one (its `next`, else the one after it), or null at the end. */
+/**
+ * The stage that follows the current one, or null when the event finishes after it: its `next`; none for a stage
+ * marked `end` or one whose only ways on are branches; else the stage written after it.
+ */
 export function nextStage(ev, st) {
   const cur = stageOf(ev, st.stage);
   if (!cur) return null;
   if (cur.next) return cur.next;
+  if (cur.end || (cur.branches || []).length) return null;
   const i = (ev.stages || []).indexOf(cur);
   return (ev.stages[i + 1] || {}).id || null;
 }

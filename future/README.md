@@ -7,7 +7,7 @@ Write-ups of work we have thought through but not scheduled. Each one says why i
 | Idea | Write-up | Pick up |
 |---|---|---|
 | Faster sight and fog rendering | [sight-performance.md](sight-performance.md) | With the light phase, or if play feels slow (on phones, or for live sight while dragging) |
-| Adventure events and subsystems (decided 2026-11-13; not built) | [adventure-events.md](adventure-events.md) | Next: triggers, stages, the Events tab, Pathfinder's subsystems, generated maps for fights with none |
+| Adventure events and subsystems (decided 2026-11-13; built 2026-11-14) | [adventure-events.md](adventure-events.md) | Built: see docs/best-practices/events.md. Left: a GM button to start a manual event |
 | Adventure importer features (decided 2026-11-13; #1-#5, #7, #8, #10, #12-#25 built) | [adventure-importer.md](adventure-importer.md) | Map-sheet splitting (#6), matching book pawns to creatures (#9) and token-sheet slicing (#11) with the next adventure import; better wall suggestions and level links (the weakest of the second round) |
 
 Other ideas raised but not yet written up (from the comparison with the first implementation, 2026-11-09):

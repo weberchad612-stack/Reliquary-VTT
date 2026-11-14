@@ -119,7 +119,7 @@ const EVENT_PHRASES = [
   ['challenge', /\b(skill challenge|Victory Points?|Influence Points?|Research Points?|Chase Points?|Infiltration Points?|Awareness Points?|Edge Points?|obstacles? in the chase)\b/i],
 ];
 function eventPhrase(s) {
-  if (/\bread (?:the following )?aloud\b/i.test(s)) return null;   // a read-aloud cue, not an event
+  if (/\bread (?:or paraphrase )?(?:the following|aloud)\b/i.test(s)) return null;   // a read-aloud cue, not an event
   for (const [what, re] of EVENT_PHRASES) if (re.test(s)) return what;
   return null;
 }

@@ -3,8 +3,10 @@
 Pathfinder adventures are full of events: combat events (a fight that starts when something happens, reinforcements
 on round 3), social events (a scene with an NPC, often an Influence encounter), and narrated skill challenges (the
 Beginner Box's lift, Victory Points). Today they live in the area notes and the ledger's timed events, and only
-Claude remembers to check them. This write-up records what was found and what the user decided (2026-11-13). None
-of it is built yet.
+Claude remembers to check them. This write-up records what was found and what the user decided (2026-11-13).
+**Built 2026-11-14:** the engine, save and records, `tools/events.mjs`, the checklist's event facts, the GM Events tab
+and the tracker's hook, the subsystems and `tools/subsystem.mjs`, generated battle maps; how to use them:
+[docs/best-practices/events.md](../docs/best-practices/events.md). The shape below is kept as the design record.
 
 ## What exists elsewhere (researched 2026-11-13)
 

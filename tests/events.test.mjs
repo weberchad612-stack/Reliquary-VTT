@@ -122,3 +122,15 @@ test('events: the importer writes them waiting and --update keeps play', () => {
   fs.writeFileSync(path.join(pack, 'adventure.json'), JSON.stringify({ title: 'P', maps: ['m'], events: [{ id: 'bad', trigger: { nonsense: 1 }, stages: [{ id: 'a', next: 'zz' }] }] }));
   assert.ok(buildSave(pack, {}).problems.some((x) => /unknown condition/.test(x)) && buildSave(pack, {}).problems.some((x) => /zz/.test(x)));
 });
+
+test('events: a flag set at time 0 counts; branch endings finish the event', () => {
+  assert.equal(holds({ flag: 'x' }, { flags: { x: 0 } }), true);
+  assert.equal(holds({ flag: 'x' }, { flags: { x: false } }), false);
+  assert.equal(holds({ flag: 'x' }, { flags: {} }), false);
+  const ev = { id: 'e', stages: [{ id: 'a', branches: [{ if: { flag: 'ok' }, go: 'win' }, { if: { flag: 'bad' }, go: 'lose' }] }, { id: 'win', end: true }, { id: 'lose', end: true }, { id: 'x' }, { id: 'y', next: 'x' }] };
+  assert.equal(nextStage(ev, { stage: 'a' }), null, 'branches only: no falling through to win');
+  assert.equal(nextStage(ev, { stage: 'win' }), null, 'end: not on to lose');
+  assert.equal(nextStage(ev, { stage: 'lose' }), null);
+  assert.equal(nextStage(ev, { stage: 'x' }), 'y', 'a plain stage goes on to the one written after it');
+  assert.equal(nextStage(ev, { stage: 'y' }), 'x');
+});

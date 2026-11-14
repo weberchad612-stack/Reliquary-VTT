@@ -117,5 +117,9 @@ description (the user's decision): `python3 tools/genmap/genmap.py <spec.json> p
 - A value of 0 is a real game time: test `=== undefined`, never truthiness (a threshold reached at time 0 looked unreached until a test caught it).
 - Every export of an engine module lands in one flat `Engine` object on the board: names must be unique across the engine (`subsystemRound`, not `nextRound`).
 - Generated maps: scattered features (graves) stay off paths and structures, and a rock's own outline is its wall (drawing the wall line over it made it read as a hut); terrain `cause` must be a slug (`low-wall`).
+- A stage that ends a branch needs `end: true`; a stage whose only ways on are branches finishes the event if none is taken (on the first real events, "descend" would otherwise have gone on to "crash", the stage written after it).
+- A flag set at game time 0 still counts: flags hold the time they were set, so `{flag}` tests presence, not truth.
+- A kind's shape takes extra `tracks` from the spec: a tally of failed approaches (three tries and the NPC closes off) is a track with an `end: failure` threshold.
+- Shard-style progress the board does not track (fused items, a GM's moment) is a flag Claude sets; the event waits on it.
 - Party level is the average of the PCs' levels, rounded; the party's areas are every keyed room a living PC stands in
   on the current map.
