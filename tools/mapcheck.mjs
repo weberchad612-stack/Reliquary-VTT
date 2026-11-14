@@ -10,7 +10,7 @@
 // every one of its squares' centres with --thorough); a point the sight reaches more than --slack cells (default
 // 0.35) outside the room's squares is a leak, reported with where it is, unless the room lists it in `sees`
 // (import.json checks.sees: {room: [other rooms it may see into: through a window, a breach the art draws]}).
-// Routes: import.json checks.routes: [{from: [x, y], to: [x, y], blocked?: true, note?}]; every door is open (secret
+// Routes: import.json checks.routes: [{from: [x, y], to: [x, y], blocked?: true, doors?: 'closed', note?}]; every door is open (secret
 // doors found) except those whose `blocked` reason says they cannot open. A route marked blocked must fail; any other
 // must succeed. Exit code 1 when anything fails.
 // Automatic (#18, 2026-11-13): every door is walked through from both sides (with every door open), and every room
@@ -110,10 +110,11 @@ export function checkMap(dir, { slack = 0.35, thorough = false } = {}) {
       if (!why) out.ok = false;
     }
   }
+  const pmClosed = prepareMove(segs, {}, map.grid);   // a route with doors: "closed" walks with every door shut
   for (const r of checks.routes || []) {
-    const res = findPath(pm, { x: r.from[0], y: r.from[1], size: 1 }, r.to[0], r.to[1]);
+    const res = findPath(r.doors === 'closed' ? pmClosed : pm, { x: r.from[0], y: r.from[1], size: 1 }, r.to[0], r.to[1]);
     const okRoute = r.blocked ? !res : !!res;
-    out.routes.push({ from: r.from, to: r.to, expect: r.blocked ? 'blocked' : 'open', got: res ? `${res.feet ?? res.cost * 5} ft` : 'blocked', ok: okRoute, note: r.note });
+    out.routes.push({ from: r.from, to: r.to, doors: r.doors || 'open', expect: r.blocked ? 'blocked' : 'open', got: res ? `${res.feet ?? res.cost * 5} ft` : 'blocked', ok: okRoute, note: r.note });
     if (!okRoute) out.ok = false;
   }
   return out;

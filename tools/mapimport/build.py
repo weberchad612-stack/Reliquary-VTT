@@ -263,8 +263,29 @@ def straight_walls(lc, mask, g, door_segs, special, cfg, report):
                     return True
         return False
     dismissed = lambda P: any(near(P, p, 0.4) for p in lc.get("dismiss_near", []))
-    misses = [P for P in linesmod.near_misses(mask, g, lc) if not covered(P) and not dismissed(P)]
-    gaps = [P for P in linesmod.gap_joins(kept, openings, lc) if not dismissed(P)]
+    # a wall separates two places: a line with the same room on both sides all along it is floor detail, and one with
+    # no room on either side lies in rock; neither is a missing wall
+    owner = {}
+    rf = os.path.join(cfg.get("_dir", ""), "rooms.json")
+    if os.path.exists(rf):
+        for k, r in json.load(open(rf)).get("rooms", {}).items():
+            for x, y, w, h in r["rects"]:
+                for i in range(x, x + w):
+                    for j in range(y, y + h):
+                        owner[(i, j)] = k
+
+    def same_room(P):
+        if not owner:
+            return False
+        for t in (0.2, 0.5, 0.8):
+            u = P["lo"] + (P["hi"] - P["lo"]) * t
+            a_, b_ = ((u, P["c"] - 0.35), (u, P["c"] + 0.35)) if P["axis"] == "h" else ((P["c"] - 0.35, u), (P["c"] + 0.35, u))
+            ra, rb = owner.get((math.floor(a_[0]), math.floor(a_[1]))), owner.get((math.floor(b_[0]), math.floor(b_[1])))
+            if ra != rb:
+                return False
+        return True   # the same room on both sides, or none (rock): either way not a missing wall
+    misses = [P for P in linesmod.near_misses(mask, g, lc) if not covered(P) and not dismissed(P) and not same_room(P)]
+    gaps = [P for P in linesmod.gap_joins(kept, openings, lc) if not dismissed(P) and not same_room(P)]
     if misses or gaps:
         report["line_proposals"] = {"near_misses": misses, "gaps": gaps}
     pieces = linesmod.cut_openings(kept, openings, lc)
@@ -377,6 +398,7 @@ def build(cfg_path, repo, use_cache=True, room=None):
     cachemod.DIR = os.path.join(os.path.dirname(os.path.abspath(cfg_path)), ".cache") if use_cache else None
     cachemod.HITS.clear(); cachemod.MISSES.clear()
     cfg = with_profile(cfg)
+    cfg["_dir"] = os.path.dirname(os.path.abspath(cfg_path))
     step = cfg.get("snap", 0.125)   # endpoint precision: 1/8 cell, or 1/32 for print-resolution maps (2026-11-14)
     vectorize.SNAP = step
     out_dir = os.path.dirname(os.path.abspath(cfg_path))
@@ -529,6 +551,22 @@ def build(cfg_path, repo, use_cache=True, room=None):
     if sq:
         report["squared_up"] = linesmod.square_up(walls, sq)
     walls += line_segs
+    # a suggested wall that an existing wall (traced or measured) already runs along is not missing
+    lp = report.get("line_proposals")
+    if lp:
+        allw = walls + door_segs + win_segs + special
+
+        def along(P):
+            for t in (0.15, 0.5, 0.85):
+                u = P["lo"] + (P["hi"] - P["lo"]) * t
+                q = (u, P["c"]) if P["axis"] == "h" else (P["c"], u)
+                if not any(dist_point_seg(q, w["a"], w["b"]) < 0.25 for w in allw):
+                    return False
+            return True
+        lp["near_misses"] = [P for P in lp["near_misses"] if not along(P)]
+        lp["gaps"] = [P for P in lp["gaps"] if not along(P)]
+        if not lp["near_misses"] and not lp["gaps"]:
+            report.pop("line_proposals")
 
     # ids: stable, in reading order (top to bottom, left to right) per kind
     def order(s):
@@ -631,6 +669,11 @@ def build(cfg_path, repo, use_cache=True, room=None):
     with open(os.path.join(out_dir, "map.json"), "w", encoding="utf-8") as f:
         json.dump(map_rec, f, indent=1)
         f.write("\n")
+    # the walls as they were before this build, for the review sheet's "changed" marks (tools/advimport/reviewsheet.py)
+    if os.path.exists(os.path.join(out_dir, "walls.json")):
+        os.makedirs(os.path.join(out_dir, ".cache"), exist_ok=True)
+        import shutil
+        shutil.copyfile(os.path.join(out_dir, "walls.json"), os.path.join(out_dir, ".cache", "walls-prev.json"))
     with open(os.path.join(out_dir, "walls.json"), "w", encoding="utf-8") as f:
         json.dump({"v": 1, "unit": "cell", "snap": step, "segs": out}, f, separators=(",", ":"))
         f.write("\n")

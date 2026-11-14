@@ -63,3 +63,20 @@ door = [{"a": [4.0, 7.0], "b": [5.0, 7.0]}]
 gaps = lines.gap_joins(L, door)
 assert len(gaps) == 1 and gaps[0]["lo"] == 4.0 and gaps[0]["hi"] == 5.5, gaps   # the doorway's gap is filled
 print("ok walls")
+
+# #21: the review sheet's tile: our map with walls, room squares, suggestions and changes drawn
+from PIL import Image  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools", "advimport"))
+import reviewsheet  # noqa: E402
+img = Image.new("RGB", (500, 500), (40, 40, 40))
+grid = {"cell_px": 50, "origin_px": [0, 0], "cols": 10, "rows": 10}
+segs = [{"t": "solid", "a": [1, 1], "b": [5, 1]}, {"t": "door", "a": [5, 1], "b": [6, 1], "door": {"id": "d1"}}]
+prev = {reviewsheet.seg_key(segs[0]), ("solid", (1.0, 3.0), (5.0, 3.0))}
+t = reviewsheet.our_tile(img, grid, [0, 0, 8, 4], segs, prev, [[1, 1, 4, 2]], [{"axis": "v", "c": 7, "lo": 0, "hi": 3}], 20)
+assert t.size == (160, 80)
+px = t.load()
+assert px[60, 20][0] > 200, "the solid wall in white"
+assert px[110, 22][1] > 180 and px[110, 22][0] < 120, "the new door marked green beside it (it was not there before)"
+assert px[60, 60][0] > 200 and px[60, 60][1] < 100, "the removed wall in red"
+assert px[140, 4][0] > 200 and px[140, 4][2] > 180, "a suggested wall dashed magenta"
+print("ok sheet")

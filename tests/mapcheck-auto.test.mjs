@@ -53,3 +53,11 @@ test('crop check: a crop\'s footprint in squares, and room squares outside it', 
   assert.deepEqual(outside([[2, 1, 4, 2]], [2, 1, 6, 3]), []);
   assert.deepEqual(outside([[2, 1, 6, 1]], [2, 1, 6, 3], 1), [[7, 1]], 'one square of slack, then outside');
 });
+
+test('map check: a route may walk with every door closed', () => {
+  const segs = [...box(0, 12, 'o'), { id: 'w', t: 'solid', a: [0, 0], b: [0, 6] }, { id: 'e', t: 'solid', a: [12, 0], b: [12, 6] },
+    { id: 'm1', t: 'solid', a: [6, 0], b: [6, 2] }, { id: 'm2', t: 'solid', a: [6, 3], b: [6, 6] }, { id: 'door01', t: 'door', a: [6, 2], b: [6, 3], door: { id: 'd01' } }];
+  const rooms = { R1: { at: [2, 3], rects: [[0, 0, 6, 6]] }, R2: { at: [9, 3], rects: [[6, 0, 6, 6]] } };
+  const r = checkMap(mapDir({ segs, rooms, checks: { routes: [{ from: [2, 2], to: [9, 2] }, { from: [2, 2], to: [9, 2], doors: 'closed', blocked: true }] } }));
+  assert.deepEqual(r.routes.map((x) => [x.doors, x.ok]), [['open', true], ['closed', true]]);
+});
