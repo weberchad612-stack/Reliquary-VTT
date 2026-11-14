@@ -21,6 +21,7 @@ import { loadGame, creature, prepareAt } from './actor.mjs';
 import { dicePath, diceRecord, sideOf } from '../board/dice.js';
 import { publicName } from '../board/names.js';
 import { chatPath, chatMessage } from '../board/chat.js';
+import { gameArgs } from './campaign.mjs';
 
 const DEGREE = { 'critical-success': 'critical success', success: 'success', failure: 'failure', 'critical-failure': 'critical failure' };
 
@@ -134,8 +135,8 @@ function main(argv) {
     const rollRaw = opt('--roll'), roll = rollRaw !== undefined && !String(rollRaw).includes(',') ? num(rollRaw, '--roll') : undefined, dcOpt = num(opt('--dc'), '--dc'), modOpt = num(opt('--mod'), '--mod');
     const rec = opt('--records'), who = opt('--who'), statName = opt('--stat'), strike = opt('--strike'), against = opt('--against'), defense = opt('--defense'), attackN = num(opt('--attack'), '--attack') || 1;
     if (modOpt !== undefined) { console.log(JSON.stringify(resolveCheck({ mod: modOpt, dc: dcOpt, roll, bonus }), null, 2)); return 0; }
-    const [pack, save] = args;
-    if (!pack || !save || !who) throw new Error('give --mod, or a pack folder, a save folder and --who');
+    const [pack, save] = gameArgs(args);
+    if (!save || !who) throw new Error('give --mod, or a save folder (or a pack folder and a save folder) and --who');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
     const r = runCheck(game, { who, stat: statName, strike, attack: attackN, against, defense, dc: dcOpt, roll: rollRaw, bonus, bonusLabel });
     console.log(JSON.stringify(r, null, 2));

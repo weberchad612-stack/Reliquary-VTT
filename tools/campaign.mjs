@@ -59,19 +59,28 @@ export function readContent(pack, packDir, actors, tokens = {}, loot = null) {
  * The art the save's tokens use (token.art names a key of the pack's art/art.json: {key: {token, full, w, h}}):
  * {key: {token: {fingerprint, asset}, full: {fingerprint, asset, w, h}}}, each file added to `images` for upload.
  */
-export function readArt(packDir, tokens, images) {
-  const file = path.join(packDir, 'art', 'art.json');
+export function readArt(packDirs, tokens, images) {
+  const dirs = Array.isArray(packDirs) ? packDirs : [packDirs];
   const used = new Set(Object.values(tokens).map((t) => t.art).filter(Boolean));
   if (!used.size) return {};
-  if (!fs.existsSync(file)) throw new Error(`tokens use art (${[...used].join(', ')}) but the pack has no art/art.json`);
-  const manifest = readJson(file);
+  // each pack's art/art.json; a key in two packs is an error (art keys must be unique across a campaign's packs)
+  const manifest = {}, from = {};
+  for (const d of dirs) {
+    const file = path.join(d, 'art', 'art.json');
+    if (!fs.existsSync(file)) continue;
+    for (const [k, v] of Object.entries(readJson(file))) {
+      if (from[k]) throw new Error(`art "${k}" is in two packs (${path.basename(from[k])}, ${path.basename(d)}): art keys must be unique across a campaign's packs`);
+      manifest[k] = v; from[k] = d;
+    }
+  }
+  if (!Object.keys(manifest).length) throw new Error(`tokens use art (${[...used].join(', ')}) but no pack has art/art.json`);
   const out = {};
   for (const key of used) {
     const a = manifest[key];
     if (!a || !a.token || !a.full) throw new Error(`art "${key}" is not in art/art.json (run tools/advimport/tokenart.py)`);
     out[key] = {};
     for (const part of ['token', 'full']) {
-      const f = path.join(packDir, 'art', a[part]);
+      const f = path.join(from[key], 'art', a[part]);
       const bytes = fs.readFileSync(f);
       const fingerprint = crypto.createHash('sha256').update(bytes).digest('hex');
       if (!images.some((i) => i.fingerprint === fingerprint)) images.push({ art: key, part, file: f, fingerprint, bytes: bytes.length, type: MIME[path.extname(f).slice(1).toLowerCase()] });
@@ -81,13 +90,89 @@ export function readArt(packDir, tokens, images) {
   return out;
 }
 
-/** Read a pack and a save from disk into what campaignRecords() takes, plus the map images. */
+// ---- campaigns of several packs (an Adventure Path: one pack per book, one campaign; docs/design/maps.md 3c) ----
+
+/**
+ * A tool's command line, in either form: `<pack-dir> <save-dir> ...` or `<save-dir> ...` (the packs are found from the
+ * campaign; a campaign of several packs is used this way). Returns [pack-dir or null, save-dir, ...the rest].
+ */
+export function gameArgs(args) {
+  const isSave = (d) => !!d && fs.existsSync(path.join(d, 'campaign.json')) && !fs.existsSync(path.join(d, 'pack.json'));
+  return isSave(args[0]) ? [null, ...args] : [...args];
+}
+
+/** The ids of the packs a campaign is built from, in order: campaign.json `packs`, or its one `pack`. */
+export const campaignPackIds = (campaign) => (campaign.packs ? campaign.packs.map((p) => p.id) : campaign.pack ? [campaign.pack.id] : []);
+
+/**
+ * A pack's folder by its id: a folder given (a pack, or the save: a folder beside it), then packs/<id>, then
+ * examples/<id>. Throws when none holds that pack.
+ */
+export function findPackDir(id, hints = []) {
+  const cands = [...hints.flatMap((h) => [h, path.join(path.dirname(path.resolve(h)), id)]), path.join(REPO, 'packs', id), path.join(REPO, 'examples', id)];
+  for (const d of cands) { try { if (readJson(path.join(d, 'pack.json')).id === id) return d; } catch { /* not this one */ } }
+  throw new Error(`pack "${id}" not found (looked in ${[...new Set(cands.map((c) => path.relative(process.cwd(), c) || '.'))].join(', ')})`);
+}
+
+/**
+ * The campaign's packs: [{id, dir, pack}] in the campaign's order. `packDir` (optional) is a hint: a pack of the
+ * campaign, or for a save that names no pack, its pack. A pack given that the campaign does not use is an error.
+ */
+export function loadPacks(packDir, saveDir) {
+  const campaign = readJson(path.join(saveDir, 'campaign.json'));
+  let ids = campaignPackIds(campaign);
+  if (packDir) {
+    const given = readJson(path.join(packDir, 'pack.json')).id;
+    if (!ids.length) ids = [given];
+    else if (!ids.includes(given)) throw new Error(`campaign "${campaign.id}" is for pack${ids.length > 1 ? 's' : ''} "${ids.join('", "')}", not "${given}"`);
+  }
+  if (!ids.length) throw new Error(`${saveDir}/campaign.json names no pack: give the pack's folder`);
+  // looked for beside a pack given, beside the save, then packs/ and examples/
+  const hints = [...(packDir ? [packDir] : []), saveDir];
+  return ids.map((id) => { const dir = findPackDir(id, hints); return { id, dir, pack: readJson(path.join(dir, 'pack.json')) }; });
+}
+
+/**
+ * Several packs as one: all their maps (each read from its own folder; `mapDirs`), their open content sources, their
+ * own content folders (`dirs`, the latest pack first, so a later book's version wins), one ruleset. The first pack
+ * gives the id and title; `ids` lists them all. Ids must not repeat across packs (maps here; art, effects, events
+ * where they are merged).
+ */
+export function mergePacks(list) {
+  if (list.length === 1) return { ...list[0].pack, ids: [list[0].id], dirs: [list[0].dir], mapDirs: Object.fromEntries(list[0].pack.maps.map((m) => [m, list[0].dir])) };
+  const rulesets = [...new Set(list.map((p) => p.pack.ruleset || 'pf2e'))];
+  if (rulesets.length > 1) throw new Error(`the campaign's packs use different game systems (${rulesets.join(', ')})`);
+  const mapDirs = {};
+  for (const p of list) for (const m of p.pack.maps) {
+    if (mapDirs[m]) throw new Error(`map "${m}" is in two packs (${path.basename(mapDirs[m])}, ${p.id}): map ids must be unique across a campaign's packs`);
+    mapDirs[m] = p.dir;
+  }
+  const first = list[0].pack;
+  return { ...first, ruleset: rulesets[0], ids: list.map((p) => p.id), dirs: list.map((p) => p.dir).reverse(), mapDirs,
+    maps: list.flatMap((p) => p.pack.maps), content: [...new Set(list.slice().reverse().flatMap((p) => p.pack.content || []))],
+    packs: list.map((p) => ({ id: p.id, title: p.pack.title || p.id, version: p.pack.version || '0' })) };
+}
+
+/** The packs' visual effects merged (a later pack's entries win): {palette, effects, fallbacks} or null. */
+function mergeEffects(list) {
+  let out = null;
+  for (const p of list) {
+    const f = path.join(p.dir, p.pack.effects || 'effects.json');
+    if (!fs.existsSync(f)) continue;
+    const { $schema: _s, ...e } = readJson(f);
+    out = out ? { palette: { ...out.palette, ...(e.palette || {}) }, effects: { ...out.effects, ...(e.effects || {}) }, fallbacks: [...(out.fallbacks || []), ...(e.fallbacks || [])] } : { palette: e.palette || {}, effects: e.effects || {}, fallbacks: e.fallbacks || [] };
+  }
+  return out;
+}
+
+/** Read a campaign (its packs and its save) from disk into what campaignRecords() takes, plus the map images. */
 export function readCampaign(packDir, saveDir) {
-  const pack = readJson(path.join(packDir, 'pack.json'));
+  const list = loadPacks(packDir, saveDir);
+  const pack = mergePacks(list);
   const campaign = readJson(path.join(saveDir, 'campaign.json'));
   const images = [];
   const maps = pack.maps.map((id) => {
-    const dir = path.join(packDir, 'maps', id);
+    const dir = path.join(pack.mapDirs[id], 'maps', id);
     const map = readJson(path.join(dir, 'map.json'));
     const wallFiles = !map.walls ? [] : Array.isArray(map.walls) ? map.walls : [map.walls];   // an area map has none
     const segs = wallFiles.flatMap((f) => readJson(path.join(dir, f)).segs);
@@ -108,9 +193,8 @@ export function readCampaign(packDir, saveDir) {
       mapStates[path.basename(f, '.json')] = st;
     }
   }
-  // the pack's own visual effects (added to and restyling the ruleset's): effects.json, or the file pack.effects names
-  const fxFile = path.join(packDir, pack.effects || 'effects.json');
-  const effects = fs.existsSync(fxFile) ? (({ $schema: _s, ...e }) => e)(readJson(fxFile)) : null;
+  // the packs' own visual effects (added to and restyling the ruleset's): effects.json, or the file pack.effects names
+  const effects = mergeEffects(list);
   // the creatures' game data (actors/<id>.json, actorstate/<id>.json) and the content they use
   const readDir = (dir) => (fs.existsSync(dir) ? Object.fromEntries(fs.readdirSync(dir).filter((n) => n.endsWith('.json')).map((n) => { const { $schema: _s, ...d } = readJson(path.join(dir, n)); return [path.basename(n, '.json'), d]; })) : {});
   const actors = readDir(path.join(saveDir, 'actors')), actorStates = readDir(path.join(saveDir, 'actorstate'));
@@ -141,8 +225,8 @@ export function readCampaign(packDir, saveDir) {
   const eventsFile = path.join(saveDir, 'events.json');
   const events = fs.existsSync(eventsFile) ? (({ $schema: _s, ...x }) => x)(readJson(eventsFile)) : null;
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
-  const content = readContent(pack, packDir, actors, tokens, loot);
-  const art = readArt(packDir, tokens, images);
+  const content = readContent(pack, pack.dirs[0], actors, tokens, loot);
+  const art = readArt(pack.dirs, tokens, images);
   const { $schema, ...camp } = campaign;
   return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays, ledger, loot, exploration, events, art };
 }
@@ -324,12 +408,15 @@ function main(argv) {
   const ai = args.indexOf('--assets');
   let assetsFile = null;
   if (ai >= 0) { assetsFile = args[ai + 1]; args.splice(ai, 2); }
-  const [cmd, a, b, c] = args;
+  let [cmd, a, b, c] = args;
+  // the commands taking <pack-dir> <save-dir> also take <save-dir> alone (the packs are found from the campaign)
+  if (['records', 'seed', 'ops-load', 'check'].includes(cmd)) { const g = gameArgs([a, b]); [a, b] = [g[0], g[1]]; }
+  if (cmd === 'verify') { const g = gameArgs([b, c]); [b, c] = [g[0], g[1]]; }
   const emit = (obj) => {
     const text = JSON.stringify(obj);
     if (out) { fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true }); fs.writeFileSync(out, text); console.log(`wrote ${out} (${(text.length / 1024).toFixed(0)} KiB)`); } else console.log(text);
   };
-  if ((cmd === 'records' || cmd === 'seed') && a && b) { emit(buildRecords(a, b, { inline: cmd === 'seed' })); return 0; }
+  if ((cmd === 'records' || cmd === 'seed') && b) { emit(buildRecords(a, b, { inline: cmd === 'seed' })); return 0; }
   if (cmd === 'save' && a && b) {
     const data = readJson(a);
     const files = writeSave(data.records || data, b);
@@ -338,7 +425,7 @@ function main(argv) {
     if (tidy.length) console.log(`${tidy.flat().length} record(s) on the board the save no longer needs (content no creature uses, old replays): node tools/campaign.mjs tidy ${a} gives the delete ops`);
     return 0;
   }
-  if (cmd === 'ops-load' && a && b) {
+  if (cmd === 'ops-load' && b) {
     const assets = assetsFile ? (readJson(assetsFile).assets || readJson(assetsFile)) : [];
     emit(loadOps(a, b, assets));
     return 0;
@@ -353,20 +440,20 @@ function main(argv) {
   if (cmd === 'glossary' && a) { const g = traitGlossary(a); if (!g) throw new Error(`no trait glossary for ${a}`); emit({ op: 'set', path: 'content/glossary.traits', data: g }); return 0; }
   if (cmd === 'tidy' && a) { const data = readJson(a); emit({ batches: tidyOps(data.records || data) }); return 0; }
   if (cmd === 'ops-clear' && a) { emit({ batches: clearOps(readJson(a)) }); return 0; }
-  if (cmd === 'verify' && a && b && c) {
+  if (cmd === 'verify' && a && c) {
     const data = readJson(a);
     const d = verifySave(data.records || data, b, c);
     if (d.length) { console.log(d.join('\n')); return 1; }
     console.log('save matches the board');
     return 0;
   }
-  if (cmd === 'check' && a && b) {
+  if (cmd === 'check' && b) {
     const d = roundTrip(a, b);
     if (d.length) { console.log(d.join('\n')); return 1; }
     console.log('round trip OK');
     return 0;
   }
-  console.error('Usage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>' +
+  console.error('(Each <pack-dir> <save-dir> below can be <save-dir> alone: the campaign names its packs.)\nUsage: node tools/campaign.mjs records|seed <pack-dir> <save-dir> [--out FILE]\n       node tools/campaign.mjs save <records-file> <save-dir>\n       node tools/campaign.mjs check <pack-dir> <save-dir>' +
     '\n       node tools/campaign.mjs ops-load <pack-dir> <save-dir> --assets ASSETS.json [--out FILE]' +
     '\n       node tools/campaign.mjs ops-clear <listing.json> [--out FILE]' +
     '\n       node tools/campaign.mjs tidy <records-file> [--out FILE]   (content no creature uses and old replays, after a save)' +

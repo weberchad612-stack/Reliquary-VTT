@@ -51,7 +51,7 @@ async function main(argv) {
     const [kind, ...rest] = args;
     let game = null;
     if (kind === 'npc' && !as) {
-      if (!pack || !save) throw new Error('npc <who> needs --pack and --save');
+      if (!save) throw new Error('npc <who> needs --save (and --pack for a save that names no pack)');
       const { loadGame } = await import('./actor.mjs');
       game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
     }

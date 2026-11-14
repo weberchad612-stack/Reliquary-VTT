@@ -32,6 +32,7 @@ import { makeId } from '../board/ids.js';
 import { fxId } from '../board/fx.js';
 import { MUSIC_PATH, AMBIENT, MOODS, MOOD_WORDS, CUES, soundRules, musicRecord, encounterFacts, ambientRecord, moodsIn } from '../board/sound.js';
 import { chooseMood } from '../engine/sound/sound.js';
+import { gameArgs } from './campaign.mjs';
 
 export const DEFAULT_SOUNDS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'sounds');   // kept with Git LFS
 const STINGS = ['victory', 'defeat', 'discovery', 'danger', 'rested'];
@@ -153,8 +154,8 @@ function main(argv) {
     for (const k of ['radius', 'inner', 'volume']) if (o[k] !== undefined) o[k] = Number(o[k]);
     o.gmOnly = flag('--gm-only') || undefined; o.gm = flag('--gm');
     if (flag('--off')) o.off = true; if (flag('--on')) o.off = undefined;
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) throw new Error('give a save folder (or a pack folder and a save folder) and a command');
     const records = rec ? readRecords(JSON.parse(fs.readFileSync(rec, 'utf8'))) : null;
     const game = loadGame(pack, save, records);
     if (!records) {   // the save's music and the maps' ambient sounds

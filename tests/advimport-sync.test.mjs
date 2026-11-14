@@ -52,3 +52,21 @@ test('sync: files left out (caches, working candidates) are never treated as gon
   const p = plan(['p/a'], { 'p/a': '1' }, { 'p/a': '1', 'p/art/candidates/x.png': '9', 'p/maps/m/.cache/detect.pkl': '8' });
   assert.deepEqual(p.gone, []);
 });
+
+test('sync: a save shared by two packs is remembered once; a pack sent alone never loses the save', () => {
+  const id = `_t-${process.pid}`;
+  const A = path.join('packs', `${id}-a`), B = path.join('packs', `${id}-b`), S = path.join('saves', id);
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'sync-'));
+  try {
+    for (const d of [A, B, S]) fs.mkdirSync(d, { recursive: true });
+    fs.writeFileSync(path.join(A, 'pack.json'), '{"id":"a"}'); fs.writeFileSync(path.join(B, 'pack.json'), '{"id":"b"}');
+    fs.writeFileSync(path.join(S, 'campaign.json'), '{"v":1}');
+    const run = (...a) => spawnSync(process.execPath, ['tools/advimport/sync.mjs', ...a, '--out', path.join(out, String(Math.random()))], { encoding: 'utf8' }).stdout;
+    assert.match(run(A, '--save', S), /2 file\(s\) changed/);
+    assert.ok(fs.existsSync(path.join(S, '.sync-state.json')), 'the save remembers itself');
+    assert.ok(!Object.keys(JSON.parse(fs.readFileSync(path.join(A, '.sync-state.json'), 'utf8'))).some((f) => f.startsWith('saves/')), 'the pack only its own');
+    assert.match(run(B, '--save', S), /1 file\(s\) changed, 0 gone/, 'book two sends itself, not the save again');
+    fs.writeFileSync(path.join(A, 'pack.json'), '{"id":"a","v":2}');
+    assert.match(run(A), /1 file\(s\) changed, 0 gone/, 'the pack alone: the save is not gone');
+  } finally { for (const d of [A, B, S]) fs.rmSync(d, { recursive: true, force: true }); }
+});

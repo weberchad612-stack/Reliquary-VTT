@@ -28,6 +28,7 @@ import { resolveToken } from '../board/names.js';
 import { contentPath } from '../board/records.js';
 import { auditPath, auditEntry } from '../board/audit.js';
 import { EXPLORE, exploreRules, exploreChoice, pcExplore, partyPace, availability, combatRequests, reminders, travelTime, durationWords } from '../board/explore.js';
+import { gameArgs } from './campaign.mjs';
 
 /** The party as the exploration rules take it: [{id, name, actor, prepared, dead}]. */
 export function partyOf(game) {
@@ -126,8 +127,8 @@ function main(argv) {
     const rec = opt('--records');
     const o = {};
     for (const k of ['expert', 'skill', 'spell', 'effect', 'note', 'terrain']) o[k] = opt(`--${k}`);
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) throw new Error('give a save folder (or a pack folder and a save folder) and a command');
     const records = rec ? readRecords(JSON.parse(fs.readFileSync(rec, 'utf8'))) : null;
     const game = loadGame(pack, save, records);
     if (!records) {   // the save's choices

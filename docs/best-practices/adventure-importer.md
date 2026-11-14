@@ -77,6 +77,25 @@ landing page), shows first in the Events tab until it has run, and the campaign 
 - **Trigger:** `{"map": "<the starting map>"}`. A kickoff the GM times by hand can add `{"manual": true}` and is run
   with `events.mjs run kickoff`.
 
+## 2d. Adventure Paths: one pack per book, one campaign
+
+An Adventure Path's books are imported **one at a time, each as its own pack**, whenever its PDF is ready (design:
+docs/design/maps.md section 3c). The first book creates the campaign; each later book joins it.
+
+- **Names:** the pack is the book (`<path>-1`, titled with the book's own name); the campaign and save are
+  the Adventure Path (`saves/<path>`, `--id <path> --title "<Adventure Path>"` on the first
+  book's `campaign.mjs`). Prefix map ids by book (`ap1-…`) and keep art keys, event and subsystem ids unique
+  across books; the importer refuses a clash.
+- **The first book:** its pipeline as usual, with `{save}` the campaign's save folder. Its landing page and kickoff
+  start the campaign.
+- **Each later book:** its own pipeline; its campaign step (`campaign.mjs packs/<book> saves/<campaign> --update`)
+  adds it to the running campaign without touching earlier books or play. When the party is ready to begin it,
+  `--update --start` moves them to the book's landing page; the GM moves them on, which brings its kickoff.
+- **Things that recur** (the home town, an NPC who returns): decide when the later book is imported, from what it
+  does. A later book can put its creatures, objects and events on an earlier book's map; a returning NPC can stay
+  the same token, so their history and ledger follow them.
+- **Sync:** each book's pack with the shared save: `sync.mjs packs/<book> --save saves/<campaign>`.
+
 ## 3. Start positions from the book's pawns
 
 Beginner adventures (and many others) print a crop of the map beside each room with pawn markers laid on top. `roomcrops.py` registers the crop to the level map (ORB features + RANSAC similarity) and converts each marker's centre to a grid cell. The markers are the creature's portrait, saved as candidate art. Creatures the book does not show (a monster that appears later) are placed from the text and noted.

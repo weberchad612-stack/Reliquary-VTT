@@ -41,6 +41,7 @@ import { contentPath, contentKey } from '../board/records.js';
 import { chatPath, chatMessage } from '../board/chat.js';
 import { spaceDistance } from '../engine/measure/measure.js';
 import { resolveToken, nameFor, publicName } from '../board/names.js';
+import { gameArgs } from './campaign.mjs';
 
 /**
  * The game as the tools see it: tokens (all maps), actors, live state, content and the ruleset.
@@ -308,8 +309,8 @@ function main(argv) {
     // --from a.json,b.json: the tools/dice.mjs damage rolls this damage came from (for the damage card)
     const from = fromFiles ? fromFiles.split(',').map((f) => JSON.parse(fs.readFileSync(f.trim(), 'utf8'))) : [];
     const o = { crit: flag('--crit'), nonlethal: flag('--nonlethal'), all: flag('--all'), parts, roll, name, from };
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) throw new Error('give a save folder (or a pack folder and a save folder) and a command');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
     const out = runCommand(game, cmd, rest, o);
     if (cmd === 'show' || cmd === 'list') console.log(out.lines.join('\n'));

@@ -38,11 +38,12 @@ export function contentLibrary(pack, packDir, { extra = null } = {}) {
     if (!fs.existsSync(dir)) throw new Error(`pack.json content: no open content "${e}" (content/${e})`);
     return dir;
   });
-  const own = packDir ? path.join(packDir, 'content') : null;
+  // the pack's own content folder; a campaign of several packs has one each (pack.dirs, the latest pack first)
+  const own = pack.dirs ? pack.dirs.map((d) => path.join(d, 'content')) : packDir ? [path.join(packDir, 'content')] : [];
   const cache = new Map();
   const fileFor = (key) => {
     const { source, kind, slug } = parseKey(key);
-    const dirs = source ? [path.join(REPO, 'content', ruleset, source)] : [own, ...listed].filter(Boolean);
+    const dirs = source ? [path.join(REPO, 'content', ruleset, source)] : [...own, ...listed];
     for (const d of dirs) { const f = path.join(d, kind, `${slug}.json`); if (fs.existsSync(f)) return f; }
     return null;
   };

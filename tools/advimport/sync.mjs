@@ -22,7 +22,8 @@
 // (deleting is not allowed on the PC). Left out: .cache/, .pipeline-state.json, .sync-state.json, and the art step's
 // working candidates (art/candidates/: pdfart.py makes them again; art/book/ holds the chosen art's sources and is
 // sent).
-// <pack>/.sync-state.json remembers each file's md5 as last sent.
+// <pack>/.sync-state.json remembers each of the pack's files' md5 as last sent, <save>/.sync-state.json the save's (one
+// save may be sent with several packs: an Adventure Path's books).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -106,9 +107,17 @@ function main(argv) {
   if (!packDir) { console.error('usage: node tools/advimport/sync.mjs <pack-dir> [--save <save-dir>] [--out <dir>] [--all]'); return 2; }
   const files = [...walk(path.resolve(packDir)), ...(save ? walk(path.resolve(save)) : [])];
   const md5s = Object.fromEntries(files.map((f) => [f, md5(path.join(REPO, f))]));
-  const stateFile = path.join(packDir, '.sync-state.json');
+  // what was last sent: the pack's files in <pack>/.sync-state.json, the save's in <save>/.sync-state.json (a save
+  // shared by several packs, an Adventure Path's books, is remembered once); an older pack state holding the save's
+  // files gives them to the save's state
+  const rel = (d) => path.relative(REPO, path.resolve(d)).split(path.sep).join('/') + '/';
+  const packRel = rel(packDir), saveRel = save ? rel(save) : null;
+  const stateFile = path.join(packDir, '.sync-state.json'), saveState = save ? path.join(save, '.sync-state.json') : null;
+  const readState = (f) => (f && fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null);
+  const under = (o, pre) => Object.fromEntries(Object.entries(o || {}).filter(([f]) => f.startsWith(pre)));
+  const packOld = readState(stateFile) || {};
   const last = pcList ? Object.fromEntries(fs.readFileSync(pcList, 'utf8').split('\n').map((l) => /^([0-9a-f]{32})\s+\*?(?:\.\/)?(.+)$/.exec(l.trim())).filter(Boolean).map((m) => [m[2], m[1]]))
-    : fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : {};
+    : { ...under(packOld, packRel), ...(saveRel ? (readState(saveState) || under(packOld, saveRel)) : {}) };
   const p = plan(files, md5s, last, all);
   if (!p.send.length && !p.gone.length) { console.log('nothing changed since the last sync'); return 0; }
   fs.rmSync(out, { recursive: true, force: true });
@@ -123,8 +132,9 @@ function main(argv) {
   fs.rmSync(tgz); fs.rmSync(list);
   fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify({ pack: path.basename(packDir), stamp, md5: crypto.createHash('md5').update(buf).digest('hex'), send: p.send, gone: p.gone }, null, 1));
   fs.writeFileSync(path.join(out, 'apply.sh'), APPLY);
-  // remembered as sent now; a broken transfer is sent again with --all
-  fs.writeFileSync(stateFile, JSON.stringify(p.state, null, 0));
+  // remembered as sent now, the pack's and the save's apart; a broken transfer is sent again with --all
+  fs.writeFileSync(stateFile, JSON.stringify(under(p.state, packRel), null, 0));
+  if (saveState) fs.writeFileSync(saveState, JSON.stringify(under(p.state, saveRel), null, 0));
   const parts = fs.readdirSync(out).sort();
   console.log(`${p.send.length} file(s) changed, ${p.gone.length} gone; ${(buf.length / 1048576).toFixed(1)} MB in ${parts.length - 2} part(s) in ${out}`);
   console.log('1. device_commit_files, each to <checkout>/_sync/' + stamp + '/<name>:');

@@ -4,11 +4,18 @@
   "title": "Map state",
   "description": "What has changed on one map during play, stored in the campaign save. See docs/design/maps.md section 7.",
   "type": "object",
-  "required": ["map"],
+  "required": [
+    "map"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "map": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "$schema": {
+      "type": "string"
+    },
+    "map": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
     "doors": {
       "description": "Only doors that differ from their initial state, plus found secret doors. Keyed by door id.",
       "type": "object",
@@ -17,248 +24,800 @@
         "additionalProperties": false,
         "minProperties": 1,
         "properties": {
-          "state": { "enum": ["closed", "open", "locked"] },
-          "found": { "type": "boolean" }
+          "state": {
+            "enum": [
+              "closed",
+              "open",
+              "locked"
+            ]
+          },
+          "found": {
+            "type": "boolean"
+          }
         }
       }
     },
     "terrain": {
       "description": "Temporary terrain added during play (a spell, an ability), with source and until.",
       "type": "array",
-      "items": { "$ref": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/terrain.schema.json#/$defs/area" }
+      "items": {
+        "$ref": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/terrain.schema.json#/$defs/area"
+      }
     },
     "terrain_on": {
       "description": "Ids of pack terrain areas that start switched off (active: false) and now apply (the bridge has collapsed).",
-      "type": "array", "items": { "type": "string" }, "uniqueItems": true
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
     },
     "terrain_off": {
       "description": "Ids of pack terrain areas that no longer apply (rubble cleared, water drained).",
-      "type": "array", "items": { "type": "string" }, "uniqueItems": true
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
     },
-    "locked_known": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-    "links_found": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-    "places_found": { "description": "Area maps: GM-only places the party has found in play (shown to players from then on).", "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "locked_known": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "links_found": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "places_found": {
+      "description": "Area maps: GM-only places the party has found in play (shown to players from then on).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
     "explored": {
       "type": "object",
-      "required": ["v", "polys"],
+      "required": [
+        "v",
+        "polys"
+      ],
       "additionalProperties": false,
       "properties": {
-        "v": { "type": "integer", "minimum": 0, "description": "Increases on every change." },
+        "v": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Increases on every change."
+        },
         "polys": {
           "description": "Closed rings in cell coordinates at 1/8 cell precision. Outer rings and holes use opposite winding.",
           "type": "array",
           "items": {
             "type": "array",
             "minItems": 3,
-            "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
           }
         }
       }
     },
     "sky_light": {
-      "enum": ["bright", "dim", "dark"],
+      "enum": [
+        "bright",
+        "dim",
+        "dark"
+      ],
       "description": "Current sky light (outdoor maps and sky regions): bright by day, dim at dusk, dark at night. Default bright."
     },
     "lights": {
       "description": "Changes to the map's static lights in play, by id (missing: as the pack gives them): on/off, colour and intensity.",
       "type": "object",
       "additionalProperties": {
-        "type": "object", "minProperties": 1, "additionalProperties": false,
-        "properties": { "on": { "type": "boolean" }, "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." }, "animation": {
-      "type": "object", "additionalProperties": false,
-      "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
-      "properties": {
-        "type": { "enum": ["none", "torch", "flicker", "pulse", "ghostly", "chroma"] },
-        "speed": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5 },
-        "intensity": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5, "description": "How strong the effect is." },
-        "reverse": { "type": "boolean", "default": false, "description": "Reverse direction (chroma: the hues turn the other way)." }
-      }
-    } }
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": false,
+        "properties": {
+          "on": {
+            "type": "boolean"
+          },
+          "colour": {
+            "type": "string",
+            "pattern": "^(#[0-9a-fA-F]{6}|none)$",
+            "description": "Colour for drawing, #rrggbb, or none (uncoloured)."
+          },
+          "intensity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Intensity for drawing, 0-100 % (default 100)."
+          },
+          "animation": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
+            "properties": {
+              "type": {
+                "enum": [
+                  "none",
+                  "torch",
+                  "flicker",
+                  "pulse",
+                  "ghostly",
+                  "chroma"
+                ]
+              },
+              "speed": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10,
+                "default": 5
+              },
+              "intensity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10,
+                "default": 5,
+                "description": "How strong the effect is."
+              },
+              "reverse": {
+                "type": "boolean",
+                "default": false,
+                "description": "Reverse direction (chroma: the hues turn the other way)."
+              }
+            }
+          }
+        }
       }
     },
     "hidden_marks": {
       "description": "GM-placed hidden markers: creature id -> the square where the party believes it is (shown to players as a ? until the creature is seen).",
       "type": "object",
-      "propertyNames": { "pattern": "^tok-[0-9a-z]{8}$" },
-      "additionalProperties": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 }
+      "propertyNames": {
+        "pattern": "^tok-[0-9a-z]{8}$"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minItems": 2,
+        "maxItems": 2
+      }
     },
     "regions_off": {
       "description": "Ids of lighting regions that no longer apply (a magical light dispelled).",
-      "type": "array", "items": { "type": "string" }, "uniqueItems": true
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
     },
     "regions": {
       "description": "Colour and intensity of lighting regions changed in play, by id (missing: as the pack gives them).",
       "type": "object",
       "additionalProperties": {
-        "type": "object", "minProperties": 1, "additionalProperties": false,
-        "properties": { "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." }, "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." } }
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": false,
+        "properties": {
+          "colour": {
+            "type": "string",
+            "pattern": "^(#[0-9a-fA-F]{6}|none)$",
+            "description": "Colour for drawing, #rrggbb, or none (uncoloured)."
+          },
+          "intensity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Intensity for drawing, 0-100 % (default 100)."
+          }
+        }
       }
     },
     "light_animation": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "description": "Light animation on the board for the whole table (drawing only).",
-      "properties": { "on": { "type": "boolean", "default": true, "description": "The GM's switch for animated lights." } }
+      "properties": {
+        "on": {
+          "type": "boolean",
+          "default": true,
+          "description": "The GM's switch for animated lights."
+        }
+      }
     },
     "light_colour": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "description": "Coloured light on the board for the whole table (drawing only).",
       "properties": {
-        "on": { "type": "boolean", "default": true, "description": "The GM's switch for coloured light." },
-        "strength": { "type": "number", "minimum": 0, "maximum": 100, "default": 25, "description": "Strongest tint, % of full colour (subtle by default)." }
+        "on": {
+          "type": "boolean",
+          "default": true,
+          "description": "The GM's switch for coloured light."
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 25,
+          "description": "Strongest tint, % of full colour (subtle by default)."
+        }
       }
     },
     "ambient": {
       "description": "Ambient sounds on this map, by id (board/sound.js): a loop heard within a radius, muffled through walls that stop sound. Claude places them (tools/sound.mjs).",
       "type": "object",
-      "propertyNames": { "pattern": "^amb-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
+      "propertyNames": {
+        "pattern": "^amb-[0-9a-z]{8}$",
+        "description": "A generated id (board/ids.js)."
+      },
       "additionalProperties": {
         "type": "object",
-        "required": ["sound", "at", "radius", "by"],
+        "required": [
+          "sound",
+          "at",
+          "radius",
+          "by"
+        ],
         "additionalProperties": false,
         "properties": {
-          "sound": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The ambient loop's name in the sound set (sounds.json)." },
-          "at": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Where it is, in cells (fractions allowed)." },
-          "radius": { "type": "number", "exclusiveMinimum": 0, "description": "How far it is heard, in feet." },
-          "inner": { "type": "number", "minimum": 0, "description": "Heard at full volume within this many feet (default a quarter of the radius, at most 10)." },
-          "when": { "enum": ["always", "day", "night"] },
-          "volume": { "type": "number", "minimum": 0, "maximum": 1 },
-          "label": { "type": "string", "maxLength": 80 },
-          "off": { "type": "boolean" },
-          "gm_only": { "type": "boolean" },
-          "by": { "enum": ["player", "gm", "claude"] }
+          "sound": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The ambient loop's name in the sound set (sounds.json)."
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Where it is, in cells (fractions allowed)."
+          },
+          "radius": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "How far it is heard, in feet."
+          },
+          "inner": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Heard at full volume within this many feet (default a quarter of the radius, at most 10)."
+          },
+          "when": {
+            "enum": [
+              "always",
+              "day",
+              "night"
+            ]
+          },
+          "volume": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "off": {
+            "type": "boolean"
+          },
+          "gm_only": {
+            "type": "boolean"
+          },
+          "by": {
+            "enum": [
+              "player",
+              "gm",
+              "claude"
+            ]
+          }
         }
       }
     },
     "notes": {
       "description": "Map notes on this map, by id: reminders pinned to a point, written by the player view, the GM view or Claude.",
       "type": "object",
-      "propertyNames": { "pattern": "^note-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
+      "propertyNames": {
+        "pattern": "^note-[0-9a-z]{8}$",
+        "description": "A generated id (board/ids.js)."
+      },
       "additionalProperties": {
         "type": "object",
-        "required": ["text", "at", "by"],
+        "required": [
+          "text",
+          "at",
+          "by"
+        ],
         "additionalProperties": false,
         "properties": {
-          "text": { "type": "string", "minLength": 1, "maxLength": 500 },
-          "at": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "The exact point the note is pinned to, in cells (fractions allowed)." },
-          "by": { "enum": ["player", "gm", "claude"], "description": "Who wrote it: the player view changes its own; the GM view any." },
-          "gm_only": { "type": "boolean", "description": "Shown only in the GM view (default false)." },
-          "updated": { "type": "string", "description": "When it was written or last changed (ISO time)." }
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "at": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "The exact point the note is pinned to, in cells (fractions allowed)."
+          },
+          "by": {
+            "enum": [
+              "player",
+              "gm",
+              "claude"
+            ],
+            "description": "Who wrote it: the player view changes its own; the GM view any."
+          },
+          "gm_only": {
+            "type": "boolean",
+            "description": "Shown only in the GM view (default false)."
+          },
+          "updated": {
+            "type": "string",
+            "description": "When it was written or last changed (ISO time)."
+          }
         }
       }
     },
     "templates": {
       "description": "Area templates placed on this map (bursts, cones, emanations, lines), by id. They stay until removed.",
       "type": "object",
-      "propertyNames": { "pattern": "^tpl-[0-9a-z]{8}$", "description": "A generated id (board/ids.js)." },
+      "propertyNames": {
+        "pattern": "^tpl-[0-9a-z]{8}$",
+        "description": "A generated id (board/ids.js)."
+      },
       "additionalProperties": {
         "type": "object",
-        "required": ["shape", "ft", "by", "origin", "cells", "col"],
+        "required": [
+          "shape",
+          "ft",
+          "by",
+          "origin",
+          "cells",
+          "col"
+        ],
         "additionalProperties": false,
         "properties": {
-          "shape": { "enum": ["burst", "cone", "emanation", "line"] },
-          "ft": { "type": "number", "exclusiveMinimum": 0, "description": "Size in feet: radius, length or distance." },
-          "width_ft": { "type": "number", "exclusiveMinimum": 0, "description": "Lines: width in feet (default one square)." },
-          "by": { "enum": ["player", "gm"], "description": "Which view placed it: players remove their own, the GM any." },
-          "caster": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$", "description": "Token id of the creature it comes from (none for a burst placed by Claude at a point)." },
-          "casterName": { "type": "string", "description": "The caster's public name when it was placed (what players may see)." },
-          "origin": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Grid point the area starts from, in cells." },
-          "height": { "type": "integer", "description": "Feet: a burst's point above the ground, or the caster's elevation for a cone, line or emanation (0 is left out)." },
-          "dir": { "type": "integer", "minimum": 0, "maximum": 7, "description": "Cones: direction, 0 north, clockwise in 45-degree steps." },
-          "angle": { "type": "number", "description": "Lines: angle in radians, 0 east, clockwise on screen." },
-          "cells": { "description": "Squares the area reaches (after walls).", "type": "array", "items": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 } },
-          "col": { "type": "integer", "minimum": 0, "description": "Palette colour index." },
-          "at": { "type": "string", "description": "When it was placed (ISO time)." }
+          "shape": {
+            "enum": [
+              "burst",
+              "cone",
+              "emanation",
+              "line"
+            ]
+          },
+          "ft": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Size in feet: radius, length or distance."
+          },
+          "width_ft": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Lines: width in feet (default one square)."
+          },
+          "by": {
+            "enum": [
+              "player",
+              "gm"
+            ],
+            "description": "Which view placed it: players remove their own, the GM any."
+          },
+          "caster": {
+            "type": "string",
+            "pattern": "^tok-[0-9a-z]{8}$",
+            "description": "Token id of the creature it comes from (none for a burst placed by Claude at a point)."
+          },
+          "casterName": {
+            "type": "string",
+            "description": "The caster's public name when it was placed (what players may see)."
+          },
+          "origin": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Grid point the area starts from, in cells."
+          },
+          "height": {
+            "type": "integer",
+            "description": "Feet: a burst's point above the ground, or the caster's elevation for a cone, line or emanation (0 is left out)."
+          },
+          "dir": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7,
+            "description": "Cones: direction, 0 north, clockwise in 45-degree steps."
+          },
+          "angle": {
+            "type": "number",
+            "description": "Lines: angle in radians, 0 east, clockwise on screen."
+          },
+          "cells": {
+            "description": "Squares the area reaches (after walls).",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "col": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Palette colour index."
+          },
+          "at": {
+            "type": "string",
+            "description": "When it was placed (ISO time)."
+          }
         }
       }
     },
     "tokens": {
       "description": "Tokens on this map, by generated id (board/ids.js). Positions, names, carried lights and senses are checked here.",
       "type": "object",
-      "propertyNames": { "pattern": "^tok-[0-9a-z]{8}$" },
+      "propertyNames": {
+        "pattern": "^tok-[0-9a-z]{8}$"
+      },
       "additionalProperties": {
         "type": "object",
-        "required": ["x", "y"],
+        "required": [
+          "x",
+          "y"
+        ],
         "properties": {
-          "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "The token's name: a PC's name, an NPC's proper name (never changed), or a unique adjective and the creature's type (Wet-Nosed Rat), never a number." },
-          "alias": { "type": "string", "minLength": 1, "maxLength": 60, "description": "What players see until the party learns the proper name (an adjective and the type: Soot-Skinned Imp)." },
-          "known": { "type": "boolean", "description": "The party has learned the proper name: players see the name, not the alias." },
-          "hidden": { "type": "boolean", "description": "Hidden by the GM: players never see it (on the map, in the tracker, its rolls); the GM view draws it transparent." },
-          "type": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "What kind of creature (giant-rat): art and stat blocks are looked up by it." },
-          "group": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "The encounter set it belongs to (b14-morlocks): letters are unique within a group." },
-          "short": { "type": "string", "minLength": 1, "maxLength": 2, "description": "The letter drawn when the token has no image: the first letter of its adjective (of the alias, else the name)." },
-          "art": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "The creature's art: a key of the pack's art/art.json (a round token image and a full portrait, never transparent). Drawn instead of the letter; the full picture shows in Quick-View." },
-          "kind": { "enum": ["pc", "ally", "neutral", "foe", "marker", "gm", "object"], "description": "pc, ally, neutral (a friendly ghost, a merchant) or foe: a creature; marker and gm: the GM's marks; object: a thing on the map (a chest, a shelf, a hazard) that holds items or a note, takes no turns and blocks nothing (docs/design/board.md, Object tokens)." },
-          "x": { "type": "integer", "minimum": 0 },
-          "y": { "type": "integer", "minimum": 0 },
-          "source": { "const": "adventure", "description": "Built from the adventure by the importer (tools/advimport/campaign.mjs); an update refreshes its art and notes and reports it when the adventure no longer has it." },
-          "last_square": { "type": "object", "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" }, "additionalProperties": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "minItems": 2, "maxItems": 2 }, "description": "A PC's square on each battle map it has left (map id -> [x, y]), so the GM can bring the party back where it was (from a landing page or a town)." },
-          "elevation": { "type": "integer", "description": "Height above the ground in feet (negative: below); shown above the token as +15 ft. 0 is left out." },
-          "dead": { "type": "boolean", "description": "Dead: drawn faded with a red cross; no longer blocks movement, sees or can be targeted." },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "The token's name: a PC's name, an NPC's proper name (never changed), or a unique adjective and the creature's type (Wet-Nosed Rat), never a number."
+          },
+          "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "What players see until the party learns the proper name (an adjective and the type: Soot-Skinned Imp)."
+          },
+          "known": {
+            "type": "boolean",
+            "description": "The party has learned the proper name: players see the name, not the alias."
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "Hidden by the GM: players never see it (on the map, in the tracker, its rolls); the GM view draws it transparent."
+          },
+          "type": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "What kind of creature (giant-rat): art and stat blocks are looked up by it."
+          },
+          "group": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "The encounter set it belongs to (b14-morlocks): letters are unique within a group."
+          },
+          "short": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2,
+            "description": "The letter drawn when the token has no image: the first letter of its adjective (of the alias, else the name)."
+          },
+          "art": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "description": "The creature's art: a key of the pack's art/art.json (a round token image and a full portrait, never transparent). Drawn instead of the letter; the full picture shows in Quick-View."
+          },
+          "kind": {
+            "enum": [
+              "pc",
+              "ally",
+              "neutral",
+              "foe",
+              "marker",
+              "gm",
+              "object"
+            ],
+            "description": "pc, ally, neutral (a friendly ghost, a merchant) or foe: a creature; marker and gm: the GM's marks; object: a thing on the map (a chest, a shelf, a hazard) that holds items or a note, takes no turns and blocks nothing (docs/design/board.md, Object tokens)."
+          },
+          "x": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "source": {
+            "const": "adventure",
+            "description": "Built from the adventure by the importer (tools/advimport/campaign.mjs); an update refreshes its art and notes and reports it when the adventure no longer has it."
+          },
+          "last_square": {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "description": "A PC's square on each battle map it has left (map id -> [x, y]), so the GM can bring the party back where it was (from a landing page or a town)."
+          },
+          "elevation": {
+            "type": "integer",
+            "description": "Height above the ground in feet (negative: below); shown above the token as +15 ft. 0 is left out."
+          },
+          "dead": {
+            "type": "boolean",
+            "description": "Dead: drawn faded with a red cross; no longer blocks movement, sees or can be targeted."
+          },
           "effects": {
             "description": "Effect badges: the system's conditions (by id) or custom effects (by name), which may name an effect in the content (ref, level). Set by Claude (tools/effect.mjs).",
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "oneOf": [{ "required": ["id"] }, { "required": ["name"] }],
+              "oneOf": [
+                {
+                  "required": [
+                    "id"
+                  ]
+                },
+                {
+                  "required": [
+                    "name"
+                  ]
+                }
+              ],
               "properties": {
-                "id": { "type": "string", "pattern": "^[a-z][a-z-]*$", "description": "A condition of the campaign's system (rulesets/<id>/conditions.js)." },
-                "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "A custom effect (a spell, an aura): shown by its first letter." },
-                "ref": { "type": "string", "pattern": "^(?:[a-z0-9][a-z0-9-]*:)?effect/[a-z0-9][a-z0-9-]*$", "description": "An effect in the content (spell-effects:effect/spell-effect-heroism): its rules change the creature's numbers (tools/effect.mjs apply)." },
-                "level": { "type": "integer", "minimum": -1, "maximum": 30, "description": "The level the effect applies at (a spell's rank): @itemLevel in its rules." },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z-]*$",
+                  "description": "A condition of the campaign's system (rulesets/<id>/conditions.js)."
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60,
+                  "description": "A custom effect (a spell, an aura): shown by its first letter."
+                },
+                "ref": {
+                  "type": "string",
+                  "pattern": "^(?:[a-z0-9][a-z0-9-]*:)?effect/[a-z0-9][a-z0-9-]*$",
+                  "description": "An effect in the content (spell-effects:effect/spell-effect-heroism): its rules change the creature's numbers (tools/effect.mjs apply)."
+                },
+                "level": {
+                  "type": "integer",
+                  "minimum": -1,
+                  "maximum": 30,
+                  "description": "The level the effect applies at (a spell's rank): @itemLevel in its rules."
+                },
                 "duration": {
-                  "type": "object", "additionalProperties": false, "required": ["unit"],
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unit"
+                  ],
                   "description": "How long it lasts (engine/time/clock.js): it runs out once its time has passed, at the expiry point of the turn it began in.",
                   "properties": {
-                    "value": { "type": "integer", "minimum": 0 },
-                    "unit": { "enum": ["rounds", "minutes", "hours", "days", "encounter", "unlimited"] },
-                    "expiry": { "enum": ["turn-start", "turn-end", "round-end"] },
-                    "sustained": { "type": "boolean" }
+                    "value": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "unit": {
+                      "enum": [
+                        "rounds",
+                        "minutes",
+                        "hours",
+                        "days",
+                        "encounter",
+                        "unlimited"
+                      ]
+                    },
+                    "expiry": {
+                      "enum": [
+                        "turn-start",
+                        "turn-end",
+                        "round-end"
+                      ]
+                    },
+                    "sustained": {
+                      "type": "boolean"
+                    }
                   }
                 },
                 "start": {
-                  "type": "object", "additionalProperties": false, "required": ["time"],
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "time"
+                  ],
                   "description": "When it began: the clock, and whose turn it was (the creature its duration counts from).",
                   "properties": {
-                    "time": { "type": "integer", "minimum": 0 },
-                    "turnOf": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$" },
-                    "round": { "type": "integer", "minimum": 0 }
+                    "time": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "turnOf": {
+                      "type": "string",
+                      "pattern": "^tok-[0-9a-z]{8}$"
+                    },
+                    "round": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
                   }
                 },
-                "grants": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z-]*$" }, "description": "Conditions this effect put on the token: they go when it does." },
-                "noDecrease": { "type": "boolean", "description": "A condition that does not go down by itself at the end of the turn (a ruling)." },
-                "kind": { "enum": ["good", "bad", "neutral"], "description": "Custom effects: the badge's border (conditions take theirs from the system)." },
-                "value": { "type": "integer", "minimum": 1, "description": "The condition's number (frightened 2)." },
-                "detail": { "type": "string", "maxLength": 60, "description": "Extra words shown with it (persistent damage: 2d6 fire)." },
-                "gm_only": { "type": "boolean", "description": "Shown only in the GM view." },
-                "until": { "type": "string", "maxLength": 80, "description": "When it ends, in words (nothing ends by itself yet)." },
-                "source": { "type": "string", "maxLength": 80, "description": "Where it came from (Demoralize by Kerra)." }
+                "grants": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z-]*$"
+                  },
+                  "description": "Conditions this effect put on the token: they go when it does."
+                },
+                "noDecrease": {
+                  "type": "boolean",
+                  "description": "A condition that does not go down by itself at the end of the turn (a ruling)."
+                },
+                "kind": {
+                  "enum": [
+                    "good",
+                    "bad",
+                    "neutral"
+                  ],
+                  "description": "Custom effects: the badge's border (conditions take theirs from the system)."
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "The condition's number (frightened 2)."
+                },
+                "detail": {
+                  "type": "string",
+                  "maxLength": 60,
+                  "description": "Extra words shown with it (persistent damage: 2d6 fire)."
+                },
+                "gm_only": {
+                  "type": "boolean",
+                  "description": "Shown only in the GM view."
+                },
+                "until": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "description": "When it ends, in words (nothing ends by itself yet)."
+                },
+                "source": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "description": "Where it came from (Demoralize by Kerra)."
+                }
               }
             }
           },
           "light": {
             "description": "A light the token carries (always a circle). Presets come from the ruleset.",
-            "type": "object", "additionalProperties": false,
-            "anyOf": [{ "required": ["preset"] }, { "required": ["bright"] }, { "required": ["dim"] }],
+            "type": "object",
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "preset"
+                ]
+              },
+              {
+                "required": [
+                  "bright"
+                ]
+              },
+              {
+                "required": [
+                  "dim"
+                ]
+              }
+            ],
             "properties": {
-              "preset": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
-              "rank": { "type": "integer", "minimum": 1, "maximum": 10 },
-              "bright": { "type": "number", "minimum": 0 },
-              "dim": { "type": "number", "minimum": 0 },
-              "on": { "type": "boolean", "default": true },
-              "colour": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}|none)$", "description": "Colour for drawing, #rrggbb, or none (uncoloured)." },
-              "intensity": { "type": "number", "minimum": 0, "maximum": 100, "description": "Intensity for drawing, 0-100 % (default 100)." },
+              "preset": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "bright": {
+                "type": "number",
+                "minimum": 0
+              },
+              "dim": {
+                "type": "number",
+                "minimum": 0
+              },
+              "on": {
+                "type": "boolean",
+                "default": true
+              },
+              "colour": {
+                "type": "string",
+                "pattern": "^(#[0-9a-fA-F]{6}|none)$",
+                "description": "Colour for drawing, #rrggbb, or none (uncoloured)."
+              },
+              "intensity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Intensity for drawing, 0-100 % (default 100)."
+              },
               "animation": {
-      "type": "object", "additionalProperties": false,
-      "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
-      "properties": {
-        "type": { "enum": ["none", "torch", "flicker", "pulse", "ghostly", "chroma"] },
-        "speed": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5 },
-        "intensity": { "type": "integer", "minimum": 1, "maximum": 10, "default": 5, "description": "How strong the effect is." },
-        "reverse": { "type": "boolean", "default": false, "description": "Reverse direction (chroma: the hues turn the other way)." }
-      }
-    },
-              "label": { "type": "string" }
+                "type": "object",
+                "additionalProperties": false,
+                "description": "How the light moves on the board (drawing only; the rules never change). Presets bring a natural default.",
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "none",
+                      "torch",
+                      "flicker",
+                      "pulse",
+                      "ghostly",
+                      "chroma"
+                    ]
+                  },
+                  "speed": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "default": 5
+                  },
+                  "intensity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "default": 5,
+                    "description": "How strong the effect is."
+                  },
+                  "reverse": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Reverse direction (chroma: the hues turn the other way)."
+                  }
+                }
+              },
+              "label": {
+                "type": "string"
+              }
             }
           },
           "senses": {
@@ -266,11 +825,36 @@
             "type": "array",
             "items": {
               "oneOf": [
-                { "type": "string", "pattern": "^[a-z][a-z-]*$" },
-                { "type": "object", "required": ["type"], "additionalProperties": false,
-                  "properties": { "type": { "type": "string", "pattern": "^[a-z][a-z-]*$" }, "range": { "type": "number", "minimum": 0 }, "source": { "type": "string" } } }
+                {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z-]*$"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z-]*$"
+                    },
+                    "range": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "source": {
+                      "type": "string"
+                    }
+                  }
+                }
               ]
             }
+          },
+          "pack": {
+            "type": "string",
+            "description": "The pack this token came from (a campaign of several packs: tools/advimport/campaign.mjs --update judges each book's own)."
           }
         }
       }

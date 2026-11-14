@@ -68,7 +68,7 @@ async function main(argv) {
     const opts = { who: opt('--who'), kind: opt('--kind'), side: opt('--side'), seed: opt('--seed'), gm: flag('--gm'), crit: flag('--crit'), type: opt('--type'), label: opt('--label') };
     const [cmd, ...rest] = args;
     let game = null;
-    if (pack && save) { const { loadGame } = await import('./actor.mjs'); game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null); }
+    if (save) { const { loadGame } = await import('./actor.mjs'); game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null); }
     console.log(JSON.stringify(runDice(cmd, rest, opts, game), null, 2));
     return 0;
   } catch (e) {

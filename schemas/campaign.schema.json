@@ -7,7 +7,6 @@
   "required": [
     "v",
     "id",
-    "pack",
     "ruleset"
   ],
   "additionalProperties": false,
@@ -40,7 +39,8 @@
         "version": {
           "type": "string"
         }
-      }
+      },
+      "description": "The pack this campaign is built from. A campaign of several packs (an Adventure Path, one pack per book) gives `packs` instead."
     },
     "ruleset": {
       "type": "string"
@@ -48,11 +48,19 @@
     "clock": {
       "type": "object",
       "description": "The game clock (tools/clock.mjs): seconds since the start of year 1 of the ruleset's calendar. `start` is when the adventure began (Day 1).",
-      "required": ["now"],
+      "required": [
+        "now"
+      ],
       "additionalProperties": false,
       "properties": {
-        "now": { "type": "integer", "minimum": 0 },
-        "start": { "type": "integer", "minimum": 0 }
+        "now": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "music": {
@@ -60,60 +68,212 @@
       "description": "The music (board/sound.js, state/music): the mood (auto follows the game), the boss switch, the run every screen plays in step, and each map's music out of combat.",
       "additionalProperties": false,
       "properties": {
-        "mood": { "enum": ["auto", "silence", "explore", "combat", "boss", "town", "tension", "rest"] },
-        "since": { "type": "number", "description": "When the current run began (ms since 1970)." },
-        "seed": { "type": ["number", "string"], "description": "The run's shuffle-bag seed." },
-        "boss": { "type": ["boolean", "null"], "description": "Boss music for the running encounter: on, off, or null (automatic, by the system's rule)." },
-        "themes": { "type": "object", "additionalProperties": { "enum": ["explore", "town", "tension", "rest", "combat", "boss"] }, "description": "A map's music out of combat, by map id." },
-        "playing": { "type": "string", "description": "The mood the run is for." },
-        "paused": { "type": "object", "additionalProperties": false, "required": ["at"], "properties": { "at": { "type": "number" } }, "description": "The GM paused the music for every screen at this time (ms); resuming moves since on by the pause." },
-        "by": { "enum": ["player", "gm", "claude"] },
-        "at": { "type": "string" }
+        "mood": {
+          "enum": [
+            "auto",
+            "silence",
+            "explore",
+            "combat",
+            "boss",
+            "town",
+            "tension",
+            "rest"
+          ]
+        },
+        "since": {
+          "type": "number",
+          "description": "When the current run began (ms since 1970)."
+        },
+        "seed": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "The run's shuffle-bag seed."
+        },
+        "boss": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Boss music for the running encounter: on, off, or null (automatic, by the system's rule)."
+        },
+        "themes": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "explore",
+              "town",
+              "tension",
+              "rest",
+              "combat",
+              "boss"
+            ]
+          },
+          "description": "A map's music out of combat, by map id."
+        },
+        "playing": {
+          "type": "string",
+          "description": "The mood the run is for."
+        },
+        "paused": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "at"
+          ],
+          "properties": {
+            "at": {
+              "type": "number"
+            }
+          },
+          "description": "The GM paused the music for every screen at this time (ms); resuming moves since on by the pause."
+        },
+        "by": {
+          "enum": [
+            "player",
+            "gm",
+            "claude"
+          ]
+        },
+        "at": {
+          "type": "string"
+        }
       }
     },
     "session": {
       "type": "object",
       "description": "When the GM started this session, for the Dice tab's \"This session\" filter (board/dice.js).",
-      "required": ["started"],
+      "required": [
+        "started"
+      ],
       "additionalProperties": false,
-      "properties": { "started": { "type": "string" } }
+      "properties": {
+        "started": {
+          "type": "string"
+        }
+      }
     },
     "encounter": {
       "type": "object",
       "description": "The encounter under way (tools/encounter.mjs; engine/time/encounter.js): round, the index of the creature acting, and the combatants in initiative order.",
-      "required": ["round", "combatants"],
+      "required": [
+        "round",
+        "combatants"
+      ],
       "additionalProperties": false,
       "properties": {
-        "round": { "type": "integer", "minimum": 0 },
-        "turn": { "type": ["integer", "null"], "minimum": 0 },
-        "started": { "type": "integer", "minimum": 0 },
-        "ended": { "type": "integer", "minimum": 0 },
+        "round": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "turn": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "started": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ended": {
+          "type": "integer",
+          "minimum": 0
+        },
         "combatants": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["token"],
+            "required": [
+              "token"
+            ],
             "additionalProperties": false,
             "properties": {
-              "token": { "type": "string", "pattern": "^tok-[0-9a-z]{8}$" },
-              "side": { "enum": ["pc", "foe", "npc"] },
-              "initiative": { "type": "number" },
-              "delayed": { "type": "boolean" },
-              "defeated": { "type": "boolean", "description": "Defeated: listed, its turns skipped." },
-              "hidden": { "type": "boolean", "description": "Hidden from players in the tracker (the GM's eye)." },
-              "stat": { "type": "string", "description": "The statistic its initiative was rolled with (perception, stealth, lore:<name>)." },
+              "token": {
+                "type": "string",
+                "pattern": "^tok-[0-9a-z]{8}$"
+              },
+              "side": {
+                "enum": [
+                  "pc",
+                  "foe",
+                  "npc"
+                ]
+              },
+              "initiative": {
+                "type": "number"
+              },
+              "delayed": {
+                "type": "boolean"
+              },
+              "defeated": {
+                "type": "boolean",
+                "description": "Defeated: listed, its turns skipped."
+              },
+              "hidden": {
+                "type": "boolean",
+                "description": "Hidden from players in the tracker (the GM's eye)."
+              },
+              "stat": {
+                "type": "string",
+                "description": "The statistic its initiative was rolled with (perception, stealth, lore:<name>)."
+              },
               "roll": {
                 "type": "object",
                 "description": "How the initiative was rolled: the dice, the one kept, the modifier and the parts that counted.",
                 "properties": {
-                  "dice": { "type": "array", "items": { "type": "number" } },
-                  "kept": { "type": "number" },
-                  "mode": { "enum": ["normal", "higher", "lower"] },
-                  "sides": { "type": "integer" },
-                  "mod": { "type": "number" },
-                  "parts": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "type": { "type": "string" }, "value": { "type": "number" }, "added": { "type": "boolean" } } } },
-                  "typed": { "type": "boolean", "description": "Typed in (physical dice)." },
-                  "set": { "type": "boolean", "description": "Set by hand afterwards: the GM typed a number, or the row was dragged." }
+                  "dice": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "kept": {
+                    "type": "number"
+                  },
+                  "mode": {
+                    "enum": [
+                      "normal",
+                      "higher",
+                      "lower"
+                    ]
+                  },
+                  "sides": {
+                    "type": "integer"
+                  },
+                  "mod": {
+                    "type": "number"
+                  },
+                  "parts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "number"
+                        },
+                        "added": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "typed": {
+                    "type": "boolean",
+                    "description": "Typed in (physical dice)."
+                  },
+                  "set": {
+                    "type": "boolean",
+                    "description": "Set by hand afterwards: the GM typed a number, or the row was dragged."
+                  }
                 }
               }
             }
@@ -128,7 +288,9 @@
     "discovered": {
       "type": "array",
       "description": "Maps the party has discovered (listed in the player view's map menu). Set by Claude, never automatically.",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "uniqueItems": true
     },
     "sky_light": {
@@ -166,12 +328,29 @@
       "description": "The campaign's players: who plays which PCs (board/players.js). The ledger records which player, and which character, introduced an invented detail.",
       "items": {
         "type": "object",
-        "required": ["id", "name"],
+        "required": [
+          "id",
+          "name"
+        ],
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-          "name": { "type": "string" },
-          "pcs": { "type": "array", "items": { "type": "string" }, "description": "token ids of the PCs this player plays" },
-          "gm": { "type": "boolean", "description": "this player also uses the GM view" }
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pcs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "token ids of the PCs this player plays"
+          },
+          "gm": {
+            "type": "boolean",
+            "description": "this player also uses the GM view"
+          }
         },
         "additionalProperties": false
       }
@@ -198,6 +377,49 @@
     "saved_at": {
       "type": "string",
       "description": "When this save was last written from the board."
+    },
+    "packs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "version"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "The packs of a campaign of several (an Adventure Path: one pack per book), in order. Map, art, event and subsystem ids are unique across them (tools/validate.mjs)."
     }
-  }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "pack"
+      ],
+      "not": {
+        "required": [
+          "packs"
+        ]
+      }
+    },
+    {
+      "required": [
+        "packs"
+      ],
+      "not": {
+        "required": [
+          "pack"
+        ]
+      }
+    }
+  ]
 }

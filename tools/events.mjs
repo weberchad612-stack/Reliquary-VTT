@@ -31,6 +31,7 @@ import { readClock } from '../engine/time/calendar.js';
 import { splitEvents, holds, dueEvents, startEvent, moveTo, nextStage, finishEvent, decide, stageOf, DAY_HOURS, EVENT_STATE_FIELDS } from '../engine/events/events.js';
 import { auditPath, auditEntry } from '../board/audit.js';
 import { ledgerPath, ledgerEntry } from '../board/ledger.js';
+import { gameArgs } from './campaign.mjs';
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 
@@ -279,8 +280,8 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   try {
     const rec = opt('--records');
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) { console.error('usage: node tools/events.mjs <pack-dir> <save-dir> [--records FILE] <command> ... (see the head of this file)'); return 2; }
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) { console.error('usage: node tools/events.mjs <pack-dir> <save-dir> [--records FILE] <command> ... (see the head of this file)'); return 2; }
     const records = rec ? readRecords(JSON.parse(fs.readFileSync(rec, 'utf8'))) : null;
     const game = loadGame(pack, save, records);
     const out = runEvents(game, pack, cmd, rest);

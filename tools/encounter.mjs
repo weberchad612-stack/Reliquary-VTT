@@ -45,6 +45,7 @@ import { describeClock } from './clock.mjs';
 import { adjustCheck } from '../engine/rules/check.js';
 import { exploreRules, initiativeHint, startRequests } from '../board/explore.js';
 import { partyOf, choicesOf } from './exploration.mjs';
+import { gameArgs } from './campaign.mjs';
 
 const sideOf = (t) => (['pc', 'npc', 'foe'].includes(t.kind) ? t.kind : 'foe');
 
@@ -185,8 +186,8 @@ function main(argv) {
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
     const rec = opt('--records'), seed = opt('--seed'), init = opt('--init'), roll = opt('--roll'), stat = opt('--stat'), mode = opt('--mode'), all = flag('--all'), undo = flag('--undo');
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command');
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) throw new Error('give a save folder (or a pack folder and a save folder) and a command');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
     const out = runEncounter(game, cmd, rest, { seed, init, roll, stat, mode, all, undo });
     console.log(cmd === 'show' ? out.lines.join('\n') : JSON.stringify(out, null, 2));

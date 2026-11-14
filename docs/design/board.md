@@ -62,7 +62,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 
 | Path | Holds | Written by |
 |---|---|---|
-| `board/meta` | Active campaign: id and title, pack id, title and version, ruleset, schema version, its maps, when loaded, when last saved to the PC | Claude, last when loading |
+| `board/meta` | Active campaign: id and title, pack id, title and version (and `packs`, every pack of a campaign of several: an Adventure Path's books), ruleset, schema version, its maps, when loaded, when last saved to the PC | Claude, last when loading |
 | `maps/<map>` | The map record: grid, image (uploaded file id and SHA-256 fingerprint), links | Claude (loading) |
 | `walls/<map>.<n>` | Wall segments in chunks of 400 | Claude (loading) |
 | `terrain/<map>`, `lighting/<map>` | Terrain areas; lighting regions and lights | Claude (loading) |

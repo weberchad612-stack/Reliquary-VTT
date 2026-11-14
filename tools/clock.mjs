@@ -20,6 +20,7 @@ import { readClock, clockAt, parseDate, adventureDay, DAY, HOUR, MINUTE } from '
 import { parseAmount, unitSeconds } from '../engine/time/clock.js';
 import { loadGame } from './actor.mjs';
 import { runTurnRules, randomSource } from './turns.mjs';
+import { gameArgs } from './campaign.mjs';
 
 /** The clock in words: "Moonday, 14 Gozran 4725 AR, 10:32 (Day 3)". */
 export function describeClock(cal, clock) {
@@ -67,8 +68,8 @@ function main(argv) {
   const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
   try {
     const rec = opt('--records'), seed = opt('--seed'), start = flag('--start');
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) throw new Error('give a pack folder, a save folder and a command (show, set, start, advance, until)');
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) throw new Error('give a save folder (or a pack folder and a save folder) and a command (show, set, start, advance, until)');
     const game = loadGame(pack, save, rec ? JSON.parse(fs.readFileSync(rec, 'utf8')) : null);
     const out = runClock(game, cmd, rest, { seed, start });
     console.log(cmd === 'show' ? out.lines.join('\n') : JSON.stringify(out, null, 2));

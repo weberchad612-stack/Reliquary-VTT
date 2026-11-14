@@ -86,6 +86,28 @@ break, between sessions). Made by `tools/advimport/landing.py`.
 { "id": "landing", "name": "Secrets of the ...", "kind": "landing", "image": { "file": "cover.webp", "w": 2400, "h": 1606 } }
 ```
 
+### 3c. Campaigns of several packs (2026-11-13)
+
+An Adventure Path is several books played as one campaign: the party, the ledger, the loot and the town carry from
+one book into the next. Each book is **its own pack**, with its own pipeline, checks and review; **one campaign**
+names them all, in order: `campaign.json` `"packs": [{"id", "version"}, ...]` (a one-pack campaign keeps its `"pack"`;
+the user's decision, 2026-11-13).
+
+- **Loading** (`tools/campaign.mjs` `loadPacks`, `mergePacks`): each pack is found by id (beside a pack folder given,
+  beside the save, `packs/<id>`, `examples/<id>`). Their maps, open content sources, own content (the latest book
+  first), art and visual effects become one; the board sees one campaign (`board/meta` lists `packs`) and never
+  reads the pack itself.
+- **Ids are unique across a campaign's packs**: maps (prefix them by book: `ap1-town`), art keys, events and
+  subsystems. The importer refuses a clash; the validator checks a save against every pack it names.
+- **Adding a book**: `node tools/advimport/campaign.mjs packs/<book> saves/<campaign> --update` adds the book (its maps,
+  cast, objects, sounds, ledger, events, subsystems, each tagged with its `pack`) and touches nothing of earlier
+  books or of play; `--start` moves the party to the new book's landing page. A book's own things are judged on its
+  own refresh ("no longer in the adventure" is per book); flags are shared, so a later book's events can wait on
+  what happened in an earlier one.
+- **Each book** has its own landing page (its cover) and its own kickoff.
+- **The tools** take `<save-dir>` alone (the packs come from the campaign); `<pack-dir> <save-dir>` still works with
+  any of the campaign's packs. `sync.mjs` remembers the save's state with the save, so several books can send it.
+
 ### 3a. Area maps (towns and regions)
 
 A map with `"kind": "area"` is a picture with places, not a battle map: no grid, walls, terrain, lighting,

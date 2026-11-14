@@ -8,6 +8,7 @@
 // With --save, every <save-dir>/maps/<id>.json is checked against the matching map.
 // Exit code: 0 = no errors (warnings allowed), 1 = errors, 2 = usage problem.
 
+import { findPackDir } from './campaign.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -488,49 +489,105 @@ export function validateEffects(target, pack, report) {
   for (const msg of checkLibrary(lib, (sys && sys.effects) || {})) report.error(file, msg);
 }
 
+/** One pack's folder: pack.json, its effects and content, every map; maps go into `maps` (an id seen before is an error). */
+function validatePackDir(target, maps, report, known0 = null) {
+  const mapsDir = path.join(target, 'maps');
+  const packFile = path.join(target, 'pack.json');
+  let out = null;
+  if (fs.existsSync(packFile)) {
+    const pack = readJson(packFile, report);
+    if (pack && schemaErrors(V.pack, pack, packFile, report)) {
+      out = pack;
+      for (const id of pack.maps) if (!fs.existsSync(path.join(mapsDir, id, 'map.json'))) report.error(packFile, `maps: no map folder "${id}"`);
+      validateEffects(target, pack, report);
+      // a campaign of several packs: their content together (each pack's own, then the others')
+      const view = validateContent(target, pack, report);
+      const prev = report.content;
+      report.content = !prev || !view ? (view || prev) : new Proxy({}, {
+        get: (_, k) => (view[k] !== undefined ? view[k] : prev[k]),
+        has: (_, k) => (k in view) || (k in prev),
+      });
+    }
+  } else report.warn(target, 'no pack.json: the board cannot load this pack as a campaign');
+  const dirs = fs.readdirSync(mapsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+  if (!dirs.length) report.warn(mapsDir, 'no maps found');
+  const known = new Set([...dirs, ...(known0 || [])]);
+  for (const d of dirs) {
+    const info = validateMapDir(path.join(mapsDir, d), { knownMaps: known, report });
+    if (info.map) {
+      if (maps.has(info.map.id)) report.error(path.join(mapsDir, d), `map id "${info.map.id}" is used twice${maps.get(info.map.id).pack && maps.get(info.map.id).pack !== target ? ' (in two of the campaign\'s packs: map ids must be unique across them)' : ''}`);
+      maps.set(info.map.id, { ...info, pack: target });
+    }
+  }
+  return out;
+}
+
+/** Art keys in two of a campaign's packs (each pack's art/art.json): errors. */
+function checkArtAcross(dirs, report) {
+  const seen = {};
+  for (const d of dirs) {
+    const f = path.join(d, 'art', 'art.json');
+    if (!fs.existsSync(f)) continue;
+    for (const k of Object.keys(JSON.parse(fs.readFileSync(f, 'utf8')))) {
+      if (seen[k]) report.error(f, `art "${k}" is also in ${path.basename(seen[k])}: art keys must be unique across a campaign's packs`);
+      else seen[k] = d;
+    }
+  }
+}
+
 export function validate(target, { save = null } = {}) {
   const report = new Report();
   const maps = new Map();
+  // a save of several packs: the other packs' map ids are known up front (a book's map may link to another book's)
+  let otherMaps = [], multi = false;
+  if (save && fs.existsSync(path.join(save, 'campaign.json'))) {
+    try {
+      const camp = JSON.parse(fs.readFileSync(path.join(save, 'campaign.json'), 'utf8'));
+      if (camp.packs) {
+        multi = true;
+        const mine = fs.existsSync(path.join(target, 'pack.json')) ? JSON.parse(fs.readFileSync(path.join(target, 'pack.json'), 'utf8')).id : null;
+        for (const p of camp.packs) if (p.id !== mine) { try { otherMaps.push(...JSON.parse(fs.readFileSync(path.join(findPackDir(p.id, [target]), 'pack.json'), 'utf8')).maps); } catch { /* reported below */ } }
+      }
+    } catch { /* reported below */ }
+  }
   if (fs.existsSync(path.join(target, 'map.json'))) {
     const info = validateMapDir(target, { report });
     if (info.map) maps.set(info.map.id, info);
   } else if (fs.existsSync(path.join(target, 'maps'))) {
-    const mapsDir = path.join(target, 'maps');
-    const packFile = path.join(target, 'pack.json');
-    if (fs.existsSync(packFile)) {
-      const pack = readJson(packFile, report);
-      if (pack && schemaErrors(V.pack, pack, packFile, report)) {
-        report.pack = pack;
-        for (const id of pack.maps) if (!fs.existsSync(path.join(mapsDir, id, 'map.json'))) report.error(packFile, `maps: no map folder "${id}"`);
-        validateEffects(target, pack, report);
-        report.content = validateContent(target, pack, report);
-      }
-    } else report.warn(target, 'no pack.json: the board cannot load this pack as a campaign');
-    const dirs = fs.readdirSync(mapsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
-    if (!dirs.length) report.warn(mapsDir, 'no maps found');
-    const known = new Set(dirs);
-    for (const d of dirs) {
-      const info = validateMapDir(path.join(mapsDir, d), { knownMaps: known, report });
-      if (info.map) {
-        if (maps.has(info.map.id)) report.error(path.join(mapsDir, d), `map id "${info.map.id}" is used twice`);
-        maps.set(info.map.id, info);
-      }
-    }
+    report.pack = validatePackDir(target, maps, report, otherMaps);
   } else {
     report.error(target, 'not a pack (no maps/ folder) or a map folder (no map.json)');
   }
-  checkLinkPairs(maps, report);
+  if (!multi) checkLinkPairs(maps, report);
 
   if (save) {
     const campFile = path.join(save, 'campaign.json');
     if (fs.existsSync(campFile)) {
       const camp = readJson(campFile, report);
       if (camp && schemaErrors(V.campaign, camp, campFile, report) && report.pack) {
-        if (camp.pack.id !== report.pack.id) report.error(campFile, `pack: this save is for pack "${camp.pack.id}", not "${report.pack.id}"`);
-        else if (camp.pack.version !== report.pack.version) report.warn(campFile, `pack: saved with version ${camp.pack.version}, the pack is ${report.pack.version}`);
-        if (camp.ruleset !== report.pack.ruleset) report.error(campFile, `ruleset: "${camp.ruleset}" does not match the pack's "${report.pack.ruleset}"`);
-        if (camp.current_map && !maps.has(camp.current_map)) report.error(campFile, `current_map: no map "${camp.current_map}" in the pack`);
-        for (const id of camp.discovered || []) if (!maps.has(id)) report.error(campFile, `discovered: no map "${id}" in the pack`);
+        // the campaign's packs: one, or several (an Adventure Path's books); the others are found by id and checked too
+        const want = camp.packs || [camp.pack];
+        const mine = want.find((p) => p.id === report.pack.id);
+        if (!mine) report.error(campFile, `pack: this save is for pack${want.length > 1 ? 's' : ''} "${want.map((p) => p.id).join('", "')}", not "${report.pack.id}"`);
+        else {
+          const dirs = [target];
+          for (const p of want) {
+            let pk = p.id === report.pack.id ? report.pack : null;
+            if (!pk) {
+              let dir = null;
+              try { dir = findPackDir(p.id, [target]); } catch (e) { report.error(campFile, `packs: ${e.message}`); continue; }
+              dirs.push(dir);
+              pk = validatePackDir(dir, maps, report, [...maps.keys(), ...otherMaps]);
+              if (!pk) continue;
+            }
+            if (p.version !== pk.version) report.warn(campFile, `pack ${p.id}: saved with version ${p.version}, the pack is ${pk.version}`);
+            if (camp.ruleset !== pk.ruleset) report.error(campFile, `ruleset: "${camp.ruleset}" does not match pack ${p.id}'s "${pk.ruleset}"`);
+          }
+          if (dirs.length > 1) checkArtAcross(dirs, report);
+          if (multi) checkLinkPairs(maps, report);
+        }
+        if (camp.current_map && !maps.has(camp.current_map)) report.error(campFile, `current_map: no map "${camp.current_map}" in the campaign's packs`);
+        for (const id of camp.discovered || []) if (!maps.has(id)) report.error(campFile, `discovered: no map "${id}" in the campaign's packs`);
       }
     }
     // the campaign ledger (GM only, private like the whole save)

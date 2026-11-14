@@ -28,6 +28,7 @@ import { readRecords } from './replay.mjs';
 import { runCheck } from './check.mjs';
 import { score, addPoints, subsystemRound, reveal, playerView, dcShift } from '../engine/events/subsystem.js';
 import { auditPath, auditEntry } from '../board/audit.js';
+import { gameArgs } from './campaign.mjs';
 
 /** Run one command: {lines, writes, result?}. */
 export function runSubsystem(game, cmd, args = [], o = {}) {
@@ -142,8 +143,8 @@ function main(argv) {
   try {
     const rec = opt('--records'), who = opt('--who'), skill = opt('--skill'), roll = opt('--roll'), n = opt('--n'), bonus = opt('--bonus'), why = opt('--why');
     const player = flagOpt('--player'), show = flagOpt('--show');
-    const [pack, save, cmd, ...rest] = args;
-    if (!pack || !save || !cmd) { console.error('usage: node tools/subsystem.mjs <pack-dir> <save-dir> [--records FILE] <command> ... (see the head of this file)'); return 2; }
+    const [pack, save, cmd, ...rest] = gameArgs(args);
+    if (!save || !cmd) { console.error('usage: node tools/subsystem.mjs <pack-dir> <save-dir> [--records FILE] <command> ... (see the head of this file)'); return 2; }
     const records = rec ? readRecords(JSON.parse(fs.readFileSync(rec, 'utf8'))) : null;
     const game = loadGame(pack, save, records);
     const out = runSubsystem(game, cmd, rest, { who, skill, roll, n: n === undefined ? undefined : Number(n), bonus: bonus === undefined ? 0 : Number(bonus), why, player, show });

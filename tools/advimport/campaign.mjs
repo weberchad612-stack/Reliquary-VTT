@@ -3,6 +3,10 @@
 //
 // Usage:
 //   node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--force]
+//   node tools/advimport/campaign.mjs <pack-dir> <save-dir> --update [--start]
+//     refreshes a campaign from its pack and keeps play; with a pack the campaign does not have yet (the next book of
+//     an Adventure Path) it adds that pack: its maps, cast, objects, sounds, ledger, events and subsystems join the
+//     campaign, earlier books and play untouched; --start moves the party to the new book's landing page.
 //
 // Reads <pack-dir>/adventure.json:
 //   {title, maps: [map ids], start: {map, room}, landing?: map id, encounters: [...], objects: [...]}
@@ -28,6 +32,7 @@ import crypto from 'node:crypto';
 import { checkEvents, EVENT_STATE_FIELDS } from '../../engine/events/events.js';
 import { checkSubsystem } from '../../engine/events/subsystem.js';
 import { systemConfig } from '../../rulesets/systems.js';
+import { campaignPackIds, findPackDir } from '../campaign.mjs';
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 const write = (f, d) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(d, null, 2) + '\n'); };
@@ -90,7 +95,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
       const size = SIZES[c.size || (doc && doc.size) || 'medium'] ?? 1;
       const tok = {
         name: c.name, ...(c.alias ? { alias: c.alias, known: false } : {}),
-        kind: e.friendly ? 'neutral' : 'foe', source: 'adventure',
+        kind: e.friendly ? 'neutral' : 'foe', source: 'adventure', pack: pack.id,
         type: slug(doc ? doc.name.replace(/\s*\(BB\)$/i, '') : c.name),
         group: e.id, short: letterFor(e.id, c.alias || c.name),
         ...(c.art ? { art: c.art } : {}),
@@ -112,7 +117,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     if (!maps[o.map]) { problems.push(`${o.id}: map "${o.map}" is not in the adventure`); continue; }
     const tid = stableId(`${pack.id}:object:${o.id}`);
     maps[o.map][tid] = {
-      name: o.name, kind: 'object', source: 'adventure', type: slug(o.kind || 'object'), group: `objects-${slug(o.room || o.map)}`,
+      name: o.name, kind: 'object', source: 'adventure', pack: pack.id, type: slug(o.kind || 'object'), group: `objects-${slug(o.room || o.map)}`,
       short: letterFor(`objects-${slug(o.room || o.map)}`, o.name), ...(o.art ? { art: o.art } : {}),
       x: Math.floor(o.at[0]), y: Math.floor(o.at[1]), ...(o.hidden ? { hidden: true } : {}),
     };
@@ -152,7 +157,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
   for (const ev of adv.events || []) {
     const { id: eid, ...def } = ev;
     if (ev.where && ev.where.map && !maps[ev.where.map]) problems.push(`event ${eid}: map "${ev.where.map}" is not in the adventure`);
-    events[eid] = { ...def, status: 'waiting' };
+    events[eid] = { ...def, pack: pack.id, status: 'waiting' };
   }
   for (const e of checkEvents(adv.events || [])) problems.push(`events: ${e}`);
   // the kickoff is mandatory: the book's way of starting the story (tools/advimport/kickoff.mjs)
@@ -166,7 +171,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     const { id: sid, kind, title: st, event, pages, note, shown, ...params } = s;
     if (!kinds[kind]) { problems.push(`subsystem ${sid}: the ${pack.ruleset} system has no kind "${kind}"`); continue; }
     const made = JSON.parse(JSON.stringify(kinds[kind].make(params)));
-    subsystems[sid] = { title: st || kinds[kind].label, kind, ...(event ? { event } : {}), ...(pages ? { pages } : {}), ...(note ? { note } : {}), ...(shown ? { shown } : {}), status: 'waiting', ...made };
+    subsystems[sid] = { title: st || kinds[kind].label, kind, pack: pack.id, ...(event ? { event } : {}), ...(pages ? { pages } : {}), ...(note ? { note } : {}), ...(shown ? { shown } : {}), status: 'waiting', ...made };
     for (const e of checkSubsystem(subsystems[sid], sid)) problems.push(`subsystem ${e}`);
   }
   return { campaign, maps, actors, ambient, ledger, events, subsystems, problems, warnings };
@@ -174,7 +179,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
 
 // Token fields the pack owns: refreshed on --update. Everything else on a token (where it stands, hidden, dead,
 // effects, its name and alias, whether its name is known, its kind after a ruling) is play's and is kept.
-const PACK_TOKEN_FIELDS = ['art', 'note', 'size', 'type', 'group', 'source'];
+const PACK_TOKEN_FIELDS = ['art', 'note', 'size', 'type', 'group', 'source', 'pack'];
 // Object fields play changes (the party takes things out): kept on --update when the save has them.
 const PLAY_OBJECT_FIELDS = ['items', 'coins'];
 
@@ -192,8 +197,38 @@ export function updateSave(packDir, saveDir, opts = {}) {
   const report = [];
   if (fresh.problems.length) return { ...fresh, report };
   const old = readJson(path.join(saveDir, 'campaign.json'));
-  const campaign = { ...old, title: old.title || fresh.campaign.title, pack: fresh.campaign.pack };
-  if (fresh.campaign.music && !old.music) campaign.music = fresh.campaign.music;
+  // the campaign's packs: refreshing its one pack, or adding (or refreshing) a book of several (docs/design/maps.md 3c)
+  const thisPack = fresh.campaign.pack;
+  const before = campaignPackIds(old);
+  const firstPack = before[0] || thisPack.id;
+  let campaign;
+  if (!before.length || (before.length === 1 && before[0] === thisPack.id)) campaign = { ...old, title: old.title || fresh.campaign.title, pack: thisPack };
+  else {
+    const list = (old.packs || [old.pack]).map((p) => (p.id === thisPack.id ? thisPack : p));
+    if (!list.some((p) => p.id === thisPack.id)) { list.push(thisPack); report.push(`pack ${thisPack.id}: added to the campaign (book ${list.length})`); }
+    const { pack: _p, ...rest } = old;
+    campaign = { ...rest, packs: list };
+    // another book's maps must not share ids with this one's
+    for (const id of before.filter((x) => x !== thisPack.id)) {
+      let other = null;
+      try { other = readJson(path.join(findPackDir(id, [packDir, saveDir]), 'pack.json')); } catch (e) { return { ...fresh, report, problems: [e.message] }; }
+      const clash = other.maps.filter((m) => fresh.maps[m]);
+      if (clash.length) return { ...fresh, report, problems: [`map id${clash.length > 1 ? 's' : ''} ${clash.join(', ')} also in pack ${id}: map ids must be unique across the campaign's packs (prefix them by book)`] };
+    }
+  }
+  // music: each map's theme; a new book's maps add theirs
+  if (fresh.campaign.music) {
+    if (!old.music) campaign.music = fresh.campaign.music;
+    else campaign.music = { ...old.music, themes: { ...fresh.campaign.music.themes, ...(old.music.themes || {}) } };
+  }
+  // --start: the party moves to this pack's landing page (or its starting map), the start of a new book
+  const added = report.some((r) => r.startsWith(`pack ${thisPack.id}: added`));
+  if (opts.start) {
+    campaign.current_map = fresh.campaign.current_map;
+    campaign.discovered = [...new Set([...(old.discovered || []), ...(fresh.campaign.discovered || [])])];
+    report.push(`the party is on ${campaign.current_map} (${thisPack.id} starts; the GM moves it on from the map menu, which brings its kickoff)`);
+  } else if (added) report.push(`to start this book: --update --start (the party moves to ${fresh.campaign.current_map}); until then play stays where it is`);
+  const mine = (x) => (x.pack || firstPack) === thisPack.id;   // a token, event or subsystem of this pack (untagged: the first)
   const adv = readAdventure(packDir);
   // every token in the save, wherever play has moved it
   const states = {};
@@ -223,7 +258,7 @@ export function updateSave(packDir, saveDir, opts = {}) {
   // pack): kept, since play may refer to them
   for (const [tid, m] of Object.entries(where)) {
     const t = states[m].tokens[tid];
-    if (!packIds.has(tid) && t.source === 'adventure') report.push(`${m}: ${t.name} is no longer in the adventure (kept)`);
+    if (!packIds.has(tid) && t.source === 'adventure' && mine(t)) report.push(`${m}: ${t.name} is no longer in the adventure (kept)`);
   }
   // door states for doors the walls no longer have
   for (const [m, st] of Object.entries(states)) {
@@ -258,15 +293,19 @@ export function updateSave(packDir, saveDir, opts = {}) {
     const was = (hadEvents && hadEvents.events) || {};
     const next = {};
     for (const [eid, def] of Object.entries(fresh.events)) {
+      if (was[eid] && !mine(was[eid])) return { ...fresh, report, problems: [`event "${eid}" is also pack ${was[eid].pack || firstPack}'s: event ids must be unique across the campaign's packs`] };
       const keep = Object.fromEntries(EVENT_STATE_FIELDS.filter((k) => was[eid] && was[eid][k] !== undefined).map((k) => [k, was[eid][k]]));
       next[eid] = { ...def, ...keep };
       if (!was[eid]) report.push(`event ${eid}: new`);
     }
-    for (const [eid, e] of Object.entries(was)) if (!next[eid]) { next[eid] = e; report.push(`event ${eid} is no longer in the adventure (kept)`); }
+    for (const [eid, e] of Object.entries(was)) if (!next[eid]) { next[eid] = e; if (mine(e)) report.push(`event ${eid} is no longer in the adventure (kept)`); }
     // subsystems: one already in play is kept as it is (its points, reveals and log are play's); new ones are added
     const hadSubs = (hadEvents && hadEvents.subsystems) || {};
     const subs = { ...hadSubs };
-    for (const [sid, s] of Object.entries(fresh.subsystems)) if (!hadSubs[sid]) { subs[sid] = s; report.push(`subsystem ${sid}: new`); }
+    for (const [sid, s] of Object.entries(fresh.subsystems)) {
+      if (hadSubs[sid] && !mine(hadSubs[sid])) return { ...fresh, report, problems: [`subsystem "${sid}" is also pack ${hadSubs[sid].pack || firstPack}'s: subsystem ids must be unique across the campaign's packs`] };
+      if (!hadSubs[sid]) { subs[sid] = s; report.push(`subsystem ${sid}: new`); }
+    }
     events = { $schema: '../../schemas/events.schema.json', events: next, ...(hadEvents && hadEvents.flags ? { flags: hadEvents.flags } : {}), ...(Object.keys(subs).length ? { subsystems: subs } : {}) };
   }
   return { campaign, maps: states, actors, ledger, events, report, problems: [], warnings: fresh.warnings };
@@ -277,12 +316,13 @@ function main(argv) {
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const force = args.includes('--force'); if (force) args.splice(args.indexOf('--force'), 1);
   const update = args.includes('--update'); if (update) args.splice(args.indexOf('--update'), 1);
+  const start = args.includes('--start'); if (start) args.splice(args.indexOf('--start'), 1);
   const id = opt('--id'), title = opt('--title');
   const [packDir, saveDir] = args;
-  if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--update | --force]'); return 2; }
+  if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--update [--start] | --force]\n  (--update with a pack the campaign does not have yet adds it: a book of an Adventure Path; --start moves the party to its landing page)'); return 2; }
   const exists = fs.existsSync(path.join(saveDir, 'campaign.json'));
   if (exists && update) {
-    const u = updateSave(packDir, saveDir, { id, title });
+    const u = updateSave(packDir, saveDir, { id, title, start });
     for (const w of u.warnings) console.error('WARNING', w);
     for (const p of u.problems) console.error('PROBLEM', p);
     if (u.problems.length) return 1;

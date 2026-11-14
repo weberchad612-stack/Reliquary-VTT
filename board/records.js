@@ -80,9 +80,11 @@ const pad = (n) => String(n).padStart(3, '0');
  * @returns {object}  {path: data}
  */
 export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, art = {}, actors = {}, actorStates = {}, content = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], loot = null, exploration = null, events = null, now = new Date().toISOString() }) {
-  if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
-    throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
-  }
+  // the campaign's packs (one, or an Adventure Path's books) must all be here
+  const have = pack.ids || [pack.id];
+  const want = campaign.packs ? campaign.packs.map((p) => p.id) : campaign.pack && campaign.pack.id ? [campaign.pack.id] : [];
+  const lacking = want.filter((id) => !have.includes(id));
+  if (lacking.length) throw new Error(`campaign "${campaign.id}" is for pack${want.length > 1 ? 's' : ''} "${want.join('", "')}", not "${have.join('", "')}"`);
   const ruleset = campaign.ruleset || pack.ruleset;
   if (pack.ruleset && ruleset !== pack.ruleset) throw new Error(`campaign ruleset "${ruleset}" does not match pack ruleset "${pack.ruleset}"`);
   const r = {};
@@ -90,6 +92,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
     schema: SCHEMA,
     campaign: { id: campaign.id, title: campaign.title || campaign.id },
     pack: { id: pack.id, title: pack.title || pack.id, version: pack.version || '0' },
+    ...(pack.packs && pack.packs.length > 1 ? { packs: pack.packs } : {}),
     ruleset,
     maps: maps.map((m) => m.id),
     loaded_at: now,
@@ -201,7 +204,10 @@ export function saveFromRecords(records, base = {}) {
   const meta = records['board/meta'];
   if (!meta) throw new Error('no campaign is loaded (board/meta is missing)');
   const table = records['state/table'] || {};
-  const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
+  const { pack: _p, packs: _ps, ...rest } = base || {};
+  // a campaign of several packs keeps its list (campaign.json `packs`); one pack keeps the one-pack form
+  const campaign = { ...rest, id: meta.campaign.id, title: meta.campaign.title,
+    ...(meta.packs && meta.packs.length > 1 ? { packs: meta.packs.map((p) => ({ id: p.id, version: p.version })) } : { pack: { id: meta.pack.id, version: meta.pack.version } }), ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
   for (const k of ['clock', 'encounter', 'session', 'music']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
   const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], lootItems = [], choices = {}, evs = {}, subs = {};
