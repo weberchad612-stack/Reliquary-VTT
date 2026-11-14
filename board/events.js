@@ -77,7 +77,7 @@ export function eventRows(defs, states, due = {}) {
 }
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const ACTION_WORDS = { narrate: 'Narrate', card: 'Card', fx: 'Effect', sound: 'Sound', light: 'Light', place: 'Place', reveal: 'Reveal', encounter: 'Fight', door: 'Door', map: 'Map', xp: 'XP', decision: 'Decision', flag: 'Flag', ledger: 'Ledger', note: 'Note' };
+const ACTION_WORDS = { narrate: 'Narrate', card: 'Card', fx: 'Effect', sound: 'Sound', light: 'Light', place: 'Place', reveal: 'Reveal', encounter: 'Fight', door: 'Door', map: 'Map', xp: 'XP', decision: 'Decision', flag: 'Flag', ledger: 'Ledger', note: 'Note', subsystem: 'Subsystem' };
 
 /** One action as a short line. */
 export function actionShort(a) {

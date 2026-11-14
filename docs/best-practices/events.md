@@ -63,6 +63,32 @@ section 11b; the pre-flight checklist's item 10.
   toast). Each is marked once per run. Conditions the board cannot see (the party's rooms, what they carry) do not hold
   there; Claude's own `due` covers them. `events.mjs due` lists the marks; `tick` clears them.
 
+## 2c. Subsystems
+
+Victory Points, Influence, Chase, Infiltration and Research (PF2E GM Core chapter 4) are points and thresholds:
+`engine/events/subsystem.js` keeps the numbers; the system's kinds (`rulesets/pf2e/subsystems.js`) give each one's
+words, default scoring and shape; `tools/subsystem.mjs` runs them; the save keeps them in `events.json`
+(`subsystems`), on the board `subsystems/<id>`.
+
+- **In adventure.json:** `"subsystems": [{"id": "lift", "kind": "victory", "title": "...", "pages": "7", "goal": 4,
+  "thresholds": [{"at": 4, "id": "fixed", "label": "...", "end": "success"}]}]`. Infiltration: `obstacles` (`goal`,
+  `individual`, `checks: [{skill, dc}]`), `awareness` thresholds (default: 5, 10, 15, 20). Influence: `npcs` (each with
+  thresholds, checks, notes for discoveries, resistances and weaknesses), `rounds`. Chase: `obstacles`, `opponent`.
+  Research: `goal`, `thresholds`, `sections`, `rounds`. A book's own scoring replaces the default with `scoring`.
+- **Points come from the rolls.** `subsystem.mjs check <id> <part> --who PC --skill S --roll N` rolls through
+  check.mjs against the part's DC (raised by thresholds reached: an infiltration's Awareness), posts the check card and
+  scores the degree. `score` is for a degree already rolled; `add` for points by hand (a spell, a complication);
+  `round` for a new round (Awareness +1 each round in an infiltration).
+- **Events and subsystems talk through flags:** a threshold reached sets `<id>:<threshold>` (or its own `flag`), an
+  overcome part `<id>:<part>`, the end `<id>:success|failure`. An event stage starts a subsystem with
+  `{"do": "subsystem", "id": "...", "show": true}` and waits on its end with `{"flag": "<id>:success"}`.
+- **What players see** (the user's decision): the card above the chat shows the points and progress, the parts,
+  notes and skills revealed (`reveal`); DCs, thresholds and hidden parts stay the GM's. The GM sees everything, marked
+  GM, with the DCs as adjusted.
+- Defaults checked against GM Core (Archives of Nethys, 2026-11-14): Victory Points, Influence, Chase and Research: critical
+  success +2, success +1, failure 0, critical failure -1 (Research never below 0); Infiltration: +2 and +1 Infiltration
+  Points, failure 1 and critical failure 2 Awareness Points, and 1 more at the end of each round.
+
 ## 3. Lessons
 
 - Keep the definition and the state in one record per event: the GM tab shows both, and `--update` refreshes the
@@ -71,5 +97,7 @@ section 11b; the pre-flight checklist's item 10.
 - A fight's end is a flag with its game time (`ended:<group>`), so a stage chained to it fires only for a fight that
   ended after the stage began.
 - A new sidebar tab needs its `<section class="sb-pane" data-pane="...">` in board/index.html as well as its entry in app.js's tab list; without it `sidebar.panel()` is null and the board fails to start (the headless check caught it).
+- A value of 0 is a real game time: test `=== undefined`, never truthiness (a threshold reached at time 0 looked unreached until a test caught it).
+- Every export of an engine module lands in one flat `Engine` object on the board: names must be unique across the engine (`subsystemRound`, not `nextRound`).
 - Party level is the average of the PCs' levels, rounded; the party's areas are every keyed room a living PC stands in
   on the current map.

@@ -118,6 +118,7 @@ export function actionLine(a) {
     decision: () => `Decide ${a.id}: ${a.question || ''}${a.options ? ` [${a.options.join(' | ')}]` : ''} (then: decide <event> ${a.id} <choice>)`,
     flag: () => `Flag ${a.name} = ${JSON.stringify(a.value ?? true)} (written)`,
     ledger: () => `Ledger ${a.kind || 'fact'}: ${a.title ? `${a.title}: ` : ''}${a.text || ''} (written)`,
+    subsystem: () => `Subsystem ${a.id}: ${a.end ? `end (${a.end})` : `start${a.show ? ', the players see its card' : ''}`} (tools/subsystem.mjs ${a.end ? `end ${a.id} ${a.end}` : `start ${a.id}${a.show ? ' --show' : ''}`})`,
     note: () => `Note: ${a.text || ''}`,
   };
   return (words[t] || (() => `${t}: ${a.text || JSON.stringify(a)}`))();

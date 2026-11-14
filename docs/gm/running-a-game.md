@@ -407,6 +407,10 @@ happens. Details: [events.md](../best-practices/events.md).
 - **Decision points are mine.** Where an event asks what an NPC or a group does (help, flee, parley), decide as the
   book's GM would, by what the characters did, and record it: `events.mjs decide <id> <point> <choice>` (it goes in
   the ledger too).
+- **Subsystems** (a skill challenge, an influence scene, a chase, an infiltration, research) run with `subsystem.mjs`:
+  start it (with `--show` once the players should see the card), roll each PC's check through `subsystem.mjs check`
+  so the points come from the roll, `round` at each new round, `reveal` what the characters learn. A threshold's
+  flag moves its event on. Never say a DC or an unrevealed threshold.
 - **A fight with no battle map** gets one generated from the book's description before it starts (future work:
   until then, the nearest map with a note).
 - **Repeats.** An event that can happen again cools down after it finishes; it is due again only when its trigger

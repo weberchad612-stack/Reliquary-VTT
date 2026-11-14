@@ -29,6 +29,10 @@ used only in private packs built from books the user owns, never in this reposit
 **Face detector.** The adventure importer centres token crops on faces with YuNet (OpenCV model zoo, MIT License,
 by Shiqi Yu): [licenses/YuNet.md](licenses/YuNet.md).
 
+**Subsystems.** The shape of the subsystem data (Victory Points, Influence, Chase, Infiltration, Research) follows the
+PF2e Subsystems module for Foundry VTT by WBHarry (MIT License); no code is copied:
+[licenses/pf2e-subsystems.md](licenses/pf2e-subsystems.md).
+
 **Sound.** The board's sound set (`sounds/`, kept with Git LFS; rendered by `tools/sound/` and published with the
 board) is performed with the Versilian Community Sample Library (VSCO 2 Community Edition, CC0, by Versilian
 Studios: github.com/sgossner/VSCO-2-CE). Its organ was sampled by Simon Dalzell of Ivy Audio, with redistribution

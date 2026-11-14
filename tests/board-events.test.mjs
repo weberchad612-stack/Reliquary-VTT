@@ -71,3 +71,26 @@ test('board events: the tab draws for the GM only, and opens an event', () => {
   view = 'player'; ui.render();
   assert.equal(list.innerHTML, '');
 });
+
+import * as SS from '../engine/events/subsystem.js';
+import { playerCardHtml, gmCardHtml } from '../board/subsystemui.js';
+import { PF2E_SUBSYSTEMS } from '../rulesets/pf2e/subsystems.js';
+
+test('board subsystem card: players see revealed parts and no DCs; the GM sees all', () => {
+  let s = { title: 'Into the keep', kind: 'infiltration', status: 'active', shown: true, ...JSON.parse(JSON.stringify(PF2E_SUBSYSTEMS.kinds.infiltration.make({ obstacles: [{ id: 'gate', label: 'Gate', goal: 2, checks: [{ skill: 'stealth', dc: 17 }] }, { id: 'vault', label: 'Secret vault', goal: 3 }] }))) };
+  s = SS.reveal(SS.reveal(s, 'gate'), 'gate', 'check:0');
+  s = SS.addPoints(s, { awareness: 5 }).sub;
+  const p = playerCardHtml(SS.playerView(s));
+  assert.match(p, /Into the keep/);
+  assert.match(p, /Awareness Points<\/span><b>5/);
+  assert.match(p, /Gate/);
+  assert.match(p, /Try: stealth/);
+  assert.ok(!/Secret vault/.test(p), 'a hidden part');
+  assert.ok(!/17|18|DC/.test(p), 'no DCs');
+  assert.ok(!/Suspicions/.test(p), 'thresholds stay the GM\'s until revealed');
+  const g = gmCardHtml('sneak', s, SS.dcShift(s));
+  assert.match(g, /stealth DC 18/);
+  assert.match(g, /✓ 5 Suspicions raised/);
+  assert.match(g, /Secret vault<\/b> <span class="ss-k">\(hidden\)/);
+  assert.match(g, /players see it/);
+});

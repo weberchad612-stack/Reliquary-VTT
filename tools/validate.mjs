@@ -21,6 +21,7 @@ import { prepareActor, BASE_RULE_KEYS } from '../engine/rules/rules.js';
 import { parseExpr } from '../engine/rules/expr.js';
 import { contentLibrary, contentView } from './library.mjs';
 import { checkEvents, splitEvents } from '../engine/events/events.js';
+import { checkSubsystem } from '../engine/events/subsystem.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_DIR = path.join(ROOT, 'schemas');
@@ -550,6 +551,7 @@ export function validate(target, { save = null } = {}) {
         const { defs, states } = splitEvents(l.events || {});
         for (const m of checkEvents(defs)) report.error(eventsFile, m);
         for (const d of defs) if (states[d.id].stage && !(d.stages || []).some((s) => s.id === states[d.id].stage)) report.error(eventsFile, `${d.id} is at unknown stage "${states[d.id].stage}"`);
+        for (const [sid, s] of Object.entries(l.subsystems || {})) for (const m of checkSubsystem(s, sid)) report.error(eventsFile, m);
       }
     }
     const dir = path.join(save, 'maps');

@@ -44,6 +44,8 @@
 //                      (exploration.json)
 //   events/<id>        an adventure event: its definition from the pack and its state in play (engine/events/
 //                      events.js; tools/events.mjs); GM only; part of the save (events.json); state/flags: its flags
+//   subsystems/<id>    a subsystem (Victory Points, Influence, Chase, Infiltration, Research: engine/events/
+//                      subsystem.js; tools/subsystem.mjs); the players' card shows its revealed parts; in events.json
 //   ledger/<time36>-<n> the campaign ledger, the GM's memory: improvisations, secrets, rulings, threads, quests, timed
 //                      events and session summaries (board/ledger.js); GM only; part of the save (ledger.json)
 //
@@ -117,6 +119,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
   for (const [id, c] of Object.entries((exploration && exploration.choices) || {})) r[`explore/${id}`] = c;
   for (const [id, e] of Object.entries((events && events.events) || {})) r[`events/${id}`] = e;
   if (events && events.flags && Object.keys(events.flags).length) r['state/flags'] = events.flags;
+  for (const [id, s] of Object.entries((events && events.subsystems) || {})) r[`subsystems/${id}`] = s;
   if (effects && effects.effects && Object.keys(effects.effects).length) r['fxlib/pack'] = { palette: effects.palette || {}, effects: effects.effects, fallbacks: effects.fallbacks || [] };
   r['state/table'] = Object.fromEntries(TABLE_FIELDS.filter((k) => campaign[k] !== undefined).map((k) => [k, campaign[k]]));
   if (!r['state/table'].current_map) r['state/table'].current_map = maps[0] && maps[0].id;
@@ -201,7 +204,7 @@ export function saveFromRecords(records, base = {}) {
   const campaign = { ...base, id: meta.campaign.id, title: meta.campaign.title, pack: { id: meta.pack.id, version: meta.pack.version }, ruleset: meta.ruleset };
   for (const k of TABLE_FIELDS) { if (table[k] !== undefined) campaign[k] = table[k]; else delete campaign[k]; }
   for (const k of ['clock', 'encounter', 'session', 'music']) { if (records[`state/${k}`]) campaign[k] = records[`state/${k}`]; else delete campaign[k]; }
-  const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], lootItems = [], choices = {}, evs = {};
+  const mapStates = {}, actors = {}, actorStates = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], lootItems = [], choices = {}, evs = {}, subs = {};
   const ensure = (id) => (mapStates[id] = mapStates[id] || { map: id });
   for (const [p, d] of Object.entries(records)) {
     const [coll] = p.split('/');
@@ -220,6 +223,7 @@ export function saveFromRecords(records, base = {}) {
     if (coll === 'loot') lootItems.push({ id: p.split('/')[1], ...d });
     if (coll === 'explore') choices[p.split('/')[1]] = d;
     if (coll === 'events') evs[p.split('/')[1]] = d;
+    if (coll === 'subsystems') subs[p.split('/')[1]] = d;
   }
   lootItems.sort((a, b) => (a.id < b.id ? -1 : 1));
   const purse = records['state/purse'] || null;
@@ -238,7 +242,8 @@ export function saveFromRecords(records, base = {}) {
   for (const st of Object.values(mapStates)) delete st.$schema;
   const exploration = Object.keys(choices).length ? { choices } : null;
   const flags = records['state/flags'] || null;
-  const events = Object.keys(evs).length || flags ? { events: Object.fromEntries(Object.keys(evs).sort().map((k) => [k, evs[k]])), ...(flags && Object.keys(flags).length ? { flags } : {}) } : null;
+  const sorted = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
+  const events = Object.keys(evs).length || Object.keys(subs).length || (flags && Object.keys(flags).length) ? { events: sorted(evs), ...(flags && Object.keys(flags).length ? { flags } : {}), ...(Object.keys(subs).length ? { subsystems: sorted(subs) } : {}) } : null;
   return { campaign, mapStates, actors, actorStates, chat, audit, dice, replays: savedReplays, ledger, loot, exploration, events };
 }
 

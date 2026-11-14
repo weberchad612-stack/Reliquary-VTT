@@ -26,6 +26,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { checkEvents, EVENT_STATE_FIELDS } from '../../engine/events/events.js';
+import { checkSubsystem } from '../../engine/events/subsystem.js';
+import { systemConfig } from '../../rulesets/systems.js';
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 const write = (f, d) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(d, null, 2) + '\n'); };
@@ -135,7 +137,17 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     events[eid] = { ...def, status: 'waiting' };
   }
   for (const e of checkEvents(adv.events || [])) problems.push(`events: ${e}`);
-  return { campaign, maps, actors, ambient, ledger, events, problems, warnings };
+  // subsystems (Victory Points, Influence, Chase, Infiltration, Research): built from the system's kinds
+  const subsystems = {};
+  const kinds = ((systemConfig(pack.ruleset) || {}).subsystems || {}).kinds || {};
+  for (const s of adv.subsystems || []) {
+    const { id: sid, kind, title: st, event, pages, note, shown, ...params } = s;
+    if (!kinds[kind]) { problems.push(`subsystem ${sid}: the ${pack.ruleset} system has no kind "${kind}"`); continue; }
+    const made = JSON.parse(JSON.stringify(kinds[kind].make(params)));
+    subsystems[sid] = { title: st || kinds[kind].label, kind, ...(event ? { event } : {}), ...(pages ? { pages } : {}), ...(note ? { note } : {}), ...(shown ? { shown } : {}), status: 'waiting', ...made };
+    for (const e of checkSubsystem(subsystems[sid], sid)) problems.push(`subsystem ${e}`);
+  }
+  return { campaign, maps, actors, ambient, ledger, events, subsystems, problems, warnings };
 }
 
 // Token fields the pack owns: refreshed on --update. Everything else on a token (where it stands, hidden, dead,
@@ -220,7 +232,7 @@ export function updateSave(packDir, saveDir, opts = {}) {
   let events = null;
   const ef = path.join(saveDir, 'events.json');
   const hadEvents = fs.existsSync(ef) ? readJson(ef) : null;
-  if (Object.keys(fresh.events).length || hadEvents) {
+  if (Object.keys(fresh.events).length || Object.keys(fresh.subsystems).length || hadEvents) {
     const was = (hadEvents && hadEvents.events) || {};
     const next = {};
     for (const [eid, def] of Object.entries(fresh.events)) {
@@ -229,7 +241,11 @@ export function updateSave(packDir, saveDir, opts = {}) {
       if (!was[eid]) report.push(`event ${eid}: new`);
     }
     for (const [eid, e] of Object.entries(was)) if (!next[eid]) { next[eid] = e; report.push(`event ${eid} is no longer in the adventure (kept)`); }
-    events = { $schema: '../../schemas/events.schema.json', events: next, ...(hadEvents && hadEvents.flags ? { flags: hadEvents.flags } : {}) };
+    // subsystems: one already in play is kept as it is (its points, reveals and log are play's); new ones are added
+    const hadSubs = (hadEvents && hadEvents.subsystems) || {};
+    const subs = { ...hadSubs };
+    for (const [sid, s] of Object.entries(fresh.subsystems)) if (!hadSubs[sid]) { subs[sid] = s; report.push(`subsystem ${sid}: new`); }
+    events = { $schema: '../../schemas/events.schema.json', events: next, ...(hadEvents && hadEvents.flags ? { flags: hadEvents.flags } : {}), ...(Object.keys(subs).length ? { subsystems: subs } : {}) };
   }
   return { campaign, maps: states, actors, ledger, events, report, problems: [], warnings: fresh.warnings };
 }
@@ -258,7 +274,7 @@ function main(argv) {
     return 0;
   }
   if (exists && !force) { console.error(`${saveDir} already holds a campaign (use --update to refresh it from the pack and keep play, or --force to start over)`); return 1; }
-  const { campaign, maps, actors, ambient, ledger, events, problems, warnings } = buildSave(packDir, { id, title });
+  const { campaign, maps, actors, ambient, ledger, events, subsystems, problems, warnings } = buildSave(packDir, { id, title });
   for (const w of warnings) console.error('WARNING', w);
   for (const p of problems) console.error('PROBLEM', p);
   if (problems.length) return 1;
@@ -267,7 +283,7 @@ function main(argv) {
   for (const [m, tokens] of Object.entries(maps)) write(path.join(saveDir, 'maps', `${m}.json`), { $schema: '../../../schemas/map-state.schema.json', map: m, tokens, ...(ambient[m] ? { ambient: ambient[m] } : {}), ...(((readJson(path.join(packDir, 'adventure.json')).map_state) || {})[m] || {}) });
   if (ledger.length) write(path.join(saveDir, 'ledger.json'), { $schema: '../../schemas/ledger.schema.json', entries: ledger });
   for (const [tid, a] of Object.entries(actors)) write(path.join(saveDir, 'actors', `${tid}.json`), a);
-  if (Object.keys(events).length) write(path.join(saveDir, 'events.json'), { $schema: '../../schemas/events.schema.json', events });
+  if (Object.keys(events).length || Object.keys(subsystems).length) write(path.join(saveDir, 'events.json'), { $schema: '../../schemas/events.schema.json', events, ...(Object.keys(subsystems).length ? { subsystems } : {}) });
   else if (force) fs.rmSync(path.join(saveDir, 'events.json'), { force: true });
   const n = Object.values(maps).reduce((k, t) => k + Object.keys(t).length, 0);
   console.log(`${saveDir}: ${n} tokens on ${Object.keys(maps).length} maps, ${Object.keys(actors).length} actors`);

@@ -37,6 +37,7 @@ import { PF2E_TRAITS } from './traits.js';
 import { PF2E_INITIATIVE } from './initiative.js';
 import { PF2E_LOOT } from './loot.js';
 import { PF2E_EXPLORATION } from './exploration.js';
+import { PF2E_SUBSYSTEMS } from './subsystems.js';
 import { SELECTORS, CONDITION_RULES, HEALTH_BANDS, healthBand, BONUS_TYPES, SKILLS, SAVES, ATTRIBUTES, RANKS } from './rules.js';
 
 import { PF2E_SOUND } from './sound.js';
@@ -95,6 +96,9 @@ export const PF2E_SYSTEM = Object.freeze({
   // exploration: the activities characters keep up while travelling, the group's pace, and what each asks for when
   // combat starts (rulesets/pf2e/exploration.js), for the Exploration tab (board/exploreui.js) and tools/exploration.mjs
   exploration: PF2E_EXPLORATION,
+  // subsystems: Victory Points, Influence, Chase, Infiltration, Research (rulesets/pf2e/subsystems.js), for
+  // tools/subsystem.mjs and the board's subsystem card
+  subsystems: PF2E_SUBSYSTEMS,
   // effects: the visual effects library (rulesets/pf2e/effects.js; primitives in engine/fx).
   effects: PF2E_EFFECTS,
   // sound: what counts as a boss for the music (board/sound.js)

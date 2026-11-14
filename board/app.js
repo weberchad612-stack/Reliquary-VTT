@@ -34,6 +34,7 @@ import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountLedger } from './ledgerui.js';
 import { mountEvents } from './eventsui.js';
+import { mountSubsystems } from './subsystemui.js';
 import { EVENTS, DUE_PATH, splitRecords, combatDue, combatCondition } from './events.js';
 import { mountLoot } from './lootui.js';
 import { lootRules, encumberedEffects, lootView, lootPath, LOOT as LOOT_COLL, PURSE, stashMerge, addCoins, coinLabel } from './loot.js';
@@ -189,7 +190,7 @@ export async function start(store, { build = null } = {}) {
   const theName = (t) => nm(t);   // no article: "the Varsha Kell" would be wrong, and adjective names read well bare
   let shellReady = false;
   let clockUi = null;   // the clock in the title line (mounted near the end of start())
-  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null, eventsUi = null;
+  let trackerUi = null, chatUi = null, sidebar = null, auditUi = null, diceUi = null, replayUi = null, ledgerUi = null, lootUi = null, exploreUi = null, eventsUi = null, subsystemUi = null;
   let sound = null;           // the board's sound (startSound below): effects, cues, music, ambient
   let EXPLORE_CHOICES = {};   // the PCs' exploration activities (explore/ records), for the badges, the tab and initiative
   const exploreBadges = { on() { try { return localStorage.getItem('reliquary.exploreBadges') !== '0'; } catch { return true; } }, set(v) { try { localStorage.setItem('reliquary.exploreBadges', v ? '1' : '0'); } catch { /* this page only */ } } };   // the encounter tracker, the chat, the sidebar and the audit log (mounted after the clock)
@@ -2778,6 +2779,8 @@ export async function start(store, { build = null } = {}) {
   if (diceUi) diceUi.render();
   if (lootUi) lootUi.render();
   if (exploreUi) exploreUi.render();
+  if (eventsUi) eventsUi.render();
+  if (subsystemUi) subsystemUi.render();
   if (sound) sound.refresh();
   if (shellReady) syncFxPanel();
   document.getElementById('dbg').hidden = v !== 'gm';   // Board info is the GM's (the user, 2026-11-12)
@@ -3464,6 +3467,8 @@ export async function start(store, { build = null } = {}) {
     { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'events', label: 'Events (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
   chatUi = mountChat({ store, view: () => S.view, readOnly: READONLY, sidebar, pane: sidebar.panel('chat').body,
     names: (id) => (S.tokens[id] ? nm(S.tokens[id]) : null), colour: kindColour, kindOf: (id) => (S.tokens[id] ? S.tokens[id].kind : null) });
+  // the subsystem card above the chat (board/subsystemui.js): the players see its revealed parts, the GM all of it
+  subsystemUi = mountSubsystems({ store, view: () => S.view, pane: sidebar.panel('chat').body, E: Engine });
   auditUi = mountAudit({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('audit').body, sidebar, tab: 'audit' });
   // the campaign ledger, the GM's memory (board/ledger.js): new entries carry the game time and the map
   ledgerUi = mountLedger({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('ledger').body, sidebar, tab: 'ledger',

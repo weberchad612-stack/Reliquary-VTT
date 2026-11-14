@@ -15,6 +15,8 @@
 //   {flag: name, is?: value}, {carrying: ref or name}, {event: id, status?: 'done'|...},
 //   {encounter_ended: group | 'any'} (since the event, or for a stage since that stage, began),
 //   {round: n, group?}, {turn: group | token name}, {hp_below: fraction, group}, {manual: true} (never by itself).
+// A subsystem (engine/events/subsystem.js) talks to events through flags: <subsystem>:<threshold>, <subsystem>:<part>
+//   (overcome) and <subsystem>:success|failure.
 
 export const DAY_HOURS = Object.freeze({ from: 6, to: 18 });
 export const STATUSES = Object.freeze(['waiting', 'running', 'done', 'cooldown']);

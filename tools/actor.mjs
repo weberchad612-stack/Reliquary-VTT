@@ -74,6 +74,8 @@ export function loadGame(packDir, saveDir, records = null) {
   const recEvents = Object.entries(records || {}).filter(([p]) => p.startsWith('events/'));
   game.events = recEvents.length ? Object.fromEntries(recEvents.map(([p, d]) => [p.slice(7), d])) : ((c.events && c.events.events) || {});
   game.flags = (records && records['state/flags']) || (c.events && c.events.flags) || {};
+  const recSubs = Object.entries(records || {}).filter(([p]) => p.startsWith('subsystems/'));
+  game.subsystems = recSubs.length ? Object.fromEntries(recSubs.map(([p, d]) => [p.slice(11), d])) : ((c.events && c.events.subsystems) || {});
   return game;
 }
 

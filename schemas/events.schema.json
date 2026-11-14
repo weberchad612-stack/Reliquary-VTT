@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "events.schema.json",
   "title": "Adventure events and flags (saves/<campaign>/events.json)",
-  "description": "Each event of the adventure as defined by the pack (adventure.json events: trigger, stages, actions; engine/events/events.js) with its state in play (status, stage, history, decisions), and the campaign's flags. On the board each event is a record events/<id>; the flags are state/flags. An update from the pack (campaign.mjs --update) replaces the definitions and keeps the state.",
+  "description": "Each event of the adventure as defined by the pack (adventure.json events: trigger, stages, actions; engine/events/events.js) with its state in play (status, stage, history, decisions), and the campaign's flags. On the board each event is a record events/<id>; the flags are state/flags. An update from the pack (campaign.mjs --update) replaces the definitions and keeps the state. Subsystems (Victory Points, Influence, Chase, Infiltration, Research; engine/events/subsystem.js) are kept here too, one record subsystems/<id> each.",
   "type": "object",
   "properties": {
     "$schema": {
@@ -171,7 +171,282 @@
     "flags": {
       "type": "object",
       "description": "Flags set by events and Claude (a fight ended: 'ended:<group>' with the game time; anything the adventure tracks)."
+    },
+    "subsystems": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "title",
+          "kind",
+          "status",
+          "tracks",
+          "scoring"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string"
+          },
+          "pages": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "waiting",
+              "active",
+              "success",
+              "failure",
+              "done"
+            ]
+          },
+          "shown": {
+            "type": "boolean",
+            "description": "Shown to the players (their card)."
+          },
+          "tracks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "goal": {
+                  "type": "number"
+                },
+                "hidden": {
+                  "type": "boolean"
+                },
+                "thresholds": {
+                  "$ref": "#/$defs/thresholds"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "label"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "revealed": {
+                  "type": "boolean"
+                },
+                "goal": {
+                  "type": "number"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "individual": {
+                  "type": "boolean"
+                },
+                "per": {
+                  "type": "object"
+                },
+                "done": {
+                  "type": "boolean"
+                },
+                "thresholds": {
+                  "$ref": "#/$defs/thresholds"
+                },
+                "scoring": {
+                  "type": "object"
+                },
+                "checks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "skill"
+                    ],
+                    "properties": {
+                      "skill": {
+                        "type": "string"
+                      },
+                      "dc": {
+                        "type": "number"
+                      },
+                      "revealed": {
+                        "type": "boolean"
+                      },
+                      "note": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "notes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "text"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string"
+                      },
+                      "revealed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "scoring": {
+            "type": "object",
+            "properties": {
+              "criticalSuccess": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "success": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "failure": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "criticalFailure": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "rounds": {
+            "type": "object",
+            "properties": {
+              "n": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "each": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "thresholds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "at",
+          "id"
+        ],
+        "properties": {
+          "at": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "revealed": {
+            "type": "boolean"
+          },
+          "reached": {
+            "type": "number"
+          },
+          "dc": {
+            "type": "number"
+          },
+          "end": {
+            "enum": [
+              "success",
+              "failure"
+            ]
+          },
+          "flag": {
+            "type": "string"
+          },
+          "falling": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
 }
