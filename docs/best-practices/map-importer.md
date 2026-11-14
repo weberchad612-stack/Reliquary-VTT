@@ -134,6 +134,7 @@ drop shadow as dark as the wall itself.
   `lines.add` entries with `"fixed": true` (`{axis, at, from, to, w}`) are used exactly as given, never measured;
   `vectorize.min_ring_cells` set very high traces nothing else. The profile `thick-dark-timber` does all of this and
   keeps only the near-black outlines in the mask, so white door bars are still detected.
+- **Propose first** (section 4f): `wallscan.py <map-dir> --propose` finds most of these walls itself.
 - **Measure before placing:** `python3 tools/mapimport/wallscan.py <map-dir> v:Y0:Y1:X0:X1 h:...` prints the dark runs
   across a band, in squares. A wall drawn between two outlines shows as two thin runs: the wall is the outer edge of
   the first to the outer edge of the second; its centre and width follow. Pick a band that crosses no door, window
@@ -177,6 +178,26 @@ the book: one PDF prints most of its maps at one scale.
   `import.json`. A map printed at another scale on purpose (a 10-ft town map) is recorded the same way.
 - **Other print scales are not flagged.** A map at 1.4x or 1.5x the usual size (a larger floor plan) is not a multiple
   and passes.
+
+## 4f. Wall proposals for hand-placed walls (2026-11-14)
+
+On art where tracing fails (section 4d), the walls no longer have to be measured one by one.
+`python3 tools/mapimport/wallscan.py <map-dir> --propose` finds them itself:
+
+- **How.** It keeps near-black ink (value under 12: the outlines' cores, below the drop shadow's 20 to 30). It finds
+  strokes at least half a square long and thin along their length (median thickness, so a shadow or corner does not
+  widen one). It pairs parallel strokes up to 0.6 of a square apart into a wall, from the outer edge of one outline to
+  the outer edge of the other. Collinear pieces are merged, and anything thinner than 0.15 or shorter than 0.75 of a
+  square is dropped.
+- **What it prints.** Each proposal is a `lines.add` entry with `"fixed": true`, marked `have` (`import.json` already
+  places it, as a fixed line or an `add` segment) or `NEW`. `--accept` appends the new ones with the note
+  "proposed by wallscan". Look at every one on the review sheet before keeping it.
+- **What it misses and what it adds.** On the first book's six hand-walled maps it found 93% of the walls placed by
+  hand, and about 90% of its proposals were walls. The misses are walls whose outline breaks often (burned, charred,
+  open corners) and walls on very low-resolution prints. The false ones are furniture drawn with the same outlines:
+  counters, stoves, cabinets. Doors, windows and curved or rubble walls are still placed by hand.
+- **Workflow.** Run `--propose` first. Accept, then delete the furniture, then measure only what is missing with
+  `wallscan.py` bands (section 4d).
 
 ## 5. Pitfalls already met
 
