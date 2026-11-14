@@ -70,6 +70,23 @@ test('sync: apply.sh joins more than 100 parts in number order, not name order',
   assert.equal(require_md5(fs.readFileSync(path.join(root, 'p', 'big.bin'))), md5);
 });
 
+test('sync: a damaged part is named for sending again, and nothing is written', { skip: spawnSync('python3', ['-V']).status !== 0 && 'no python3' }, () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pc-'));
+  const here = path.join(root, '_sync', 'S3');
+  fs.mkdirSync(here, { recursive: true });
+  const a = Buffer.from('first half'), b = Buffer.from('second half');
+  fs.writeFileSync(path.join(here, 'sync.tgz.part00'), a);
+  fs.writeFileSync(path.join(here, 'sync.tgz.part01'), Buffer.from('damaged!!!!'));
+  fs.writeFileSync(path.join(here, 'manifest.json'), JSON.stringify({ pack: 'p', stamp: 'S3', md5: require_md5(Buffer.concat([a, b])), gone: [], send: [],
+    parts: [{ name: 'sync.tgz.part00', md5: require_md5(a) }, { name: 'sync.tgz.part01', md5: require_md5(b) }, { name: 'sync.tgz.part02', md5: 'x' }] }));
+  fs.writeFileSync(path.join(here, 'apply.sh'), APPLY);
+  const r = spawnSync('bash', [path.join(here, 'apply.sh'), root], { encoding: 'utf8' });
+  assert.equal(r.status, 1);
+  assert.match(r.stdout, /RESEND: .*sync\.tgz\.part01 sync\.tgz\.part02/);
+  assert.ok(!/part00/.test(r.stdout.split('RESEND')[1]), 'the good part is not asked for');
+  assert.ok(fs.existsSync(here), 'the parts stay for the rerun');
+});
+
 test('sync: files left out (caches, working candidates) are never treated as gone', () => {
   const p = plan(['p/a'], { 'p/a': '1' }, { 'p/a': '1', 'p/art/candidates/x.png': '9', 'p/maps/m/.cache/detect.pkl': '8' });
   assert.deepEqual(p.gone, []);

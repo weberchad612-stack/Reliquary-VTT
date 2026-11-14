@@ -161,6 +161,15 @@ Before this was fixed, `part100` sorted before `part11`, and the archive failed 
 If `apply.sh` reports BROKEN, compare each part's md5 on both sides before sending anything again. When the parts
 match, the join is at fault, not the transfer.
 
+**Resending one part.** `manifest.json` lists every part's md5, and `apply.sh` checks each part before it joins
+them. If a part is missing or damaged, it prints `RESEND: <parts>` and stops without writing anything. Commit only
+those parts again from the same `<out>` folder, then rerun `apply.sh`.
+
+**Smaller art sources.** The book's art (`art/book/`, the token step's sources) was nine tenths of a first sync.
+`packimages.py` (the pipeline's `images` step, before `art`) turns each PNG there into lossless WebP. The pixels are
+checked identical before the PNG is removed, and `art.json` is repointed. On Book 1 this took 176 MB down to 89 MB.
+Map images are left alone, because the board draws them as they are.
+
 On the PC, `apply.sh` handles each file like this:
 
 - It checks the archive's md5 first.

@@ -14,14 +14,14 @@
 // enough for the device bridge, manifest.json and apply.sh, and prints the steps for Claude:
 //   1. device_commit_files: every file in <out> to <checkout>/_sync/<stamp>/ on the PC
 //   2. device_bash: bash "<checkout>/_sync/<stamp>/apply.sh" "<checkout>"
-// apply.sh joins the parts, checks the archive's md5, and for each file: writes it when the PC's copy is the one
-// last synced (or the file is new there; a file never synced before that differs is first copied to
-// _to_delete/<stamp>/replaced/); otherwise the PC's copy is kept and the new one goes to
-// _sync/<stamp>/incoming/ (a conflict: the user changed it, for instance a save written after play). Files that
-// were synced before and are gone from the pack are moved to _to_delete/<stamp>/. Writes overwrite in place
-// (deleting is not allowed on the PC). Left out: .cache/, .pipeline-state.json, .sync-state.json, and the art step's
-// working candidates (art/candidates/: pdfart.py makes them again; art/book/ holds the chosen art's sources and is
-// sent).
+// apply.sh checks each part's md5 (naming any part to send again: RESEND), joins them, checks the archive's md5,
+// and for each file: writes it when the PC's copy is the one last synced (or the file is new there; a file never
+// synced before that differs is first copied to _to_delete/<stamp>/replaced/); otherwise the PC's copy is kept and
+// the new one goes to _sync/<stamp>/incoming/ (a conflict: the user changed it, for instance a save written after
+// play). Files that were synced before and are gone from the pack are moved to _to_delete/<stamp>/. Writes overwrite
+// in place (deleting is not allowed on the PC). Left out: .cache/, .pipeline-state.json, .sync-state.json, and the
+// art step's working candidates (art/candidates/: pdfart.py makes them again; art/book/ holds the chosen art's
+// sources, kept as lossless WebP by packimages.py, and is sent).
 // <pack>/.sync-state.json remembers each of the pack's files' md5 as last sent, <save>/.sync-state.json the save's (one
 // save may be sent with several packs: an Adventure Path's books).
 
@@ -60,6 +60,15 @@ export const APPLY = `#!/usr/bin/env bash
 set -u
 ROOT="$1"; HERE="$(cd "$(dirname "$0")" && pwd)"; STAMP="$(basename "$HERE")"
 cd "$HERE" || exit 1
+# every part checked first: a damaged or missing part is named, so only it is sent again
+BAD=$(python3 - <<'PY'
+import hashlib, json, os
+m = json.load(open("manifest.json"))
+bad = [p["name"] for p in m.get("parts", []) if not os.path.exists(p["name"]) or hashlib.md5(open(p["name"], "rb").read()).hexdigest() != p["md5"]]
+print(" ".join(bad))
+PY
+)
+if [ -n "$BAD" ]; then echo "RESEND: these parts are missing or damaged, send them again and rerun: $BAD"; exit 1; fi
 ls sync.tgz.part* | sort -V | xargs cat > /tmp/sync-$STAMP.tgz
 WANT=$(python3 -c "import json;print(json.load(open('manifest.json'))['md5'])")
 GOT=$(md5sum /tmp/sync-$STAMP.tgz | cut -d' ' -f1)
@@ -130,9 +139,14 @@ function main(argv) {
   const buf = fs.readFileSync(tgz);
   // numbered as wide as the count needs (part000 .. part106), so the names sort in the order the parts join
   const width = Math.max(2, String(Math.ceil(buf.length / PART) - 1).length);
-  for (let i = 0, n = 0; i < buf.length; i += PART, n++) fs.writeFileSync(path.join(out, `sync.tgz.part${String(n).padStart(width, '0')}`), buf.subarray(i, i + PART));
+  const partList = [];
+  for (let i = 0, n = 0; i < buf.length; i += PART, n++) {
+    const name = `sync.tgz.part${String(n).padStart(width, '0')}`, piece = buf.subarray(i, i + PART);
+    fs.writeFileSync(path.join(out, name), piece);
+    partList.push({ name, md5: crypto.createHash('md5').update(piece).digest('hex') });
+  }
   fs.rmSync(tgz); fs.rmSync(list);
-  fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify({ pack: path.basename(packDir), stamp, md5: crypto.createHash('md5').update(buf).digest('hex'), send: p.send, gone: p.gone }, null, 1));
+  fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify({ pack: path.basename(packDir), stamp, md5: crypto.createHash('md5').update(buf).digest('hex'), parts: partList, send: p.send, gone: p.gone }, null, 1));
   fs.writeFileSync(path.join(out, 'apply.sh'), APPLY);
   // remembered as sent now, the pack's and the save's apart; a broken transfer is sent again with --all
   fs.writeFileSync(stateFile, JSON.stringify(under(p.state, packRel), null, 0));
