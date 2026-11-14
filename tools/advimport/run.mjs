@@ -43,6 +43,7 @@ export function standardPipeline(packId) {
       { id: 'mapcheck', each: 'map', run: 'node tools/mapcheck.mjs {pack}/maps/{map}', inputs: ['{pack}/maps/{map}/walls.json', '{pack}/maps/{map}/rooms.json', '{pack}/maps/{map}/import.json'] },
       { id: 'adventure', run: 'python3 {pack}/build_adventure.py', inputs: ['{pack}/build_adventure.py'], outputs: ['{pack}/adventure.json'] },
       { id: 'statmatch', run: 'node tools/advimport/statmatch.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}"', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json'], review: true },
+      { id: 'areas', run: 'node tools/advimport/areas.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}" --proposals {pack}/area-proposals.json', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/notes/*.md', '{pack}/checklist.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/rooms.json', '{pack}/maps/*/lighting.json', '{pack}/maps/*/terrain.json'], review: true, note: 'every area of the book accounted for' },
       { id: 'art', run: 'python3 tools/advimport/tokenart.py {pack}/art/art.json', inputs: ['{pack}/art/art.json'], outputs: ['{pack}/art/tokens'] },
       { id: 'campaign', run: 'node tools/advimport/campaign.mjs {pack} {save} --update', inputs: ['{pack}/adventure.json', '{pack}/pack.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/map.json'], outputs: ['{save}/campaign.json'] },
       { id: 'validate', run: 'node tools/validate.mjs {pack} --save {save}', inputs: ['{pack}/maps/*/walls.json', '{save}/campaign.json'] },

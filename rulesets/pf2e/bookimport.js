@@ -99,3 +99,42 @@ export function compare(b, doc) {
 
 /** Content sources that hold no creatures (skipped when looking for candidates). */
 export const NOT_CREATURES = /equipment|hazards/;
+
+// ---- the area checklist (tools/advimport/areas.mjs, #14) and proposals from the text (#15) ----
+// What one keyed area's text asks of the map and the notes, as facts: {kind, ..., at} where `at` is a few words of
+// context for the report (shown to Claude at run time, never stored). Kinds: dc (a check and its DC), door (a door
+// that is locked, stuck, barred or secret), lock (something else that is locked), light (dark, dim or bright, or a
+// light source), terrain (difficult, greater difficult, hazardous, water to swim), treasure.
+
+const SKILLS = 'Acrobatics|Arcana|Athletics|Crafting|Deception|Diplomacy|Intimidation|Lore|Medicine|Nature|Occultism|Performance|Religion|Society|Stealth|Survival|Thievery|Perception|Fortitude|Reflex|Will';
+const around = (s, i, n = 6) => s.slice(Math.max(0, i - 40), i + 60).replace(/\s+/g, ' ').trim().split(' ').slice(0, n * 2).join(' ');
+
+/** The facts in one area's text. */
+export function areaFacts(text) {
+  const t = text.replace(/-\n\s*/g, '').replace(/\s*\n\s*/g, ' ');
+  const out = [];
+  for (const m of t.matchAll(new RegExp(`DC (\\d+)(?:\\s+((?:${SKILLS})(?:(?:, | or |, or )(?:${SKILLS}))*))?`, 'g'))) {
+    out.push({ kind: 'dc', dc: Number(m[1]), what: m[2] || null, at: around(t, m.index) });
+  }
+  const sentences = t.split(/(?<=[.!?])\s+/);
+  for (const s of sentences) {
+    if (/Perception [+-]\d|\bAC \d+;|Speed \d+ feet|\[(one|two|three)-actions?\]|\bHP \d+/.test(s)) continue;   // a stat block's lines
+    const door = /\bdoors?\b/i.test(s);
+    if (/\bsecret door/i.test(s)) out.push({ kind: 'door', what: 'secret', at: s.slice(0, 90) });
+    if (door && /\blocked\b/i.test(s) && !/\bunlocked\b/i.test(s)) out.push({ kind: 'door', what: 'locked', at: s.slice(0, 90) });
+    else if (/\blocked\b/i.test(s) && !/\bunlocked\b/i.test(s)) out.push({ kind: 'lock', at: s.slice(0, 90) });
+    if (door && /\bstuck\b/i.test(s)) out.push({ kind: 'door', what: 'stuck', at: s.slice(0, 90) });
+    if (door && /\b(barred|blocked|barricaded)\b/i.test(s)) out.push({ kind: 'door', what: 'blocked', at: s.slice(0, 90) });
+    // the room's light, not an event's: "glows" (something lights up) is left out; "glowing" mushrooms are not
+    if (/\b(bright light|brightly lit|well lit|sunlight|daylight)\b/i.test(s) && !/\bglows\b/i.test(s)) out.push({ kind: 'light', level: 'bright', at: s.slice(0, 90) });
+    else if (/\b(dim light|dimly lit|faint light|glowing|pale (?:\w+ )?light)\b/i.test(s) && !/\bglows\b/i.test(s)) out.push({ kind: 'light', level: 'dim', at: s.slice(0, 90) });
+    else if (/\b(pitch[- ]black|complete darkness|in darkness|is dark|are dark|no light)\b/i.test(s)) out.push({ kind: 'light', level: 'dark', at: s.slice(0, 90) });
+    if (/\b(torch(es)?|lanterns?|braziers?|candles?|campfire|a fire|fireplace|hearth)\b/i.test(s)) out.push({ kind: 'light', source: true, at: s.slice(0, 90) });
+    if (/\bgreater difficult terrain\b/i.test(s)) out.push({ kind: 'terrain', what: 'greater-difficult', at: s.slice(0, 90) });
+    else if (/\bdifficult terrain\b/i.test(s)) out.push({ kind: 'terrain', what: 'difficult', at: s.slice(0, 90) });
+    if (/\bhazardous terrain\b/i.test(s)) out.push({ kind: 'terrain', what: 'hazardous', at: s.slice(0, 90) });
+    if (/\b(swim|deep water|Swim check)\b/i.test(s)) out.push({ kind: 'terrain', what: 'swim', at: s.slice(0, 90) });
+  }
+  if (/(^|\n)\s*Treasure\b/.test(text)) out.push({ kind: 'treasure', at: 'Treasure' });
+  return out;
+}
