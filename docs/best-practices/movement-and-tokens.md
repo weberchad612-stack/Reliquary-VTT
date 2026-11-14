@@ -25,3 +25,15 @@ For Claude and for board code using `engine/movement/` and `engine/tokens/` (des
 - Draw tokens biggest first, so a creature sharing a bigger one's space stays visible.
 - **Waypoints while dragging** (Space, as the old board's ruler; 2026-11-12): dragging one token, Space drops a waypoint where the token is now, Backspace takes the last one back. With no waypoints the route is the cheapest path; with waypoints each leg is the cheapest path from the point before (`pathVia`), and the diagonal count carries on from leg to leg, as in one move. Each waypoint shows as a dot with the distance travelled so far stamped beside it (the sum of `pathVia`'s `legs` up to it; terrain included; the user's choice, 2026-11-12); the label gives the total, the leg being drawn ("this leg 15 ft") and how many waypoints there are. The label sits above the goal square, lifted above the height label ("+50 ft") when the token has one, which would otherwise cover it. It works in and out of combat, and it is this screen's only: nothing is shared until the token is dropped. A group drag has no route, so no waypoints. Use `pathVia` too when a player describes a route ("round the pillar, then to the door").
 - **Click priority on the board:** a token's drawn disc takes a click before a door, then a door, then the rest of a token's square. Doors often run through the middle of a square, and a token standing in a doorway must still be draggable; the parts of the door outside the token stay clickable (the other leaf of a double door, the door's ends).
+
+## Moving the party together: marching order (2026-11-14)
+
+- A party arriving on a map, or moved by Claude in narration, is placed by `placeFormation` (`engine/tokens/marching.js`).
+  Each member goes to its place in the marching order's block, turned the way the party heads. Where the block does
+  not fit, the party goes in column. Only squares that can be walked to are used, never one behind a wall, and never
+  a square the party has not explored except a member's own place and the arrival or destination square.
+- Only the formation's shape counts (the bounding box of the occupied squares), not where on the 4 x 4 grid it was
+  drawn.
+- Several selected tokens dragged together keep their own spacing; that is not marching order.
+- The board and Claude's tool: [board.md](board.md) (Marching order); the design: docs/design/board.md ("The party's
+  marching order").
