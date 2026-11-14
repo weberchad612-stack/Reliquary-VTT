@@ -497,6 +497,15 @@ export function deriveCharacter(build, get, opts = {}) {
   let ancestryHp = null;   // set by a rule (a heritage's own ancestry HP), else the ancestry's
   const resolve = opts.resolve || (() => null);
   const camel = (x) => String(x).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+  // a choice's place in the build's selections: "<item>.<flag>"; when an item has several choices under one flag (a
+  // Season of Ghosts background's Seasonal Boon: the adjustment, then which family or foundling), the later ones
+  // are "<item>.<flag>.2", ".3"
+  const choiceId = (d, fr) => {
+    const flag = fr.flag || camel(fr.slug || d.slug);
+    const same = ((d.rules || []).map((r) => (r.key === 'unsupported' ? r.foundry : null)).filter((x) => x && x.key === 'ChoiceSet' && (x.flag || camel(x.slug || d.slug)) === flag));
+    const n = same.indexOf(fr);
+    return n > 0 ? `${d.slug}.${flag}.${n + 1}` : `${d.slug}.${flag}`;
+  };
   const tags = new Set();
   for (const [kind, d] of [['class', cls], ['ancestry', anc], ['heritage', her], ['background', bg]]) if (d && d.slug) tags.add(`${kind}:${d.slug}`);
   for (const f of feats) tags.add(`feat:${f.slug}`);
@@ -540,7 +549,7 @@ export function deriveCharacter(build, get, opts = {}) {
     if (/feature$/.test(from)) featureDocs.set(d.slug, { name: d.name, slug: d.slug, ...(key ? { ref: key } : {}), level, ...playRules(d) });
     queue.push({ d, key, level, from, granter, flags: {} });
     // the roll options of the choices made on it count from the start, as Foundry's do
-    for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[`${d.slug}.${fr.flag || camel(fr.slug || d.slug)}`]); if (o) tags.add(o); }
+    for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[choiceId(d, fr)]); if (o) tags.add(o); }
   };
   add(cls, b.class, 1, 'class'); add(anc, b.ancestry, 1, 'ancestry'); add(her, b.heritage, 1, 'heritage'); add(bg, b.background, 1, 'background');
   for (const f of (cls && cls.features) || []) if (f.level <= L && f.ref) add(get(f.ref), f.ref, f.level, 'class feature');
@@ -560,7 +569,7 @@ export function deriveCharacter(build, get, opts = {}) {
     if (holds === false) return true;
     if (fr.key === 'ChoiceSet') {
       const flag = fr.flag || camel(fr.slug || d.slug);
-      const id = `${d.slug}.${flag}`;
+      const id = choiceId(d, fr);
       const c = fr.choices;
       const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { ...(o.value && typeof o.value === 'object' ? { value: slug(foundryLabel(o.label)), label: foundryLabel(o.label), data: o.value } : { value: o.value, label: o.label ? foundryLabel(o.label).replace(/^Trait /, '').replace(/^None option$/, 'None') : String(o.value).split('.').pop() }), ...(o.predicate ? { predicate: o.predicate } : {}) } : { value: o, label: String(o) })) }
         : c && typeof c === 'object' && c.ownedItems ? { owned: { types: c.types || [], ...(c.predicate ? { predicate: c.predicate } : {}) } }
@@ -928,7 +937,16 @@ export function deriveCharacter(build, get, opts = {}) {
   // a feat a feature grants only when its prerequisite holds (a warpriest's Deadly Simplicity, for a deity with a
   // simple favored weapon): granted feats whose prerequisite is plainly unmet are taken back
   const notGranted = [];
-  for (const f of feats.filter((x) => x.slot === 'granted')) {
+  // (only where the granter's own text makes the grant conditional: "If your deity's favored weapon is a simple
+  // weapon..., you gain the Deadly Simplicity cleric feat"; a background that simply grants a skill feat grants it
+  // whatever its prerequisites, as Close Ties grants Specialty Crafting)
+  const conditional = (f) => {
+    const granter = [...featureDocs.values()].map((x) => get(x.ref)).concat([bg, her, anc, cls]).find((d) => d && d.name === f.from)
+      || feats.map((x) => get(x.ref)).find((d) => d && d.name === f.from);
+    const t = String((granter && granter.text) || '').replace(/\s+/g, ' ');
+    return t.split(/(?<=[.!?])\s+/).some((sen) => /\bif\b/i.test(sen) && sen.toLowerCase().includes(f.name.toLowerCase()));
+  };
+  for (const f of feats.filter((x) => x.slot === 'granted' && conditional(x))) {
     const r = prereqCheck(get(f.ref), pf);
     if (r.met === false) { notGranted.push({ feat: f.name, from: f.from, unmet: r.unmet }); feats.splice(feats.indexOf(f), 1); }
   }

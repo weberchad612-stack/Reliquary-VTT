@@ -263,3 +263,12 @@ test('builder: a choice of linked feats is offered by name and granted (Steadfas
   assert.deepEqual(r.problems, []);
   assert.ok(r.actor.feats.some((f) => f.slug === 'teakettle-form' && f.slot === 'granted'));
 });
+
+test('builder: a background with several choices under one flag (Season of Ghosts\' Seasonal Boon) and its unconditional feat', () => {
+  const base = { v: 1, level: 1, ancestry: 'ancestries:ancestry/tanuki', background: 'backgrounds:background/close-ties', class: 'classes:class/champion' };
+  const feat = (sel) => B.derive({ ...base, selections: sel }).actor.feats.filter((f) => f.slot === 'granted' && f.slug !== 'shield-block').map((f) => f.slug);
+  assert.deepEqual(feat({ 'close-ties.variant': 'none' }), ['specialty-crafting'], 'granted even though Close Ties trains Diplomacy, not Crafting');
+  assert.ok(B.steps({ ...base, selections: { 'close-ties.variant': 'foundling' } }).steps.some((s) => s.id === '1:choice.close-ties.variant.3'), 'the foundling choice is its own step');
+  assert.deepEqual(feat({ 'close-ties.variant': 'foundling', 'close-ties.variant.3': 'mysterious' }), ['streetwise']);
+  assert.deepEqual(feat({ 'close-ties.variant': 'family', 'close-ties.variant.2': 'typical' }), ['specialty-crafting']);
+});
