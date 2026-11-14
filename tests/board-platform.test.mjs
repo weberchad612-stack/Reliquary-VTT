@@ -56,6 +56,23 @@ test('platform store: writes to one record never overlap, a transient failure is
     await new Promise((r) => setTimeout(r, 5));
     assert.equal(seen.at(-1), 'k');
     assert.equal(s.listeners(), 1); off(); assert.equal(s.listeners(), 0);
+    // several watchers of one record share one platform listener; a late one gets the last value at once
+    const a = [], b = [];
+    const offA = s.watch('tokens/k', (d) => a.push(d && d.x));
+    const offB = s.watch('tokens/k', (d) => b.push(d && d.x));
+    await new Promise((r) => setTimeout(r, 5));
+    assert.equal(s.listeners(), 1, 'one listener for two watchers');
+    const c = [];
+    const offC = s.watch('tokens/k', (d) => c.push(d && d.x));
+    await new Promise((r) => setTimeout(r, 1));
+    assert.deepEqual(c, [5], 'the late watcher has the value without a new snapshot');
+    await s.set('tokens/k', { x: 9 });
+    await new Promise((r) => setTimeout(r, 5));
+    assert.equal(a.at(-1), 9); assert.equal(b.at(-1), 9); assert.equal(c.at(-1), 9);
+    offA(); offB();
+    assert.equal(s.listeners(), 1, 'kept while one watcher remains');
+    offC(); offC();
+    assert.equal(s.listeners(), 0, 'closed with the last; a second off does nothing');
     assert.equal(s.assetUrl('abc'), '/_blob/abc');
   } finally { delete globalThis.claude; }
 });

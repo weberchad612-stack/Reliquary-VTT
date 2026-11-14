@@ -97,8 +97,9 @@ export class MemoryStore {
   /** Listeners now open (the platform limits these; the board should keep a handful). */
   listeners() {
     let n = 0;
-    for (const s of this.docSubs.values()) n += s.size;
-    for (const s of this.collSubs.values()) n += s.size;
+    // as the platform store counts: one listener per watched record or collection, however many watchers share it
+    for (const s of this.docSubs.values()) n += s.size ? 1 : 0;
+    for (const s of this.collSubs.values()) n += s.size ? 1 : 0;
     return n;
   }
 

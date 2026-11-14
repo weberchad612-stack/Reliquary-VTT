@@ -100,6 +100,12 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
   own system's. It is the same for every campaign of a system, so it travels with the page rather than through
   the database.
 - **Publishing the page alone keeps the sound files** (`publish_files` with `index.html` only, patch mode). Publish the sound set only when it changed, from the repository's `sounds/` ([sound.md](sound.md) section 5). After sound changes, also run `tools/headless/soundcheck.mjs`.
+- **One platform listener per record or collection** (2026-11-14): the store shares a snapshot listener between
+  every part of the board that watches the same record or collection (the encounter is watched from four places), a
+  late watcher getting the last value at once; the listener closes with its last watcher. Board info and the smoke
+  check count listeners that way. The events and subsystems work had taken the board from 24 to 30 (the smoke check
+  wants under 30, leaving room under the platform's cap of about 40); sharing brought it to 26. A new watch on a path
+  something already watches costs nothing; a new path costs one.
 - **Before every publish, run the headless smoke checks** (`NODE_PATH=$(npm root -g) node tools/headless/smoke.mjs`; docs/best-practices/development.md): every check must pass with no page errors.
 - **After every publish, write the version to `app/build`** (`{version, commit, at}`; read it first for its version). Open boards with an older build then offer to reload. `app/` is not a campaign collection: leave it out of saves and out of the clear listing when switching campaigns.
 

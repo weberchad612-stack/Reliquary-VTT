@@ -25,7 +25,7 @@ class PlatformStore {
     this.kind = 'platform';
     this.db = db;
     this.queues = new Map();
-    this.subs = 0;
+    this.shared = new Map();   // 'doc:<path>' or 'coll:<name>' -> one platform listener and its watchers
   }
 
   /** Run fn after every earlier write to the same path (one write at a time per record). */
@@ -58,24 +58,40 @@ class PlatformStore {
 
   remove(path) { return this._queue(path, () => this.db.doc(path).delete()); }
 
+  // One snapshot listener per record or collection, however many parts of the board watch it: the platform caps a
+  // page's listeners (about 40), and the encounter, flags and events are each watched from several places. A late
+  // watcher gets the last value at once; the listener closes when its last watcher goes.
+  _shared(key, open, cb, onError) {
+    let sh = this.shared.get(key);
+    if (!sh) {
+      sh = { cbs: new Set(), has: false, last: null, off: null };
+      this.shared.set(key, sh);
+      sh.off = open((v) => { sh.has = true; sh.last = v; for (const w of [...sh.cbs]) w.cb(clone(v)); },
+        (e) => { for (const w of [...sh.cbs]) report(w.onError, key.replace(/^(doc|coll):/, ''), e); });
+    }
+    const w = { cb, onError };
+    sh.cbs.add(w);
+    if (sh.has) queueMicrotask(() => { if (sh.cbs.has(w)) cb(clone(sh.last)); });
+    return () => {
+      if (!sh.cbs.delete(w) || sh.cbs.size) return;
+      this.shared.delete(key);
+      sh.off();
+    };
+  }
+
   watch(path, cb, onError) {
-    this.subs++;
-    const off = this.db.doc(path).onSnapshot((snap) => cb(snap.exists ? clone(snap.data()) : null), (e) => report(onError, path, e));
-    return () => { this.subs--; off(); };
+    return this._shared(`doc:${path}`, (next, err) => this.db.doc(path).onSnapshot((snap) => next(snap.exists ? snap.data() : null), err), cb, onError);
   }
 
   watchCollection(collection, cb, onError) {
-    this.subs++;
-    const off = this.db.collection(collection).onSnapshot(
-      (snap) => cb(snap.docs.map((d) => ({ id: d.id, path: `${collection}/${d.id}`, data: clone(d.data()) }))),
-      (e) => report(onError, collection, e),
-    );
-    return () => { this.subs--; off(); };
+    return this._shared(`coll:${collection}`, (next, err) => this.db.collection(collection).onSnapshot(
+      (snap) => next(snap.docs.map((d) => ({ id: d.id, path: `${collection}/${d.id}`, data: d.data() }))), err), cb, onError);
   }
 
   assetUrl(id) { return id ? '/_blob/' + id : null; }
 
-  listeners() { return this.subs; }
+  /** The platform listeners this page holds (one per watched record or collection). */
+  listeners() { return this.shared.size; }
 }
 
 async function retry(fn) {
