@@ -11,7 +11,7 @@
 //    levels: {"<n>": {feats: {ancestry|class|general|skill: key}, boosts: [4 attrs] (5, 10, 15, 20),
 //                     skillIncrease: skill or "lore:<subject>", trained: [skills an Intelligence increase adds],
 //                     selections: {<flag>: value} (the content's choices: section 9.3)}},
-//    deity (a content key), selections: {"<item slug>.<flag>": value} (the answers to the content's "pick one" rules: section 9.6),
+//    deity (a content key; deitySkill: the skill taken when the deity's is trained already), selections: {"<item slug>.<flag>": value} (the answers to the content's "pick one" rules: section 9.6),
 //    languages: [the languages chosen at 1st level] (levels[n].languages: those an Intelligence increase adds),
 //    approvals: [{what, by, at}] (uncommon and rare options the GM allowed; "language:<slug>" for a language), name, details}
 
@@ -246,7 +246,7 @@ function choicePrompt(p) {
 function fill(v, flags, actorFlags = {}) {
   if (typeof v !== 'string') return v;
   let missing = false;
-  const out = v.replace(/\{item\|flags\.system\.rulesSelections\.([A-Za-z0-9_]+)\}/gi, (_, f) => { if (flags[f] === undefined) { missing = true; return ''; } return String(flags[f]); })
+  const out = v.replace(/\{item\|flags\.system\.rulesSelections\.([A-Za-z0-9_.]+)\}/gi, (_, f) => { const x = dig(flags, f); if (x === undefined) { missing = true; return ''; } return String(x); })
     .replace(/\{actor\|flags\.([A-Za-z0-9_.]+)\}/g, (_, p) => { const x = dig(actorFlags, p); if (x === undefined) { missing = true; return ''; } return String(x); });
   if (missing) return undefined;
   return /\{[^}]*\|/.test(out) ? null : out;
@@ -280,6 +280,73 @@ export function rankFormula(src, level, rankAt) {
     return fns[t](...args);
   };
   try { const v = expr(); return i === toks.length && typeof v === 'number' ? v : null; } catch { return null; }
+}
+
+/**
+ * A background's Lore skill when it is a choice written only in its text: {phrase, options} (options: the subjects
+ * the text names, "Legal" and "Warfare" in "the Legal Lore or Warfare Lore skill"; none when it is the player's own,
+ * "a Lore skill related to one terrain"), or null.
+ */
+export function backgroundLore(bg) {
+  const m = /trained in (?:the )?([^.]*\bLore\b[^.]*)\./.exec((bg && bg.text) || '');
+  if (!m) return null;
+  const phrase = m[1].replace(/\s+/g, ' ').trim();
+  const named = [...phrase.matchAll(/\b([A-Z][a-z]+(?: [A-Z][a-z]+)?) Lore\b/g)].map((x) => x[1]).filter((x) => !/^(A|The|Lore)$/.test(x));
+  return { phrase, options: /\bor\b|either/.test(phrase) ? [...new Set(named)] : [] };
+}
+
+/**
+ * Does a content document match a Foundry item filter (a ChoiceSet's "choices.filter": item:level:1,
+ * item:trait:general, item:tag:cleric-doctrine, item:category:class, item:type:feat)? ctx: {classSlug, ancestrySlug}
+ * for the filters that name the character's own ({actor|system.details.class.trait}). null when a term cannot be
+ * read.
+ */
+export function itemMatches(filter, doc, ctx = {}) {
+  const term = (t) => {
+    if (typeof t !== 'string') {
+      if (t && t.not !== undefined) { const v = term(t.not); return v === null ? null : !v; }
+      if (t && Array.isArray(t.or)) { const v = t.or.map(term); return v.includes(true) ? true : v.includes(null) ? null : false; }
+      if (t && Array.isArray(t.nor)) { const v = t.nor.map(term); return v.includes(true) ? false : v.includes(null) ? null : true; }
+      if (t && Array.isArray(t.and)) { const v = t.and.map(term); return v.includes(false) ? false : v.includes(null) ? null : true; }
+      if (t && Array.isArray(t.lte) && t.lte[0] === 'item:level') return (doc.level || 0) <= Number(t.lte[1]);
+      if (t && Array.isArray(t.gte) && t.gte[0] === 'item:level') return (doc.level || 0) >= Number(t.gte[1]);
+      return null;
+    }
+    const x = t.replace('{actor|system.details.class.trait}', ctx.classSlug || '').replace('{actor|system.details.ancestry.trait}', ctx.ancestrySlug || '');
+    let m;
+    if ((m = /^item:level:(\d+)$/.exec(x))) return (doc.level || 0) === Number(m[1]);
+    if ((m = /^item:trait:(.+)$/.exec(x))) return (doc.traits || []).includes(m[1]);
+    if ((m = /^item:tag:(.+)$/.exec(x))) return (doc.tags || []).includes(m[1]);
+    if ((m = /^item:category:(.+)$/.exec(x))) return doc.category === m[1];
+    if ((m = /^item:type:(.+)$/.exec(x))) return doc.kind === m[1];
+    if ((m = /^item:rarity:(.+)$/.exec(x))) return (doc.rarity || 'common') === m[1];
+    if ((m = /^item:slug:(.+)$/.exec(x)) || (m = /^item:([a-z0-9-]+)$/.exec(x))) return doc.slug === m[1];
+    if (/^feature:/.test(x)) return ctx.tags ? ctx.tags.has(x) : null;
+    return null;
+  };
+  return term({ and: Array.isArray(filter) ? filter : [filter] });
+}
+
+/** The game lists a choice can name ("choices": "skills"); weapon groups come from the content (ctx.weaponGroups). */
+export function configList(name, ctx = {}) {
+  if (name === 'skills') return SKILLS.map((v) => ({ value: v, label: v[0].toUpperCase() + v.slice(1) }));
+  if (name === 'attributes' || name === 'abilities') return ATTRIBUTES.map((v) => ({ value: v, label: v }));
+  if (name === 'weaponGroups') return (ctx.weaponGroups || []).map((v) => ({ value: v, label: v.replace(/-/g, ' ') }));
+  if (name === 'system.details.deities.domains') return ((ctx.deity && ctx.deity.domains && ctx.deity.domains.primary) || []).map((v) => ({ value: v, label: v }));
+  if (name === 'languages') return [...LANGUAGES.common, ...LANGUAGES.uncommon, ...LANGUAGES.rare].map((v) => ({ value: v, label: v }));
+  return null;
+}
+
+// the roll options a deity gives its worshipper (Foundry's deity item does the same)
+function deityOptions(d) {
+  const p = 'deity:primary';
+  const out = ['deity', `${p}:${d.slug}`, `self:deity:slug:${d.slug}`];
+  const sc = d.sanctification;
+  if (sc && sc.modal && (sc.what || []).length) for (const w of sc.what) out.push(`${p}:sanctification:${sc.modal}:${w}`);
+  else out.push(`${p}:sanctification:none`);
+  for (const w of d.weapons || []) out.push(`${p}:favored-weapon:${w}`);
+  for (const f of d.font || []) out.push(`${p}:font:${f}`);
+  return out;
 }
 
 /**
@@ -387,6 +454,12 @@ export function deriveCharacter(build, get, opts = {}) {
   if (cls && chosen.length < want) need(1, 'skills', `Choose ${want - chosen.length} more trained skill${want - chosen.length > 1 ? 's' : ''} (${want} in all: the class's ${(cls.skills || {}).additional || 0}, Intelligence ${intAt1}${doubled ? `, ${doubled} for a skill trained twice` : ''}).`);
   if (chosen.length > want && cls) problems.push(`${chosen.length} trained skills chosen, ${want} allowed`);
   for (const l of [...((bg && bg.lore) || []), ...((b.skills || {}).lore || [])]) P.lore[loreSlug(l)] = 1;
+  // a background whose Lore is a choice written only in its text ("the Legal Lore or Warfare Lore skill")
+  const bgLore = bg && !(bg.lore || []).length ? backgroundLore(bg) : null;
+  if (bgLore && !((b.skills || {}).lore || []).length) {
+    need(1, 'lore', `${bg.name}: choose the Lore skill (the background says "${bgLore.phrase}").`);
+    pending[pending.length - 1].choice = { lore: true, ...(bgLore.options.length ? { options: bgLore.options.map((o) => ({ value: o, label: `${o} Lore` })) } : {}) };
+  }
   // ---- features and feats ----
   const features = cls ? (cls.features || []).filter((f) => f.level <= L).map((f) => (f.ref ? f.ref.split('/').pop() : slug(f.name))) : [];
   // the ancestry's own features (a dwarf's Clan Dagger, an elf's or a gnome's low-light vision)
@@ -419,7 +492,10 @@ export function deriveCharacter(build, get, opts = {}) {
   for (const f of feats) tags.add(`feat:${f.slug}`);
   for (const s of features) { tags.add(`feat:${s}`); tags.add(`feature:${s}`); }   // Foundry gives class features both
   for (const t of (anc && anc.traits) || []) tags.add(`self:trait:${t}`);
-  if (b.deity) tags.add('deity');
+  // the deity: the build's own, or the one a class's deity choice picks (both land in build.deity, section 9.8)
+  const deityDoc = b.deity ? get(b.deity) : null;
+  if (b.deity && (!deityDoc || deityDoc.kind !== 'deity')) problems.push(`deity ${b.deity} is not in the content`);
+  if (deityDoc) for (const o of deityOptions(deityDoc)) tags.add(o);
   if (her && her.slug) tags.add(`self:heritage:${her.slug}`);
   const choicesOf = (d) => ((d && d.rules) || []).map((r) => (r.key === 'unsupported' ? r.foundry : null)).filter((fr) => fr && fr.key === 'ChoiceSet');
   const facts = { level: L, tags };
@@ -454,7 +530,7 @@ export function deriveCharacter(build, get, opts = {}) {
     if (/feature$/.test(from)) featureDocs.set(d.slug, { name: d.name, slug: d.slug, ...(key ? { ref: key } : {}), level, ...playRules(d) });
     queue.push({ d, key, level, from, granter, flags: {} });
     // the roll options of the choices made on it count from the start, as Foundry's do
-    for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[`${d.slug}.${fr.flag || camel(d.slug)}`]); if (o) tags.add(o); }
+    for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[`${d.slug}.${fr.flag || camel(fr.slug || d.slug)}`]); if (o) tags.add(o); }
   };
   add(cls, b.class, 1, 'class'); add(anc, b.ancestry, 1, 'ancestry'); add(her, b.heritage, 1, 'heritage'); add(bg, b.background, 1, 'background');
   for (const f of (cls && cls.features) || []) if (f.level <= L && f.ref) add(get(f.ref), f.ref, f.level, 'class feature');
@@ -473,24 +549,31 @@ export function deriveCharacter(build, get, opts = {}) {
     const holds = predicateHolds(fr.predicate === undefined ? undefined : fillDeep(fr.predicate), facts);
     if (holds === false) return true;
     if (fr.key === 'ChoiceSet') {
-      const flag = fr.flag || camel(d.slug);
+      const flag = fr.flag || camel(fr.slug || d.slug);
       const id = `${d.slug}.${flag}`;
       const c = fr.choices;
-      const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { value: o.value, label: foundryLabel(o.label) } : { value: o, label: String(o) })) }
+      const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { ...(o.value && typeof o.value === 'object' ? { value: slug(foundryLabel(o.label)), label: foundryLabel(o.label), data: o.value } : { value: o.value, label: foundryLabel(o.label).replace(/^Trait /, '').replace(/^None option$/, 'None') }), ...(o.predicate ? { predicate: o.predicate } : {}) } : { value: o, label: String(o) })) }
         : c && typeof c === 'object' && c.ownedItems ? { owned: { types: c.types || [], ...(c.predicate ? { predicate: c.predicate } : {}) } }
         : c && typeof c === 'object' && c.filter ? { filter: c.filter, ...(c.itemType ? { itemType: c.itemType } : {}) }
         : typeof c === 'string' ? { config: c } : c && c.config ? { config: c.config } : null;
       if (!spec) return skip('a choice of a kind the builder does not read');
+      if (spec.itemType === 'deity') {
+        // the class's deity choice is the build's deity: a step of its own
+        if (!deityDoc) { need(level, 'deity', `${d.name}: choose a deity.`); pending[pending.length - 1].choice = { item: key || d.slug, flag, ...spec }; return true; }
+        flags[flag] = b.deity;
+        return true;
+      }
       if (sel[id] === undefined) {
         need(level, `choice.${id}`, `${d.name}: ${spec.owned ? 'choose one of the character\'s own items (once the gear is bought)' : choicePrompt(fr.prompt)}.`);
         pending[pending.length - 1].choice = { item: key || d.slug, flag, ...spec };
         return true;
       }
       if (spec.options) {
-        const ok = spec.options.some((o) => o.value === sel[id] || (typeof o.value === 'string' && /^Compendium\./.test(o.value) && resolve(o.value) === sel[id]));
-        if (!ok) problems.push(`${d.name}: ${sel[id]} is not one of its choices`);
-      }
-      flags[flag] = sel[id];
+        const hit = spec.options.find((o) => o.value === sel[id] || (typeof o.value === 'string' && /^Compendium\./.test(o.value) && resolve(o.value) === sel[id]));
+        if (!hit) problems.push(`${d.name}: ${sel[id]} is not one of its choices`);
+        // a choice whose values are records (a dwarf's clan: its two skills) keeps the record
+        flags[flag] = hit && hit.data ? hit.data : sel[id];
+      } else flags[flag] = sel[id];
       const o = choiceOption(fr, sel[id]);
       if (o) tags.add(o);
       return true;
@@ -503,6 +586,7 @@ export function deriveCharacter(build, get, opts = {}) {
       const g = gk ? get(gk) : null;
       if (!g) return skip(`it grants ${uuid}, which is not in the open content`);
       if (seen.has(gk)) return true;
+      if (g.kind === 'deity') return true;   // the build's deity (above)
       if (g.kind === 'feat') {
         if (g.category === 'classfeature') { features.push(g.slug); tags.add(`feature:${g.slug}`); }
         else feats.push({ name: g.name, slug: g.slug, ref: gk, level, slot: 'granted', from: d.name, ...playRules(g) });
@@ -591,6 +675,19 @@ export function deriveCharacter(build, get, opts = {}) {
     else if (target[0] === 'languages') langExtra += v;
     else up(target[0], target[1], v, fr.mode);
   }
+  // the deity's skill and favored weapon, for a class whose deity feature trains them (cleric, champion)
+  const deityFeature = [...featureDocs.values()].map((f) => get(f.ref)).find((d) => d && /deity grants you the trained proficiency rank in one skill|trained in the divine skill listed for your deity/i.test(d.text || ''));
+  if (deityFeature && deityDoc) {
+    const sk = (deityDoc.skill || [])[0];
+    if (sk && P.skills[sk]) need(1, 'deitySkill', `${deityDoc.name}'s skill, ${sk}, is trained already: choose another skill to become trained in.`);
+    if (sk && !P.skills[sk]) P.skills[sk] = 1;
+    const other = b.deitySkill;
+    if (other && sk && P.skills[sk] && other !== sk) { if (P.skills[other]) problems.push(`${other} is trained already (choose another skill)`); else P.skills[other] = 1; if (pending.length && pending[pending.length - 1].step === 'deitySkill') pending.pop(); }
+  }
+  if (deityDoc && P.weapons['deitys-favored-weapon'] && (deityDoc.weapons || []).length) {
+    P.definitions = P.definitions || {};
+    P.definitions['deitys-favored-weapon'] = { when: [{ or: deityDoc.weapons.map((w) => `item:base:${w}`) }] };
+  }
   // skill increases (after the rules: a skill the class's own choice trains is increased from trained), and the
   // skills an Intelligence increase adds
   for (const lv of ((cls && cls.skillIncreaseLevels) || []).filter((x) => x <= L)) {
@@ -660,11 +757,19 @@ export function deriveCharacter(build, get, opts = {}) {
   // ---- prerequisites of the feats the player chose (section 9.7), against the character as built: exact for the
   // feats of its newest level, which is when a choice is made ----
   const checks = [];
-  const pf = { ...prereqFacts(actor, b), knownNames: opts.knownNames };
+  const favoredCategories = deityDoc ? (deityDoc.weapons || []).map((w) => (get(`equipment:item/${w}`) || {}).category || (w === 'fist' ? 'unarmed' : null)).filter(Boolean) : null;
+  const pf = { ...prereqFacts(actor, b, { favoredCategories }), knownNames: opts.knownNames };
+  // a feat a feature grants only when its prerequisite holds (a warpriest's Deadly Simplicity, for a deity with a
+  // simple favored weapon): granted feats whose prerequisite is plainly unmet are taken back
+  const notGranted = [];
+  for (const f of feats.filter((x) => x.slot === 'granted')) {
+    const r = prereqCheck(get(f.ref), pf);
+    if (r.met === false) { notGranted.push({ feat: f.name, from: f.from, unmet: r.unmet }); feats.splice(feats.indexOf(f), 1); }
+  }
   for (const f of feats.filter((x) => !['granted', 'background'].includes(x.slot))) {
     const r = prereqCheck(get(f.ref), { ...pf, names: new Set([...pf.names].filter((n) => n !== f.name.toLowerCase())) });
     for (const p of r.unmet) problems.push(`${f.name} (level ${f.level} ${f.slot} feat): prerequisite not met: ${p}`);
     for (const p of r.unread) checks.push({ feat: f.name, level: f.level, prerequisite: p });
   }
-  return { actor, pending, problems, unsupported, checks };
+  return { actor, pending, problems, unsupported, checks, notGranted, rollOptions: [...tags].sort() };
 }

@@ -720,3 +720,51 @@ on the board: **Claude walks the player through it in chat, step by step**, and 
   actor schema, and runs in the engine with the HP, saves, Perception, unarmoured AC and spell DC the rules give
   for its ranks; languages and Intelligence increases; the dwarf's clan dagger; prerequisite forms and a feat whose
   prerequisite is unmet.
+
+### 9.8 Step 3 as built (2026-11-14): the step-by-step builder
+
+Decisions (the user, 2026-11-14, by questionnaire):
+- **Remaster over legacy:** Foundry's data already drops the legacy version of anything the remaster reprinted (31
+  Core Rulebook feats remain, none of them remastered). Legacy options with no remaster version are **offered
+  freely** (marked "legacy" in lists); those that rely on alignment, which the remaster removed, are not offered.
+- **Books:** each campaign keeps its list (`<save>/builder.json` `sources`, book titles); a campaign with none
+  allows all the open content. Rarity applies on top.
+- **The draft** lives in the campaign save (`<save>/builds/<id>.json`) until it is finished; nothing is on the
+  board before then.
+- **Options:** Claude offers a shortlist of four to six that suit the character, a line each on why, and the full
+  list on request.
+
+As built:
+- `rulesets/pf2e/builder.js` `builder({settings})`: `steps(build)` (the pending steps grouped as
+  `"<level>:<step>"` with a count), `options(build, step, {all, search})`, `apply(build, step, values)`,
+  `clear(build, step)`, `derive`; `preview(result)` (the sheet in short, from the engine), `books()`.
+- **Options** for every step: ancestry, heritage (its own and the versatile ones), background, class, deity, key
+  attribute, each boost slot, skills, Lore, languages, skill increases, feats by slot, and the content's choices
+  (listed values with their conditions, item filters over the content, game lists: skills, weapon groups, a
+  deity's domains). Each option carries its level, rarity, book, "legacy", `needs` (the GM's leave), `gmChecks`
+  (prerequisites the builder cannot read) and, with `--all`, `blocked` with the reasons (not in the campaign's
+  books, relies on alignment, taken already, prerequisite not met, a dedication waiting).
+- **Feats by slot:** ancestry feats by the ancestry's traits, a versatile heritage's and any it counts as; class
+  feats by the class or the archetype trait; general and skill feats by trait; the slot's level; how many times it
+  may be taken. **Dedications:** another dedication waits until two more feats of the last archetype are taken
+  (feats whose prerequisites name its dedication).
+- **The deity** (`build.deity`): a step for a class whose deity feature asks for one (the cleric's and the
+  champion's deity choice is the build's deity). It gives Foundry's deity roll options (font, sanctification,
+  favored weapon), so the choices that read them list only what fits (Torag's font: heal). The deity's skill is
+  trained for a class whose deity feature says so (a step to pick another when it is trained already,
+  `deitySkill`), and the favored weapon gets its proficiency definition.
+- **A granted feat whose prerequisite is plainly unmet is taken back** (`notGranted`): a warpriest gains Deadly
+  Simplicity only for a deity whose favored weapon is simple or an unarmed attack.
+- **A background's Lore written only in its text** is a step (`lore`), with the subjects the text names ("Legal or
+  Warfare").
+- **Choices whose values are records** (a dwarf's clan: its two skills) keep the record; the step's value is the
+  option's name.
+- `tools/builder.mjs`: `new`, `list`, `next`, `options`, `choose`, `clear`, `approve`, `level`, `preview`,
+  `finish` (writes `<save>/actors/<id>.json`; no step or problem may be left; the token on the board is step 5),
+  `settings`, `books`, `report`. The tool is free of any game system: it reaches `rulesets/<campaign's
+  ruleset>/builder.js`.
+- **Tested** (`tests/builder-tool.test.mjs`): steps and options, boosts into their slots, class feats, unmet
+  prerequisites, dedications, books and alignment, the deity's font and grants, the Guard's lore, a dwarf's clan,
+  and a fighter built and finished from the tool. A dwarf warpriest of Torag was built through the tool by hand.
+- **Left:** casters' spells and the sorcerer's, witch's and summoner's tradition (step 4); gear and its choices,
+  the token on the board (step 5).

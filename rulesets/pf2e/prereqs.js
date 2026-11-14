@@ -12,7 +12,7 @@ const norm = (s) => String(s || '').toLowerCase().replace(/[’']/g, "'").replac
  * What a character offers a prerequisite: from the actor deriveCharacter makes.
  * @returns {{names: Set<string>, P: object, attributes: object, traits: Set<string>, languages: Set<string>, deity: boolean, casts: boolean}}
  */
-export function prereqFacts(actor, build = {}) {
+export function prereqFacts(actor, build = {}, extra = {}) {
   const names = new Set();
   for (const f of [...(actor.feats || []), ...(actor.features || [])]) {
     if (typeof f === 'string') { names.add(norm(f.replace(/-/g, ' '))); continue; }
@@ -27,6 +27,7 @@ export function prereqFacts(actor, build = {}) {
     languages: new Set((actor.languages || []).map(norm)),
     senses: new Set(((actor.ancestry || {}).senses || []).map((x) => norm(x).replace(/[-\s]/g, ''))),
     deity: !!build.deity,
+    favoredCategories: extra.favoredCategories || null,
     casts: Object.values(P.spellcasting || {}).some((r) => r > 0),
     heritage: norm(actor.heritage), ancestry: norm(actor.ancestry && actor.ancestry.name), className: norm(actor.class && actor.class.name),
   };
@@ -80,6 +81,14 @@ export function prereqMet(text, f) {
   if ((m = /^(.+) trait$/.exec(t)) && !/,| or /.test(m[1])) return f.traits.has(m[1]);
   if ((m = /^you speak (.+)$/.exec(t))) return f.languages.has(m[1]);
   if (/^(you )?(follow|worship) a deity$|^you have a deity$/.test(t)) return f.deity;
+  // "deity with a simple or unarmed attack favored weapon"
+  if ((m = /^deity with an? (.+?) favou?red weapon$/.exec(t))) {
+    if (!f.deity) return false;
+    if (!f.favoredCategories) return null;
+    const want = m[1].replace(/\battack\b/g, '').split(/,? or |, /).map((x) => x.trim());
+    return f.favoredCategories.some((c) => want.includes(c));
+  }
+  if (/^trained with your deity's favou?red weapon$/.test(t)) return f.deity ? ((f.P.weapons || {})['deitys-favored-weapon'] || 0) >= 1 : false;
   if (/^(you have a )?spellcasting class feature$|^(the )?ability to cast spells$/.test(t)) return f.casts || null;
   // "Druid Dedication or Wizard Dedication", "Guiding Shot or Set-Up Strike", "Bomber's field discovery, A, or B"
   if (/ or /.test(t)) {

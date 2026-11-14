@@ -146,3 +146,254 @@ export function markdown(r) {
   for (const [k, list] of Object.entries(r.other)) lines.push('', `## ${k[0].toUpperCase() + k.slice(1).replace(/y$/, "ie")}s: ${list.length}`, '', ...[...new Set(list.map((u) => u.item))].slice(0, 40).map((x) => `- ${x}`), ...(new Set(list.map((u) => u.item)).size > 40 ? ['- ...'] : []));
   return lines.join('\n') + '\n';
 }
+
+// ---- step 3: the step-by-step builder (docs/design/game-data.md 9.8) ----
+
+import { deriveCharacter, boostSlots, ATTRIBUTES, SKILLS, maxSkillRank, itemMatches, configList, predicateHolds as holds, backgroundLore } from './build.js';
+import { LANGUAGES, languageRarity } from './languages.js';
+import { prereqFacts, prereqCheck } from './prereqs.js';
+
+const ALIGNED = /\b(lawful|chaotic|good|evil|neutral) alignment\b|\balignment\b/i;
+const ALIGN_TRAITS = ['good', 'evil', 'lawful', 'chaotic'];
+
+/** Every document in a content folder, with its key, read once. */
+function folderDocs(source, folder, cache) {
+  const k = `${source}/${folder}`;
+  if (!cache.has(k)) cache.set(k, keysIn(source, folder).map((key) => ({ key, doc: JSON.parse(fs.readFileSync(path.join(OPEN, source, folder, key.split('/').pop() + '.json'), 'utf8')) })));
+  return cache.get(k);
+}
+
+/** A line about a document for a list: its first sentence, short. */
+function summary(doc) {
+  let t = String((doc && doc.text) || '').replace(/\s+/g, ' ').trim();
+  // the stat lines a feat opens with (Access, Frequency, Trigger, Requirements) are not what it does
+  for (let i = 0; i < 4; i++) t = t.replace(/^-+\s*/, '').replace(/^(Access|Frequency|Trigger|Requirements?|Prerequisites?|Cost|Cast|Duration|Range|Targets?) [^.]*\.\s*/, '');
+  const first = (/^(.{20,200}?[.!?])(\s|$)/.exec(t) || [null, t.slice(0, 160)])[1];
+  return first.length > 200 ? `${first.slice(0, 197)}...` : first;
+}
+
+/**
+ * The builder for one campaign: settings {sources: [book titles] | null (all)}. Returns
+ * {derive(build), steps(build), options(build, stepId, {all, search}), apply(build, stepId, values), clear(build, stepId)}.
+ * A step id is "<level>:<step>" ("1:feat.class", "1:boosts.free", "5:choice.fighter-weapon-mastery.fighterWeaponMastery").
+ */
+export function builder({ get = contentGetter(), resolve, settings = {} } = {}) {
+  resolve = resolve || foundryResolver(JSON.parse(fs.readFileSync(path.join(OPEN, 'import-manifest.json'), 'utf8')));
+  let knownNames = null;
+  const known = () => (knownNames = knownNames || knownFeatNames());
+  const cache = new Map();
+  const derive = (b) => deriveCharacter(b, get, { resolve, knownNames: known() });
+  let groups = null;
+  const weaponGroups = () => (groups = groups || [...new Set(folderDocs('equipment', 'item', cache).filter((x) => x.doc.kind === 'weapon' && x.doc.group).map((x) => x.doc.group))].sort());
+
+  // the gates every option passes: the campaign's books, the remaster (no alignment), rarity (the GM's leave)
+  const gate = (key, doc, b) => {
+    const book = (doc.source || {}).title;
+    if (settings.sources && settings.sources.length && book && !settings.sources.includes(book)) return { out: `not in the campaign's books (${book})` };
+    if ((doc.traits || []).some((t) => ALIGN_TRAITS.includes(t)) || (doc.prerequisites || []).some((p) => ALIGNED.test(p))) return { out: 'relies on alignment, which the remaster removed' };
+    const rarity = doc.rarity || 'common';
+    if (rarity !== 'common' && !(b.approvals || []).some((a) => a.what === key)) return { needs: `the GM's leave (${rarity})` };
+    return {};
+  };
+  const entry = (key, doc, extra = {}) => ({ value: key, name: doc.name, ...(doc.level !== undefined ? { level: doc.level } : {}), ...(doc.rarity ? { rarity: doc.rarity } : {}),
+    book: (doc.source || {}).title, ...((doc.source || {}).remaster ? {} : { legacy: true }), summary: summary(doc), ...extra });
+
+  /** The steps still to take, grouped: [{id, level, step, count, text, choice?}] in order. */
+  const steps = (b) => {
+    const r = derive(b);
+    const out = [];
+    for (const p of r.pending) {
+      const id = `${p.level}:${p.step}`;
+      const have = out.find((x) => x.id === id);
+      if (have) { have.count += 1; continue; }
+      out.push({ id, level: p.level, step: p.step, count: 1, text: p.text, ...(p.choice ? { choice: p.choice } : {}) });
+    }
+    return { steps: out, result: r };
+  };
+
+  const featOptions = (b, r, kind, level, all) => {
+    const A = r.actor, cls = get(b.class), anc = get(b.ancestry), her = b.heritage ? get(b.heritage) : null;
+    const ancTraits = new Set([...(anc ? [anc.slug, ...(anc.traits || [])] : []), ...(her && (her.versatile || !her.ancestry) ? [her.slug, ...(her.traits || [])] : []), ...(r.rollOptions || []).filter((o) => o.startsWith('self:trait:')).map((o) => o.slice(11))]);
+    const taken = new Map();
+    for (const f of A.feats || []) taken.set(f.ref, (taken.get(f.ref) || 0) + 1);
+    const facts = { ...prereqFacts(A, b), knownNames: known() };
+    // a dedication waits until two more feats of the last archetype are taken
+    const dedications = (A.feats || []).filter((f) => /-dedication$/.test(f.slug));
+    const lastDed = dedications[dedications.length - 1];
+    const lockedDed = lastDed && (A.feats || []).filter((f) => f !== lastDed && (get(f.ref) || {}).prerequisites && get(f.ref).prerequisites.some((p) => p.toLowerCase().includes(lastDed.name.toLowerCase()))).length < 2;
+    const out = [];
+    for (const { key, doc } of folderDocs('feats', 'feat', cache)) {
+      const tr = doc.traits || [];
+      const fits = kind === 'ancestry' ? doc.category === 'ancestry' && tr.some((t) => ancTraits.has(t))
+        : kind === 'class' ? doc.category === 'class' && (tr.includes(cls && cls.slug) || tr.includes('archetype'))
+        : kind === 'general' ? tr.includes('general')
+        : kind === 'skill' ? tr.includes('skill') : false;
+      if (!fits || (doc.level || 0) > level) continue;
+      const why = [];
+      const g = gate(key, doc, b);
+      if (g.out) why.push(g.out);
+      const max = doc.maxTakable === 'unlimited' ? Infinity : doc.maxTakable || 1;
+      if ((taken.get(key) || 0) >= max) why.push('taken already');
+      if (lockedDed && tr.includes('dedication')) why.push(`two more ${lastDed.name.replace(/ Dedication$/, '')} feats come before another dedication`);
+      const pc = prereqCheck(doc, { ...facts, names: facts.names });
+      if (pc.met === false) why.push(`prerequisite not met: ${pc.unmet.join('; ')}`);
+      if (why.length && !all) continue;
+      out.push(entry(key, doc, { ...(g.needs ? { needs: g.needs } : {}), ...(pc.unread.length ? { gmChecks: pc.unread } : {}), ...(why.length ? { blocked: why } : {}), ...(doc.prerequisites && doc.prerequisites.length ? { prerequisites: doc.prerequisites } : {}) }));
+    }
+    return out.sort((x, y) => (y.level || 0) - (x.level || 0) || x.name.localeCompare(y.name));
+  };
+
+  const docOptions = (b, list, all) => list.map(({ key, doc }) => {
+    const g = gate(key, doc, b);
+    if (g.out && !all) return null;
+    return entry(key, doc, { ...(g.needs ? { needs: g.needs } : {}), ...(g.out ? { blocked: [g.out] } : {}) });
+  }).filter(Boolean).sort((x, y) => x.name.localeCompare(y.name));
+
+  /** The options for a step: [{value, name, level?, rarity?, book?, legacy?, needs?, gmChecks?, blocked?, summary?}]. */
+  const options = (b, id, { all = false, search } = {}) => {
+    const { steps: st, result: r } = steps(b);
+    const s = st.find((x) => x.id === id) || { id, level: Number(id.split(':')[0]) || 1, step: id.split(':').slice(1).join(':') };
+    const P = r.actor.proficiencies;
+    let out;
+    const step = s.step;
+    if (step === 'ancestry') out = docOptions(b, folderDocs('ancestries', 'ancestry', cache), all);
+    else if (step === 'heritage') out = docOptions(b, folderDocs('heritages', 'heritage', cache).filter(({ doc }) => !doc.ancestry || doc.ancestry.ref === b.ancestry), all);
+    else if (step === 'background') out = docOptions(b, folderDocs('backgrounds', 'background', cache), all);
+    else if (step === 'class') out = docOptions(b, folderDocs('classes', 'class', cache), all);
+    else if (step === 'deity') out = docOptions(b, folderDocs('deities', 'deity', cache).filter(({ doc }) => !s.choice || !s.choice.filter || itemMatches(s.choice.filter, doc) !== false), all);
+    else if (step === 'keyAttribute') { const k = (get(b.class) || {}).keyAttribute || []; out = (k.length ? k : ATTRIBUTES).map((a) => ({ value: a, name: a })); }
+    else if (step.startsWith('boosts.')) {
+      const which = step.slice(7);
+      const src = which === 'ancestry' ? get(b.ancestry) : which === 'background' ? get(b.background) : null;
+      const chosen = which.startsWith('level') ? ((b.levels || {})[s.level] || {}).boosts || [] : (b.boosts || {})[which] || [];
+      const slots = src ? boostSlots(src) : Array.from({ length: 4 }, () => ({ options: [...ATTRIBUTES], free: true }));
+      const i = slots.findIndex((sl, n) => !sl.fixed && !chosen[n]);
+      const sl = slots[i] || { options: [...ATTRIBUTES] };
+      out = sl.options.filter((a) => !chosen.includes(a) && !slots.some((x) => x.fixed === a)).map((a) => ({ value: a, name: a, ...(sl.free ? { free: true } : {}) }));
+    } else if (['skills', 'trained', 'deitySkill'].includes(step)) out = SKILLS.filter((k) => !P.skills[k]).map((k) => ({ value: k, name: k }));
+    else if (step === 'skillIncrease') {
+      const cap = maxSkillRank(s.level);
+      out = [...SKILLS.filter((k) => (P.skills[k] || 0) >= 1 && (P.skills[k] || 0) < cap).map((k) => ({ value: k, name: k, rank: P.skills[k] })),
+        ...Object.entries(P.lore || {}).filter(([, v]) => v < cap).map(([k, v]) => ({ value: `lore:${k}`, name: `${k} Lore`, rank: v }))];
+    } else if (step === 'languages') {
+      const anc = get(b.ancestry);
+      const list = new Set(((anc && anc.additionalLanguages) || {}).choices || []);
+      const knownL = new Set(r.actor.languages || []);
+      out = [...LANGUAGES.common, ...LANGUAGES.uncommon, ...LANGUAGES.rare].filter((l) => !knownL.has(l)).map((l) => {
+        const free = LANGUAGES.common.includes(l) || list.has(l);
+        const ok = free || (b.approvals || []).some((a) => a.what === `language:${l}`);
+        return { value: l, name: l, rarity: languageRarity(l), ...(ok ? {} : { needs: `the GM's leave (${languageRarity(l)})` }), ...(list.has(l) ? { ancestry: true } : {}) };
+      }).filter((o) => all || !o.needs || o.ancestry);
+    } else if (step === 'lore') { const named = ((s.choice || {}).options || []).map((o) => ({ value: o.value, name: o.label })); out = named.length ? named : [{ value: '<subject>', name: 'the subject the background describes (the player names it)' }]; }
+    else if (step.startsWith('feat.')) out = featOptions(b, r, step.slice(5), s.level, all);
+    else if (step.startsWith('choice.') && s.choice) {
+      const c = s.choice, rolls = new Set(r.rollOptions || []);
+      if (c.options) out = c.options.map((o) => ({ value: o.value, name: o.label, ...(o.predicate && holds(o.predicate, { level: r.actor.level, tags: rolls }) === false ? { blocked: ['not open to this character'] } : {}) })).filter((o) => all || !o.blocked);
+      else if (c.config) {
+        const list = configList(c.config, { weaponGroups: weaponGroups(), deity: b.deity ? get(b.deity) : null });
+        out = list ? list.filter((o) => c.config !== 'skills' || all || !P.skills[o.value]).map((o) => ({ value: o.value, name: o.label })) : [{ value: '<value>', name: `a ${c.config} (the builder has no list: the GM names it)` }];
+      } else if (c.filter) {
+        const pools = c.itemType === 'deity' ? [['deities', 'deity']] : [['feats', 'feat'], ['class-features', 'feat'], ['ancestry-features', 'feat']];
+        const ctx = { classSlug: (get(b.class) || {}).slug, ancestrySlug: (get(b.ancestry) || {}).slug, tags: rolls };
+        const facts = { ...prereqFacts(r.actor, b), knownNames: known() };
+        out = [];
+        for (const [src, fol] of pools) for (const { key, doc } of folderDocs(src, fol, cache)) {
+          if (itemMatches(c.filter, doc, ctx) !== true) continue;
+          const g = gate(key, doc, b);
+          const pc = prereqCheck(doc, facts);
+          const why = [...(g.out ? [g.out] : []), ...(pc.met === false ? [`prerequisite not met: ${pc.unmet.join('; ')}`] : [])];
+          if (why.length && !all) continue;
+          out.push(entry(key, doc, { ...(g.needs ? { needs: g.needs } : {}), ...(pc.unread.length ? { gmChecks: pc.unread } : {}), ...(why.length ? { blocked: why } : {}) }));
+        }
+        out.sort((x, y) => x.name.localeCompare(y.name));
+      } else if (c.owned) out = [{ value: '<item>', name: 'one of the character\'s own items: chosen once the gear is bought (step 5)' }];
+    }
+    out = out || [];
+    if (search) { const w = search.toLowerCase(); out = out.filter((o) => `${o.name} ${o.summary || ''}`.toLowerCase().includes(w)); }
+    return { step: s, options: out };
+  };
+
+  /** The build with a choice made: values for the step (several for a step taken several times). */
+  const apply = (b0, id, values) => {
+    const b = JSON.parse(JSON.stringify(b0 || { v: 1, level: 1 }));
+    const [lvS, ...rest] = id.split(':');
+    const level = Number(lvS) || 1, step = rest.join(':');
+    const vals = [].concat(values).filter((v) => v !== undefined && v !== null && v !== '');
+    const lv = () => { b.levels = b.levels || {}; return (b.levels[level] = b.levels[level] || {}); };
+    const one = () => { if (vals.length !== 1) throw new Error(`${id}: one value, not ${vals.length}`); return vals[0]; };
+    if (['ancestry', 'heritage', 'background', 'class', 'deity', 'keyAttribute', 'deitySkill'].includes(step)) {
+      b[step] = one();
+      if (step === 'ancestry') { delete b.heritage; if (b.boosts) delete b.boosts.ancestry; }
+      if (step === 'background' && b.boosts) delete b.boosts.background;
+    } else if (step.startsWith('boosts.')) {
+      const which = step.slice(7);
+      const src = which === 'ancestry' ? get(b.ancestry) : which === 'background' ? get(b.background) : null;
+      const slots = src ? boostSlots(src) : Array.from({ length: 4 }, () => ({}));
+      const arr = which.startsWith('level') ? (lv().boosts = lv().boosts || []) : ((b.boosts = b.boosts || {})[which] = (b.boosts[which] || []));
+      const queue = [...vals];
+      slots.forEach((sl, n) => { if (!sl.fixed && !arr[n] && queue.length) arr[n] = queue.shift(); else if (sl.fixed && arr[n] === undefined) arr[n] = null; });
+      if (queue.length) throw new Error(`${id}: ${queue.length} more boost${queue.length > 1 ? 's' : ''} than open slots`);
+    } else if (step === 'skills') { b.skills = b.skills || {}; b.skills.trained = [...(b.skills.trained || []), ...vals]; }
+    else if (step === 'lore') { b.skills = b.skills || {}; b.skills.lore = [...(b.skills.lore || []), ...vals]; }
+    else if (step === 'trained') lv().trained = [...(lv().trained || []), ...vals];
+    else if (step === 'languages') { if (level === 1) b.languages = [...(b.languages || []), ...vals]; else lv().languages = [...(lv().languages || []), ...vals]; }
+    else if (step === 'skillIncrease') lv().skillIncrease = one();
+    else if (step.startsWith('feat.')) { lv().feats = lv().feats || {}; lv().feats[step.slice(5)] = one(); }
+    else if (step.startsWith('choice.')) { b.selections = b.selections || {}; b.selections[step.slice(7)] = one(); }
+    else throw new Error(`${id}: not a step the builder knows`);
+    return b;
+  };
+
+  /** The build with a step's choice taken back (and what depended on it is asked again). */
+  const clear = (b0, id) => {
+    const b = JSON.parse(JSON.stringify(b0));
+    const [lvS, ...rest] = id.split(':');
+    const level = Number(lvS) || 1, step = rest.join(':');
+    const L = (b.levels || {})[level] || {};
+    if (['ancestry', 'heritage', 'background', 'class', 'deity', 'keyAttribute', 'deitySkill'].includes(step)) delete b[step];
+    else if (step.startsWith('boosts.')) { const w = step.slice(7); if (w.startsWith('level')) delete L.boosts; else if (b.boosts) delete b.boosts[w]; }
+    else if (step === 'skills' && b.skills) delete b.skills.trained;
+    else if (step === 'lore' && b.skills) delete b.skills.lore;
+    else if (step === 'languages') { if (level === 1) delete b.languages; else delete L.languages; }
+    else if (['trained', 'skillIncrease'].includes(step)) delete L[step];
+    else if (step.startsWith('feat.') && L.feats) delete L.feats[step.slice(5)];
+    else if (step.startsWith('choice.') && b.selections) delete b.selections[step.slice(7)];
+    return b;
+  };
+
+  return { derive, steps, options, apply, clear, get };
+}
+
+import { prepareActor } from '../../engine/rules/rules.js';
+import { systemConfig } from '../systems.js';
+
+/** The books in the open content a character's options come from (for a campaign's list). */
+export function books() {
+  const out = new Map();
+  for (const [source, folder] of [['ancestries', 'ancestry'], ['heritages', 'heritage'], ['backgrounds', 'background'], ['classes', 'class'], ['feats', 'feat'], ['deities', 'deity']]) {
+    const d = path.join(OPEN, source, folder);
+    for (const f of fs.readdirSync(d)) { const t = (JSON.parse(fs.readFileSync(path.join(d, f), 'utf8')).source || {}).title; if (t) out.set(t, (out.get(t) || 0) + 1); }
+  }
+  return [...out].sort((a, b) => b[1] - a[1]).map(([title, n]) => ({ title, options: n }));
+}
+
+/** A character's sheet in short, from the engine: what Claude shows the player as the build goes. */
+export function preview(result, get = contentGetter()) {
+  const A = result.actor;
+  const content = new Proxy({}, { get: (_, k) => (typeof k === 'string' ? get(k) : undefined) });
+  const p = prepareActor({ actor: A, state: {}, effects: [], content, ruleset: systemConfig('pf2e').actors });
+  const sign = (n) => (n >= 0 ? `+${n}` : `${n}`);
+  const R = ['U', 'T', 'E', 'M', 'L'];
+  const P = A.proficiencies;
+  const lines = [
+    `${A.name}, level ${A.level} ${A.ancestry.name}${A.heritage ? ` (${A.heritage})` : ''} ${A.class.name}${A.background ? `, ${A.background}` : ''}`,
+    `Attributes: ${Object.entries(A.attributes).map(([k, v]) => `${k.toUpperCase()} ${sign(v)}`).join(', ')}`,
+    `HP ${p.hp.max.value}, AC ${p.ac.value} (unarmoured), Speed ${A.ancestry.speed} ft; Perception ${sign(p.perception.value)} (${R[P.perception]})`,
+    `Saves: Fortitude ${sign(p.saves.fortitude.value)} (${R[P.fortitude]}), Reflex ${sign(p.saves.reflex.value)} (${R[P.reflex]}), Will ${sign(p.saves.will.value)} (${R[P.will]}); class DC ${p.classDC.value}${p.spell ? `; spell DC ${p.spell.dc.value}, spell attack ${sign(p.spell.attack.value)} (${p.spell.tradition})` : ''}`,
+    `Skills: ${Object.entries(p.skills).filter(([k]) => (P.skills || {})[k]).map(([k, v]) => `${k} ${sign(v.value)} (${R[P.skills[k]]})`).join(', ') || 'none yet'}${Object.keys(p.lore || {}).length ? `; ${Object.values(p.lore).map((v) => `${v.label} ${sign(v.value)}`).join(', ')}` : ''}`,
+    `Feats: ${(A.feats || []).map((f) => `${f.name} (${f.slot}${f.slot === 'granted' && f.from ? ` by ${f.from}` : ''}, ${f.level})`).join('; ') || 'none yet'}`,
+    `Features: ${(A.features || []).map((f) => (typeof f === 'string' ? f : f.name)).join(', ') || 'none'}`,
+    `Languages: ${(A.languages || []).join(', ')}${A.build && A.build.deity ? `; deity ${(get(A.build.deity) || {}).name}` : ''}`,
+  ];
+  return { lines, prepared: p };
+}

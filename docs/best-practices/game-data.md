@@ -325,5 +325,11 @@ What the board does with it: docs/best-practices/board.md (Replay).
   unmet only when it is a known feat or feature.
 - System facts Foundry's data does not carry (a class's casting attribute, the languages' rarities) go in
   `rulesets/pf2e/` as small tables, with where they come from.
+- **Building a character with a player** (`tools/builder.mjs`, design section 9.8): one step at a time, in the
+  order `next` gives. For each step offer a shortlist of four to six options that suit the character so far, a line
+  each on why, and say the full list is there on request (`options --all`, `--search`). Make the choice with
+  `choose` only when the player has picked; show `preview` after the big choices (ancestry, class, boosts, feats).
+  An uncommon or rare option is offered but needs the GM's leave (`approve`); a "GM CHECKS" prerequisite is put to
+  the GM, not decided by Claude. The draft lives in the campaign save, so a build can stop and resume.
 - The design and what is built: docs/design/game-data.md section 9.
 
