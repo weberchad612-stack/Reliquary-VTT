@@ -26,6 +26,9 @@ are included for non-commercial use under the Community Use Policy above, and th
 **Not included:** text, maps and art from books (adventure text, keyed room descriptions, maps): those are
 used only in private packs built from books the user owns, never in this repository.
 
+**Face detector.** The adventure importer centres token crops on faces with YuNet (OpenCV model zoo, MIT License,
+by Shiqi Yu): [licenses/YuNet.md](licenses/YuNet.md).
+
 **Sound.** The board's sound set (`sounds/`, kept with Git LFS; rendered by `tools/sound/` and published with the
 board) is performed with the Versilian Community Sample Library (VSCO 2 Community Edition, CC0, by Versilian
 Studios: github.com/sgossner/VSCO-2-CE). Its organ was sampled by Simon Dalzell of Ivy Audio, with redistribution

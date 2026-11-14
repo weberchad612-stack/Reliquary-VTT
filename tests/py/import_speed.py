@@ -80,3 +80,15 @@ assert px[110, 22][1] > 180 and px[110, 22][0] < 120, "the new door marked green
 assert px[60, 60][0] > 200 and px[60, 60][1] < 100, "the removed wall in red"
 assert px[140, 4][0] > 200 and px[140, 4][2] > 180, "a suggested wall dashed magenta"
 print("ok sheet")
+
+# #24: face-centred crops fall back to the figure's shape when no face is found
+import tokenart  # noqa: E402
+blank = Image.new("RGB", (400, 800), (255, 255, 255))
+from PIL import ImageDraw as _D  # noqa: E402
+_D.Draw(blank).rectangle([150, 100, 250, 700], fill=(30, 60, 30))   # a tall figure, no face
+assert tokenart.find_face(blank) is None
+assert tokenart.square(blank, "face") == tokenart.square(blank, "top"), "tall, no face: the top of the figure"
+wide = Image.new("RGB", (800, 400), (255, 255, 255))
+_D.Draw(wide).rectangle([100, 150, 700, 250], fill=(30, 60, 30))
+assert tokenart.square(wide, None) == tokenart.square(wide, "center"), "wide, no face: its middle"
+print("ok faces")
