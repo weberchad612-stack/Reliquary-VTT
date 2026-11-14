@@ -44,7 +44,7 @@ The database is the truth during play; the PC save is the truth between sessions
 4. **Write it to the PC** (`device_commit_files` into `saves/<campaign>/`, with the backup files), then **read it back**: `sha256sum` on the PC must match the workspace copy, file by file.
 5. Tell the user the save is on their PC, with what it holds (where the PCs are, doors opened).
 
-The page cannot write to the PC itself, so saving is always asked of Claude in chat.
+The page cannot write to the PC itself, so saving is always asked of Claude in chat. The PC's save is the truth between sessions: when a private pack is sent to the PC with `tools/advimport/sync.mjs` (adventure-importer.md section 8), a save file changed on the PC since the last sync is never overwritten; the new copy waits beside it in `_sync/<stamp>/incoming/`.
 
 ## 4. Switch campaigns
 

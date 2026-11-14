@@ -363,7 +363,9 @@ adventure, most of it is already done by the adventure importer
 ([adventure-importer.md](../best-practices/adventure-importer.md)): the cast as hidden tokens with their stat
 blocks and art, objects with their treasure, the room table, door states, ambient sounds and music, the
 illustrations' index and the ledger. Then the rules below are checks: confirm each is in place before the party
-arrives, and do by hand what the import left out.
+arrives, and do by hand what the import left out. When the pack changes during a campaign (a map fixed, a creature
+added), refresh the campaign with `campaign.mjs --update`, which keeps everything that happened in play; never start
+it over.
 
 - **Veils come down on the text's trigger.** A barrier the book says vanishes (a curtain of darkness, a ward) is a
   veil on the map. When its trigger happens in play, dispel it (merge `{doors: {<id>: {state: "open"}}}` into
