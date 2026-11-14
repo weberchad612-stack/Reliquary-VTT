@@ -596,3 +596,29 @@ on the board: **Claude walks the player through it in chat, step by step**, and 
 5. **Equipment** at creation (starting wealth, class kits) and **finishing**: the PC on the board.
 6. **A full level-1 character with the user**, step by step, for each kind of class; then **levelling** (section 9.3,
    point 5).
+
+### 9.5 Step 1 as built (2026-11-14): the build record and the derivation
+
+- `rulesets/pf2e/build.js` `deriveCharacter(build, get)` returns `{actor, pending, problems}`. `actor` is in the
+  character format the engine already runs (the build kept in it as `build`). `pending` lists what is still to
+  choose, by level and step (`ancestry`, `heritage`, `boosts.free`, `keyAttribute`, `skills`, `feat.class`,
+  `skillIncrease`...), each with a sentence for the player. `problems` lists wrong choices; a wrong choice is never
+  silently taken.
+- Worked out so far:
+  - **Attributes:** fixed and chosen boosts from ancestry and background, the ancestry's flaw, the class's key
+    attribute and four free boosts; two boosts from one source never to one attribute; the boosts at 5, 10, 15 and
+    20, a boost at +4 or more being partial (two raise it by one).
+  - **HP inputs:** the ancestry's and class's HP; the engine adds Constitution and level.
+  - **Proficiencies:** the class's Perception, saves, class DC, armour and weapons at 1st level.
+  - **Skills:** trained skills from class and background; the player's picks (the class's number plus Intelligence,
+    one more for each skill two sources both train); lore; skill increases capped at expert before 7th level and
+    master before 15th; skills an Intelligence increase adds.
+  - **Feats and features:** one feat per slot by the class's feat levels, the background's feat, and class features
+    up to the character's level.
+- The schema (`rulesets/pf2e/schemas/actor.schema.json`) gains `build`, and feats gain `ref`, `level` and `slot`.
+- **Tested** (`tests/pf2e-build.test.mjs`) against numbers worked out from the rules, not against the hand-made
+  sample PCs (they were made as test data, not from the rules). A 1st-level human fighter runs in the engine with
+  the right HP, saves and Perception.
+- **Left for step 2:** everything in a rule (the fighter's Acrobatics-or-Athletics, a subclass, Versatile Human's
+  general feat, the proficiency gains of later class features). **Left for step 3:** choices written only in a
+  background's text, such as the Guard's "Legal Lore or Warfare Lore", which Foundry does not encode.

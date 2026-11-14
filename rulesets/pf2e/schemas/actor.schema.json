@@ -385,6 +385,20 @@
               },
               "text": {
                 "type": "string"
+              },
+              "ref": {
+                "type": "string",
+                "description": "The feat's content key (a built character's)."
+              },
+              "level": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20,
+                "description": "The level it was taken at."
+              },
+              "slot": {
+                "type": "string",
+                "description": "Which slot it fills: ancestry, class, general, skill, background, or a feature's grant."
               }
             },
             "additionalProperties": false
@@ -504,6 +518,9 @@
         },
         "note": {
           "type": "string"
+        },
+        "build": {
+          "$ref": "#/$defs/build"
         }
       }
     },
@@ -556,6 +573,183 @@
         },
         "note": {
           "type": "string"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "description": "The player's choices that make this character (rulesets/pf2e/build.js; docs/design/game-data.md section 9): the character's numbers are worked out from them.",
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "const": 1
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "ancestry": {
+          "type": "string"
+        },
+        "heritage": {
+          "type": "string"
+        },
+        "background": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "keyAttribute": {
+          "enum": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha"
+          ]
+        },
+        "boosts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ancestry": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "str",
+                  "dex",
+                  "con",
+                  "int",
+                  "wis",
+                  "cha",
+                  null
+                ]
+              }
+            },
+            "background": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "str",
+                  "dex",
+                  "con",
+                  "int",
+                  "wis",
+                  "cha",
+                  null
+                ]
+              }
+            },
+            "free": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "str",
+                  "dex",
+                  "con",
+                  "int",
+                  "wis",
+                  "cha"
+                ]
+              },
+              "maxItems": 4
+            }
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "trained": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "lore": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "levels": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^([1-9]|1[0-9]|20)$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "feats": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "boosts": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "str",
+                    "dex",
+                    "con",
+                    "int",
+                    "wis",
+                    "cha"
+                  ]
+                },
+                "maxItems": 4
+              },
+              "skillIncrease": {
+                "type": "string"
+              },
+              "trained": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "selections": {
+                "type": "object"
+              },
+              "spells": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "what",
+              "by"
+            ],
+            "properties": {
+              "what": {
+                "type": "string"
+              },
+              "by": {
+                "type": "string"
+              },
+              "at": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
         }
       }
     }

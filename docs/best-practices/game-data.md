@@ -302,3 +302,13 @@ What the board does with it: docs/best-practices/board.md (Replay).
 - **Event order is the log's order**: running the turn rules once per event (end of turn, new round, next turn)
   keeps the lines in the order things happened.
 
+## Character builds (2026-11-14)
+
+- A built PC keeps its **choices** (`build`) beside the numbers worked out from them; change a choice and work it
+  out again (`rulesets/pf2e/build.js` `deriveCharacter`), never edit the numbers of a built PC by hand.
+- Content is named by key (`classes:class/fighter`, `feats:feat/toughness`): the builder checks every key exists and
+  is the right kind.
+- Test the rules against numbers worked out from the book's rules, not against existing sample characters; and
+  remember that a proficiency rank counts twice (trained +2, expert +4, master +6, legendary +8, plus level).
+- The design and what is built: docs/design/game-data.md section 9.
+
