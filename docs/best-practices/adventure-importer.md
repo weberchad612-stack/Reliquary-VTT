@@ -246,3 +246,20 @@ level at that point. For PF2E that is GM Core's DCs by level (level 1: 15, level
   it needs none: an opposed check against a creature's DC, Treat Disease against the disease's DC, or a rule's
   effect rather than a check.
 - **On the review page.** "DCs the book does not give" lists every filled DC with its party level.
+
+## 12. Rooms from the map's labels (2026-11-14)
+
+A town or village map whose area keys are printed on it, as live text in the PDF, gives the room table its points
+directly. Nobody has to place them.
+
+- **`python3 tools/advimport/maplabels.py <pack> <map-id>`** reads the words on the map's page that look like area keys.
+  It keeps those lying on the map image and takes each through the image's own steps: its placement on the page (the
+  PDF's transform), then `crop_px`, `scale` and `rotate`, then the grid. The result is a point in squares. On a map
+  printed sideways and at 10-ft squares, the points matched the hand-placed ones to a hundredth of a square.
+- **`roomtable.py <pack> --from-labels <map-id> --overrides <titles.json> --max-cells N`** floods each room from its
+  label to the walls. A building gets its real shape. An area with no walls round it (a lot, a yard, a stage open to the
+  street) floods past N. It keeps a 4 x 4 box round its label instead (`box` in the spec changes the size), drawn after
+  the walled rooms and never over their squares, and is marked `open: true` and reported. Give it a `clip` when its
+  real extent matters.
+- **Sight on a town map.** Walled rooms can now be tested: each building's `checks.sees` lists `outside` and the open
+  areas, never another building, so a gap between two buildings shows as a leak. Open areas see everything.
