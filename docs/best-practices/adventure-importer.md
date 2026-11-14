@@ -263,3 +263,35 @@ directly. Nobody has to place them.
   real extent matters.
 - **Sight on a town map.** Walled rooms can now be tested: each building's `checks.sees` lists `outside` and the open
   areas, never another building, so a gap between two buildings shows as a leak. Open areas see everything.
+
+## 13. Shared builders: only the book's content is written per book (2026-11-14)
+
+A book's builders used to repeat the same helpers each time. The shared parts now live in the tools, and a book's
+builders hold only that book's content, paraphrased.
+
+- **`tools/advimport/buildlib.py`** (`from buildlib import *` after `sys.path.insert(0, "tools/advimport")`):
+  - shorthands: `source(name)`, `creature`, `encounter`, `obj`, `item`;
+  - event actions: `note`, `narrate`, `xp`, `ledger`, `flag`, `show_subsystem`, `start_encounter`, `reveal`;
+  - subsystems: `victory` and `check` (a check with DC `None` is filled by `dcfill.mjs`);
+  - `unique_names` gives creatures that share a name on one map an adjective, never a number;
+  - `system(pack)` loads the game system's pieces, such as PF2E's weak and elite adjustment from
+    `rulesets/pf2e/advbuild.py`.
+- **`write_adventure(pack, ...)` and `write_events(pack, events, subsystems)`** check before writing and write nothing
+  when anything is wrong:
+  - an id used twice;
+  - a map not in `pack.json`;
+  - a creature with no square, or with art that `art.json` lacks;
+  - two creatures with one name in an encounter;
+  - other than exactly one kickoff;
+  - an event naming an encounter or subsystem that does not exist.
+
+  Maps come from `pack.json` and notes from `notes/*.md` unless they are given.
+- **`tools/advimport/areamap.py <pack> <spec.json>`** builds town and region maps from the book's clean image and the
+  labels printed over it. The spec holds the page and image, one crop box per map, a label pattern, the book's places
+  keyed by printed number (paraphrased), and `repeat` for a label printed many times with no number (groves: p1,
+  p2, ...). An unknown label, or a place no label marks, stops that map.
+- **The pipeline** runs both builders in its `adventure` step, before the maps: it needs nothing the maps make, and the
+  DC fill after the maps then sees the final events. The area maps are its `areamaps` step.
+- **Moving a book over** changed nothing in its output. Book 1's builders swapped their helper definitions for imports
+  under the same short names (`c = creature`, `E = encounter`, ...). Its area-map script became a spec read from the
+  script itself. The adventure, events and area maps came out identical: same places, a byte-identical image.
