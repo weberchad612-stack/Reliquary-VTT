@@ -11,6 +11,7 @@
 //    levels: {"<n>": {feats: {ancestry|class|general|skill: key}, boosts: [4 attrs] (5, 10, 15, 20),
 //                     skillIncrease: skill or "lore:<subject>", trained: [skills an Intelligence increase adds],
 //                     selections: {<flag>: value} (the content's choices: section 9.3)}},
+//    deity (a content key), selections: {"<item slug>.<flag>": value} (the answers to the content's "pick one" rules: section 9.6),
 //    approvals: [{what, by, at}] (uncommon and rare options the GM allowed), name, details}
 
 export const ATTRIBUTES = Object.freeze(['str', 'dex', 'con', 'int', 'wis', 'cha']);
@@ -31,11 +32,232 @@ export function boostSlots(doc) {
 /** The highest rank a skill may reach at a level (expert from 1, master from 7, legendary from 15). */
 export const maxSkillRank = (level) => (level >= 15 ? 4 : level >= 7 ? 3 : 2);
 
+// ---- the rules a build runs (section 9.6) ----
+
+/** The Foundry rule elements a build runs: the rest are read at the table, or not at all. */
+export const BUILD_RULES = Object.freeze(['ChoiceSet', 'GrantItem', 'ActiveEffectLike', 'MartialProficiency']);
+
+/** Foundry's compendium names for the packs a build uses, and our sources for them. */
+export const FOUNDRY_PACKS = Object.freeze({
+  actionspf2e: 'actions', ancestries: 'ancestries', ancestryfeatures: 'ancestry-features', backgrounds: 'backgrounds',
+  classes: 'classes', classfeatures: 'class-features', 'feats-srd': 'feats', heritages: 'heritages', 'spells-srd': 'spells',
+  'equipment-srd': 'equipment', 'feat-effects': 'feat-effects', deities: 'deities', 'familiar-abilities': 'familiar-abilities',
+  'spell-effects': 'spell-effects', 'equipment-effects': 'equipment-effects', 'other-effects': 'other-effects',
+});
+
+/**
+ * A resolver for Foundry's links ("Compendium.pf2e.feats-srd.Item.<id or name>") from the import manifest
+ * (content/pf2e/import-manifest.json): (uuid) -> our content key, or null.
+ */
+export function foundryResolver(manifest) {
+  const byId = new Map(), byName = new Map();
+  for (const [k, v] of Object.entries((manifest && manifest.documents) || {})) {
+    const [source, id] = [k.slice(0, k.indexOf('/')), k.slice(k.indexOf('/') + 1)];
+    const key = `${source}:${v.key}`;
+    byId.set(`${source}/${id}`, key);
+    if (v.name) byName.set(`${source}/${String(v.name).toLowerCase()}`, key);
+  }
+  return (uuid) => {
+    const m = /^Compendium\.pf2e\.([^.]+)\.Item\.(.+)$/.exec(String(uuid || ''));
+    if (!m) return null;
+    const source = FOUNDRY_PACKS[m[1]] || m[1];
+    return byId.get(`${source}/${m[2]}`) || byName.get(`${source}/${m[2].toLowerCase()}`) || null;
+  };
+}
+
+// proficiency gains written in a class feature's text ("your proficiency rank for Fortitude saves increases to
+// master"): Foundry's data leaves most of them out, and the text says them in a fixed form
+const RANKS = { trained: 1, expert: 2, master: 3, legendary: 4 };
+const GAIN = [
+  [/\byour (?:and your [a-z'’]+ )?proficiency ranks? (?:for|in|with) ([^.]*?) (?:increases?|increase) to (expert|master|legendary)/gi, 1, 2],
+  [/\byour proficiency ranks? increases? to (expert|master|legendary) (?:for|with|in) ([^.]*)/gi, 2, 1],
+  // "you're trained in light and medium armor", "you become trained in martial weapons"
+  [/\byou(?:'re| are| become)? trained (?:in|with) ([^.;]*)/gi, 1, null],
+  // "you have expert proficiency in Fortitude saves", "you gain expert proficiency with martial weapons"
+  [/\byou (?:have|gain) (expert|master|legendary) proficiency (?:in|with) ([^.;]*)/gi, 2, 1],
+];
+// a feature whose text sums up features that come at later levels ("Second Doctrine (3rd): ...") is read from
+// those features, not from the summary
+const SUMMARY = /\(\d+(?:st|nd|rd|th)\):/;
+
+/** What a phrase names: [{bag, key}] in the proficiencies, or null when it cannot be told from the words. */
+export function profTargets(phrase) {
+  const p = String(phrase || '').toLowerCase();
+  if (/chosen|that group|choice|listed|\bor\b|\beach\b|^it$|^your (weapon|armor)|associated|matching|related|instead|rather/.test(p)) return null;
+  const out = [];
+  if (/spell attack|spell dc/.test(p)) out.push({ bag: 'spellcasting', key: 'class' });
+  if (/class dc|ranger dc/.test(p)) out.push({ bag: null, key: 'classDC' });
+  if (/perception/.test(p)) out.push({ bag: null, key: 'perception' });
+  for (const s of ['fortitude', 'reflex', 'will']) if (new RegExp(`\\b${s}\\b`).test(p)) out.push({ bag: null, key: s });
+  if (/favored weapon/.test(p)) out.push({ bag: 'weapons', key: 'deitys-favored-weapon' });
+  if (/firearms/.test(p)) out.push({ bag: 'weapons', key: 'firearms-crossbows' });
+  else if (/advanced weapons/.test(p)) out.push({ bag: 'weapons', key: 'advanced' });
+  if (/simple/.test(p)) out.push({ bag: 'weapons', key: 'simple' });
+  if (/martial/.test(p)) out.push({ bag: 'weapons', key: 'martial' });
+  if (/unarmed attacks/.test(p)) out.push({ bag: 'weapons', key: 'unarmed' });
+  if (/alchemical bombs/.test(p)) out.push({ bag: 'weapons', key: 'alchemical-bombs' });
+  if (/unarmored/.test(p)) out.push({ bag: 'armor', key: 'unarmored' });
+  if (/\blight\b/.test(p)) out.push({ bag: 'armor', key: 'light' });
+  if (/\bmedium\b/.test(p)) out.push({ bag: 'armor', key: 'medium' });
+  if (/\bheavy\b/.test(p)) out.push({ bag: 'armor', key: 'heavy' });
+  for (const k of SKILLS) if (new RegExp(`\\b${k}\\b`).test(p)) out.push({ bag: 'skills', key: k });
+  const lore = /([a-z]+) lore/.exec(p);
+  if (lore) out.push({ bag: 'lore', key: lore[1] });
+  return out.length ? out : null;
+}
+
+/**
+ * A feature several classes share (Weapon Expertise) words its text once for each, in paragraphs headed by the
+ * classes' names ("Druid, Kineticist You've improved ..."): the paragraphs for this class, or the whole text when it
+ * has no such headings.
+ */
+export function classSection(text, className) {
+  const paras = String(text || '').split(/\n\s*\n(?:---\s*\n)?/).map((p) => p.replace(/^---\s*/, '').trim()).filter(Boolean);
+  const head = (p) => { const m = /^([A-Z][a-z]+(?:, [A-Z][a-z]+)*) (?=[A-Z])/.exec(p); return m ? m[1].split(', ') : null; };
+  if (paras.filter(head).length < 2 || !className) return String(text || '');
+  return paras.filter((p) => (head(p) || []).includes(className)).map((p) => p.replace(/^[A-Z][a-z]+(?:, [A-Z][a-z]+)* /, '')).join('\n\n');
+}
+
+/** The proficiency gains a feature's text states: {gains: [{bag, key, rank}], unread: [phrase]}. */
+export function textGains(text) {
+  const gains = [], unread = [];
+  const t = String(text || '');
+  if (SUMMARY.test(t)) return { gains, unread };
+  for (const [re, pi, ri] of GAIN) {
+    for (const m of t.matchAll(re)) {
+      // the clause up to a condition ("At 13th level, if ...") belongs to a later level: not read here
+      if (/\bat \d+(?:st|nd|rd|th) level\b[^.]*$/i.test(t.slice(Math.max(0, m.index - 60), m.index))) continue;
+      // nor one that holds only if something is so ("If you have qi spells, your proficiency ..."): the rules or
+      // the step that gives that thing read it
+      if (/\bif\b[^.]*$/i.test(t.slice(Math.max(0, m.index - 80), m.index))) continue;
+      const phrase = m[pi].replace(/\s+(?:and|but|as long as|if|when|while)\s+(?:you|your)\b.*$/i, '').replace(/,?\s+and gain\b.*$/i, '');
+      const rank = ri ? m[ri] : 'trained';
+      const targets = profTargets(phrase);
+      // "the listed skills", "the skill associated with your patron": the subclass's own rules give those
+      if (/listed|associated|matching|related|granted by/i.test(phrase)) continue;
+      if (!targets) { unread.push(phrase.trim()); continue; }
+      for (const x of targets) gains.push({ ...x, rank: RANKS[rank.toLowerCase()] });
+    }
+  }
+  return { gains, unread };
+}
+
+// terms a predicate tests that are states in play (an effect, a condition, a battle form, a target): while
+// building none of them holds
+const IN_PLAY = /^(self:(effect|condition|action|stance)|battle-form|target:|origin:|item:|rage$|stance:)/;
+
+/**
+ * Does a Foundry predicate hold for the build? facts: {level, tags: Set of the character's roll options,
+ * knows?(term)}. Returns true, false, or null (a term the builder cannot know: only when facts.knows is given,
+ * as the report does; the build itself reads an unknown term as absent).
+ */
+export function predicateHolds(pred, facts) {
+  if (pred === undefined || pred === null) return true;
+  const one = (t) => {
+    if (typeof t === 'string') {
+      if (IN_PLAY.test(t)) return false;
+      const rk = /^((?:skill|defense|attack|save):[a-z-]+:rank):(\d)$/.exec(t);
+      if (rk) return facts.rank ? facts.rank(rk[1]) === Number(rk[2]) : facts.knows ? true : null;
+      if (facts.knows && !facts.knows(t)) return null;
+      return facts.tags.has(t);
+    }
+    if (t && typeof t === 'object') {
+      if (t.not !== undefined) { const v = one(t.not); return v === null ? null : !v; }
+      if (Array.isArray(t.or)) { const v = t.or.map(one); return v.some((x) => x === true) ? true : v.some((x) => x === null) ? null : false; }
+      if (Array.isArray(t.nor)) { const v = t.nor.map(one); return v.some((x) => x === true) ? false : v.some((x) => x === null) ? null : true; }
+      if (Array.isArray(t.nand)) { const v = t.nand.map(one); return v.some((x) => x === false) ? true : v.some((x) => x === null) ? null : false; }
+      if (Array.isArray(t.and)) { const v = t.and.map(one); return v.some((x) => x === false) ? false : v.some((x) => x === null) ? null : true; }
+      for (const op of ['gte', 'gt', 'lte', 'lt', 'eq']) {
+        const rk = Array.isArray(t[op]) && typeof t[op][0] === 'string' && /^(skill|defense|attack|save):[a-z-]+:rank$/.test(t[op][0]);
+        if (Array.isArray(t[op]) && (t[op][0] === 'self:level' || rk) && typeof t[op][1] === 'number') {
+          if (rk && !facts.rank) return facts.knows ? true : null;
+          const a = rk ? facts.rank(t[op][0]) : facts.level, n = t[op][1];
+          return { gte: a >= n, gt: a > n, lte: a <= n, lt: a < n, eq: a === n }[op];
+        }
+      }
+    }
+    return null;
+  };
+  const list = Array.isArray(pred) ? pred : [pred];
+  const v = list.map(one);
+  return v.some((x) => x === false) ? false : v.some((x) => x === null) ? null : true;
+}
+
+/** The roll option a choice gives ("kinetic-gate:first-element:air"), or null when it gives none. */
+export function choiceOption(fr, value) {
+  if (!fr || !fr.rollOption || value === undefined || value === null) return null;
+  const v = String(value).includes('/') ? String(value).split('/').pop() : String(value);
+  return `${fr.rollOption}:${v.toLowerCase()}`;
+}
+
+/** Foundry's words are keys into its language file ("PF2E.Skill.Acrobatics"): the last part, spaced ("Acrobatics"). */
+export function foundryLabel(k) {
+  const t = String(k == null ? '' : k);
+  if (!/^PF2E\./.test(t)) return t;
+  const last = t.split('.').pop().replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Za-z])(\d)/g, '$1 $2');
+  return last.charAt(0) + last.slice(1).toLowerCase();
+}
+
+/** What a choice asks, from Foundry's prompt key: "choose a skill", "make a choice (general training)". */
+function choicePrompt(p) {
+  const parts = String(p || '').split('.');
+  if (!/^PF2E\./.test(String(p || ''))) return p ? String(p) : 'make a choice';
+  if (parts[parts.length - 1] === 'Prompt') return parts.length > 3 ? `make a choice (${foundryLabel(parts.slice(0, -1).join('.')).toLowerCase()})` : 'make a choice';
+  const w = foundryLabel(p).toLowerCase().replace(/\bone\b/, '1');
+  return `choose ${/^[aeiou]/.test(w) ? 'an' : 'a'} ${w}`;
+}
+
+/**
+ * Fill a rule's references: {item|flags.system.rulesSelections.<flag>} with this item's choice and
+ * {actor|flags.<path>} with a flag another item set (the cleric's doctrine sets the doctrines its later features
+ * grant). undefined: a reference not filled yet (a choice to make, a flag still to come); null: a reference the
+ * builder does not read.
+ */
+function fill(v, flags, actorFlags = {}) {
+  if (typeof v !== 'string') return v;
+  let missing = false;
+  const out = v.replace(/\{item\|flags\.system\.rulesSelections\.([A-Za-z0-9_]+)\}/gi, (_, f) => { if (flags[f] === undefined) { missing = true; return ''; } return String(flags[f]); })
+    .replace(/\{actor\|flags\.([A-Za-z0-9_.]+)\}/g, (_, p) => { const x = dig(actorFlags, p); if (x === undefined) { missing = true; return ''; } return String(x); });
+  if (missing) return undefined;
+  return /\{[^}]*\|/.test(out) ? null : out;
+}
+const dig = (o, p) => p.split('.').reduce((a, k) => (a && typeof a === 'object' ? a[k] : undefined), o);
+function setPath(o, p, v, mode) {
+  const ks = p.split('.'), last = ks.pop();
+  let t = o;
+  for (const k of ks) t = t[k] && typeof t[k] === 'object' ? t[k] : (t[k] = {});
+  t[last] = mode === 'override' && v && typeof v === 'object' && !Array.isArray(v) ? { ...(t[last] || {}), ...v } : v;
+}
+
+/**
+ * Work out a rank Foundry writes as a formula: numbers, @actor.level, @actor.system.<...>.rank (read through
+ * rankAt), ternary, max, min, gte, gt, lte, lt, eq. null when it holds anything else.
+ */
+export function rankFormula(src, level, rankAt) {
+  const toks = String(src).match(/@[A-Za-z0-9_.{}|-]+|\d+|[A-Za-z]+|[(),]/g) || [];
+  let i = 0;
+  const expr = () => {
+    const t = toks[i++];
+    if (t === undefined) throw new Error('end');
+    if (/^\d+$/.test(t)) return Number(t);
+    if (t === '@actor.level') return level;
+    if (t.startsWith('@actor.system.')) { const v = rankAt(t.slice(14)); if (v === null) throw new Error(t); return v; }
+    const fns = { ternary: (c, a, b) => (c ? a : b), max: Math.max, min: Math.min, gte: (a, b) => a >= b, gt: (a, b) => a > b, lte: (a, b) => a <= b, lt: (a, b) => a < b, eq: (a, b) => a === b };
+    if (!fns[t] || toks[i++] !== '(') throw new Error(t);
+    const args = [expr()];
+    while (toks[i] === ',') { i++; args.push(expr()); }
+    if (toks[i++] !== ')') throw new Error(')');
+    return fns[t](...args);
+  };
+  try { const v = expr(); return i === toks.length && typeof v === 'number' ? v : null; } catch { return null; }
+}
+
 /**
  * The character a build makes. get(key) -> content document (or undefined).
- * @returns {{actor: object, pending: Array<{level, step, text}>, problems: string[]}}
+ * opts.resolve(uuid) -> content key: Foundry's links in the content's rules (foundryResolver).
+ * @returns {{actor: object, pending: Array<{level, step, text}>, problems: string[], unsupported: Array<{from, rule, why}>}}
  */
-export function deriveCharacter(build, get) {
+export function deriveCharacter(build, get, opts = {}) {
   const b = build || {}, L = Math.max(1, Math.min(20, b.level || 1));
   const pending = [], problems = [];
   const need = (level, step, text) => pending.push({ level, step, text });
@@ -95,11 +317,12 @@ export function deriveCharacter(build, get) {
   }
 
   // ---- proficiencies ----
-  const P = { perception: 0, fortitude: 0, reflex: 0, will: 0, classDC: 0, armor: {}, weapons: {}, skills: {}, lore: {} };
+  const P = { perception: 0, fortitude: 0, reflex: 0, will: 0, classDC: 0, armor: {}, weapons: {}, skills: {}, lore: {}, spellcasting: {} };
   if (cls) {
     P.perception = cls.perception || 0;
     for (const s of ['fortitude', 'reflex', 'will']) P[s] = (cls.saves || {})[s] || 0;
     P.classDC = 1;
+    if (cls.spellcasting) P.spellcasting[cls.slug] = cls.spellcasting;
     for (const [k, v] of Object.entries(cls.defenses || {})) if (v) P.armor[k] = v;
     for (const [k, v] of Object.entries(cls.attacks || {})) {
       if (k === 'other') { if (v && v.name && v.rank) P.weapons[slug(v.name)] = v.rank; continue; }
@@ -121,17 +344,6 @@ export function deriveCharacter(build, get) {
   if (cls && chosen.length < want) need(1, 'skills', `Choose ${want - chosen.length} more trained skill${want - chosen.length > 1 ? 's' : ''} (${want} in all: the class's ${(cls.skills || {}).additional || 0}, Intelligence ${intAt1}${doubled ? `, ${doubled} for a skill trained twice` : ''}).`);
   if (chosen.length > want && cls) problems.push(`${chosen.length} trained skills chosen, ${want} allowed`);
   for (const l of [...((bg && bg.lore) || []), ...((b.skills || {}).lore || [])]) P.lore[loreSlug(l)] = 1;
-  // skill increases, and the skills an Intelligence increase adds
-  for (const lv of ((cls && cls.skillIncreaseLevels) || []).filter((x) => x <= L)) {
-    const s = (levels[lv] || {}).skillIncrease;
-    if (!s) { need(lv, 'skillIncrease', `Choose a skill to increase at level ${lv}.`); continue; }
-    const [bag, name] = s.startsWith('lore:') ? [P.lore, loreSlug(s.slice(5))] : [P.skills, s];
-    const now = bag[name] || 0;
-    if (now + 1 > maxSkillRank(lv)) problems.push(`level ${lv}: ${s} cannot go above ${['untrained', 'trained', 'expert', 'master', 'legendary'][maxSkillRank(lv)]} yet`);
-    else bag[name] = now + 1;
-  }
-  for (const [lv, d] of Object.entries(levels)) for (const s of (d && d.trained) || []) P.skills[s] = Math.max(P.skills[s] || 0, 1);
-
   // ---- features and feats ----
   const features = cls ? (cls.features || []).filter((f) => f.level <= L).map((f) => (f.ref ? f.ref.split('/').pop() : slug(f.name))) : [];
   const feats = [];
@@ -152,6 +364,186 @@ export function deriveCharacter(build, get) {
     }
   }
 
+  // ---- the content's own rules: "pick one", "you gain this", proficiency upgrades (section 9.6) ----
+  const sel = b.selections || {}, unsupported = [], granted = [], actorFlags = {}, waiting = [], formulas = [];
+  const resolve = opts.resolve || (() => null);
+  const camel = (x) => String(x).replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+  const tags = new Set();
+  for (const [kind, d] of [['class', cls], ['ancestry', anc], ['heritage', her], ['background', bg]]) if (d && d.slug) tags.add(`${kind}:${d.slug}`);
+  for (const f of feats) tags.add(`feat:${f.slug}`);
+  for (const s of features) { tags.add(`feat:${s}`); tags.add(`feature:${s}`); }   // Foundry gives class features both
+  for (const t of (anc && anc.traits) || []) tags.add(`self:trait:${t}`);
+  if (b.deity) tags.add('deity');
+  if (her && her.slug) tags.add(`self:heritage:${her.slug}`);
+  const choicesOf = (d) => ((d && d.rules) || []).map((r) => (r.key === 'unsupported' ? r.foundry : null)).filter((fr) => fr && fr.key === 'ChoiceSet');
+  const facts = { level: L, tags };
+  const up = (bag, k, rank, mode) => {
+    const box = bag ? P[bag] : P;
+    const now = box[k] || 0;
+    box[k] = Math.max(0, Math.min(4, mode === 'override' ? rank : mode === 'add' ? now + rank : Math.max(now, rank)));
+  };
+  const spellKey = () => (cls && cls.slug) || 'class';
+  // a rule's proficiency path: [bag, key] in P, or null
+  const pathOf = (p) => {
+    let m;
+    if ((m = /^system\.skills\.([a-z-]+)\.rank$/.exec(p))) return SKILLS.includes(m[1]) ? ['skills', m[1]] : /-lore$/.test(m[1]) ? ['lore', m[1].replace(/-lore$/, '')] : null;
+    if ((m = /^system\.proficiencies\.attacks\.([a-z-]+)\.rank$/.exec(p))) return ['weapons', m[1]];
+    if ((m = /^system\.proficiencies\.defenses\.([a-z-]+)\.rank$/.exec(p))) return ['armor', m[1]];
+    if ((m = /^system\.saves\.(fortitude|reflex|will)\.rank$/.exec(p))) return [null, m[1]];
+    if (/^system\.(attributes\.)?perception\.rank$/.test(p)) return [null, 'perception'];
+    if (/^system\.proficiencies\.classDCs\.[a-z-]+\.rank$/.test(p)) return [null, 'classDC'];
+    if (/^system\.proficiencies\.spellcasting\.rank$/.test(p)) return ['spellcasting', spellKey()];
+    return null;
+  };
+  const rankAt = (p) => { const t = pathOf(`system.${p}`); return t ? ((t[0] ? P[t[0]] : P)[t[1]] || 0) : null; };
+  facts.rank = (term) => {
+    const [kind, k] = term.split(':');
+    const bag = { skill: P.skills, defense: P.armor, attack: P.weapons }[kind];
+    return bag ? (bag[k] || 0) : kind === 'save' ? (P[k] || 0) : 0;
+  };
+  const seen = new Set();
+  const queue = [];
+  const add = (d, key, level, from, granter) => {
+    if (!d || seen.has(key || d.slug)) return;
+    seen.add(key || d.slug);
+    queue.push({ d, key, level, from, granter, flags: {} });
+    // the roll options of the choices made on it count from the start, as Foundry's do
+    for (const fr of choicesOf(d)) { const o = choiceOption(fr, sel[`${d.slug}.${fr.flag || camel(d.slug)}`]); if (o) tags.add(o); }
+  };
+  add(cls, b.class, 1, 'class'); add(anc, b.ancestry, 1, 'ancestry'); add(her, b.heritage, 1, 'heritage'); add(bg, b.background, 1, 'background');
+  for (const f of (cls && cls.features) || []) if (f.level <= L && f.ref) add(get(f.ref), f.ref, f.level, 'class feature');
+  for (const f of feats) add(get(f.ref), f.ref, f.level, `${f.slot} feat`);
+
+  // one rule: true when done (or set aside), 'wait' when it needs a flag another item has not set yet
+  const run = (it, fr) => {
+    const { d, key, level, flags } = it;
+    const where = `${d.name} (${it.from})`;
+    const skip = (why) => { unsupported.push({ from: where, rule: fr.key, why }); return true; };
+    tags.delete('parent:granter');
+    for (const t of [...tags].filter((x) => x.startsWith('parent:granter:'))) tags.delete(t);
+    if (it.granter) { tags.add(`parent:granter:slug:${it.granter}`); tags.add('parent:granter'); }
+    const fillDeep = (x) => (typeof x === 'string' ? (fill(x, flags, actorFlags) ?? '') : Array.isArray(x) ? x.map(fillDeep) : x && typeof x === 'object' ? Object.fromEntries(Object.entries(x).map(([k, v]) => [k, fillDeep(v)])) : x);
+    const holds = predicateHolds(fr.predicate === undefined ? undefined : fillDeep(fr.predicate), facts);
+    if (holds === false) return true;
+    if (fr.key === 'ChoiceSet') {
+      const flag = fr.flag || camel(d.slug);
+      const id = `${d.slug}.${flag}`;
+      const c = fr.choices;
+      const spec = Array.isArray(c) ? { options: c.map((o) => (o && typeof o === 'object' ? { value: o.value, label: foundryLabel(o.label) } : { value: o, label: String(o) })) }
+        : c && typeof c === 'object' && c.ownedItems ? { owned: { types: c.types || [], ...(c.predicate ? { predicate: c.predicate } : {}) } }
+        : c && typeof c === 'object' && c.filter ? { filter: c.filter, ...(c.itemType ? { itemType: c.itemType } : {}) }
+        : typeof c === 'string' ? { config: c } : c && c.config ? { config: c.config } : null;
+      if (!spec) return skip('a choice of a kind the builder does not read');
+      if (sel[id] === undefined) {
+        need(level, `choice.${id}`, `${d.name}: ${spec.owned ? 'choose one of the character\'s own items (once the gear is bought)' : choicePrompt(fr.prompt)}.`);
+        pending[pending.length - 1].choice = { item: key || d.slug, flag, ...spec };
+        return true;
+      }
+      if (spec.options) {
+        const ok = spec.options.some((o) => o.value === sel[id] || (typeof o.value === 'string' && /^Compendium\./.test(o.value) && resolve(o.value) === sel[id]));
+        if (!ok) problems.push(`${d.name}: ${sel[id]} is not one of its choices`);
+      }
+      flags[flag] = sel[id];
+      const o = choiceOption(fr, sel[id]);
+      if (o) tags.add(o);
+      return true;
+    }
+    if (fr.key === 'GrantItem') {
+      const uuid = fill(fr.uuid, flags, actorFlags);
+      if (uuid === undefined) return /\{actor\|/.test(fr.uuid) ? 'wait' : true;   // a choice still to make: its own step says so
+      if (uuid === null) return skip(`it grants ${fr.uuid}, which the builder cannot work out`);
+      const gk = /^Compendium\./.test(uuid) ? resolve(uuid) : uuid;
+      const g = gk ? get(gk) : null;
+      if (!g) return skip(`it grants ${uuid}, which is not in the open content`);
+      if (seen.has(gk)) return true;
+      if (g.kind === 'feat') {
+        if (g.category === 'classfeature') { features.push(g.slug); tags.add(`feature:${g.slug}`); }
+        else feats.push({ name: g.name, slug: g.slug, ref: gk, level, slot: 'granted', from: d.name, ...(g.rules && g.rules.length ? { rules: g.rules } : {}) });
+        tags.add(`feat:${g.slug}`);
+      } else granted.push({ name: g.name, kind: g.kind, ref: gk, from: d.name });
+      add(g, gk, level, g.category === 'classfeature' ? 'class feature' : 'granted', d.slug);
+      return true;
+    }
+    if (fr.key === 'MartialProficiency') {
+      // a proficiency for weapons matching a definition (Fighter Weapon Mastery's chosen group); sameAs: its rank
+      // goes with another's (Monastic Weaponry: as unarmed attacks, up to master)
+      const fillAll = (x) => (typeof x === 'string' ? fill(x, flags, actorFlags) : Array.isArray(x) ? x.map(fillAll) : x && typeof x === 'object' ? Object.fromEntries(Object.entries(x).map(([k, v]) => [k, fillAll(v)])) : x);
+      const def = fillAll(fr.definition);
+      const text = JSON.stringify(def, (k, v) => (v === undefined ? '__undefined__' : v));
+      if (text.includes('__undefined__')) return true;   // the choice is still to make
+      if (text.includes('null')) return skip('a weapon proficiency the builder cannot work out');
+      const slugOf = fr.slug || `${d.slug}-${Object.keys(P.definitions || {}).length + 1}`;
+      P.definitions = P.definitions || {};
+      P.definitions[slugOf] = { when: Array.isArray(def) ? def : [def], ...(fr.sameAs ? { sameAs: fr.sameAs } : {}), ...(RANKS[fr.maxRank] ? { max: RANKS[fr.maxRank] } : {}) };
+      if (typeof fr.value === 'number') up('weapons', slugOf, fr.value, 'upgrade');
+      else if (fr.value !== undefined && fr.value !== null) formulas.push({ where, fr, target: ['weapons', slugOf] });
+      return true;
+    }
+    // ActiveEffectLike
+    const path = fill(fr.path, flags, actorFlags);
+    if (path === undefined) return /\{actor\|/.test(fr.path) ? 'wait' : true;
+    if (path === null) return skip(`a change to ${fr.path}, which the builder cannot work out`);
+    if (/^flags\./.test(path)) { setPath(actorFlags, path.slice(6), fr.value, fr.mode); return true; }
+    const target = pathOf(path);
+    if (!target) return true;   // not a proficiency: a play-time effect, read by the rules at the table
+    if (!['upgrade', 'override', 'add'].includes(fr.mode)) return skip(`a ${fr.mode} of ${path}`);
+    const raw = typeof fr.value === 'string' ? fill(fr.value, flags, actorFlags) : fr.value;
+    if (raw === undefined) return true;   // a rank set by a choice still to make
+    const v = typeof raw === 'number' ? raw : /^\d+$/.test(String(raw)) ? Number(raw) : undefined;
+    if (v === undefined) { formulas.push({ where, fr: { ...fr, value: String(raw).replace(/@item\.flags\.system\.rulesSelections\.([A-Za-z0-9_]+)/g, (m, k) => (typeof flags[k] === 'number' || /^\d+$/.test(String(flags[k])) ? String(flags[k]) : m)) }, target }); return true; }   // worked out once the rest is in
+    up(target[0], target[1], v, fr.mode);
+    return true;
+  };
+  for (;;) {
+    while (queue.length) {
+      const it = queue.shift();
+      if (it.from === 'class feature') {
+        // the proficiency gains a class feature states in its text and Foundry leaves out
+        // (a feature shared by classes, Weapon Expertise, is read in this class's paragraphs only)
+        const { gains, unread } = textGains(classSection(it.d.text, cls && cls.name));
+        for (const g of gains) {
+          const k = g.bag === 'spellcasting' ? spellKey() : g.key;
+          // a rank raised above trained raises what the character has: a wizard's Weapon Expertise does not make
+          // it an expert with martial weapons it was never trained in
+          if (g.rank > 1 && g.bag && !((P[g.bag] || {})[k] > 0)) continue;
+          up(g.bag, k, g.rank, 'upgrade');
+        }
+        const covered = (it.d.rules || []).some((r) => r.foundry && (r.foundry.key === 'MartialProficiency' || /\.rank$/.test(r.foundry.path || '')));
+        if (!covered) for (const u of unread) unsupported.push({ from: `${it.d.name} (class feature)`, rule: 'text', why: `a proficiency gain for "${u}": the player says what it applies to` });
+      }
+      for (const r of it.d.rules || []) {
+        const fr = r.key === 'unsupported' ? r.foundry : null;
+        if (!fr || !BUILD_RULES.includes(fr.key)) continue;
+        if (run(it, fr) === 'wait') waiting.push({ it, fr });
+      }
+    }
+    // rules waiting on a flag: run those whose flag has come; stop when none moves
+    const before = waiting.length;
+    for (const w of waiting.splice(0)) if (run(w.it, w.fr) === 'wait') waiting.push(w);
+    if (!queue.length && waiting.length === before) break;
+  }
+  for (const w of waiting) unsupported.push({ from: `${w.it.d.name} (${w.it.from})`, rule: w.fr.key, why: `it waits on ${w.fr.uuid || w.fr.path}, which nothing set` });
+  // ranks written as formulas ("the same as your unarmed attacks"), in order, after everything else
+  for (const { where, fr, target } of formulas) {
+    const v = rankFormula(fr.value, L, rankAt);
+    if (v === null) unsupported.push({ from: where, rule: fr.key, why: `a rank the builder cannot work out: ${JSON.stringify(fr.value)}` });
+    else up(target[0], target[1], v, fr.mode);
+  }
+  // skill increases (after the rules: a skill the class's own choice trains is increased from trained), and the
+  // skills an Intelligence increase adds
+  for (const lv of ((cls && cls.skillIncreaseLevels) || []).filter((x) => x <= L)) {
+    const s = (levels[lv] || {}).skillIncrease;
+    if (!s) { need(lv, 'skillIncrease', `Choose a skill to increase at level ${lv}.`); continue; }
+    const [bag, name] = s.startsWith('lore:') ? [P.lore, loreSlug(s.slice(5))] : [P.skills, s];
+    const now = bag[name] || 0;
+    if (now + 1 > maxSkillRank(lv)) problems.push(`level ${lv}: ${s} cannot go above ${['untrained', 'trained', 'expert', 'master', 'legendary'][maxSkillRank(lv)]} yet`);
+    else bag[name] = now + 1;
+  }
+  for (const [lv, d] of Object.entries(levels)) for (const s of (d && d.trained) || []) P.skills[s] = Math.max(P.skills[s] || 0, 1);
+
+  for (const k of Object.keys(P.spellcasting)) if (!P.spellcasting[k]) delete P.spellcasting[k];
+  if (!Object.keys(P.spellcasting).length) delete P.spellcasting;
+
   const actor = {
     system: 'pf2e', kind: 'character', name: b.name || 'New character', level: L,
     ancestry: anc ? { name: anc.name, hp: anc.hp || 0, size: anc.size || 'medium', speed: anc.speed || 25, traits: [...(anc.traits || [])], senses: anc.vision && anc.vision !== 'normal' ? [anc.vision] : [] }
@@ -164,7 +556,8 @@ export function deriveCharacter(build, get) {
     features,
     feats,
     traits: anc ? [...(anc.traits || [])] : [],
+    ...(granted.length ? { granted } : {}),
     build: b,
   };
-  return { actor, pending, problems };
+  return { actor, pending, problems, unsupported };
 }

@@ -292,6 +292,30 @@
                 "minimum": 0,
                 "maximum": 4
               }
+            },
+            "definitions": {
+              "description": "Proficiencies a feature defines for weapons that match a Foundry item predicate (Fighter Weapon Mastery's group, Monastic Weaponry): {slug: {when, sameAs?, max?}}. The rank is weapons[slug], or with sameAs the rank of weapons[sameAs] up to max.",
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "when"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "when": {
+                    "type": "array"
+                  },
+                  "sameAs": {
+                    "type": "string"
+                  },
+                  "max": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4
+                  }
+                }
+              }
             }
           }
         },
@@ -399,6 +423,10 @@
               "slot": {
                 "type": "string",
                 "description": "Which slot it fills: ancestry, class, general, skill, background, or a feature's grant."
+              },
+              "from": {
+                "type": "string",
+                "description": "For a granted feat: what granted it (Versatile Human, a class feature)."
               }
             },
             "additionalProperties": false
@@ -521,6 +549,32 @@
         },
         "build": {
           "$ref": "#/$defs/build"
+        },
+        "granted": {
+          "type": "array",
+          "description": "Other things the build's rules grant (actions, effects): name, kind, content ref and what granted them.",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "ref"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "ref": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -750,6 +804,21 @@
         },
         "details": {
           "type": "object"
+        },
+        "selections": {
+          "type": "object",
+          "description": "The answers to the content's own \"pick one\" rules, by \"<item slug>.<flag>\": a value, or a content key for a choice of item (docs/design/game-data.md 9.6).",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "deity": {
+          "type": "string",
+          "description": "The deity, a content key (deities:deity/<slug>)."
         }
       }
     }

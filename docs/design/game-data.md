@@ -622,3 +622,57 @@ on the board: **Claude walks the player through it in chat, step by step**, and 
 - **Left for step 2:** everything in a rule (the fighter's Acrobatics-or-Athletics, a subclass, Versatile Human's
   general feat, the proficiency gains of later class features). **Left for step 3:** choices written only in a
   background's text, such as the Guard's "Legal Lore or Warfare Lore", which Foundry does not encode.
+
+### 9.6 Step 2 as built (2026-11-14): the content's own rules
+
+- `deriveCharacter(build, get, {resolve})` now runs the Foundry rule elements a build needs (`BUILD_RULES`):
+  - **ChoiceSet** ("pick one"): a choice of listed values, of items by filter (`item:level:1`, `item:trait:general`,
+    `item:tag:alchemist-research-field`), of a game list (`weaponGroups`, `skills`), or of the character's own gear
+    (made at step 5). The answer goes in the build's `selections`, keyed `"<item slug>.<flag>"` (the flag Foundry
+    names, or the item's slug in camel case): a value, or a content key for a choice of item. A choice not made is a
+    pending step carrying what it offers (`choice: {item, flag, options | filter | config | owned}`); an answer not
+    among the listed values is a problem. A choice's roll option (`kinetic-gate:first-element:air`) is added to the
+    character's roll options.
+  - **GrantItem** ("you gain this"): a fixed item or the item a choice picked (`{item|flags...rulesSelections...}`)
+    or a flag another item set (`{actor|flags...}`: the cleric's doctrine sets the doctrines its First to Final
+    Doctrine features grant). Granted feats join `feats` with `slot: 'granted'` and `from`; granted class features
+    join `features`; anything else (actions, effects) goes in the actor's `granted`. Grants are followed in turn.
+    A rule that waits on a flag not set yet is run again once it is; one still waiting at the end is reported.
+  - **ActiveEffectLike** on a proficiency rank (skills, lore, weapons, armour, saves, Perception, class DC,
+    spellcasting): upgrade, override or add. A rank written as a formula (`ternary(gte(@actor.level,7),3,2)`,
+    `@actor.system.proficiencies.attacks.unarmed.rank`) is worked out after everything else (`rankFormula`).
+    On `flags.`: sets the flag. Any other path is a play-time effect, left to the table.
+  - **MartialProficiency**: a weapon proficiency for weapons matching a predicate (Fighter Weapon Mastery's chosen
+    group; Monastic Weaponry, "as your unarmed attacks, up to master"). Kept in `proficiencies.definitions`
+    (`{slug: {when, sameAs?, max?}}`); `rulesets/pf2e/actor.js` `weaponRank` takes the best of a weapon's category,
+    base weapon, group and every definition it matches.
+- **Predicates** (`predicateHolds`) are read against the character's roll options: `class:`, `feat:`, `feature:`,
+  `ancestry:`, `heritage:`, `background:`, `self:trait:`, `self:heritage:`, `deity`, `parent:granter:slug:`, the
+  choices' roll options, `self:level` and rank comparisons (`skill:athletics:rank`, `defense:light:rank`). A state
+  in play (`self:effect:`, `self:condition:`, a battle form, a target) never holds while building.
+- **Proficiency gains in the text.** Foundry leaves most class features' proficiency gains out of its rules
+  ("Your proficiency rank for Fortitude saves increases to master"), so `textGains` reads them from the text in the
+  fixed forms the books use ("your proficiency rank(s) for X increase(s) to R", "you're trained in X", "you have /
+  gain R proficiency in X"). It does not read a gain that holds only "if" something is so, one "at 13th level", an
+  eidolon's ("their proficiency"), a summary of later features ("Second Doctrine (3rd): ..."), or a subclass's
+  "listed skills" (its own rules give those). A feature several classes share (Weapon Expertise) is read in the
+  class's own paragraph (`classSection`). A rank above trained raises only what the character already has: a
+  wizard's Weapon Expertise does not make it expert with martial weapons. A gain whose target is the player's pick
+  ("the chosen saving throw") is reported.
+- The class's own spellcasting rank (`class.spellcasting`) is the casting proficiency from 1st level.
+- Skill increases now come after the rules, so a skill the class's own choice trains is increased from trained.
+- **Links:** Foundry's `Compendium.pf2e.<pack>.Item.<id or name>` resolve through the import manifest
+  (`foundryResolver`; `FOUNDRY_PACKS` maps Foundry's pack names to our sources).
+- **Content:** the importer now keeps Foundry's other tags (`tags`, the `item:tag:` choice filters match on); the
+  8.7.0 release was imported again for it (591 documents gained tags, nothing else changed).
+- **The report:** `node tools/builder.mjs report [--json] [--class <slug>]` (the PF2E side in `rulesets/pf2e/builder.js`) lists the building rules the builder
+  cannot run. On 2026-11-14: 70 in all; 22 of the 29 classes have none. Left: 45 conditions on states it cannot
+  know while building (an exemplar's ikon, a kineticist's junction, a familiar), 18 choices of the character's own
+  gear (step 5), 4 rank formulas reading item flags, 3 gains the player applies (a monk's Path to Perfection
+  saves; the investigator's Deductive Improvisation).
+- **Tested** (`tests/pf2e-build.test.mjs`): the fighter's skill choice, Versatile Human's and Natural Ambition's
+  feats, Shield Block and Reactive Strike from class features; a level 11 fighter (Perception, saves, class DC,
+  armour from the text; master with swords from its weapon group); a level 7 warpriest (doctrine flags, armour,
+  martial weapons); every class at 20th level; the report.
+- **Left for step 3:** listing a choice's options (filters with `{actor|...}` in them, the game lists), and the
+  choices written only in text (the Guard's lore).

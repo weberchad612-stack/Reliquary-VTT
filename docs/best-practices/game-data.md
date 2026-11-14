@@ -310,5 +310,14 @@ What the board does with it: docs/best-practices/board.md (Replay).
   is the right kind.
 - Test the rules against numbers worked out from the book's rules, not against existing sample characters; and
   remember that a proficiency rank counts twice (trained +2, expert +4, master +6, legendary +8, plus level).
+- The content's own choices are answered in the build's `selections` (`"<item slug>.<flag>": value`), never by
+  editing the derived numbers; the builder shows each unanswered one as a step with what it offers.
+- Foundry leaves many proficiency gains out of its rules and writes them in the text: read the text only in its
+  fixed forms, only the class's own paragraph of a shared feature, and never raise a rank the character does not
+  have. Check a change against every class at 20th level (the test does) before trusting it.
+- After changing the builder, run `node tools/builder.mjs report`: a class that had no unrunnable rules must still
+  have none.
+- A content field the builder needs (Foundry's tags) is added in the converter and the release imported again
+  (`tools/import/foundry-pf2e.mjs --release`), never written into `content/pf2e/` by hand.
 - The design and what is built: docs/design/game-data.md section 9.
 

@@ -283,12 +283,48 @@ function applyStrikeRules(s, rules, tags, facts) {
   if (rules.critSpec.some((c) => testPredicate(c.when, t, facts))) s.critSpec = true;
 }
 
+// a weapon's facts as Foundry's item terms read them (item:group:sword, item:category:martial, item:base:longsword)
+function weaponTerm(t, w) {
+  const m = /^item:(group|category|base|trait|damage:type):(.+)$/.exec(t);
+  if (m) {
+    if (m[1] === 'group') return w.group === m[2];
+    if (m[1] === 'category') return (w.category || 'simple') === m[2];
+    if (m[1] === 'base') return (w.baseItem || w.slug) === m[2];
+    if (m[1] === 'trait') return (w.traits || []).includes(m[2]);
+    return ((w.damage || {}).type) === m[2];
+  }
+  if (t === 'item:melee') return !w.range || (w.traits || []).includes('thrown');
+  if (t === 'item:ranged') return !!w.range;
+  return false;
+}
+function weaponMatches(def, w) {
+  const one = (t) => (typeof t === 'string' ? weaponTerm(t, w)
+    : t && t.not !== undefined ? !one(t.not) : t && Array.isArray(t.or) ? t.or.some(one) : t && Array.isArray(t.nor) ? !t.nor.some(one)
+    : t && Array.isArray(t.and) ? t.and.every(one) : false);
+  return (Array.isArray(def) ? def : [def]).every(one);
+}
+/**
+ * A character's proficiency with a weapon: the best of its category, its base weapon (weapon-base-<base>), its
+ * group (weapon-group-<group>) and any proficiency a feature defines for weapons like it (proficiencies.definitions,
+ * e.g. Fighter Weapon Mastery's chosen group: {when: predicate, sameAs?, max?}).
+ */
+export function weaponRank(w, P) {
+  const W = (P && P.weapons) || {};
+  const ranks = [W[w.category || 'simple'], W[`weapon-base-${w.baseItem || w.slug}`], W[`weapon-group-${w.group}`]];
+  for (const [slug, def] of Object.entries((P && P.definitions) || {})) {
+    if (!weaponMatches(def.when, w)) continue;
+    // sameAs: the rank goes with another (Monastic Weaponry: as unarmed attacks, up to master)
+    ranks.push(def.sameAs ? Math.min(W[def.sameAs] || 0, def.max || 4) : W[slug]);
+  }
+  return Math.max(0, ...ranks.filter((x) => typeof x === 'number'));
+}
+
 /** A character's Strike with a weapon: attack bonus (with the multiple attack penalty) and damage. */
 function characterStrike(w, { attrs, P, level, stat, feats }) {
   const traits = w.traits || [], ranged = !!w.range && !traits.includes('thrown'), thrown = traits.includes('thrown');
   const finesse = traits.includes('finesse');
   const atkAttr = ranged ? 'dex' : finesse && attrs.dex > attrs.str ? 'dex' : 'str';
-  const rank = (P.weapons || {})[w.category || 'simple'] || 0;
+  const rank = weaponRank(w, P);
   const potency = (w.runes || {}).potency || 0, striking = (w.runes || {}).striking || 0;
   const mods = potency ? [{ slug: 'potency', label: 'potency rune', type: 'item', value: potency }] : [];
   const attack = stat({

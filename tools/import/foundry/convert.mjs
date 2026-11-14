@@ -299,6 +299,8 @@ function base(d, kind, ctx, extra = {}) {
     ...(level !== undefined ? { level } : {}),
     ...(tr.rarity && tr.rarity !== 'common' ? { rarity: tr.rarity } : {}),
     ...(strs(tr.value).length ? { traits: strs(tr.value) } : {}),
+    // Foundry's other tags: what choice filters match on (item:tag:<tag>), docs/design/game-data.md 9.6
+    ...(strs(tr.otherTags).length ? { tags: strs(tr.otherTags) } : {}),
     ...extra,
   };
   const text = cleanText((s.description || {}).value ?? (typeof s.description === 'string' ? s.description : ''));
