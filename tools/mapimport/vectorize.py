@@ -22,7 +22,7 @@ def settings(cfg):
 
 
 def snap(v):
-    return round(round(v / SNAP) * SNAP, 3)
+    return round(round(v / SNAP) * SNAP, 6)
 
 
 def to_cells(p, grid):

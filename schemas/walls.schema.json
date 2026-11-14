@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/weberchad612-stack/Reliquary-VTT/schemas/walls.schema.json",
   "title": "Wall segments",
-  "description": "Vector wall segments for one map, in grid cells. Endpoints are multiples of 1/8 cell (checked by tools/validate.mjs). See docs/design/maps.md sections 4 and 5.",
+  "description": "Vector wall segments for one map, in grid cells. Endpoints are multiples of the file's snap: 1/8 cell (maps imported before 2026-11-14) or 1/32 cell (checked by tools/validate.mjs). See docs/design/maps.md sections 4 and 5.",
   "type": "object",
   "required": ["v", "unit", "snap", "segs"],
   "additionalProperties": false,
@@ -10,7 +10,7 @@
     "$schema": { "type": "string" },
     "v": { "const": 1 },
     "unit": { "const": "cell" },
-    "snap": { "const": 0.125 },
+    "snap": { "enum": [0.125, 0.03125], "description": "Endpoint precision in cells: 1/8, or 1/32 for maps imported at print resolution (2026-11-14)." },
     "segs": { "type": "array", "items": { "$ref": "#/$defs/seg" } }
   },
   "$defs": {
@@ -25,6 +25,7 @@
         "a": { "$ref": "#/$defs/point" },
         "b": { "$ref": "#/$defs/point" },
         "t": { "enum": ["solid", "terrain", "grate", "window", "slit", "ethereal", "door", "secret"] },
+        "w": { "type": "number", "exclusiveMinimum": 0, "maximum": 2, "description": "Wall thickness in cells: a and b are its centre line. Sight, light, sound and movement meet its faces (half w each side, ends squared off w/2 past a and b), so it is solid through and walls meet at their centres; sight sees a wall to its far face, so the fog reveals the whole drawn wall. Not for doors, one-way walls or proximity walls. Missing: a line with no thickness." },
         "move": { "enum": [0, 20] },
         "sight": { "$ref": "#/$defs/sense" },
         "light": { "$ref": "#/$defs/sense" },

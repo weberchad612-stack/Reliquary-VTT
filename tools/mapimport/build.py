@@ -51,8 +51,9 @@ sys.path.insert(0, os.path.dirname(HERE))
 
 from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize, terrain as terrainmod  # noqa: E402
 from mapimport import lighting as lightingmod  # noqa: E402
+from mapimport import lines as linesmod  # noqa: E402
 
-SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note")
+SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note", "w", "line")
 DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find", "pair", "hinge", "swing")
 
 
@@ -196,9 +197,135 @@ def apply_props(seg, props):
             seg[k] = v
 
 
+PROFILES = os.path.join(HERE, "profiles.json")
+
+
+def deep_merge(base, over):
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = deep_merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
+def with_profile(cfg):
+    """Settings from a named art-style profile (profiles.json), with the map's own settings over them."""
+    name = cfg.get("profile")
+    if not name:
+        return cfg
+    profiles = json.load(open(PROFILES, encoding="utf-8"))
+    if name not in profiles:
+        raise ValueError(f'no profile "{name}" in {PROFILES} (have: {", ".join(k for k in profiles if not k.startswith("_"))})')
+    prof = {k: v for k, v in profiles[name].items() if k not in ("note", "learned_from")}
+    return deep_merge(prof, cfg)
+
+
+def straight_walls(lc, mask, g, door_segs, special, cfg, report):
+    """Straight walls: the proposals found in the mask (lc.auto), minus rejected ones, plus hand-listed lines measured
+    from the art; split by doors and windows; as centre lines with thickness. Their pixels leave the mask so the
+    tracer does not draw them again."""
+    cs = g["cell_px"]
+    found = linesmod.find_lines(mask, g, lc) if lc.get("auto", True) else []
+    rej = lc.get("reject_near", [])
+
+    def near(L, p, d=0.3):
+        u, v = (p[0], p[1]) if L["axis"] == "h" else (p[1], p[0])
+        return abs(v - L["c"]) <= d and L["lo"] - d <= u <= L["hi"] + d
+    kept = [L for L in found if not any(near(L, p) for p in rej)]
+    report["lines_proposed"] = len(found)
+    report["lines_rejected"] = len(found) - len(kept)
+    for spec in lc.get("add", []):
+        m = linesmod.measure(spec, mask, g, lc)
+        if not m["found"]:
+            m["w"] = spec.get("w", 0.06)
+            report.setdefault("lines_not_found", []).append(spec)
+        kept.append(m)
+    openings = [x for x in door_segs + special if x["t"] in ("door", "secret", "window", "ethereal", "terrain")]
+    kept = linesmod.consolidate(kept, lc)
+    # a door, window or hand-placed opening on a straight wall sits exactly on its centre line
+    aligned = 0
+    for o in openings:
+        (ax, ay), (bx, by) = o["a"], o["b"]
+        for L in kept:
+            if L["axis"] == "h" and abs(ay - by) < 0.05 and abs((ay + by) / 2 - L["c"]) <= max(0.15, L["w"]) and min(ax, bx) < L["hi"] + 1.5 and max(ax, bx) > L["lo"] - 1.5:
+                o["a"], o["b"] = [ax, L["c"]], [bx, L["c"]]; aligned += 1; break
+            if L["axis"] == "v" and abs(ax - bx) < 0.05 and abs((ax + bx) / 2 - L["c"]) <= max(0.15, L["w"]) and min(ay, by) < L["hi"] + 1.5 and max(ay, by) > L["lo"] - 1.5:
+                o["a"], o["b"] = [L["c"], ay], [L["c"], by]; aligned += 1; break
+    report["openings_aligned"] = aligned
+    pieces = linesmod.cut_openings(kept, openings, lc)
+    segs = linesmod.to_segments(pieces)
+    # the drawn wall under each line leaves the mask
+    import cv2
+    w8 = mask.astype(np.uint8)
+    for L in pieces:
+        a, b = (cells_to_px([L["lo"], L["c"]], g), cells_to_px([L["hi"], L["c"]], g)) if L["axis"] == "h" else (cells_to_px([L["c"], L["lo"]], g), cells_to_px([L["c"], L["hi"]], g))
+        cv2.line(w8, tuple(int(round(v)) for v in a), tuple(int(round(v)) for v in b), 0, max(1, int(round(L["w"] * cs)) + 4))
+    mask[:] = w8.astype(bool)
+    report["lines"] = len(segs)
+    return segs
+
+
+def erase_interiors(cfg, mask, g, segs, report):
+    """Each keyed room's inside loses its traced wall pixels, except within margin_cells of the room's edge: grid
+    lines, floor shading and furniture outlines inside a room never become walls. The room is the floor reached from
+    its point (cfg rooms) without crossing wall pixels or the walls known so far (straight walls, doors, hand-placed
+    segments), kept inside its clip rectangle if it has one; dark islands inside it are its floor detail."""
+    import cv2
+    ic = cfg["interior_erase"] if isinstance(cfg["interior_erase"], dict) else {}
+    margin = ic.get("margin_cells", 0.15)
+    skip = set(ic.get("skip", []))
+    cs, (ox, oy) = g["cell_px"], g["origin_px"]
+    H, W = mask.shape
+    barrier = mask.astype(np.uint8)
+    for x in segs:
+        if x.get("w"):   # a thick wall: its whole box, squared off w/2 past its ends, as the engine sees it
+            a, b, h = np.array(x["a"], float), np.array(x["b"], float), x["w"] / 2 + 1.5 / cs
+            u = (b - a) / (np.linalg.norm(b - a) or 1); n = np.array([u[1], -u[0]])
+            box = [a - u * h + n * h, b + u * h + n * h, b + u * h - n * h, a - u * h - n * h]
+            cv2.fillPoly(barrier, [np.round(np.array([cells_to_px(q, g) for q in box])).astype(np.int32)], 1)
+            continue
+        a, b = cells_to_px(x["a"], g), cells_to_px(x["b"], g)
+        cv2.line(barrier, tuple(int(round(v)) for v in a), tuple(int(round(v)) for v in b), 1, 3)
+    total = 0
+    k = max(1, int(round(margin * cs)))
+    for key, at in cfg["rooms"].items():
+        if key in skip:
+            continue
+        bar = barrier.copy()
+        clip = (ic.get("clip") or {}).get(key)
+        if clip:
+            p0, p1 = cells_to_px(clip[:2], g), cells_to_px(clip[2:], g)
+            keep = np.zeros_like(bar); keep[max(0, int(p0[1])):int(p1[1]), max(0, int(p0[0])):int(p1[0])] = 1
+            bar[keep == 0] = 1
+        sx, sy = (int(round(v)) for v in cells_to_px(at, g))
+        if bar[sy, sx]:   # the point is on a wall: the nearest floor pixel
+            ys, xs = np.nonzero(bar == 0)
+            if not len(xs):
+                continue
+            n = int(np.argmin((xs - sx) ** 2 + (ys - sy) ** 2)); sx, sy = int(xs[n]), int(ys[n])
+        ff = np.zeros((H + 2, W + 2), np.uint8)
+        region = (1 - bar).astype(np.uint8)
+        cv2.floodFill(region, ff, (sx, sy), 2)
+        room = (region == 2).astype(np.uint8)
+        if room.sum() > 0.5 * H * W:
+            report.setdefault("interior_erase_problems", []).append(f"{key}: the room leaks (give it a clip)")
+            continue
+        # the room with its holes (dark floor detail) filled, pulled in from its edge by the margin
+        cnts, _ = cv2.findContours(room, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        full = np.zeros_like(room)
+        cv2.drawContours(full, cnts, -1, 1, -1)
+        inner = cv2.erode(full, np.ones((2 * k + 1, 2 * k + 1), np.uint8)).astype(bool)
+        hit = mask & inner
+        total += int(hit.sum())
+        mask[hit] = False
+    report["interior_erased_px"] = total
+
+
 def build(cfg_path, repo):
     with open(cfg_path, encoding="utf-8") as f:
         cfg = json.load(f)
+    cfg = with_profile(cfg)
+    step = cfg.get("snap", 0.125)   # endpoint precision: 1/8 cell, or 1/32 for print-resolution maps (2026-11-14)
+    vectorize.SNAP = step
     out_dir = os.path.dirname(os.path.abspath(cfg_path))
     report = {"applied": []}
 
@@ -242,6 +369,11 @@ def build(cfg_path, repo):
             p0, p1 = cells_to_px([x0, y0], g), cells_to_px([x1, y1], g)
             wall[max(0, int(round(p0[1]))):max(0, int(round(p1[1]))), max(0, int(round(p0[0]))):max(0, int(round(p1[0])))] = False
         report["applied"].append({"erase": e.get("cells") or e.get("poly"), "note": e.get("note", "")})
+
+    gl = cfg.get("grid_lines") or {}
+    if gl.get("suppress"):
+        wall, n = linesmod.suppress_grid(wall, g, gl)
+        report["grid_lines_cleared_px"] = n
 
     fcfg = cfg.get("features")
     pre, _ = features.smooth_and_find_slits(wall, door_px | window_px, cs, fpc, fcfg)
@@ -313,8 +445,6 @@ def build(cfg_path, repo):
         a, b = seg_cells(s["a"], s["b"], g)
         slit_segs.append({"a": a, "b": b, "t": "slit", "prox": {"sight": s["near_ft"], "light": s["near_ft"]}})
 
-    rings = vectorize.rings(smooth, g, cfg.get("vectorize"))
-    walls = [dict(s, t="solid") for s in vectorize.segments(rings)]
     for x in cfg.get("add", []):
         seg = {"t": x["t"], "a": [vectorize.snap(v) for v in x["a"]], "b": [vectorize.snap(v) for v in x["b"]]}
         if x.get("door") is not None:
@@ -322,6 +452,18 @@ def build(cfg_path, repo):
         apply_props(seg, {k: v for k, v in x.items() if k not in ("t", "a", "b", "door")})
         special.append(seg)
         report["applied"].append({"add": x["t"], "a": x["a"], "b": x["b"], "note": x.get("note", "")})
+    line_segs = []
+    lc = cfg.get("lines")
+    if lc:
+        line_segs = straight_walls(lc, smooth, g, door_segs + win_segs, special, cfg, report)
+    if cfg.get("interior_erase") and cfg.get("rooms"):
+        erase_interiors(cfg, smooth, g, line_segs + door_segs + win_segs + special, report)
+    rings = vectorize.rings(smooth, g, cfg.get("vectorize"))
+    walls = [dict(s, t="solid") for s in vectorize.segments(rings)]
+    sq = (cfg.get("square_up_deg") if cfg.get("square_up_deg") is not None else (3.0 if lc else 0))
+    if sq:
+        report["squared_up"] = linesmod.square_up(walls, sq)
+    walls += line_segs
 
     # ids: stable, in reading order (top to bottom, left to right) per kind
     def order(s):
@@ -349,6 +491,12 @@ def build(cfg_path, repo):
                 seg["door"] = {k: v for k, v in s["door"].items() if v is not None}
             if seg["a"] != seg["b"]:
                 out.append(seg)
+    # welding: ends that nearly meet become one point (a measured wall's end wins), then all on the file's grid
+    if cfg.get("weld_cells", 0.08 if lc else 0):
+        report["welded_ends"] = linesmod.weld(out, cfg.get("weld_cells", 0.08), step)
+        out = [x for x in out if x["a"] != x["b"]]
+    for x in out:
+        x.pop("line", None)
     # Double doors: each leaf names the other (ids are known only now).
     for seg in out:
         door = seg.get("door")
@@ -398,7 +546,7 @@ def build(cfg_path, repo):
         json.dump(map_rec, f, indent=1)
         f.write("\n")
     with open(os.path.join(out_dir, "walls.json"), "w", encoding="utf-8") as f:
-        json.dump({"v": 1, "unit": "cell", "snap": 0.125, "segs": out}, f, separators=(",", ":"))
+        json.dump({"v": 1, "unit": "cell", "snap": step, "segs": out}, f, separators=(",", ":"))
         f.write("\n")
     counts = {}
     for s in out:

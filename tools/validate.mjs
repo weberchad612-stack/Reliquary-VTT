@@ -192,10 +192,11 @@ export function validateMapDir(dir, { knownMaps = null, report = new Report() } 
       segIds.add(s.id);
 
       for (const p of [s.a, s.b]) {
-        if (!onSnap(p[0]) || !onSnap(p[1])) report.error(file, `${where}: endpoint ${fmt(p)} is not on the 1/8 cell grid`);
+        if (!onSnap(p[0], walls.snap) || !onSnap(p[1], walls.snap)) report.error(file, `${where}: endpoint ${fmt(p)} is not on the 1/${Math.round(1 / walls.snap)} cell grid`);
         if (!inGrid(p, grid)) report.error(file, `${where}: endpoint ${fmt(p)} is outside the ${grid.cols}x${grid.rows} grid`);
       }
       if (s.a[0] === s.b[0] && s.a[1] === s.b[1]) report.error(file, `${where}: zero length`);
+      if (s.w && (s.door || s.dir || s.prox)) report.error(file, `${where}: a thick wall (w) cannot be a door, one-way or a proximity wall`);
 
       const key = [fmt(s.a), fmt(s.b)].sort().join('-');
       if (edges.has(key)) report.warn(file, `${where}: same endpoints as segment ${edges.get(key)}`);

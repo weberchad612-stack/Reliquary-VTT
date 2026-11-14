@@ -56,8 +56,9 @@ export function blocksFrom(seg, p) {
   return dir === DIR.LEFT ? s < 0 : s > 0;
 }
 
-/** Endpoint precision in cells (1/8 cell, decision 1). */
+/** Endpoint precision in cells (1/8 cell, decision 1); maps imported at print resolution use FINE_SNAP (2026-11-14). */
 export const SNAP = 0.125;
+export const FINE_SNAP = 0.03125;
 
 /** True when v is a multiple of SNAP (within floating-point noise). */
 export function onSnap(v, snap = SNAP) {

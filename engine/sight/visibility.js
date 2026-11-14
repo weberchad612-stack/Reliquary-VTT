@@ -26,9 +26,45 @@ export function prepare(segs, state = {}, sense = 'sight') {
     const live = s.door ? doors[s.door.id] : undefined;
     const v = senseOf(s, live)[sense];
     if (v === SENSE.NONE) continue;
+    if (isThick(s)) {
+      // A thick wall: sight sees it to its far face (worked out per viewer, activeFor); light, sound and
+      // movement meet its four faces, so nothing passes through and nothing lights its inside
+      if (sense === 'sight') out.push({ id: s.id, a: s.a, b: s.b, v, dir: 0, w: s.w });
+      else wallBox(s.a, s.b, s.w).forEach(([a, b], i) => out.push({ id: `${s.id}~${i}`, a, b, v, dir: 0 }));
+      continue;
+    }
     out.push({ id: s.id, a: s.a, b: s.b, v, dir: s.dir || 0, prox: s.prox && s.prox[sense] });
   }
   return out;
+}
+
+/** A wall with a thickness (walls.json `w`): its centre line runs a-b. Doors, one-way and proximity walls stay lines. */
+const isThick = (s) => s.w > 0 && !s.door && !s.dir && !s.prox;
+
+/** The unit direction of a-b and its normal (left of a->b, y down). */
+function axes(a, b) {
+  const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+  const u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L];
+  return { u, n: [u[1], -u[0]] };
+}
+
+/**
+ * The four faces of a thick wall: the centre line a-b widened by w/2 each side and squared off w/2 past each end
+ * (so two walls that meet at their centre lines overlap at the corner, leaving no gap).
+ */
+export function wallBox(a, b, w) {
+  const { u, n } = axes(a, b), h = w / 2;
+  const p = (base, su, sn) => [base[0] + u[0] * su * h + n[0] * sn * h, base[1] + u[1] * su * h + n[1] * sn * h];
+  const c = [p(a, -1, 1), p(b, 1, 1), p(b, 1, -1), p(a, -1, -1)];
+  return [[c[0], c[1]], [c[1], c[2]], [c[2], c[3]], [c[3], c[0]]];
+}
+
+/** A thick wall as a viewer at `o` meets it for sight: its far face (squared off past both ends). */
+export function farFace(a, b, w, o) {
+  const { u, n } = axes(a, b), h = w / 2;
+  const side = (o[0] - a[0]) * n[0] + (o[1] - a[1]) * n[1] >= 0 ? -1 : 1;   // the face away from the viewer
+  const off = [n[0] * side * h, n[1] * side * h];
+  return [[a[0] - u[0] * h + off[0], a[1] - u[1] * h + off[1]], [b[0] + u[0] * h + off[0], b[1] + u[1] * h + off[1]]];
 }
 
 /** Distance from point p to segment a-b. */
@@ -111,7 +147,13 @@ function activeFor(prepared, origin, feetPerCell) {
   const out = [];
   for (const s of prepared) {
     const kind = effective(s, origin, feetPerCell);
-    if (kind !== 'none') out.push({ a: s.a, b: s.b, kind });
+    if (kind === 'none') continue;
+    if (s.w) {
+      // its far face and both end caps: the caps stop a slanting ray slipping past the wall's end beside a door
+      const box = wallBox(s.a, s.b, s.w), [fa, fb] = farFace(s.a, s.b, s.w, origin);
+      out.push({ a: fa, b: fb, kind }, { a: box[1][0], b: box[1][1], kind }, { a: box[3][0], b: box[3][1], kind });
+    }
+    else out.push({ a: s.a, b: s.b, kind });
   }
   return out;
 }
