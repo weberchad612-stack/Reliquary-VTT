@@ -34,13 +34,14 @@ const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 /** The standard steps of an adventure import (`init` writes them; each pack edits its own copy). */
 export function standardPipeline(packId) {
   return {
-    vars: { book: 'pdfsource/<adventure>.pdf', maps_pdf: 'pdfsource/<level maps>.pdf', levels: 'A=<maps.pdf>:1', pages: '4-35', running_heads: '^(<RUNNING HEAD>)' },
+    vars: { book: 'pdfsource/<adventure>.pdf', maps_pdf: 'pdfsource/<level maps>.pdf', levels: 'A=<maps.pdf>:1', crop_levels: 'A=<map id>', pages: '4-35', running_heads: '^(<RUNNING HEAD>)' },
     steps: [
       { id: 'text', run: 'node tools/advimport/pagetext.mjs {book} {extracted}/text', inputs: ['{book}'], outputs: ['{extracted}/text/p001.txt'], note: 'every page as text' },
       { id: 'roomcrops', run: 'python3 tools/advimport/roomcrops.py {book} --level {levels} --out {extracted}/roomcrops.json --images {extracted}/markers', inputs: ['{book}', '{maps_pdf}'], outputs: ['{extracted}/roomcrops.json'] },
       { id: 'landing', run: 'python3 tools/advimport/landing.py {pack} --pdf {book} --page 1', inputs: ['{book}'], outputs: ['{pack}/maps/landing/map.json'], review: true, note: 'the cover; ask the user when the book has none' },
       { id: 'map', each: 'map', run: 'python3 tools/mapimport/build.py {pack}/maps/{map}/import.json', inputs: ['{pack}/maps/{map}/import.json', 'tools/mapimport/profiles.json', '{pack}/maps/{map}/rooms.json'], outputs: ['{pack}/maps/{map}/walls.json'], review: true },
       { id: 'mapcheck', each: 'map', run: 'node tools/mapcheck.mjs {pack}/maps/{map}', inputs: ['{pack}/maps/{map}/walls.json', '{pack}/maps/{map}/rooms.json', '{pack}/maps/{map}/import.json'] },
+      { id: 'cropcheck', run: 'node tools/advimport/cropcheck.mjs {pack} {extracted}/roomcrops.json --levels {crop_levels}', inputs: ['{extracted}/roomcrops.json', '{pack}/maps/*/rooms.json'], note: 'rooms against the book\'s crops' },
       { id: 'adventure', run: 'python3 {pack}/build_adventure.py', inputs: ['{pack}/build_adventure.py'], outputs: ['{pack}/adventure.json'] },
       { id: 'statmatch', run: 'node tools/advimport/statmatch.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}"', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json'], review: true },
       { id: 'areas', run: 'node tools/advimport/areas.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}" --proposals {pack}/area-proposals.json', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/notes/*.md', '{pack}/checklist.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/rooms.json', '{pack}/maps/*/lighting.json', '{pack}/maps/*/terrain.json'], review: true, note: 'every area of the book accounted for' },

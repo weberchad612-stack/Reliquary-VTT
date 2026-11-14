@@ -252,6 +252,21 @@ def straight_walls(lc, mask, g, door_segs, special, cfg, report):
             if L["axis"] == "v" and abs(ax - bx) < 0.05 and abs((ax + bx) / 2 - L["c"]) <= max(0.15, L["w"]) and min(ay, by) < L["hi"] + 1.5 and max(ay, by) > L["lo"] - 1.5:
                 o["a"], o["b"] = [L["c"], ay], [L["c"], by]; aligned += 1; break
     report["openings_aligned"] = aligned
+    # #17: walls the search may have missed, for Claude to check against the art: long runs it dropped (with why)
+    # and gaps between lined-up walls that no opening fills. Ones already covered by a kept line are left out;
+    # `lines.dismiss_near` silences ones Claude has checked.
+    def covered(P):
+        for L in kept:
+            if L["axis"] == P["axis"] and abs(L["c"] - P["c"]) < 0.3:
+                ov = min(L["hi"], P["hi"]) - max(L["lo"], P["lo"])
+                if ov >= 0.5 * (P["hi"] - P["lo"]):
+                    return True
+        return False
+    dismissed = lambda P: any(near(P, p, 0.4) for p in lc.get("dismiss_near", []))
+    misses = [P for P in linesmod.near_misses(mask, g, lc) if not covered(P) and not dismissed(P)]
+    gaps = [P for P in linesmod.gap_joins(kept, openings, lc) if not dismissed(P)]
+    if misses or gaps:
+        report["line_proposals"] = {"near_misses": misses, "gaps": gaps}
     pieces = linesmod.cut_openings(kept, openings, lc)
     segs = linesmod.to_segments(pieces)
     # the drawn wall under each line leaves the mask
@@ -640,7 +655,10 @@ def main(argv):
     ap.add_argument("--room", help="rebuild only this room's walls (rooms.json); keep every other wall as it is")
     a = ap.parse_args(argv)
     r = build(a.config, a.repo, use_cache=not a.no_cache, room=a.room)
-    print(json.dumps({**({"room_rebuilt": r["room_rebuilt"]} if r.get("room_rebuilt") else {}), "segments": r["segments"], "counts": r["counts"], "grid": r["grid"], **({"cache": r["cache"]} if r.get("cache") else {})}, default=float))
+    lp = r.get("line_proposals") or {}
+    print(json.dumps({**({"room_rebuilt": r["room_rebuilt"]} if r.get("room_rebuilt") else {}),
+                      **({"walls_to_check": {"near_misses": len(lp.get("near_misses", [])), "gaps": len(lp.get("gaps", [])), "see": "import-report.json line_proposals"}} if lp else {}),
+                      "segments": r["segments"], "counts": r["counts"], "grid": r["grid"], **({"cache": r["cache"]} if r.get("cache") else {})}, default=float))
 
 
 if __name__ == "__main__":

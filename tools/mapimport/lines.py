@@ -83,8 +83,9 @@ def suppress_grid(mask, g, cfg=None):
     return out, cleared
 
 
-def _bands(mask, cs, s, axis):
-    """Straight runs along `axis` ('h': rows, 'v': columns) as {axis, c, lo, hi, w} in pixels."""
+def _bands(mask, cs, s, axis, rejects=None):
+    """Straight runs along `axis` ('h': rows, 'v': columns) as {axis, c, lo, hi, w} in pixels. Runs long enough to be a
+    wall but dropped by a test go into `rejects` with the reason (near misses: walls hidden by rock, webs, furniture)."""
     m = mask if axis == "h" else mask.T
     min_len = int(s["min_len_cells"] * cs)
     # keep pixels that belong to a long run along the axis
@@ -102,12 +103,24 @@ def _bands(mask, cs, s, axis):
     out = []
     for i in range(1, n):
         x, y, w, h, area = stats[i]
-        if w < min_len or h < s["min_w_cells"] * cs or h > s["max_w_cells"] * cs:
+        miss = lambda why, c=None: rejects is not None and w >= 2 * min_len and rejects.append(
+            {"axis": axis, "c": c if c is not None else y + h / 2, "lo": float(x), "hi": float(x + w), "w": float(h), "why": why})
+        if w < min_len or h < s["min_w_cells"] * cs:
+            continue
+        if h > s["max_w_cells"] * cs:
+            # a wall joined by something dark beside it: a long edge with open floor outside it may be the wall's face
+            pad = max(2, int(0.06 * cs))
+            face = lambda band: band.size and (1 - band.mean()) > s["side_clear"]
+            if face(m[max(0, y - pad):y, x:x + w]):
+                miss("thick: something dark joins it (rock, furniture); this edge faces open floor", y + 0.5)
+            if face(m[y + h:y + h + pad, x:x + w]):
+                miss("thick: something dark joins it (rock, furniture); this edge faces open floor", y + h - 0.5)
             continue
         sub = lab[y:y + h, x:x + w] == i
         prof = sub.sum(axis=0)   # thickness along the run
         cover = prof > 0
         if cover.mean() < s["fill_ratio"]:
+            miss(f"broken: only {cover.mean():.0%} drawn (webs, rubble, art over it)")
             continue
         # a wall has open floor on at least one side; a run inside a dark mass (rock, shadow) does not
         pad = max(2, int(0.06 * cs))
@@ -115,12 +128,58 @@ def _bands(mask, cs, s, axis):
         below = m[y + h:y + h + pad, x:x + w]
         clear = lambda band: band.size and (1 - band.mean()) > s["side_clear"]
         if not (clear(above) or clear(below)):
+            miss("no open floor on either side (rock or shadow around it)")
             continue
         rows = np.nonzero(sub.any(axis=1))[0]
         weights = sub.sum(axis=1)[rows]
         c = y + float((rows * weights).sum() / weights.sum()) + 0.5
         thick = float(np.median(prof[cover]))
         out.append({"axis": axis, "c": c, "lo": float(x), "hi": float(x + w), "w": thick})
+    return out
+
+
+def near_misses(mask, g, cfg=None):
+    """Long straight runs the auto search dropped, with why, in cells: [{axis, c, lo, hi, w, why}]. Walls hidden by
+    rock, webs or furniture show up here (#17); Claude checks each against the art and lists the real ones in
+    lines.add."""
+    s = settings(cfg)
+    cs, (ox, oy) = g["cell_px"], g["origin_px"]
+    rej = []
+    _bands(mask, cs, s, "h", rej)
+    _bands(mask, cs, s, "v", rej)
+    out = []
+    for b in rej:
+        o_c, o_l = (oy, ox) if b["axis"] == "h" else (ox, oy)
+        out.append({"axis": b["axis"], "c": round((b["c"] - o_c) / cs, 3), "lo": round((b["lo"] - o_l) / cs, 3), "hi": round((b["hi"] - o_l) / cs, 3), "why": b["why"]})
+    return out
+
+
+def gap_joins(lines, openings, cfg=None, max_gap=3.0):
+    """Collinear straight walls with a gap between them that no door, window or opening fills: a wall hidden by
+    clutter, or an opening the text explains. [{axis, c, lo, hi, gap}] in cells, for Claude to check (#17)."""
+    s = settings(cfg)
+    out = []
+    by = {"h": sorted([l for l in lines if l["axis"] == "h"], key=lambda l: (l["c"], l["lo"])),
+          "v": sorted([l for l in lines if l["axis"] == "v"], key=lambda l: (l["c"], l["lo"]))}
+    for axis, L in by.items():
+        for i, a in enumerate(L):
+            for b in L[i + 1:]:
+                if abs(b["c"] - a["c"]) > s["align_cells"]:
+                    continue
+                gap = b["lo"] - a["hi"]
+                if gap < 0.2 or gap > max_gap:
+                    continue
+                c = (a["c"] + b["c"]) / 2
+                filled = False
+                for o in openings:
+                    (ax, ay), (bx, by_) = o["a"], o["b"]
+                    oc = (ay + by_) / 2 if axis == "h" else (ax + bx) / 2
+                    lo_o, hi_o = (min(ax, bx), max(ax, bx)) if axis == "h" else (min(ay, by_), max(ay, by_))
+                    if abs(oc - c) < 0.3 and hi_o > a["hi"] - 0.1 and lo_o < b["lo"] + 0.1:
+                        filled = True
+                        break
+                if not filled:
+                    out.append({"axis": axis, "c": round(c, 3), "lo": round(a["hi"], 3), "hi": round(b["lo"], 3), "gap": round(gap, 2)})
     return out
 
 

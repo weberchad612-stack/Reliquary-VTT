@@ -45,3 +45,21 @@ assert by["w0001"]["a"] == [0, 0.5], "R1's wall is the new one"
 assert by["door01"]["door"]["id"] == "d01" and by["door01"]["a"] == [1.1, 4], "the rebuilt door keeps its ids"
 assert rep["room_rebuilt"]["room"] == "R1"
 print("ok")
+
+# #17: walls hidden by clutter (lines.near_misses, lines.gap_joins)
+from mapimport import lines  # noqa: E402
+g = {"cell_px": 50, "origin_px": [0, 0], "cols": 10, "rows": 10}
+m = np.zeros((500, 500), bool)
+m[100:104, 50:450] = True            # a clean wall: found by the search
+m[300:340, 50:450] = True            # a wall with a dark mass under it (40 px thick): too thick, a near miss
+found = lines.find_lines(m, g, {"max_w_cells": 0.25})
+assert any(abs(L["c"] - 2.04) < 0.1 for L in found), found
+nm = lines.near_misses(m, g, {"max_w_cells": 0.25})
+assert any(P["why"].startswith("thick") and 5.5 < P["c"] < 7 for P in nm), nm
+assert not any(abs(P["c"] - 2.04) < 0.2 for P in nm), "the clean wall is found, not a near miss"
+L = [{"axis": "h", "c": 2.0, "lo": 1.0, "hi": 4.0, "w": 0.1}, {"axis": "h", "c": 2.02, "lo": 5.5, "hi": 9.0, "w": 0.1},
+     {"axis": "h", "c": 7.0, "lo": 1.0, "hi": 4.0, "w": 0.1}, {"axis": "h", "c": 7.0, "lo": 5.0, "hi": 9.0, "w": 0.1}]
+door = [{"a": [4.0, 7.0], "b": [5.0, 7.0]}]
+gaps = lines.gap_joins(L, door)
+assert len(gaps) == 1 and gaps[0]["lo"] == 4.0 and gaps[0]["hi"] == 5.5, gaps   # the doorway's gap is filled
+print("ok walls")
