@@ -330,7 +330,8 @@ export function itemMatches(filter, doc, ctx = {}) {
     if ((m = /^item:type:(.+)$/.exec(x))) return doc.kind === m[1];
     if ((m = /^item:rarity:(.+)$/.exec(x))) return (doc.rarity || 'common') === m[1];
     if ((m = /^item:slug:(.+)$/.exec(x)) || (m = /^item:([a-z0-9-]+)$/.exec(x))) return doc.slug === m[1];
-    if (/^feature:/.test(x)) return ctx.tags ? ctx.tags.has(x) : null;
+    // any other term is the character's own roll option (a champion's sanctification: "sanctification:holy")
+    if (!/^item:/.test(x)) return ctx.tags ? ctx.tags.has(x) : null;
     return null;
   };
   return term({ and: Array.isArray(filter) ? filter : [filter] });

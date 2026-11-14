@@ -272,3 +272,13 @@ test('builder: a background with several choices under one flag (Season of Ghost
   assert.deepEqual(feat({ 'close-ties.variant': 'foundling', 'close-ties.variant.3': 'mysterious' }), ['streetwise']);
   assert.deepEqual(feat({ 'close-ties.variant': 'family', 'close-ties.variant.2': 'typical' }), ['specialty-crafting']);
 });
+
+test('builder: a champion\'s causes follow its sanctification, and the steps come in a player\'s order', () => {
+  const b = { v: 1, level: 1, ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/skilled-human', background: 'backgrounds:background/acolyte', class: 'classes:class/champion', keyAttribute: 'str' };
+  const ids = B.steps(b).steps.map((s) => s.step);
+  assert.ok(ids.indexOf('deity') < ids.indexOf('choice.cause.cause') && ids.indexOf('choice.deity-champion.sanctification') < ids.indexOf('choice.cause.cause'), ids.join(' '));
+  assert.ok(ids.indexOf('choice.cause.cause') < ids.indexOf('skills') && ids.indexOf('skills') < ids.indexOf('feat.class') && ids[ids.length - 1] === 'gear');
+  const holy = { ...b, deity: 'deities:deity/sarenrae', selections: { 'deity-champion.sanctification': 'holy' } };
+  const causes = B.options(holy, '1:choice.cause.cause').options.map((o) => o.name).sort();
+  assert.ok(causes.includes('Grandeur') && causes.includes('Redemption') && !causes.includes('Iniquity'), causes.join(', '));
+});

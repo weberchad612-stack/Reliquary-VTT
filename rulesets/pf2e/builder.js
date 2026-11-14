@@ -221,7 +221,15 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
       if (have) { have.count += 1; continue; }
       out.push({ id, level: p.level, step: p.step, count: 1, text: p.text, ...(p.choice ? { choice: p.choice } : {}) });
     }
-    return { steps: out, result: r };
+    // the order a player takes them in: who the character is (ancestry to boosts), then what defines it (its deity
+    // and its features' choices; a choice whose options hang on another, a champion's cause on its sanctification,
+    // after those), then skills and languages, feats, spells, and gear last; by level, then this order
+    const strings = (x) => (typeof x === 'string' ? [x] : Array.isArray(x) ? x.flatMap(strings) : x && typeof x === 'object' ? Object.values(x).flatMap(strings) : []);
+    const waits = (st) => !!(st.choice && st.choice.filter && strings(st.choice.filter).some((t) => !/^item:/.test(t)));
+    const ORDER = ['ancestry', 'heritage', 'background', 'class', 'keyAttribute', 'boosts', 'tradition', 'deity', 'choice', 'lore', 'deitySkill', 'waiting', 'skills', 'trained', 'languages', 'skillIncrease', 'feat', 'spells', 'gear'];
+    const rank = (st) => ORDER.indexOf(waits(st) ? 'waiting' : st.step.split('.')[0]);
+    const steps = out.map((st, i) => ({ st, i })).sort((a, b) => a.st.level - b.st.level || rank(a.st) - rank(b.st) || a.i - b.i).map((x) => x.st);
+    return { steps, result: r };
   };
 
   const featOptions = (b, r, kind, level, all) => {
