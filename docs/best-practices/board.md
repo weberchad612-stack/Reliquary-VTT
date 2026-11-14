@@ -90,8 +90,10 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
 ### Marching order (2026-11-14)
 
 - The planner is the engine's (`engine/tokens/marching.js`), shared by the board's arrivals (`board/travel.js`
-  `formationArrival`) and Claude's tool (`tools/marching.mjs`), so the two always agree. The tab is
-  `board/marchui.js`; the record is `state/marching` `{slots: {token id: [col, row]}, extra: [token ids]}`.
+  `formationArrival`) and Claude's tool (`tools/marching.mjs`), so the two always agree. The grid is
+  `board/marchui.js`, mounted at the top of the Exploration tab (`#march-box`, above `#explore-box`); the record is
+  `state/marching` `{slots: {token id: [col, row]}, extra: [token ids]}`. Its help is a short list, one point a line
+  (the user, 2026-11-14: not one paragraph).
 - **Claude moving the party:** `node tools/marching.mjs <save> --records FILE move --to X,Y` (the square the front of
   the party reaches; `--facing` when the heading is not simply toward it), then write its `tokens/<id>` updates. When
   it says NOT MOVED, it wrote nothing: someone has no room on explored ground. Choose another square, move them by
@@ -103,6 +105,9 @@ Tested on 2026-11-10: Keep to Crypt and back. Sizes: the Keep is 26 load records
   Offsets are taken from the middle of the occupied squares (the bounding box), never the grid's middle: measured
   from the grid, a column drawn at the right-hand edge walked down one side of the corridor. And a column with no
   "came from" side (the party starts mid-corridor) breaks the lead's tie toward the facing.
+  A drag is followed from the window in the capture phase, so no other handler on the board can swallow its moves.
+  The smoke check scrolls the grid into view before dragging: an earlier check can leave the Exploration tab
+  scrolled down, and a raw mouse drag does not scroll the way a click does.
 
 ## 7. Board info, the build stamp and publishing
 

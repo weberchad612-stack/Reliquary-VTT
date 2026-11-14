@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The party's marching order from chat (engine/tokens/marching.js; the board's Marching order tab: board/marchui.js).
+// The party's marching order from chat (engine/tokens/marching.js; the top of the board's Exploration tab: board/marchui.js).
 // Claude moves the party with it when narration moves the group: the block faces the way the party heads, the front
 // row reaches the destination, in column where the block does not fit, and nobody is ever placed on ground the party
 // has not explored except their own place in the block and the destination itself (the user, 2026-11-14).

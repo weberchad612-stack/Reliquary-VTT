@@ -225,11 +225,13 @@ const CHECKS = {
       `music ${music && music.data.mood}; sfx ${sfx.map((e) => e.data.name).join(',')}; ambient off ${amb && amb.data.off}; ${sliders} sliders; music muted alone ${chMuted.join(',')} (${chPressed}); paused ${paused} then resumed ${!music.data.paused}; player mood buttons ${playerMoods}`);
   },
   async marching({ page }) {
-    // the tab sits right under Actions; the party's PCs are on the grid, front row up; a drag moves one, saved for everyone
-    const order = await page.evaluate(() => [...document.querySelectorAll('.sb-strip [data-tab]')].map((x) => x.dataset.tab));
-    await openTab(page, 'marching');
+    // at the top of the Exploration tab; the party's PCs are on the grid, front row up; a drag moves one, saved for everyone
+    await openTab(page, 'exploration');
+    const first = await page.evaluate(() => { const p = document.querySelector('.sb-pane[data-pane="exploration"] #march-box'); return !!p && !p.previousElementSibling && !!document.querySelector('#explore-box'); });
+    const bullets = await page.$$eval('#march-box .mo-help li', (x) => x.length);
     const toks = await page.$$eval('.mo-tok', (x) => x.map((e) => e.dataset.id));
     const src = await page.$(`.mo-tok[data-id="${KERRA}"]`), dst = await page.$('.mo-cell[data-cell="3,3"]');
+    await page.$eval('#march-box .mo-grid', (g) => g.scrollIntoView({ block: 'center' })); await page.waitForTimeout(150);   // an earlier check may leave the tab scrolled
     const a = await src.boundingBox(), b = await dst.boundingBox();
     await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down();
     await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 }); await page.mouse.up();
@@ -239,9 +241,9 @@ const CHECKS = {
     // tap a token, then a square
     await page.click(`.mo-tok[data-id="${PIP}"]`); await page.click('.mo-cell[data-cell="0,0"]'); await page.waitForTimeout(300);
     const pip = await page.$eval(`.mo-tok[data-id="${PIP}"]`, (e) => e.closest('.mo-cell').dataset.cell);
-    const arrow = await page.$('.mo-fwd svg');
-    return ok(order.indexOf('marching') === order.indexOf('actions') + 1 && toks.includes(KERRA) && toks.includes(PIP) && rec && rec.slots[KERRA].join(',') === '3,3' && where === '3,3' && pip === '0,0' && arrow,
-      `tab after Actions: ${order.indexOf('marching') === order.indexOf('actions') + 1}; ${toks.length} on the grid; Kerra dragged to ${where}, saved ${rec && rec.slots[KERRA]}; Pip tapped to ${pip}`);
+    const explore = await page.$$eval('#explore-box .ex-pc', (x) => x.length);
+    return ok(first && bullets >= 5 && toks.includes(KERRA) && toks.includes(PIP) && rec && rec.slots[KERRA].join(',') === '3,3' && where === '3,3' && pip === '0,0' && explore > 0,
+      `top of Exploration: ${first}; ${bullets} help bullets; ${toks.length} on the grid; Kerra dragged to ${where}, saved ${rec && rec.slots[KERRA]}; Pip tapped to ${pip}; ${explore} exploration cards below`);
   },
   async listeners({ page }) {
     const n = await page.evaluate(() => window.reliquary.store.listeners());

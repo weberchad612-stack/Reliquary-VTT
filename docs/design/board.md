@@ -724,7 +724,8 @@ them and moves to the Party stash with where it was found.
 
 The user's design (FR-1 in future/backlog.md, decided 2026-11-10 and 2026-11-14).
 
-- **The tab:** "Marching order", right under Actions, in both views. It shows a 4 x 4 grid with an arrow above it
+- **Where:** at the top of the Exploration tab, in both views (the user, 2026-11-14: it began as its own tab under
+  Actions and moved there the same day, since marching order is part of exploring). It shows a 4 x 4 grid with an arrow above it
   pointing the way the party travels, so the front row is at the top. The party's tokens stand on it with their art.
   **Anyone moves anyone**: drag a token to a square, or tap it and then the square. A token dropped on another swaps
   with it.

@@ -3463,7 +3463,7 @@ export async function start(store, { build = null } = {}) {
   sidebar = mountSidebar({ root: document.getElementById('sidebar'), view: () => S.view, tabs: [
     // the user's order (2026-11-12; Replay moved up under Chat the same night)
     { id: 'chat', label: 'Chat' }, { id: 'replay', label: 'Replay' }, { id: 'encounter', label: 'Encounter' },
-    { id: 'actions', label: 'Actions' }, { id: 'marching', label: 'Marching order' }, { id: 'exploration', label: 'Exploration' },
+    { id: 'actions', label: 'Actions' }, { id: 'exploration', label: 'Exploration' },
     { id: 'loot', label: 'Party loot' }, { id: 'notes', label: 'Notes' }, { id: 'quests', label: 'Quest log' }, { id: 'effects', label: 'Visual effects' }, { id: 'sound', label: 'Sound' },
     { id: 'lighting', label: 'Lighting (GM)', gm: true }, { id: 'walls', label: 'Walls (GM)', gm: true },
     { id: 'dice', label: 'Dice statistics' }, { id: 'ledger', label: 'Ledger (GM)', gm: true }, { id: 'events', label: 'Events (GM)', gm: true }, { id: 'audit', label: 'Audit log (GM)', gm: true }] });
@@ -3506,13 +3506,13 @@ export async function start(store, { build = null } = {}) {
   }
   // Exploration (board/explore.js): each PC's activity while travelling, the party's pace, the GM's travel box, the
   // reminders; the activities' combat requests reach the tracker (initiativeHint, beforeBegin) and the badges the map
-  exploreUi = mountExplore({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('exploration').body, sidebar, tab: 'exploration', sys: SYS,
+  exploreUi = mountExplore({ store, view: () => S.view, readOnly: READONLY, pane: document.getElementById('explore-box'), sidebar, tab: 'exploration', sys: SYS,
     party: exploreParty, choices: () => EXPLORE_CHOICES, content: (keys) => qvContent(keys), trait: traitWords, log: (text) => logChange(text),
     advance: (secs, words) => clockUi && clockUi.advance(secs, words), badges: exploreBadges, onBadges: () => draw() });
   store.watchCollection(EXPLORE, (l) => { EXPLORE_CHOICES = Object.fromEntries(l.map((e) => [e.id, e.data])); draw(); if (exploreUi) exploreUi.refresh(); });
-  // Marching order (board/marchui.js): the party on a 4 x 4 grid, forward up; arrivals (board/travel.js) and Claude's moves
+  // Marching order (board/marchui.js), at the top of the Exploration tab (the user, 2026-11-14): the party on a 4 x 4 grid, forward up; arrivals (board/travel.js) and Claude's moves
   // (tools/marching.mjs) keep it. Everyone moves anyone; the GM adds companions and allies who travel with the party
-  marchUi = mountMarching({ store, view: () => S.view, readOnly: READONLY, pane: sidebar.panel('marching').body, E: Engine,
+  marchUi = mountMarching({ store, view: () => S.view, readOnly: READONLY, pane: document.getElementById('march-box'), E: Engine,
     tokens: () => S.tokens, colour: (t) => kindColour(t), log: (text) => logChange(text),
     art: (t) => { const a = t && t.art && ART[t.art] && (ART[t.art].token || ART[t.art].full); return a ? store.assetUrl(a.asset) : null; } });
   // Party loot (board/loot.js): the stash, the purse, and each PC's coins and load; the encumbered condition follows

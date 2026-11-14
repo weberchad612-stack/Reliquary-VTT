@@ -349,7 +349,7 @@ Narration is the heart of the game for the user: it is what engages the players.
   never guess a pronoun. A dead character is story only (no XP, hero points or gear). _(I1-I5)_
 - **Marching order.** When narration moves the party, move it with `tools/marching.mjs move --to X,Y` (the front of
   the party reaches X,Y; read the board's records fresh first). It keeps the campaign's marching order (the board's
-  Marching order tab), facing the way they head, in column through narrow places, never through walls. **Never put
+  marching order, at the top of its Exploration tab), facing the way they head, in column through narrow places, never through walls. **Never put
   anyone on ground the party has not explored**: when the tool says NOT MOVED, choose another square or ask the user.
   _(I4)_
 

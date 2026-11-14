@@ -1,4 +1,4 @@
-// The Marching order tab (the user, 2026-11-14): the party on a 4 x 4 grid, the front row at the top under an arrow
+// The marching order, at the top of the Exploration tab (the user, 2026-11-14; first its own tab): the party on a 4 x 4 grid, the front row at the top under an arrow
 // pointing the way the party travels. Everyone moves anyone (drag a token to a square, or tap it and tap the square;
 // a token dropped on another swaps with it). The GM adds others who travel with the party (a companion, an allied
 // NPC) and takes them off again. The party keeps this order when it arrives on a map (board/travel.js
@@ -69,10 +69,18 @@ export function mountMarching(o) {
   function render() {
     const { tokens, members, slots, extra } = current();
     const write = canWrite();
-    let html = `<div class="mo">${gridHtml({ members, slots, picked, write })}`;
-    const how = 'Placement is relative: only the shape you draw and who stands where in it count, not where on the grid you draw it. '
-      + 'In play the shape is centred where the party goes and turned so the arrow points the way it travels; in a narrow passage the party goes in column, front row first.';
-    html += `<p class="mo-msg muted">${members.length ? (write ? `Drag a token to a square (or tap it, then the square). ${how}` : how) : 'No one is in the party on this map yet.'}</p>`;
+    let html = `<div class="mo"><h3 class="mo-title">Marching order</h3>${gridHtml({ members, slots, picked, write })}`;
+    // how it works, one point per line (the user, 2026-11-14)
+    const how = [
+      ...(write ? ['Drag a token to a square, or tap it and then the square. Dropping one on another swaps them.'] : []),
+      'Placement is relative: only the shape and who stands where count, not where on the grid you draw it.',
+      'The arrow points the way the party travels; the shape turns to face it.',
+      'The party keeps this order when it arrives on a map and when Claude moves it.',
+      'In a narrow passage it goes in column, front row first.',
+      'Nobody is placed on ground the party has not explored.',
+    ];
+    html += members.length ? `<ul class="mo-help">${how.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p class="mo-msg muted">No one is in the party on this map yet.</p>';
+    html += '<p class="mo-msg muted" aria-live="polite"></p>';
     if (gm() && write) {
       const others = Object.entries(tokens).filter(([id, t]) => t && !t.dead && t.kind !== 'pc' && t.kind !== 'object' && !extra.has(id))
         .sort(([, a], [, b]) => String(a.name || '').localeCompare(String(b.name || '')));
@@ -85,14 +93,9 @@ export function mountMarching(o) {
     pane.innerHTML = html + '</div>';
   }
 
-  // tap a token, then a square; or drag a token onto a square
-  pane.addEventListener('pointerdown', (ev) => {
-    const tok = ev.target.closest('.mo-tok');
-    if (!tok || !canWrite()) return;
-    drag = { id: tok.dataset.id, x: ev.clientX, y: ev.clientY, moved: false, ghost: null };
-    tok.setPointerCapture(ev.pointerId);
-  });
-  pane.addEventListener('pointermove', (ev) => {
+  // tap a token, then a square; or drag a token onto a square. Once a drag starts the window follows the pointer (in
+  // the capture phase), so the map's own handlers (an encounter's, an aim) can never swallow its moves.
+  function onMove(ev) {
     if (!drag) return;
     if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) > 6) {
       drag.moved = true;
@@ -104,18 +107,33 @@ export function mountMarching(o) {
     const under = drag.moved && document.elementFromPoint(ev.clientX, ev.clientY);
     const cell = under && under.closest && under.closest('.mo-cell');
     if (cell && pane.contains(cell)) cell.classList.add('mo-over');
-  });
-  pane.addEventListener('pointerup', (ev) => {
-    if (!drag) return;
+  }
+  function stop() {
+    window.removeEventListener('pointermove', onMove, true);
+    window.removeEventListener('pointerup', onUp, true);
+    window.removeEventListener('pointercancel', onCancel, true);
+  }
+  function onUp(ev) {
+    if (!drag) return stop();
     const d = drag;
     drag = null;
+    stop();
     if (d.ghost) d.ghost.remove();
     if (!d.moved) { picked = picked === d.id ? null : d.id; render(); return; }
     const under = document.elementFromPoint(ev.clientX, ev.clientY);
     const cell = under && under.closest && under.closest('.mo-cell');
     if (cell && pane.contains(cell)) moveMember(d.id, cell.dataset.cell); else render();
+  }
+  function onCancel() { if (drag && drag.ghost) drag.ghost.remove(); drag = null; stop(); render(); }
+  pane.addEventListener('pointerdown', (ev) => {
+    const tok = ev.target.closest('.mo-tok');
+    if (!tok || !canWrite() || ev.button > 0) return;
+    ev.preventDefault();
+    drag = { id: tok.dataset.id, x: ev.clientX, y: ev.clientY, moved: false, ghost: null };
+    window.addEventListener('pointermove', onMove, true);
+    window.addEventListener('pointerup', onUp, true);
+    window.addEventListener('pointercancel', onCancel, true);
   });
-  pane.addEventListener('pointercancel', () => { if (drag && drag.ghost) drag.ghost.remove(); drag = null; render(); });
   pane.addEventListener('click', (ev) => {
     const cell = ev.target.closest('.mo-cell');
     if (cell && picked && !ev.target.closest('.mo-tok') && canWrite()) { moveMember(picked, cell.dataset.cell); return; }
