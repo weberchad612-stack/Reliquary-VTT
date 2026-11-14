@@ -58,7 +58,11 @@ export function slotsAt(c, level) {
  * "Sorcerous Gifts cantrip: Daze; 1st: Phantom Pain"): {0: name, 1: name, ...}. A rank the text leaves to a choice
  * ("see Draconic Exemplars") is left out.
  */
-export function grantedSpellNames(text) {
+/**
+ * The spells a subclass grants, by rank. A rank given as "variable (see Genie Type below)" is read from the line of
+ * the type chosen ("- Jaathoom 2nd: Invisibility; 5th: ..."), when `variant` names it.
+ */
+export function grantedSpellNames(text, variant) {
   const t = String(text || '').replace(/\s+/g, ' ');
   const h = /(?:Granted Spells?|Sorcerous Gifts)\s*-?\s*/.exec(t);
   if (!h) return {};
@@ -70,7 +74,16 @@ export function grantedSpellNames(text) {
   for (let i = 0; i + 1 < parts.length; i += 2) {
     const name = parts[i + 1].replace(/[;\s-]+$/, '').replace(/\s*\(.*$/, '').trim();
     if (!name || /^see\b/i.test(name)) continue;
+    if (/^variable\b/i.test(name)) { out[parts[i] === 'cantrip' ? 0 : Number(parts[i])] = 'variable'; continue; }
     out[parts[i] === 'cantrip' ? 0 : Number(parts[i])] = name;
+  }
+  if (Object.values(out).includes('variable')) {
+    const line = variant && new RegExp(`(?:^|\\s)- ${variant}\\s+((?:\\d+(?:st|nd|rd|th):[^;]+;?\\s*)+)`, 'i').exec(String(text || '').replace(/\r/g, ''));
+    for (const [r, n] of Object.entries(out)) {
+      if (n !== 'variable') continue;
+      const m = line && new RegExp(`${r}(?:st|nd|rd|th):\\s*([^;\\n]+)`).exec(line[1]);
+      if (m) out[r] = m[1].replace(/\s*\(.*$/, '').trim(); else delete out[r];
+    }
   }
   return out;
 }
@@ -130,8 +143,8 @@ const ordinal = (r) => { r = Number(r); return `${r}${r === 1 ? 'st' : r === 2 ?
 export function learnedSpellNames(text) {
   const t = String(text || '').replace(/\s+/g, ' ');
   const out = [];
-  const add = (name, how) => { name = name.trim(); if (name && !out.some((x) => x.name === name)) out.push({ name, how }); };
-  for (const m of t.matchAll(/\b(?:[Yy]ou learn|[Yy]ou gain|and) the ([A-Z][A-Za-z'’ -]+?) (?:composition |devotion |hex |order |revelation |focus |warden |qi |bloodline |domain )?(spell|cantrip)\b/g)) add(m[1], 'learn');
+  const add = (name, how) => { name = name.trim(); if (/ or /.test(name) || /^variable\b/i.test(name)) return; if (name && !out.some((x) => x.name === name)) out.push({ name, how }); };
+  for (const m of t.matchAll(/\b(?:[Yy]ou learn|[Yy]ou gain|and) the ([A-Z][A-Za-z'’ -]+?) (?:[a-z-]+ )?(spell|cantrip)\b/g)) add(m[1], 'learn');
   for (const m of t.matchAll(/\byour familiar learns ([A-Z][A-Za-z'’ -]+?)(?=[.,;]|\s+and\b)/g)) add(m[1], 'book');
   for (const m of t.matchAll(/\binitial:\s*([A-Z][A-Za-z'’ -]+?)(?=\s*(?:-\s*advanced|;|\s-\s|$))/g)) add(m[1], 'learn');
   for (const m of t.matchAll(/\bOrder Spell\s+([A-Z][A-Za-z'’ -]+?)(?=\s+Anathema\b)/g)) add(m[1], 'learn');

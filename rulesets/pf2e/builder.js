@@ -389,11 +389,19 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
         const list = configList(c.config, { weaponGroups: weaponGroups(), deity: b.deity ? get(b.deity) : null });
         out = list ? list.filter((o) => c.config !== 'skills' || all || !P.skills[o.value]).map((o) => ({ value: o.value, name: o.label })) : [{ value: '<value>', name: `a ${c.config} (the builder has no list: the GM names it)` }];
       } else if (c.filter) {
-        const pools = c.itemType === 'deity' ? [['deities', 'deity']] : [['feats', 'feat'], ['class-features', 'feat'], ['ancestry-features', 'feat']];
-        const ctx = { classSlug: (get(b.class) || {}).slug, ancestrySlug: (get(b.ancestry) || {}).slug, tags: rolls };
+        // where the filter looks: by the kind of item the choice is for
+        const pools = c.itemType === 'deity' ? [['deities', 'deity']] : c.itemType === 'action' ? [['actions', 'action']] : ['weapon', 'armor', 'shield', 'equipment'].includes(c.itemType) ? [['equipment', 'item']]
+          : c.itemType === 'spell' ? [['spells', 'spell']] : [['feats', 'feat'], ['class-features', 'feat'], ['ancestry-features', 'feat']];
+        const ctx = { classSlug: (get(b.class) || {}).slug, ancestrySlug: (get(b.ancestry) || {}).slug, tags: rolls, level: r.actor.level };
         const facts = { ...prereqFacts(r.actor, b), knownNames: known() };
         out = [];
+        // a feature or feat the character already has is not offered again (a dual gate's second element), unless
+        // it can be taken more than once
+        const mine = (b.selections || {})[String(id).replace(/^\d+:choice\./, '')];
+        const held = new Set([...(r.actor.features || []), ...(r.actor.feats || [])].map((f) => f && f.ref).filter((k) => k && k !== mine));
         for (const [src, fol] of pools) for (const { key, doc } of folderDocs(src, fol, cache)) {
+          if (['weapon', 'armor', 'shield'].includes(c.itemType) && doc.kind !== c.itemType) continue;
+          if (held.has(key) && !(doc.maxTakable > 1)) continue;
           if (itemMatches(c.filter, doc, ctx) !== true) continue;
           const g = gate(key, doc, b);
           const pc = prereqCheck(doc, facts);
@@ -531,4 +539,26 @@ export function preview(result, get = contentGetter()) {
     `Languages: ${(A.languages || []).join(', ')}${A.build && A.build.deity ? `; deity ${(get(A.build.deity) || {}).name}` : ''}`,
   ];
   return { lines, prepared: p };
+}
+
+/**
+ * The completeness sweep and the text check (docs/design/game-data.md 9.13), for `builder.mjs sweep`: every class
+ * (or `only`) at `level` with every option of every choice, every ancestry × heritage and background (origins), and
+ * every record's text against what the builder made of it (text). Returns [{what, where, kind, text, count?}];
+ * a "note" is the rules working (a deity whose favored weapon is not simple: no Deadly Simplicity).
+ */
+export async function sweep({ level = 1, only, origins = false, text = false, B = builder() } = {}) {
+  const { sweepClass, sweepOrigins, keysIn } = await import('./sweep.js');
+  const tc = await import('./textcheck.js');
+  const out = [];
+  const classes = keysIn('classes', 'class').filter((k) => !only || k.endsWith(`/${only}`));
+  // a class that needs a deity gets one with a holy and a favored-weapon choice to try
+  const fixedFor = (k) => (['champion', 'cleric'].includes(k.split('/').pop()) ? { deity: 'deities:deity/sarenrae' } : {});
+  if (!origins && !text) for (const k of classes) for (const i of sweepClass(B, k, { level, fixed: fixedFor(k), base: { approvals: [{ what: k }] } })) out.push({ what: k, ...i });
+  if (origins) for (const i of sweepOrigins(B)) out.push({ what: 'origins', ...i });
+  if (text) {
+    for (const i of tc.textCheckOrigins(B)) out.push({ what: 'origins', ...i });
+    for (const k of classes) for (const i of tc.textCheckClass(B, k, { level: Math.max(level, 20), fixed: fixedFor(k) })) out.push({ what: k, ...i });
+  }
+  return out;
 }

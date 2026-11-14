@@ -867,3 +867,38 @@ As built:
   marked (`region`; `+` and "REGION:" in the tool's lists), listed after the campaign's own, and allowed whatever
   the campaign's book list. Unlike the campaign's own, it keeps its rarity: an uncommon or rare regional option
   still needs the GM's leave. Claude puts them in its shortlists and says why (the adventure is set there).
+
+### 9.13 The completeness sweep and the text check (2026-11-14)
+
+The first all-classes check built one human acolyte per class, filled only the choices that listed options, and
+trusted the rules data: it found errors, not gaps. Testing with the user found gaps it could not (a tanuki's blank
+choices, a champion's missing causes, a devotion spell written only in text). Two checks now look for them.
+
+- **The sweep** (`rulesets/pf2e/sweep.js`; `builder.mjs sweep`): every class at a level, filled the way a player
+  might (`autoFill`), then every option of every choice it made tried in turn with the later steps filled after it;
+  every ancestry with each heritage, and every background, with every option of their own choices
+  (`--origins`). It reports a problem, a rule the builder cannot run, a choice with no options or only
+  placeholders, an option without a readable name; a grant the rules take back (Sarenrae's scimitar is not simple:
+  no Deadly Simplicity) is a note. A step stuck in one round is retried in the next (a summoner's spells wait on
+  its tradition). Every class is clean at 1st and 20th level, and every origin.
+- **The text check** (`rulesets/pf2e/textcheck.js`; `builder.mjs sweep --text`): each record's plain statements
+  ("You gain the Toughness feat", "You become trained in Stealth", "You can cast the Detect Magic cantrip as an
+  arcane innate spell", "Choose ...") against the character built with it. Conditional sentences, lines of a list
+  (one option among several) and a yaoguai's other form are not the record's own.
+- **Choices and grants written only in text** (`rulesets/pf2e/textchoices.js`), read the same way for every record
+  so a new book's heritage works without code: a tradition and a cantrip from it (cast as an innate spell, marked
+  `innate` in `granted`), a cantrip from a named list, Lore subjects the player names (with "at 5th level you become
+  expert"), an Intelligence- or Wisdom-based skill, a word from a short list (a camouflage tripkee's terrain),
+  something the player names (a beastkin's animal), innate spells, a background's feat, and a background's
+  variants written one paragraph each (Brevic Noble's families: when Foundry's choice picks one, its Lore comes from
+  the text). A record whose Foundry rules ask their own choice is left to them.
+- **Found and fixed by the sweep:** filters on weapons (melee, ranged, base weapon, group, hands, damage type,
+  range increment), the granter's level, `xor`, and the character's own flags ("item:trait:{actor|...gate.one}");
+  choices from a list the features build up ("flags.system.kineticist.elements", a thaumaturge's adept choices),
+  which wait until those features have run; a feature or feat the character has is not offered again (a dual
+  gate's second element); a flag whose value names a choice (a dragon eidolon's tradition); a grant naming a flag
+  nothing set grants nothing, as in Foundry (Battle Creed has no First Doctrine); granted spells that turn on a
+  subclass's choice (a genie sorcerer's genie type); skills applied level by level (a skill an Intelligence increase
+  trains at 5th can be raised at 13th); a background's feat comes at 1st level whatever its own level; "add" to a
+  flag adds to a list or a number; "@actor.flags..." in a formula; accented names; "even if you don't meet its
+  prerequisites" is not a condition.

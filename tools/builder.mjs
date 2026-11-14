@@ -33,6 +33,9 @@
 //       books of the region it is set in ("Tian Xia"), listed next and marked + (the packs' "region")
 //   node tools/builder.mjs books [--system pf2e]                              the books in the open content
 //   node tools/builder.mjs report [--system pf2e] [--json] [--class <slug>]  the building rules it cannot run yet
+//   node tools/builder.mjs sweep [--system pf2e] [--level N] [--class <slug>] [--origins] [--text] [--json]
+//       the completeness sweep: every class (or one) with every option of every choice, or every ancestry, heritage
+//       and background (--origins), or the text check (--text); lists what goes wrong (nothing, when all is well)
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -95,6 +98,12 @@ export async function run(argv) {
     if (rest[i].startsWith('--')) { const k = rest[i].slice(2); const v = rest[i + 1] && !rest[i + 1].startsWith('--') ? rest[++i] : true; flags[k] = v; } else pos.push(rest[i]);
   }
   const out = (x) => process.stdout.write((typeof x === 'string' ? x : JSON.stringify(x, null, 1)) + '\n');
+  if (cmd === 'sweep') {
+    const sb = await systemBuilder(flags.system || 'pf2e');
+    if (!sb.sweep) throw new Error(`ruleset "${flags.system || 'pf2e'}" has no sweep`);
+    const r = (await sb.sweep({ level: Number(flags.level || 1), only: flags.class, origins: !!flags.origins, text: !!flags.text })).filter((i) => flags.notes || i.kind !== 'note');
+    return out(flags.json ? r : r.length ? r.map((i) => `${i.what.split('/').pop()} | ${i.kind} | ${i.where} | ${i.text}${i.count > 1 ? ` (x${i.count})` : ''}`).join('\n') : 'sweep: nothing found');
+  }
   if (cmd === 'report' || cmd === 'books') {
     const sb = await systemBuilder(flags.system || 'pf2e');
     if (cmd === 'books') return out(flags.json ? sb.books() : sb.books().map((x) => `${x.title} (${x.options})`).join('\n'));

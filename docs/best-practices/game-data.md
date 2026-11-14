@@ -348,5 +348,12 @@ What the board does with it: docs/best-practices/board.md (Replay).
   "REGION:"): they fit the place the adventure is set; uncommon and rare ones still need the GM's leave.
 - **Shopping:** suggest gear that fits the build (armour it is trained in, its weapons, an adventurer's pack) within
   the budget, and let the player change it; the coins left go to the character.
+- **After changing the builder, run the sweep** (`node tools/builder.mjs sweep`, `--level 20`, `--origins`,
+  `--text`) and expect "nothing found". A check that only looks for errors misses gaps: try every option of every
+  choice, and compare what each record's text says with what the builder made of it. When the sweep finds a gap,
+  fix it in the general reader (a filter term, a text pattern) rather than for the one record, and pin it with a
+  test (`tests/builder-sweep.test.mjs`).
+- A choice or grant written only in a record's text goes through `textchoices.js`'s patterns, never a
+  record-by-record table, unless no general wording exists (the champion's devotion spell, `TEXT_CHOICES`).
 - The design and what is built: docs/design/game-data.md section 9.
 
