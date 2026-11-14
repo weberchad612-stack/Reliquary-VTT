@@ -23,7 +23,7 @@ Collected while importing the first whole adventure (a Beginner Box adventure, 2
 
 | # | Feature | Decision |
 |---|---|---|
-| 1 | Straight-wall snapping | **Build now**, and have the tool **propose candidate straight walls itself** for Claude to accept or reject |
+| 1 | Straight-wall snapping | **Build now**, and have the tool **propose candidate straight walls itself** for Claude to accept or reject; traced segments within about 3° of horizontal or vertical are squared up |
 | 2 | Room-interior erase from the room table | **Build now** |
 | 3 | Grid-line suppression | **Build now** |
 | 4 | One check command (sight against the room table's shapes, routes) | **Build now** |
@@ -34,3 +34,4 @@ Collected while importing the first whole adventure (a Beginner Box adventure, 2
 | 9 | Matching book pawns to creatures | Later |
 | 10 | Stat block matching, with the book's differences flagged | **Build now** (matching and comparison) |
 | 11 | Token-sheet slicing | Later |
+| 12 | **Wall thickness** (engine, board, importer) | **Build now** (2026-11-13): a wall is a centre line with a width `w` (squares) measured from the drawn wall; sight and movement test its two faces, so walls are solid through and junctions meet at the centre with no gaps; fog reveals a seen wall to its far face; light brightens the lit face. Walls without `w` (outline-traced maps) work as before. Resolves the open question in docs/design/maps.md on wall edges at the limit of sight. |
