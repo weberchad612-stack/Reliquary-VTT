@@ -13,6 +13,16 @@ The user's decisions (2026-11-13): index every book, prepare one level at a time
 
 ## 2. The steps
 
+**One command runs them (2026-11-13).** `node tools/advimport/run.mjs packs/<pack> init` writes the pack's
+`pipeline.json` with the standard steps; fill in its `vars` (the PDFs, the room-crop levels, the adventure's pages,
+the book's running heads) and change what this book needs (the Unlit Star's landing page uses page 2's art, for
+instance). Then `run.mjs packs/<pack> run` runs what is out of date, in order, and stops at a failure; `status` is
+the table (up to date, out of date and why, failed, waiting for review); `approve <step>` marks a review step done
+once Claude has looked; `mark <steps>` records results made by hand before the pack had a pipeline. A step is out of
+date when its definition changed, an output is missing, or an input changed since it last ran. Review steps (the
+maps, the landing page, statmatch, the area checklist, loot, links, the review sheet) wait for `approve` after
+every run, and the table shows them until then. The table below is what each step does and what to check.
+
 | Step | Do | Check |
 |---|---|---|
 | Ingest | Copy the PDFs to `pdfsource/` (from the PC: `device_stage_files`). `pdftotext -layout` per page into `extracted/<pack>/text/`; `pdfimages -list` into `extracted/<pack>/images.txt`. Read the contents page to find where the adventure, the creatures, hazards and items are. | Every page has text (no scans); page numbers match the printed ones. |
@@ -26,7 +36,12 @@ The user's decisions (2026-11-13): index every book, prepare one level at a time
 | Rooms | `python3 tools/advimport/roomtable.py packs/<pack> --from-crops extracted/<pack>/roomcrops.json --levels A=<map>,... --overrides <spec.json> --write-spec <merged.json>` proposes each room's point and title from the book's labelled maps and crops; the overrides fix the rest (key, a point inside, title, pages; `clip` for a room open to its neighbours). Writes each map's `rooms.json`, which the map check uses. | No square in two rooms; sizes plausible. |
 | Illustrations | `art/illustrations.json`: every picture that belongs to an area (file, page, area, what it shows, spoiler, when to show it). | Spoilers marked. |
 | Sound and memory | In `adventure.json`: `ambient` (a loop per sound source the text gives: fires, water, magic, a crypt), `music.themes` (each map's music out of combat), `map_state` (a light that starts off), `ledger` (the quest, threads, secrets, timed events). | Loops exist in `sounds/sounds.json`; the ledger holds what Claude must not forget. |
-| Campaign | `node tools/advimport/campaign.mjs packs/<pack> saves/<pack>`, then `node tools/validate.mjs packs/<pack> --save saves/<pack>`. | No errors. |
+| Campaign | `node tools/advimport/campaign.mjs packs/<pack> saves/<pack>` (a campaign already there: `--update`, section 7), then `node tools/validate.mjs packs/<pack> --save saves/<pack>`. | No errors. |
+| Area checklist | `node tools/advimport/areas.mjs packs/<pack> extracted/<pack>/text --pages A-B --skip '<running heads>' --proposals <file>` (#14, #15): every keyed area's checks and DCs, doors (locked, stuck, barred, secret), light, terrain, treasure and stat blocks, against the notes, `adventure.json`, the room's doors, lighting (lights reaching it count) and terrain. For doors, light and terrain it proposes `import.json` entries. | Nothing to check. Each item is fixed, or explained in `checklist.json` (`{"explained": [{"area", "match", "why"}]}`). On the first import it found the A4 light my notes had and the map lacked. |
+| Loot | `node tools/advimport/lootmatch.mjs packs/<pack> extracted/<pack>/text --pages A-B --skip '...'` (#16): item refs and hazard keys exist; prices printed after a name; named items that could be content items; treasure text no object holds; hazards' printed numbers (from their own block) against the content. | Nothing to check, or explained in `checklist.json`. |
+| Levels | `node tools/advimport/links.mjs packs/<pack> extracted/<pack>/text --pages A-B --skip '...'` (#25): stairs, lifts, ladders and trapdoors the text names, paired with the area they reach on another map, against the maps' links; `--json` gives the missing ones in `map.links` format. | A pair "named" in one sentence is reliable; "likely" (a way up meeting a way down) usually; "weak" is a list to look through. Move each proposed square onto the drawn stairs. |
+| Crops | `node tools/advimport/cropcheck.mjs packs/<pack> extracted/<pack>/roomcrops.json --levels A=<map>,...` (#17): each room's squares against its book crop's footprint. | No room reaches outside its crop (a missing wall lets the room's flood run on). |
+| Review sheet | `python3 tools/advimport/reviewsheet.py packs/<pack> --book <book.pdf> --crops extracted/<pack>/roomcrops.json --levels A=<map>,...` (#21): `packs/<pack>/review/<map>.png`, each room's book crop beside our walls (by type), its squares, the importer's wall suggestions (dashed magenta) and what changed since the last build (green new, red removed). For Claude; the user sees it on request. | Look at every room. Each suggestion is a missing wall (add it to `lines.add`) or not (`lines.dismiss_near`, with a note). |
 | Review page | `python3 tools/advimport/review.py packs/<pack> --save saves/<pack>`: one file, sent to the user. | Everything above on one page. |
 | Review | The campaign opens on the landing page (`campaign.mjs` warns when there is none). Bundle a board on memory (`campaign.mjs seed`, `bundle.mjs --data seed=...`) and walk it in GM view; send it to the user as a file. With "publish", load the campaign into the board as its own campaign. | Tokens show their art, objects open and Take works, lights and doors behave as the notes say. |
 
@@ -61,3 +76,55 @@ Every token gets an image. The round token is a square crop (512 px); the Quick-
 - **The book's simplified stat blocks differ from the open data in small ways** (weak creatures, a young creature's HP, a speed): `statmatch.mjs` lists every one; apply them as the actor's differences and say so in its note. It found two that had been missed by reading.
 - **One sheet, two maps:** a level and its roof printed together are imported as two maps with `crop_px`, linked by the lift.
 - Features for the next import are listed in [future/adventure-importer.md](../../future/adventure-importer.md).
+
+## 7. Updating a campaign that is being played (#19)
+
+`campaign.mjs <pack> <save> --update` refreshes a campaign from its pack without losing play. Use it whenever the
+pack changes after the campaign exists. The pipeline's campaign step always uses it; `--force` starts over and is
+for a campaign nobody has played.
+
+- **From the pack:** tokens' art, notes, size, type and group. Creatures' stat blocks and the book's changes.
+  Objects' text, notes, DCs, locks and hazards.
+- **Kept from play:** where every token is, hidden, dead, effects, names learned and kind after a ruling. Door
+  states and explored areas. What was taken from objects (`items` and `coins`). PCs and every token added in
+  play. The table, the clock, music, players. The ledger's own entries.
+- **Added:** new creatures and objects, new maps, new ambient sounds, and adventure ledger entries not there yet.
+- **Reported, not deleted:** creatures and objects the adventure no longer has. Tokens built from the adventure
+  carry `source: "adventure"` so this can be told.
+- **Dropped:** door states for doors no longer on a map (also reported).
+
+## 8. Sending the pack to the user's PC (#23)
+
+`node tools/advimport/sync.mjs packs/<pack> --save saves/<pack>` packs what changed since the last sync into parts
+the device bridge can carry, with `manifest.json` and `apply.sh`, and prints the two steps:
+
+1. `device_commit_files` puts every file into `<checkout>/_sync/<stamp>/`.
+2. `device_bash` runs `bash .../apply.sh <checkout>`.
+
+On the PC, `apply.sh` handles each file like this:
+
+- It checks the archive's md5 first.
+- It writes a file only when the PC's copy is the one last sent, and overwrites in place (deleting is not allowed
+  there).
+- A file the user changed there is kept, and the new copy goes to `incoming/` beside it. This is how a save
+  written after play is protected.
+- A first-time overwrite backs up the PC's copy into `_to_delete/<stamp>/replaced/`.
+- Files gone from the pack move to `_to_delete/<stamp>/`.
+
+For the first sync of a pack the PC already holds, list the PC's files first:
+
+    find packs/<pack> saves/<pack> -type f ! -path '*/.cache/*' -exec md5sum {} + > _pc-md5.txt
+
+Stage that file and pass it as `--pc <file>`. Left out of every sync: caches, run state, and the art step's working
+`art/candidates/` (`pdfart.py` makes them again). `art/book/` is sent, because it holds the chosen art's sources.
+
+## 9. What the second round of tools found on the first import (2026-11-13)
+
+- **Area checklist:** one real miss. The A4 light was in my notes, but not on the map.
+- **Map check, reachability:** A12 and A13 could not be reached. The import had blocked their doors, but the
+  drawing puts the rubble between the doors in the hall. It also found two door leaves that open onto the rubble.
+- **Statmatch:** two misses earlier (the weak slimes, a swim Speed).
+- **Wall suggestions:** they find one of the four walls once listed by hand. They're useful as a pointer on the
+  review sheet, not as a replacement for looking.
+- **Links between levels:** weak on a book that describes its lift outside the keyed areas.
+- **Speed:** level A's rebuild went from 68 s to 5 s.

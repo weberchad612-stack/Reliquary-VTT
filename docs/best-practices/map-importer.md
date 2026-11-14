@@ -101,6 +101,29 @@ overrides only what differs.
   in `lines.add` with a note naming what hides it, instead of lowering thresholds for the whole map. Erase boxes near
   corners eat walls; check with the map check, not by eye.
 
+## 4c. Rebuilding fast, one room at a time, and wall suggestions (2026-11-13)
+
+- **Step cache** (`tools/mapimport/cache.py`): the slow steps (the source image's size and detection copy, masks,
+  door and window detection) are kept in `<map>/.cache/` and reused while their inputs hash the same, and the
+  board's image is rewritten only when the source changed. Level A of the first import: 68 s cold, 5 s warm,
+  identical walls. `--no-cache` computes everything again. The cache is private with the pack (about 60 MB a map,
+  mostly the detection copy) and is never synced.
+- **One room:** `build.py <import.json> --room A4` rebuilds and keeps only that room's walls (its squares in
+  `rooms.json` plus half a square). Every other wall stays exactly as it was. An opening rebuilt in the room keeps
+  its old id and door id when one of the same type lies within half a square. Use it to try a fix in one room
+  without disturbing the map.
+- **Wall suggestions** (`import-report.json` `line_proposals`; the build's output says how many): near misses
+  (long straight runs the auto search dropped, with why: too thick because rock or furniture joins them, broken
+  by webs, rock on both sides) and gaps (lined-up walls with nothing in the gap). Suggestions are left out when the
+  same room, or no room, is on both sides, or when an existing wall already runs along them. Check each on the
+  review sheet. A real wall goes into `lines.add` with a note; one that isn't goes into `lines.dismiss_near` (a
+  point near it), with a note in `lines._notes`. On the first import they found one of the four hidden walls. They
+  point; they do not replace looking.
+- **The map check now walks every door** from both sides and reaches every room from the starting area.
+  `checks.door_walk: {door id: why}` and `checks.unreached: {room: why}` explain the exceptions. Each leak says
+  what the sight went through (an opening by type and id, or a gap in the walls, and where). A route can walk
+  with every door closed (`doors: "closed"`), which shows that a hall is blocked even when a way round exists.
+
 ## 5. Pitfalls already met
 
 - **Page backgrounds** are often the largest image on a page. They are shared across pages; the map is not.
@@ -114,6 +137,8 @@ overrides only what differs.
 - **Off-grid doorways:** art rarely lines doors up with the grid. The movement engine's clearance (0.3 cells) handles most cases; check routes through every door.
 - **Moss over walls can leave gaps the sight leak check misses.** The outdoor flood in the lighting step moves between square centres and found three on Gauntlight; an `erase` box that is too wide can also remove a wall next to what it was meant to erase (A21's stairs took its west wall). Run the flood on every map.
 - **Added segments must reach into the walls they join.** A segment that ends exactly at a wall's corner leaves a sliver for sight to leak through; extend each end an eighth of a cell or more into the wall.
+- **A blocked door is not a blocked hall.** A12 and A13's doors were marked blocked because the text says the hall outside is blocked; the drawing puts the rubble between the doors, so both rooms were unreachable. Model rubble as what the drawing shows (low walls at its edges) and let the map check's reachability test confirm it.
+- **Removing corrections by their note text** can take an original with it: removing my duplicate rubble walls by a phrase in their notes also deleted the original north edge. Remove by exact position, and compare the build with `.cache/walls-prev.json` (the review sheet marks removed walls in red).
 - **Segment ids change** every time a map is vectorized again. Corrections are geometric, in cell coordinates, never by segment id.
 
 ## 5a. Area maps are not imported
