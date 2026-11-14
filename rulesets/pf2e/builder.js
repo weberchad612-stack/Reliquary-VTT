@@ -151,6 +151,7 @@ export function markdown(r) {
 
 import { deriveCharacter, boostSlots, ATTRIBUTES, SKILLS, maxSkillRank, itemMatches, configList, predicateHolds as holds, backgroundLore } from './build.js';
 import { LANGUAGES, languageRarity } from './languages.js';
+import { CHARACTER_WEALTH, priceCp, cpLabel, GEAR_KINDS, isConsumable } from './startgear.js';
 import { prereqFacts, prereqCheck } from './prereqs.js';
 
 const ALIGNED = /\b(lawful|chaotic|good|evil|neutral) alignment\b|\balignment\b/i;
@@ -280,6 +281,33 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     return out.sort((x, y) => (y.rank || 0) - (x.rank || 0) || x.name.localeCompare(y.name));
   };
 
+  // the items a gear step can take: a permanent item of the slot's level or lower, or anything the purse affords
+  // (consumables up to the character's level, permanent items one level lower)
+  const gearOptions = (b, r, s, all) => {
+    const L = r.actor.level;
+    const wealth = CHARACTER_WEALTH[L] || CHARACTER_WEALTH[20];
+    const perm = /^gear\.permanent(\d+)$/.exec(s.step);
+    const left = (r.coins ? r.coins.gp * 100 + r.coins.sp * 10 + r.coins.cp : wealth.gp * 100);
+    const out = [];
+    for (const { key, doc } of folderDocs('equipment', 'item', cache)) {
+      if (!GEAR_KINDS.includes(doc.kind) || doc.kind === 'treasure') continue;
+      const cons = isConsumable(doc);
+      const cost = priceCp(doc, 1);
+      if (cost === null) continue;
+      const why = [];
+      if (perm) { if (cons || (doc.level || 0) > Number(perm[1])) continue; }
+      else {
+        if ((doc.level || 0) > (cons ? L : Math.max(0, L - 1))) continue;
+        if (cost > left) why.push(`costs ${cpLabel(cost)}, ${cpLabel(left)} left`);
+      }
+      const g = gate(key, doc, b);
+      if (g.out) why.push(g.out);
+      if (why.length && !all) continue;
+      out.push(entry(key, doc, { kind: doc.kind, price: cpLabel(cost) + (doc.price && doc.price.per > 1 ? ` for ${doc.price.per}` : ''), ...(doc.bulk !== undefined ? { bulk: doc.bulk } : {}), ...(g.needs ? { needs: g.needs } : {}), ...(why.length ? { blocked: why } : {}) }));
+    }
+    return out.sort((x, y) => (perm ? (y.level || 0) - (x.level || 0) : 0) || x.kind.localeCompare(y.kind) || x.name.localeCompare(y.name));
+  };
+
   /** The options for a step: [{value, name, level?, rarity?, book?, legacy?, needs?, gmChecks?, blocked?, summary?}]. */
   const options = (b, id, { all = false, search } = {}) => {
     const { steps: st, result: r } = steps(b);
@@ -318,6 +346,7 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     } else if (step === 'lore') { const named = ((s.choice || {}).options || []).map((o) => ({ value: o.value, name: o.label })); out = named.length ? named : [{ value: '<subject>', name: 'the subject the background describes (the player names it)' }]; }
     else if (step.startsWith('feat.')) out = featOptions(b, r, step.slice(5), s.level, all);
     else if (step.startsWith('spells.')) out = spellOptions(b, r, s, all);
+    else if (step === 'gear' || step.startsWith('gear.permanent')) out = gearOptions(b, r, s, all);
     else if (step === 'tradition') out = [{ value: '-', name: 'chosen with the subclass: make that choice first' }];
     else if (step.startsWith('choice.') && s.choice) {
       const c = s.choice, rolls = new Set(r.rollOptions || []);
@@ -373,6 +402,23 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     else if (step === 'skillIncrease') lv().skillIncrease = one();
     else if (step.startsWith('feat.')) { lv().feats = lv().feats || {}; lv().feats[step.slice(5)] = one(); }
     else if (step.startsWith('choice.')) { b.selections = b.selections || {}; b.selections[step.slice(7)] = one(); }
+    else if (step === 'gear') {
+      // "<key>" or "<key> x3" to buy, "-<key>" to put back, "done" when the shopping is over
+      const g = (b.gear = b.gear || {});
+      g.items = g.items || [];
+      for (const v of vals) {
+        if (v === 'done') { g.done = true; continue; }
+        if (v === 'undone') { delete g.done; continue; }
+        const m = /^(-)?(\S+?)(?:\s*[x*](\d+))?$/.exec(String(v).trim());
+        if (!m) throw new Error(`${id}: "${v}" is "<key>", "<key> x3", "-<key>" or "done"`);
+        const qty = Number(m[3] || 1);
+        const have = g.items.find((x) => x.ref === m[2]);
+        if (m[1]) { if (!have) throw new Error(`${id}: ${m[2]} is not in the gear`); have.qty = (have.qty || 1) - qty; if (have.qty <= 0) g.items = g.items.filter((x) => x !== have); }
+        else if (have) have.qty = (have.qty || 1) + qty;
+        else g.items.push({ ref: m[2], ...(qty > 1 ? { qty } : {}) });
+      }
+    }
+    else if (step.startsWith('gear.permanent')) { const lvl = step.slice(14); const g = (b.gear = b.gear || {}); g.permanent = g.permanent || {}; g.permanent[lvl] = [...(g.permanent[lvl] || []), ...vals]; }
     else if (step.startsWith('spells.')) {
       const sp = (b.spells = b.spells || {});
       if (step === 'spells.cantrips') sp.cantrips = [...(sp.cantrips || []), ...vals];
@@ -399,6 +445,8 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     else if (['trained', 'skillIncrease'].includes(step)) delete L[step];
     else if (step.startsWith('feat.') && L.feats) delete L.feats[step.slice(5)];
     else if (step.startsWith('choice.') && b.selections) delete b.selections[step.slice(7)];
+    else if (step === 'gear' && b.gear) { delete b.gear.items; delete b.gear.done; }
+    else if (step.startsWith('gear.permanent') && b.gear && b.gear.permanent) delete b.gear.permanent[step.slice(14)];
     else if (step.startsWith('spells.') && b.spells) {
       if (step === 'spells.cantrips') delete b.spells.cantrips;
       else if (/^spells\.rank\d+$/.test(step) && b.spells.repertoire) delete b.spells.repertoire[step.slice(11)];
@@ -435,13 +483,14 @@ export function preview(result, get = contentGetter()) {
   const lines = [
     `${A.name}, level ${A.level} ${A.ancestry.name}${A.heritage ? ` (${A.heritage})` : ''} ${A.class.name}${A.background ? `, ${A.background}` : ''}`,
     `Attributes: ${Object.entries(A.attributes).map(([k, v]) => `${k.toUpperCase()} ${sign(v)}`).join(', ')}`,
-    `HP ${p.hp.max.value}, AC ${p.ac.value} (unarmoured), Speed ${A.ancestry.speed} ft; Perception ${sign(p.perception.value)} (${R[P.perception]})`,
+    `HP ${p.hp.max.value}, AC ${p.ac.value}${(A.items || []).some((i) => i.carry === 'worn' && (get(i.ref) || {}).kind === 'armor') ? '' : ' (unarmoured)'}, Speed ${p.speeds && p.speeds.land ? p.speeds.land.value : A.ancestry.speed} ft; Perception ${sign(p.perception.value)} (${R[P.perception]})`,
     `Saves: Fortitude ${sign(p.saves.fortitude.value)} (${R[P.fortitude]}), Reflex ${sign(p.saves.reflex.value)} (${R[P.reflex]}), Will ${sign(p.saves.will.value)} (${R[P.will]}); class DC ${p.classDC.value}${p.spell ? `; spell DC ${p.spell.dc.value}, spell attack ${sign(p.spell.attack.value)} (${p.spell.tradition})` : ''}`,
     `Skills: ${Object.entries(p.skills).filter(([k]) => (P.skills || {})[k]).map(([k, v]) => `${k} ${sign(v.value)} (${R[P.skills[k]]})`).join(', ') || 'none yet'}${Object.keys(p.lore || {}).length ? `; ${Object.values(p.lore).map((v) => `${v.label} ${sign(v.value)}`).join(', ')}` : ''}`,
     `Feats: ${(A.feats || []).map((f) => `${f.name} (${f.slot}${f.slot === 'granted' && f.from ? ` by ${f.from}` : ''}, ${f.level})`).join('; ') || 'none yet'}`,
     `Features: ${(A.features || []).map((f) => (typeof f === 'string' ? f : f.name)).join(', ') || 'none'}`,
     ...(A.spellcasting && A.spellcasting.slots ? [`Spells (${A.spellcasting.tradition}, ${A.spellcasting.kind}): slots ${Object.entries(A.spellcasting.slots).map(([r, n]) => `${r}:${n}`).join(' ')}; cantrips ${(A.spellcasting.cantrips || []).map((x) => x.name).join(', ') || 'none yet'}; spells ${(A.spellcasting.spells || []).map((x) => `${x.name} (${x.rank})`).join(', ') || 'none yet'}${(A.spellcasting.signature || []).length ? `; signature ${A.spellcasting.signature.map((x) => x.name).join(', ')}` : ''}`] : []),
     ...(A.spellcasting && (A.spellcasting.focus || []).length ? [`Focus spells: ${A.spellcasting.focus.map((x) => x.name).join(', ')} (pool ${((A.resources || {}).focus || {}).max || 0})`] : []),
+    ...(A.items && A.items.length ? [`Gear: ${A.items.map((i) => `${i.name}${i.qty > 1 ? ` x${i.qty}` : ''}${i.carry === 'worn' ? ' (worn)' : i.carry === 'held' ? ' (held)' : ''}`).join(', ')}; coins ${result.coins ? `${result.coins.gp} gp ${result.coins.sp} sp ${result.coins.cp} cp` : '-'}`] : []),
     `Languages: ${(A.languages || []).join(', ')}${A.build && A.build.deity ? `; deity ${(get(A.build.deity) || {}).name}` : ''}`,
   ];
   return { lines, prepared: p };

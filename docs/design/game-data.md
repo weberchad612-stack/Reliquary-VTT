@@ -806,3 +806,35 @@ As built:
   focus pool; a cleric with nothing to choose.
 - **Left:** spells at higher levels for prepared casters are prepared daily, not built; the animist's apparitions,
   a psychic's psi cantrips and amps, and archetype casting (the dedication spellcasting feats) come with levelling.
+
+### 9.10 Step 5 as built (2026-11-14): starting gear and finishing
+
+Decisions (the user, 2026-11-14, by questionnaire):
+- **A 1st-level character shops with 15 gp** (Player Core), with Claude suggesting gear for the build.
+- **A character built above 1st level** takes GM Core's Character Wealth table: permanent items of set levels,
+  which the player picks, plus currency.
+- **Where a finished character goes is asked each time:** it joins the party, takes another PC's place (who goes
+  to the bullpen), or waits in a **bullpen** of available characters.
+- **Token art:** the player's picture, asked for at finish, made into the token and portrait by the adventure
+  importer's `tokenart.py`, so PCs and NPCs share one look.
+
+As built:
+- `rulesets/pf2e/startgear.js`: GM Core Table 10-10 (`CHARACTER_WEALTH`, checked against Archives of Nethys on
+  2026-11-14), prices in copper (`priceCp`, "per" quantities), coins, kits' contents, how an item is carried.
+- **Steps:** `gear.permanent<level>` (the table's permanent items, highest first: not consumables, of that level or
+  lower) and `gear` (shopping with the currency: consumables up to the character's level, permanent items a level
+  lower; "<key>", "<key> x3", "-<key>" to put back, "done"). Checked: an item in the content, priced, common or
+  approved, the levels, the total within the currency. A kit is unpacked into its contents.
+- **The actor:** `items` (one suit of armour worn, one weapon and one shield held, the rest stowed; the player
+  changes it in Party loot), and the coins left go to `actorstate/<id>.coins` at finish.
+- **Finishing** (`tools/builder.mjs finish --to party|swap|bullpen`): writes the actor and its coins, then joins
+  the party on the party's map (a free square beside a PC, reachable from them; `--at` to choose), takes `--out`'s
+  square and marching slot (they go to the bullpen with their token kept), or waits in `<save>/bullpen.json`.
+  `bullpen`, `field` (bring one in, `--to party|swap`) and `bench` (a PC leaves the board) manage the bullpen.
+  Each prints `{lines, writes}`: the board's records (actor, actorstate, token, marching, and the content its
+  items use) for a campaign that is loaded. `--image FILE [--crop face|top|center]` makes the token art in the
+  pack's `art/pcs/` (art key: the PC's id); the board shows it once the campaign is loaded again.
+- The validator does not ask for a token for a character in the bullpen.
+- **Tested:** a fighter built, shopped for and finished into the party from the tool; a PC benched and brought
+  back in another's place with her token as it was; the wealth table's steps and checks for a 3rd-level
+  character. Token art from a picture was run by hand (a test pack and save in a temporary folder).

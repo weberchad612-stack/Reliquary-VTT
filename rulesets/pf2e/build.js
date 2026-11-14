@@ -17,6 +17,7 @@
 
 import { LANGUAGES, languageRarity } from './languages.js';
 import { prereqFacts, prereqCheck } from './prereqs.js';
+import { CHARACTER_WEALTH, priceCp, coinsOf, cpLabel, GEAR_KINDS, isConsumable, carryOf, kitContents } from './startgear.js';
 import { CASTERS, slotsAt, maxRank as castMax, spellSteps, grantedSpellNames, subclassTradition, learnedSpellNames } from './casting.js';
 
 export const ATTRIBUTES = Object.freeze(['str', 'dex', 'con', 'int', 'wis', 'cha']);
@@ -830,6 +831,62 @@ export function deriveCharacter(build, get, opts = {}) {
     const fs = granted.filter(focusOf).map((g) => ({ name: g.name, ref: g.ref }));
     if (fs.length && spellOut) spellOut.focus = fs;
   }
+  // ---- starting gear (section 9.10): GM Core's permanent items for the level, then shopping with the currency ----
+  const wealth = CHARACTER_WEALTH[L] || CHARACTER_WEALTH[20];
+  const gear = b.gear || {};
+  const gearItems = [];
+  const approvedKey = (k) => (b.approvals || []).some((a) => a.what === k);
+  const gearDoc = (k, where) => {
+    const d = get(k);
+    if (!d || !GEAR_KINDS.includes(d.kind)) { problems.push(`${where}: ${k} is not an item in the content`); return null; }
+    if (d.rarity && d.rarity !== 'common' && !approvedKey(k)) problems.push(`${where}: ${d.name} is ${d.rarity}: it needs the GM's leave`);
+    return d;
+  };
+  for (const [lvl, n] of Object.entries(wealth.items).sort((a, b) => Number(b[0]) - Number(a[0]))) {
+    const got = ((gear.permanent || {})[lvl]) || [];
+    for (const k of got) {
+      const d = gearDoc(k, `level ${lvl} permanent item`);
+      if (!d) continue;
+      if (isConsumable(d)) problems.push(`level ${lvl} permanent item: ${d.name} is a consumable`);
+      if ((d.level || 0) > Number(lvl)) problems.push(`level ${lvl} permanent item: ${d.name} is level ${d.level}`);
+      gearItems.push({ ref: k, qty: 1 });
+    }
+    if (got.length < n) need(L, `gear.permanent${lvl}`, `Choose ${n - got.length} permanent item${n - got.length > 1 ? 's' : ''} of level ${lvl} or lower (GM Core's wealth for a level ${L} character).`);
+    if (got.length > n) problems.push(`${got.length} permanent items of level ${lvl} chosen, ${n} allowed`);
+  }
+  const budget = wealth.gp * 100;
+  let spent = 0;
+  for (const it of gear.items || []) {
+    const d = gearDoc(it.ref, 'gear');
+    if (!d) continue;
+    const qty = it.qty || 1;
+    const cap = isConsumable(d) ? L : Math.max(0, L - 1);
+    if ((d.level || 0) > cap) problems.push(`gear: ${d.name} is level ${d.level || 0}; with currency a level ${L} character buys ${isConsumable(d) ? 'consumables' : 'permanent items'} of level ${cap} or lower`);
+    const cost = priceCp(d, qty);
+    if (cost === null) problems.push(`gear: ${d.name} has no price`);
+    else spent += cost;
+    if (d.kind === 'kit') for (const c of kitContents(d)) gearItems.push({ ref: c.ref, qty: c.qty * qty });
+    else gearItems.push({ ref: it.ref, qty });
+  }
+  if (spent > budget) problems.push(`gear costs ${cpLabel(spent)}, more than the ${wealth.gp} gp to spend`);
+  if (!gear.done) need(L, 'gear', `Buy gear: ${cpLabel(Math.max(0, budget - spent))} of ${wealth.gp} gp left${wealth.items && Object.keys(wealth.items).length ? ' (after the permanent items)' : ''}; say when the shopping is done.`);
+  const actorItems = [];
+  for (const it of gearItems) {
+    const d = get(it.ref);
+    if (!d) continue;
+    const have = actorItems.find((x) => x.ref === it.ref && isConsumable(d));
+    if (have) { have.qty = (have.qty || 1) + it.qty; continue; }
+    actorItems.push({ ref: it.ref, name: d.name, ...(it.qty > 1 ? { qty: it.qty } : {}), carry: carryOf(d) });
+  }
+  // one suit of armour worn, one weapon and one shield in hand; the rest stowed (the player changes it in Party loot)
+  const firstOf = {};
+  for (const it of actorItems) {
+    if (it.carry === 'stowed') continue;
+    const kind = (get(it.ref) || {}).kind;
+    if (firstOf[kind]) it.carry = 'stowed'; else firstOf[kind] = true;
+  }
+  const coins = coinsOf(Math.max(0, budget - spent));
+
   for (const k of Object.keys(P.spellcasting)) if (!P.spellcasting[k]) delete P.spellcasting[k];
   if (!Object.keys(P.spellcasting).length) delete P.spellcasting;
 
@@ -851,6 +908,7 @@ export function deriveCharacter(build, get, opts = {}) {
     ...(casting && casting.tradition ? { spellcasting: { ...casting, ...(spellOut || {}) } } : {}),
     ...(focusSpells.length ? { resources: { focus: { max: Math.min(3, focusSpells.length) } } } : {}),
     ...(granted.length ? { granted } : {}),
+    ...(actorItems.length ? { items: actorItems } : {}),
     build: b,
   };
   // ---- prerequisites of the feats the player chose (section 9.7), against the character as built: exact for the
@@ -870,5 +928,5 @@ export function deriveCharacter(build, get, opts = {}) {
     for (const p of r.unmet) problems.push(`${f.name} (level ${f.level} ${f.slot} feat): prerequisite not met: ${p}`);
     for (const p of r.unread) checks.push({ feat: f.name, level: f.level, prerequisite: p });
   }
-  return { actor, pending, problems, unsupported, checks, notGranted, rollOptions: [...tags].sort() };
+  return { actor, pending, problems, unsupported, checks, notGranted, coins, rollOptions: [...tags].sort() };
 }

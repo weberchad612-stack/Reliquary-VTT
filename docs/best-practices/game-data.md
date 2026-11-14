@@ -335,5 +335,10 @@ What the board does with it: docs/best-practices/board.md (Replay).
   they were checked, and a test that pins them to the book's numbers.
 - A caster's tradition, granted spells and focus spells are read from the subclass's text in its fixed forms; a
   spell the text names that the content lacks is reported, never guessed.
+- **Finishing a character:** ask the player and the GM where it goes (the party, in another PC's place, or the
+  bullpen) and ask for a picture for its token; never pick for them. Write the `writes` `finish` prints to the board
+  when the campaign is loaded, and record who plays it (`tools/players.mjs`).
+- **Shopping:** suggest gear that fits the build (armour it is trained in, its weapons, an adventurer's pack) within
+  the budget, and let the player change it; the coins left go to the character.
 - The design and what is built: docs/design/game-data.md section 9.
 

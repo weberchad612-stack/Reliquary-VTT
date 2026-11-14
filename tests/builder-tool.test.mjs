@@ -87,13 +87,15 @@ test('builder: a background\'s Lore written only in its text, and a choice of re
   assert.equal(s.crafting, 1); assert.equal(s.survival, 1);
 });
 
-test('builder tool: a draft in the campaign save, built and finished', async () => {
-  const save = fs.mkdtempSync(path.join(os.tmpdir(), 'bsave-'));
-  fs.writeFileSync(path.join(save, 'campaign.json'), JSON.stringify({ v: 1, id: 't', title: 'T', ruleset: 'pf2e' }));
+test('builder tool: a draft in the campaign save, built, shopped for, finished into the party, swapped and benched', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bsave-'));
+  fs.cpSync('examples/sample-pack', path.join(tmp, 'sample-pack'), { recursive: true });
+  fs.cpSync('examples/campaigns/keep-test', path.join(tmp, 'save'), { recursive: true });
+  const save = path.join(tmp, 'save');
   const lines = [];
   const orig = process.stdout.write.bind(process.stdout);
   const cap = async (args) => { lines.length = 0; process.stdout.write = (x) => { lines.push(String(x)); return true; }; try { await run(args); } finally { process.stdout.write = orig; } return lines.join(''); };
-  const id = /Draft (pc-[0-9a-f]+)/.exec(await cap(['new', save, '--name', 'Kerra', '--player', 'Chad']))[1];
+  const id = /Draft (pc-[0-9a-f]+)/.exec(await cap(['new', save, '--name', 'Bryn', '--player', 'Chad']))[1];
   const pick = (step, ...v) => cap(['choose', save, id, step, ...v]);
   await pick('1:ancestry', 'ancestries:ancestry/human'); await pick('1:heritage', 'heritages:heritage/skilled-human');
   await pick('1:background', 'backgrounds:background/guard'); await pick('1:class', 'classes:class/fighter');
@@ -102,17 +104,47 @@ test('builder tool: a draft in the campaign save, built and finished', async () 
   await pick('1:choice.skilled-human.skill', 'survival'); await pick('1:skills', 'acrobatics', 'medicine', 'society');
   await pick('1:lore', 'Warfare'); await pick('1:languages', 'elven');
   await pick('1:feat.ancestry', 'feats:feat/natural-ambition'); await pick('1:choice.natural-ambition.naturalAmbition', 'feats:feat/snagging-strike');
-  const last = await pick('1:feat.class', 'feats:feat/reactive-shield');
+  await pick('1:feat.class', 'feats:feat/reactive-shield');
+  assert.match(await cap(['next', save, id]), /1:gear: Buy gear: 15 gp of 15 gp left/);
+  await pick('1:gear', 'equipment:item/longsword', 'equipment:item/chain-mail', 'equipment:item/steel-shield', 'equipment:item/adventurers-pack', 'equipment:item/javelin x4');
+  const last = await pick('1:gear', 'done');
   assert.match(last, /ready to finish/, last);
-  assert.match(await cap(['preview', save, id]), /HP 20, AC 15/);
-  assert.match(await cap(['options', save, id, '1:feat.class', '--search', 'shield', '--all']), /reactive-shield.*BLOCKED: taken already/);
-  const fin = await cap(['finish', save, id, '--actor', 'tok-kerra']);
-  assert.match(fin, /Finished Kerra/);
-  const actor = JSON.parse(fs.readFileSync(path.join(save, 'actors', 'tok-kerra.json'), 'utf8'));
-  assert.equal(actor.name, 'Kerra');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(save, 'builds', `${id}.json`), 'utf8')).status, 'finished');
+  const pv = await cap(['preview', save, id]);
+  assert.match(pv, /HP 20, AC 18, Speed 25 ft/, pv);
+  assert.match(pv, /Chain Mail \(worn\).*Steel Shield \(held\).*Torch x5.*Javelin x4; coins 4 gp 1 sp 0 cp/, pv);
+  await assert.rejects(() => cap(['finish', save, id]), /--to party, swap/);
+  const fin = JSON.parse(await cap(['finish', save, id, '--to', 'party']));
+  assert.match(fin.lines.join('\n'), /Bryn joins the party at 24,46 on sample-keep/);
+  const tid = JSON.parse(fs.readFileSync(path.join(save, 'builds', `${id}.json`), 'utf8')).actor;
+  assert.deepEqual(fin.writes.slice(0, 4).map((w) => `${w.op} ${w.path}`), [`set actors/${tid}`, `update actorstate/${tid}`, `set tokens/${tid}`, 'set state/marching']);
+  assert.ok(fin.writes.some((w) => w.path === 'content/equipment.item.chain-mail'), 'the content its items use');
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(save, 'actorstate', `${tid}.json`), 'utf8')).coins, { gp: 4, sp: 1, cp: 0 });
+  const st = JSON.parse(fs.readFileSync(path.join(save, 'maps', 'sample-keep.json'), 'utf8'));
+  assert.deepEqual([st.tokens[tid].x, st.tokens[tid].y, st.tokens[tid].kind], [24, 46, 'pc']);
+  // Kerra to the bullpen (her token kept), then back in Bryn's place
+  JSON.parse(await cap(['bench', save, 'Kerra']));
+  assert.match(await cap(['bullpen', save]), /Kerra/);
+  const sw = JSON.parse(await cap(['field', save, 'Kerra', '--to', 'swap', '--out', 'Bryn']));
+  assert.match(sw.lines.join('\n'), /Bryn leaves the board for the bullpen; Kerra takes their place at 24,46/);
+  const st2 = JSON.parse(fs.readFileSync(path.join(save, 'maps', 'sample-keep.json'), 'utf8'));
+  assert.equal(st2.tokens[tid], undefined);
+  assert.equal(st2.tokens['tok-cw77vfz9'].note, 'Carries a lit torch', 'her token comes back as it was');
+  assert.match(await cap(['bullpen', save]), /Bryn/);
   assert.match(await cap(['settings', save, '--books', 'Pathfinder Player Core|Pathfinder Player Core 2']), /Player Core 2/);
-  fs.rmSync(save, { recursive: true });
+  fs.rmSync(tmp, { recursive: true });
+});
+
+test('builder: starting gear above 1st level follows GM Core\'s wealth table', () => {
+  const b = { v: 1, level: 3, ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/skilled-human', background: 'backgrounds:background/acolyte', class: 'classes:class/fighter' };
+  const st = B.steps(b).steps.filter((s) => s.step.startsWith('gear')).map((s) => [s.step, s.count, s.text]);
+  assert.deepEqual(st.map((x) => x[0]), ['gear.permanent2', 'gear.permanent1', 'gear']);
+  assert.match(st[1][2], /Choose 2 permanent items of level 1 or lower/);
+  assert.match(st[2][2], /25 gp of 25 gp left/);
+  const perm = B.options(b, '3:gear.permanent2').options;
+  assert.ok(perm.length && perm.every((o) => (o.level || 0) <= 2 && o.kind !== 'consumable'));
+  const bad = B.derive({ ...b, gear: { permanent: { 2: ['equipment:item/healing-potion-minor'] }, items: [{ ref: 'equipment:item/full-plate', qty: 1 }, { ref: 'equipment:item/longsword', qty: 20 }] } });
+  assert.match(bad.problems.join('\n'), /is a consumable|is level/);
+  assert.match(bad.problems.join('\n'), /more than the 25 gp to spend/);
 });
 
 // ---- step 4: casters (rulesets/pf2e/casting.js) ----

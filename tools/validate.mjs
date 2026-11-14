@@ -724,13 +724,15 @@ export function validateActors(save, pack, content, report) {
   const tokens = new Set(), tokenEffects = {};
   const mdir = path.join(save, 'maps');
   if (fs.existsSync(mdir)) for (const f of fs.readdirSync(mdir).filter((n) => n.endsWith('.json'))) { try { const st = JSON.parse(fs.readFileSync(path.join(mdir, f), 'utf8')); for (const [id, t] of Object.entries(st.tokens || {})) { tokens.add(id); tokenEffects[id] = t.effects || []; } } catch { /* reported by validateState */ } }
+  // characters waiting in the bullpen have no token (tools/builder.mjs, docs/design/game-data.md 9.10)
+  const benched = new Set((() => { try { return JSON.parse(fs.readFileSync(path.join(save, 'bullpen.json'), 'utf8')).pcs.map((x) => x.id); } catch { return []; } })());
   const adir = path.join(save, 'actors'), sdir = path.join(save, 'actorstate');
   const ids = fs.existsSync(adir) ? fs.readdirSync(adir).filter((n) => n.endsWith('.json')).map((n) => path.basename(n, '.json')) : [];
   for (const id of ids) {
     const file = path.join(adir, id + '.json'), a = readJson(file, report);
     if (!a || !schemaErrors(V.actor, a, file, report)) continue;
     if (!/^tok-[0-9a-z]{8}$/.test(id)) report.error(file, `"${id}" is not a token id: an actor has its token's id`);
-    else if (!tokens.has(id)) report.warn(file, `no token "${id}" on any map of this save`);
+    else if (!tokens.has(id) && !benched.has(id)) report.warn(file, `no token "${id}" on any map of this save`);
     if (a.system !== pack.ruleset) { report.error(file, `system "${a.system}" is not the campaign's ruleset "${pack.ruleset}"`); continue; }
     if (a.kind === 'object') { validateObject(a, file, content, report); continue; }
     if (check && !schemaErrors(check, a, file, report)) continue;

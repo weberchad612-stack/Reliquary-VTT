@@ -25,7 +25,7 @@ const FIGHTER = {
   ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/versatile-human',
   background: 'backgrounds:background/guard', class: 'classes:class/fighter', keyAttribute: 'str',
   boosts: { ancestry: ['str', 'con'], background: ['str', 'dex'], free: ['str', 'dex', 'con', 'wis'] },
-  skills: { trained: ['acrobatics', 'medicine', 'society'], lore: ['warfare'] }, languages: ['elven'],
+  skills: { trained: ['acrobatics', 'medicine', 'society'], lore: ['warfare'] }, languages: ['elven'], gear: { done: true },
   // the content's own choices: the fighter's skill, Versatile Human's general feat, Natural Ambition's class feat
   selections: { 'fighter.fighterSkill': 'athletics', 'versatile-human.versatileHeritage': 'feats:feat/toughness', 'natural-ambition.naturalAmbition': 'feats:feat/snagging-strike' },
   levels: { 1: { feats: { ancestry: 'feats:feat/natural-ambition', class: 'feats:feat/reactive-shield' } } },
@@ -62,8 +62,8 @@ test('build: a 1st-level human fighter, worked out from the choices', () => {
 
 test('build: what is still to choose, step by step', () => {
   const r = deriveCharacter({ v: 1, level: 1 }, get, { resolve });
-  assert.deepEqual(r.pending.map((p) => p.step), ['ancestry', 'background', 'class', 'boosts.free', 'boosts.free', 'boosts.free', 'boosts.free']);
-  const half = deriveCharacter({ ...FIGHTER, keyAttribute: undefined, boosts: { ancestry: ['str'], background: [], free: [] }, skills: {}, selections: {}, levels: {} }, get, { resolve });
+  assert.deepEqual(r.pending.map((p) => p.step), ['ancestry', 'background', 'class', 'boosts.free', 'boosts.free', 'boosts.free', 'boosts.free', 'gear']);
+  const half = deriveCharacter({ ...FIGHTER, gear: {}, keyAttribute: undefined, boosts: { ancestry: ['str'], background: [], free: [] }, skills: {}, selections: {}, levels: {} }, get, { resolve });
   const steps = half.pending.map((p) => p.step);
   for (const s of ['boosts.ancestry', 'boosts.background', 'keyAttribute', 'boosts.free', 'skills', 'feat.ancestry', 'feat.class']) assert.ok(steps.includes(s), `${s} is pending: ${steps}`);
   assert.match(half.pending.find((p) => p.step === 'keyAttribute').text, /dex or str/);
@@ -98,7 +98,7 @@ test('build: levels bring feats, skill increases and boosts; a boost at +4 is a 
     4: { feats: { class: 'feats:feat/intimidating-strike', skill: 'feats:feat/quick-coercion' } },
     5: { feats: { ancestry: 'feats:feat/natural-ambition' }, skillIncrease: 'athletics', boosts: ['str', 'dex', 'con', 'wis'] } } };
   const r = deriveCharacter(lv5, get, { resolve });
-  assert.deepEqual(r.pending, [], JSON.stringify(r.pending));
+  assert.deepEqual(r.pending.filter((p) => !p.step.startsWith('gear')), [], JSON.stringify(r.pending));
   assert.equal(r.actor.attributes.str, 4, 'str was +4: the boost is partial, half way to +5');
   assert.equal(r.actor.attributes.dex, 3);
   assert.match(r.problems.join('\n'), /level 5: athletics cannot go above expert yet/, 'master needs level 7');
