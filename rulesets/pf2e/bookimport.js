@@ -138,3 +138,57 @@ export function areaFacts(text) {
   if (/(^|\n)\s*Treasure\b/.test(text)) out.push({ kind: 'treasure', at: 'Treasure' });
   return out;
 }
+
+// ---- loot and hazard matching (tools/advimport/lootmatch.mjs, #16) ----
+
+/** A price written after a name in the book, "(5 gp)", "(2 gp, 5 sp)", as {gp, sp, cp}, or null. */
+export function priceAfter(text, name) {
+  const at = text.toLowerCase().indexOf(name.toLowerCase());
+  if (at < 0) return null;
+  const rest = text.slice(at + name.length);
+  const gap = /^([^(]*)\(/.exec(rest);   // only a few words may stand between, and never another item ("and a rope")
+  if (!gap || gap[1].length > 20 || /[.;,]|\b(and|or|with)\b/.test(gap[1])) return null;
+  const m = /^[^(]*\(([^)]*\b(?:gp|sp|cp|pp)\b[^)]*)\)/.exec(rest);
+  if (!m) return null;
+  const out = {};
+  for (const c of m[1].matchAll(/(\d+)\s*(pp|gp|sp|cp)\b/g)) out[c[2]] = (out[c[2]] || 0) + Number(c[1]);
+  return Object.keys(out).length ? out : null;
+}
+
+/** An item's price in copper, for comparing. */
+export const priceCp = (p) => (p ? (p.pp || 0) * 1000 + (p.gp || 0) * 100 + (p.sp || 0) * 10 + (p.cp || 0) : null);
+
+/** The treasure paragraphs of an area's text (after a "Treasure" heading, up to the next heading). */
+export function treasureText(text) {
+  const lines = text.split('\n'), out = [];
+  let on = false;
+  for (const l of lines) {
+    if (/^\s*Treasure\b/.test(l)) { on = true; continue; }
+    if (on && /^\s*([A-Z]{1,2}\d{1,2}[a-z]?[.:]\s|[A-Z][A-Z ,'’-]{6,}$)/.test(l)) on = false;
+    if (on) out.push(l);
+  }
+  return out.join(' ').replace(/\s+/g, ' ');
+}
+
+/** A hazard's printed numbers, as the book gives them: {stealth, disable: [dc...], ac, hp}. */
+export function hazardNumbers(text) {
+  const t = text.replace(/\s+/g, ' ');
+  const n = (re) => { const m = re.exec(t); return m ? Number(m[1]) : null; };
+  const disablePart = (/Disable\b(.{0,240}?)(?:\bAC \d|\bHP \d|Routine|Reset|\bReaction\b|$)/.exec(t) || [])[1] || '';
+  return {
+    stealth: n(/(?:Stealth|Notice) DC (\d+)/) ?? n(/Stealth \+?(\d+)/),
+    disable: [...disablePart.matchAll(/DC (\d+)/g)].map((m) => Number(m[1])),
+    ac: n(/\bAC (\d+)/), hp: n(/\bHP (\d+)/),
+  };
+}
+
+/** The same numbers from an open-content hazard. */
+export function hazardContent(doc) {
+  const s = doc.stats || {};
+  return {
+    stealth: s.stealth ? (s.stealth.dc ?? (s.stealth.value !== undefined ? s.stealth.value + 10 : null)) : null,
+    stealthMod: s.stealth && s.stealth.value !== undefined ? s.stealth.value : null,
+    disable: [...String(doc.disable || '').matchAll(/DC (\d+)/g)].map((m) => Number(m[1])),
+    ac: s.ac ?? null, hp: s.hp ?? (s.hitPoints ?? null),
+  };
+}
