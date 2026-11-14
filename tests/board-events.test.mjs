@@ -94,3 +94,10 @@ test('board subsystem card: players see revealed parts and no DCs; the GM sees a
   assert.match(g, /Secret vault<\/b> <span class="ss-k">\(hidden\)/);
   assert.match(g, /players see it/);
 });
+
+test('board events: the kickoff comes first until it has run', () => {
+  const defs = [{ id: 'a', title: 'Alpha', trigger: {}, stages: [{ id: 's' }] }, { id: 'k', title: 'Zed begins', kickoff: true, trigger: {}, stages: [{ id: 's' }] }];
+  assert.deepEqual(eventRows(defs, { a: { status: 'running' } }).map((r) => r.id), ['k', 'a']);
+  assert.deepEqual(eventRows(defs, { a: { status: 'running' }, k: { status: 'done' } }).map((r) => r.id), ['a', 'k']);
+  assert.match(eventDetailHtml(defs[1], {}), /kickoff: narrate it when the party first arrives/);
+});

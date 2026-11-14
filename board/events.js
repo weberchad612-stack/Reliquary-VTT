@@ -72,8 +72,9 @@ export function eventRows(defs, states, due = {}) {
   return defs.map((d) => {
     const st = states[d.id] || {};
     const status = due[d.id] && st.status !== 'done' ? (st.status === 'running' ? 'running' : 'due') : (st.status || 'waiting');
-    return { id: d.id, title: d.title || d.id, status, stage: st.stage || null, pages: d.pages || null, kind: d.kind || null, due: due[d.id] || null, runs: st.runs || 0 };
-  }).sort((a, b) => (order[a.status] - order[b.status]) || a.title.localeCompare(b.title));
+    return { id: d.id, title: d.title || d.id, status, stage: st.stage || null, pages: d.pages || null, kind: d.kind || null, due: due[d.id] || null, runs: st.runs || 0, kickoff: !!d.kickoff };
+  // the kickoff first until it has run (it is the first thing at the table), then by state
+  }).sort((a, b) => ((b.kickoff && b.status !== 'done') - (a.kickoff && a.status !== 'done')) || (order[a.status] - order[b.status]) || a.title.localeCompare(b.title));
 }
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -97,6 +98,7 @@ export function eventDetailHtml(def, st = {}, due = null) {
   const decisions = Object.entries(st.decisions || {}).map(([k, v]) => `<li>${esc(k)}: ${esc(v)}</li>`).join('');
   const hist = (st.history || []).slice(-8).map((h) => `<li>${esc(h.what)}</li>`).join('');
   return `<div class="ev-detail">`
+    + (def.kickoff ? '<p class="ev-note">The adventure\'s kickoff: narrate it when the party first arrives, before anything else.</p>' : '')
     + `<p class="ev-trig"><b>Starts:</b> ${esc(conditionWords(def.trigger))}${def.repeat ? ` · may happen again${def.repeat.cooldown ? ` after ${esc(hours(def.repeat.cooldown))}` : ''}` : ''}</p>`
     + (due ? `<p class="ev-due">Due: ${esc(due.why)}${due.to ? ` (to ${esc(due.to)})` : ''}. Claude runs it.</p>` : '')
     + (def.note ? `<p class="ev-note">${esc(def.note)}</p>` : '')

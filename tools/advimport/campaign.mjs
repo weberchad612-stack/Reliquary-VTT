@@ -51,9 +51,27 @@ function statBlock(repo, ruleset, key) {
   return fs.existsSync(f) ? readJson(f) : null;
 }
 
+/**
+ * The pack's adventure: adventure.json (often made by the pack's build_adventure.py) with the events and subsystems
+ * of adventure-events.json merged in. Events live in their own file so a rebuild of adventure.json cannot erase them
+ * (docs/best-practices/events.md). An id in both is an error.
+ */
+export function readAdventure(packDir) {
+  const adv = readJson(path.join(packDir, 'adventure.json'));
+  const ef = path.join(packDir, 'adventure-events.json');
+  if (!fs.existsSync(ef)) return adv;
+  const extra = readJson(ef);
+  for (const k of ['events', 'subsystems']) {
+    const have = new Set((adv[k] || []).map((x) => x.id));
+    for (const x of extra[k] || []) if (have.has(x.id)) throw new Error(`${k} "${x.id}" is in both adventure.json and adventure-events.json`);
+    adv[k] = [...(adv[k] || []), ...(extra[k] || [])];
+  }
+  return adv;
+}
+
 export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
   const pack = readJson(path.join(packDir, 'pack.json'));
-  const adv = readJson(path.join(packDir, 'adventure.json'));
+  const adv = readAdventure(packDir);
   const maps = Object.fromEntries([...new Set([...(adv.landing ? [adv.landing] : []), ...(adv.maps || pack.maps)])].map((m) => [m, {}]));
   const actors = {};
   const problems = [];
@@ -137,6 +155,10 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     events[eid] = { ...def, status: 'waiting' };
   }
   for (const e of checkEvents(adv.events || [])) problems.push(`events: ${e}`);
+  // the kickoff is mandatory: the book's way of starting the story (tools/advimport/kickoff.mjs)
+  const kick = (adv.events || []).filter((e) => e.kickoff);
+  if (!kick.length) problems.push('no kickoff event: every adventure has one ("kickoff": true; tools/advimport/kickoff.mjs finds the book\'s opening and gives a skeleton)');
+  if (kick.length > 1) problems.push(`${kick.length} kickoff events (${kick.map((e) => e.id).join(', ')}): there is one`);
   // subsystems (Victory Points, Influence, Chase, Infiltration, Research): built from the system's kinds
   const subsystems = {};
   const kinds = ((systemConfig(pack.ruleset) || {}).subsystems || {}).kinds || {};
@@ -172,7 +194,7 @@ export function updateSave(packDir, saveDir, opts = {}) {
   const old = readJson(path.join(saveDir, 'campaign.json'));
   const campaign = { ...old, title: old.title || fresh.campaign.title, pack: fresh.campaign.pack };
   if (fresh.campaign.music && !old.music) campaign.music = fresh.campaign.music;
-  const adv = readJson(path.join(packDir, 'adventure.json'));
+  const adv = readAdventure(packDir);
   // every token in the save, wherever play has moved it
   const states = {};
   const mapsDir = path.join(saveDir, 'maps');

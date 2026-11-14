@@ -72,6 +72,7 @@ test('adventure importer: stable token ids, creatures and objects from adventure
   assert.match(stableId('x'), /^tok-[0-9a-z]{8}$/);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'adv-'));
   fs.writeFileSync(path.join(dir, 'pack.json'), JSON.stringify({ id: 'p', ruleset: 'pf2e', maps: ['m'] }));
+  fs.writeFileSync(path.join(dir, 'adventure-events.json'), JSON.stringify({ events: [{ id: 'kickoff', kickoff: true, title: 'It begins', pages: '1', trigger: { map: 'm' }, stages: [{ id: 'scene', actions: [{ do: 'narrate', text: 'The scene.' }] }] }] }));
   fs.writeFileSync(path.join(dir, 'adventure.json'), JSON.stringify({
     title: 'T', maps: ['m'], start: { map: 'm' },
     encounters: [{ id: 'e1', map: 'm', room: 'R1', pages: '1', hidden: true, creatures: [
@@ -117,6 +118,7 @@ test('adventure importer: --update refreshes the pack\'s data and keeps play', (
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'advup-'));
   const save = path.join(dir, 'save');
   fs.writeFileSync(path.join(dir, 'pack.json'), JSON.stringify({ id: 'p', ruleset: 'pf2e', maps: ['m'] }));
+  fs.writeFileSync(path.join(dir, 'adventure-events.json'), JSON.stringify({ events: [{ id: 'kickoff', kickoff: true, title: 'It begins', pages: '1', trigger: { map: 'm' }, stages: [{ id: 'scene', actions: [{ do: 'narrate', text: 'The scene.' }] }] }] }));
   fs.mkdirSync(path.join(dir, 'maps', 'm'), { recursive: true });
   fs.writeFileSync(path.join(dir, 'maps', 'm', 'walls.json'), JSON.stringify({ v: 1, segs: [{ id: 'door01', t: 'door', a: [0, 0], b: [1, 0], door: { id: 'd01' } }] }));
   const adv = (note, extra = []) => ({ title: 'T', maps: ['m'], start: { map: 'm' }, ledger: [{ kind: 'thread', text: 'A thread' }],

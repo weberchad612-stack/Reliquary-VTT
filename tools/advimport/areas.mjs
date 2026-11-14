@@ -18,6 +18,7 @@
 // counts as a fact is the game system's: rulesets/<ruleset>/bookimport.js `areaFacts` (and `parseBlocks` for stat
 // blocks). Nothing from the book is written anywhere but the run's output.
 
+import { readAdventure } from './campaign.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { systemReader, nameVariants } from './statmatch.mjs';
@@ -49,7 +50,7 @@ export function splitAreas(pages, { skip = null } = {}) {
 /** The pack as the checks see it, keyed by area. */
 export function packIndex(packDir) {
   const pack = readJson(path.join(packDir, 'pack.json'));
-  const adv = fs.existsSync(path.join(packDir, 'adventure.json')) ? readJson(path.join(packDir, 'adventure.json')) : {};
+  const adv = fs.existsSync(path.join(packDir, 'adventure.json')) ? readAdventure(packDir) : {};
   const idx = { rooms: {}, notes: {}, encounters: {}, objects: {}, doors: {}, light: {}, lights: {}, terrain: {}, base: {}, mapLights: {}, fpc: {} };
   for (const m of pack.maps || []) {
     const dir = path.join(packDir, 'maps', m);

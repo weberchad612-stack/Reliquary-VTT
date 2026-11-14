@@ -426,6 +426,11 @@ happens. Details: [events.md](../best-practices/events.md).
   the system's per-session resources (PF2E: 1 Hero Point).
   If the campaign has a landing page, the party waits there while players join; the user moves it on to the
   session's map from the GM view's map menu (or asks Claude to). Don't narrate the first scene until it has moved.
+- **The kickoff opens the adventure.** Every imported adventure has one kickoff event, the book's own way of starting
+  the story; it is due the moment the party first arrives on the starting map. Run it before anything else
+  (`events.mjs tick`) and do its stages in order: the table setup, the scene-setting narration in your own words,
+  where the heroes start, and how the book folds the players in (each hero's first action, the players introducing
+  their heroes). Let each player answer before moving on; then hand over to the first area.
 - **Ending a session** ("wrap up"; offer it when the user says he's done): _(X)_
   1. Close what's open: no replay left unrevealed, the banner cleared, the encounter ended or noted as
      ongoing.

@@ -102,6 +102,7 @@ test('events: the importer writes them waiting and --update keeps play', () => {
   const pack = path.join(dir, 'pack'), save = path.join(dir, 'save');
   fs.mkdirSync(pack, { recursive: true });
   fs.writeFileSync(path.join(pack, 'pack.json'), JSON.stringify({ id: 'p', title: 'P', ruleset: 'pf2e', maps: ['m'] }));
+  fs.writeFileSync(path.join(pack, 'adventure-events.json'), JSON.stringify({ events: [{ id: 'kickoff', kickoff: true, title: 'It begins', pages: '1', trigger: { map: 'm' }, stages: [{ id: 'scene', actions: [{ do: 'narrate', text: 'The scene.' }] }] }] }));
   const ev = (title) => ({ id: 'beam', title, trigger: { all: [{ time: 'night' }, { level: { min: 2 } }] }, stages: [{ id: 'a' }, { id: 'b', when: { encounter_ended: 'g1' } }] });
   fs.writeFileSync(path.join(pack, 'adventure.json'), JSON.stringify({ title: 'P', maps: ['m'], landing: null, events: [ev('Old')] }));
   const b = buildSave(pack, {});

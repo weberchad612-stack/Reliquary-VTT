@@ -131,6 +131,29 @@ const SUBSYSTEM_HEADS = [
   ['victory-points', /(^|\n)\s*(VICTORY POINTS|Victory Points)\b/],
 ];
 
+// The adventure's opening (tools/advimport/kickoff.mjs): the headings and cues that mark where a book tells the GM
+// how to start: the background, getting started, the first read-aloud, where the heroes begin, how the players come
+// into the story (introductions, the first thing each hero does).
+export const KICKOFF_CUES = [
+  ['heading', /^\s*(Getting Started|Starting the Adventure|Beginning the Adventure|Adventure Background|Background|Introduction|Adventure Synopsis|Adventure Summary|Adventure Hooks?|Opening Scene|Part 1:?.*|Chapter 1:?.*)\s*$/m],
+  ['read-aloud', /\b(start by reading|begin by reading|read (?:or paraphrase )?the following|read the text in \w+ (?:below|aloud)|to set the scene|read aloud)\b/i],
+  ['placement', /\b(place (?:their|the) (?:pawns?|minis|miniatures|tokens)|pawns? in area|the (?:heroes|PCs|party) (?:begin|start)s? (?:in|at|the adventure))\b/i],
+  ['players', /\b(introduce (?:their|your) (?:heroes|characters)|ask each player|each player (?:describes|introduces)|go around the table)\b/i],
+  ['xp', /\bfor starting\b.*\bXP\b|\bXP\b.*\bfor starting\b/i],
+];
+
+/** Where a page's text looks like the adventure's opening: [{kind, at}] (KICKOFF_CUES). */
+export function kickoffCues(text) {
+  const out = [];
+  const flat = text.replace(/-\n\s*/g, '').replace(/\s*\n\s*/g, ' ');
+  for (const [kind, re] of KICKOFF_CUES) {
+    if (kind === 'heading') { const m = re.exec(text); if (m) out.push({ kind, at: m[1].trim() }); continue; }
+    const m = re.exec(flat);
+    if (m) out.push({ kind, at: flat.slice(Math.max(0, m.index - 30), m.index + 60).trim() });
+  }
+  return out;
+}
+
 export function areaFacts(text) {
   const t = text.replace(/-\n\s*/g, '').replace(/\s*\n\s*/g, ' ');
   const out = [];

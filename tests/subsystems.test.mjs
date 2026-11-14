@@ -118,6 +118,7 @@ test('subsystems: the importer builds them from the system\'s kinds and --update
   const pack = path.join(dir, 'pack'), save = path.join(dir, 'save');
   fs.mkdirSync(pack, { recursive: true }); fs.mkdirSync(save, { recursive: true });
   fs.writeFileSync(path.join(pack, 'pack.json'), JSON.stringify({ id: 'p', title: 'P', ruleset: 'pf2e', maps: ['m'] }));
+  fs.writeFileSync(path.join(pack, 'adventure-events.json'), JSON.stringify({ events: [{ id: 'kickoff', kickoff: true, title: 'It begins', pages: '1', trigger: { map: 'm' }, stages: [{ id: 'scene', actions: [{ do: 'narrate', text: 'The scene.' }] }] }] }));
   const adv = (subs) => fs.writeFileSync(path.join(pack, 'adventure.json'), JSON.stringify({ title: 'P', maps: ['m'], subsystems: subs }));
   adv([{ id: 'lift', kind: 'victory', title: 'Fix the lift', goal: 4, pages: '7', thresholds: [{ at: 4, id: 'fixed', label: 'Fixed', end: 'success' }] }]);
   const b = buildSave(pack, {});

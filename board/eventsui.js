@@ -30,7 +30,7 @@ export function mountEvents(o) {
     const byId = Object.fromEntries(split.defs.map((d) => [d.id, d]));
     listEl.innerHTML = shown.map((r) => `<li class="ev-row ev-${r.status}" data-id="${esc(r.id)}">`
       + `<button type="button" class="ev-line" aria-expanded="${opened.has(r.id)}"><span class="ev-st" title="${LABEL[r.status]}">${ICON[r.status]}</span>`
-      + `<span class="ev-title">${esc(r.title)}</span><span class="ev-meta">${esc([LABEL[r.status] + (r.stage ? `: ${r.stage}` : ''), r.pages ? `pp ${r.pages}` : null, r.runs > 1 ? `${r.runs}×` : null].filter(Boolean).join(' · '))}</span></button>`
+      + `<span class="ev-title">${r.kickoff ? '<span class="ev-kick">Kickoff</span> ' : ''}${esc(r.title)}</span><span class="ev-meta">${esc([LABEL[r.status] + (r.stage ? `: ${r.stage}` : ''), r.pages ? `pp ${r.pages}` : null, r.runs > 1 ? `${r.runs}×` : null].filter(Boolean).join(' · '))}</span></button>`
       + (opened.has(r.id) ? eventDetailHtml(byId[r.id], split.states[r.id], r.due) : '') + '</li>').join('');
     if (o.badge) o.badge(active);
   }

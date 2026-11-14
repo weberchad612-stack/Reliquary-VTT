@@ -48,11 +48,32 @@ every run, and the table shows them until then. The table below is what each ste
 ## 2b. Events and subsystems
 
 Every event the area checklist finds (a timed beat, reinforcements, something that happens once the party does
-something, a skill challenge or subsystem block) is written into `adventure.json` `events` (and `subsystems`), or
+something, a skill challenge or subsystem block) is written into the pack's `adventure-events.json` (`events` and
+`subsystems`; merged into the adventure by the importer, so rebuilding `adventure.json` from a pack script cannot
+erase them), or
 explained in `checklist.json` when the notes or an encounter already carry it (a room rule, a puzzle's XP, where a
 creature starts). Paraphrase with page references. Then `campaign.mjs --update` and a dry run of each event on a
 scratch copy of the save with a PC placed in its area: due, tick, the subsystem's checks, each branch
 ([events.md](events.md)). The first adventure's dry runs found two engine bugs before play.
+
+## 2c. The adventure kickoff (mandatory)
+
+Every adventure has its own way of starting the story, and the import keeps it as **one event marked `"kickoff":
+true`** (the user, 2026-11-13). It is due when the party first arrives on the starting map (the GM moves it off the
+landing page), shows first in the Events tab until it has run, and the campaign is not built without it.
+
+- **The step:** `node tools/advimport/kickoff.mjs packs/<pack> extracted/<pack>/text --pages A-B` (in the pipeline as
+  `kickoff`, before `campaign`; `run.mjs` warns about a pipeline without it). It finds the book's opening with the
+  system's cues (a "Getting Started" or background heading, the first read-aloud, where the heroes start, how the
+  players are brought in, XP for starting), checks the kickoff event against it, and gives a skeleton when there is
+  none. Review it like the other checks, then `approve kickoff`.
+- **What it holds, in the book's order:** what the book asks of the table before play (characters ready, where the
+  pawns go); the scene-setting read-aloud and backstory, paraphrased with its page; where the heroes start; and how
+  the book folds the players in: the first thing each hero does, the players introducing their heroes (name,
+  ancestry, background, class, a look), gathering their gear; XP for starting if the book gives it; then the hand-off
+  to the first area or fight (which stays that area's encounter).
+- **Trigger:** `{"map": "<the starting map>"}`. A kickoff the GM times by hand can add `{"manual": true}` and is run
+  with `events.mjs run kickoff`.
 
 ## 3. Start positions from the book's pawns
 

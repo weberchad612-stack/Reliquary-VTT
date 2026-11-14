@@ -16,6 +16,7 @@
 //            and any var substituted.
 //   inputs   files and globs (relative to the repository) the step reads; outputs: what it writes.
 //   each     "map": once per map folder of the pack that has an import.json ({map} is its id).
+//   Mandatory: the kickoff step (the book's way of starting the story, as an event); status and run warn without it.
 //   review   the result needs Claude's look before the import goes on: after a run the step waits for
 //            `approve`; later steps still run, and the table says what is waiting.
 // A step is out of date when it never ran, its definition changed, an output is missing, or an input is newer than
@@ -31,6 +32,9 @@ import { fileURLToPath } from 'node:url';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 
+/** Steps every pack's pipeline must keep. */
+export const MANDATORY = Object.freeze(['kickoff']);
+
 /** The standard steps of an adventure import (`init` writes them; each pack edits its own copy). */
 export function standardPipeline(packId) {
   return {
@@ -45,11 +49,12 @@ export function standardPipeline(packId) {
       { id: 'cropcheck', run: 'node tools/advimport/cropcheck.mjs {pack} {extracted}/roomcrops.json --levels {crop_levels}', inputs: ['{extracted}/roomcrops.json', '{pack}/maps/*/rooms.json'], note: 'rooms against the book\'s crops' },
       { id: 'adventure', run: 'python3 {pack}/build_adventure.py', inputs: ['{pack}/build_adventure.py'], outputs: ['{pack}/adventure.json'] },
       { id: 'statmatch', run: 'node tools/advimport/statmatch.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}"', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json'], review: true },
-      { id: 'areas', run: 'node tools/advimport/areas.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}" --proposals {pack}/area-proposals.json', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/notes/*.md', '{pack}/checklist.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/rooms.json', '{pack}/maps/*/lighting.json', '{pack}/maps/*/terrain.json'], review: true, note: 'every area of the book accounted for' },
+      { id: 'areas', run: 'node tools/advimport/areas.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}" --proposals {pack}/area-proposals.json', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/adventure-events.json', '{pack}/notes/*.md', '{pack}/checklist.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/rooms.json', '{pack}/maps/*/lighting.json', '{pack}/maps/*/terrain.json'], review: true, note: 'every area of the book accounted for' },
       { id: 'loot', run: 'node tools/advimport/lootmatch.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}"', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/checklist.json'], review: true, note: 'items and hazards against the content and the book' },
       { id: 'links', run: 'node tools/advimport/links.mjs {pack} {extracted}/text --pages {pages} --skip "{running_heads}"', inputs: ['{extracted}/text/p001.txt', '{pack}/maps/*/map.json', '{pack}/maps/*/rooms.json'], review: true, note: 'stairs and lifts between levels' },
       { id: 'art', run: 'python3 tools/advimport/tokenart.py {pack}/art/art.json', inputs: ['{pack}/art/art.json'], outputs: ['{pack}/art/tokens'] },
-      { id: 'campaign', run: 'node tools/advimport/campaign.mjs {pack} {save} --update', inputs: ['{pack}/adventure.json', '{pack}/pack.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/map.json'], outputs: ['{save}/campaign.json'] },
+      { id: 'kickoff', run: 'node tools/advimport/kickoff.mjs {pack} {extracted}/text --pages {pages}', inputs: ['{extracted}/text/p001.txt', '{pack}/adventure.json', '{pack}/adventure-events.json'], review: true, note: 'mandatory: the book\'s way of starting the story, as the kickoff event' },
+      { id: 'campaign', run: 'node tools/advimport/campaign.mjs {pack} {save} --update', inputs: ['{pack}/adventure.json', '{pack}/adventure-events.json', '{pack}/pack.json', '{pack}/maps/*/walls.json', '{pack}/maps/*/map.json'], outputs: ['{save}/campaign.json'] },
       { id: 'validate', run: 'node tools/validate.mjs {pack} --save {save}', inputs: ['{pack}/maps/*/walls.json', '{save}/campaign.json'] },
       { id: 'review-page', run: 'python3 tools/advimport/review.py {pack} --save {save}', inputs: ['{save}/campaign.json', '{pack}/maps/*/walls.json'], outputs: ['{pack}/review.html'] },
     ],
@@ -130,6 +135,8 @@ function main(argv) {
   if (!fs.existsSync(pf)) { console.error(`no ${pf} (node tools/advimport/run.mjs ${packDir} init)`); return 1; }
   const steps = expandSteps(packDir, readJson(pf));
   const st = loadState(packDir);
+  // mandatory steps every pack keeps (the user, 2026-11-13: every adventure has its kickoff)
+  for (const id of MANDATORY) if (!steps.some((s) => s.id === id)) console.error(`WARNING  ${pf} has no "${id}" step: it is mandatory (copy it from the standard steps: run.mjs init in an empty pack shows them)`);
   if (cmd === 'status') { console.log(table(steps, st)); return 0; }
   if (cmd === 'approve') {
     const hit = steps.filter((s) => ids.includes(s.id) || ids.includes(s.base));
