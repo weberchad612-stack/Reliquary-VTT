@@ -338,6 +338,8 @@ What the board does with it: docs/best-practices/board.md (Replay).
 - **Finishing a character:** ask the player and the GM where it goes (the party, in another PC's place, or the
   bullpen) and ask for a picture for its token; never pick for them. Write the `writes` `finish` prints to the board
   when the campaign is loaded, and record who plays it (`tools/players.mjs`).
+- **Describe every ancestry** you list (the user, 2026-11-14): a few words on what it is ("carabao-headed forest
+  people of Tian Xia"), never a bare name; the option's `summary` is the content's own opening line to work from.
 - **The class step:** show the classes by role (the tool's groups), and when the player names a role or a concept,
   shortlist from that group and the classes that list it under `also`.
 - **The campaign's own options** (marked `*`, "CAMPAIGN:") go in every shortlist where they fit, with why: the
