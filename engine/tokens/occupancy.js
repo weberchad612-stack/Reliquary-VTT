@@ -36,7 +36,9 @@ export function mayShare(a, b, rule = SHARE_RULE) {
  */
 export function blockersAt(token, x, y, others, opts = {}) {
   const rule = opts.rule || SHARE_RULE;
-  const ignore = opts.ignore || ((o) => o.dead || o.kind === 'marker' || o.kind === 'gm');
+  // objects (a chest, a shelf: board/objects.js) never block and are never blocked
+  const ignore = opts.ignore || ((o) => o.dead || o.kind === 'marker' || o.kind === 'gm' || o.kind === 'object');
   const size = sizeOf(token);
+  if (token.kind === 'object') return [];
   return others.filter((o) => o.id !== token.id && !ignore(o) && spacesOverlap(x, y, size, o) && !mayShare(token, o, rule));
 }

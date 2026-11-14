@@ -355,7 +355,7 @@ export function validateState(file, mapInfo, report = new Report()) {
   for (const id of st.regions_off || []) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions_off: no lighting region "${id}" on map "${map.id}"`);
   for (const id of Object.keys(st.regions || {})) if (!(mapInfo.regionIds || new Set()).has(id)) report.error(file, `regions.${id}: no lighting region "${id}" on map "${map.id}"`);
   if (st.sky_light && !map.outdoor && !(mapInfo.hasSky)) report.warn(file, 'sky_light is set but the map is indoor with no sky regions');
-  const KINDS = new Set(['pc', 'ally', 'neutral', 'foe', 'marker', 'gm']);
+  const KINDS = new Set(['pc', 'ally', 'neutral', 'foe', 'marker', 'gm', 'object']);
   for (const [id, n] of Object.entries(st.notes || {})) {
     if (n.at && !cellInGrid([Math.floor(n.at[0]), Math.floor(n.at[1])], grid)) report.warn(file, `notes.${id}: point (${n.at[0]}, ${n.at[1]}) is outside the grid`);
     if (typeof n.text === 'string' && !n.text.trim()) report.error(file, `notes.${id}: the text is empty`);
@@ -623,6 +623,17 @@ function contentDir(dir, ruleset, report, open) {
  * A save's creatures (actors/<id>.json) and their live state (actorstate/<id>.json): the schemas, a stat block or
  * items that exist in the pack's content, a token for each, and the ruleset preparing each one without problems.
  */
+/** An object token's data (board/objects.js): its items and hazard exist in the content; no stat block, no turns. */
+function validateObject(a, file, content, report) {
+  const look = (k) => { try { return content[k]; } catch (e) { report.error(file, e.message); return undefined; } };
+  for (const [i, it] of (a.items || []).entries()) {
+    if (!it.ref && !it.name) report.error(file, `items[${i}]: needs a library key (ref) or a name`);
+    else if (it.ref && !look(it.ref)) report.error(file, `items[${i}]: no "${it.ref}" in the pack's content or the open sources pack.json lists`);
+  }
+  if (a.hazard && !look(a.hazard)) report.error(file, `hazard: no "${a.hazard}" in the pack's content or the open sources pack.json lists`);
+  if (!a.name) report.warn(file, 'an object without a name');
+}
+
 export function validateActors(save, pack, content, report) {
   const sys = systemConfig(pack.ruleset), check = rulesetSchema(pack.ruleset, 'actor');
   const tokens = new Set(), tokenEffects = {};
@@ -636,6 +647,7 @@ export function validateActors(save, pack, content, report) {
     if (!/^tok-[0-9a-z]{8}$/.test(id)) report.error(file, `"${id}" is not a token id: an actor has its token's id`);
     else if (!tokens.has(id)) report.warn(file, `no token "${id}" on any map of this save`);
     if (a.system !== pack.ruleset) { report.error(file, `system "${a.system}" is not the campaign's ruleset "${pack.ruleset}"`); continue; }
+    if (a.kind === 'object') { validateObject(a, file, content, report); continue; }
     if (check && !schemaErrors(check, a, file, report)) continue;
     const look = (k) => { try { return content[k]; } catch (e) { report.error(file, e.message); return undefined; } };
     if (a.base && !look(a.base)) { report.error(file, `base: no "${a.base}" in the pack's content or the open sources pack.json lists`); continue; }

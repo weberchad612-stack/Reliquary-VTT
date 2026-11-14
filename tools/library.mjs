@@ -78,6 +78,7 @@ export function referencedKeys(actors, tokens = {}, loot = []) {
   for (const it of loot || []) if (it && it.ref) keys.add(it.ref);   // the party's stash
   for (const a of Object.values(actors || {})) {
     if (a && a.base) keys.add(a.base);
+    if (a && a.hazard) keys.add(a.hazard);   // an object token that is a hazard: its stat block
     for (const it of (a && a.items) || []) if (it && it.ref) keys.add(it.ref);
   }
   for (const t of Object.values(tokens || {})) for (const e of (t && t.effects) || []) if (e && e.ref) keys.add(e.ref);

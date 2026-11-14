@@ -34,7 +34,8 @@ import { auditPath, auditEntry } from './audit.js';
 import { mountAudit } from './auditui.js';
 import { mountLedger } from './ledgerui.js';
 import { mountLoot } from './lootui.js';
-import { lootRules, encumberedEffects } from './loot.js';
+import { lootRules, encumberedEffects, lootView, lootPath, LOOT as LOOT_COLL, PURSE, stashMerge, addCoins, coinLabel } from './loot.js';
+import { isObject, isOpen, objectView, takeFromObject, takeAllFromObject, foundAt } from './objects.js';
 import { mountExplore } from './exploreui.js';
 import { EXPLORE, exploreRules, initiativeHint, startRequests, badgeFor } from './explore.js';
 import { clockLabel } from './clock.js';
@@ -138,6 +139,9 @@ export async function start(store, { build = null } = {}) {
   const MS = (await store.get(`mapstate/${MAP_ID}`)) || {};
   const TOKENS0 = {};
   for (const e of await store.list('tokens')) if (e.data.map === MAP_ID) { const { map: _m, ...t } = e.data; TOKENS0[e.id] = t; }
+  // creatures' art from the pack (art/<key>: a round token image and a full portrait); tokens name it with `art`
+  const ART = {};
+  for (const e of await store.list('art').catch(() => [])) ART[e.id] = e.data;
   const MAPNOTES = {};       // map notes on this map: {id: note} (records notes/<id>)
   for (const e of await store.list('notes')) if (e.data.map === MAP_ID) { const { map: _m, ...n } = e.data; MAPNOTES[e.id] = n; }
   const TEMPLATES = {};   // area templates on this map: {id: template} (records templates/<id>)
@@ -1151,6 +1155,37 @@ export async function start(store, { build = null } = {}) {
     const list = raw().map((t) => (t.id === drag.id ? { ...t, x: drag.goal[0], y: drag.goal[1], slot: undefined } : t));
     return { list, layout: Engine.layoutTiny(list) };
   }
+  /** The art's image for a token ('token' or 'full'), once loaded; starts loading it and redraws when it arrives. */
+  const artCache = new Map();
+  function artImage(key, part = 'token') {
+    const a = key && ART[key] && ART[key][part];
+    const url = a && store.assetUrl(a.asset);
+    if (!url) return null;
+    let img = artCache.get(url);
+    if (!img) { img = new Image(); img.decoding = 'async'; img.onload = () => draw(); img.src = url; artCache.set(url, img); }
+    return img.complete && img.naturalWidth ? img : null;
+  }
+  const kindColour = (t) => (t.kind === 'pc' ? '#5b93ff' : t.kind === 'ally' || t.kind === 'neutral' ? '#d8b24a' : t.kind === 'object' ? '#a08060' : '#e5615a');
+  /** A token's disc: its art clipped to the circle with a ring in its kind's colour, else the kind's colour and its letter. */
+  function paintDisc(c, t0, cx, cy, r, { dashed = false } = {}) {
+    const img = artImage(t0.art);
+    c.beginPath();
+    if (t0.kind === 'object') c.roundRect(cx - r, cy - r, 2 * r, 2 * r, r * 0.25); else c.arc(cx, cy, r, 0, Math.PI * 2);
+    if (img) {
+      c.save(); c.clip(); c.drawImage(img, cx - r, cy - r, 2 * r, 2 * r); c.restore();
+      c.lineWidth = Math.max(2, r * 0.12); c.strokeStyle = kindColour(t0);
+      if (dashed) c.setLineDash([4, 3]);
+      c.stroke(); c.setLineDash([]);
+      c.lineWidth = 1; c.strokeStyle = '#0d0f12'; c.stroke();
+      return;
+    }
+    c.fillStyle = kindColour(t0); c.fill();
+    c.lineWidth = 2; c.strokeStyle = '#0d0f12';
+    if (dashed) c.setLineDash([4, 3]);
+    c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#fff'; c.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(letterOf(t0), cx, cy + 1);
+  }
   function drawTokens(F, full) {
     // biggest first, so a creature sharing a bigger one's space is drawn on top of it
     const order = Object.entries(S.tokens).sort((a, b) => (b[1].size || 1) - (a[1].size || 1));
@@ -1176,13 +1211,7 @@ export async function start(store, { build = null } = {}) {
       const look = tokenState(t0, S.view, CONDS);   // dead: faded and grey; down (unconscious, dying): greyed
       if (look === 'dead') { ctx.globalAlpha *= 0.55; ctx.filter = 'grayscale(0.6)'; }
       else if (look === 'down') ctx.filter = 'grayscale(0.75) brightness(0.8)';
-      ctx.fillStyle = t.kind === 'pc' ? '#5b93ff' : '#e5615a';
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.lineWidth = 2; ctx.strokeStyle = '#0d0f12';
-      if (full && !seen) ctx.setLineDash([4, 3]);
-      ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(letterOf(t), cx, cy + 1);
+      paintDisc(ctx, { ...t0, ...t }, cx, cy, r, { dashed: full && !seen });
       ctx.restore();
       if (look === 'dead') drawDeadCross(cx, cy, r);
       // A thin square on the grid squares the token occupies (a Tiny creature alone: its square; sharing a
@@ -1739,13 +1768,7 @@ export async function start(store, { build = null } = {}) {
       if (!t0 || now - g.t0 >= g.ms) { glides.delete(id); ended = true; continue; }
       const [x, y] = glideAt(g, now), size = Engine.isTiny(t0) ? 0.5 : t0.size || 1;
       const r = (P(size) / 2 - (size < 1 ? 2 : 5)) * Engine.drawScale(t0), cx = P(x + size / 2), cy = P(y + size / 2);
-      c.save();
-      c.fillStyle = t0.kind === 'pc' ? '#5b93ff' : '#e5615a';
-      c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
-      c.lineWidth = 2; c.strokeStyle = '#0d0f12'; c.stroke();
-      c.fillStyle = '#fff'; c.font = `600 ${Math.max(10, r * 0.95)}px IBM Plex Sans, sans-serif`;
-      c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(letterOf(t0), cx, cy + 1);
-      c.restore();
+      c.save(); paintDisc(c, t0, cx, cy, r); c.restore();
     }
     for (const [id, f] of flashes) {
       if (!S.tokens[id] || now >= f.until) { flashes.delete(id); continue; }
@@ -2293,6 +2316,7 @@ export async function start(store, { build = null } = {}) {
     if (!access) return qvClose(id);
     const actor = await store.get(`actors/${id}`).catch(() => null);
     const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+    if (isObject(t)) return objectRender(id, w, t, actor || {}, state);
     const content = await qvContent(quickViewKeys(actor, t, SYS));
     let prepared = null;
     const base = actor && actor.base ? content[actor.base] || null : null;
@@ -2305,7 +2329,80 @@ export async function start(store, { build = null } = {}) {
     w.el.setAttribute('aria-label', `Token Quick-View: ${title.name}`);
     w.el.querySelector('.qv-t').textContent = title.name;
     w.el.querySelector('.qv-k').textContent = [title.kind, title.also].filter(Boolean).join(' · ');
-    w.el.querySelector('.qv-b').innerHTML = quickViewBody(o);
+    // the creature's full picture, whole (contained, never cropped), above the stat block
+    const full = t.art && ART[t.art] && ART[t.art].full;
+    const artUrl = full && store.assetUrl(full.asset);
+    const pic = artUrl ? `<figure class="qv-art"><img src="${artUrl}" alt="${esc(title.name)}"${full.w ? ` width="${full.w}" height="${full.h}"` : ''}></figure>` : '';
+    w.el.querySelector('.qv-b').innerHTML = pic + quickViewBody(o);
+  }
+  // ---- object tokens (board/objects.js): what is inside, and Take to the party's stash ----
+  async function objectRender(id, w, t, actor, state) {
+    const L = lootRules(SYS), view = S.view;
+    const content = await qvContent((actor.items || []).map((it) => it.ref).filter(Boolean));
+    if (!qvWins.has(id)) return;
+    const v = objectView(actor, state, view), name = publicName(t);
+    const full = t.art && ART[t.art] && ART[t.art].full, artUrl = full && store.assetUrl(full.asset);
+    w.el.setAttribute('aria-label', `Token Quick-View: ${name}`);
+    w.el.querySelector('.qv-t').textContent = name;
+    w.el.querySelector('.qv-k').textContent = v.hazard ? 'Hazard' : 'Object';
+    const row = ({ i, item }) => {
+      const lv = lootView(item, content, view, L);
+      const qty = lv.qty > 1 ? ` ×${lv.qty}` : '';
+      return `<li><span class="ob-n">${esc(lv.name)}${qty}</span>${lv.unknown && view === 'gm' ? ' <span class="ob-tag">unidentified</span>' : ''}<button type="button" class="ob-b" data-ob="take" data-i="${i}">Take</button></li>`;
+    };
+    const coins = v.coins ? `<li><span class="ob-n">${esc(coinLabel(v.coins, L))}</span><button type="button" class="ob-b" data-ob="coins">Take</button></li>` : '';
+    const inside = v.items.length || v.coins
+      ? `<ul class="ob-list">${v.items.map(row).join('')}${coins}</ul>${v.items.length + (v.coins ? 1 : 0) > 1 ? '<button type="button" class="ob-b ob-all" data-ob="all">Take everything</button>' : ''}`
+      : v.open || view === 'gm' ? '<p class="ob-empty">Nothing inside.</p>' : '';
+    const closed = !v.open && view !== 'gm' ? `<p class="ob-closed">${v.locked ? `Locked (${esc(v.locked)}).` : 'You have not found anything inside yet.'} Ask the GM.</p>` : '';
+    const gm = view === 'gm' ? [
+      v.note ? `<p class="ob-note"><b>GM</b> ${esc(v.note)}</p>` : '',
+      v.hazard ? `<p class="ob-note"><b>Hazard</b> ${esc(v.hazard)}</p>` : '',
+      v.find_dc ? `<p class="ob-note"><b>Find</b> Perception DC ${v.find_dc}</p>` : '',
+      v.locked ? `<p class="ob-note"><b>Locked</b> ${esc(v.locked)}</p>` : '',
+      (actor.locked || actor.find_dc) ? `<button type="button" class="ob-b" data-ob="open">${state.open ? 'Close to players' : 'Open to players'}</button>` : '',
+    ].join('') : '';
+    w.el.querySelector('.qv-b').innerHTML = (artUrl ? `<figure class="qv-art"><img src="${artUrl}" alt="${esc(name)}"></figure>` : '')
+      + (v.text ? `<p class="ob-text">${esc(v.text)}</p>` : '') + closed + inside + gm;
+    if (!w.obWired) {
+      w.obWired = true;
+      w.el.addEventListener('click', (ev) => {
+        const b = ev.target.closest('[data-ob]');
+        if (b) objectAction(id, b.dataset.ob, Number(b.dataset.i)).catch((e) => console.warn('object', e));
+      });
+    }
+  }
+  async function objectAction(id, act, i) {
+    const t = S.tokens[id];
+    const actor = await store.get(`actors/${id}`).catch(() => null);
+    if (!t || !actor) return;
+    const L = lootRules(SYS), who = S.view === 'gm' ? 'gm' : 'player';
+    const state = (await store.get(`actorstate/${id}`).catch(() => null)) || {};
+    if (act === 'open') {
+      await store.set(`actorstate/${id}`, { ...state, open: !state.open });
+      return;
+    }
+    if (S.view !== 'gm' && !isOpen(actor, state)) return;
+    const clock = await store.get('state/clock').catch(() => null);
+    const found = foundAt(actor, t, MAP_ID, clock && clock.now !== undefined ? { now: clock.now } : null);
+    const now = new Date().toISOString();
+    const stash = await store.list(LOOT_COLL).catch(() => []);
+    const content = await qvContent((actor.items || []).map((it) => it.ref).filter(Boolean));
+    const put = async (item) => {
+      const m = stashMerge(stash.map((e) => ({ id: e.path || `${LOOT_COLL}/${e.id}`, data: e.data })), item, content, L);
+      await store.set(m.id || lootPath(), m.data);
+    };
+    let next = actor, taken = [];
+    if (act === 'take') { const r = takeFromObject(actor, i, found, now, who); next = r.actor; await put(r.stashItem); taken.push(r.stashItem); }
+    if (act === 'all') { const r = takeAllFromObject(actor, found, now, who); next = r.actor; for (const it of r.stashItems) await put(it); taken.push(...r.stashItems); if (r.coins) await takeCoinsFrom(r.coins); }
+    if (act === 'coins' && actor.coins) { await takeCoinsFrom(actor.coins); const { coins: _c, ...rest } = actor; next = rest; }
+    await store.set(`actors/${id}`, next);
+    const words = taken.map((it) => lootView(it, content, 'gm', L).name).concat(act !== 'take' && actor.coins ? [coinLabel(actor.coins, L)] : []);
+    if (words.length) await store.set(auditPath(), auditEntry({ text: `Took ${words.join(', ')} from ${actor.name || publicName(t)} to the party's stash`, by: S.view === 'gm' ? 'gm' : 'player', map: MAP_ID })).catch(() => {});
+    async function takeCoinsFrom(c) {
+      const purse = (await store.get(PURSE).catch(() => null)) || {};
+      await store.set(PURSE, addCoins(purse, c, L));
+    }
   }
   /** Tokens changed (effects, death, the view): redraw the open Quick-Views a moment later. */
   function qvRefresh() { if (qvWins.size && !qvT) qvT = setTimeout(() => { qvT = null; for (const id of [...qvWins.keys()]) qvRender(id); }, 50); }

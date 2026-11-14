@@ -25,6 +25,8 @@
 //   actorstate/<id>    what is happening to it now: HP, temporary HP, resources spent (written often)
 //   content/<kind>.<slug>  the game content the campaign's creatures use, only those documents: stat blocks, items
 //                          (content key <kind>/<slug>; one naming its source is content/<source>.<kind>.<slug>)
+//   art/<key>          a creature's art from the pack (art/art.json): {token: {asset, fingerprint}, full: {asset,
+//                      fingerprint, w, h}}; tokens name it with `art`. Pack data: loaded, never saved
 //   fxlib/pack         the pack's visual effects ({palette, effects, fallbacks}; its effects.json), if it has any
 //   fx/<time>-<n>      a visual effect playing now (written by Claude; not part of the save; board/fx.js)
 //   chat/<time36>-<n>  a chat message: Claude's narration, a ruling, an NPC speaking, a roll card, a table event
@@ -73,7 +75,7 @@ const pad = (n) => String(n).padStart(3, '0');
  * @param {string} [c.now]      ISO time for board/meta
  * @returns {object}  {path: data}
  */
-export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, actors = {}, actorStates = {}, content = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], loot = null, exploration = null, now = new Date().toISOString() }) {
+export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects = null, art = {}, actors = {}, actorStates = {}, content = {}, chat = [], audit = [], dice = [], replays = [], ledger = [], loot = null, exploration = null, now = new Date().toISOString() }) {
   if (campaign.pack && campaign.pack.id && campaign.pack.id !== pack.id) {
     throw new Error(`campaign "${campaign.id}" is for pack "${campaign.pack.id}", not "${pack.id}"`);
   }
@@ -99,6 +101,7 @@ export function campaignRecords({ campaign, pack, maps, mapStates = {}, effects 
       r[`lighting/${m.id}`] = { map: m.id, ...lighting };
     }
   }
+  for (const [key, a] of Object.entries(art)) r[`art/${key}`] = a;
   for (const [id, a] of Object.entries(actors)) r[`actors/${id}`] = a;
   for (const [id, s] of Object.entries(actorStates)) r[`actorstate/${id}`] = s;
   for (const [key, doc] of Object.entries(content)) r[contentPath(key)] = doc;

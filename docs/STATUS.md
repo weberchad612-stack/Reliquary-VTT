@@ -2,7 +2,7 @@
 
 A one-page map of what is built, for a new conversation getting its bearings. Each line points at the guide that
 says how to use or change it. Keep this page short and current: when a feature lands, changes or moves, update its
-line here in the same commit. Last brought up to date: 2026-11-13 (Sound).
+line here in the same commit. Last brought up to date: 2026-11-13 (adventure importer, token art, object tokens).
 
 ## The pieces
 
@@ -12,6 +12,7 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Sound).
 | Pathfinder 2e (`rulesets/pf2e/`) | Measurement, areas, conditions, terrain, light and senses, creatures' statistics, damage and healing, rule keys, turn rules (they report their dice), Golarion's calendar, Quick-View's stat block, traits, initiative, roll kinds, the title line's badge, loot (coins, Bulk, identifying, selling), exploration (activities, pace, combat-start requests), sound (what is a boss). | [game-data.md](best-practices/game-data.md) |
 | Open content (`content/pf2e/`) | All of Foundry PF2E's open data (ORC and OGL), imported by `tools/import/foundry-pf2e.mjs`. | [content/pf2e/README.md](../content/pf2e/README.md) |
 | Map importer (`tools/mapimport/`) | Book maps to packs: grid, walls, doors, terrain, lighting, with every decision in `import.json`. Packs stay private. | [map-importer.md](best-practices/map-importer.md) |
+| Adventure importer (`tools/advimport/`) | A whole adventure to a pack and a campaign: paraphrased notes, maps (with the map importer), start squares from the book's pawn markers, token art and portraits from the book, the cast with stat blocks, object tokens with their treasure. First import: the Beginner Box adventure (2026-11-13). | [adventure-importer.md](best-practices/adventure-importer.md) |
 | Claude's tools (`tools/`) | Campaign load, save and switch; tokens, templates, notes, effects, visual effects; creatures, checks, dice; the clock and encounters; chat messages, check and damage cards, audit lines; replays (`replay.mjs`: resolve a batch in a draft, narration steps) and the thinking banner (`think.mjs`); the campaign ledger (`ledger.mjs`) and the campaign's players (`players.mjs`); party loot (`loot.mjs`: find, add, identify, appraise, move, buy, sell, coins); exploration (`exploration.mjs`: activities, pace, travel, reminders); sound (`sound.mjs`: mood, boss, cues, ambient sounds; the sound set's generator `tools/sound/`). | [tools/README.md](../tools/README.md) |
 | The board (`board/`) | Reliquary Virtual Tabletop: one published page, player and GM views, its own database. Below. | [board.md](best-practices/board.md), [design](design/board.md) |
 | GM guides (`docs/gm/`, `rulesets/pf2e/gm.md`) | How Claude runs a game: secrecy, narration, the ledger, dice, foes, exploration, combat, time, loot, quests, preparing an area, sessions, house rules, a pre-flight checklist; the PF2E guide adds the system's secret checks, reactions, conditions, healing and rulings. Reviewed rule by rule with the user (2026-11-13). | [running-a-game.md](gm/running-a-game.md) |
@@ -25,7 +26,9 @@ line here in the same commit. Last brought up to date: 2026-11-13 (Sound).
 - **The map:** tokens (drag, Space waypoints with running distances, group moves, arrow keys), doors, fog and
   light, terrain, area templates, map notes, effect badges, targets (T), the token HUD (right-click: target,
   status effects, templates; left column: height, Enter Combat, the GM's Hide), Token Quick-View (double-click),
-  pings and visual effects, Stride ranges during an encounter. Hidden tokens never reach players.
+  pings and visual effects, Stride ranges during an encounter. Hidden tokens never reach players. Tokens show
+  their creature's art (the Quick-View the whole picture); **object tokens** (chests, shelves, hazards) hold items or a
+  note, open in Quick-View and send what is taken to the Party stash with where it was found (board/objects.js).
 - **"Claude is thinking"**: a banner over the map on every screen while Claude resolves a batch
   (`tools/replay.mjs`, or `tools/think.mjs` for anything else): one random line and the time elapsed; "still thinking" after
   5 quiet minutes, gone after 30; the GM can clear it.

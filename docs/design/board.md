@@ -69,6 +69,7 @@ database takes two-part paths (`collection/record`), so every path is two parts 
 | `explored/<map>.<n>` | The party's explored area, in chunks of 200 outlines | The board (a moment after it grows) |
 | `notes/<id>` | One map note with the map it is on: text, the exact point, author (`player`, `gm`, `claude`), GM-only flag, when last changed | The board (Map ▸ Add note, N); Claude (`tools/note.mjs`) |
 | `templates/<id>` | One placed area template (burst, cone, emanation, line) with the map it is on: shape, size, caster, origin, the squares it reaches, colour, who placed it | The board (the token HUD's Area template); Claude (`tools/area.mjs`) |
+| `art/<key>` | A creature's art from the pack (`art/art.json`): the round token image and the full portrait, each `{asset, fingerprint}` (the portrait with `w`, `h`). Tokens name it with `art`. Pack data, never saved | Claude (loading) |
 | `actors/<id>` | A creature's game data (same id as its token): a PC's build, or a stat block reference with its own differences (docs/design/game-data.md); a character's `items` carry how each is carried (held, worn, stowed), invested, quantities and what is known of them (board/loot.js) | Claude (loading, `tools/actor.mjs`, `tools/loot.mjs`); the Party loot tab (items) |
 | `actorstate/<id>` | What is happening to it now: HP, temporary HP, resources, a raised shield, the coins it carries | Claude; the Party loot tab (coins) |
 | `chat/<time36>-<n>` | A chat message, the players' story: Claude's narration, a ruling, an NPC speaking, or a roll card (initiative, check, damage; events were retired 2026-11-12 and go to the audit log); `gm: true` for the GM's eyes only (board/chat.js). Part of the save (`chat.json`) | Whoever rolled or changed something (the board, `tools/encounter.mjs`), Claude (`tools/chat.mjs`) |
@@ -680,3 +681,22 @@ The user's decisions:
 - `sfx/<time>-<n>`: {map, name, by, ts, gm?}, played once by every screen and removed after ten minutes, like `fx/`.
 
 How to use and change it: [docs/best-practices/sound.md](../best-practices/sound.md).
+
+
+## Token art and object tokens (built 2026-11-13)
+
+The user's decisions for the adventure importer: every token has an image (the adventure's own art first, then its
+token pack, the Monster Core books, the web); the image is cropped into the token's circle in place of the letter,
+and the whole picture shows in Quick-View; neither is transparent. Containers, features and hazards are **object
+tokens**: hidden until found, clickable, holding loot or a note, with no initiative unless a hazard; treasure lives in
+them and moves to the Party stash with where it was found.
+
+- **Art:** `token.art` names a key of the pack's `art/art.json`; the campaign loader uploads the token image and the
+  portrait like map images and writes `art/<key>`; the board reads the collection once (no listener). `paintDisc`
+  draws the art clipped to the circle (objects: a rounded square) with a ring in the side's colour (party blue, foes
+  red, neutral and allies gold, objects brown); without art, the colour and the letter as before.
+- **Objects:** `kind: "object"` tokens with game data `actors/<id>` of `kind: "object"` (board/objects.js: text,
+  the GM's note, items, coins, hazard, locked, find DC, room) and live state `actorstate/<id>` (`open`). They never
+  block movement or get blocked. Quick-View shows the description; the GM also the note, find DC, lock and hazard and
+  an "Open to players" switch; the contents with Take and Take everything once open. Taking writes the stash record
+  (merged onto a matching stack), the purse for coins, the object's new contents and an audit line.

@@ -51,6 +51,15 @@ The user's standing rule:
 | Sight spot checks | Stand beside each special feature. | Arrow slits work only up close; barred door windows only beside the door; stained glass blocks sight; secret doors block until found and opened. |
 | Look at it | Build the demo page on the map and walk it. | It plays the way the adventure reads. |
 
+## 4a. Print-quality maps and sheets with several maps (2026-11-13)
+
+- A 300 ppi print map is 300 px a square. Ask the user what the board should show (they chose 200 px a square: under every GPU's texture limit) and set `source.scale`. Detection runs on a smaller copy (`detect_cell_px`, default 50; 150 for thin-line art), so tracing stays fast whatever the image size.
+- A sheet with two maps (a level and its roof): one `import.json` each with `source.crop_px` (source pixels, before scaling), and `grid` in the cropped, scaled image's pixels.
+- Thin black wall lines turn grey when downscaled: sample colours at full resolution. If the tracer still breaks them up or picks up grid lines, hand-place the straight walls on their measured lines (`add`) and erase each room's interior (`erase`), as in the [adventure importer](adventure-importer.md) section 6.
+- `features.door_reach_cells`: how far past a door bar to look for its jamb (default 0.6). Lower it to about 0.1 where the bars are drawn on the wall line itself.
+- `doors: [{near, drop: true}]` removes a false door (a bed's white edge); a mask `exclude` stops it being seen at all.
+- `map.start` and `map.links` in the settings are copied into `map.json`.
+
 ## 5. Pitfalls already met
 
 - **Page backgrounds** are often the largest image on a page. They are shared across pages; the map is not.

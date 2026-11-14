@@ -35,7 +35,7 @@ export function pickLetter(name, used = new Set()) {
 /** Letters taken in a group, by the other tokens of that group. */
 export function lettersInGroup(tokens, group, exceptId) {
   const out = new Set();
-  for (const [id, t] of Object.entries(tokens || {})) if (id !== exceptId && groupOf(t, id) === group && !t.img) out.add(letterOf(t));
+  for (const [id, t] of Object.entries(tokens || {})) if (id !== exceptId && groupOf(t, id) === group && !t.img && !t.art) out.add(letterOf(t));
   return out;
 }
 
@@ -69,8 +69,8 @@ export function nameProblems(tokens) {
       if (!byName.has(key)) byName.set(key, []);
       byName.get(key).push(id);
     }
-    if (t.kind !== 'pc' && /(^|\s)(\d+|#\d+|\(\w+\))$/.test(publicName(t).trim())) out.push(`${id}: "${publicName(t)}" is numbered: name it by an adjective and its type`);
-    if (!t.img) {
+    if (t.kind !== 'pc' && t.kind !== 'object' && /(^|\s)(\d+|#\d+|\(\w+\))$/.test(publicName(t).trim())) out.push(`${id}: "${publicName(t)}" is numbered: name it by an adjective and its type`);
+    if (!t.img && !t.art) {
       const key = groupOf(t, id) + '|' + letterOf(t);
       if (!byLetter.has(key)) byLetter.set(key, []);
       byLetter.get(key).push(id);

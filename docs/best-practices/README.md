@@ -5,6 +5,7 @@ How to use and change each core feature well. Written for Claude, who runs the t
 | Feature | Guide |
 |---|---|
 | Map importer (`tools/mapimport/`) | [map-importer.md](map-importer.md) |
+| Adventure importer (`tools/advimport/`): a whole adventure into a pack and a campaign | [adventure-importer.md](adventure-importer.md) |
 | Walls, doors and openings (`walls.json`) | [walls-and-doors.md](walls-and-doors.md) |
 | Sight and fog of war (`engine/sight/`, `engine/fog/`) | [sight-and-fog.md](sight-and-fog.md) |
 | Movement and tokens (`engine/movement/`, `engine/tokens/`; Stride bands during encounters and waypoints while dragging on the board) | [movement-and-tokens.md](movement-and-tokens.md) |

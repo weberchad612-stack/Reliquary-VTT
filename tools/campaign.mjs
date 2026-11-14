@@ -55,6 +55,32 @@ export function readContent(pack, packDir, actors, tokens = {}, loot = null) {
   return content;
 }
 
+/**
+ * The art the save's tokens use (token.art names a key of the pack's art/art.json: {key: {token, full, w, h}}):
+ * {key: {token: {fingerprint, asset}, full: {fingerprint, asset, w, h}}}, each file added to `images` for upload.
+ */
+export function readArt(packDir, tokens, images) {
+  const file = path.join(packDir, 'art', 'art.json');
+  const used = new Set(Object.values(tokens).map((t) => t.art).filter(Boolean));
+  if (!used.size) return {};
+  if (!fs.existsSync(file)) throw new Error(`tokens use art (${[...used].join(', ')}) but the pack has no art/art.json`);
+  const manifest = readJson(file);
+  const out = {};
+  for (const key of used) {
+    const a = manifest[key];
+    if (!a || !a.token || !a.full) throw new Error(`art "${key}" is not in art/art.json (run tools/advimport/tokenart.py)`);
+    out[key] = {};
+    for (const part of ['token', 'full']) {
+      const f = path.join(packDir, 'art', a[part]);
+      const bytes = fs.readFileSync(f);
+      const fingerprint = crypto.createHash('sha256').update(bytes).digest('hex');
+      if (!images.some((i) => i.fingerprint === fingerprint)) images.push({ art: key, part, file: f, fingerprint, bytes: bytes.length, type: MIME[path.extname(f).slice(1).toLowerCase()] });
+      out[key][part] = { fingerprint, asset: null, ...(part === 'full' ? { w: a.w, h: a.h } : {}) };
+    }
+  }
+  return out;
+}
+
 /** Read a pack and a save from disk into what campaignRecords() takes, plus the map images. */
 export function readCampaign(packDir, saveDir) {
   const pack = readJson(path.join(packDir, 'pack.json'));
@@ -113,16 +139,20 @@ export function readCampaign(packDir, saveDir) {
   const exploration = fs.existsSync(exploreFile) ? (({ $schema: _s, ...x }) => x)(readJson(exploreFile)) : null;
   const tokens = Object.assign({}, ...Object.values(mapStates).map((st) => st.tokens || {}));
   const content = readContent(pack, packDir, actors, tokens, loot);
+  const art = readArt(packDir, tokens, images);
   const { $schema, ...camp } = campaign;
-  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays, ledger, loot, exploration };
+  return { campaign: camp, pack, maps, mapStates, images, effects, actors, actorStates, content, chat, audit, dice, replays, ledger, loot, exploration, art };
 }
 
 /** The campaign as records, with its images listed (or inlined as data URLs with `inline`). */
 export function buildRecords(packDir, saveDir, { inline = false, now } = {}) {
   const c = readCampaign(packDir, saveDir);
-  if (inline) for (const m of c.maps) m.image.asset = 'fp-' + m.image.fingerprint.slice(0, 16);
+  if (inline) {
+    for (const m of c.maps) m.image.asset = 'fp-' + m.image.fingerprint.slice(0, 16);
+    for (const a of Object.values(c.art || {})) for (const part of Object.values(a)) part.asset = 'fp-' + part.fingerprint.slice(0, 16);
+  }
   const records = campaignRecords({ ...c, now });
-  const out = { records, images: c.images.map(({ map, file, fingerprint, bytes, type }) => ({ map, file: path.relative(process.cwd(), file), fingerprint, bytes, type })) };
+  const out = { records, images: c.images.map(({ map, art, part, file, fingerprint, bytes, type }) => ({ ...(map ? { map } : { art, part }), file: path.relative(process.cwd(), file), fingerprint, bytes, type })) };
   if (inline) {
     out.assets = {};
     for (const img of c.images) out.assets['fp-' + img.fingerprint.slice(0, 16)] = `data:${img.type};base64,${fs.readFileSync(img.file).toString('base64')}`;
@@ -231,10 +261,13 @@ export function loadOps(packDir, saveDir, assets = [], { now } = {}) {
   const { records, images } = buildRecords(packDir, saveDir, { now });
   const upload = [];
   for (const [p, d] of Object.entries(records)) {
-    if (!p.startsWith('maps/')) continue;
-    const id = bySha.get(d.image.fingerprint);
-    if (id) d.image.asset = id;
-    else upload.push(images.find((i) => i.fingerprint === d.image.fingerprint));
+    // map images, and token art (art/<key>: a token image and a full portrait)
+    const parts = p.startsWith('maps/') ? [d.image] : p.startsWith('art/') ? Object.values(d) : [];
+    for (const part of parts) {
+      const id = bySha.get(part.fingerprint);
+      if (id) part.asset = id;
+      else if (!upload.some((u) => u.fingerprint === part.fingerprint)) upload.push(images.find((i) => i.fingerprint === part.fingerprint));
+    }
   }
   const ops = Object.entries(records).filter(([p]) => p !== 'board/meta').map(([path, data]) => ({ op: 'set', path, data }));
   return { batches: batches(ops), meta: { op: 'set', path: 'board/meta', data: records['board/meta'] }, upload };
