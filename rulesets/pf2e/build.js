@@ -360,6 +360,19 @@ function deityOptions(d) {
 }
 
 /**
+ * Choices a feature's text asks for that Foundry's data does not encode as a rule: {feature slug: {flag, prompt,
+ * grants, options(ctx) -> content keys}}.
+ */
+export const TEXT_CHOICES = Object.freeze({
+  // Player Core 2: "Choose either Shields of the Spirit or a spell based on your deity's divine font (Lay on Hands if
+  // your deity allows heal, Touch of the Void if your deity allows harm)"
+  'devotion-spells': {
+    flag: 'spell', prompt: 'choose your devotion spell', grants: 'spell',
+    options: ({ deity }) => ['spells:spell/shields-of-the-spirit', ...((deity && deity.font) || []).includes('heal') ? ['spells:spell/lay-on-hands'] : [], ...((deity && deity.font) || []).includes('harm') ? ['spells:spell/touch-of-the-void'] : []],
+  },
+});
+
+/**
  * The character a build makes. get(key) -> content document (or undefined).
  * opts.resolve(uuid) -> content key: Foundry's links in the content's rules (foundryResolver). opts.knownNames: the
  * names of every feat and class feature (lower case), so a prerequisite naming one the character lacks is unmet
@@ -822,6 +835,19 @@ export function deriveCharacter(build, get, opts = {}) {
       };
     }
   }
+  // choices written only in a feature's text, with no rule for them in Foundry's data (TEXT_CHOICES): a champion's
+  // devotion spell. The answer is a selection like any other ("<feature>.<flag>")
+  for (const [fslug, tc] of Object.entries(TEXT_CHOICES)) {
+    if (!featureDocs.has(fslug)) continue;
+    const id = `${fslug}.${tc.flag}`;
+    const opts = tc.options({ deity: deityDoc }).filter((k) => get(k));
+    const fd = featureDocs.get(fslug);
+    if (sel[id] === undefined) { need(fd.level || 1, `choice.${id}`, `${fd.name}: ${tc.prompt}.`); pending[pending.length - 1].choice = { item: fd.ref, flag: tc.flag, options: opts.map((k) => ({ value: k, label: (get(k) || {}).name || k })) }; continue; }
+    if (!opts.includes(sel[id])) { problems.push(`${fd.name}: ${sel[id]} is not one of its choices (${opts.map((k) => (get(k) || {}).name).join(', ')})`); continue; }
+    const g = get(sel[id]);
+    if (tc.grants === 'spell') granted.push({ name: g.name, kind: 'spell', ref: sel[id], from: fd.name });
+  }
+
   // spells the features' and feats' text says the character learns (a bard's compositions, an oracle's revelation, a
   // druid's order spell, a muse's spell), beside those their rules grant
   const textSpells = [];

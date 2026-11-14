@@ -380,7 +380,7 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
       const c = s.choice, rolls = new Set(r.rollOptions || []);
       if (c.options) out = c.options.map((o) => {
         // an option that is a Foundry link (a feat to pick) is offered as our content key, with its name and summary
-        const k = typeof o.value === 'string' && /^Compendium\./.test(o.value) ? resolve(o.value) : null;
+        const k = typeof o.value === 'string' && /^Compendium\./.test(o.value) ? resolve(o.value) : typeof o.value === 'string' && /^[a-z0-9-]+:[a-z0-9-]+\//.test(o.value) && get(o.value) ? o.value : null;
         const d = k ? get(k) : null;
         const base = d ? entry(k, d) : { value: o.value, name: o.label || String(o.value) };
         return { ...base, ...(o.predicate && holds(o.predicate, { level: r.actor.level, tags: rolls }) === false ? { blocked: ['not open to this character'] } : {}) };

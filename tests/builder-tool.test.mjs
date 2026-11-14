@@ -282,3 +282,12 @@ test('builder: a champion\'s causes follow its sanctification, and the steps com
   const causes = B.options(holy, '1:choice.cause.cause').options.map((o) => o.name).sort();
   assert.ok(causes.includes('Grandeur') && causes.includes('Redemption') && !causes.includes('Iniquity'), causes.join(', '));
 });
+
+test('builder: a choice written only in text (a champion\'s devotion spell, by its deity\'s font)', () => {
+  const b = { v: 1, level: 1, ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/skilled-human', class: 'classes:class/champion', deity: 'deities:deity/sarenrae' };
+  assert.deepEqual(B.options(b, '1:choice.devotion-spells.spell').options.map((o) => o.name), ['Shields of the Spirit', 'Lay on Hands'], 'Sarenrae allows heal only');
+  const r = B.derive(B.apply(b, '1:choice.devotion-spells.spell', 'spells:spell/lay-on-hands'));
+  assert.deepEqual(r.actor.spellcasting.focus.map((x) => x.name), ['Lay on Hands']);
+  assert.deepEqual(r.actor.resources, { focus: { max: 1 } });
+  assert.match(B.derive(B.apply(b, '1:choice.devotion-spells.spell', 'spells:spell/touch-of-the-void')).problems.join(), /not one of its choices/);
+});
