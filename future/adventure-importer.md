@@ -52,7 +52,7 @@ first** (#20, #22, #23), then #14 to #18 and #21, then #19, then the two smaller
 | 19 | **Re-importing without losing play.** An update mode for a running campaign: refresh walls, notes and art from the pack, keep tokens (same ids) and their state, door states and explored areas. | **Build now** |
 | 20 | **Rebuild only what changed.** Save each map-import step's result and reuse it while its settings are unchanged; allow rebuilding one room's area. A level A rebuild takes about a minute today. | **Build now** (both parts) |
 | 21 | **Review sheet.** One image per map: each room's book crop beside our walls, doors and room squares, with changes since the last build highlighted. | **Build now, for Claude's checking**; the user sees it only on request |
-| 22 | **One import command with a status table.** Run every step for a pack in order; show what is out of date, what failed and what waits for review. | **Build now** |
+| 22 | **One import command with a status table.** Run every step for a pack in order (the landing page included, 2026-11-13); show what is out of date, what failed and what waits for review. | **Build now** |
 | 23 | **Sync to the user's PC.** One command: pack what changed, send it, check it arrived intact, extract into the checkout (overwrite in place; stale files to `_to_delete`). | **Build now** |
 | 24 | **Face-centred token crops.** Centre each round token on the creature's face. | **Build now** |
 | 25 | **Auto-link stairs and lifts** between levels from the maps' stair and lift markers. | **Build now** |

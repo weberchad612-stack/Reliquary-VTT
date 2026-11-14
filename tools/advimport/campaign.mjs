@@ -110,6 +110,12 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     const { map, ...rest } = a;
     (ambient[map] = ambient[map] || {})[stableId(`${pack.id}:ambient:${n}`).replace('tok-', 'amb-')] = { ...rest, by: 'claude' };
   });
+  const warnings = [];
+  if (!adv.landing) warnings.push('no landing page: the campaign starts on a level (make one with tools/advimport/landing.py and name it in adventure.json "landing")');
+  else {
+    const lf = path.join(packDir, 'maps', adv.landing, 'map.json');
+    if (!fs.existsSync(lf) || readJson(lf).kind !== 'landing') problems.push(`landing: "${adv.landing}" is not a landing page in the pack (tools/advimport/landing.py)`);
+  }
   const start = adv.start || { map: Object.keys(maps)[0] };
   const campaign = {
     $schema: '../../schemas/campaign.schema.json', v: 1,
@@ -120,7 +126,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
   };
   const t0 = Date.now();
   const ledger = (adv.ledger || []).map((e, n) => ({ id: `${t0.toString(36).padStart(9, '0')}-${n.toString(36)}`, at: new Date(t0).toISOString(), by: 'claude', source: 'adventure', ...e }));
-  return { campaign, maps, actors, ambient, ledger, problems };
+  return { campaign, maps, actors, ambient, ledger, problems, warnings };
 }
 
 function main(argv) {
@@ -131,7 +137,8 @@ function main(argv) {
   const [packDir, saveDir] = args;
   if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--force]'); return 2; }
   if (fs.existsSync(path.join(saveDir, 'campaign.json')) && !force) { console.error(`${saveDir} already holds a campaign (use --force to rebuild it)`); return 1; }
-  const { campaign, maps, actors, ambient, ledger, problems } = buildSave(packDir, { id, title });
+  const { campaign, maps, actors, ambient, ledger, problems, warnings } = buildSave(packDir, { id, title });
+  for (const w of warnings) console.error('WARNING', w);
   for (const p of problems) console.error('PROBLEM', p);
   if (problems.length) return 1;
   if (force) for (const d of ['maps', 'actors']) fs.rmSync(path.join(saveDir, d), { recursive: true, force: true });

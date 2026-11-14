@@ -91,6 +91,16 @@ test('adventure importer: stable token ids, creatures and objects from adventure
   assert.deepEqual([maps.m[chestId].kind, actors[chestId].kind, actors[chestId].find_dc, actors[chestId].room], ['object', 'object', 12, 'R1']);
   assert.equal(Object.values(actors).filter((a) => a.kind === 'npc').length, 2, 'the pedlar has no stat block, so no game data');
   assert.equal(campaign.current_map, 'm');
+  assert.match(buildSave(dir, { repo: path.resolve('.') }).warnings.join(), /no landing page/);
+  // with a landing page named, the campaign starts there and the page gets its map state
+  const adv = JSON.parse(fs.readFileSync(path.join(dir, 'adventure.json'), 'utf8'));
+  fs.writeFileSync(path.join(dir, 'adventure.json'), JSON.stringify({ ...adv, landing: 'cover' }));
+  assert.match(buildSave(dir, { repo: path.resolve('.') }).problems.join(), /not a landing page/);
+  fs.mkdirSync(path.join(dir, 'maps', 'cover'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'maps', 'cover', 'map.json'), JSON.stringify({ id: 'cover', name: 'Cover', kind: 'landing', image: { file: 'cover.webp', w: 10, h: 10 } }));
+  const withCover = buildSave(dir, { repo: path.resolve('.') });
+  assert.deepEqual([withCover.problems, withCover.warnings, withCover.campaign.current_map, withCover.campaign.discovered], [[], [], 'cover', ['m']]);
+  assert.deepEqual(withCover.maps.cover, {});
 });
 
 test('schemas and the board know object tokens and art', () => {

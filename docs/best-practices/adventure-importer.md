@@ -2,7 +2,7 @@
 
 For Claude, when turning one or more adventure PDFs the user owns into a private pack and a campaign: maps, lighting, sound, tokens and their art, objects and treasure, and GM notes. It builds on the [map importer](map-importer.md). The tools only propose: Claude reads, looks and decides, and records every decision. First done end to end with the Pathfinder Beginner Box adventure (2026-11-13).
 
-The user's decisions (2026-11-13): index every book, prepare one level at a time; review on a private review page and as a GM preview on the board; containers, features and hazards become **object tokens** (hidden until found, clickable, holding loot or a note, no initiative unless a hazard); treasure lives inside object tokens and moves to the Party stash with where it was found; room text becomes **paraphrased notes with page references, as complete as possible**; every token gets an image.
+The user's decisions (2026-11-13): index every book, prepare one level at a time; review on a private review page and as a GM preview on the board; containers, features and hazards become **object tokens** (hidden until found, clickable, holding loot or a note, no initiative unless a hazard); treasure lives inside object tokens and moves to the Party stash with where it was found; room text becomes **paraphrased notes with page references, as complete as possible**; every token gets an image; every adventure gets a **landing page** (its cover, where the party waits while players join; 2026-11-13).
 
 ## 1. Privacy first
 
@@ -28,7 +28,7 @@ The user's decisions (2026-11-13): index every book, prepare one level at a time
 | Sound and memory | In `adventure.json`: `ambient` (a loop per sound source the text gives: fires, water, magic, a crypt), `music.themes` (each map's music out of combat), `map_state` (a light that starts off), `ledger` (the quest, threads, secrets, timed events). | Loops exist in `sounds/sounds.json`; the ledger holds what Claude must not forget. |
 | Campaign | `node tools/advimport/campaign.mjs packs/<pack> saves/<pack>`, then `node tools/validate.mjs packs/<pack> --save saves/<pack>`. | No errors. |
 | Review page | `python3 tools/advimport/review.py packs/<pack> --save saves/<pack>`: one file, sent to the user. | Everything above on one page. |
-| Review | Bundle a board on memory (`campaign.mjs seed`, `bundle.mjs --data seed=...`) and walk it in GM view; send it to the user as a file. With "publish", load the campaign into the board as its own campaign. | Tokens show their art, objects open and Take works, lights and doors behave as the notes say. |
+| Review | The campaign opens on the landing page (`campaign.mjs` warns when there is none). Bundle a board on memory (`campaign.mjs seed`, `bundle.mjs --data seed=...`) and walk it in GM view; send it to the user as a file. With "publish", load the campaign into the board as its own campaign. | Tokens show their art, objects open and Take works, lights and doors behave as the notes say. |
 
 ## 3. Start positions from the book's pawns
 
