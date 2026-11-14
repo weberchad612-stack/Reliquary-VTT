@@ -69,7 +69,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
       const size = SIZES[c.size || (doc && doc.size) || 'medium'] ?? 1;
       const tok = {
         name: c.name, ...(c.alias ? { alias: c.alias, known: false } : {}),
-        kind: e.friendly ? 'neutral' : 'foe',
+        kind: e.friendly ? 'neutral' : 'foe', source: 'adventure',
         type: slug(doc ? doc.name.replace(/\s*\(BB\)$/i, '') : c.name),
         group: e.id, short: letterFor(e.id, c.alias || c.name),
         ...(c.art ? { art: c.art } : {}),
@@ -91,7 +91,7 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
     if (!maps[o.map]) { problems.push(`${o.id}: map "${o.map}" is not in the adventure`); continue; }
     const tid = stableId(`${pack.id}:object:${o.id}`);
     maps[o.map][tid] = {
-      name: o.name, kind: 'object', type: slug(o.kind || 'object'), group: `objects-${slug(o.room || o.map)}`,
+      name: o.name, kind: 'object', source: 'adventure', type: slug(o.kind || 'object'), group: `objects-${slug(o.room || o.map)}`,
       short: letterFor(`objects-${slug(o.room || o.map)}`, o.name), ...(o.art ? { art: o.art } : {}),
       x: Math.floor(o.at[0]), y: Math.floor(o.at[1]), ...(o.hidden ? { hidden: true } : {}),
     };
@@ -129,14 +129,110 @@ export function buildSave(packDir, { id, title, repo = process.cwd() } = {}) {
   return { campaign, maps, actors, ambient, ledger, problems, warnings };
 }
 
+// Token fields the pack owns: refreshed on --update. Everything else on a token (where it stands, hidden, dead,
+// effects, its name and alias, whether its name is known, its kind after a ruling) is play's and is kept.
+const PACK_TOKEN_FIELDS = ['art', 'note', 'size', 'type', 'group', 'source'];
+// Object fields play changes (the party takes things out): kept on --update when the save has them.
+const PLAY_OBJECT_FIELDS = ['items', 'coins'];
+
+/**
+ * Refresh a campaign from its pack without losing play (docs/best-practices/adventure-importer.md, section 7):
+ * the pack's own data (tokens' art and notes, creatures' stat blocks and the book's changes, objects' text, DCs, locks
+ * and hazards) comes from the new build; play (where tokens are, hidden, dead, effects, names learned, door states,
+ * explored areas, what was taken from objects, PCs and anything added in play, the table, the clock, the ledger's
+ * own entries) stays. New creatures, objects, maps and ambient sounds are added. Creatures and objects no longer in
+ * the adventure are kept and reported. Door states for doors no longer on a map are dropped and reported.
+ * @returns {{campaign, maps: {id: state}, actors: {id: actor}, ledger: Array|null, report: string[], problems, warnings}}
+ */
+export function updateSave(packDir, saveDir, opts = {}) {
+  const fresh = buildSave(packDir, opts);
+  const report = [];
+  if (fresh.problems.length) return { ...fresh, report };
+  const old = readJson(path.join(saveDir, 'campaign.json'));
+  const campaign = { ...old, title: old.title || fresh.campaign.title, pack: fresh.campaign.pack };
+  if (fresh.campaign.music && !old.music) campaign.music = fresh.campaign.music;
+  const adv = readJson(path.join(packDir, 'adventure.json'));
+  // every token in the save, wherever play has moved it
+  const states = {};
+  const mapsDir = path.join(saveDir, 'maps');
+  for (const f of fs.existsSync(mapsDir) ? fs.readdirSync(mapsDir).filter((x) => x.endsWith('.json')) : []) states[f.slice(0, -5)] = readJson(path.join(mapsDir, f));
+  const where = {};
+  for (const [m, st] of Object.entries(states)) for (const tid of Object.keys(st.tokens || {})) where[tid] = m;
+  const packIds = new Set();
+  for (const [m, tokens] of Object.entries(fresh.maps)) {
+    if (!states[m]) {
+      states[m] = { $schema: '../../../schemas/map-state.schema.json', map: m, tokens: {}, ...((adv.map_state || {})[m] || {}) };
+      report.push(`map ${m}: new`);
+    }
+    for (const [tid, t] of Object.entries(tokens)) {
+      packIds.add(tid);
+      const at = where[tid];
+      if (!at) { states[m].tokens[tid] = t; report.push(`${m}: new token ${t.name}`); continue; }
+      const cur = states[at].tokens[tid];
+      for (const k of PACK_TOKEN_FIELDS) { if (t[k] !== undefined) cur[k] = t[k]; else delete cur[k]; }
+    }
+    const amb = fresh.ambient[m] || {};
+    const have = states[m].ambient || {};
+    const add = Object.keys(amb).filter((k) => !have[k]);
+    if (add.length) { states[m].ambient = { ...have, ...Object.fromEntries(add.map((k) => [k, amb[k]])) }; report.push(`${m}: ${add.length} new ambient sound(s)`); }
+  }
+  // tokens that came from an earlier build of the adventure but are no longer in it (an id made by stableId for this
+  // pack): kept, since play may refer to them
+  for (const [tid, m] of Object.entries(where)) {
+    const t = states[m].tokens[tid];
+    if (!packIds.has(tid) && t.source === 'adventure') report.push(`${m}: ${t.name} is no longer in the adventure (kept)`);
+  }
+  // door states for doors the walls no longer have
+  for (const [m, st] of Object.entries(states)) {
+    const wf = path.join(packDir, 'maps', m, 'walls.json');
+    if (!st.doors || !fs.existsSync(wf)) continue;
+    const ids = new Set(readJson(wf).segs.filter((x) => x.door).map((x) => x.door.id));
+    for (const d of Object.keys(st.doors)) if (!ids.has(d)) { delete st.doors[d]; report.push(`${m}: door ${d} is no longer on the map (its state dropped)`); }
+    if (st.locked_known) st.locked_known = st.locked_known.filter((d) => ids.has(d));
+  }
+  // game data: the pack's fields win; what play changed on an object stays
+  const actors = {};
+  for (const [tid, a] of Object.entries(fresh.actors)) {
+    const f = path.join(saveDir, 'actors', `${tid}.json`);
+    const was = fs.existsSync(f) ? readJson(f) : null;
+    const next = { ...(was || {}), ...a };
+    if (was && a.kind === 'object') for (const k of PLAY_OBJECT_FIELDS) { if (was[k] !== undefined) next[k] = was[k]; else if (k in was === false && a[k] === undefined) delete next[k]; }
+    actors[tid] = next;
+  }
+  // the ledger: the adventure's entries that are not there yet
+  let ledger = null;
+  const lf = path.join(saveDir, 'ledger.json');
+  const have = fs.existsSync(lf) ? readJson(lf) : { $schema: '../../schemas/ledger.schema.json', entries: [] };
+  const sig = (e) => JSON.stringify([e.kind, e.title || '', e.text]);
+  const known = new Set(have.entries.map(sig));
+  const add = fresh.ledger.filter((e) => !known.has(sig(e)));
+  if (add.length) { ledger = { ...have, entries: [...have.entries, ...add] }; report.push(`ledger: ${add.length} new adventure entr${add.length === 1 ? 'y' : 'ies'}`); }
+  return { campaign, maps: states, actors, ledger, report, problems: [], warnings: fresh.warnings };
+}
+
 function main(argv) {
   const args = argv.slice(2);
   const opt = (k) => { const i = args.indexOf(k); if (i < 0) return undefined; const v = args[i + 1]; args.splice(i, 2); return v; };
   const force = args.includes('--force'); if (force) args.splice(args.indexOf('--force'), 1);
+  const update = args.includes('--update'); if (update) args.splice(args.indexOf('--update'), 1);
   const id = opt('--id'), title = opt('--title');
   const [packDir, saveDir] = args;
-  if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--force]'); return 2; }
-  if (fs.existsSync(path.join(saveDir, 'campaign.json')) && !force) { console.error(`${saveDir} already holds a campaign (use --force to rebuild it)`); return 1; }
+  if (!packDir || !saveDir) { console.error('usage: node tools/advimport/campaign.mjs <pack-dir> <save-dir> [--id ID] [--title TITLE] [--update | --force]'); return 2; }
+  const exists = fs.existsSync(path.join(saveDir, 'campaign.json'));
+  if (exists && update) {
+    const u = updateSave(packDir, saveDir, { id, title });
+    for (const w of u.warnings) console.error('WARNING', w);
+    for (const p of u.problems) console.error('PROBLEM', p);
+    if (u.problems.length) return 1;
+    write(path.join(saveDir, 'campaign.json'), u.campaign);
+    for (const [m, st] of Object.entries(u.maps)) write(path.join(saveDir, 'maps', `${m}.json`), st);
+    for (const [tid, a] of Object.entries(u.actors)) write(path.join(saveDir, 'actors', `${tid}.json`), a);
+    if (u.ledger) write(path.join(saveDir, 'ledger.json'), u.ledger);
+    for (const r of u.report) console.log(' ', r);
+    console.log(`${saveDir}: updated from the pack, play kept (${u.report.length} change${u.report.length === 1 ? '' : 's'} besides refreshed art, notes and stat blocks)`);
+    return 0;
+  }
+  if (exists && !force) { console.error(`${saveDir} already holds a campaign (use --update to refresh it from the pack and keep play, or --force to start over)`); return 1; }
   const { campaign, maps, actors, ambient, ledger, problems, warnings } = buildSave(packDir, { id, title });
   for (const w of warnings) console.error('WARNING', w);
   for (const p of problems) console.error('PROBLEM', p);

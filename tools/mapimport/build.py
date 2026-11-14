@@ -52,6 +52,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 from mapimport import extract, grid as gridmod, mask as maskmod, features, vectorize, terrain as terrainmod  # noqa: E402
 from mapimport import lighting as lightingmod  # noqa: E402
 from mapimport import lines as linesmod  # noqa: E402
+from mapimport import cache as cachemod  # noqa: E402
 
 SEG_PROPS = ("sight", "light", "sound", "move", "dir", "prox", "room", "note", "w", "line")
 DOOR_PROPS = ("id", "label", "initial", "dc", "stuck_dc", "blocked", "auto_find", "pair", "hinge", "swing")
@@ -320,9 +321,46 @@ def erase_interiors(cfg, mask, g, segs, report):
     report["interior_erased_px"] = total
 
 
-def build(cfg_path, repo):
+def merge_room(new, out_dir, room, report, margin=0.5):
+    """One room rebuilt: the walls in and around room `room` (its squares in rooms.json, plus `margin` cells) come
+    from this run; every other wall is kept from the map's walls.json exactly as it was. A door, window or other
+    opening rebuilt in the room keeps its old id (and door id) when one of the same type lies within half a square,
+    so saves that name it still work. docs/best-practices/map-importer.md section 4c."""
+    rooms = json.load(open(os.path.join(out_dir, "rooms.json"))).get("rooms", {})
+    if room not in rooms:
+        raise ValueError(f"no room {room} in rooms.json")
+    rects = [(x - margin, y - margin, x + w + margin, y + h + margin) for x, y, w, h in rooms[room]["rects"]]
+    inside = lambda s: any(x0 <= (s["a"][0] + s["b"][0]) / 2 <= x1 and y0 <= (s["a"][1] + s["b"][1]) / 2 <= y1 for x0, y0, x1, y1 in rects)
+    old = json.load(open(os.path.join(out_dir, "walls.json")))["segs"]
+    kept = [s for s in old if not inside(s)]
+    used = {s["id"] for s in kept}
+    mid = lambda s: ((s["a"][0] + s["b"][0]) / 2, (s["a"][1] + s["b"][1]) / 2)
+    old_in = [s for s in old if inside(s)]
+    fresh = 0
+    for s in [x for x in new if inside(x)]:
+        twin = min((o for o in old_in if o["t"] == s["t"] and o["id"] not in used and s["t"] != "solid"),
+                   key=lambda o: math.dist(mid(o), mid(s)), default=None)
+        if twin is not None and math.dist(mid(twin), mid(s)) <= 0.5:
+            s["id"] = twin["id"]
+            if s.get("door") and twin.get("door"):
+                s["door"]["id"] = twin["door"]["id"]
+        if s["id"] in used:
+            n = 1
+            while f"r{n:04d}" in used:
+                n += 1
+            s["id"] = f"r{n:04d}"
+            fresh += 1
+        used.add(s["id"])
+        kept.append(s)
+    report["room_rebuilt"] = {"room": room, "replaced": len(old_in), "now": len(kept) - (len(old) - len(old_in)), "new_ids": fresh}
+    return kept
+
+
+def build(cfg_path, repo, use_cache=True, room=None):
     with open(cfg_path, encoding="utf-8") as f:
         cfg = json.load(f)
+    cachemod.DIR = os.path.join(os.path.dirname(os.path.abspath(cfg_path)), ".cache") if use_cache else None
+    cachemod.HITS.clear(); cachemod.MISSES.clear()
     cfg = with_profile(cfg)
     step = cfg.get("snap", 0.125)   # endpoint precision: 1/8 cell, or 1/32 for print-resolution maps (2026-11-14)
     vectorize.SNAP = step
@@ -330,32 +368,44 @@ def build(cfg_path, repo):
     report = {"applied": []}
 
     src = cfg["source"]
-    img, chosen = extract.extract_map(os.path.join(repo, src["pdf"]), src["page"], src.get("image"))
-    img = extract.crop_scale(img, src.get("crop_px"), src.get("scale"))
-    report["source"] = {"page": src["page"], "image": chosen["num"], "size": list(img.size),
+    pdf = os.path.join(repo, src["pdf"])
+    src_key = cachemod.key(cachemod.file_id(pdf), src["page"], src.get("image"), src.get("crop_px"), src.get("scale"))
+
+    # The full image is pulled out of the PDF only when something needs it (the first run, a changed source or grid,
+    # the board's image missing); otherwise only its size and the smaller detection copy come from the cache.
+    _full = {}
+
+    def full():
+        if "img" not in _full:
+            im, ch = extract.extract_map(pdf, src["page"], src.get("image"))
+            _full["img"], _full["chosen"] = extract.crop_scale(im, src.get("crop_px"), src.get("scale")), ch
+        return _full["img"]
+    size, chosen_num = cachemod.memo("source-info", lambda: (full().size, _full["chosen"]["num"]), key_extra=src_key)
+    report["source"] = {"page": src["page"], "image": chosen_num, "size": list(size),
                         **({"crop_px": src["crop_px"]} if src.get("crop_px") else {}),
                         **({"scale": src["scale"]} if src.get("scale") else {})}
 
     g = cfg.get("grid", "auto")
     if g == "auto":
-        g = gridmod.calibrate(img)
+        g = cachemod.memo("grid", lambda: gridmod.calibrate(full()), key_extra=src_key)
         report["grid"] = dict(g, found="auto")
     else:
         report["grid"] = dict(g, found="given")
     # Detection runs on a copy at about detect_cell_px per square (default 50): a print-quality map at 200-300 px per
     # square takes many minutes and gigabytes to trace and gains nothing, because every result is in cells.
     # The board still gets the full image and its grid.
-    full_img, full_g = img, g
+    full_g = g
     want = cfg.get("detect_cell_px", 50)
-    if g["cell_px"] > want * 1.5:
-        k = want / g["cell_px"]
-        img = img.resize((max(1, round(img.size[0] * k)), max(1, round(img.size[1] * k))), Image.LANCZOS)
+    k = want / g["cell_px"] if g["cell_px"] > want * 1.5 else 1.0
+    img = cachemod.memo("detect", lambda: full().resize((max(1, round(size[0] * k)), max(1, round(size[1] * k))), Image.LANCZOS) if k < 1 else full(),
+                        key_extra=[src_key, k])
+    if k < 1:
         g = dict(g, cell_px=g["cell_px"] * k, origin_px=[v * k for v in g["origin_px"]])
         report["detect"] = {"cell_px": round(g["cell_px"], 3), "size": list(img.size)}
     cs = g["cell_px"]
     fpc = cfg["map"].get("feet_per_cell", 5)
 
-    m = maskmod.build_masks(img, g, cfg.get("mask"))
+    m = cachemod.memo("masks", maskmod.build_masks, img, g, cfg.get("mask"))
     wall, door_px, window_px = m["wall"], m["door"], m["window"]
     import cv2
     for e in cfg.get("erase", []):
@@ -377,7 +427,7 @@ def build(cfg_path, repo):
 
     fcfg = cfg.get("features")
     pre, _ = features.smooth_and_find_slits(wall, door_px | window_px, cs, fpc, fcfg)
-    doors = features.find_doors(door_px, pre, cs, fcfg)
+    doors = cachemod.memo("doors-pre", features.find_doors, door_px, pre, cs, fcfg)
     rej = (cfg.get("slits") or {}).get("reject_near", [])
     smooth, slits = features.smooth_and_find_slits(wall, door_px | window_px, cs, fpc, fcfg, doors=doors,
                                                    reject_px=[cells_to_px(r, g) for r in rej])
@@ -400,10 +450,10 @@ def build(cfg_path, repo):
         special.append(seg)
         report["applied"].append({"opening": kind, "at": o["at"], "note": o.get("note", "")})
 
-    doors = features.find_doors(door_px, smooth, cs, fcfg)
+    doors = cachemod.memo("doors", features.find_doors, door_px, smooth, cs, fcfg)
     for d in doors:
         clear_doorway(smooth, d, cs)
-    wins = features.find_windows(window_px, smooth, cs, fcfg)
+    wins = cachemod.memo("windows", features.find_windows, window_px, smooth, cs, fcfg)
 
     door_segs = []
     openings = []        # one list of leaves per detected door opening
@@ -515,13 +565,23 @@ def build(cfg_path, repo):
             door["pair"] = door.pop("_partner")["door"]["id"]
         if door:
             door.pop("_leafname", None)
+    if room:
+        out = merge_room(out, out_dir, room, report)
 
     mp = cfg["map"]
     img_name = f'{mp["id"]}.webp'
-    full_img.save(os.path.join(out_dir, img_name), "WEBP", quality=88, method=6)
+    # the board's image: written again only when the source changed or the file is gone
+    img_path = os.path.join(out_dir, img_name)
+    marker = os.path.join(cachemod.DIR, "image.key") if cachemod.DIR else None
+    if not (marker and os.path.exists(img_path) and os.path.exists(marker) and open(marker).read() == src_key):
+        full().save(img_path, "WEBP", quality=88, method=6)
+        if marker:
+            os.makedirs(cachemod.DIR, exist_ok=True)
+            with open(marker, "w") as f:
+                f.write(src_key)
     map_rec = {
         "id": mp["id"], "name": mp["name"],
-        "image": {"file": img_name, "w": full_img.size[0], "h": full_img.size[1]},
+        "image": {"file": img_name, "w": size[0], "h": size[1]},
         "grid": {"cell_px": round(float(full_g["cell_px"]), 3), "origin_px": [float(v) for v in full_g["origin_px"]],
                  "cols": int(g["cols"]), "rows": int(g["rows"]), "feet_per_cell": fpc},
         "walls": "walls.json",
@@ -564,6 +624,8 @@ def build(cfg_path, repo):
         counts[s["t"]] = counts.get(s["t"], 0) + 1
     report["counts"] = counts
     report["segments"] = len(out)
+    if cachemod.DIR:
+        report["cache"] = {"reused": list(cachemod.HITS), "computed": list(cachemod.MISSES)}
     with open(os.path.join(out_dir, "import-report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, indent=1, default=float)
         f.write("\n")
@@ -574,9 +636,11 @@ def main(argv):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("config")
     ap.add_argument("--repo", default=os.path.dirname(os.path.dirname(HERE)))
+    ap.add_argument("--no-cache", action="store_true", help="compute every step again and rewrite the cache")
+    ap.add_argument("--room", help="rebuild only this room's walls (rooms.json); keep every other wall as it is")
     a = ap.parse_args(argv)
-    r = build(a.config, a.repo)
-    print(json.dumps({"segments": r["segments"], "counts": r["counts"], "grid": r["grid"]}, default=float))
+    r = build(a.config, a.repo, use_cache=not a.no_cache, room=a.room)
+    print(json.dumps({**({"room_rebuilt": r["room_rebuilt"]} if r.get("room_rebuilt") else {}), "segments": r["segments"], "counts": r["counts"], "grid": r["grid"], **({"cache": r["cache"]} if r.get("cache") else {})}, default=float))
 
 
 if __name__ == "__main__":

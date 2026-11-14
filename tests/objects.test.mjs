@@ -10,7 +10,7 @@ import { isOpen, objectView, takeFromObject, takeAllFromObject, foundAt } from '
 import { blockersAt } from '../engine/tokens/occupancy.js';
 import { readArt } from '../tools/campaign.mjs';
 import { campaignRecords } from '../board/records.js';
-import { stableId, buildSave } from '../tools/advimport/campaign.mjs';
+import { stableId, buildSave, updateSave } from '../tools/advimport/campaign.mjs';
 import { nameProblems } from '../board/names.js';
 
 const chest = {
@@ -111,4 +111,39 @@ test('schemas and the board know object tokens and art', () => {
   assert.match(app, /paintDisc/);
   assert.match(app, /objectRender/);
   assert.doesNotMatch(fs.readFileSync('board/objects.js', 'utf8'), /pf2e|Pathfinder/i, 'objects are system-free');
+});
+
+test('adventure importer: --update refreshes the pack\'s data and keeps play', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'advup-'));
+  const save = path.join(dir, 'save');
+  fs.writeFileSync(path.join(dir, 'pack.json'), JSON.stringify({ id: 'p', ruleset: 'pf2e', maps: ['m'] }));
+  fs.mkdirSync(path.join(dir, 'maps', 'm'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'maps', 'm', 'walls.json'), JSON.stringify({ v: 1, segs: [{ id: 'door01', t: 'door', a: [0, 0], b: [1, 0], door: { id: 'd01' } }] }));
+  const adv = (note, extra = []) => ({ title: 'T', maps: ['m'], start: { map: 'm' }, ledger: [{ kind: 'thread', text: 'A thread' }],
+    encounters: [{ id: 'e1', map: 'm', room: 'R1', pages: '1', creatures: [{ name: 'Grey Rat', ref: 'pathfinder-monster-core:creature/giant-rat', at: [3, 4], note }, ...extra] }],
+    objects: [{ id: 'o1', map: 'm', room: 'R1', at: [2, 2], name: 'Chest', kind: 'container', items: [{ ref: 'item/dagger' }, { name: 'Rope' }], find_dc: 12 }] });
+  fs.writeFileSync(path.join(dir, 'adventure.json'), JSON.stringify(adv('old note')));
+  const first = buildSave(dir, { repo: path.resolve('.') });
+  // write the save as the tool does, then play: the rat moves and dies, a PC joins, a door opens, the rope is taken
+  const w = (f, d) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(d)); };
+  w(path.join(save, 'campaign.json'), { ...first.campaign, current_map: 'm', clock: { now: 99 } });
+  const rat = Object.keys(first.maps.m).find((k) => first.maps.m[k].name === 'Grey Rat');
+  const chest = Object.keys(first.maps.m).find((k) => first.maps.m[k].name === 'Chest');
+  const tokens = { ...first.maps.m, [rat]: { ...first.maps.m[rat], x: 7, y: 7, dead: true }, 'tok-pc000001': { name: 'Kerra', kind: 'pc', x: 1, y: 1 } };
+  w(path.join(save, 'maps', 'm.json'), { map: 'm', tokens, doors: { d01: { state: 'open' }, gone: { state: 'open' } } });
+  for (const [id, a] of Object.entries(first.actors)) w(path.join(save, 'actors', `${id}.json`), id === chest ? { ...a, items: [a.items[0]] } : a);
+  w(path.join(save, 'ledger.json'), { entries: [...first.ledger, { id: 'x', kind: 'ruling', text: 'Mine', by: 'gm' }] });
+  // the pack changes: a new note, a new creature
+  fs.writeFileSync(path.join(dir, 'adventure.json'), JSON.stringify(adv('new note', [{ name: 'Second Rat', ref: 'pathfinder-monster-core:creature/giant-rat', at: [5, 5] }])));
+  const u = updateSave(dir, save, { repo: path.resolve('.') });
+  assert.deepEqual(u.problems, []);
+  const t = u.maps.m.tokens;
+  assert.deepEqual([t[rat].x, t[rat].y, t[rat].dead, t[rat].source, String(u.actors[rat].note).startsWith('new note')], [7, 7, true, 'adventure', true], 'play kept, the note refreshed');
+  assert.ok(t['tok-pc000001'], 'the PC stays');
+  assert.ok(Object.values(t).some((x) => x.name === 'Second Rat'), 'the new creature arrives');
+  assert.deepEqual(u.maps.m.doors, { d01: { state: 'open' } }, 'a door no longer on the map loses its state');
+  assert.deepEqual(u.actors[chest].items.map((i) => i.ref || i.name), ['item/dagger'], 'taken loot stays taken');
+  assert.equal(u.campaign.clock.now, 99);
+  assert.equal(u.ledger, null, 'no new adventure entries: the ledger is left alone');
+  assert.ok(u.report.some((r) => /Second Rat/.test(r)));
 });
