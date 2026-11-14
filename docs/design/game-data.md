@@ -517,3 +517,82 @@ to look (`rulesets/pf2e/content.js`: `featKeys`, the feat's own `ref` first, the
 Foundry's class features, feats and ancestry features). These are optional content (`actorContent`, section 7):
 loading copies the first one found, tidy keeps them, and the board fetches the first key it holds.
 
+
+## 9. The character builder (designed 2026-11-14)
+
+A first pass at making PF2E characters, and next at levelling them up, with the same framework. There is no editor
+on the board: **Claude walks the player through it in chat, step by step**, and a tool does the rules.
+
+### 9.1 Decisions (the user, 2026-11-14)
+
+- **No full UI editor for now.** Claude presents each step's options and the player chooses: the questionnaire form
+  for small choices; for long lists (357 heritages, 547 backgrounds) Claude first asks what the player is after,
+  then offers a few fitting options, and the player may always name another.
+- **Levelling up comes next**, with the same steps and the same questionnaire form.
+- **Remaster supersedes an equivalent legacy option.** Foundry's current data has already dropped the legacy Core
+  Rulebook material, and no legacy ancestry, heritage or background shares a remastered one's name. The builder
+  hides a legacy option when a remastered option has the same name; a list in the ruleset
+  (`rulesets/pf2e/build.js`, `SUPERSEDED`) names any renamed pair found later. Legacy options with no remastered
+  equivalent (Kitsune, Poppet, the Mwangi ancestries) are offered.
+- **Uncommon and rare options are offered with the GM's approval**: common options freely; an uncommon or rare one
+  is shown as such and taken only once the GM (the user) says yes, recorded in the build with who approved it.
+- **No variant rules in the first pass.** Each variant is flagged for later: future/backlog.md FR-17 to FR-24 (Free
+  Archetype, Ancestry Paragon, Gradual Attribute Boosts, Automatic Bonus Progression, Dual Class, Proficiency
+  Without Level, alternate ancestry boosts and voluntary flaws, Level 0 and Stamina).
+- **Every class, spellcasters included**: spells are chosen at creation and when levelling.
+
+### 9.2 What is there, and what is missing
+
+- **There:** all of Foundry's build content, imported (section 7): 54 ancestries, 357 heritages, 547 backgrounds, 29
+  classes, every class feature, ancestry feature and feat, and every spell. A class document holds its HP, key
+  attribute, starting proficiencies, feat levels, skill increase levels and its features by level.
+- **Missing:** the rules inside them that a build runs on, kept by the importer as `unsupported`:
+  - `ChoiceSet` (1,418): "choose one": from a list (178 in build content), from a filter over the content (96: a
+    research field, an instinct), or a configured set (skills).
+  - `GrantItem` (1,405): "you gain this": a fixed feature (490) or the one a choice picked (137:
+    `{item|flags.system.rulesSelections.<flag>}`).
+  - `ActiveEffectLike` (3,009): most proficiency changes (`system.skills.<skill>.rank` upgrade,
+    `system.proficiencies.attacks.<group>.rank`), and class-specific flags.
+- **Spell slots and casting style are not in Foundry's data** (its players set up spellcasting by hand). Each caster
+  class's tradition, prepared or spontaneous, slots per level and cantrips, repertoire or spellbook sizes go in the
+  ruleset (`rulesets/pf2e/build.js`): game rules, committed like the rest of the ruleset.
+- **Today's PCs are results, not builds** (`examples/.../actors/`: attributes and proficiency ranks as numbers). They
+  cannot be levelled. Built PCs keep both: the build record, and the actor derived from it.
+
+### 9.3 Design (for review)
+
+1. **A build record per PC: the choices, not the results** (`actors/<id>` `build`):
+   `{ancestry, heritage, background, class, levels: {1: {boosts, skills, feats: {ancestry, class, ...}, selections:
+   {<flag>: value}, spells}, 2: {...}}, approvals: [{what, by, at}]}`, every option by its content key. The sheet's
+   numbers (attributes, proficiencies, HP, features, feats, spells) are worked out from it by the engine
+   (`deriveCharacter`), so a level-up adds that level's choices and a mistake is put right at the level it was made.
+2. **The rules a build needs, run by the engine**: ChoiceSet (list, filter and configured sets), GrantItem (fixed
+   and chosen), and ActiveEffectLike's proficiency upgrades and flags, enough for every class's features and the
+   common ancestries, heritages and backgrounds. Anything a build meets that it cannot run is listed for the GM,
+   never silently dropped.
+3. **A builder tool Claude drives** (`tools/builder.mjs`): `next` (the step the character is on and what it must
+   choose), `options` (only what the character qualifies for: level, prerequisites, the campaign's sources, rarity,
+   remaster over legacy; with a one-line summary each), `choose` (checks the choice and records it), `preview`
+   (the sheet as it stands), `finish` (writes the PC to the campaign). Claude never works out the rules itself.
+4. **The steps of creation**, in the book's order: ancestry, heritage, background, class (with its subclass
+   choices), attribute boosts (ancestry, background, class, four free; flaws), skills, ancestry and class feats (and
+   the background's skill feat), spells for a caster, starting equipment (wealth and kit), name and details.
+5. **Levelling** (next pass): `next` lists what the new level gives (HP, class features and their choices, feats by
+   kind, a skill increase, boosts at 5, 10, 15 and 20, new spells and slots), and Claude walks through it the same
+   way.
+6. **On the board**: the finished PC is a token with its actor; Token Quick-View shows the sheet. Players see their
+   own character's build; the GM sees all.
+
+### 9.4 Build order (proposed)
+
+1. **The build record and the derivation**: the record's schema, `deriveCharacter` for the parts with no rules to run
+   (ancestry, heritage, background and class basics, boosts, skills, HP, the class's proficiency table), checked
+   against the sample PCs rebuilt as builds.
+2. **The build rules**: ChoiceSet, GrantItem and ActiveEffectLike's proficiency upgrades, so class features and
+   subclasses work; a report of every class, ancestry and background feature they still cannot run.
+3. **The builder tool**: `next`, `options`, `choose`, `preview`, `finish`; the campaign's sources and rarity; remaster
+   over legacy; GM approval for uncommon and rare.
+4. **Spellcasters**: each caster class's casting in the ruleset; spells chosen at creation.
+5. **Equipment** at creation (starting wealth, class kits) and **finishing**: the PC on the board.
+6. **A full level-1 character with the user**, step by step, for each kind of class; then **levelling** (section 9.3,
+   point 5).

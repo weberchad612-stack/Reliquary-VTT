@@ -24,6 +24,14 @@ Status: **open** (not started), **designing**, **building**, **done**.
 | FR-14 | [Aura notes on the board's turns](#fr-14-aura-notes-on-the-boards-turns) | open | 2026-11-12 |
 | FR-15 | [A home for the Selection card's controls](#fr-15-a-home-for-the-selection-cards-controls) | open | 2026-11-12 |
 | FR-16 | [Two-finger touchpad panning](#fr-16-two-finger-touchpad-panning) | open | 2026-11-12 |
+| FR-17 | [Variant rule: Free Archetype](#fr-17-variant-rule-free-archetype) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-18 | [Variant rule: Ancestry Paragon](#fr-18-variant-rule-ancestry-paragon) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-19 | [Variant rule: Gradual Attribute Boosts](#fr-19-variant-rule-gradual-attribute-boosts) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-20 | [Variant rule: Automatic Bonus Progression](#fr-20-variant-rule-automatic-bonus-progression) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-21 | [Variant rule: Dual Class](#fr-21-variant-rule-dual-class) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-22 | [Variant rule: Proficiency Without Level](#fr-22-variant-rule-proficiency-without-level) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-23 | [Variant rule: Alternate ancestry boosts and voluntary flaws](#fr-23-variant-rule-alternate-ancestry-boosts-and-voluntary-flaws) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
+| FR-24 | [Variant rule: Level 0 characters and Stamina](#fr-24-variant-rule-level-0-characters-and-stamina) | open (the user, 2026-11-14: no variant rules in the first character builder; each one later) | 2026-11-14 |
 
 ---
 
@@ -595,3 +603,51 @@ rolls by the tools (today Claude adds it); travel fatigue past 8 hours a day and
 (FR-1) feeding who meets a trap first; Detect Magic's 30-foot check against magic items on the map; the activities'
 choices for a spell drawn from the character's spells once characters keep spell lists; class and feat exploration
 activities (Pursue a Lead, Assume a Role) when a character has them.
+
+## FR-17: Variant rule: Free Archetype
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." An extra class feat slot at every even level, used only for archetype feats. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-18: Variant rule: Ancestry Paragon
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." Extra ancestry feats (at 1st level and every odd level, per the variant). Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-19: Variant rule: Gradual Attribute Boosts
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." The four boosts of levels 5, 10, 15 and 20 spread one per level over the levels before them. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-20: Variant rule: Automatic Bonus Progression
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." Item bonuses from level instead of potency, striking and resilient runes; changes loot and the sheet. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-21: Variant rule: Dual Class
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." Two classes at once: both classes' features, feats and proficiencies. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-22: Variant rule: Proficiency Without Level
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." Proficiency bonuses without the character's level; changes every DC and creature too. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-23: Variant rule: Alternate ancestry boosts and voluntary flaws
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." The two free boosts instead of an ancestry's fixed boosts and flaw, and taking extra flaws for extra boosts (offered as the rules allow them; check against the remaster). Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
+
+## FR-24: Variant rule: Level 0 characters and Stamina
+
+**Asked for:** the user, 2026-11-14, while designing the character builder: "None for now, flag every variant as a future
+implementation." Starting below 1st level; the Stamina and Resolve points variant. Switched on per campaign when built, in the builder's options for that campaign
+(docs/design/game-data.md section 9).
