@@ -9,10 +9,11 @@ data in the campaign, run by Claude the moment they are due. Design and decision
 | The engine (conditions, what is due, moving an event's state) | `engine/events/events.js` (system-free) |
 | The save | `events.json` (`schemas/events.schema.json`): each event's definition and its state, and the flags; on the board `events/<id>` and `state/flags` (GM only) |
 | The tool | `tools/events.mjs`: `status`, `due`, `tick`, `run`, `next`, `go`, `finish`, `reset`, `decide`, `flag`, `unflag`, `context` |
-| Where they come from | the pack's `adventure.json` `events`, carried into the save by `tools/advimport/campaign.mjs` |
+| Where they come from | the pack's `adventure-events.json` (`events`, `subsystems`; merged with `adventure.json` by `readAdventure`), carried into the save by `tools/advimport/campaign.mjs` |
+| The kickoff | one event per adventure marked `kickoff`: the book's way of starting the story (`tools/advimport/kickoff.mjs`; adventure-importer.md 2c) |
 | A fight's end | `tools/encounter.mjs end` sets `ended:<group>` for each group in it |
 
-## 1. Writing an event (adventure.json)
+## 1. Writing an event (adventure-events.json)
 
 ```json
 { "id": "bell-at-dusk", "title": "The bell at dusk", "kind": "combat", "pages": "12-13",
@@ -76,7 +77,7 @@ Victory Points, Influence, Chase, Infiltration and Research (PF2E GM Core chapte
 words, default scoring and shape; `tools/subsystem.mjs` runs them; the save keeps them in `events.json`
 (`subsystems`), on the board `subsystems/<id>`.
 
-- **In adventure.json:** `"subsystems": [{"id": "lift", "kind": "victory", "title": "...", "pages": "7", "goal": 4,
+- **In adventure-events.json:** `"subsystems": [{"id": "lift", "kind": "victory", "title": "...", "pages": "7", "goal": 4,
   "thresholds": [{"at": 4, "id": "fixed", "label": "...", "end": "success"}]}]`. Infiltration: `obstacles` (`goal`,
   `individual`, `checks: [{skill, dc}]`), `awareness` thresholds (default: 5, 10, 15, 20). Influence: `npcs` (each with
   thresholds, checks, notes for discoveries, resistances and weaknesses), `rounds`. Chase: `obstacles`, `opponent`.
