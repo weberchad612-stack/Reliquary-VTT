@@ -162,7 +162,20 @@ export function runEncounter(game, cmd, args, opts = {}) {
   if (cmd === 'delay') { const id = E.acting(enc); const r = E.delay(enc, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} delays`], r.events, r.now); }
   if (cmd === 'resume') { const id = who(args[0]); const r = E.resume(enc, id, now0); return done(r.encounter, [`${name(id)} stops delaying`], r.events, r.now); }
   if (cmd === 'remove') { const id = who(args[0]); const r = E.removeCombatant(enc, id, now0, T.roundSeconds); return done(r.encounter, [`${name(id)} leaves the encounter`], r.events, r.now); }
-  if (cmd === 'end') { const r = E.end(enc, now0); return done(r.encounter, [`The encounter ends after ${enc.round} round(s)`], r.events, r.now); }
+  if (cmd === 'end') {
+    const r = E.end(enc, now0);
+    const out = done(r.encounter, [`The encounter ends after ${enc.round} round(s)`], r.events, r.now);
+    // the fight's groups have ended: events waiting on them read these flags (tools/events.mjs; engine/events)
+    const groups = [...new Set(enc.combatants.map((c) => (game.tokens[c.token] || {}).group).filter(Boolean))];
+    if (groups.length) {
+      const flags = { ...(game.flags || {}) };
+      for (const g of groups) flags[`ended:${g}`] = r.now;
+      game.flags = flags;
+      out.writes.push({ op: 'set', path: 'state/flags', data: flags });
+      out.lines.push('Check events: node tools/events.mjs ... due (a fight ended)');
+    }
+    return out;
+  }
   throw new Error('commands: show, start, add, init, roll, defeat, hide, begin, next, previous, next-round, previous-round, delay, resume, remove, end');
 }
 

@@ -70,6 +70,10 @@ export function loadGame(packDir, saveDir, records = null) {
   const game = { tokens, actors, states, content: contentView(lib), lib, onBoard, sys, ruleset: sys.actors, clock, encounter, pack: c.pack, campaign: c.campaign };
   game.auras = null;   // worked out when first needed (auraEffects)
   game.records = records || {};   // the board's records as given (other tools read their own collections from them)
+  // the adventure's events and the flags: the board's records over the save's (engine/events/events.js)
+  const recEvents = Object.entries(records || {}).filter(([p]) => p.startsWith('events/'));
+  game.events = recEvents.length ? Object.fromEntries(recEvents.map(([p, d]) => [p.slice(7), d])) : ((c.events && c.events.events) || {});
+  game.flags = (records && records['state/flags']) || (c.events && c.events.flags) || {};
   return game;
 }
 

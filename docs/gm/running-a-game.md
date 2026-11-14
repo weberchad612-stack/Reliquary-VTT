@@ -32,7 +32,10 @@ the whole guide). Each line points to its section.
    milestone and return.
 9. **Loot and quests (9, 10):** the adventure's treasure exactly, with its history, into the stash (`loot.mjs add`); quests from people in
    their own words, logged.
-10. **The system's guide** (PF2E: `rulesets/pf2e/gm.md`) for its secret checks, reactions, conditions and
+10. **Events (11b, `events.mjs`):** `events.mjs due` after every move to a new area, rest, clock jump, fight's end
+    and new round; anything due, run at once (`tick`), the stage's actions carried out in order, the user told after.
+    In combat also watch for a round, a creature's turn or its wounds that the book ties to something happening.
+11. **The system's guide** (PF2E: `rulesets/pf2e/gm.md`) for its secret checks, reactions, conditions and
     rulings.
 
 ## 1. Secrecy
@@ -386,10 +389,34 @@ it over.
 - **Locked doors are set before arrival.** Every locked, barred or stuck door the adventure puts in the
   area is locked on the board before the party gets there, so a try at it answers correctly. _(K3)_
 
+## 11b. Events
+
+An adventure's events (something that happens when a condition is met: at night once the party reaches a level, when
+a fight ends, after two hours have passed, on round 3, when a creature drops below half its HP) are imported into the
+campaign (`events.json`; adventure-importer.md). The GM sees each one in the Events tab; players see only what
+happens. Details: [events.md](../best-practices/events.md).
+
+- **Claude runs an event as soon as it is due, and tells the user afterwards** (the user's decision, 2026-11-13).
+  `events.mjs due` says what is due and why; `events.mjs tick` starts it (or moves it on) and prints the stage's
+  actions as a checklist: narrate (in my own words, from the notes), cards, effects, sounds, light, place creatures,
+  start the fight, doors, XP, decisions. Flags and ledger entries are written by the tool; do the rest in order, as a
+  replay when it has several steps. Then `events.mjs next <id>` when the stage's actions are done.
+- **When to check.** After every move into a new area or onto a new map, every rest and clock jump, every fight's end
+  (`encounter.mjs end` sets the flag events wait on) and every new round. A trigger the GM picks ("when the moment is
+  right") is a manual one: run it with `events.mjs run <id>` at a moment that suits the table.
+- **Decision points are mine.** Where an event asks what an NPC or a group does (help, flee, parley), decide as the
+  book's GM would, by what the characters did, and record it: `events.mjs decide <id> <point> <choice>` (it goes in
+  the ledger too).
+- **A fight with no battle map** gets one generated from the book's description before it starts (future work:
+  until then, the nearest map with a note).
+- **Repeats.** An event that can happen again cools down after it finishes; it is due again only when its trigger
+  holds after the cooldown, and only if the GM wants it (ask before running a repeat).
+
 ## 12. Sessions
 
 - **Starting a session.** Read this guide and the system's, `docs/STATUS.md`, and the campaign's ledger
-  (`ledger.mjs story`: the story so far, timed events due, open quests and threads); check the board is on the
+  (`ledger.mjs story`: the story so far, timed events due, open quests and threads) and the events
+  (`events.mjs status`: what is running, what may be due); check the board is on the
   right campaign, and that the campaign's players are recorded (`players.mjs list`: who plays which PCs; if not,
   ask the user once and record it), so the ledger can say who introduced what. Every PC starts with
   the system's per-session resources (PF2E: 1 Hero Point).
