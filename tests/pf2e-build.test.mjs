@@ -176,7 +176,8 @@ test('build rules: a cleric doctrine sets the flags its later features grant fro
   assert.deepEqual(P.armor, { unarmored: 1, light: 1, medium: 1 });
   assert.equal(P.weapons.martial, 2, 'Second Doctrine trained, Third Doctrine expert');
   assert.deepEqual(P.spellcasting, { divine: 1 });
-  assert.deepEqual(actor.spellcasting, { tradition: 'divine', attribute: 'wis', kind: 'prepared' });
+  assert.deepEqual([actor.spellcasting.tradition, actor.spellcasting.attribute, actor.spellcasting.kind, actor.spellcasting.learns], ['divine', 'wis', 'prepared', 'list']);
+  assert.deepEqual(actor.spellcasting.slots, { 1: 3, 2: 3, 3: 3, 4: 2 }, 'a 7th-level cleric');
   assert.ok(actor.feats.some((f) => f.slug === 'shield-block' && f.slot === 'granted'));
 });
 

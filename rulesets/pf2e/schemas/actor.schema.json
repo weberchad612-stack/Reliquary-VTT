@@ -507,10 +507,125 @@
               "enum": [
                 "prepared",
                 "spontaneous",
-                "innate"
+                "innate",
+                "focus"
               ]
+            },
+            "slots": {
+              "type": "object",
+              "description": "Spell slots by rank at the character's level (rulesets/pf2e/casting.js).",
+              "propertyNames": {
+                "pattern": "^([1-9]|10)$"
+              },
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "learns": {
+              "enum": [
+                "repertoire",
+                "book",
+                "list"
+              ],
+              "description": "How it learns spells: a repertoire, a book or familiar, or its whole tradition's list."
+            },
+            "cantrips": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                }
+              }
+            },
+            "spells": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                }
+              },
+              "description": "Its repertoire, or its book's or familiar's spells, with the spells its subclass grants."
+            },
+            "signature": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                }
+              }
+            },
+            "focus": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "ref"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "rank": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                }
+              },
+              "description": "Its focus spells and focus cantrips."
             }
-          }
+          },
+          "additionalProperties": false
         },
         "features": {
           "type": "array",
@@ -1005,6 +1120,40 @@
             "type": "string"
           },
           "description": "Languages chosen at 1st level (rulesets/pf2e/languages.js)."
+        },
+        "spells": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The spells chosen (docs/design/game-data.md 9.9): cantrips and repertoire for a repertoire caster, book for a book or familiar caster, signature spells by rank.",
+          "properties": {
+            "cantrips": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "repertoire": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "book": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "signature": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }

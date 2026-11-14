@@ -768,3 +768,41 @@ As built:
   and a fighter built and finished from the tool. A dwarf warpriest of Torag was built through the tool by hand.
 - **Left:** casters' spells and the sorcerer's, witch's and summoner's tradition (step 4); gear and its choices,
   the token on the board (step 5).
+
+### 9.9 Step 4 as built (2026-11-14): casters
+
+- **The tables** (`rulesets/pf2e/casting.js` `CASTERS`, `slotsAt`, `maxRank`): Foundry's data has the class
+  features' words but not the spells-per-day tables, so they are kept here, from Player Core 1 and 2 and the later
+  books, checked against Archives of Nethys on 2026-11-14. Patterns: a new rank arrives with 2 slots and has 3
+  after (bard, cleric, druid, witch, wizard), 3 then 4 (oracle, sorcerer), 1 then 2 (magus, summoner, psychic,
+  necromancer); a 10th-rank slot at 19th level for all but the magus and summoner; the animist's own slots (its
+  apparition slots apart). Cantrips: 5, the psychic 3 (its conscious mind adds more), the animist 2.
+- **How each learns** (`learns`): a **repertoire** (bard, oracle, sorcerer, psychic, summoner: as many spells of
+  a rank as its slots; a sorcerer's bloodline gift counts among them; signature spells from 3rd level, one a rank,
+  from the repertoire), a **book** (wizard 10 cantrips and 5 1st-rank spells, witch's familiar the same, magus 8
+  and 5, necromancer's dirge 8 and 4; 2 more a level), or its **whole list** (cleric, druid, animist: nothing to
+  choose at building).
+- **Tradition from the subclass:** a sorcerer's bloodline, a witch's patron, a summoner's eidolon say it in their
+  text ("Tradition occult", "Spell List occult"), a flag (`flags.system.eidolon.tradition`) or the record a choice
+  picked (a draconic sorcerer's dragon). Until it is known the build shows a `tradition` step that points at the
+  subclass choice, and the casting proficiency is kept under the class's name.
+- **Granted spells, read from the text:** a subclass's spells by rank ("Granted Spells - cantrip: Ignition - 1st:
+  Breathe Fire", "Sorcerous Gifts cantrip: Daze; 1st: Phantom Pain") up to the ranks the character casts; the
+  spells features say it learns ("You learn the Counter Performance composition spell", "Revelation Spells -
+  initial: Incendiary Aura", "Order Spell Tempest Surge", "You gain the Nudge Fate hex cantrip", "Muse Spell Sure
+  Strike", "your familiar learns Sure Strike"). A focus spell (the focus trait; a focus cantrip such as a
+  composition has no tradition) goes to `spellcasting.focus`; the **focus pool** is one point for each focus
+  spell that is not a cantrip, three at most. A champion casts its devotion spells as a divine focus caster.
+- **Steps** (`spells.cantrips`, `spells.rank<N>`, `spells.signature<N>`, `spells.bookCantrips`, `spells.book1`,
+  `spells.book`) and their **options**: spells of the tradition, not focus spells, of the rank the step asks (a
+  repertoire rank may take a lower-rank spell to heighten), gated by rarity and the campaign's books. Chosen
+  spells are checked: a spell, of the tradition (a granted one may be of another), not a focus spell, a cantrip
+  where a cantrip is asked and not otherwise, of a rank the character casts, and approved when uncommon or rare.
+- **The actor** (`spellcasting`: tradition, attribute, kind, `slots`, `learns`, `cantrips`, `spells`, `signature`,
+  `focus`; `resources.focus.max`) and the build (`spells`: cantrips, repertoire by rank, book, signature by rank).
+- **Tested** (`tests/builder-tool.test.mjs`): the tables against the books' (wizard, sorcerer, oracle, magus,
+  psychic, necromancer, animist); granted and learned spells from texts; an aberrant sorcerer's tradition, gifts,
+  focus spell, choices and checks; a witch's familiar, lesson spell and hex cantrip; a bard's compositions and
+  focus pool; a cleric with nothing to choose.
+- **Left:** spells at higher levels for prepared casters are prepared daily, not built; the animist's apparitions,
+  a psychic's psi cantrips and amps, and archetype casting (the dedication spellcasting feats) come with levelling.

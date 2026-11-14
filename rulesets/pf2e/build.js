@@ -17,6 +17,7 @@
 
 import { LANGUAGES, languageRarity } from './languages.js';
 import { prereqFacts, prereqCheck } from './prereqs.js';
+import { CASTERS, slotsAt, maxRank as castMax, spellSteps, grantedSpellNames, subclassTradition, learnedSpellNames } from './casting.js';
 
 export const ATTRIBUTES = Object.freeze(['str', 'dex', 'con', 'int', 'wis', 'cha']);
 export const SKILLS = Object.freeze(['acrobatics', 'arcana', 'athletics', 'crafting', 'deception', 'diplomacy', 'intimidation', 'medicine', 'nature', 'occultism', 'performance', 'religion', 'society', 'stealth', 'survival', 'thievery']);
@@ -37,7 +38,11 @@ export const CASTING_ATTRIBUTE = Object.freeze({ animist: 'wis', bard: 'cha', cl
  * from a choice (a sorcerer's bloodline, a witch's patron, a summoner's eidolon), or null for a class that does not
  * cast from its spellcasting feature.
  */
+// classes that cast only focus spells from their own class features (a champion's devotion spells)
+export const FOCUS_CASTING = Object.freeze({ champion: { tradition: 'divine', attribute: 'cha', kind: 'focus' } });
+
 export function castingOf(cls, get, keyAttr) {
+  if (cls && FOCUS_CASTING[cls.slug]) return { ...FOCUS_CASTING[cls.slug] };
   const at = cls && CASTING_ATTRIBUTE[cls.slug];
   if (!at) return null;
   const feat = (cls.features || []).map((f) => f.ref && get(f.ref)).find((d) => d && /spellcasting$/.test(d.slug));
@@ -137,11 +142,14 @@ export function profTargets(phrase) {
  * classes' names ("Druid, Kineticist You've improved ..."): the paragraphs for this class, or the whole text when it
  * has no such headings.
  */
+// the classes' names, for telling a shared feature's class headings from other capitalised words
+export const CLASS_NAMES = Object.freeze(['Alchemist', 'Animist', 'Barbarian', 'Bard', 'Champion', 'Cleric', 'Commander', 'Druid', 'Exemplar', 'Fighter', 'Guardian', 'Gunslinger', 'Inventor', 'Investigator', 'Kineticist', 'Magus', 'Monk', 'Necromancer', 'Oracle', 'Psychic', 'Ranger', 'Rogue', 'Runesmith', 'Sorcerer', 'Summoner', 'Swashbuckler', 'Thaumaturge', 'Witch', 'Wizard']);
+
 export function classSection(text, className) {
   const paras = String(text || '').split(/\n\s*\n(?:---\s*\n)?/).map((p) => p.replace(/^---\s*/, '').trim()).filter(Boolean);
-  const head = (p) => { const m = /^([A-Z][a-z]+(?:, [A-Z][a-z]+)*) (?=[A-Z])/.exec(p); return m ? m[1].split(', ') : null; };
+  const head = (p) => { const m = /^([A-Z][a-z]+(?:, [A-Z][a-z]+)*)(?= [A-Z]|\s*$)/.exec(p); const names = m ? m[1].split(', ') : null; return names && names.every((n) => CLASS_NAMES.includes(n)) ? names : null; };
   if (paras.filter(head).length < 2 || !className) return String(text || '');
-  return paras.filter((p) => (head(p) || []).includes(className)).map((p) => p.replace(/^[A-Z][a-z]+(?:, [A-Z][a-z]+)* /, '')).join('\n\n');
+  return paras.filter((p) => (head(p) || []).includes(className)).map((p) => p.replace(/^[A-Z][a-z]+(?:, [A-Z][a-z]+)*\s*/, '')).join('\n\n');
 }
 
 /** The proficiency gains a feature's text states: {gains: [{bag, key, rank}], unread: [phrase]}. */
@@ -160,7 +168,7 @@ export function textGains(text) {
       const rank = ri ? m[ri] : 'trained';
       const targets = profTargets(phrase);
       // "the listed skills", "the skill associated with your patron": the subclass's own rules give those
-      if (/listed|associated|matching|related|granted by/i.test(phrase)) continue;
+      if (/listed|associated|matching|related|granted by|number of|instead of/i.test(phrase)) continue;
       if (!targets) { unread.push(phrase.trim()); continue; }
       for (const x of targets) gains.push({ ...x, rank: RANKS[rank.toLowerCase()] });
     }
@@ -732,6 +740,96 @@ export function deriveCharacter(build, get, opts = {}) {
   if (anc) pickLang(1, b.languages, (((anc.additionalLanguages || {}).count) || 0) + Math.max(0, intAt1) + langExtra);
   for (const [lv, n] of Object.entries(intGains)) pickLang(Number(lv), (levels[lv] || {}).languages, n);
 
+  // ---- spells (section 9.9): the tradition a subclass sets, the slots, the spells chosen and granted ----
+  const caster = cls && CASTERS[cls.slug];
+  let spellOut = null;
+  if (casting) {
+    if (!casting.tradition) {
+      // a sorcerer's bloodline, a witch's patron, a summoner's eidolon: the subclass says, in its text, a flag or the
+      // record its choice picked (a draconic sorcerer's dragon)
+      const fromFlags = (o) => (o && typeof o === 'object' ? (typeof o.tradition === 'string' ? o.tradition : Object.values(o).map(fromFlags).find(Boolean)) : null);
+      const fromSel = Object.values(sel).map((v) => null).find(Boolean);
+      const recs = [...featureDocs.values()].map((f) => get(f.ref)).filter(Boolean);
+      casting.tradition = fromFlags(actorFlags) || recs.map((d) => subclassTradition(d.text)).find((t) => t && t !== 'variable') || fromSel || null;
+      if (casting.tradition && P.spellcasting[cls.slug] !== undefined) { P.spellcasting[casting.tradition] = Math.max(P.spellcasting[casting.tradition] || 0, P.spellcasting[cls.slug]); delete P.spellcasting[cls.slug]; }
+      if (!casting.tradition) need(1, 'tradition', `${cls.name}: the tradition comes with the ${cls.slug === 'sorcerer' ? 'bloodline' : cls.slug === 'witch' ? 'patron' : cls.slug === 'summoner' ? 'eidolon' : 'subclass'}: choose that first.`);
+    }
+    if (caster) {
+      const rankOf = (k) => { const d = get(k); return d ? ((d.traits || []).includes('cantrip') ? 0 : d.rank || 1) : -1; };
+      // the subclass's granted spells, by rank, up to the ranks the character casts
+      const granted = {};
+      for (const d of [...featureDocs.values()].map((f) => get(f.ref)).filter(Boolean)) {
+        for (const [r, name] of Object.entries(grantedSpellNames(d.text))) {
+          if (Number(r) > castMax(caster, L)) continue;
+          const k = `spells:spell/${slug(name)}`;
+          if (get(k)) granted[r] = k; else unsupported.push({ from: `${d.name} (class feature)`, rule: 'text', why: `a granted spell, ${name}, not found in the open content` });
+        }
+      }
+      const sp = b.spells || {};
+      for (const st of spellSteps(caster, L, sp, granted, rankOf)) { need(L, st.step, st.text); pending[pending.length - 1].choice = { spells: true, count: st.count, ...(st.rank !== undefined ? { rank: st.rank } : {}) }; }
+      // what was chosen must be a spell of the tradition, of a rank the character casts, and not a focus spell
+      const top = castMax(caster, L);
+      const check = (k, where, wantRank) => {
+        const d = get(k);
+        if (!d || d.kind !== 'spell') { problems.push(`${where}: ${k} is not a spell in the content`); return; }
+        const r = rankOf(k);
+        if ((d.traits || []).includes('focus') || !(d.traditions || []).length) problems.push(`${where}: ${d.name} is a focus spell (focus spells come from features and feats)`);
+        if (casting.tradition && !(d.traditions || []).includes(casting.tradition) && !Object.values(granted).includes(k)) problems.push(`${where}: ${d.name} is not a ${casting.tradition} spell`);
+        if (wantRank === 0 && r !== 0) problems.push(`${where}: ${d.name} is not a cantrip`);
+        if (wantRank > 0 && r === 0) problems.push(`${where}: ${d.name} is a cantrip`);
+        if (wantRank > 0 && r > wantRank) problems.push(`${where}: ${d.name} is a ${r}-rank spell`);
+        if (r > top) problems.push(`${where}: ${d.name} is rank ${r}, above the ${top} this character casts`);
+        if (d.rarity && d.rarity !== 'common' && !(b.approvals || []).some((a) => a.what === k)) problems.push(`${where}: ${d.name} is ${d.rarity}: it needs the GM's leave`);
+      };
+      const seenSp = new Set();
+      const dup = (k, where) => { if (seenSp.has(`${where}|${k}`)) problems.push(`${where}: ${k} chosen twice`); seenSp.add(`${where}|${k}`); };
+      for (const k of sp.cantrips || []) { check(k, 'cantrips', 0); dup(k, 'cantrips'); }
+      for (const [r, list] of Object.entries(sp.repertoire || {})) for (const k of list) { check(k, `${r}-rank repertoire`, Number(r)); dup(k, 'repertoire'); }
+      for (const k of sp.book || []) { check(k, 'book', rankOf(k) === 0 ? 0 : top); dup(k, 'book'); }
+      for (const [r, k] of Object.entries(sp.signature || {})) {
+        const known = [...((sp.repertoire || {})[r] || []), granted[r]].filter(Boolean);
+        if (!known.includes(k)) problems.push(`signature spell of rank ${r}: ${k} is not in the repertoire at that rank`);
+      }
+      const named = (k) => ({ name: (get(k) || {}).name || k, ref: k });
+      spellOut = {
+        slots: slotsAt(caster, L).ranks,
+        cantrips: [...(granted[0] ? [granted[0]] : []), ...(sp.cantrips || []), ...(sp.book || []).filter((k) => rankOf(k) === 0)].map(named),
+        spells: [...Object.entries(granted).filter(([r]) => r !== '0').map(([r, k]) => ({ ...named(k), rank: Number(r) })),
+          ...Object.entries(sp.repertoire || {}).flatMap(([r, list]) => list.map((k) => ({ ...named(k), rank: Number(r) }))),
+          ...(sp.book || []).filter((k) => rankOf(k) > 0).map((k) => ({ ...named(k), rank: rankOf(k) }))],
+        ...(Object.keys(sp.signature || {}).length ? { signature: Object.values(sp.signature).map(named) } : {}),
+        learns: caster.learns,
+      };
+    }
+  }
+  // spells the features' and feats' text says the character learns (a bard's compositions, an oracle's revelation, a
+  // druid's order spell, a muse's spell), beside those their rules grant
+  const textSpells = [];
+  for (const d of [...[...featureDocs.values()].map((f) => get(f.ref)), ...feats.map((f) => get(f.ref))].filter(Boolean)) {
+    for (const { name, how } of learnedSpellNames(classSection(d.text, cls && cls.name))) {
+      const k = `spells:spell/${slug(name)}`;
+      const sd = get(k);
+      if (!sd || sd.kind !== 'spell') { unsupported.push({ from: d.name, rule: 'text', why: `a spell it grants, ${name}, not found in the open content` }); continue; }
+      if (granted.some((g) => g.ref === k) || textSpells.some((g) => g.ref === k)) continue;
+      textSpells.push({ name: sd.name, kind: 'spell', ref: k, from: d.name, ...(how !== 'learn' ? { repertoire: true } : {}) });
+    }
+  }
+  for (const g of textSpells) {
+    const { repertoire, ...rest } = g;
+    const d = get(g.ref) || {};
+    const isFocus = (d.traits || []).includes('focus') || !(d.traditions || []).length;
+    // a focus spell joins the character's granted things; any other spell joins what it casts from slots
+    if (isFocus) granted.push(rest);
+    else if (spellOut) { const r = (d.traits || []).includes('cantrip') ? 0 : d.rank || 1; if (r === 0) spellOut.cantrips.push({ name: d.name, ref: g.ref }); else spellOut.spells.push({ name: d.name, ref: g.ref, rank: r }); }
+  }
+  // focus spells: the pool is one Focus Point for each focus spell (not focus cantrips), three at most
+  // a focus spell has the focus trait; a focus cantrip (a composition) has none, and no tradition
+  const focusOf = (g) => { const d = g.kind === 'spell' && get(g.ref); return !!d && ((d.traits || []).includes('focus') || !(d.traditions || []).length); };
+  const focusSpells = granted.filter((g) => focusOf(g) && !((get(g.ref) || {}).traits || []).includes('cantrip'));
+  if (spellOut || granted.some(focusOf)) {
+    const fs = granted.filter(focusOf).map((g) => ({ name: g.name, ref: g.ref }));
+    if (fs.length && spellOut) spellOut.focus = fs;
+  }
   for (const k of Object.keys(P.spellcasting)) if (!P.spellcasting[k]) delete P.spellcasting[k];
   if (!Object.keys(P.spellcasting).length) delete P.spellcasting;
 
@@ -750,7 +848,8 @@ export function deriveCharacter(build, get, opts = {}) {
     feats,
     traits: anc ? [...(anc.traits || [])] : [],
     languages: langs,
-    ...(casting && casting.tradition ? { spellcasting: casting } : {}),
+    ...(casting && casting.tradition ? { spellcasting: { ...casting, ...(spellOut || {}) } } : {}),
+    ...(focusSpells.length ? { resources: { focus: { max: Math.min(3, focusSpells.length) } } } : {}),
     ...(granted.length ? { granted } : {}),
     build: b,
   };

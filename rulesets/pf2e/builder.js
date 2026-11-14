@@ -249,6 +249,37 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     return entry(key, doc, { ...(g.needs ? { needs: g.needs } : {}), ...(g.out ? { blocked: [g.out] } : {}) });
   }).filter(Boolean).sort((x, y) => x.name.localeCompare(y.name));
 
+  // the spells a step can take: of the character's tradition, not focus spells, of the rank the step asks
+  const spellOptions = (b, r, s, all) => {
+    const sc = r.actor.spellcasting || {};
+    const sp = b.spells || {};
+    const step = s.step;
+    const isCantrip = (d) => (d.traits || []).includes('cantrip');
+    const isFocus = (d) => (d.traits || []).includes('focus') || !(d.traditions || []).length;
+    const top = Math.max(0, ...Object.keys(sc.slots || {}).map(Number).filter((n) => n < 10));
+    const chosen = new Set([...(sp.cantrips || []), ...Object.values(sp.repertoire || {}).flat(), ...(sp.book || [])]);
+    if (/^spells\.signature/.test(step)) {
+      const rank = Number(step.slice(16));
+      return (sc.spells || []).filter((x) => x.rank === rank).map((x) => ({ value: x.ref, name: x.name }));
+    }
+    let want;
+    if (step === 'spells.cantrips' || step === 'spells.bookCantrips') want = (d) => isCantrip(d);
+    else if (/^spells\.rank\d+$/.test(step)) { const n = Number(step.slice(11)); want = (d) => !isCantrip(d) && (d.rank || 1) <= n; }
+    else if (step === 'spells.book1') want = (d) => !isCantrip(d) && (d.rank || 1) === 1;
+    else if (step === 'spells.book') want = (d) => !isCantrip(d) && (d.rank || 1) <= top;
+    else return [];
+    if (!sc.tradition) return [{ value: '-', name: 'the tradition is not known yet: choose the subclass first' }];
+    const out = [];
+    for (const { key, doc } of folderDocs('spells', 'spell', cache)) {
+      if (doc.kind !== 'spell' || isFocus(doc) || !(doc.traditions || []).includes(sc.tradition) || !want(doc)) continue;
+      const g = gate(key, doc, b);
+      const why = [...(g.out ? [g.out] : []), ...(chosen.has(key) ? ['chosen already'] : [])];
+      if (why.length && !all) continue;
+      out.push(entry(key, doc, { rank: isCantrip(doc) ? 0 : doc.rank, ...(g.needs ? { needs: g.needs } : {}), ...(why.length ? { blocked: why } : {}) }));
+    }
+    return out.sort((x, y) => (y.rank || 0) - (x.rank || 0) || x.name.localeCompare(y.name));
+  };
+
   /** The options for a step: [{value, name, level?, rarity?, book?, legacy?, needs?, gmChecks?, blocked?, summary?}]. */
   const options = (b, id, { all = false, search } = {}) => {
     const { steps: st, result: r } = steps(b);
@@ -286,6 +317,8 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
       }).filter((o) => all || !o.needs || o.ancestry);
     } else if (step === 'lore') { const named = ((s.choice || {}).options || []).map((o) => ({ value: o.value, name: o.label })); out = named.length ? named : [{ value: '<subject>', name: 'the subject the background describes (the player names it)' }]; }
     else if (step.startsWith('feat.')) out = featOptions(b, r, step.slice(5), s.level, all);
+    else if (step.startsWith('spells.')) out = spellOptions(b, r, s, all);
+    else if (step === 'tradition') out = [{ value: '-', name: 'chosen with the subclass: make that choice first' }];
     else if (step.startsWith('choice.') && s.choice) {
       const c = s.choice, rolls = new Set(r.rollOptions || []);
       if (c.options) out = c.options.map((o) => ({ value: o.value, name: o.label, ...(o.predicate && holds(o.predicate, { level: r.actor.level, tags: rolls }) === false ? { blocked: ['not open to this character'] } : {}) })).filter((o) => all || !o.blocked);
@@ -340,6 +373,14 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     else if (step === 'skillIncrease') lv().skillIncrease = one();
     else if (step.startsWith('feat.')) { lv().feats = lv().feats || {}; lv().feats[step.slice(5)] = one(); }
     else if (step.startsWith('choice.')) { b.selections = b.selections || {}; b.selections[step.slice(7)] = one(); }
+    else if (step.startsWith('spells.')) {
+      const sp = (b.spells = b.spells || {});
+      if (step === 'spells.cantrips') sp.cantrips = [...(sp.cantrips || []), ...vals];
+      else if (/^spells\.rank\d+$/.test(step)) { const n = step.slice(11); sp.repertoire = sp.repertoire || {}; sp.repertoire[n] = [...(sp.repertoire[n] || []), ...vals]; }
+      else if (/^spells\.signature\d+$/.test(step)) { sp.signature = sp.signature || {}; sp.signature[step.slice(16)] = one(); }
+      else if (['spells.bookCantrips', 'spells.book1', 'spells.book'].includes(step)) sp.book = [...(sp.book || []), ...vals];
+      else throw new Error(`${id}: not a spell step`);
+    }
     else throw new Error(`${id}: not a step the builder knows`);
     return b;
   };
@@ -358,6 +399,12 @@ export function builder({ get = contentGetter(), resolve, settings = {} } = {}) 
     else if (['trained', 'skillIncrease'].includes(step)) delete L[step];
     else if (step.startsWith('feat.') && L.feats) delete L.feats[step.slice(5)];
     else if (step.startsWith('choice.') && b.selections) delete b.selections[step.slice(7)];
+    else if (step.startsWith('spells.') && b.spells) {
+      if (step === 'spells.cantrips') delete b.spells.cantrips;
+      else if (/^spells\.rank\d+$/.test(step) && b.spells.repertoire) delete b.spells.repertoire[step.slice(11)];
+      else if (/^spells\.signature\d+$/.test(step) && b.spells.signature) delete b.spells.signature[step.slice(16)];
+      else if (/^spells\.book/.test(step)) delete b.spells.book;
+    }
     return b;
   };
 
@@ -393,6 +440,8 @@ export function preview(result, get = contentGetter()) {
     `Skills: ${Object.entries(p.skills).filter(([k]) => (P.skills || {})[k]).map(([k, v]) => `${k} ${sign(v.value)} (${R[P.skills[k]]})`).join(', ') || 'none yet'}${Object.keys(p.lore || {}).length ? `; ${Object.values(p.lore).map((v) => `${v.label} ${sign(v.value)}`).join(', ')}` : ''}`,
     `Feats: ${(A.feats || []).map((f) => `${f.name} (${f.slot}${f.slot === 'granted' && f.from ? ` by ${f.from}` : ''}, ${f.level})`).join('; ') || 'none yet'}`,
     `Features: ${(A.features || []).map((f) => (typeof f === 'string' ? f : f.name)).join(', ') || 'none'}`,
+    ...(A.spellcasting && A.spellcasting.slots ? [`Spells (${A.spellcasting.tradition}, ${A.spellcasting.kind}): slots ${Object.entries(A.spellcasting.slots).map(([r, n]) => `${r}:${n}`).join(' ')}; cantrips ${(A.spellcasting.cantrips || []).map((x) => x.name).join(', ') || 'none yet'}; spells ${(A.spellcasting.spells || []).map((x) => `${x.name} (${x.rank})`).join(', ') || 'none yet'}${(A.spellcasting.signature || []).length ? `; signature ${A.spellcasting.signature.map((x) => x.name).join(', ')}` : ''}`] : []),
+    ...(A.spellcasting && (A.spellcasting.focus || []).length ? [`Focus spells: ${A.spellcasting.focus.map((x) => x.name).join(', ')} (pool ${((A.resources || {}).focus || {}).max || 0})`] : []),
     `Languages: ${(A.languages || []).join(', ')}${A.build && A.build.deity ? `; deity ${(get(A.build.deity) || {}).name}` : ''}`,
   ];
   return { lines, prepared: p };

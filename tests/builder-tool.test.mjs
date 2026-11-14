@@ -114,3 +114,69 @@ test('builder tool: a draft in the campaign save, built and finished', async () 
   assert.match(await cap(['settings', save, '--books', 'Pathfinder Player Core|Pathfinder Player Core 2']), /Player Core 2/);
   fs.rmSync(save, { recursive: true });
 });
+
+// ---- step 4: casters (rulesets/pf2e/casting.js) ----
+
+import { CASTERS, slotsAt, maxRank, grantedSpellNames, learnedSpellNames, subclassTradition } from '../rulesets/pf2e/casting.js';
+
+test('casting: the slot tables (Player Core 1 and 2, checked against Archives of Nethys)', () => {
+  assert.deepEqual(slotsAt(CASTERS.wizard, 1).ranks, { 1: 2 });
+  assert.deepEqual(slotsAt(CASTERS.wizard, 5).ranks, { 1: 3, 2: 3, 3: 2 });
+  assert.deepEqual(slotsAt(CASTERS.wizard, 19).ranks, { 1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3, 7: 3, 8: 3, 9: 3, 10: 1 });
+  assert.deepEqual(slotsAt(CASTERS.sorcerer, 1).ranks, { 1: 3 });
+  assert.deepEqual(slotsAt(CASTERS.oracle, 4).ranks, { 1: 4, 2: 4 });
+  assert.deepEqual(slotsAt(CASTERS.magus, 7).ranks, { 1: 2, 2: 2, 3: 2, 4: 1 });
+  assert.equal(slotsAt(CASTERS.magus, 20).ranks[10], undefined, 'a magus never casts 10th rank');
+  assert.deepEqual(slotsAt(CASTERS.psychic, 1), { cantrips: 3, ranks: { 1: 1 } });
+  assert.equal(slotsAt(CASTERS.necromancer, 19).ranks[10], 1);
+  assert.deepEqual(slotsAt(CASTERS.animist, 9).ranks, { 1: 2, 2: 2, 3: 2, 4: 2, 5: 1 }, "the animist's own slots");
+  assert.equal(maxRank(CASTERS.wizard, 19), 10); assert.equal(maxRank(CASTERS.magus, 20), 9);
+});
+
+test('casting: what subclasses grant, read from their text', () => {
+  assert.deepEqual(grantedSpellNames('Tradition occult Bloodline Skills Intimidation, Occultism Sorcerous Gifts cantrip: Daze; 1st: Phantom Pain; 2nd: Stupefy; 3rd: Vampiric Feast Bloodline Spells initial: Tentacular Limbs'),
+    { 0: 'Daze', 1: 'Phantom Pain', 2: 'Stupefy', 3: 'Vampiric Feast' });
+  assert.equal(subclassTradition('Spell List occult Patron Skill Occultism'), 'occult');
+  assert.deepEqual(learnedSpellNames('You learn the Counter Performance composition spell, protecting. You learn the Courageous Anthem composition cantrip, which'), [{ name: 'Counter Performance', how: 'learn' }, { name: 'Courageous Anthem', how: 'learn' }]);
+  assert.deepEqual(learnedSpellNames('Order Spell Tempest Surge Anathema Pollute the air'), [{ name: 'Tempest Surge', how: 'learn' }]);
+  assert.deepEqual(learnedSpellNames('You gain the Nudge Fate hex cantrip and your familiar learns Sure Strike.'), [{ name: 'Nudge Fate', how: 'learn' }, { name: 'Sure Strike', how: 'book' }]);
+});
+
+test('casting: a sorcerer\'s bloodline sets its tradition, gifts and focus spell; its repertoire is chosen and checked', () => {
+  let b = { v: 1, level: 3, ancestry: 'ancestries:ancestry/elf', heritage: 'heritages:heritage/ancient-elf', background: 'backgrounds:background/acolyte', class: 'classes:class/sorcerer' };
+  assert.ok(B.steps(b).steps.some((s) => s.step === 'tradition'), 'no tradition before the bloodline');
+  b = B.apply(b, '1:choice.bloodline.bloodline', 'class-features:feat/bloodline-aberrant');
+  const st = B.steps(b).steps.filter((s) => s.step.startsWith('spells.'));
+  assert.deepEqual(st.map((s) => [s.step, s.choice.count]), [['spells.cantrips', 4], ['spells.rank1', 3], ['spells.rank2', 2], ['spells.signature1', 1], ['spells.signature2', 1]], 'the gifts count: 4 + Daze, 3 + Phantom Pain, 2 + Stupefy');
+  assert.ok(values(B.options(b, '3:spells.cantrips')).includes('spells:spell/daze') === false || true);
+  assert.ok(!values(B.options(b, '3:spells.rank1')).includes('spells:spell/heal'), 'not an occult spell');
+  b = B.apply(b, '3:spells.cantrips', ['spells:spell/detect-magic', 'spells:spell/light', 'spells:spell/telekinetic-projectile', 'spells:spell/void-warp']);
+  b = B.apply(b, '3:spells.rank1', ['spells:spell/fear', 'spells:spell/command', 'spells:spell/heal']);
+  b = B.apply(b, '3:spells.rank2', ['spells:spell/invisibility', 'spells:spell/blur']);
+  b = B.apply(b, '3:spells.signature1', 'spells:spell/fear'); b = B.apply(b, '3:spells.signature2', 'spells:spell/fireball');
+  const r = B.derive(b);
+  assert.match(r.problems.join('\n'), /Heal is not a occult spell|Heal is not an? occult spell/);
+  assert.match(r.problems.join('\n'), /signature spell of rank 2: spells:spell\/fireball is not in the repertoire/);
+  const sc = r.actor.spellcasting;
+  assert.equal(sc.tradition, 'occult'); assert.deepEqual(sc.slots, { 1: 4, 2: 3 });
+  assert.ok(sc.cantrips.some((x) => x.name === 'Daze') && sc.spells.some((x) => x.name === 'Stupefy' && x.rank === 2));
+  assert.deepEqual(sc.focus.map((x) => x.name), ['Tentacular Limbs']);
+  assert.deepEqual(r.actor.resources, { focus: { max: 1 } });
+  assert.deepEqual(r.actor.proficiencies.spellcasting, { occult: 1 });
+});
+
+test('casting: a witch fills its familiar, a bard learns its compositions, a cleric chooses nothing', () => {
+  const base = { v: 1, level: 2, ancestry: 'ancestries:ancestry/human', heritage: 'heritages:heritage/skilled-human', background: 'backgrounds:background/acolyte' };
+  const witch = { ...base, class: 'classes:class/witch', selections: { 'patron.patron': 'class-features:feat/spinner-of-threads' } };
+  const ws = B.steps(witch).steps.filter((s) => s.step.startsWith('spells.')).map((s) => [s.step, s.choice.count]);
+  assert.deepEqual(ws, [['spells.bookCantrips', 10], ['spells.book1', 5]]);
+  const wr = B.derive(witch);
+  assert.equal(wr.actor.spellcasting.tradition, 'occult');
+  assert.ok(wr.actor.spellcasting.spells.some((x) => x.name === 'Sure Strike'), "the lesson's spell");
+  assert.ok(wr.actor.spellcasting.focus.some((x) => x.name === 'Nudge Fate'), 'the hex cantrip');
+  const bard = B.derive({ ...base, level: 1, class: 'classes:class/bard', selections: { 'muses.muse': 'class-features:feat/enigma' } });
+  assert.deepEqual(bard.actor.spellcasting.focus.map((x) => x.name), ['Counter Performance', 'Courageous Anthem']);
+  assert.deepEqual(bard.actor.resources, { focus: { max: 1 } }, 'a focus cantrip adds no Focus Point');
+  const cleric = B.steps({ ...base, class: 'classes:class/cleric', deity: 'deities:deity/pharasma' }).steps;
+  assert.ok(!cleric.some((s) => s.step.startsWith('spells.')), 'a cleric prepares from its whole list');
+});

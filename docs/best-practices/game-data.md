@@ -331,5 +331,9 @@ What the board does with it: docs/best-practices/board.md (Replay).
   `choose` only when the player has picked; show `preview` after the big choices (ancestry, class, boosts, feats).
   An uncommon or rare option is offered but needs the GM's leave (`approve`); a "GM CHECKS" prerequisite is put to
   the GM, not decided by Claude. The draft lives in the campaign save, so a build can stop and resume.
+- Rules tables Foundry's data does not carry (spells per day) go in `rulesets/pf2e/` with their source and the date
+  they were checked, and a test that pins them to the book's numbers.
+- A caster's tradition, granted spells and focus spells are read from the subclass's text in its fixed forms; a
+  spell the text names that the content lacks is reported, never guessed.
 - The design and what is built: docs/design/game-data.md section 9.
 
