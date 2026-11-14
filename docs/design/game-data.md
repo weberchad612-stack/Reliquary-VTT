@@ -847,3 +847,17 @@ As built:
   project's own words. The class options carry `group`, `also`, `hp` and `key`, ordered by role; the tool prints a
   heading for each group. A class from a book added later shows under "Other" until it is placed (a test asks
   that none is).
+
+### 9.12 The campaign's own player options (2026-11-14)
+
+- The user's rule: an adventure's own player options (its player's guide's backgrounds, its feats, items and the
+  like) are always recommended when building a character for that campaign, and the player is told why.
+- Foundry's data names each document's book (`source.title`: "Pathfinder Season of Ghosts Player's Guide",
+  "Pathfinder Season of Ghosts Hardcover Compilation", "Pathfinder Beginner Box: Secrets of the Unlit Star"). A
+  pack's `series` (`pack.json`; the adventure importer sets it) names the adventure; the builder's settings may add
+  more (`settings --series`). An option from a book whose title contains it is the **campaign's own**: listed
+  first (within its group), marked (`campaign`: the book; `*` and "CAMPAIGN:" in the tool's lists), allowed
+  whatever the campaign's book list, and open without the GM's leave, since the adventure gives access to its own
+  options (Season of Ghosts' player's guide backgrounds are rare in the books).
+- Claude puts them in every shortlist where they fit and says why: what the option ties the character to in this
+  adventure.

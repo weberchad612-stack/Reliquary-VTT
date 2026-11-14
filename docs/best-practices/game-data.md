@@ -340,6 +340,9 @@ What the board does with it: docs/best-practices/board.md (Replay).
   when the campaign is loaded, and record who plays it (`tools/players.mjs`).
 - **The class step:** show the classes by role (the tool's groups), and when the player names a role or a concept,
   shortlist from that group and the classes that list it under `also`.
+- **The campaign's own options** (marked `*`, "CAMPAIGN:") go in every shortlist where they fit, with why: the
+  adventure built them for its characters (a player's guide background ties the character to its places and
+  people). A pack's `series` names its adventure; set it when importing.
 - **Shopping:** suggest gear that fits the build (armour it is trained in, its weapons, an adventurer's pack) within
   the budget, and let the player change it; the coins left go to the character.
 - The design and what is built: docs/design/game-data.md section 9.

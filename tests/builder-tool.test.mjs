@@ -230,3 +230,14 @@ test('builder: a heritage that sets the ancestry\'s Hit Points (Hold-Scarred Orc
   assert.ok(r.actor.feats.some((f) => f.slug === 'diehard'));
   assert.equal(B.derive({ v: 1, level: 1, ancestry: 'ancestries:ancestry/orc', heritage: 'heritages:heritage/winter-orc', class: 'classes:class/guardian' }).actor.ancestry.hp, 10);
 });
+
+test('builder: the campaign\'s own player options come first, marked, with access from the campaign', () => {
+  const sog = builder({ settings: { series: ['Season of Ghosts'], sources: ['Pathfinder Player Core'] } });
+  const bg = sog.options({ v: 1, level: 1, ancestry: 'ancestries:ancestry/orc', class: 'classes:class/guardian' }, '1:background').options;
+  const own = bg.filter((o) => o.campaign);
+  assert.ok(own.length >= 6, 'the player\'s guide backgrounds');
+  assert.deepEqual(bg.slice(0, own.length).map((o) => o.campaign), own.map(() => "Pathfinder Season of Ghosts Player's Guide"), 'listed first');
+  assert.ok(own.every((o) => !o.needs && !o.blocked), 'rare in the books, but the campaign gives access, and its books are allowed');
+  const none = builder().options({ v: 1, level: 1 }, '1:background').options;
+  assert.ok(!none.some((o) => o.campaign));
+});
