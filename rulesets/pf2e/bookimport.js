@@ -110,6 +110,27 @@ const SKILLS = 'Acrobatics|Arcana|Athletics|Crafting|Deception|Diplomacy|Intimid
 const around = (s, i, n = 6) => s.slice(Math.max(0, i - 40), i + 60).replace(/\s+/g, ' ').trim().split(' ').slice(0, n * 2).join(' ');
 
 /** The facts in one area's text. */
+// Event phrasing (future/adventure-events.md, "Find and check"): something that happens when a condition is met. Each
+// pattern names the kind of event it suggests; the checklist asks that an adventure.json event covers the area.
+const EVENT_PHRASES = [
+  ['timed', /\b(at night|each night|every night|at dawn|at dusk|at midnight|the next (?:day|night|morning)|the following (?:day|night|morning)|\d+ (?:hours|days|minutes) (?:later|after|pass)|after (?:an hour|a day|a week|\d+ (?:hours|days|rounds)))\b/i],
+  ['combat', /\b(reinforcements?|joins? the (?:fight|combat|battle|fray)|on the (?:second|third|fourth|fifth) round|at the (?:start|end) of the (?:second|third|fourth|fifth) round|(?:reduced to|falls? (?:to|below)) half (?:its|their) Hit Points|below half (?:its|their) Hit Points|arrives? (?:in|after) \d+ rounds|(?:comes?|come running) to investigate|investigates? the (?:noise|sounds of combat|commotion))\b/i],
+  ['trigger', /\b(?:once|when|if|as soon as|after) the (?:PCs|heroes|party|characters) (?:have |are |first )?(?:defeat(?:ed)?|kill(?:ed)?|open(?:ed)?|touch(?:ed)?|leave|left|rest(?:ed)?|return(?:ed)?|linger|wait|take too long|fail(?:ed)?|refuse|solve[ds]?|destroy(?:ed)?|free[ds]?|ring|pull|activate[ds]?|reach level|are level)\b|\bonce the (?:PCs|heroes|party) reach\b/i],
+  ['challenge', /\b(skill challenge|Victory Points?|Influence Points?|Research Points?|Chase Points?|Infiltration Points?|Awareness Points?|Edge Points?|obstacles? in the chase)\b/i],
+];
+function eventPhrase(s) {
+  if (/\bread (?:the following )?aloud\b/i.test(s)) return null;   // a read-aloud cue, not an event
+  for (const [what, re] of EVENT_PHRASES) if (re.test(s)) return what;
+  return null;
+}
+const SUBSYSTEM_HEADS = [
+  ['influence', /(^|\n)\s*(INFLUENCE|Influence)\s*(\d+|Skills)\b/],
+  ['chase', /(^|\n)\s*(CHASE|Chase) (Points|Obstacle)|\bObstacle Level\b/],
+  ['infiltration', /(^|\n)\s*Awareness Points?\b|\bInfiltration\b.*\bObstacles?\b/],
+  ['research', /(^|\n)\s*Research Checks?\b|\bResearch Points? \(?(?:RP)?/],
+  ['victory-points', /(^|\n)\s*(VICTORY POINTS|Victory Points)\b/],
+];
+
 export function areaFacts(text) {
   const t = text.replace(/-\n\s*/g, '').replace(/\s*\n\s*/g, ' ');
   const out = [];
@@ -134,7 +155,11 @@ export function areaFacts(text) {
     else if (/\bdifficult terrain\b/i.test(s)) out.push({ kind: 'terrain', what: 'difficult', at: s.slice(0, 90) });
     if (/\bhazardous terrain\b/i.test(s)) out.push({ kind: 'terrain', what: 'hazardous', at: s.slice(0, 90) });
     if (/\b(swim|deep water|Swim check)\b/i.test(s)) out.push({ kind: 'terrain', what: 'swim', at: s.slice(0, 90) });
+    const ev = eventPhrase(s);
+    if (ev) out.push({ kind: 'event', what: ev, at: s.slice(0, 90) });
   }
+  // a subsystem's block (its heading words, on a line of their own)
+  for (const [what, re] of SUBSYSTEM_HEADS) if (re.test(text)) out.push({ kind: 'event', what, at: what });
   if (/(^|\n)\s*Treasure\b/.test(text)) out.push({ kind: 'treasure', at: 'Treasure' });
   return out;
 }

@@ -81,6 +81,8 @@ export function packIndex(packDir) {
   }
   for (const e of adv.encounters || []) (idx.encounters[e.room] = idx.encounters[e.room] || []).push(e);
   for (const o of adv.objects || []) (idx.objects[o.room] = idx.objects[o.room] || []).push(o);
+  idx.events = {};
+  for (const ev of adv.events || []) for (const a of [].concat((ev.where && ev.where.area) || [], ev.areas || [])) (idx.events[a] = idx.events[a] || []).push(ev);
   return { pack, idx };
 }
 
@@ -151,6 +153,11 @@ export function checkArea(area, facts, blocks, idx, explained = []) {
       const t = L.terrain;
       if (t.length) done.push(`${f.what} terrain`);
       else miss(`${f.what} terrain in the text, and no terrain area in the room`, f, room ? { section: 'terrain.areas', entry: { id: `${f.what}-${k.toLowerCase()}`, kind: f.what === 'swim' ? 'swim' : f.what, room: k, select: [{ rects: room.rects }], note: `${k} (${where}): ${f.what} in the text; narrow it to the squares the text means` } } : null);
+    } else if (f.kind === 'event') {
+      // an event in the text: one in adventure.json for this area (or its parent), else the notes say why none
+      const evs = [...new Set([k, ...keys, ...family].flatMap((x) => (idx.events || {})[x] || []))];
+      if (evs.length) done.push(`event (${evs.map((e) => e.id).join(', ')})`);
+      else miss(`a ${f.what} event in the text, and no event in adventure.json for the area`, f, { section: 'events', entry: { id: `${k.toLowerCase()}-${f.what}`, title: 'name it', pages: area.pages.join(','), where: { map: room && room.map, area: k }, trigger: { area: k }, stages: [{ id: 'start', actions: [{ do: 'narrate', text: 'paraphrase' }] }], note: `${k} (${where}): ${f.what} in the text: "${(f.at || '').slice(0, 60)}"` } });
     } else if (f.kind === 'treasure') {
       if (objs.some((o) => (o.items && o.items.length) || o.coins) || /treasure|loot/i.test(notes)) done.push('treasure');
       else miss('treasure in the text, and no object holds any', f);

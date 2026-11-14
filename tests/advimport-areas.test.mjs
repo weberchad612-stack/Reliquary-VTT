@@ -54,3 +54,26 @@ test('area checklist: what the pack lacks is listed, with proposals; explained i
   const blocks = parseBlocks('X1. Mossy Gate\nMOSS TROLL\nPerception +5\nAC 14; HP 30\n', 4);
   assert.match(checkArea(a.X1, [], blocks, idx).missing[0].what, /stat block MOSS TROLL/);
 });
+
+test('area checklist: events in the text, found and checked against adventure.json events', () => {
+  const kinds = (t) => areaFacts(t).filter((x) => x.kind === 'event').map((x) => x.what);
+  assert.deepEqual(kinds('At night the bell tolls across the yard.'), ['timed']);
+  assert.deepEqual(kinds('Two more guards arrive as reinforcements on the third round.'), ['combat']);
+  assert.deepEqual(kinds('Once the heroes defeat the ogre, the gate opens.'), ['trigger']);
+  assert.deepEqual(kinds('The party earns Victory Points for each success.'), ['challenge']);
+  assert.deepEqual(kinds('INFLUENCE 3\nThe mayor listens.'), ['influence']);
+  // not events: room entry, read-aloud cues, rules text about rounds and dying
+  assert.deepEqual(kinds('When the heroes enter the room, read the following aloud.'), []);
+  assert.deepEqual(kinds('When the heroes open the door, read the following aloud.'), []);
+  assert.deepEqual(kinds('Each round, every hero and monster gets one turn. When a monster is reduced to 0 Hit Points, it is removed.'), []);
+  const idx = { rooms: { X1: { map: 'm', at: [1, 1], rects: [[0, 0, 4, 4]] } }, notes: { X1: '## X1' }, encounters: {}, objects: {}, doors: {}, light: {}, lights: {}, terrain: {}, mapLights: {}, base: {}, fpc: { m: 5 }, events: {} };
+  const area = { key: 'X1', pages: [4], text: 'Once the heroes defeat the ogre, the gate opens.' };
+  const miss = checkArea(area, areaFacts(area.text), [], idx);
+  assert.match(miss.missing[0].what, /a trigger event in the text, and no event/);
+  assert.equal(miss.proposals[0].section, 'events');
+  assert.deepEqual(miss.proposals[0].entry.where, { map: 'm', area: 'X1' });
+  idx.events.X1 = [{ id: 'gate-opens' }];
+  const ok = checkArea(area, areaFacts(area.text), [], idx);
+  assert.deepEqual(ok.missing, []);
+  assert.ok(ok.done.includes('event (gate-opens)'));
+});

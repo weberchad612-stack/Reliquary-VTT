@@ -5,38 +5,173 @@
   "description": "Each event of the adventure as defined by the pack (adventure.json events: trigger, stages, actions; engine/events/events.js) with its state in play (status, stage, history, decisions), and the campaign's flags. On the board each event is a record events/<id>; the flags are state/flags. An update from the pack (campaign.mjs --update) replaces the definitions and keeps the state.",
   "type": "object",
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "events": {
       "type": "object",
-      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
       "additionalProperties": {
         "type": "object",
-        "required": ["title", "trigger", "stages"],
+        "required": [
+          "title",
+          "trigger",
+          "stages"
+        ],
         "properties": {
-          "title": { "type": "string" },
-          "kind": { "enum": ["combat", "social", "challenge", "timed", "location", "story"] },
-          "pages": { "type": "string" },
-          "where": { "type": "object", "properties": { "map": { "type": "string" }, "area": { "type": "string" } }, "additionalProperties": false },
-          "trigger": { "type": "object" },
-          "stages": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id"], "properties": {
-            "id": { "type": "string" }, "title": { "type": "string" }, "when": { "type": "object" }, "actions": { "type": "array" },
-            "branches": { "type": "array", "items": { "type": "object", "required": ["if", "go"], "properties": { "if": { "type": "object" }, "go": { "type": "string" } }, "additionalProperties": false } },
-            "next": { "type": "string" }, "note": { "type": "string" } }, "additionalProperties": false } },
-          "repeat": { "type": "object", "properties": { "cooldown": { "type": "number", "minimum": 0 } }, "additionalProperties": false },
-          "note": { "type": "string" },
-          "status": { "enum": ["waiting", "running", "done", "cooldown"] },
-          "stage": { "type": "string" },
-          "started": { "type": "number" },
-          "stage_at": { "type": "number" },
-          "runs": { "type": "integer", "minimum": 0 },
-          "last": { "type": "number" },
-          "history": { "type": "array", "items": { "type": "object", "properties": { "at": { "type": "number" }, "what": { "type": "string" } }, "additionalProperties": false } },
-          "decisions": { "type": "object" }
+          "title": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "combat",
+              "social",
+              "challenge",
+              "timed",
+              "location",
+              "story"
+            ]
+          },
+          "pages": {
+            "type": "string"
+          },
+          "where": {
+            "type": "object",
+            "properties": {
+              "map": {
+                "type": "string"
+              },
+              "area": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "trigger": {
+            "type": "object"
+          },
+          "stages": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "when": {
+                  "type": "object"
+                },
+                "actions": {
+                  "type": "array"
+                },
+                "branches": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "if",
+                      "go"
+                    ],
+                    "properties": {
+                      "if": {
+                        "type": "object"
+                      },
+                      "go": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "next": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "repeat": {
+            "type": "object",
+            "properties": {
+              "cooldown": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "waiting",
+              "running",
+              "done",
+              "cooldown"
+            ]
+          },
+          "stage": {
+            "type": "string"
+          },
+          "started": {
+            "type": "number"
+          },
+          "stage_at": {
+            "type": "number"
+          },
+          "runs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last": {
+            "type": "number"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "number"
+                },
+                "what": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "decisions": {
+            "type": "object"
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Other areas the event covers (the area checklist counts it for each)."
+          }
         },
         "additionalProperties": false
       }
     },
-    "flags": { "type": "object", "description": "Flags set by events and Claude (a fight ended: 'ended:<group>' with the game time; anything the adventure tracks)." }
+    "flags": {
+      "type": "object",
+      "description": "Flags set by events and Claude (a fight ended: 'ended:<group>' with the game time; anything the adventure tracks)."
+    }
   },
   "additionalProperties": false
 }
